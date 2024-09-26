@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Aggiungi all'elenco di lettura</translation>
 <translation id="1854463785401910334">Esegui una ricerca nelle schede aperte</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} di {count} password}other{{position} di {count} password}}</translation>
+<translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invita membri del gruppo Famiglia</translation>
@@ -703,6 +704,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469834037720363704">Numero pacco</translation>
 <translation id="4471472356135655769">Impossibile esportare le password</translation>
+<translation id="4474142134969976028">Nessun risultato corrispondente</translation>
 <translation id="4474494258097106883">Realizzato per il tuo iPhone</translation>
 <translation id="4488754974567924717">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>

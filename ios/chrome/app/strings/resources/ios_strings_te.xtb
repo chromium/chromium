@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">చదవాల్సిన లిస్ట్‌ను జోడించండి</translation>
 <translation id="1854463785401910334">తెరిచి ఉన్న ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} పాస్‌వర్డ్‌లో {position}వది}other{{count} పాస్‌వర్డ్‌లలో {position}వది}}</translation>
+<translation id="1861262398884155592">ఈ ఫోల్డర్ ఖాళీగా ఉంది</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ఫ్యామిలీ మెంబర్‌లను ఆహ్వానించండి</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3982893814825393515">సమస్యను రిపోర్ట్ చేయండి…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేశారు. ఖాతా మెనూను తెరవండి.</translation>
+<translation id="3986739045730058129">ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="3987993985790029246">లింక్‌ను కాపీ చేయండి</translation>
 <translation id="3992684624889376114">ఈ పేజీ గురించి</translation>
 <translation id="3994422733891749358">మీరు స్వీకరించాలనుకుంటున్న నోటిఫికేషన్‌లను ఎంచుకోండి</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">గమనికలు <ph name="CHARACTER_LIMIT" /> వరకు అక్షరాలను సేవ్ చేయగలవు.</translation>
 <translation id="4469834037720363704">ప్యాకేజీ నంబర్</translation>
 <translation id="4471472356135655769">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
+<translation id="4474142134969976028">మ్యాచ్ అయ్యే ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4474494258097106883">మీ iPhone కోసం రూపొందించబడింది</translation>
 <translation id="4488754974567924717">మీ పాస్‌వర్డ్‌లు చోరీకి గురైనట్లయితే, మేము మీకు తెలియజేస్తాము</translation>
 <translation id="4489536976005181779">{count,plural, =1{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీని జోడించడం జరిగింది}other{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీలను జోడించడం జరిగింది}}</translation>
@@ -757,6 +760,7 @@
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4717844083556844785">ప్రస్తుత వెబ్‌పేజీ అజ్ఞాత మోడ్‌లో ఉంది</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
+<translation id="4720530280568305198">మీ ఎంపిక కొత్త ట్యాబ్‌లో తెరవబడింది</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4742407542027196863">పాస్‌వర్డ్‌లను మేనేజ్ చేయండి…</translation>
 <translation id="4742897645503301228">'ధరను ట్రాక్ చేయండి'ని దాచండి</translation>

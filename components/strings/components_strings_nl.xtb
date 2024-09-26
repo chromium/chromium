@@ -379,6 +379,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1658111267661135323">Tv en video</translation>
 <translation id="1658918301167915956">bluetooth-apparaten</translation>
 <translation id="1662550410081243962">Betaalmethoden opslaan en invullen</translation>
+<translation id="1662980953334786797">Dezelfde volgorde</translation>
 <translation id="1663943134801823270">Passen en adressen zijn afkomstig uit Chrome. Je kunt ze beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Flexo-fotopolymeer</translation>
 <translation id="166624440456221306">Vergelijkingstabel verwijderen</translation>
@@ -700,6 +701,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
+<translation id="2242389809734574253">IBAN opslaan gesloten.</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
 <translation id="2246480341630108201">Je ouder heeft nog niet aangegeven dat het goed is</translation>
 <translation id="2247789808226901522">Kaart verlopen</translation>
@@ -1235,6 +1237,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3272112314896217187">Voer de <ph name="NUMBER_OF_DIGITS" />-cijferige verificatiecode in</translation>
 <translation id="3272643614306383237">Minder dan 1 MB. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
 <translation id="3273738040255912340">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN opslaan is op volledige hoogte geopend.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te openen in <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te openen in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Je organisatie, <ph name="ENROLLMENT_DOMAIN" />, heeft bepaalde gegevens gestuurd naar de volgende websites, zoals instellingen of beleidsregels.</translation>
 <translation id="3286372614333682499">staand</translation>
@@ -1652,6 +1655,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
 <translation id="4025325634010721551">Beleid is opnieuw geladen</translation>
 <translation id="4025338605225449265">Valuta's en wisselkoersen</translation>
+<translation id="4025777154208238692">Omgekeerde volgorde</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" /><ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Aanvallers kunnen informatie zien en wijzigen<ph name="END_STRONG" /> die je naar de site stuurt of van de site krijgt.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Het is het veiligst om deze site later te bezoeken<ph name="END_STRONG" /> als je nu een openbaar netwerk gebruikt. Je loopt minder risico als je een vertrouwd netwerk, zoals je wifi-netwerk thuis of op het werk, gebruikt.
     <ph name="END_LIST" />
@@ -2119,6 +2123,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4881808915112408168">24 x 31,5 inch</translation>
 <translation id="4882314601499260499">Geen gebruikersbeleid toegepast. Als je gebruikersbeleid wilt toevoegen, moet je organisatie <ph name="LINK_BEGIN" />je domein verifiëren<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Voer je vraag of prompt in</translation>
 <translation id="4885030148564729407">Huwelijksreizen en romantische uitjes</translation>
 <translation id="4885256590493466218">Bij het afrekenen betalen met <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Wachtwoorden beveiligen met Windows Hello</translation>
@@ -2578,6 +2583,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5723873695528696965">Je MIDI-apparaten bedienen en herprogrammeren</translation>
 <translation id="5725297205162868298">De snelkoppeling mag niet beginnen met het teken @: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="5728246486828755318">Kan vragen om geavanceerde printerfuncties te gebruiken</translation>
 <translation id="5729442113829771034">Peuteronderwijs</translation>
 <translation id="5730040223043577876">Chrome raadt je aan je wachtwoord opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="5732392974455271431">Je ouders kunnen de blokkering van deze site opheffen</translation>
@@ -2589,6 +2595,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5743684619253032786">Nagelverzorgingsproducten</translation>
 <translation id="5745733273847572235">Kan om je locatie vragen</translation>
 <translation id="5750869797196646528">Handen volgen</translation>
+<translation id="5752327398324808817">Voer 1 of 2 woorden in</translation>
 <translation id="5759751709240058861">De camera gebruiken en bewegen</translation>
 <translation id="5763042198335101085">Geef een geldig e-mailadres op</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongindeling.</translation>
@@ -3083,6 +3090,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6671169470640320959">Autofinanciering</translation>
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
 <translation id="6677351035258626477">Fastfood</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als optie}other{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als opties}}</translation>
 <translation id="6681790815630918386">CVC opgeslagen</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6687230248707087982">Envelop (effen)</translation>
@@ -3099,6 +3107,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6696575039575740785">Web-apps installeren niet toegestaan</translation>
 <translation id="6698097747703777657">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Gemaakt:</translation>
+<translation id="6698769547327354196">Als je Pix in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Schuifbalk voor tijd</translation>
 <translation id="6702851555558236418">Audio- en muzieksoftware</translation>
 <translation id="6702919718839027939">Presenteren</translation>
@@ -3401,6 +3410,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Bedrijfsvoering</translation>
+<translation id="7244061187185055290">Beschrijf in een paar woorden wat je zoekt</translation>
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
@@ -3781,7 +3791,6 @@ Aanvullende informatie:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">De CVC van deze kaart wordt versleuteld en opgeslagen op je apparaat zodat je sneller kunt betalen</translation>
 <translation id="7937554595067888181">Verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Toon bij het afrekenen welke beloningen en voordelen beschikbaar zijn voor je kaarten. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie over kaartvoordelen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Het servercertificaat is nog niet geldig.</translation>
 <translation id="7941628148012649605">Envelop Chou 4</translation>
 <translation id="794169214536209644">Snoep en zoetigheden</translation>

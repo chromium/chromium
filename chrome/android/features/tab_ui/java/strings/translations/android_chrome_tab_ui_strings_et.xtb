@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranž</translation>
 <translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
 <translation id="1273910660700874265">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> valikud</translation>
+<translation id="1293272072740285747">Saate selle grupi säilitada, et lisada vahelehed hiljem, või selle kustutada, kui seda enam vaja pole.
+
+Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GROUP" />“ ja see kustutatakse kõigist seadmetest.</translation>
 <translation id="1340839264183302272">Lahku grupist</translation>
 <translation id="1419023007528516122">See kustutab grupi jäädavalt teie seadmest.</translation>
 <translation id="1486715732399361704">Siit leiate kõik oma vahelegrupid</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Poe teabe vaatamine, valik saadaval ekraanikuva ülaosas</translation>
+<translation id="5615302411300498438">Saate selle grupi säilitada, et vahelehed hiljem lisada, või lahkuda.
+
+Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="5627941783489838464">Vahelehtede värskendused puuduvad</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Taasta vaheleht}other{Taasta vahelehed}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link Chrome'ist}other{<ph name="TABS_COUNT_MANY" /> linki Chrome'ist}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_ADDED" /> vahelehte lisati, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="8631711675211020168">Kõik kaotavad kohe juurdepääsu vahelehegrupile <ph name="GROUP_NAME" /> ja see kustutatakse kõigist seadmetest</translation>
 <translation id="8633025649649592204">Hiljutised toimingud</translation>
+<translation id="8635399646025169806">Kas säilitada vahelehegrupid?</translation>
 <translation id="870736955561925754">Kas sulgeda vaheleht ja kustutada grupp?</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Loodud <ph name="NUM_MONTHS_ONE" /> kuu tagasi}other{Loodud <ph name="NUM_MONTHS_MANY" /> kuud tagasi}}</translation>
+<translation id="8804742093141782941">Säilita grupp</translation>
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>
 <translation id="8887921976452567404">Teie suletud vahelehti ja gruppe on võimalik avada jaotistest Hiljutised vahelehed ja Vahelehegrupid.</translation>
 <translation id="8915916167043355778">Sule kõik</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">ဖတ်ရန်စာရင်းသို့ ထည့်ရန်</translation>
 <translation id="1854463785401910334">ဖွင့်ထားသည့်တဘ်များတွင် ရှာဖွေခြင်း</translation>
 <translation id="1861067954551502701">{count,plural, =1{စကားဝှက် {count} ခုအနက် {position}}other{စကားဝှက် {count} ခုအနက် {position}}}</translation>
+<translation id="1861262398884155592">ဤဖိုင်တွဲတွင် မည်သည့်အရာမျှ မရှိပါ</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />။</translation>
 <translation id="1881621406744213161">မိသားစုဝင်များကို ဖိတ်ကြားပါ</translation>
@@ -674,6 +675,7 @@
 <translation id="4302061870579014542">နေရာသတ်မှတ်ရန်</translation>
 <translation id="4304713468139749426">စကားဝှက်မန်နေဂျာ</translation>
 <translation id="4309403553630140242">နောက်ထပ်အချက်အလက်အတွက် နှစ်ချက်တို့ပါ</translation>
+<translation id="4320848494125124980">မကြာသေးမီက သုံးထားသည်များ</translation>
 <translation id="4324735664183300693">အကြောင်းကြားချက်များ ဖွင့်ရန်</translation>
 <translation id="4328843285884395590">ကျွန်ုပ်၏ Drive</translation>
 <translation id="4331177082088332784">BEGIN_LINK အကြောင်းအရာ ဆက်တင်များ END_LINK တွင် ၎င်းကို စီမံနိုင်သည်</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">မှတ်ချက်များကို စာလုံးရေ <ph name="CHARACTER_LIMIT" /> လုံးအထိ သိမ်းနိုင်သည်။</translation>
 <translation id="4469834037720363704">ပက်ကေ့ဂျ် နံပါတ်</translation>
 <translation id="4471472356135655769">စကားဝှက်များကို ထုတ်ယူ၍မရပါ</translation>
+<translation id="4474142134969976028">ထပ်တူကျသည့် ရလဒ်မရှိပါ</translation>
 <translation id="4474494258097106883">သင့် iPhone အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="4488754974567924717">သင့်စကားဝှက်များ ပေါက်ကြားသွားပါက သင့်ကို ကျွန်ုပ်တို့အသိပေးပါမည်</translation>
 <translation id="4489536976005181779">{count,plural, =1{သင့်အကောင့် {email} ရှိ သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာကို ထည့်လိုက်သည်}other{သင့်အကောင့် {email} ရှိ သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာများကို ထည့်လိုက်သည်}}</translation>

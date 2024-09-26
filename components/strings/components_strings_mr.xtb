@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="2239100178324503013">आता पाठवा</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
+<translation id="2242389809734574253">IBAN सेव्ह करा ही शीट बंद केली आहे.</translation>
 <translation id="2246264294482514010">१० x १२ इं</translation>
 <translation id="2246480341630108201">तुमच्या पालकांनी अद्याप परवानगी दिलेली नाही</translation>
 <translation id="2247789808226901522">कार्ड एक्स्पायर झाले आहे</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> अंकी पडताळणी कोड एंटर करा</translation>
 <translation id="3272643614306383237">१ MB पेक्षा कमी. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
 <translation id="3273738040255912340">तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल आणि ब्राउझरमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो व इतर आवश्यक टास्क करू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी ही Chromium च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN सेव्ह करा ही शीट पूर्ण उंचीवर उघडली आहे.</translation>
 <translation id="3281350579597955952">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}}</translation>
 <translation id="3282085321714087552">तुमच्या संस्थेने <ph name="ENROLLMENT_DOMAIN" /> खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
 <translation id="3286372614333682499">पोट्रेट</translation>
@@ -2124,6 +2126,7 @@
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4881808915112408168">२४ x ३१.५ इं</translation>
 <translation id="4882314601499260499">कोणतीही वापरकर्ता धोरणे लागू केलेली नाहीत. वापरकर्ता धोरणे जोडण्यासाठी, तुमच्या संस्थेने <ph name="LINK_BEGIN" />तुमच्या डोमेनची पडताळणी करणे<ph name="LINK_END" /> आवश्यक आहे.</translation>
+<translation id="4883911187498618061">तुमचा प्रश्न किंवा प्रॉम्प्ट एंटर करा</translation>
 <translation id="4885030148564729407">हनिमून आणि रोमॅंटिक गेटवे</translation>
 <translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
@@ -2583,6 +2586,7 @@
 <translation id="572328651809341494">अलीकडील टॅब</translation>
 <translation id="5723873695528696965">तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करा</translation>
 <translation id="5725297205162868298">शॉर्टकट @ या वर्णापासून सुरू होऊ शकत नाही: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">प्रिंटरची प्रगत वैशिष्ट्ये वापरण्याची विनंती करू शकते</translation>
 <translation id="5729442113829771034">बालवाडीपूर्व शिक्षण</translation>
 <translation id="5730040223043577876">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chrome तुम्हाला तो रीसेट करण्याची शिफारस करत आहे.</translation>
 <translation id="5732392974455271431">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
@@ -2594,6 +2598,7 @@
 <translation id="5743684619253032786">नखांच्या निगेशी संबंधित उत्पादने</translation>
 <translation id="5745733273847572235">तुमच्या स्थानाची विनंती करू शकते</translation>
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
+<translation id="5752327398324808817">एक किंवा दोन शब्द एंटर करा</translation>
 <translation id="5759751709240058861">तुमचा कॅमेरा वापरा आणि हलवा</translation>
 <translation id="5763042198335101085">वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="5764725887548570807">ओरिजिनचा फॉरमॅट चुकीचा आहे.</translation>
@@ -3090,6 +3095,7 @@
 <translation id="6671169470640320959">ऑटो वित्तव्यवस्था</translation>
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
 <translation id="6677351035258626477">फास्ट फूड</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून <ph name="FINANCIAL_ACCOUNT_TYPES" /> पहा}other{तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून <ph name="FINANCIAL_ACCOUNT_TYPES" /> पहा}}</translation>
 <translation id="6681790815630918386">CVC सेव्ह केला आहे</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6687230248707087982">एन्व्हलप (प्लेन)</translation>
@@ -3106,6 +3112,7 @@
 <translation id="6696575039575740785">वेब अ‍ॅप्स इंस्टॉल करण्याची अनुमती नाही</translation>
 <translation id="6698097747703777657">तुमचा कोड मिळाला नाही का? <ph name="BEGIN_LINK" />नवीन कोड मिळवा<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">तयार केलेले:</translation>
+<translation id="6698769547327354196">Chrome मध्ये Pix बंद करण्यासाठी, तुमच्या <ph name="BEGIN_LINK1" />पेमेंट सेटिंग्ज<ph name="END_LINK1" /> वर जा</translation>
 <translation id="67007264085648978">टाइम स्क्रबर</translation>
 <translation id="6702851555558236418">ऑडिओ आणि संगीताशी संबंधित सॉफ्टवेअर</translation>
 <translation id="6702919718839027939">सादर करा</translation>
@@ -3261,6 +3268,7 @@
 <translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6978722349058177832">तुम्ही हे डिव्हाइस शेअर केल्यास, प्रत्येक वेळी तुम्ही ऑटोफिल वापरून पेमेंट करताना Chromium तुम्हाला पडताळणी करण्यास सांगू शकते</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">तृतीय पक्ष कुकीना असलेला अ‍ॅक्सेस व्यवस्थापित करा</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6984270784814146224">लेबल नसलेली इमेज. मजकूर काढत आहे, Google AI द्वारे सक्षम केले आहे</translation>
 <translation id="6987806006823772670">एन्व्हलप (कोटेड)</translation>
@@ -3407,6 +3415,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">व्यवसायासंबंधित कामकाज</translation>
+<translation id="7244061187185055290">तुम्ही काय शोधत आहात याचे काही शब्दांमध्ये वर्णन करा</translation>
 <translation id="7251437084390964440">नेटवर्क कॉन्फिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉन्फिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
@@ -3787,7 +3796,6 @@
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
 <translation id="7937163678541954811">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउट करण्यासाठी तुमच्या डिव्हाइसवर सेव्ह केला जाईल</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
-<translation id="7938490694919717008">चेकआउट करताना तुमच्या कार्डसाठी कोणते रिवॉर्ड आणि फायदे उपलब्ध आहेत ते दाखवा <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्डच्या लाभांबद्दल जाणून घ्या<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">सर्व्हरचे सर्टिफिकेट अद्याप वैध नाही.</translation>
 <translation id="7941628148012649605">एन्व्हलप चोउ ४</translation>
 <translation id="794169214536209644">कँडी आणि मिठाई</translation>

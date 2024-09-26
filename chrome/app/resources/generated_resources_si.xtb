@@ -320,6 +320,7 @@
 <translation id="122082903575839559">සහතික අත්සනේ ප්‍රතිලඝු</translation>
 <translation id="1221024147024329929">RSA සංකේතනය සහිත PKCS #1 MD2</translation>
 <translation id="1221825588892235038">තෝරාගැනීම් පමණි</translation>
+<translation id="1222835797152767346">පුරනය වීම පහසු කිරීම සඳහා PIN එකක් සකසන්න</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> බලපත්‍රයක් අවශ්‍ය කරයි</translation>
 <translation id="1223853788495130632">ඔබේ පරිපාලක මෙම සැකසුම සඳහා නිශ්චිත අගයක් නිර්දේශ කරයි.</translation>
 <translation id="1225177025209879837">සැකසුම් ඉල්ලීම...</translation>
@@ -5346,7 +5347,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4838327282952368871">සිහිනමය</translation>
 <translation id="4838836835474292213">පසුරු පුවරුව කියවීමේ ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="4838907349371614303">මුරපදය යාවත්කාලීන කරන ලදි</translation>
-<translation id="4838958829619609362">තේරීම <ph name="LANGUAGE" /> තුළ නොමැත</translation>
 <translation id="4839303808932127586">ලෙස වීඩියෝව සුරකින්න(&amp;v)...</translation>
 <translation id="4839910546484524995">ඔබේ උපාංගය පරීක්ෂා කරන්න</translation>
 <translation id="4840096453115567876">කෙසේ වුවත් අප්‍රසිද්ධ ප්‍රකාරයෙන් ඉවත් වන්නද?</translation>
@@ -5956,7 +5956,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5287425679749926365">ඔබේ ගිණුම්</translation>
 <translation id="5288106344236929384">තවත් ක්‍රියා, <ph name="DOMAIN" /> මත <ph name="USERNAME" /> සඳහා මුරයතුරු විකල්ප</translation>
 <translation id="5288678174502918605">වැසූ ටැබ නැවත විවෘත කරන්න (&amp;e)</translation>
-<translation id="52895863590846877">පිටුව <ph name="LANGUAGE" /> බසින් නැත</translation>
 <translation id="5290020561438336792">PC සහ විකාශ උපාංගය වෙනස් Wi-Fi ජාලවල ඇත (උදා. 2.4GHz එදි. 5GHz)</translation>
 <translation id="52912272896845572">පුද්ගලික ගොනුව අවලංගුයි.</translation>
 <translation id="5291739252352359682">Chrome බ්‍රව්සරය තුළ මාධ්‍ය සඳහා ස්වයංක්‍රියව සිරස්තල තනයි (දැනට ඉංග්‍රීසි භාෂාවෙන් ලබා ගත හැකිය) ශ්‍රව්‍ය සහ සිරස්තල ස්ථානීයව සකසන අතර කිසි විටෙක උපාංගය හැර නොයයි.</translation>
@@ -6412,6 +6411,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5624959475330585145">අනාරක්ෂිත සම්බන්ධතා භාවිත කිරීමට පෙර විමසන්න</translation>
 <translation id="5625225435499354052">Google Pay හි සංස්කරණය කරන්න</translation>
 <translation id="5626134646977739690">නම:</translation>
+<translation id="5626172233890210551">ඒ වෙනුවට මුරපදය භාවිත කරන්න</translation>
 <translation id="5627832140542566187">සංදර්ශක දිශානතිය</translation>
 <translation id="5628434207686266338">උපාංග මුරපදය සකසන්න</translation>
 <translation id="562935524653278697">ඔබේ පරිපාලක ඔබේ පිටුසන්, ඉතිහාසය, මුරපද, සහ වෙනත් සැකසීම් සමමුහුර්ත කිරීම අබල කර ඇත.</translation>
@@ -7189,6 +7189,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6207937957461833379">රට/කලාපය:</translation>
 <translation id="6208521041562685716">ජංගම දත්ත ක්‍රියාත්මක කරනු ලැබේ</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> වෙත සුරැකීම අසාර්ථක විය</translation>
+<translation id="6209767197996242814">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">සංඝටක යාවත්කාලීනය</translation>
 <translation id="6209908325007204267">ඔබේ උපාංගයට Chrome ව්‍යවසාය උත්ශ්‍රේණිගත කිරීමක් ඇතුළත් වේ, නමුත් ඔබේ පරිශීලක නම ව්‍යවසාය ගිණුමක් සමග ආශ්‍රිත නොවේ. ද්විතීයික උපාංගයක g.co/ChromeEnterpriseAccount කරා පිවිසීමෙන් ව්‍යවසාය ගිණුමක් සාදන්න.</translation>
 <translation id="6210282067670792090">ලිපින තීරුව තුළ, සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම සඳහා කෙටි මං සහිත මෙම යතුරු පුවරු කෙටි මඟ භාවිත කරන්න</translation>
@@ -8096,7 +8097,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="686366188661646310">මුරපදය මකන්නද?</translation>
 <translation id="6863925886424789941">කොලෝසියම</translation>
 <translation id="6865313869410766144">ස්වයංපිරවුම් පෝර්ම දත්ත</translation>
-<translation id="6865598234501509159">පිටුව <ph name="LANGUAGE" /> බසින් නැත</translation>
 <translation id="6865708901122695652">WebRTC සිද්ධි ලොග් (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">නිහඬ</translation>
 <translation id="686664946474413495">වර්ණ උෂ්ණත්වය</translation>
@@ -8716,7 +8716,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7343372807593926528">ප්‍රතිපෝෂණ යැවීමට පෙර කරුණාකර ගැටලුව විස්තර කරන්න.</translation>
 <translation id="7344585835349671209">ඔබේ උපාංගයෙහි HTTPS/SSL සහතික කළමනාකරණය කරන්න</translation>
 <translation id="7345706641791090287">ඔබගේ මුරපදය තහවුරු කරන්න</translation>
-<translation id="7345919885156673810">තේරීම <ph name="LANGUAGE" /> තුළ නොමැත</translation>
 <translation id="7346909386216857016">හරි, තේරුම් ගත්තා!</translation>
 <translation id="7347751611463936647">මෙම දිගුව භාවිතයට, "<ph name="EXTENSION_KEYWORD" />" යොදා, ඊලඟට TAB, ඉන්පසු ඔබේ විධායන හෝ සෙවුම ලියන්න.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> වෙතින් ඉවතට සංචලන වීමට ක්ලික් කරන්න.</translation>
@@ -10754,6 +10753,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8791534160414513928">ඔබගේ පිරික්සුම් මාර්ග තදබදය සමගින් "Do Not Track" ඉල්ලීමක් යවන්න</translation>
 <translation id="8793390639824829328">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට අඩවි මෙම විශේෂාංගය භාවිතා කරයි</translation>
 <translation id="879413103056696865">හොට්ස්පොට් ක්‍රියාත්මක අතරතුර, ඔබේ <ph name="PHONE_NAME" />:</translation>
+<translation id="8794548468611058947">පුරනය වීමට ඔබේ Google ගිණුමේ මුරපදය ඇතුළු කරනවා වෙනුවට, ඔබට මෙම <ph name="DEVICE_TYPE" /> සඳහා PIN එකක් තැනීමට හැක</translation>
 <translation id="8795916974678578410">නව කවුළුව</translation>
 <translation id="8796919761992612392">ඔබේ Chrome අභිරුචි&amp;කරණය කරන්න</translation>
 <translation id="8797459392481275117">මෙම අඩවිය කිසි විට පරිවර්තනය නොකරන්න</translation>

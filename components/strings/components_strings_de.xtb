@@ -379,6 +379,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1658111267661135323">Fernsehen und Video</translation>
 <translation id="1658918301167915956">Bluetooth-Geräte</translation>
 <translation id="1662550410081243962">Zahlungsmethoden speichern und ausfüllen</translation>
+<translation id="1662980953334786797">In der gleichen Reihenfolge</translation>
 <translation id="1663943134801823270">Die Karten und Adressen stammen aus Chrome. Sie werden in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwaltet.</translation>
 <translation id="1664389769577564606">Flexofotopolymer</translation>
 <translation id="166624440456221306">Vergleichstabelle löschen</translation>
@@ -1657,6 +1658,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4023431997072828269">Dieses Formular wird über eine Verbindung gesendet, die nicht vollständig sicher ist. Hierdurch können deine Informationen für andere sichtbar sein.</translation>
 <translation id="4025325634010721551">Richtlinien wurden neu geladen</translation>
 <translation id="4025338605225449265">Währungen und Devisenkurse</translation>
+<translation id="4025777154208238692">Umgekehrte Reihenfolge</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Angreifer können Informationen, die du an die Website sendest oder von der Website erhältst, sehen und ändern.<ph name="END_STRONG" />
       <ph name="LIST_ITEM" />Wenn du ein öffentliches Netzwerk verwendest, ist es am sichersten, <ph name="BEGIN_STRONG" />diese Website erst später aufzurufen<ph name="END_STRONG" />. Das Risiko ist bei einem vertrauenswürdigen Netzwerk – wie dem WLAN zu Hause oder am Arbeitsplatz – geringer.
@@ -3794,8 +3796,6 @@ Weitere Details:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Der CVC dieser Karte wird verschlüsselt und für einen schnelleren Bezahlvorgang auf deinem Gerät gespeichert</translation>
 <translation id="7937554595067888181">Läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
-<translation id="7938490694919717008">Anzeigen, welche Prämien und Vorteile für deine Karten an der Kasse verfügbar sind.
-<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Informationen zu Kartenvorteilen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Serverzertifikat ist noch nicht gültig.</translation>
 <translation id="7941628148012649605">Umschlag Chou 4</translation>
 <translation id="794169214536209644">Süßigkeiten</translation>

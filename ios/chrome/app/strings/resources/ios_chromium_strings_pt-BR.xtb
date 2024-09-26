@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Abra o menu do Chromium</translation>
 <translation id="12739128458173458">Para enviar esta guia a outro dispositivo, faça login no Chromium nos dois aparelhos.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
+<translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1423007117030725713">Inicie uma pesquisa em uma nova guia do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie suas guias anônimas.</translation>
 <translation id="146407871188825689">Usar o Chromium no iPad por padrão</translation>
@@ -177,6 +178,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5571094606370987472">Abre as guias recentes do Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Abrir minha guia mais recente no Chromium</translation>
+<translation id="5671188105328420281">Dicas do Chromium</translation>
 <translation id="5688047395118852662">Este card mostra sugestões para você aproveitar o Chromium ao máximo.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="584550191241316896">Conectado ao Chromium</translation>
@@ -218,6 +220,7 @@ Considerações:
 <translation id="6752854822223394465">Sua organização está configurando o Chromium…</translation>
 <translation id="6794054469102824109">Abre o jogo do dinossauro do Chromium.</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
+<translation id="6831043979455480757">Traduzir</translation>
 <translation id="6852419005633611413">Acesse o Chromium com mais rapidez no Dock da tela inicial</translation>
 <translation id="6852799557929001644">Acesse suas senhas do Chromium e muito mais em outros apps neste dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar esta guia a outro dispositivo, faça login no Chromium no outro aparelho.</translation>

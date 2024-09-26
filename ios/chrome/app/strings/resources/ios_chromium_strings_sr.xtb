@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Отворите Chromium мени</translation>
 <translation id="12739128458173458">Да бисте послали ову картицу на други уређај, пријавите се у Chromium на оба уређаја.</translation>
 <translation id="1361748954329991663">Chromium је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chromium-а.</translation>
+<translation id="1383876407941801731">Претражи</translation>
 <translation id="1423007117030725713">Започните претрагу на новој Chromium картици.</translation>
 <translation id="1431818719585918472">Дозволите Chromium-у да закључа картице без архивирања.</translation>
 <translation id="146407871188825689">Подразумевано користите Chromium на iPad-у</translation>
@@ -49,6 +50,7 @@
 <translation id="2195025571279539885">Желите ли да Chromium следећи пут понуди да преведе странице са овог сајта чији је језик <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Ова адреса је тренутно сачувана у Chromium-у. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">То значи да ће Chromium сваки пут захтевати сајт за рачунар.</translation>
+<translation id="2270466829363945454">Купујте</translation>
 <translation id="2313870531055795960">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chromium-у. Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетну датотеку, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање.</translation>
 <translation id="231828342043114302">Да бисте добијали персонализовани садржај на основу интересовања, пријавите се у Chromium.</translation>
 <translation id="2326738825692478496">Неки Chromium подаци још нису сачувани на Google налогу.
@@ -129,6 +131,7 @@
 <translation id="4432744876818348753">Пријавите се да бисте искористили Chromium на најбољи начин.</translation>
 <translation id="4445228361214254027">Организација је искључила могућност коришћења и чувања Chromium података на Google налогу. Нови обележивачи, лозинке и други садржај ће се чувати само на овом уређају.</translation>
 <translation id="4498832288620833153">Додаје унете URL-ове на листу за читање у Chromium-у.</translation>
+<translation id="4508268628669724828">Вратите се овде за још корисних савета о томе како да искористите Chromium на најбољи начин.</translation>
 <translation id="452436063477828504">Уверите се да увек можете да користите Chromium податке на Google налогу</translation>
 <translation id="4527452566931097835">Желите да подесите Chromium као подразумевани прегледач?</translation>
 <translation id="4555020257205549924">Када је ова функција укључена, Chromium ће нудити да преводи странице написане на другим језицима помоћу Google преводиоца. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -177,6 +180,7 @@
 <translation id="5571094606370987472">Отвара Chromium недавне картице.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Отварање моје најновије картице у Chromium-у</translation>
+<translation id="5671188105328420281">Савети за Chromium</translation>
 <translation id="5688047395118852662">Ова картица вам приказује предлоге о томе како да искористите Chromium-а на најбољи начин.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="584550191241316896">Пријављени сте у Chromium</translation>
@@ -218,6 +222,7 @@
 <translation id="6752854822223394465">Ваша организација подешава Chromium...</translation>
 <translation id="6794054469102824109">Отвара игру Chromium диносаурус.</translation>
 <translation id="6820823224820483452">Chromium није успео да провери све лозинке. Пробајте поново сутра.</translation>
+<translation id="6831043979455480757">Преведи</translation>
 <translation id="6852419005633611413">Брже приступајте Chromium-у са траке с апликацијама на почетном екрану</translation>
 <translation id="6852799557929001644">Приступајте Chromium лозинкама и осталим функцијама у другим апликацијама на овом уређају.</translation>
 <translation id="6887138405044152640">Да бисте послали ову картицу на други уређај, пријавите се у Chromium тамо.</translation>
@@ -238,6 +243,7 @@
 <translation id="7228180817326917122">Савет за Chromium: Одаберите положај траке за адресу</translation>
 <translation id="725427773388857052">Chromium може да вас штити од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
 <translation id="7269362888766543920">Неки програмски додаци изазивају отказивање Chromium-а. Пробајте да их деинсталирате.</translation>
+<translation id="7279391168585141365">Сачувајте лозинке у Chromium-у</translation>
 <translation id="7285031092584344905">Приступајте Chromium лозинкама и осталим функцијама у другим апликацијама.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Изабрани подаци су уклоњени из Chromium-а и са синхронизованих уређаја. Google налог можда има друге облике историје прегледања, попут претрага и активности у другим Google услугама на history.google.com.</translation>

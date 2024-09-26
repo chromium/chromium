@@ -634,6 +634,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="404352903042073578">नाम नभएको समूह</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="405365679581583349">Google Play services अपडेट गर्नुहोस्</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -1444,6 +1445,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7592322927044331376">सर्वप्रथम Chrome बाट पासवर्डहरू एक्स्पोर्ट गर्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> लाई <ph name="TOP_ORIGIN" /> का सम्बन्धमा कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="7603168929588204083">मिति अवैध छ</translation>
 <translation id="7605594153474022051">सिंकले काम गरिरहेको छैन</translation>
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>

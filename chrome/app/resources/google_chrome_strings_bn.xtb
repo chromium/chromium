@@ -167,6 +167,7 @@
 <translation id="2945997411976714835">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার প্রসেস শুরু করা যায়নি।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chrome</translation>
 <translation id="2970681950995291301">Chrome থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সেটিংস পৃষ্ঠায় গিয়ে Chrome থেকে সাইন-আউট করুন</translation>
+<translation id="2994465299455873643"><ph name="BROWSER_NAME" /> ব্রাউজার পুরনো হয়ে গেলে এটি এনক্রিপশন পরিষেবা প্রদান করে এবং সুরক্ষিতভাবে ফিরিয়ে আনার সুবিধাও দেয়। এই পরিষেবা বন্ধ থাকলে, <ph name="BROWSER_NAME" /> ব্রাউজারের এনক্রিপ্ট করা ডেটাতে অ্যাক্সেস নাও থাকতে পারে এবং <ph name="BROWSER_NAME" /> নিজেকে ঠিক নাও করতে পারে।</translation>
 <translation id="3018957014024118866">এছাড়া, Chrome থেকেও ডেটা মুছে দিন (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex আপডেট করার জন্য আবার চালু করুন</translation>
 <translation id="3037838751736561277">Google Chrome পটভূমি মোডে রয়েছে।</translation>
@@ -223,6 +224,7 @@
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
 <translation id="3695446226812920698">কীভাবে করবেন তা জানুন</translation>
 <translation id="3697952514309507634">অন্যান্য Chrome প্রোফাইল</translation>
+<translation id="3700276346088749847">আপনার অ্যাকাউন্টের Chrome ডেটা মুছে ফেলুন</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ভার্সন</translation>
 <translation id="3718181793972440140">এটি এই ডিভাইস থেকে ১টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -294,6 +296,7 @@
 <translation id="4575717501879784448">আপনার ব্রাউজ করার অভিজ্ঞতা উন্নত করার জন্য Chrome এইসব ট্যাব বন্ধ করে দিতে পারে, এর ফলে রিসোর্স কম ব্যবহার হবে।</translation>
 <translation id="459622048091363950">Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।</translation>
 <translation id="4600710005438004015">Chrom লেটেস্ট ভার্সনে আপডেট করা যাচ্ছে না, তাই আপনি নতুন বৈশিষ্ট্য এবং সুরক্ষা সমাধানগুলি পাচ্ছেন না।</translation>
+<translation id="4601439950572737842">পাসফ্রেজ ব্যবহার করে আপনার ডেটা এনক্রিপ্ট করা হয়েছে। আপনার Google অ্যাকাউন্টে Chrome সম্পর্কিত ডেটা ব্যবহার ও সেভ করতে এটি লিখুন।</translation>
 <translation id="4624065194742029982">Chrome-এর 'ছদ্মবেশী' মোড</translation>
 <translation id="4627412468266359539">ঐচ্ছিক: Google-কে অটোমেটিক ডায়াগনস্টিক ও ব্যবহারের ডেটা পাঠিয়ে ChromeOS Flex-এর ফিচার ও পারফর্ম্যান্সের উন্নতিতে সাহায্য করুন।</translation>
 <translation id="4633000520311261472">Chrome কে আরও নিরাপদ করতে, আমরা কিছু এক্সটেনশান অক্ষম করেছি যা <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> এ তালিকাবদ্ধ করা হয়নি এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছে৷</translation>

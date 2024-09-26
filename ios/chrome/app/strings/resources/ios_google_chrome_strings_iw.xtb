@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1143896152279775643">‏הסיסמה תישמר במנהל הסיסמאות של Google עבור <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">‏פתיחת כרטיסייה חדשה ב-Chrome</translation>
 <translation id="1166460004393506534">‏מחיקה של נתוני הגלישה ב-Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">‏טיפ ל-Chrome: אפשר לבחור את המיקום של סרגל הכתובות</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chrome.</translation>
+<translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chrome ומאפליקציות אחרות של Google במכשיר הזה.</translation>
 <translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>

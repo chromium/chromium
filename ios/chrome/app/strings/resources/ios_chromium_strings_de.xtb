@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Chromium-Menü öffnen</translation>
 <translation id="12739128458173458">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chromium an.</translation>
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
+<translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1423007117030725713">Eine Suche auf einem neuen Chromium-Tab starten.</translation>
 <translation id="1431818719585918472">Erlaube Chromium, deine Inkognitotabs zu sperren.</translation>
 <translation id="146407871188825689">Chromium standardmäßig auf dem iPad verwenden</translation>
@@ -176,6 +177,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5571094606370987472">Öffnet die zuletzt geöffneten Chromium-Tabs.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Aktuellen Tab in Chromium öffnen</translation>
+<translation id="5671188105328420281">Chromium-Tipps</translation>
 <translation id="5688047395118852662">Auf dieser Karte findest du Vorschläge, wie du Chromium optimal nutzen kannst.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="584550191241316896">In Chromium angemeldet</translation>
@@ -217,6 +219,7 @@ Wichtige Hinweise:
 <translation id="6752854822223394465">Deine Organisation richtet Chromium ein…</translation>
 <translation id="6794054469102824109">Öffnet Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
+<translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6852419005633611413">Über das Startbildschirm-Dock schneller auf Chromium zugreifen</translation>
 <translation id="6852799557929001644">Du kannst in anderen Apps auf diesem Gerät auf deine Chromium-Passwörter und mehr zugreifen.</translation>
 <translation id="6887138405044152640">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chromium an.</translation>

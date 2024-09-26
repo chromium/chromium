@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Axustar á zona de escaneamento</translation>
 <translation id="1343442362630695901">lago de auga salgada</translation>
 <translation id="1348657754632799065">Barra de gravación</translation>
+<translation id="1350909945461913813">Non esquezas gardar o teu traballo</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1371650399987522809">Comentarios sobre os fondos de pantalla coa tecnoloxía da IA de Google</translation>
 <translation id="1374385338586507108">Definir</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Versión do SDK:</translation>
 <translation id="2016697457005847575">Probar os pasos para tentar solucionar o problema</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Escolle un tema e despois selecciona as palabras subliñadas para personalizar as túas imaxes xeradas por IA.</translation>
 <translation id="2045814230297767491">cubertos</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Non se detectou ningunha voz</translation>
 <translation id="2446553403094072641">Precisión do punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2468124392950503650">Selecciona unha solicitude para xerar contido ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía de creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utiliza Axúdame a escribir, con tecnoloxía da IA de Google, para preparar borradores ou puír o traballo que xa teñas feito</translation>
 <translation id="2480572840229215612">cangrexos</translation>
 <translation id="248546197012830854">O dispositivo non ten conexión. Conéctao á rede wifi para ver o contido de axuda.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Non hai ningún resultado que coincida</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
+<translation id="4486524074141928967">A sesión pecharase á/s <ph name="TIME" /></translation>
 <translation id="4500722292849917410">O atallo non está dispoñible. Preme un novo atallo usando unha tecla modificadora (Control, Alt, Maiúsculas ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">gris</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
+<translation id="5613201299517339763">Pechouse a sesión</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resumo</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
 <translation id="5938286923316838007">Non se puido crear ningún nome de gravación para este contido</translation>
 <translation id="5939518447894949180">Restablecer</translation>
+<translation id="5942727615796467094">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
 <translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
 <translation id="5947266287934282605">Os datos restableceranse o último día do mes se este cae antes desta data</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desactivar o tema claro</translation>
 <translation id="6359919876285606596">Esta é unha acción permanente, polo que non se poderá desfacer</translation>
+<translation id="6368342879959028556">Ao seleccionar Crear con IA, escribe unha solicitude personalizada. Coa opción Fondos de pantalla xerados por IA podes escoller un tema e, a continuación, elixir as palabras subliñadas para personalizar un fondo de pantalla xerado por IA.</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="6373461326814131011">estanque</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Ir á configuración da conta</translation>
 <translation id="6462978824459367242">O botón para engadir APN agora está activado</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">As túas tres solicitudes e resultados máis recentes. Só poderás acceder a eles cando esteas usando a función Estilo e fondo de pantalla.</translation>
 <translation id="6472207088655375767">Contrasinal dun só uso</translation>
 <translation id="6472979596862005515">embarcacións</translation>
 <translation id="64778964625672495">vermella escura</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659594942844771486">Pestana</translation>
 <translation id="66621959568103627">rosa coral</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A opción Inspírame pode ofrecerche máis opcións de imaxes xeradas por IA únicas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA xenerativa ten carácter experimental e aínda se está desenvolvendo, polo que actualmente ten dispoñibilidade limitada.</translation>
 <translation id="6673898378497337661">aumentar o brillo do teclado</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6694534975463174713">cadeado</translation>

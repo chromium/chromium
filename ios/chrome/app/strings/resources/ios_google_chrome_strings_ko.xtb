@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1066101356081285416">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 모든 사용자를 위해 Google 쇼핑 기능을 개선하기 위해 운송장 번호와 웹사이트 이름이 Google로 전송됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 언제든지 업데이트할 수 있습니다.</translation>
+<translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1146503048444965320">Chrome에서 새 탭 열기</translation>
 <translation id="1166460004393506534">Chrome에서 인터넷 사용 기록 삭제</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome 도움말: 주소 표시줄 위치 선택</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
+<translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>

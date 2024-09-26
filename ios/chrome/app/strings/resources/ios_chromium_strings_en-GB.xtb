@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Open the Chromium menu</translation>
 <translation id="12739128458173458">To send this tab to another device, sign in to Chromium on both devices.</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
+<translation id="1383876407941801731">Search</translation>
 <translation id="1423007117030725713">Start a search in a new Chromium tab.</translation>
 <translation id="1431818719585918472">Let Chromium lock your incognito tabs.</translation>
 <translation id="146407871188825689">Use Chromium on iPad by default</translation>
@@ -177,6 +178,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5571094606370987472">Opens the Chromium Recent Tabs.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Open my latest tab in Chromium</translation>
+<translation id="5671188105328420281">Chromium tips</translation>
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="584550191241316896">Signed in to Chromium</translation>
@@ -218,6 +220,7 @@ Things to consider:
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
 <translation id="6794054469102824109">Opens the Chromium Dino Game.</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6852419005633611413">Access Chromium faster from your Home Screen Dock</translation>
 <translation id="6852799557929001644">Access your Chrome passwords and more across other apps on this device.</translation>
 <translation id="6887138405044152640">To send this tab to another device, sign in to Chromium there.</translation>

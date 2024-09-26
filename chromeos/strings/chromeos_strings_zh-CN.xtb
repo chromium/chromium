@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1343442362630695901">咸水湖</translation>
 <translation id="1348657754632799065">录制栏</translation>
+<translation id="1350909945461913813">请务必保存您的工作</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1371650399987522809">针对 Google AI 赋能的壁纸的反馈</translation>
 <translation id="1374385338586507108">定义</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。</translation>
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">若要查看屏保，请连接到网络并重新加载此页面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">未检测到语音</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
+<translation id="2468124392950503650">选择提示来生成图片，或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">没有符合条件的结果</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4486524074141928967">您将于<ph name="TIME" /> 退出账号</translation>
 <translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">灰色</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5600027863942488546">已测试<ph name="KEY_NAME" />键</translation>
+<translation id="5613201299517339763">您已退出账号</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5630438231335788050">包豪斯</translation>
 <translation id="5631759159893697722">摘要</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="5938286923316838007">无法为此内容创建录制名称</translation>
 <translation id="5939518447894949180">重置</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> 管理员已设置此 <ph name="DEVICE_TYPE" /> 的使用时间</translation>
 <translation id="594552776027197022">生成随机密钥对</translation>
 <translation id="5946538341867151940">您尚未连接网络。如果您的移动运营商推荐使用自定义 APN，请选择“+ 新建 APN”，然后输入 APN 信息</translation>
 <translation id="5947266287934282605">如果当月的最后一天早于该日期，系统会在该月的最后一天重置数据</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">其他星球</translation>
 <translation id="6359706544163531585">停用浅色主题</translation>
 <translation id="6359919876285606596">此操作一旦执行便无法撤消</translation>
+<translation id="6368342879959028556">如果选择“利用 AI 创建”，请撰写自定义提示。或者，您也可以选择“AI 壁纸”，选择一个主题，然后选择带下划线的字词，打造个性化的 AI 壁纸。</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6373461326814131011">池塘</translation>
 <translation id="6379086450106841622">触摸屏</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">打开账号设置</translation>
 <translation id="6462978824459367242">APN“添加”按钮现已启用</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
+<translation id="6468146470109254228">显示您最近使用的 3 个提示和输出内容。您只能在使用“壁纸与个性化”功能时访问这些内容。</translation>
 <translation id="6472207088655375767">动态密码</translation>
 <translation id="6472979596862005515">船</translation>
 <translation id="64778964625672495">深红色</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659594942844771486">标签页</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6694534975463174713">锁定</translation>

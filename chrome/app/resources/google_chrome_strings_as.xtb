@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে: ইনষ্টলাৰৰ প্ৰক্ৰিয়াটো আৰম্ভ হ’ব পৰা নাই।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটৱর্কত ছাইন ইন - Chrome</translation>
 <translation id="2970681950995291301">Chromeৰ পৰা আপোনাৰ Google একাউণ্টটো আঁতৰাবলৈ ছেটিঙৰ পৃষ্ঠাত Chromeৰ পৰা ছাইন আউট কৰক</translation>
+<translation id="2994465299455873643"><ph name="BROWSER_NAME" /> পুনৰুদ্ধাৰ কৰাৰ বাবে এনক্ৰিপশ্বন সেৱা আৰু এটা সুৰক্ষিত পদ্ধতি প্ৰদান কৰে, যদিহে সেইটোৰ ম্যাদ উকলি যায়। যদি এই সেৱাটো অক্ষম কৰা হয়, <ph name="BROWSER_NAME" />এ এনক্ৰিপ্ট কৰা ডেটাৰ এক্সেছ হেৰুৱাব পাৰে আৰু <ph name="BROWSER_NAME" /> নিজে নিজে পুনৰুদ্ধাৰ কৰা নহ’ব পাৰে।</translation>
 <translation id="3018957014024118866">লগতে Chrome (<ph name="URL" />)ৰ পৰা ডেটা মচক</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex আপডে’ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="3037838751736561277">Google Chrome নেপথ্যৰ ম’ডত আছে।</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chromeএ "<ph name="EXTENSION_NAME" />"ত মালৱেৰ থকাটো পাইছে</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3697952514309507634">Chromeৰ অন্য প্ৰ’ফাইল</translation>
+<translation id="3700276346088749847">আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে ChromeOSক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flexৰ সংস্কৰণ</translation>
 <translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">অপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ আৰু সম্পদসমূহ খালী কৰিবলৈ Chromeএ এই টেবসমূহ নিষ্ক্ৰিয় কৰিব পাৰে।</translation>
 <translation id="459622048091363950">Chromeএ এক্সেছ পোৱাৰ পাছতেই ৱেবছাইটসমূহে আপোনাক এক্সেছৰ বাবে অনুমতি বিচাৰিব পাৰিব।</translation>
 <translation id="4600710005438004015">Chromeক শেহতীয়া সংস্কৰণলৈ আপডে'ট কৰিব পৰা নগ'ল, গতিকে আপুনি নতুন সুবিধা আৰু সমস্যা সমাধানৰ উপায়সমূহ লাভ কৰা নাই।</translation>
+<translation id="4601439950572737842">আপোনাৰ ডেটা আপোনাৰ পাছফ্ৰে’জৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="4624065194742029982">Chrome ইনক’গনিট’</translation>
 <translation id="4627412468266359539">ঐচ্ছিক: Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াই ChromeOS Flexৰ সুবিধা আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক।</translation>
 <translation id="4633000520311261472">আমি Chromeক অধিক সুৰক্ষিত কৰিবলৈ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীভুক্ত কিছুমান এক্সটেনশ্বন অক্ষম কৰিছোঁ যিবোৰ হয়তো আপোনাৰ অজ্ঞাতে যোগ কৰা হৈছিল।</translation>

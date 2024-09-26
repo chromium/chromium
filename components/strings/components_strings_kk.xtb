@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
 <translation id="2241693394036365668">Файл жүктеп алынды</translation>
+<translation id="2242389809734574253">Жабылған IBAN нөмірін сақтау.</translation>
 <translation id="2246264294482514010">10 x 12 дюйм</translation>
 <translation id="2246480341630108201">Ата-анаң әзірше бұл сайтты мақұлдамады.</translation>
 <translation id="2247789808226901522">Картаның мерзімі аяқталды</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> цифрлық растау кодын енгізіңіз</translation>
 <translation id="3272643614306383237">1 МБ-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
 <translation id="3273738040255912340">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Толығымен ашылған IBAN нөмірін сақтау.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="3286372614333682499">портреттік</translation>
@@ -2124,6 +2126,7 @@
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйм</translation>
 <translation id="4882314601499260499">Ешбір пайдаланушы саясаты қолданылмаған. Пайдаланушы саясаттарын қосу үшін ұйымыңыз <ph name="LINK_BEGIN" />доменіңізді растауы<ph name="LINK_END" /> қажет.</translation>
+<translation id="4883911187498618061">Сұрақ немесе нұсқауды енгізіңіз.</translation>
 <translation id="4885030148564729407">Бал айы және романтикалық орындар</translation>
 <translation id="4885256590493466218">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
 <translation id="4887406273302438710">Windows Hello технологиясымен құпия сөздерді қорғау</translation>
@@ -2583,6 +2586,7 @@
 <translation id="572328651809341494">Соңғы қойындылар</translation>
 <translation id="5723873695528696965">MIDI құрылғыларын басқару және қайта бағдарламалау</translation>
 <translation id="5725297205162868298">Жылдам пәрмен @ таңбасынан басталмауы керек: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Озық принтер функцияларын пайдалануға рұқсат сұрай алады</translation>
 <translation id="5729442113829771034">Мектепке дейінгі білім</translation>
 <translation id="5730040223043577876">Chrome басқа сайттарда пайдаланылған құпия сөзіңізді қайта орнатуды ұсынады.</translation>
 <translation id="5732392974455271431">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
@@ -2594,6 +2598,7 @@
 <translation id="5743684619253032786">Тырнақ күтіміне арналған өнімдер</translation>
 <translation id="5745733273847572235">Орналасқан жеріңізді сұрай алады</translation>
 <translation id="5750869797196646528">Қолды бақылау</translation>
+<translation id="5752327398324808817">Бір немесе екі сөз енгізіңіз.</translation>
 <translation id="5759751709240058861">Камераны пайдалану және жылжыту</translation>
 <translation id="5763042198335101085">Дұрыс электрондық пошта мекенжайын енгізіңіз</translation>
 <translation id="5764725887548570807">Дереккөз форматы жарамсыз.</translation>
@@ -3089,6 +3094,7 @@
 <translation id="6671169470640320959">Автокөлік сатып алуды қаржыландыру</translation>
 <translation id="6671697161687535275">Chromium жүйесінен нысан ұсынысын алып тастау керек пе?</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опция ретінде көрсетіледі}other{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опциялар ретінде көрсетіледі}}</translation>
 <translation id="6681790815630918386">CVC сақталды</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6687230248707087982">Хатқалта (қарапайым)</translation>
@@ -3105,6 +3111,7 @@
 <translation id="6696575039575740785">Веб-қолданбаларды орнатуға рұқсат берілмеді.</translation>
 <translation id="6698097747703777657">Код келмеді ме? <ph name="BEGIN_LINK" />Жаңа код алыңыз<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Жасалған кезі:</translation>
+<translation id="6698769547327354196">Chrome-дағы Pix қызметін өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="67007264085648978">Уақыт сырғытпасы</translation>
 <translation id="6702851555558236418">Аудио мен музыкаға арналған бағдарламалық құралдар</translation>
 <translation id="6702919718839027939">Презентация</translation>
@@ -3260,6 +3267,7 @@
 <translation id="6978236010531171013">Бәрібір бөлісу</translation>
 <translation id="6978722349058177832">Бұл құрылғыны бөліссеңіз, автотолтыру функциясымен төлеген сайын, Chromium өзіңіздің растауыңызды сұрайды.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">үшінші тарап cookie файлдарын пайдалану рұқсатын басқару</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6984270784814146224">Суреттің белгісі жоқ. Google AI көмегімен мәтін шығарып алынып жатыр.</translation>
 <translation id="6987806006823772670">Хатқалта (жылтыратылған)</translation>
@@ -3405,6 +3413,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Бизнес операциялар</translation>
+<translation id="7244061187185055290">Не іздеп жатқаныңызды қысқаша сипаттап беріңіз.</translation>
 <translation id="7251437084390964440">Желі конфигурациясы ONC стандартына сәйкес келмейді. Конфигурацияның кей бөліктері импортталмаған болуы мүмкін.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
@@ -3785,7 +3794,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және құрылғыңызға сақталады.</translation>
 <translation id="7937554595067888181">Жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Төлеген кезде карталарда болатын бонустарды көрсетеді. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Карта бонустары туралы толық ақпарат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Сервер сертификаты әлі жарамды емес.</translation>
 <translation id="7941628148012649605">Chou 4 хатқалтасы</translation>
 <translation id="794169214536209644">Кәмпиттер мен тәттілер</translation>

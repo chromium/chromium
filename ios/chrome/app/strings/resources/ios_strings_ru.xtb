@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Добавить в список для чтения</translation>
 <translation id="1854463785401910334">Поиск по открытым вкладкам</translation>
 <translation id="1861067954551502701">{count,plural, =1{Пароль {position} из {count}}one{Пароль {position} из {count}}few{Пароль {position} из {count}}many{Пароль {position} из {count}}other{Пароль {position} из {count}}}</translation>
+<translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Пригласите участников в семейную группу</translation>
@@ -702,6 +703,7 @@
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Номер заказа</translation>
 <translation id="4471472356135655769">Не удалось экспортировать пароли</translation>
+<translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4474494258097106883">Создан специально для iPhone</translation>
 <translation id="4488754974567924717">Мы сообщим, если ваши пароли будут раскрыты</translation>
 <translation id="4489536976005181779">{count,plural, =1{Страница добавлена в список для чтения в вашем аккаунте ({email}).}one{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}few{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}many{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}other{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}}</translation>

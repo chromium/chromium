@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1143896152279775643">La contrasenya es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Obre una pestanya nova a Chrome</translation>
 <translation id="1166460004393506534">Suprimeix les dades de navegació a Chrome</translation>
@@ -38,6 +39,7 @@ Aspectes que cal tenir en compte:
 <translation id="1670609221633730681">Consell de Chrome: tria la posició de la barra d'adreces</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Afegeix els URL introduïts a les adreces d'interès de Chrome.</translation>
+<translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1830634592642484976">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>

@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">橘色</translation>
 <translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
 <translation id="1273910660700874265">「<ph name="TITLE_OF_GROUP" />」分頁群組選項</translation>
+<translation id="1293272072740285747">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。
+
+假如選擇刪除，所有人將隨即無法存取「<ph name="TITLE_OF_GROUP" />」分頁群組，而且該群組將從所有裝置中刪除。</translation>
 <translation id="1340839264183302272">退出群組</translation>
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>
 <translation id="1486715732399361704">你可以在這裡找到所有分頁群組</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">全選</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資訊和可用選項位於靠近畫面頂端的地方</translation>
+<translation id="5615302411300498438">如果保留，之後可以新增分頁。你也可以離開群組。
+
+如果退出，你將隨即無法存取「<ph name="TITLE_OF_GROUP" />」分頁群組。</translation>
 <translation id="5627941783489838464">沒有更新的分頁</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{還原分頁}other{要還原分頁嗎？}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="8631711675211020168">所有使用者的「<ph name="GROUP_NAME" />」分頁群組存取權會立即遭到撤銷，且該群組將從所有裝置中刪除</translation>
 <translation id="8633025649649592204">近期活動</translation>
+<translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="870736955561925754">要關閉分頁並刪除群組嗎？</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">你在這些無痕分頁中的活動將從這部裝置上移除</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前建立}other{<ph name="NUM_MONTHS_MANY" /> 個月前建立}}</translation>
+<translation id="8804742093141782941">保留群組</translation>
 <translation id="8820741577754260431">在分頁上查看降價資訊</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>

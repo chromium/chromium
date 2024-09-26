@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1343442362630695901">സാൾട്ട് ലേക്ക്</translation>
 <translation id="1348657754632799065">റെക്കോർഡിംഗ് ബാർ</translation>
+<translation id="1350909945461913813">എല്ലാ പ്രവർത്തനവും സംരക്ഷിക്കുന്നുവെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
 <translation id="1374385338586507108">നിർവചിക്കുക</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK പതിപ്പ്:</translation>
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">നിങ്ങളുടെ AI ചിത്രങ്ങൾ വ്യക്തിപരമാക്കാൻ ഒരു തീം തിരഞ്ഞെടുത്ത്, അടിവരയിട്ട വാക്കുകൾ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="2045814230297767491">കട്ട്ലറി</translation>
 <translation id="2047316797244836561">സ്ക്രീൻ സേവർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">സംഭാഷണമൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
+<translation id="2468124392950503650">സൃഷ്ടിക്കാൻ പ്രോംപ്റ്റ് തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />പ്രോംപ്റ്റ് ഗൈഡ്<ph name="END_LINK_PROMPTING_GUIDE" /> കാണുക</translation>
 <translation id="2472215337771558851">ഒരു ഡ്രാഫ്റ്റ് സൃഷ്ടിക്കാനോ നിലവിലുള്ള വർക്ക് പരിഷ്കരിക്കാനോ, Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന 'എന്നെ എഴുതാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
 <translation id="2480572840229215612">ഞണ്ടുകൾ</translation>
 <translation id="248546197012830854">ഉപകരണം ഓഫ്‌ലൈനാണ്. സഹായ ഉള്ളടക്കം കാണാൻ വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">പൊരുത്തപ്പെടുന്ന ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
+<translation id="4486524074141928967"><ph name="TIME" />-ന് നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
 <translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">ചാരനിറം</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> കീ പരിശോധിച്ചു</translation>
+<translation id="5613201299517339763">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5630438231335788050">ബൗഹൗസ്</translation>
 <translation id="5631759159893697722">സംക്ഷേപം</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">ഫയൽ കണ്ടെത്തിയില്ല</translation>
 <translation id="5938286923316838007">ഈ ഉള്ളടക്കത്തിന്റെ റെക്കോർഡിംഗ് പേരുകൾ സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="5942727615796467094">ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്മിൻ സജ്ജീകരിച്ചു</translation>
 <translation id="594552776027197022">ക്രമരഹിതമായ കീ ജോടി സൃഷ്‌ടിക്കുക</translation>
 <translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
 <translation id="5947266287934282605">മാസത്തിലെ അവസാന ദിവസം ഈ ദിവസത്തിന് മുമ്പാണെങ്കിൽ, മാസത്തിന്റെ അവസാന ദിവസം ഡാറ്റ റീസെറ്റ് ചെയ്യും</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">മറ്റൊരു ഗ്രഹം</translation>
 <translation id="6359706544163531585">ലൈറ്റ് തീം പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="6359919876285606596">ഈ പ്രവർത്തനം ശാശ്വതമാണ്, പഴയപടിയാക്കാനാകില്ല</translation>
+<translation id="6368342879959028556">“AI ഉപയോഗിച്ച് സൃഷ്ടിക്കുക” തിരഞ്ഞെടുക്കുമ്പോൾ, ഒരു ഇഷ്‌ടാനുസൃത പ്രോംപ്റ്റ് എഴുതുക. അല്ലെങ്കിൽ നിങ്ങൾക്ക് "AI വാൾപേപ്പറുകൾ" തിരഞ്ഞെടുത്ത ശേഷം, നിങ്ങളുടെ AI വാൾപേപ്പർ വ്യക്തിപരമാക്കാൻ ഒരു തീം തിരഞ്ഞെടുത്ത്, അടിവരയിട്ട വാക്കുകൾ തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>
 <translation id="6373461326814131011">കുളം</translation>
 <translation id="6379086450106841622">ടച്ച്സ്ക്രീൻ</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">അക്കൗണ്ട് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="6462978824459367242">APN ചേർക്കുക ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}}</translation>
+<translation id="6468146470109254228">നിങ്ങളുടെ ഏറ്റവും അടുത്തിടെയുള്ള 3 പ്രോംപ്റ്റുകളും ഔട്ട്പുട്ടുകളും. വാൾപേപ്പറും സ്റ്റൈലും ഉപയോഗിക്കുമ്പോൾ മാത്രമേ നിങ്ങൾക്ക് ഇവ ആക്‌സസ് ചെയ്യാനാകൂ.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ബോട്ടുകൾ</translation>
 <translation id="64778964625672495">കടും ചുവപ്പ്</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659594942844771486">ബ്രൗസർ ടാബ്</translation>
 <translation id="66621959568103627">കോറൽ പിങ്ക്</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          തനതും വ്യത്യസ്‌തവുമായ കൂടുതൽ AI ചിത്ര ഓപ്‌ഷനുകൾ ലഭിക്കുന്നതിന് "എന്നെ പ്രചോദിപ്പിക്കൂ" തിരഞ്ഞെടുക്കുക.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          നിങ്ങൾ AI ഉപയോഗിച്ച് സൃഷ്‌ടിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി, ചിത്രങ്ങൾ ജനറേറ്റ് ചെയ്യാനും ഉൽപ്പന്നം മെച്ചപ്പെടുത്താനും പ്രോംപ്‌റ്റ് Google AI സെർവറുകളിലേക്ക് അയയ്‌ക്കും.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ജനറേറ്റീവ് AI പരീക്ഷണാത്മകവും പ്രാരംഭ ഘട്ടത്തിലുള്ളതുമാണ്, നിലവിൽ ഇതിന്റെ ലഭ്യത പരിമിതമാണ്.</translation>
 <translation id="6673898378497337661">കീബോർഡിന്റെ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6694534975463174713">ലോക്ക്</translation>

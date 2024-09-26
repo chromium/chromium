@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Opna nýjan flipa í Chrome</translation>
 <translation id="1166460004393506534">Eyða vefskoðunargögnum í Chrome</translation>
@@ -38,6 +39,7 @@ Hafðu í huga:
 <translation id="1670609221633730681">Chrome-ábending: Veldu staðsetningu veffangastikunnar</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Bæta innteknum vefslóðum við bókamerkin þín í Chrome.</translation>
+<translation id="1799920918471566157">Ábendingar fyrir Chrome</translation>
 <translation id="1830634592642484976">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>

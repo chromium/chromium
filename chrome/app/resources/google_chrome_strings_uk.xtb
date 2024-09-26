@@ -165,6 +165,7 @@
 <translation id="2945997411976714835">Сталася помилка. Не вдалося розпочати встановлення.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
 <translation id="2970681950995291301">Щоб вилучити обліковий запис Google, вийдіть із Chrome на сторінці налаштувань</translation>
+<translation id="2994465299455873643">Надає сервіси шифрування й безпечний спосіб відновити вебпереглядач <ph name="BROWSER_NAME" />, якщо він застаріє. Якщо вимкнути цей сервіс, <ph name="BROWSER_NAME" /> може втратити доступ до зашифрованих даних. При цьому <ph name="BROWSER_NAME" />, імовірно, не зможе самостійно відновитися.</translation>
 <translation id="3018957014024118866">Також видалити дані з Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Перезапустити, щоб оновити &amp;ОС Chrome Flex</translation>
 <translation id="3037838751736561277">Google Chrome у фоновому режимі.</translation>
@@ -221,6 +222,7 @@
 <translation id="3673813398384385993">Веб-переглядач Chrome виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
 <translation id="3695446226812920698">Докладніше</translation>
 <translation id="3697952514309507634">Інші профілі Chrome</translation>
+<translation id="3700276346088749847">очистьте дані Chrome у своєму обліковому записі</translation>
 <translation id="3703994572283698466">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версія ОС Chrome Flex</translation>
 <translation id="3718181793972440140">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
@@ -292,6 +294,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4575717501879784448">Chrome може зробити ці вкладки неактивними, щоб покращити якість вебперегляду й звільнити ресурси.</translation>
 <translation id="459622048091363950">Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="4600710005438004015">Не вдалось оновити Chrome до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
+<translation id="4601439950572737842">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="4624065194742029982">Анонімний режим у Chrome</translation>
 <translation id="4627412468266359539">Необов’язково: допоможіть нам покращувати функції та підвищувати продуктивність ОС Chrome Flex, автоматично надсилаючи компанії Google дані про використання й діагностику.</translation>
 <translation id="4633000520311261472">Щоб зробити Chrome безпечнішим, ми вимкнули деякі розширення, установлені не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додані без вашого відома.</translation>

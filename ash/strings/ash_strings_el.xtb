@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Το ενεργό παράθυρο αγκυρώθηκε αριστερά.</translation>
 <translation id="1708345662127501511">Γραφείο: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ρυθμίσεις δικτύου</translation>
-<translation id="171610090693716835">Απολαύστε αυτά που θέλετε με τις εξατομικευμένες λίστες αναπαραγωγής για συγκέντρωση. Αποκτήστε το YouTube Music και το YouTube χωρίς διαφημίσεις, με 3 μήνες YouTube Premium χωρίς χρέωση.</translation>
 <translation id="1719094688023114093">Οι Ζωντανοί υπότιτλοι είναι ενεργοποιημένοι.</translation>
 <translation id="1720011244392820496">Ενεργοποίηση του Συγχρονισμού Wi-Fi</translation>
 <translation id="1720230731642245863">Σημείο πρόσβασης Wi-Fi ανενεργό</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Υπάρχει διαθέσιμη ενημέρωση</translation>
 <translation id="2416438829169535743">Έξοδος από προβολή;</translation>
 <translation id="2417486498593892439">Σύνδεση στο δίκτυο</translation>
+<translation id="2423619675829330672">Πάρα πολλές προσπάθειες εισαγωγής του PIN. Περιμένετε <ph name="TIME_LEFT" /> και δοκιμάστε ξανά.</translation>
 <translation id="2426051945783024481">Έγινε αυτόματο κεντράρισμα κάμερας</translation>
 <translation id="2427507373259914951">Αριστερό κλικ</translation>
 <translation id="2429753432712299108">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης. Προτού αποδεχτείτε, επιβεβαιώστε ότι αυτό το κλειδί πρόσβασης εμφανίζεται στη συγκεκριμένη συσκευή: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Εμφανίζονται παράθυρα από όλα τα γραφεία. Πατήστε το πάνω βέλος για την εμφάνιση παραθύρων από το τρέχον γραφείο</translation>
 <translation id="6337159624125741244">Η μεγέθυνση πλήρους οθόνης είναι ενεργή</translation>
 <translation id="6338485349199627913">Το <ph name="DISPLAY_NAME" /> είναι μια διαχειριζόμενη περίοδος σύνδεσης την οποία διαχειρίζεται ο τομέας <ph name="MANAGER" />.</translation>
+<translation id="6340148837564298498">Εάν ξεχάσατε το PIN σας, δοκιμάστε να ανακτήσετε αυτόν τον χρήστη.</translation>
 <translation id="6344138931392227467">Η συσκευή <ph name="DEVICE_NAME" /> συνδέθηκε</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> και έπειτα <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ή <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ΠΡΟΤΑΣΕΙΣ ΕΦΑΡΜΟΓΩΝ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Σάρωση του αρχείου <ph name="FILENAME" /> για λήψη</translation>
 <translation id="6542521951477560771">Μετάδοση στη συσκευή <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF και άλλα</translation>
+<translation id="6545382064335350438">Η επαλήθευση του PIN σας εξακολουθεί να μην είναι δυνατή. Δοκιμάστε ξανά.</translation>
 <translation id="6555373427270923730">Πληκτρολογήστε μια διεύθυνση ιστού στη γραμμή διευθύνσεων και έπειτα πατήστε <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Νέα εγκατάσταση</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Ο διαχειριστής αυτού του λογαριασμού δεν έχει επιτρέψει τις πολλαπλές συνδέσεις.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> συνδεδεμένες συσκευές</translation>
+<translation id="7921565901396407357">Δεν ήταν δυνατή η επαλήθευση του PIN σας. Δοκιμάστε ξανά.</translation>
 <translation id="7923534281713082605">Καιρός</translation>
 <translation id="7926080067315048321">Εμφάνιση όλων των εργασιών στο Google Tasks στον ιστό</translation>
 <translation id="7930731167419639574">Η επεξεργασία της ομιλίας γίνεται πλέον τοπικά και η υπαγόρευση λειτουργεί εκτός σύνδεσης.</translation>

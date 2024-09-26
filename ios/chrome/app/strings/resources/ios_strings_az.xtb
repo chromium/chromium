@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Oxu siyahısına əlavə edin</translation>
 <translation id="1854463785401910334">Açıq tabları axtarın</translation>
 <translation id="1861067954551502701">{count,plural, =1{Parol {position}/{count}}other{Parol {position}/{count}}}</translation>
+<translation id="1861262398884155592">Qovluq boşdur</translation>
 <translation id="1872096359983322073">Fənər</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Ailə üzvlərini dəvət edin</translation>
@@ -673,6 +674,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4302061870579014542">Mövqe ayarlayın</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="4309403553630140242">Ətraflı məlumat üçün iki dəfə toxunun</translation>
+<translation id="4320848494125124980">Son</translation>
 <translation id="4324735664183300693">Bildirişləri aktiv edin</translation>
 <translation id="4328843285884395590">Diskim</translation>
 <translation id="4331177082088332784">Bunu BEGIN_LINK Kontent ayarlarında END_LINK idarə etmək olar</translation>
@@ -701,6 +703,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4469324811108161144">Qeydlər maksimum <ph name="CHARACTER_LIMIT" /> simvolu yadda saxlaya bilər.</translation>
 <translation id="4469834037720363704">Bağlama nömrəsi</translation>
 <translation id="4471472356135655769">Parolları eksport etmək alınmadı</translation>
+<translation id="4474142134969976028">Uyğun nəticə yoxdur</translation>
 <translation id="4474494258097106883">iPhone'unuz üçün hazırlanıb</translation>
 <translation id="4488754974567924717">Parollar oğurlansa, sizə xəbər verəcəyik</translation>
 <translation id="4489536976005181779">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{Səhifələr hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>

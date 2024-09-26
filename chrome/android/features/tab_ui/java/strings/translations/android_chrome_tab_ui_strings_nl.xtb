@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1273910660700874265">Opties voor tabbladgroep <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Behoud deze groep om later tabbladen toe te voegen of verwijder de groep als je deze niet meer nodig hebt.
+
+Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep <ph name="TITLE_OF_GROUP" /> kwijt en wordt deze verwijderd van alle apparaten.</translation>
 <translation id="1340839264183302272">Groep verlaten</translation>
 <translation id="1419023007528516122">Hiermee wordt de groep definitief van je apparaat verwijderd</translation>
 <translation id="1486715732399361704">Hier vind je al je tabbladgroepen</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad sluiten, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
+<translation id="5615302411300498438">Behoud deze groep om later tabbladen toe te voegen of verlaat de groep.
+
+Als je de groep verlaat, raak je meteen de toegang tot de tabbladgroep <ph name="TITLE_OF_GROUP" /> kwijt.</translation>
 <translation id="5627941783489838464">Geen tabbladupdates</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tabblad herstellen}other{Tabbladen herstellen}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link vanuit Chrome}other{<ph name="TABS_COUNT_MANY" /> links vanuit Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tabblad toegevoegd, <ph name="ANY_CLOSED" /> gesloten}other{<ph name="MANY_ADDED" /> tabbladen toegevoegd, <ph name="ANY_CLOSED" /> gesloten}}</translation>
 <translation id="8631711675211020168">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van alle apparaten</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
+<translation id="8635399646025169806">Tabbladgroep behouden?</translation>
 <translation id="870736955561925754">Tabblad sluiten en groep verwijderen?</translation>
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand geleden gemaakt}other{<ph name="NUM_MONTHS_MANY" /> maanden geleden gemaakt}}</translation>
+<translation id="8804742093141782941">Groep behouden</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>
 <translation id="8887921976452567404">Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen.</translation>
 <translation id="8915916167043355778">Alles sluiten</translation>

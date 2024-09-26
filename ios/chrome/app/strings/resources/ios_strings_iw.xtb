@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">הוספה לרשימת הקריאה</translation>
 <translation id="1854463785401910334">חיפוש בכרטיסיות הפתוחות</translation>
 <translation id="1861067954551502701">{count,plural, =1{סיסמה אחת ({position}) מתוך {count}}one{‫{position} מתוך {count} סיסמאות}two{‫{position} מתוך {count} סיסמאות}other{‫{position} מתוך {count} סיסמאות}}</translation>
+<translation id="1861262398884155592">התיקייה הזו ריקה</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">הזמנת חברים לקבוצה המשפחתית</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3982893814825393515">דיווח על בעיה…</translation>
 <translation id="398604237578616937">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
+<translation id="3986739045730058129">מעבר לכרטיסייה</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="3994422733891749358">אילו התראות היית רוצה לקבל?</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="4469834037720363704">מספר החבילה</translation>
 <translation id="4471472356135655769">אי אפשר לייצא סיסמאות</translation>
+<translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4474494258097106883">‏מותאם ל-iPhone שלך</translation>
 <translation id="4488754974567924717">אם הסיסמאות שלך ייחשפו לאחרים, נודיע לך</translation>
 <translation id="4489536976005181779">{count,plural, =1{הדף נוסף לרשימת הקריאה בחשבון שלך, {email}}one{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}two{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}other{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}}</translation>
@@ -757,6 +760,7 @@
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4717844083556844785">דף האינטרנט הנוכחי מוצג במצב פרטי</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
+<translation id="4720530280568305198">הבחירה שלך נפתחה בכרטיסייה חדשה</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4742407542027196863">ניהול סיסמאות…</translation>
 <translation id="4742897645503301228">הסתרת האפשרות 'מעקב אחר מחירים'</translation>

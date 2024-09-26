@@ -215,7 +215,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1703117532528082099">Ventana activa anclada a la izquierda.</translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
-<translation id="171610090693716835">Mantén la concentración con listas de reproducción personalizadas. Disfruta de YouTube Music y YouTube sin anuncios con 3 meses de YouTube Premium sin coste económico.</translation>
 <translation id="1719094688023114093">Subtítulos automáticos activados.</translation>
 <translation id="1720011244392820496">Activar Sincronización Wi‑Fi</translation>
 <translation id="1720230731642245863">Punto de acceso desactivado</translation>
@@ -398,6 +397,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
 <translation id="2416438829169535743">¿Salir de la vista?</translation>
 <translation id="2417486498593892439">Iniciar sesión en la red</translation>
+<translation id="2423619675829330672">Demasiados intentos de introducción de PIN. Espera <ph name="TIME_LEFT" /> e inténtalo de nuevo.</translation>
 <translation id="2426051945783024481">Encuadre de cámara centrado automáticamente</translation>
 <translation id="2427507373259914951">Clic con el botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la llave de acceso <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
@@ -1578,6 +1578,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6330012934079202188">Se muestran las ventanas de todos los escritorios. Pulsa la tecla de la flecha hacia arriba para ver las ventanas del escritorio actual.</translation>
 <translation id="6337159624125741244">La lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Si has olvidado tu PIN, prueba a recuperar este usuario.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> y, a continuación, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGERENCIAS DE APLICACIONES</translation>
@@ -1634,6 +1635,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6539852571005954999">Analizando <ph name="FILENAME" /> para descargar</translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs y más</translation>
+<translation id="6545382064335350438">Aún no se ha podido verificar tu PIN. Inténtalo de nuevo.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, a continuación, pulsa <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
@@ -2030,6 +2032,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7904094684485781019">El administrador de esta cuenta ha inhabilitado el inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7921565901396407357">No se ha podido verificar tu PIN. Inténtalo de nuevo.</translation>
 <translation id="7923534281713082605">El tiempo</translation>
 <translation id="7926080067315048321">Ver todas las tareas en Google Tasks en la Web</translation>
 <translation id="7930731167419639574">Ahora la voz se procesa de forma local y el dictado funciona sin conexión.</translation>

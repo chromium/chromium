@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">TV 및 동영상</translation>
 <translation id="1658918301167915956">블루투스 기기</translation>
 <translation id="1662550410081243962">결제 수단 저장 및 자동 입력</translation>
+<translation id="1662980953334786797">동일한 주문</translation>
 <translation id="1663943134801823270">카드와 주소는 Chrome에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="1664389769577564606">Flexo 포토폴리머</translation>
 <translation id="166624440456221306">비교 표 삭제</translation>
@@ -1659,6 +1660,7 @@
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
 <translation id="4025325634010721551">정책 새로고침됨</translation>
 <translation id="4025338605225449265">환거래 및 환전</translation>
+<translation id="4025777154208238692">역순 정렬</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />공격자는 사용자가 사이트에서 보내거나 받는 정보를 보고 변경<ph name="END_STRONG" />할 수 있습니다.
       <ph name="LIST_ITEM" />공용 네트워크를 사용 중이라면 <ph name="BEGIN_STRONG" />나중에 이 사이트를 방문하는 것이 가장 안전<ph name="END_STRONG" />합니다. 집이나 직장 Wi-Fi와 같이 신뢰할 수 있는 네트워크를 사용하면 위험이 적습니다.
@@ -3795,7 +3797,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">더 빠른 결제를 위해 이 카드의 CVC가 암호화되어 기기에 저장됩니다.</translation>
 <translation id="7937554595067888181">만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">결제 시 카드에 사용할 수 있는 리워드와 혜택을 표시합니다. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />카드 혜택 자세히 알아보기<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">서버 인증서가 유효하지 않습니다.</translation>
 <translation id="7941628148012649605">봉투 Chou 4</translation>
 <translation id="794169214536209644">사탕류</translation>

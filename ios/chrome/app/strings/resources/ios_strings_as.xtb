@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="1854463785401910334">খোলা থকা টেবত সন্ধান কৰক</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} টা পাছৱৰ্ডৰ {position} নম্বৰ পাছৱৰ্ডটো}one{{count} টা পাছৱৰ্ডৰ {position} নম্বৰ পাছৱৰ্ডটো}other{{count} টা পাছৱৰ্ডৰ {position} নম্বৰ পাছৱৰ্ডটো}}</translation>
+<translation id="1861262398884155592">এই ফল্ডাৰটো খালী</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
 <translation id="1881621406744213161">পৰিয়ালৰ সদস্যসকলক আমন্ত্ৰণ জনাওক</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">স্থান ছেট কৰক</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="4309403553630140242">অধিক তথ্যৰ বাবে দুবাৰ টিপক</translation>
+<translation id="4320848494125124980">শেহতীয়া</translation>
 <translation id="4324735664183300693">জাননী অন কৰক</translation>
 <translation id="4328843285884395590">মোৰ ড্ৰাইভ</translation>
 <translation id="4331177082088332784">আপুনি এইটো BEGIN_LINK সমলৰ ছেটিঙ END_LINKত পৰিচালনা কৰিব পাৰে</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">টোকায়ে <ph name="CHARACTER_LIMIT" /> টা পৰ্যন্ত বৰ্ণ ছেভ কৰিব পাৰে।</translation>
 <translation id="4469834037720363704">পেকেজৰ নম্বৰ</translation>
 <translation id="4471472356135655769">পাছৱৰ্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
+<translation id="4474142134969976028">মিল থকা কোনো ফলাফল নাই</translation>
 <translation id="4474494258097106883">আপোনাৰ iPhoneৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="4488754974567924717">আপোনাৰ পাছৱৰ্ড হেক কৰিলে, আমি আপোনাক জনাম</translation>
 <translation id="4489536976005181779">{count,plural, =1{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ কৰা হৈছে}one{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ কৰা হৈছে}other{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ কৰা হৈছে}}</translation>
@@ -1347,7 +1350,7 @@
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="7451023311965289370">{count,plural, =1{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}one{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}other{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}}</translation>
-<translation id="7451404862887877229">প্ৰথমে "গোপনীয়তা আৰু সুৰক্ষা"ত টিপক আৰু তাৰ পাছত "সুৰক্ষিত ব্ৰাউজিং"ত টিপক</translation>
+<translation id="7451404862887877229">প্ৰথমে "গোপনীয়তা আৰু সুৰক্ষা"ত টিপক আৰু তাৰ পাছত "সুৰক্ষিত ব্ৰাউজিঙ"ত টিপক</translation>
 <translation id="7454057999980797137">ৰাজ্য / দেশ</translation>
 <translation id="7458706065921255639">ব্যক্তিগতকৰণ আৰু লিংক কৰা</translation>
 <translation id="745899714366929493">দিনজোৰা</translation>

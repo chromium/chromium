@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">用緊嘅視固定咗喺畫面左邊。</translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">網絡設定</translation>
-<translation id="171610090693716835">個人化「專注模式」播放清單幫你保持專注。3 個月免費體驗 YouTube Premium，暢享零廣告的 YouTube Music 和 YouTube 體驗。</translation>
 <translation id="1719094688023114093">「即時字幕」功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi Sync</translation>
 <translation id="1720230731642245863">「熱點」已關閉</translation>
@@ -398,7 +397,7 @@
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">要結束檢視畫面嗎？</translation>
 <translation id="2417486498593892439">登入網絡</translation>
-<translation id="2423619675829330672">PIN 碼輸入錯誤次數過多，請等 <ph name="TIME_LEFT" />後再試一次。</translation>
+<translation id="2423619675829330672">嘗試輸入 PIN 的次數過多。請等候 <ph name="TIME_LEFT" />，然後再試一次。</translation>
 <translation id="2426051945783024481">相機鏡頭已自動置中</translation>
 <translation id="2427507373259914951">按一下左鍵</translation>
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
@@ -1577,7 +1576,7 @@
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6337159624125741244">已開啟「全螢幕放大鏡」</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
-<translation id="6340148837564298498">如果忘記 PIN 碼，建議你復原這個使用者的帳戶。</translation>
+<translation id="6340148837564298498">如果忘記 PIN，建議你復原此使用者的帳戶。</translation>
 <translation id="6344138931392227467">已連結 <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 然後 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">應用程式建議</translation>
@@ -1634,7 +1633,7 @@
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji、GIF 等</translation>
-<translation id="6545382064335350438">系統仍無法驗證 PIN 碼，請再試一次。</translation>
+<translation id="6545382064335350438">系統仍然無法驗證你的 PIN，請再試一次。</translation>
 <translation id="6555373427270923730">在網址列中輸入網址，然後按 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559158502366839560">探索更多應用程式和遊戲</translation>
@@ -2030,7 +2029,7 @@
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">已連接 <ph name="DEVICECOUNT" /> 部裝置</translation>
-<translation id="7921565901396407357">無法驗證 PIN 碼，請再試一次。</translation>
+<translation id="7921565901396407357">無法驗證你的 PIN，請再試一次。</translation>
 <translation id="7923534281713082605">天氣</translation>
 <translation id="7926080067315048321">前往 Google Tasks 網頁版查看所有工作</translation>
 <translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>

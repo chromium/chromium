@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1066101356081285416">Chrome будет распознавать номера отслеживания на сайтах, которые вы посещаете, и показывать актуальную информацию о посылках на странице быстрого доступа. Номер отслеживания и название сайта будут передаваться в Google для обеспечения работы этой функции и улучшения функций Google Покупок для всех пользователей. Вы можете в любой момент изменить это в <ph name="BEGIN_LINK" />настройках отслеживания заказов<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1143896152279775643">Ваш пароль будет сохранен в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Открыть новую вкладку в Chrome</translation>
 <translation id="1166460004393506534">Удалить данные о работе в браузере Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Совет по работе с Chrome: выберите удобное расположение адресной строки</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Указанные URL будут добавлены в закладки в Chrome.</translation>
+<translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1830634592642484976">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="USER_EMAIL" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="1917964099031477364">Этот аккаунт и все несохраненные данные будут удалены из Chrome и других приложений Google на устройстве.</translation>
 <translation id="1919130412786645364">Разрешить вход в Chrome</translation>

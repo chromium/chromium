@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Dodaj na bralni seznam</translation>
 <translation id="1854463785401910334">Iskanje po odprtih zavihkih</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} od {count} gesla}one{{position} od {count} gesla}two{{position} od {count} gesel}few{{position} od {count} gesel}other{{position} od {count} gesel}}</translation>
+<translation id="1861262398884155592">Ta mapa je prazna</translation>
 <translation id="1872096359983322073">Svetilka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Povabilo družinskim članom</translation>
@@ -605,6 +606,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3982893814825393515">Prijava težave …</translation>
 <translation id="398604237578616937">Prijavljeni ste kot <ph name="USER_EMAIL" />. Odprite meni računa.</translation>
+<translation id="3986739045730058129">Pojdite na zavihek</translation>
 <translation id="3987993985790029246">Kopiranje povezave</translation>
 <translation id="3992684624889376114">O tej strani</translation>
 <translation id="3994422733891749358">Izberite obvestila, ki jih želite prejemati</translation>
@@ -673,6 +675,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
+<translation id="4320848494125124980">Nedavno</translation>
 <translation id="4324735664183300693">Vklop obvestil</translation>
 <translation id="4328843285884395590">Moj disk</translation>
 <translation id="4331177082088332784">To lahko upravljate v BEGIN_LINK nastavitvah vsebine END_LINK</translation>
@@ -701,6 +704,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4469324811108161144">Zapiski lahko shranijo do toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Številka paketa</translation>
 <translation id="4471472356135655769">Gesel ni mogoče izvoziti</translation>
+<translation id="4474142134969976028">Ni ustreznih rezultatov</translation>
 <translation id="4474494258097106883">Ustvarjeno za vaš iPhone</translation>
 <translation id="4488754974567924717">Če bodo vaša gesla ogrožena, vas bomo o tem obvestili.</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stran je bila dodana na bralni seznam v računu {email}}one{Strani so bile dodane na bralni seznam v računu {email}}two{Strani so bile dodane na bralni seznam v računu {email}}few{Strani so bile dodane na bralni seznam v računu {email}}other{Strani so bile dodane na bralni seznam v računu {email}}}</translation>
@@ -756,6 +760,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4699172675775169585">Predpomnjene slike in datoteke</translation>
 <translation id="4717844083556844785">Trenutna spletna stran je v anonimnem načinu</translation>
 <translation id="4719927025381752090">Ponudi prevajanje</translation>
+<translation id="4720530280568305198">Izbira se je odprla na novem zavihku</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4742407542027196863">Upravljaj gesla …</translation>
 <translation id="4742897645503301228">Skrij spremljanje cene</translation>

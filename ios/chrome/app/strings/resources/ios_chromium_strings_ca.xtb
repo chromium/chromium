@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Obre el menú de Chromium</translation>
 <translation id="12739128458173458">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chromium als dos dispositius.</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1423007117030725713">Inicia una cerca en una pestanya nova de Chromium.</translation>
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="146407871188825689">Utilitza Chromium a l'iPad de manera predeterminada</translation>
@@ -177,6 +178,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5571094606370987472">Obre les pestanyes recents de Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Obre la meva darrera pestanya a Chromium</translation>
+<translation id="5671188105328420281">Consells per a Chromium</translation>
 <translation id="5688047395118852662">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chromium.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="584550191241316896">Sessió iniciada a Chromium</translation>
@@ -218,6 +220,7 @@ Aspectes que cal tenir en compte:
 <translation id="6752854822223394465">La teva organització està configurant Chromium...</translation>
 <translation id="6794054469102824109">Obre el joc El dinosaure de Chromium.</translation>
 <translation id="6820823224820483452">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
+<translation id="6831043979455480757">Tradueix</translation>
 <translation id="6852419005633611413">Accedeix a Chromium més de pressa des del Dock de la pantalla d'inici</translation>
 <translation id="6852799557929001644">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions d'aquest dispositiu.</translation>
 <translation id="6887138405044152640">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chromium al dispositiu en qüestió.</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1066101356081285416">Chrome će otkrivati brojeve za praćenje na web lokacijama koje posjetite i prikazivat će vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv web lokacije će se slati Googleu radi pružanja ove funkcije i poboljšanja funkcija kupovine na Googleu za sve. Možete ažurirati ovo bilo kada u <ph name="BEGIN_LINK" />Postavkama praćenja paketa<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Pretražujte pomoću Google Objektiva</translation>
 <translation id="1143896152279775643">Vaša lozinka će se sačuvati u Googleov Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chromeu</translation>
 <translation id="1166460004393506534">Brisanje podataka pregledanja u Chromeu</translation>
@@ -38,6 +39,7 @@ Stvari za razmatranje:
 <translation id="1670609221633730681">Savjet za Chrome: odaberite položaj trake za adresu</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Dodaje unesene URL-ove u vaše oznake u Chromeu.</translation>
+<translation id="1799920918471566157">Savjeti za Chrome</translation>
 <translation id="1830634592642484976">Adresa je trenutno sačuvana u Chromeu. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>

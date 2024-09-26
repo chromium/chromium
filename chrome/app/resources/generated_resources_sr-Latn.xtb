@@ -2920,6 +2920,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="304644035656848980">Pregled mikrofona</translation>
 <translation id="3046910703532196514">Veb-stranica, kompletna</translation>
 <translation id="304747341537320566">Mehanizmi govora</translation>
+<translation id="3047678109605649715">Nema glasova (<ph name="LANGUAGE" />) na uređaju. Oslobodite prostor na uređaju i probajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji prodavca <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Pusti (k)</translation>
 <translation id="3048742847101793553">Organizacija je blokirala ovaj fajl jer skeniranje nije uspelo.</translation>
@@ -4161,6 +4162,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3948116654032448504">&amp;Potraži sliku u pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Ova kartica reprodukuje zvuk</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može da menja datoteke u direktorijumima u nastavku</translation>
+<translation id="3948985214866944547">Većina ljudi blokira deljenje precizne lokacije za ovaj sajt</translation>
 <translation id="394984172568887996">Uvezeno iz IE pregledača</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> da bi preuzimanje fajlova bilo bezbednije</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
@@ -5344,7 +5346,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4838327282952368871">Čarobno</translation>
 <translation id="4838836835474292213">Pristup za čitanje privremene memorije je dozvoljen</translation>
 <translation id="4838907349371614303">Lozinka je ažurirana</translation>
-<translation id="4838958829619609362">Izbor nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Sa&amp;čuvaj video snimak kao...</translation>
 <translation id="4839910546484524995">Proverite uređaj</translation>
 <translation id="4840096453115567876">Želite da ipak izađete iz režima bez arhiviranja?</translation>
@@ -5954,7 +5955,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5287425679749926365">Nalozi</translation>
 <translation id="5288106344236929384">Još radnji, opcija za pristupni kôd za <ph name="USERNAME" /> na <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">P&amp;onovo otvori zatvorenu karticu</translation>
-<translation id="52895863590846877">Jezik ove stranice nije <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Računar i uređaj za prebacivanje na različite WiFi mreže (npr. 2,4 GHz i 5 GHz)</translation>
 <translation id="52912272896845572">Datoteka privatnog ključa je nevažeća.</translation>
 <translation id="5291739252352359682">Automatski pravi titl za medije u Chrome pregledaču (trenutno je dostupno na engleskom). Sve audio datoteke i titlovi se obrađuju lokalno i ostaju samo na uređaju.</translation>
@@ -8099,7 +8099,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="686366188661646310">Želite da izbrišete lozinku?</translation>
 <translation id="6863925886424789941">Koloseum</translation>
 <translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
-<translation id="6865598234501509159">Jezik ove stranice nije <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC evidencije događaja (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Tiho</translation>
 <translation id="686664946474413495">Temperatura boja</translation>
@@ -8720,7 +8719,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7343372807593926528">Opišite problem da biste poslali povratne informacije.</translation>
 <translation id="7344585835349671209">Upravljajte HTTPS/SSL sertifikatima na uređaju</translation>
 <translation id="7345706641791090287">Potvrdite lozinku</translation>
-<translation id="7345919885156673810">Izbor nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7347751611463936647">Da biste koristili ovaj dodatak, unesite „<ph name="EXTENSION_KEYWORD" />“ i pritisnite taster TAB, a zatim unesite komandu ili obavite pretragu.</translation>
 <translation id="7347943691222276892">Kliknite da biste napustili podstranicu <ph name="SUBPAGE_TITLE" />.</translation>

@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Mở trình đơn Chromium</translation>
 <translation id="12739128458173458">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chromium trên cả hai thiết bị.</translation>
 <translation id="1361748954329991663">Chromium đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chromium mới nữa.</translation>
+<translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1423007117030725713">Bắt đầu tìm kiếm trong thẻ mới trên Chromium.</translation>
 <translation id="1431818719585918472">Để Chromium khóa các thẻ Ẩn danh của bạn.</translation>
 <translation id="146407871188825689">Sử dụng Chromium trên iPad theo mặc định</translation>
@@ -177,6 +178,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="5571094606370987472">Mở các thẻ gần đây trong Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Mở thẻ mà tôi mở gần đây nhất trong Chromium</translation>
+<translation id="5671188105328420281">Mẹo khi dùng Chromium</translation>
 <translation id="5688047395118852662">Thẻ này hiển thị cho bạn các nội dung đề xuất về cách khai thác tối đa Chromium.</translation>
 <translation id="5700709190537129682">Chromium không thể kiểm tra mật khẩu của bạn</translation>
 <translation id="584550191241316896">Đã đăng nhập vào Chromium</translation>
@@ -218,6 +220,7 @@ Những yếu tố cần xem xét:
 <translation id="6752854822223394465">Tổ chức của bạn đang thiết lập Chromium...</translation>
 <translation id="6794054469102824109">Mở trò chơi khủng long trên Chromium.</translation>
 <translation id="6820823224820483452">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
+<translation id="6831043979455480757">Dịch</translation>
 <translation id="6852419005633611413">Truy cập Chromium nhanh hơn từ thanh dock trên màn hình chính</translation>
 <translation id="6852799557929001644">Truy cập mật khẩu và các dữ liệu khác mà bạn lưu trên Chromium trong các ứng dụng khác trên thiết bị này.</translation>
 <translation id="6887138405044152640">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chromium trên thiết bị đó.</translation>

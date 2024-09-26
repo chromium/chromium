@@ -169,6 +169,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
+<translation id="2994465299455873643">Provides encryption services and a secure way for recovering <ph name="BROWSER_NAME" /> if it gets out of date. If this service is disabled, <ph name="BROWSER_NAME" /> may lose access to encrypted data, and <ph name="BROWSER_NAME" /> may not be able to recover itself.</translation>
 <translation id="3018957014024118866">Also delete data from Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Relaunch to update Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
@@ -225,6 +226,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
 <translation id="3695446226812920698">Find out how</translation>
 <translation id="3697952514309507634">Other Chrome profiles</translation>
+<translation id="3700276346088749847">clear the Chrome data in your account</translation>
 <translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
@@ -296,6 +298,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4575717501879784448">Chrome can make these tabs inactive to improve your browsing experience and free up resources.</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
+<translation id="4601439950572737842">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4627412468266359539">Optional: Help improve Chrome OS Flex features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="4633000520311261472">To make Chrome safer, we disabled some extensions that aren't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>

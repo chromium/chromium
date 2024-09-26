@@ -635,6 +635,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="404352903042073578">အမည်ပေးမထားသော အုပ်စု</translation>
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="405365679581583349">Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1446,6 +1447,7 @@
 <translation id="7592322927044331376">အရင်ဆုံး Chrome မှ စကားဝှက်များကို ထုတ်ယူပြီး ဖျက်ပါ</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> တွင် သင်ဖြစ်ကြောင်းအတည်ပြုရန် <ph name="EMBEDDED_ORIGIN" /> ကို ခွင့်ပြုပါ</translation>
 <translation id="7596558890252710462">လည်ပတ်မှု စနစ်</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7603168929588204083">မမှန်ကန်သော ရက်စွဲ</translation>
 <translation id="7605594153474022051">စင့်ခ်လုပ်၍မရပါ</translation>
 <translation id="7612619742409846846">အဖြစ် Google သို့လက်မှတ်ထိုးဝင်ရန်</translation>

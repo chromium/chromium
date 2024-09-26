@@ -700,6 +700,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2239100178324503013">Dërgo tani</translation>
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
+<translation id="2242389809734574253">"Ruaj numrin IBAN" është mbyllur.</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
 <translation id="2246480341630108201">Prindi yt nuk e ka dhënë ende lejen</translation>
 <translation id="2247789808226901522">Karta ka skaduar</translation>
@@ -1238,6 +1239,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3272112314896217187">Fut kodin e verifikimit <ph name="NUMBER_OF_DIGITS" />-shifror</translation>
 <translation id="3272643614306383237">Më pak se 1 MB. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
 <translation id="3273738040255912340">Administratori yt mund të bëjë ndryshime në profilin dhe shfletuesin tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">"Ruaj numrin IBAN" hapur në lartësi të plotë.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Politika e administratorit nuk rekomandon hapjen e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon hapjen e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizata jote, <ph name="ENROLLMENT_DOMAIN" />, ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -2125,6 +2127,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
 <translation id="4882314601499260499">Nuk zbatohet asnjë politikë e përdoruesit. Për të shtuar politikat e përdoruesit, organizata jote duhet <ph name="LINK_BEGIN" />të verifikojë domenin tënd<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Fut pyetjen ose kërkesën</translation>
 <translation id="4885030148564729407">Muaj mjalti dhe pushime romantike</translation>
 <translation id="4885256590493466218">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes</translation>
 <translation id="4887406273302438710">Mbroji fjalëkalimet me Windows Hello</translation>
@@ -2584,6 +2587,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="572328651809341494">Skedat e fundit</translation>
 <translation id="5723873695528696965">Të kontrollojë dhe të riprogramojë pajisjet e tua MIDI</translation>
 <translation id="5725297205162868298">Shkurtorja nuk mund të nisë me karakterin @: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Mund të kërkojë të përdorë veçoritë e përparuara të printerit</translation>
 <translation id="5729442113829771034">Arsimi në fëmijërinë e hershme</translation>
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="5732392974455271431">Prindërit e tu mund ta zhbllokojnë atë për ty</translation>
@@ -2595,6 +2599,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5743684619253032786">Produkte për kujdesin e thonjve</translation>
 <translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
+<translation id="5752327398324808817">Fut një ose dy fjalë</translation>
 <translation id="5759751709240058861">Të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="5763042198335101085">Fut një adresë të vlefshme email-i</translation>
 <translation id="5764725887548570807">Format i pavlefshëm i origjinës.</translation>
@@ -3089,6 +3094,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6671169470640320959">Financim për makina</translation>
 <translation id="6671697161687535275">Të hiqet sugjerimi i formularit nga Chromium?</translation>
 <translation id="6677351035258626477">Restorant ushqimesh të shpejta</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsion}other{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsione}}</translation>
 <translation id="6681790815630918386">Kodi CVC u ruajt</translation>
 <translation id="6683022854667115063">Kufje</translation>
 <translation id="6687230248707087982">Zarf (i thjeshtë)</translation>
@@ -3105,6 +3111,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6696575039575740785">Instalimi i aplikacioneve të uebit nuk lejohet</translation>
 <translation id="6698097747703777657">Nuk e more kodin tënd? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Krijuar:</translation>
+<translation id="6698769547327354196">Për të çaktivizuar Pix në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Shiriti kohor</translation>
 <translation id="6702851555558236418">Softuerë të audios dhe muzikës</translation>
 <translation id="6702919718839027939">Prezantim</translation>
@@ -3260,6 +3267,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6978236010531171013">Ndaj gjithsesi</translation>
 <translation id="6978722349058177832">Nëse e ndan këtë pajisje me të tjerët, Chromium mund të të kërkojë që të verifikohesh sa herë që paguan duke përdorur plotësimin automatik</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
+<translation id="6979302985396162258">menaxho qasjen në kukit e një pale të tretë</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6984270784814146224">Imazh i paetiketuar. Teksti po nxirret, mundësuar nga IA-ja e Google</translation>
 <translation id="6987806006823772670">Zarf (i veshur)</translation>
@@ -3405,6 +3413,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operacionet e biznesit</translation>
+<translation id="7244061187185055290">Me pak fjalë, përshkruaj atë që po kërkon</translation>
 <translation id="7251437084390964440">Konfigurimi i rrjetit nuk përputhet me standardin ONC. Disa pjesë të konfigurimit mund të mos jenë importuar.
 Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
@@ -3785,7 +3794,6 @@ Detaje shtesë:
 <translation id="7935318582918952113">Distiluesi i DOM-it</translation>
 <translation id="7937163678541954811">CVC-ja e kësaj karte do të enkriptohet dhe do të ruhet në pajisjen tënde për përfundim më të shpejtë të blerjes</translation>
 <translation id="7937554595067888181">Skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Shfaq se cilat shpërblime dhe përfitime ofrohen për kartat e tua në përfundim të blerjes <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Mëso rreth përfitimeve të kartës<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certifikata e serverit nuk është ende e vlefshme.</translation>
 <translation id="7941628148012649605">Zarf Chou 4</translation>
 <translation id="794169214536209644">Ëmbëlsira dhe karamele</translation>

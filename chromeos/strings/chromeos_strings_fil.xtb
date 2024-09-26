@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1343442362630695901">salt lake</translation>
 <translation id="1348657754632799065">Recording bar</translation>
+<translation id="1350909945461913813">Tiyaking i-save ang anumang ginawa</translation>
 <translation id="1367951781824006909">Pumili ng isang file</translation>
 <translation id="1371650399987522809">Feedback para sa wallpaper na pinapagana ng Google AI</translation>
 <translation id="1374385338586507108">Bigyang-kahulugan</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong mga imaheng gawa ng AI.</translation>
 <translation id="2045814230297767491">kubyertos</translation>
 <translation id="2047316797244836561">Kumonekta sa network at i-reload ang page para makita ang screen saver.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Walang na-detect na pagsasalita</translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
+<translation id="2468124392950503650">Pumili ng prompt para gumawa o makita ang<ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2480572840229215612">mga alimango</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Walang tumutugmang resulta</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
+<translation id="4486524074141928967">Isa-sign out ka nang <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang modifier key (ctrl, alt, shift, o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kulay ng interface</translation>
 <translation id="4503223151711056411">Kaliwang arrow</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">gray</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5600027863942488546">Nasubok ang key na <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">Na-sign out ka</translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Hindi nahanap ang file</translation>
 <translation id="5938286923316838007">Hindi makagawa ng mga pangalan ng recording para sa content na ito</translation>
 <translation id="5939518447894949180">I-reset</translation>
+<translation id="5942727615796467094">Itinakda ng administrator ng <ph name="MANAGER" /> kung kailan magagamit ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="594552776027197022">Bumuo ng random na keypair</translation>
 <translation id="5946538341867151940">Hindi ka pa nakakonekta. Kung nagrerekomenda ang iyong mobile carrier ng custom na APN, ilagay ang impormasyon ng APN sa pamamagitan ng pagpili sa "+ Bagong APN"</translation>
 <translation id="5947266287934282605">Kung ang huling araw ng buwan ay bago ang araw na ito, mare-reset ang data sa huling araw ng buwan</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">ibang planeta</translation>
 <translation id="6359706544163531585">I-disable ang maliwanag na tema</translation>
 <translation id="6359919876285606596">Permanente na ang aksyong ito at hindi ito maa-undo</translation>
+<translation id="6368342879959028556">Kapag pinili mo ang “Gumawa gamit ang AI,” magsulat ng custom na prompt. O puwede mong piliin ang “Mga AI wallpaper,” para pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong AI wallpaper.</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6373461326814131011">pond</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Pumunta sa mga setting ng account</translation>
 <translation id="6462978824459367242">Naka-enable na ang button na Magdagdag ng APN</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{I-scan ulit ang page?}=1{I-scan ulit ang page {PAGE_NUMBER}?}one{I-scan ulit ang page {PAGE_NUMBER}?}other{I-scan ulit ang page {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Ang 3 pinakakamakailang prompt at output. Maa-access mo lang ang mga ito habang ginagamit mo ang Wallpaper at style.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">mga bangka</translation>
 <translation id="64778964625672495">dark red</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">coral pink</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Piliin ang "I-inspire ako" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga imaheng gawa ng AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kapag gumawa ka gamit ang AI, ipinapadala ang prompt sa mga server ng Google AI para bumuo ng mga imahe at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ang Generative AI ay pang-eksperimento, na nasa unang yugto ng pag-develop, at kasalukuyang may limitadong availability.</translation>
 <translation id="6673898378497337661">taasan ang liwanag ng keyboard</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6694534975463174713">lock</translation>
@@ -1569,6 +1587,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
 <translation id="8882789155418924367">mga kuwago</translation>
 <translation id="8892443466059986410">Kanselahin ang pag-edit ng shortcut</translation>
+<translation id="8897043028305808902">Ni-rename ang file</translation>
 <translation id="8898840733695078011">Lakas ng signal</translation>
 <translation id="8909114361904403025">pataas na arrow</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>

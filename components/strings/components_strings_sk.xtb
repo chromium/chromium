@@ -700,6 +700,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2239100178324503013">Odoslať</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
+<translation id="2242389809734574253">Okno uloženie čísla IBAN bolo zavreté.</translation>
 <translation id="2246264294482514010">10 × 12 palcov</translation>
 <translation id="2246480341630108201">Tvoj rodič zatiaľ nepovedal, že je to v poriadku</translation>
 <translation id="2247789808226901522">Karta vypršala</translation>
@@ -1235,6 +1236,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3272112314896217187">Zadajte <ph name="NUMBER_OF_DIGITS" />‑miestny overovací kód</translation>
 <translation id="3272643614306383237">Menej ako 1 MB. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
 <translation id="3273738040255912340">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Okno uloženia čísla IBAN je otvorené na celú výšku.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravidlá správcu otvorenie tohto súboru v službe <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}other{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="3282085321714087552">Vaša organizácia, <ph name="ENROLLMENT_DOMAIN" />, odoslala na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="3286372614333682499">na výšku</translation>
@@ -2121,6 +2123,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4881808915112408168">24 × 31,5 palca</translation>
 <translation id="4882314601499260499">Neuplatňujú sa žiadne pravidlá pre používateľov. Ak chcete pridať pravidlá pre používateľov, vaša organizácia musí <ph name="LINK_BEGIN" />overiť vašu doménu<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Zadajte otázku alebo pokyn</translation>
 <translation id="4885030148564729407">Medové týždne a romantické dovolenkové miesta</translation>
 <translation id="4885256590493466218">Zaplaťte za nákup kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Ochrana hesiel pomocou funkcie Windows Hello</translation>
@@ -2580,6 +2583,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="572328651809341494">Nedávne karty</translation>
 <translation id="5723873695528696965">Ovládať a preprogramovávať zariadenia MIDI</translation>
 <translation id="5725297205162868298">Skratka sa nemôže začínať znakom @: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="5728246486828755318">Môže požiadať o povolenie používať pokročilé funkcie tlačiarne</translation>
 <translation id="5729442113829771034">Predškolské vzdelávanie</translation>
 <translation id="5730040223043577876">Ak ste heslo použili aj na iných weboch, Chrome ho odporúča obnoviť.</translation>
 <translation id="5732392974455271431">Vaši rodičia ho môžu pre vás odblokovať</translation>
@@ -2591,6 +2595,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5743684619253032786">Výrobky na starostlivosť o nechty</translation>
 <translation id="5745733273847572235">Môže žiadať o povolenie používať vašu polohu</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>
+<translation id="5752327398324808817">Zadajte slovo alebo dve</translation>
 <translation id="5759751709240058861">Používať kameru a hýbať ňou</translation>
 <translation id="5763042198335101085">Zadajte platnú e-mailovú adresu</translation>
 <translation id="5764725887548570807">Neplatný formát zdroja.</translation>
@@ -3085,6 +3090,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6671169470640320959">Financovanie áut</translation>
 <translation id="6671697161687535275">Chcete návrh položky formulára odstrániť z prehliadača Chromium?</translation>
 <translation id="6677351035258626477">Rýchle občerstvenie</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Pri nákupoch v Chrome uvidíte možnosť <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}other{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6681790815630918386">Overovací kód karty bol uložený</translation>
 <translation id="6683022854667115063">Slúchadlá</translation>
 <translation id="6687230248707087982">Obálka (kancelárska)</translation>
@@ -3101,6 +3107,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6696575039575740785">Inštalácia webových aplikácií nie je povolená</translation>
 <translation id="6698097747703777657">Nedostali ste kód? <ph name="BEGIN_LINK" />Získať nový kód<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Vytvorené:</translation>
+<translation id="6698769547327354196">Ak chcete vypnúť Pix v Chrome, prejdite do <ph name="BEGIN_LINK1" />nastavení platieb<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Posúvač času</translation>
 <translation id="6702851555558236418">Zvukový a hudobný softvér</translation>
 <translation id="6702919718839027939">Prezentovať</translation>
@@ -3256,6 +3263,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6978236010531171013">Aj tak zdieľať</translation>
 <translation id="6978722349058177832">Ak toto zariadenie zdieľate, Chromium vás môže požiadať o overenie každej platby využívajúcej automatické dopĺňanie</translation>
 <translation id="6979158407327259162">Disk Google</translation>
+<translation id="6979302985396162258">spravujte prístup k súborom cookie tretích strán</translation>
 <translation id="6979440798594660689">Ignorovať (predvolené)</translation>
 <translation id="6984270784814146224">Neoznačený obrázok. Extrahuje sa text pomocou umelej inteligencie od Googlu.</translation>
 <translation id="6987806006823772670">Obálka (poťahovaná)</translation>
@@ -3402,6 +3410,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Obchodná činnosť</translation>
+<translation id="7244061187185055290">Niekoľkými slovami opíšte, čo hľadáte</translation>
 <translation id="7251437084390964440">Konfigurácia siete nie je v súlade so štandardom ONC. Niektoré časti konfigurácie sa nemusia importovať.
 Ďalšie podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
@@ -3782,7 +3791,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Overovací kód tejto karty bude zašifrovaný a uložený do vášho zariadenia na zrýchlenie platieb</translation>
 <translation id="7937554595067888181">Platí do <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Zobrazte si, ktoré odmeny a výhody sú k dispozícii pre vaše karty pri platbe. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ďalšie informácie o výhodách kariet<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certifikát servera ešte nie je platný.</translation>
 <translation id="7941628148012649605">Obálka Chou 4</translation>
 <translation id="794169214536209644">Cukrovinky</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Додати в список читання</translation>
 <translation id="1854463785401910334">Шукати у відкритих вкладках</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} з {count} пароля}one{{position} з {count} пароля}few{{position} з {count} паролів}many{{position} з {count} паролів}other{{position} з {count} пароля}}</translation>
+<translation id="1861262398884155592">Ця папка порожня</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Запросіть учасників у сімейну групу</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4309403553630140242">Двічі торкніться, щоб дізнатися більше</translation>
+<translation id="4320848494125124980">Нещодавні</translation>
 <translation id="4324735664183300693">Увімкнути сповіщення</translation>
 <translation id="4328843285884395590">Мій диск</translation>
 <translation id="4331177082088332784">Ви можете змінити цей параметр у BEGIN_LINK налаштуваннях контенту END_LINK</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Номер відправлення</translation>
 <translation id="4471472356135655769">Не вдається експортувати паролі</translation>
+<translation id="4474142134969976028">Немає результатів</translation>
 <translation id="4474494258097106883">Створено для iPhone</translation>
 <translation id="4488754974567924717">Якщо ваші паролі буде зламано, ми вас сповістимо</translation>
 <translation id="4489536976005181779">{count,plural, =1{Сторінку додано в список читання у вашому обліковому записі ({email})}one{Сторінки додано в список читання у вашому обліковому записі ({email})}few{Сторінки додано в список читання у вашому обліковому записі ({email})}many{Сторінки додано в список читання у вашому обліковому записі ({email})}other{Сторінки додано в список читання у вашому обліковому записі ({email})}}</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}one{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}other{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}}</translation>
+<translation id="1861262398884155592">ফোল্ডারটি খালি</translation>
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ফ্যামিলি মেম্বারদের আমন্ত্রণ জানান</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">পজিশন সেট করুন</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
+<translation id="4320848494125124980">সাম্প্রতিক</translation>
 <translation id="4324735664183300693">বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="4328843285884395590">আমার ড্রাইভ</translation>
 <translation id="4331177082088332784">আপনি এটি BEGIN_LINK কন্টেন্ট সেটিংস END_LINK থেকে ম্যানেজ করতে পারবেন</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4469834037720363704">প্যাকেজ নম্বর</translation>
 <translation id="4471472356135655769">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
+<translation id="4474142134969976028">কোনও ফলাফল মিলছে না</translation>
 <translation id="4474494258097106883">আপনার iPhone-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="4488754974567924717">আপনার পাসওয়ার্ড যদি চুরি হয়ে যায়, আমরা তা আপনাকে জানাবো</translation>
 <translation id="4489536976005181779">{count,plural, =1{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}one{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}other{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}}</translation>

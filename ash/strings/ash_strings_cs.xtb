@@ -215,7 +215,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1703117532528082099">Aktivní okno je zadokováno vlevo.</translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
-<translation id="171610090693716835">Soustřeďte se s přizpůsobenými playlisty. Získejte YouTube Music a YouTube bez reklam s YouTube Premium na tři měsíce bez dalších poplatků.</translation>
 <translation id="1719094688023114093">Okamžité titulky jsou zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
 <translation id="1720230731642245863">Hotspot je vypnutý</translation>
@@ -398,6 +397,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2412593942846481727">K dispozici je aktualizace</translation>
 <translation id="2416438829169535743">Opustit zobrazení?</translation>
 <translation id="2417486498593892439">Přihlásit se k síti</translation>
+<translation id="2423619675829330672">Příliš mnoho pokusů o zadání kódu PIN. Počkejte <ph name="TIME_LEFT" /> a zkuste to znovu.</translation>
 <translation id="2426051945783024481">Záběr kamery byl automaticky vycentrován</translation>
 <translation id="2427507373259914951">Kliknutí levým tlačítkem</translation>
 <translation id="2429753432712299108">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Než toto povolení schválíte, zkontrolujte si, zda je na zařízení zobrazen následující přístupový klíč: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6330012934079202188">Zobrazují se okna ze všech ploch, stisknutím šipky nahoru zobrazíte okna z aktuální plochy</translation>
 <translation id="6337159624125741244">Zvětšení celé obrazovky je zapnuté</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relace, kterou spravuje doména <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Pokud jste PIN zapomněli, zkuste uživatele obnovit.</translation>
 <translation id="6344138931392227467">Zařízení <ph name="DEVICE_NAME" /> je připojeno</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> a poté <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> nebo <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">NÁVRHY APLIKACÍ</translation>
@@ -1633,6 +1634,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6539852571005954999">Skenování staženého souboru <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Odesílání do zařízení <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Smajlíky, GIFy a další</translation>
+<translation id="6545382064335350438">PIN se pořád nedaří ověřit. Zkuste to znovu.</translation>
 <translation id="6555373427270923730">Zadejte do adresního řádku webovou adresu a poté stiskněte <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nová instalace</translation>
@@ -2028,6 +2030,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7904094684485781019">Správce tohoto účtu zakázal vícenásobné přihlášení.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Připojená zařízení: <ph name="DEVICECOUNT" /></translation>
+<translation id="7921565901396407357">PIN se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="7923534281713082605">Počasí</translation>
 <translation id="7926080067315048321">Zobrazit všechny úkoly v úkolech Google na webu</translation>
 <translation id="7930731167419639574">Řeč se teď zpracovává místně a diktování funguje offline.</translation>

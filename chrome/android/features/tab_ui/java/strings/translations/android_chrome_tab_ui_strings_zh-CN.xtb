@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">橙色</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1273910660700874265">“<ph name="TITLE_OF_GROUP" />”标签页分组选项</translation>
+<translation id="1293272072740285747">您可以保留此分组以便日后添加标签页；如果不再需要，也可以将其删除。
+
+如果删除，所有人将立即失去对标签页分组“<ph name="TITLE_OF_GROUP" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="1340839264183302272">退出分组</translation>
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">查看商店信息，屏幕顶部附近有可用选项</translation>
+<translation id="5615302411300498438">您可以保留此分组以便日后添加标签页，也可以退出分组。
+
+如果退出，您将立即失去对标签页分组“<ph name="TITLE_OF_GROUP" />”的访问权限。</translation>
 <translation id="5627941783489838464">无标签页更新</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{恢复标签页}other{恢复标签页}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 中的 <ph name="TABS_COUNT_ONE" /> 个链接}other{Chrome 中的 <ph name="TABS_COUNT_MANY" /> 个链接}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>
 <translation id="8631711675211020168">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
 <translation id="8633025649649592204">近期活动</translation>
+<translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="870736955561925754">要关闭标签页并删除分组吗？</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_MONTHS_ONE" /> 个月前}other{创建时间：<ph name="NUM_MONTHS_MANY" /> 个月前}}</translation>
+<translation id="8804742093141782941">保留分组</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
 <translation id="8887921976452567404">您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。</translation>
 <translation id="8915916167043355778">全部关闭</translation>

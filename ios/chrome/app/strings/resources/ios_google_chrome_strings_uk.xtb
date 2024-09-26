@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1066101356081285416">Chrome виявлятиме номери відстеження на сайтах, які ви відвідуєте, і показуватиме оновлення щодо відправлень на сторінці нової вкладки. Номер відстеження замовлення й назва веб-сайту надсилатимуться в Google, щоб забезпечити роботу цієї функції і зробити покупки в Google зручнішими для всіх користувачів. Ви можете будь-коли змінити це в <ph name="BEGIN_LINK" />налаштуваннях відстеження замовлень<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Шукати через Об’єктив</translation>
 <translation id="1143896152279775643">Ваш пароль буде збережено в Менеджері паролів Google для електронної адреси <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Відкрити нову вкладку в Chrome</translation>
 <translation id="1166460004393506534">Видалити дані вебперегляду в Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Порада щодо Chrome: виберіть розташування адресного рядка</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Додає введені URL-адреси до закладок у Chrome.</translation>
+<translation id="1799920918471566157">Поради щодо Chrome</translation>
 <translation id="1830634592642484976">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="1917964099031477364">Цей обліковий запис і всі незбережені дані буде вилучено з Chrome та інших додатків Google на цьому пристрої.</translation>
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Google for at levere denne funktion og forbedre Googles shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åbn en ny fane i Chrome</translation>
 <translation id="1166460004393506534">Slet browserdata i Chrome</translation>
@@ -38,6 +39,7 @@ Vær opmærksom på følgende:
 <translation id="1670609221633730681">Tip til Chrome: Vælg, hvor din adresselinje skal placeres</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Føjer de angivne webadresser til dine bogmærker i Chrome.</translation>
+<translation id="1799920918471566157">Tips til Chrome</translation>
 <translation id="1830634592642484976">Denne adresse gemmes i øjeblikket i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Denne konto og data, som ikke er gemt, fjernes fra Chrome og andre Google-apps på denne enhed.</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>

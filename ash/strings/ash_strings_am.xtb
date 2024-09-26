@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">ገባሪ መስኮት በግራ በኩል ተተክሏል።</translation>
 <translation id="1708345662127501511">ዴስክ፦ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">የአውታረ መረብ ቅንብሮች</translation>
-<translation id="171610090693716835">ግላዊ በተደረጉ የትኩረት አጫዋች ዝርዝሮች መስመር ይዘው ይቆዩ። በ3 ወራት ያለ ምንም ወጪ YouTube Premium YouTube Music እና YouTubeን ከማስታወቂያ-ነፃ ያግኙ</translation>
 <translation id="1719094688023114093">የቀጥታ ስርጭት መግለጫ ጽሁፍ በርቷል።</translation>
 <translation id="1720011244392820496">የWi-Fi ስምረትን ያብሩ</translation>
 <translation id="1720230731642245863">መገናኛ ነጥብ ጠፍቷል</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
 <translation id="2416438829169535743">ከዕይታ ይውጣ?</translation>
 <translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
+<translation id="2423619675829330672">በጣም ብዙ የፒን ሙከራዎች። <ph name="TIME_LEFT" /> ይጠብቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="2426051945783024481">የካሜራ ክፈፍ በራስ-ሰር መሃል ላይ ሆኗል</translation>
 <translation id="2427507373259914951">የግራ ጠቅታ</translation>
 <translation id="2429753432712299108">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። ከመቀበልዎ በፊት እባክዎ ይህ የይለፍ ቃል በዚያ መሣሪያ ላይ የሚታይ መሆኑን ያረጋግጡ፦ <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">ከሁሉም ዴስኮች ላይ መስኮቶችን በማሳየት ላይ፣ አሁን ካለው ዴስክ ላይ መስኮቶችን ለማሳየት የላይ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="6337159624125741244">ባለሙሉ ማያ ገጽ ማጉያ በርቷል</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> በ<ph name="MANAGER" /> የሚተዳደር ክፍለ-ጊዜ ነው</translation>
+<translation id="6340148837564298498">ፒንዎን ከረሱ እኚህን ተጠቃሚ መልሰው ለማግኘት ይሞክሩ።</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ተገናኝቷል</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> በመቀጠል <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ወይም <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">የመተግበሪያ አስተያየት ጥቆማዎች</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">እየተቃኘ ያለ <ph name="FILENAME" /> ያውርዱ</translation>
 <translation id="6542521951477560771">ወደ <ph name="RECEIVER_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="6542891623636520977">ስሜት ገላጭ ምስሎች፣ GIFዎች እና ሌሎች</translation>
+<translation id="6545382064335350438">ፒንዎ አሁንም ሊረጋገጥ አልቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="6555373427270923730">በአድራሻ አሞሌው ውስጥ የድር አድራሻ ይተይቡ፣ በመቀጠል <ph name="MODIFIER" /><ph name="KEY" /> ይጫኑ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 አዲስ ጭነት</translation>
@@ -2030,6 +2032,7 @@
 <translation id="7904094684485781019">የዚህ መለያ አስተዳዳሪ ባለብዙ መለያ መግባትን ከልክሏል።</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> መሣሪያዎች ተገናኝተዋል</translation>
+<translation id="7921565901396407357">ፒንዎ ሊረጋገጥ አልቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="7923534281713082605">የአየር ሁኔታ</translation>
 <translation id="7926080067315048321">ሁሉንም ተግባራት በGoogle ተግባሮች ድር ላይ ይመልከቱ</translation>
 <translation id="7930731167419639574">ንግግር አሁን በመሣሪያው ላይ የሚሰናዳ ነው እና በቃል ማስጻፍ ከመስመር ውጭ ይሰራል</translation>

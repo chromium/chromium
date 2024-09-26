@@ -226,6 +226,7 @@
 <translation id="3673813398384385993">Браўзер Chrome выявіў, што пашырэнне "<ph name="EXTENSION_NAME" />" змяшчае шкоднае ПЗ</translation>
 <translation id="3695446226812920698">Даведацца больш</translation>
 <translation id="3697952514309507634">Іншыя профілі Chrome</translation>
+<translation id="3700276346088749847">ачысціць даныя Chrome ва ўліковым запісе</translation>
 <translation id="3703994572283698466">Chrome OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версія Chrome OS Flex</translation>
 <translation id="3718181793972440140">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
@@ -296,6 +297,7 @@
 <translation id="4575717501879784448">Каб палепшыць выкарыстанне браўзера і вызваліць рэсурсы, Chrome можа адключыць гэтыя ўкладкі.</translation>
 <translation id="459622048091363950">Як толькі Chrome атрымае дазвол, вэб-сайты змогуць запытваць у вас доступ.</translation>
 <translation id="4600710005438004015">Браўзеру Chrome не ўдалося абнавіцца да апошняй версіі, таму ў ім няма новых функцый і выпраўленняў сістэмы бяспекі.</translation>
+<translation id="4601439950572737842">Вашы даныя зашыфраваны фразай-паролем. Увядзіце яе, каб захоўваць даныя Chrome ва ўліковым запісе Google.</translation>
 <translation id="4624065194742029982">Chrome у рэжыме інкогніта</translation>
 <translation id="4627412468266359539">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome OS Flex шляхам аўтаматычнай адпраўкі ў Google даных пра выкарыстанне і дыягностыку (неабавязкова).</translation>
 <translation id="4633000520311261472">У мэтах бяспекі Chrome мы выключылі некаторыя пашырэнні, якія не значацца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і маглі быць дададзены без вашага ведама.</translation>

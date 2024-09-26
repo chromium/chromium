@@ -3488,6 +3488,7 @@
 <translation id="3487649228420469005">ಸ್ಕ್ಯಾನ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3488199663160411179">ಹೆಸರು</translation>
 <translation id="3490695139702884919">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ… <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಮರೆತುಹೋದರೆ, ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಬಹುದು</translation>
 <translation id="3491669675709357988">ನಿಮ್ಮ ಮಗುವಿನ ಖಾತೆಯನ್ನು Family Link ಪೋಷಕ ನಿಯಂತ್ರಣಗಳಿಗಾಗಿ ಸೆಟಪ್ ಮಾಡಲಾಗಿಲ್ಲ. ನೀವು ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೇರಿಸಬಹುದು. ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಆ್ಯಪ್‌ನಲ್ಲಿ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳ ಕುರಿತ ಮಾಹಿತಿಯನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>
 <translation id="3491678231052507920">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ನಿಮ್ಮನ್ನು VR ಸೆಷನ್‌ಗೆ ಪ್ರವೇಶಿಸುವಂತೆ ಮಾಡಲು ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಹಾಗೂ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="3493043608231401654">ಟ್ಯಾಬ್ ಗುಂಪಿನಿಂದ <ph name="TAB_TITLE" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
@@ -5350,7 +5351,6 @@
 <translation id="4838327282952368871">ಕನಸು</translation>
 <translation id="4838836835474292213">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಓದಲು ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4838907349371614303">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="4838958829619609362">ಆಯ್ಕೆಯು <ph name="LANGUAGE" /> ನಲ್ಲಿ ಇಲ್ಲ</translation>
 <translation id="4839303808932127586">ಇದರಂತೆ ವೀಡಿಯೊ ಉ&amp;ಳಿಸಿ...</translation>
 <translation id="4839910546484524995">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4840096453115567876">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ತ್ಯಜಿಸುವುದೇ?</translation>
@@ -5960,7 +5960,6 @@
 <translation id="5287425679749926365">ನಿಮ್ಮ ಖಾತೆಗಳು</translation>
 <translation id="5288106344236929384"><ph name="DOMAIN" /> ನಲ್ಲಿ <ph name="USERNAME" /> ಅವರಿಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು, ಪಾಸ್‌ಕೀ ಆಯ್ಕೆಗಳು</translation>
 <translation id="5288678174502918605">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮರು&amp;ತೆರೆಯಿರಿ</translation>
-<translation id="52895863590846877">ಪುಟವು <ph name="LANGUAGE" /> ಭಾಷೆಯಲ್ಲಿಲ್ಲ</translation>
 <translation id="5290020561438336792">ವಿಭಿನ್ನ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ PC ಮತ್ತು ಬಿತ್ತರಿಸುವ ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿವೆ (ಉದಾ. 2.4GHz ವಿರುದ್ಧ 5GHz)</translation>
 <translation id="52912272896845572">ಖಾಸಗಿ ಕೀಲಿ ಫೈಲ್ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="5291739252352359682">Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮೀಡಿಯಾಗಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಚಿಸುತ್ತದೆ (ಪ್ರಸ್ತುತವಾಗಿ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯವಿದೆ). ಆಡಿಯೋ ಮತ್ತು ಶೀರ್ಷಿಕೆಗಳನ್ನು ಸ್ಥಳೀಯವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಸಾಧನದಲ್ಲಿಯೇ ಉಳಿಯುತ್ತದೆ.</translation>
@@ -8104,7 +8103,6 @@
 <translation id="686366188661646310">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸುವುದೇ?</translation>
 <translation id="6863925886424789941">ಕೊಲೊಸಿಯಮ್</translation>
 <translation id="6865313869410766144">ಸ್ವಯಂತುಂಬುವಿಕೆ ಫಾರ್ಮ್ ಡೇಟಾ</translation>
-<translation id="6865598234501509159">ಪುಟವು <ph name="LANGUAGE" /> ಭಾಷೆಯಲ್ಲಿಲ್ಲ</translation>
 <translation id="6865708901122695652">WebRTC ಈವೆಂಟ್‌ ಲಾಗ್‌ಗಳು (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">ನಿಶ್ಶಬ್ದ</translation>
 <translation id="686664946474413495">ಬಣ್ಣ ತಾಪಮಾನ</translation>
@@ -8726,7 +8724,6 @@
 <translation id="7343372807593926528">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸುವ ಮೊದಲು ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ.</translation>
 <translation id="7344585835349671209">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ HTTPS/SSL ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7345706641791090287">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
-<translation id="7345919885156673810">ಆಯ್ಕೆಯು <ph name="LANGUAGE" /> ನಲ್ಲಿ ಇಲ್ಲ</translation>
 <translation id="7346909386216857016">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
 <translation id="7347751611463936647">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು "<ph name="EXTENSION_KEYWORD" />", ಅನ್ನು ಟೈಪ್ ಮಾಡಿ, ನಂತರ TAB, ನಂತರ ನಿಮ್ಮ ಕಮಾಂಡ್ ಅಥವಾ ಹುಡುಕಾಟ‌ವನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> ನಿಂದ ಹಿಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>

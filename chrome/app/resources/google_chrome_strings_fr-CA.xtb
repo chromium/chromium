@@ -169,6 +169,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chrome</translation>
 <translation id="2970681950995291301">Pour retirer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page Paramètres</translation>
+<translation id="2994465299455873643">Fournit des services de chiffrement et un moyen sécurisé de récupérer <ph name="BROWSER_NAME" /> s'il devient obsolète. Si ce service est désactivé, <ph name="BROWSER_NAME" /> peut perdre l'accès aux données chiffrées et <ph name="BROWSER_NAME" /> risque de ne pas pouvoir se récupérer.</translation>
 <translation id="3018957014024118866">Supprimer également les données de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Relancer pour mettre à jour Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome fonctionne en mode arrière-plan.</translation>

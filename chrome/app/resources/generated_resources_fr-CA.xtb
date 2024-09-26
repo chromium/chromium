@@ -380,6 +380,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="126387934568812801">Inclure cette capture d'écran et les titres des onglets ouverts</translation>
 <translation id="1264083566674525434">Modifier les autorisations du site</translation>
 <translation id="1264337193001759725">Pour afficher les journaux de l'IU réseau, consultez cette page : <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1264956950255940376">Plissez l'œil gauche</translation>
 <translation id="1265279736024499987">Vos applications et vos paramètres seront synchronisés sur tous les appareils Chrome OS Flex sur lesquels vous êtes connecté avec votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Langue de la traduction :</translation>
 <translation id="1267649802567297774">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, dans le style <ph name="STYLE" />, avec l'ambiance <ph name="MOOD" />.</translation>
@@ -459,6 +460,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1327527584824210101">Utilisez votre clé d'accès</translation>
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas accessibles</translation>
 <translation id="1328364753167940710">Dans <ph name="NUM_HR" /> h</translation>
+<translation id="1328928545650070438">Baissez les sourcils</translation>
 <translation id="1329466763986822896">Améliorer la confidentialité de ce point d’accès</translation>
 <translation id="1331977651797684645">C'était moi.</translation>
 <translation id="1333489022424033687">Certaines fonctionnalités de <ph name="ORIGIN" /> risquent de ne pas fonctionner si vous n'effacez pas les données que d'autres sites ont stockées sur votre appareil</translation>
@@ -506,6 +508,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1363772878823415675">Accorder à <ph name="SPECIFIC_NAME" /> l'autorisation d'accéder aux appareils USB.</translation>
 <translation id="136378536198524553">L'économiseur d'énergie est activé</translation>
 <translation id="136522805455656552">Pour assurer la sécurité de votre appareil, vous ne devez exécuter et installer que des logiciels provenant de sources et de développeurs fiables. <ph name="LEARN_MORE" /></translation>
+<translation id="1365650529628379165">Levez les sourcils</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> images générées</translation>
 <translation id="1368603372088757436">Linux n'est pas pris en charge sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google</translation>
@@ -1046,6 +1049,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai prévu. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> pourrait ne pas faire de mises à jour automatiques</translation>
+<translation id="1735957571918073979">Clignez les deux yeux</translation>
 <translation id="1735983780784385591">Importés de Linux</translation>
 <translation id="173628468822554835">D'accord. Par défaut, les nouveaux sites que vous visitez ne vous enverront pas de notifications.</translation>
 <translation id="1737968601308870607">Rapporter un bogue</translation>
@@ -1164,6 +1168,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1816036116994822943">Vitesse de numérisation du clavier</translation>
 <translation id="1817871734039893258">Récupération de fichier Microsoft</translation>
 <translation id="1818913467757368489">Téléversement du journal en cours…</translation>
+<translation id="1819377896744763509">La configuration peut prendre un peu plus de temps…</translation>
 <translation id="1819443852740954262">Tout ouvrir dans une fenêtre de navigation privée</translation>
 <translation id="1819721979226826163">Touchez Notifications de l'application &gt; Services Google Play.</translation>
 <translation id="1822140782238030981">Vous utilisez déjà Chrome? Connectez-vous à votre compte</translation>
@@ -2649,6 +2654,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2856907950922663165">Désactiver le chiffrement des URL?</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
+<translation id="2860710618359053450">Déplacez la mâchoire vers la droite</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861402191395139055">Abonnements Passpoint</translation>
 <translation id="2861941300086904918">Gestionnaire de sécurité de Native Client</translation>
@@ -3066,6 +3072,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3179982752812949580">Police du texte</translation>
 <translation id="3180284704187420717">Enregistrez vos favoris, mots de passe et plus encore avec la synchronisation</translation>
 <translation id="3180716079618904608">Trouver des applis et des jeux</translation>
+<translation id="3180990259147710757">Déplacez la mâchoire vers la gauche</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3182749001423093222">Correcteur orthographique</translation>
 <translation id="3183139917765991655">Importateur de profils</translation>
@@ -3344,6 +3351,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3390013585654699824">Renseignements sur l'application</translation>
 <translation id="3390442085511866400">Enregistrer l'image &amp;amp;vidéo sous…</translation>
 <translation id="3390530051434634135">Note : <ph name="NOTE" /></translation>
+<translation id="3390740059150071453">Regardez à gauche</translation>
 <translation id="3391721320619127327">Le lecteur d'écran sur ChromeOS Flex, ChromeVox, est principalement utilisé par les personnes aveugles ou ayant une basse vision pour lire le texte affiché à l'écran avec un synthétiseur vocal ou un afficheur braille. Maintenez les deux touches de volume enfoncées pendant cinq secondes pour activer ChromeVox. Lorsque ChromeVox est activé, une présentation rapide s'affiche.</translation>
 <translation id="3393554941209044235">Analyse de document par Chrome</translation>
 <translation id="3394072120086516913">Le PC est connecté par câble et l'appareil de diffusion est connecté par Wi-Fi</translation>
@@ -4374,6 +4382,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4100733287846229632">L'appareil ne possède presque plus d'espace de stockage</translation>
 <translation id="4100853287411968461">Nouvelle limite de temps d'utilisation des écrans</translation>
 <translation id="4101352914005291489">SSID masqué</translation>
+<translation id="410225014223200513">Formez un cercle avec vos lèvres</translation>
 <translation id="4102906002417106771">Redémarrer l'appareil pour effectuer une réinitialisation Powerwash</translation>
 <translation id="4103644672850109428">Lecteur d'écran, agrandissement</translation>
 <translation id="4104163789986725820">E&amp;xporter...</translation>
@@ -4557,6 +4566,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="425411422794688815">Un problème est survenu. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="4254414375763576535">Grand pointeur</translation>
 <translation id="4254813446494774748">Langue de la traduction :</translation>
+<translation id="4255016471934258618">Ouvrez grand la bouche</translation>
 <translation id="425573743389990240">Taux de décharge de la batterie en watts (une valeur négative signifie que la batterie se recharge)</translation>
 <translation id="4256316378292851214">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
@@ -4905,6 +4915,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4513872120116766993">Rédaction prédictive</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4515872537870654449">Communiquez avec Dell pour faire réparer votre appareil. La station d'accueil s'éteindra si le ventilateur ne fonctionne pas.</translation>
+<translation id="4516395361210407049">Les boutons de la barre d'outils ont été réinitialisés</translation>
 <translation id="4518840066030486079">Style de mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="4519605771716872386">Synchronisation des fichiers activée</translation>
@@ -5327,6 +5338,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4830502475412647084">Installation d'une mise à jour du système d'exploitation en cours…</translation>
 <translation id="4831226137013573603">désactiver le son du microphone</translation>
 <translation id="4833683849865011483">1 imprimante a été trouvée sur le serveur d'impression</translation>
+<translation id="4835598628985424375">Plissez les lèvres en les serrant</translation>
 <translation id="4835677468087803981">Masquer le NIP</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
 <translation id="4837128290434901661">Rétablir la recherche Google?</translation>
@@ -5335,7 +5347,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="4838836835474292213">Accès en lecture au presse-papiers autorisé</translation>
 <translation id="4838907349371614303">Mot de passe mis à jour</translation>
-<translation id="4838958829619609362">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4839910546484524995">Vérifiez votre appareil</translation>
 <translation id="4840096453115567876">Quitter le mode de navigation privée quand même?</translation>
@@ -5751,6 +5762,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5143374789336132547">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5143612243342258355">Ce fichier est dangereux</translation>
 <translation id="5143712164865402236">Activer le mode plein écran</translation>
+<translation id="514387318601895731">Regardez vers le bas</translation>
 <translation id="5143960098217235598">Cela permet l'accès au microphone pour les applis, les sites Web dotés de l'autorisation du microphone et les services système</translation>
 <translation id="5144815231216017543">alt+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">Lorsque vous vous éloignez de votre appareil, votre écran se verrouille automatiquement. Lorsque vous êtes devant votre appareil, votre écran restera actif plus longtemps. Si l'écran de verrouillage est désactivé, votre appareil se mettra en veille au lieu de se verrouiller.</translation>
@@ -5944,7 +5956,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5287425679749926365">Vos comptes</translation>
 <translation id="5288106344236929384">Plus d'actions, d'options de clé d'accès pour <ph name="USERNAME" /> sur <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Rouvrir l'ongl&amp;et fermé</translation>
-<translation id="52895863590846877">La page n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Le PC et l'appareil de diffusion sont connectés à différents réseaux Wi-Fi (p. ex. 2,4 GHz et 5 GHz)</translation>
 <translation id="52912272896845572">Le fichier de clé privée est incorrect.</translation>
 <translation id="5291739252352359682">Crée automatiquement des sous-titres pour les éléments multimédias dans le navigateur Chrome (cette fonctionnalité est offerte en anglais pour le moment). L'audio et les sous-titres sont traités localement et ne quittent jamais l'appareil.</translation>
@@ -6721,6 +6732,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sera bientôt mise en pause</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
+<translation id="5866236843389439313">Étirez le coin gauche de votre bouche</translation>
 <translation id="5868434909835797817">Le microphone est désactivé sur votre appareil</translation>
 <translation id="5868479397518301468">Délai de connexion dépassé</translation>
 <translation id="5868822853313956582">Suivre les couleurs de l'appareil</translation>
@@ -6884,6 +6896,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5985458664595100876">Format d'URL incorrect. Les formats pris en charge sont \\server\share et smb://server/share.</translation>
 <translation id="5985556342298151179">Appli Chrome installée par l'administrateur de votre appareil.</translation>
 <translation id="598810097218913399">Retirer l'attribution</translation>
+<translation id="5988563937187882754">Regardez à droite</translation>
 <translation id="5990266201903445068">Wi-Fi seulement</translation>
 <translation id="5990386583461751448">Traduit</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}one{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}other{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer ces applications.}}</translation>
@@ -8085,7 +8098,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="686366188661646310">Supprimer le mot de passe?</translation>
 <translation id="6863925886424789941">Le Colisée</translation>
 <translation id="6865313869410766144">Données de remplissage automatique de formulaires</translation>
-<translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Journaux d'événements WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Calme</translation>
 <translation id="686664946474413495">Température des couleurs</translation>
@@ -8705,7 +8717,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
 <translation id="7344585835349671209">Gérer les certificats HTTPS/SSL sur votre appareil</translation>
 <translation id="7345706641791090287">Confirmer votre mot de passe</translation>
-<translation id="7345919885156673810">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7347751611463936647">Pour utiliser cette extension, entrez « <ph name="EXTENSION_KEYWORD" /> », appuyez sur TAB, puis entrez votre commande ou votre recherche.</translation>
 <translation id="7347943691222276892">Cliquez pour quitter la page <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9226,6 +9237,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7713139339518499741">Voix naturelle</translation>
 <translation id="7714307061282548371">Les témoins de <ph name="DOMAIN" /> sont autorisés</translation>
 <translation id="7714464543167945231">Certificat</translation>
+<translation id="7715455358521357192">Plissez l'œil droit</translation>
 <translation id="7716648931428307506">Indiquez où enregistrer votre mot de passe</translation>
 <translation id="7716781361494605745">URL de la politique de l'autorité de certification Netscape</translation>
 <translation id="7717014941119698257">Téléchargement : <ph name="STATUS" /></translation>
@@ -9433,6 +9445,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Retirer l'extension <ph name="EXTENSION_NAME" />?</translation>
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="7860802890538098598">Étirez le coin droit de votre bouche</translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7861846108263890455">Langue du compte Google</translation>
 <translation id="7864114920800968141">Dans <ph name="NUM_MIN" /> min</translation>
@@ -9816,6 +9829,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8123975449645947908">Faire défiler vers l'arrière</translation>
 <translation id="8124313775439841391">ONC géré</translation>
 <translation id="8125651784723647184">Le partage de mot de passe est géré par votre administrateur</translation>
+<translation id="8126355825906412872">Souriez</translation>
 <translation id="8129265306888404830">Pour utiliser l'adresse de courriel de votre organisation (<ph name="EMAIL_DOMAIN" />), vous devez utiliser l'inscription d'entreprise. Si cet appareil est destiné à votre usage personnel, connectez-vous avec votre compte Google personnel.</translation>
 <translation id="8130476996317833777">Ne pas autoriser les sites à utiliser l'optimiseur V8</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
@@ -10950,6 +10964,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8944725102565796255">Si vous ne souhaitez utiliser ce compte qu'une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />. Si vous souhaitez ajouter un compte pour quelqu'un d'autre, <ph name="LINK_BEGIN" />ajoutez une nouvelle personne<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
 
 Les autorisations que vous avez déjà accordées à des sites Web et à des applications peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans les <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="8945050808870279132">Froncez votre nez</translation>
 <translation id="8945274638472141382">Taille de l'icône</translation>
 <translation id="8945508919180478719">Micro de type studio</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage ne sont pas complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -11416,6 +11431,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="971774202801778802">URL du favori</translation>
 <translation id="973473557718930265">Quitter</translation>
 <translation id="973558314812359997">Taille du curseur de souris</translation>
+<translation id="97381968209917373">Supprimer le certificat <ph name="CERT_NAME" /></translation>
 <translation id="975893173032473675">Langue cible</translation>
 <translation id="976499800099896273">Boîte de dialogue d'annulation de la correction automatique affichée pour la correction de <ph name="TYPED_WORD" /> en <ph name="CORRECTED_WORD" />.  Appuyez sur la flèche vers le haut pour y accéder, ou sur Échap pour l'ignorer.</translation>
 <translation id="976572010712028687">Confirmer que vous êtes un parent</translation>

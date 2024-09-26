@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1066101356081285416">‏‫Chrome شماره‌های رهگیری را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه «برگه جدید» نشان می‌دهد. برای ارائه این ویژگی و بهبود ویژگی‌های Google Shopping برای همه، شماره رهگیری بسته و نام وب‌سایت به Google ارسال می‌شود. هرزمان خواستید می‌توانید این مورد را در <ph name="BEGIN_LINK" />تنظیمات رهگیری بسته<ph name="END_LINK" /> به‌روزرسانی کنید.</translation>
+<translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="1146503048444965320">‏باز کردن برگه جدید در Chrome</translation>
 <translation id="1166460004393506534">‏حذف کردن داده‌های مرور در Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">‏نکته Chrome: موقعیت نوار نشانی را انتخاب کنید</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏نشانی‌های وب واردشده را به نشانک‌های شما در Chrome اضافه می‌کند.</translation>
+<translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1830634592642484976">‏این نشانی درحال‌حاضر در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
 <translation id="1917964099031477364">‏این حساب و همه داده‌های ذخیره‌نشده از Chrome و دیگر برنامه‌های Google در این دستگاه برداشته می‌شود.</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>

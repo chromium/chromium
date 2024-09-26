@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1343442362630695901">αλυκή</translation>
 <translation id="1348657754632799065">Γραμμή εγγραφής</translation>
+<translation id="1350909945461913813">Βεβαιωθείτε ότι έχετε αποθηκεύσει τις εργασίες σας</translation>
 <translation id="1367951781824006909">Επιλογή αρχείου</translation>
 <translation id="1371650399987522809">Σχόλια για την ταπετσαρία με την υποστήριξη του Google AI</translation>
 <translation id="1374385338586507108">Ορισμός</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Έκδοση SDK:</translation>
 <translation id="2016697457005847575">Δοκιμή βημάτων αντιμετώπισης προβλημάτων</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Για να εξατομικεύσετε τις εικόνες AI, επιλέξτε ένα θέμα και έπειτα τις υπογραμμισμένες λέξεις.</translation>
 <translation id="2045814230297767491">μαχαιροπίρουνα</translation>
 <translation id="2047316797244836561">Συνδεθείτε σε ένα δίκτυο και επαναλάβετε τη φόρτωση της σελίδας για να δείτε την προφύλαξη οθόνης.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Δεν ανιχνεύτηκε ομιλία</translation>
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
+<translation id="2468124392950503650">Επιλέξτε μια οδηγία για δημιουργία ή δείτε τον <ph name="BEGIN_LINK_PROMPTING_GUIDE" />οδηγό οδηγιών<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Χρησιμοποιήστε τη λειτουργία Βοήθησέ με να γράψω, για να δημιουργήσετε ένα πρόχειρο ή να τελειοποιήσετε μια υπάρχουσα εργασία, με την υποστήριξη του Google AI</translation>
 <translation id="2480572840229215612">καβούρια</translation>
 <translation id="248546197012830854">Η συσκευή είναι εκτός σύνδεσης. Συνδεθείτε στο δίκτυο Wi-Fi για να δείτε περιεχόμενο βοήθειας.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="4486524074141928967">Θα αποσυνδεθείτε στις <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας ένα πλήκτρο τροποποίησης (ctrl, alt, shift ή <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Χρώμα διεπαφής</translation>
 <translation id="4503223151711056411">Αριστερό βέλος</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">γκρι</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5600027863942488546">Το πλήκτρο <ph name="KEY_NAME" /> ελέγχθηκε</translation>
+<translation id="5613201299517339763">Αποσυνδεθήκατε</translation>
 <translation id="5620281292257375798">Εσωτερική χρήση μόνο</translation>
 <translation id="5630438231335788050">μπάουχαους</translation>
 <translation id="5631759159893697722">περίληψη</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Το αρχείο δεν βρέθηκε</translation>
 <translation id="5938286923316838007">Δεν είναι δυνατή η δημιουργία ονομάτων εγγραφών για αυτό το περιεχόμενο</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
+<translation id="5942727615796467094">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί αυτή η συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
 <translation id="5946538341867151940">Δεν έχετε συνδεθεί ακόμα. Εάν η εταιρεία κινητής τηλεφωνίας προτείνει ένα προσαρμοσμένο APN, εισαγάγετε τις πληροφορίες του APN επιλέγοντας "+ Νέο APN"</translation>
 <translation id="5947266287934282605">Αν η τελευταία ημέρα του μήνα είναι πριν από αυτή την ημέρα, θα γίνει επαναφορά των δεδομένων την τελευταία ημέρα του μήνα</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">διαφορετικός πλανήτης</translation>
 <translation id="6359706544163531585">Απενεργοποίηση φωτεινού θέματος</translation>
 <translation id="6359919876285606596">Αυτή η ενέργεια είναι οριστική και δεν μπορεί να αναιρεθεί</translation>
+<translation id="6368342879959028556">Όταν επιλέξετε Δημιουργία με AI, γράψτε μια προσαρμοσμένη οδηγία. Εναλλακτικά, μπορείτε να επιλέξετε "Ταπετσαρίες AI", για να επιλέξετε ένα θέμα και, έπειτα, τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε την ταπετσαρία AI.</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="6373461326814131011">λιμνούλα</translation>
 <translation id="6379086450106841622">Οθόνη αφής</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>
 <translation id="6462978824459367242">Το κουμπί προσθήκης APN είναι πλέον ενεργοποιημένο</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας;}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}}</translation>
+<translation id="6468146470109254228">Οι 3 πιο πρόσφατες οδηγίες και έξοδοι. Μπορείτε να αποκτήσετε πρόσβαση σε αυτές τις πληροφορίες, μόνο όταν χρησιμοποιείτε τη λειτουργία Ταπετσαρία και στιλ.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">βάρκες</translation>
 <translation id="64778964625672495">σκούρο κόκκινο</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="66621959568103627">ροζ κοραλί</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Επιλέξτε Δώσε μου έμπνευση, για να λάβετε περισσότερες μοναδικές και διαφορετικές επιλογές εικόνων AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Όταν δημιουργείτε περιεχόμενο με AI, η οδηγία αποστέλλεται στους διακομιστές Google AI για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Το generative AI είναι πειραματικό και βρίσκεται σε πρώιμο στάδιο ανάπτυξης. Προς το παρόν, η διαθεσιμότητά του είναι περιορισμένη.</translation>
 <translation id="6673898378497337661">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6694534975463174713">κλειδαριά</translation>

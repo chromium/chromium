@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
 <translation id="1854463785401910334">തുറന്നിരിക്കുന്ന ടാബുകളിൽ തിരയുക</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} പാസ്‌വേഡിൽ {position}-ാമത്തേത്}other{{count} പാസ്‌വേഡുകളിൽ {position}-ാമത്തേത്}}</translation>
+<translation id="1861262398884155592">ഈ ഫോൾഡറിൽ ഒന്നുമില്ല</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">കുടുംബാംഗങ്ങളെ ക്ഷണിക്കുക</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3982893814825393515">ഒരു പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
+<translation id="3986739045730058129">ടാബിലേക്ക് പോകുക</translation>
 <translation id="3987993985790029246">ലിങ്ക് പകർത്തുക</translation>
 <translation id="3992684624889376114">ഈ പേജിനെക്കുറിച്ച്</translation>
 <translation id="3994422733891749358">നിങ്ങൾ സ്വീകരിക്കാൻ ആഗ്രഹിക്കുന്ന അറിയിപ്പുകൾ തിരഞ്ഞെടുക്കുക</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">കുറിപ്പുകളിൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങൾ വരെ ഉണ്ടാകാം.</translation>
 <translation id="4469834037720363704">പാക്കേജ് നമ്പർ</translation>
 <translation id="4471472356135655769">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="4474142134969976028">പൊരുത്തപ്പെടുന്ന ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4474494258097106883">നിങ്ങളുടെ iPhone-നായി നിർമ്മിച്ചത്</translation>
 <translation id="4488754974567924717">നിങ്ങളുടെ പാസ്‌വേഡുകൾ അപഹരിക്കപ്പെട്ടിട്ടുണ്ടെങ്കിൽ ഞങ്ങൾ നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="4489536976005181779">{count,plural, =1{നിങ്ങളുടെ അക്കൗണ്ടിലെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് പേജ് ചേർത്തു, {email}}other{നിങ്ങളുടെ അക്കൗണ്ടിലെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് പേജുകൾ ചേർത്തു, {email}}}</translation>
@@ -757,6 +760,7 @@
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4717844083556844785">നിലവിലെ വെബ്‌പേജ് അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="4719927025381752090">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
+<translation id="4720530280568305198">നിങ്ങൾ തിരഞ്ഞെടുത്തത് പുതിയ ടാബിൽ തുറന്നു</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4742407542027196863">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="4742897645503301228">'നിരക്ക് ട്രാക്ക് ചെയ്യുക' മറയ്ക്കുക</translation>

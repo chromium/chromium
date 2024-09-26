@@ -4143,6 +4143,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3948116654032448504">&amp;Szukaj obrazu w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Ta karta odtwarza dźwięk</translation>
 <translation id="3948507072814225786">Strona <ph name="ORIGIN" /> może edytować pliki w tych folderach</translation>
+<translation id="3948985214866944547">W przypadku tej witryny większość użytkowników blokuje udostępnianie dokładnej lokalizacji</translation>
 <translation id="394984172568887996">Zaimportowane z IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby zwiększyć bezpieczeństwo pobierania plików</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
@@ -5325,7 +5326,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4838327282952368871">Marzycielski</translation>
 <translation id="4838836835474292213">Przyznano uprawnienia do odczytu zawartości schowka</translation>
 <translation id="4838907349371614303">Hasło zostało zaktualizowane</translation>
-<translation id="4838958829619609362">Wybrany fragment nie jest w tym języku (<ph name="LANGUAGE" />)</translation>
 <translation id="4839303808932127586">Za&amp;pisz film wideo jako...</translation>
 <translation id="4839910546484524995">Sprawdź urządzenie</translation>
 <translation id="4840096453115567876">Zamknąć tryb incognito mimo to?</translation>
@@ -5935,7 +5935,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5287425679749926365">Twoje konta</translation>
 <translation id="5288106344236929384">Więcej czynności, opcje klucza dla użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">O&amp;twórz ponownie zamkniętą kartę</translation>
-<translation id="52895863590846877">Język tej strony to nie <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Komputer i urządzenie przesyłające w różnych sieciach Wi-Fi (np. 2,4 GHz i 5 GHz)</translation>
 <translation id="52912272896845572">Plik kluczy prywatnych jest nieprawidłowy.</translation>
 <translation id="5291739252352359682">Automatycznie tworzy napisy do multimediów w przeglądarce Chrome (obecnie w języku angielskim). Dźwięk oraz napisy są przetwarzane lokalnie i nigdy nie opuszczają urządzenia.</translation>
@@ -8077,7 +8076,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="686366188661646310">Usunąć hasło?</translation>
 <translation id="6863925886424789941">Koloseum</translation>
 <translation id="6865313869410766144">Autouzupełnianie danych formularzy</translation>
-<translation id="6865598234501509159">Język tej strony to nie <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Logi zdarzeń WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Cicho</translation>
 <translation id="686664946474413495">Temperatura kolorów</translation>
@@ -8698,7 +8696,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7343372807593926528">Zanim wyślesz opinię, opisz problem.</translation>
 <translation id="7344585835349671209">Zarządzaj certyfikatami HTTPS/SSL na urządzeniu</translation>
 <translation id="7345706641791090287">Potwierdź hasło</translation>
-<translation id="7345919885156673810">Wybrany fragment nie jest w tym języku (<ph name="LANGUAGE" />)</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7347751611463936647">Aby skorzystać z tego rozszerzenia, wpisz „<ph name="EXTENSION_KEYWORD" />”, naciśnij klawisz TAB i wpisz odpowiednie polecenie lub wyszukiwany tekst.</translation>
 <translation id="7347943691222276892">Kliknij, by powrócić z podstrony <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9008,6 +9005,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7566118625369982896">Zarządzaj linkami aplikacji Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Utwórz kombinację klawiszy</translation>
+<translation id="7568759527730933493">Używanie bezpiecznego połączenia do wyszukiwania adresu IP witryny w Systemie nazw domenowych (DNS). Funkcja korzysta z usługi zarządzanej dostawcy na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Bezpieczne połączenia nie są używane w przypadku niektórych domen skonfigurowanych przez administratora.</translation>
 <translation id="756876171895853918">Dostosuj awatara</translation>
 <translation id="7568790562536448087">Aktualizowanie</translation>
 <translation id="7569983096843329377">Czarny</translation>
@@ -9170,6 +9168,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7676867886086876795">Wysyła Twój głos do Google, by umożliwić dyktowanie w dowolnym polu tekstowym.</translation>
 <translation id="7678588695732963732">Zresetować wszystkie uprawnienia urządzenia USB?</translation>
 <translation id="7679171213002716280">Liczba zarządzanych drukarek: <ph name="PRINTER_COUNT" />.</translation>
+<translation id="7679895819123160382">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w systemie nazw domenowych (DNS) <ph name="PRODUCT_NAME" /> używa bezpiecznego połączenia. Bezpieczne połączenia nie są używane w przypadku niektórych domen skonfigurowanych przez administratora.</translation>
 <translation id="7680416688940118410">Kalibracja ekranu dotykowego</translation>
 <translation id="7681095912841365527">Strona może używać Bluetootha</translation>
 <translation id="7681597159868843240">Witryny zwykle używają czujników ruchu urządzenia, aby obsługiwać funkcje takie jak rzeczywistość wirtualna czy monitorowanie aktywności</translation>
@@ -9568,6 +9567,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7955105108888461311">Zapytaj osobiście</translation>
 <translation id="7955177647836564772">Jeśli funkcja Smart Lock jest włączona, a telefon odblokowany, nie musisz wpisywać hasła ani kodu PIN</translation>
 <translation id="7956373551960864128">Twoje zapisane drukarki</translation>
+<translation id="7956918070009672177">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="7957074856830851026">Sprawdzanie informacji z urządzenia, takich jak numer seryjny lub identyfikator zasobu</translation>
 <translation id="7958157896921135832">Zwiększ rozmiar czcionki</translation>
 <translation id="7958828865373988933">Jeśli chcesz utworzyć klucz dostępu dla aplikacji <ph name="APP_NAME" /> na kluczu bezpieczeństwa USB, podłącz go i dotknij</translation>

@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Актыўнае акно замацавана злева.</translation>
 <translation id="1708345662127501511">Працоўны стол: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Налады сеткі</translation>
-<translation id="171610090693716835">Персаналізаваныя плэй-лісты для канцэнтрацыі ўвагі дапамогуць засяродзіцца на важных справах. Аформіце падпіску на YouTube Music і YouTube без рэкламы і атрымайце тры месяцы бясплатнага выкарыстання YouTube Premium.</translation>
 <translation id="1719094688023114093">Імгненныя субцітры ўключаны.</translation>
 <translation id="1720011244392820496">Уключыце сінхранізацыю Wi-Fi</translation>
 <translation id="1720230731642245863">Хот-спот выключаны</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Ёсць абнаўленне</translation>
 <translation id="2416438829169535743">Выйсці з рэжыму навучання?</translation>
 <translation id="2417486498593892439">Увайдзіце ў сетку</translation>
+<translation id="2423619675829330672">Занадта многа спроб уводу PIN-кода. Пачакайце <ph name="TIME_LEFT" /> і паўтарыце спробу.</translation>
 <translation id="2426051945783024481">Камера адцэнтравана аўтаматычна</translation>
 <translation id="2427507373259914951">Націсканне левай кнопкай мышы</translation>
 <translation id="2429753432712299108">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазволу на спалучэнне. Перш чым пагадзіцца, упэўніцеся, што на прыладзе паказаны гэты ключ доступу: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Паказаны вокны ўсіх працоўных сталоў. Каб пераключыцца на рэжым паказу вокнаў бягучага працоўнага стала, націсніце стрэлку ўверх</translation>
 <translation id="6337159624125741244">Поўнаэкранная лупа ўключана</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, якім кіруе <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Калі вы забылі PIN-код, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
 <translation id="6344138931392227467">Прылада "<ph name="DEVICE_NAME" />" падключана</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затым <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРАПАНОВЫ ПРАГРАМ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Ідзе праверка спампаванага файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Вядзецца трансляцыя на прыладу "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6542891623636520977">Эмодзі, файлы GIF і іншае</translation>
+<translation id="6545382064335350438">Зноў не ўдалося спраўдзіць PIN-код. Паўтарыце спробу.</translation>
 <translation id="6555373427270923730">Увядзіце вэб-адрас у адрасны радок, затым націсніце <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Усталявана нядаўна</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Падключана прылад: <ph name="DEVICECOUNT" /></translation>
+<translation id="7921565901396407357">Не ўдалося спраўдзіць PIN-код. Паўтарыце спробу.</translation>
 <translation id="7923534281713082605">Надвор’е</translation>
 <translation id="7926080067315048321">Паглядзець усе задачы ў вэб-версіі Google Задач</translation>
 <translation id="7930731167419639574">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай.</translation>

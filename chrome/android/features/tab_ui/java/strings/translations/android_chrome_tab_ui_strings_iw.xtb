@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">כתום</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1273910660700874265">‫<ph name="TITLE_OF_GROUP" /> אפשרויות לקבוצת כרטיסיות</translation>
+<translation id="1293272072740285747">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.
+
+אם הקבוצה תימחק, כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="TITLE_OF_GROUP" />', והיא תימחק מכל המכשירים.</translation>
 <translation id="1340839264183302272">יציאה מהקבוצה</translation>
 <translation id="1419023007528516122">הקבוצה תימחק לתמיד מהמכשיר שלך</translation>
 <translation id="1486715732399361704">כל קבוצות הכרטיסיות שלך מופיעות כאן</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
+<translation id="5615302411300498438">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה.
+
+אם בחרת לעזוב, הגישה שלך לקבוצת הכרטיסיות '<ph name="TITLE_OF_GROUP" />' תאבד באופן מיידי.</translation>
 <translation id="5627941783489838464">אף כרטיסייה לא התעדכנה</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{שחזור הכרטיסייה}one{שחזור הכרטיסיות}two{שחזור הכרטיסיות}other{שחזור הכרטיסיות}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏קישור אחד (<ph name="TABS_COUNT_ONE" />) מ-Chrome}one{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}two{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}other{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
 <translation id="8631711675211020168">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות <ph name="GROUP_NAME" />, והיא תימחק מכל המכשירים</translation>
 <translation id="8633025649649592204">פעילות אחרונה</translation>
+<translation id="8635399646025169806">לשמור את קבוצת הכרטיסיות?</translation>
 <translation id="870736955561925754">לסגור את הכרטיסייה ולמחוק את הקבוצה?</translation>
 <translation id="8714939927607906138">מחיר נמוך יותר</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8730999928494395583">הפעילות שלך בכרטיסיות הפרטיות האלה תוסר מהמכשיר הזה</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{נוצרה לפני חודש (<ph name="NUM_MONTHS_ONE" />)}one{נוצרה לפני <ph name="NUM_MONTHS_MANY" /> חודשים}two{נוצרה לפני חודשיים (<ph name="NUM_MONTHS_MANY" />)}other{נוצרה לפני <ph name="NUM_MONTHS_MANY" /> חודשים}}</translation>
+<translation id="8804742093141782941">שמירת הקבוצה</translation>
 <translation id="8820741577754260431">הצגת הנחות בכרטיסיות</translation>
 <translation id="8887921976452567404">אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'.</translation>
 <translation id="8915916167043355778">סגירת הכול</translation>

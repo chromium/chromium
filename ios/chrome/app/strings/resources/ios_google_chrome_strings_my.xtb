@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1066101356081285416">Chrome က သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များရှိ ခြေရာခံနံပါတ်များကို သိရှိမည်ဖြစ်ပြီး ‘တဘ်အသစ်’ စာမျက်နှာတွင် ပက်ကေ့ဂျ်ဆိုင်ရာ အပ်ဒိတ်များကိုပြပါမည်။ ဤဝန်ဆောင်မှုပေးရန်နှင့် လူတိုင်းအတွက် Google Shopping ဝန်ဆောင်မှုများကို မွမ်းမံရန် ကုန်ပို့စဉ် ပက်ကေ့ဂျ်တည်နေရာကို ခြေရာခံသည့်နံပါတ်နှင့် ဝဘ်ဆိုက်အမည်ကို Google သို့ ပို့ပါမည်။ <ph name="BEGIN_LINK" />ကုန်ပို့စဉ် ပက်ကေ့ဂျ်တည်နေရာကို ခြေရာခံခြင်း ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
+<translation id="1086486568852410168">Google Lens ဖြင့် ရှာရန်</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> အတွက် သင့်စကားဝှက်ကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ သိမ်းပါမည်။</translation>
 <translation id="1146503048444965320">Chrome တွင် တဘ်အသစ် ဖွင့်ရန်</translation>
 <translation id="1166460004393506534">Chrome ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ရန်</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome အကြံပြုချက်- လိပ်စာဘား တည်နေရာကို ရွေးချယ်ပါ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">ထည့်သွင်းထားသော URL များကို Chrome ရှိ သင့်လိပ်စာများသို့ ထည့်ရန်။</translation>
+<translation id="1799920918471566157">Chrome အကြံပြုချက်များ</translation>
 <translation id="1830634592642484976">ဤလိပ်စာကို Chrome တွင် လောလောဆယ် သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကိုသုံးရန် သင်၏ Google Account ဖြစ်သော <ph name="USER_EMAIL" /> တွင်သိမ်းပါ။</translation>
 <translation id="1917964099031477364">ဤအကောင့်နှင့် သိမ်းမထားသော ဒေတာမှန်သမျှကို Chrome နှင့် ဤစက်ပေါ်ရှိ အခြား Google app များမှ ဖယ်ရှားပါမည်။</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>

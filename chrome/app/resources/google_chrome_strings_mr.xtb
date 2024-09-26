@@ -168,6 +168,7 @@
 <translation id="2945997411976714835">इंस्टॉलसंबंधित एरर: इंस्टॉलर प्रक्रिया सुरू झाली नाही.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chrome मधून साइन आउट करा</translation>
+<translation id="2994465299455873643"><ph name="BROWSER_NAME" /> कालबाह्य झाल्यास, एन्क्रिप्शन सेवा आणि ते रिकव्‍हर करण्याचा सुरक्षित मार्ग पुरवते. ही सेवा बंद केलेली असल्यास, <ph name="BROWSER_NAME" /> एन्क्रिप्ट केलेल्या डेटाचा अ‍ॅक्सेस गमवू शकते आणि कदाचित <ph name="BROWSER_NAME" /> ला स्वतःला रिकव्‍हर करता येणार नाही.</translation>
 <translation id="3018957014024118866">तसेच Chrome मधून डेटा हटवा (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">ChromeOS Flex अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
@@ -224,6 +225,7 @@
 <translation id="3673813398384385993">Chrome ला "<ph name="EXTENSION_NAME" />" मध्ये मालवेअर असल्याचे आढळले</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3697952514309507634">इतर Chrome प्रोफाइल</translation>
+<translation id="3700276346088749847">तुमच्या खात्यामधील Chrome डेटा साफ करा</translation>
 <translation id="3703994572283698466">ChromeOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="3716540481907974026">ChromeOS Flex आवृत्ती</translation>
 <translation id="3718181793972440140">हे या डिव्‍हाइस मधून 1 आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
@@ -295,6 +297,7 @@
 <translation id="4575717501879784448">तुमच्या ब्राउझिंग अनुभवामध्ये सुधारणा करण्यासाठी आणि स्रोत रिक्त करण्यासाठी Chrome हे टॅब इनॅक्टिव्ह करू शकते.</translation>
 <translation id="459622048091363950">एकदा का Chrome ला ॲक्सेस मिळाला की, वेबसाइट तुम्हाला ॲक्सेससाठी विचारतील.</translation>
 <translation id="4600710005438004015">Chrome नवीनतम आवृत्तीवर अपडेट होऊ शकले नाही, त्यामुळे तुम्ही नवीन वैशिष्ट्ये आणि सुरक्षितता निराकरणे गमावत आहात.</translation>
+<translation id="4601439950572737842">तुमचा डेटा हा तुमच्या पासफ्रेझच्या मदतीने एन्क्रिप्ट केला आहे. तुमच्या Google खात्यामधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
 <translation id="4624065194742029982">Chrome चा गुप्त मोड</translation>
 <translation id="4627412468266359539">पर्यायी: Google ला निदान आणि वापर डेटा आपोआप पाठवून ChromeOS Flex ची वैशिष्‍ट्ये व परफॉर्मन्स यांमध्ये सुधारणा करण्यात मदत करा.</translation>
 <translation id="4633000520311261472">Chrome ला अधिक सुरक्षित करण्यासाठी, आम्ही <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये सूचीबद्ध नसलेले काही विस्तार अक्षम केले आणि ते कदाचित आपल्या माहिती शिवाय जोडले गेले असावेत.</translation>

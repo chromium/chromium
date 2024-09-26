@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1343442362630695901">солено езеро</translation>
 <translation id="1348657754632799065">Лента за запис</translation>
+<translation id="1350909945461913813">Не забравяйте да запазите работата си</translation>
 <translation id="1367951781824006909">Избор на файл</translation>
 <translation id="1371650399987522809">Отзиви за тапет, базиран на AI на Google</translation>
 <translation id="1374385338586507108">Дефиниране</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Версия на SDK:</translation>
 <translation id="2016697457005847575">Изпробвайте стъпките за отстраняване на неизправности</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Посочете тема и след това изберете от подчертаните думи, за да персонализирате генерираните от AI изображения.</translation>
 <translation id="2045814230297767491">прибори за хранене</translation>
 <translation id="2047316797244836561">Моля, свържете се с мрежа и презаредете страницата, за да прегледате скрийнсейвъра.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Не бе открит говор</translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2468124392950503650">Изберете подкана с цел създаване или вижте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ръководството за подканите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Използвайте функцията „Помощ при писане“, базирана на AI на Google, за да създадете чернова или да прецизирате съществуващ текст</translation>
 <translation id="2480572840229215612">раци</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Няма съответстващи резултати</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
+<translation id="4486524074141928967">Ще излезете от профила си в <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Клавишната комбинация не е налице. Използвайте друга, като натиснете модифициращ клавиш (Ctrl, Alt, Shift или „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Цвят на интерфейса</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">сив</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5600027863942488546">Клавишът <ph name="KEY_NAME" /> е тестван</translation>
+<translation id="5613201299517339763">Вече не сте в профила си</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5630438231335788050">Баухаус</translation>
 <translation id="5631759159893697722">резюме</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="5938286923316838007">Не могат да се създадат имена на записи за това съдържание</translation>
 <translation id="5939518447894949180">Нулиране</translation>
+<translation id="5942727615796467094">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5946538341867151940">Още нямате връзка. Ако мобилният ви оператор препоръчва персонализирано име на точката за достъп (APN), въведете съответната информация, като изберете „+ Ново име на точка за достъп (APN)“</translation>
 <translation id="5947266287934282605">Ако последният ден от месеца е преди този ден, информацията за преноса на данни ще бъде нулирана в края на месеца</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">различна планета</translation>
 <translation id="6359706544163531585">Деактивиране на светлата тема</translation>
 <translation id="6359919876285606596">Това действие е необратимо и не може да бъде отменено</translation>
+<translation id="6368342879959028556">Когато изберете „Създаване с AI“, напишете персонализирана подкана. Можете също да изберете „Тапети от AI“, за да посочите тема, и след това да изберете от подчертаните думи, за да персонализирате тапета от AI.</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="6373461326814131011">Изкуствено езеро</translation>
 <translation id="6379086450106841622">Сензорен екран</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Към настройките на профила</translation>
 <translation id="6462978824459367242">Бутонът за добавяне на име на точката за достъп (APN) вече е активиран</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Трите ви най-скорошни подкани и съответните резултати. Можете да осъществявате достъп до тях само докато използвате „Оформление и стил“.</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="6472979596862005515">лодки</translation>
 <translation id="64778964625672495">тъмночервено</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="66621959568103627">кораловорозов</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Вдъхнови ме“, за да получите повече уникални и разнообразни опции за генерирани от AI изображения.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когато създавате с AI, подканата се изпраща до сървърите за AI на Google с цел генериране на изображения и подобряване на продукта, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Декларацията за поверителност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративният AI е експериментален, в ранен етап на разработка и понастоящем е с ограничена наличност.</translation>
 <translation id="6673898378497337661">увеличаване на яркостта на клавиатурата</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6694534975463174713">катинар</translation>
@@ -1569,6 +1587,7 @@
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8882789155418924367">сови</translation>
 <translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>
+<translation id="8897043028305808902">Файлът бе преименуван</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8909114361904403025">стрелка за нагоре</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>

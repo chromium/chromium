@@ -215,7 +215,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1703117532528082099">Faol oyna chapga mahkamlandi.</translation>
 <translation id="1708345662127501511">Ish stoli: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Tarmoq sozlamalari</translation>
-<translation id="171610090693716835">Diqqatni jamlashga moslangan pleylistlardan foydalaning. YouTube Premium obunasi bilan YouTube Music va YouTube xizmatlariga reklamasiz ruxsat oling. Dastlabki 3 oy bepul.</translation>
 <translation id="1719094688023114093">Jonli izoh yoniq.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync funksiyasini yoqish</translation>
 <translation id="1720230731642245863">Hotspot oʻchiq</translation>
@@ -398,6 +397,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2412593942846481727">Yangilanish chiqdi</translation>
 <translation id="2416438829169535743">Darslik yopilsinmi?</translation>
 <translation id="2417486498593892439">Tarmoqqa kirish</translation>
+<translation id="2423619675829330672">PIN kod juda koʻp marta kiritildi. <ph name="TIME_LEFT" /> kuting, keyin qaytadan urining</translation>
 <translation id="2426051945783024481">Kamera freymi avtomatik markazga olinadi</translation>
 <translation id="2427507373259914951">Chap klik</translation>
 <translation id="2429753432712299108">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali ulanishga ruxsat so‘ramoqda. Uning ekranida quyidagi kod ko‘rinaytganligini tekshiring: <ph name="PASSKEY" />.</translation>
@@ -1577,6 +1577,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6330012934079202188">Barcha ish stollar oynalari chiqarilgan, joriy ish stoli oynalarini chiqarish uchun yuqoriga strelkani bosing</translation>
 <translation id="6337159624125741244">Butun ekran rejimidagi lupa yoniq</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> seansi <ph name="MANAGER" /> domenida boshqariladi</translation>
+<translation id="6340148837564298498">PIN kodni unutsangiz, bu hisobni tiklashga urining.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ulandi</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, keyin esa <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ILOVA TAKLIFLARI</translation>
@@ -1633,6 +1634,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> yuklanmasi tekshirilmoqda</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6542891623636520977">Emoji, GIF va boshqalar</translation>
+<translation id="6545382064335350438">PIN kod hali ham tasdiqlanmadi. Qayta urining.</translation>
 <translation id="6555373427270923730">Manzillar qatoriga veb-manzilni kiritib <ph name="MODIFIER" /><ph name="KEY" /> birikmasini bosing</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 yangi oʻrnatilgan</translation>
@@ -2029,6 +2031,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ta qurilma ulangan</translation>
+<translation id="7921565901396407357">PIN kod tasdiqlanmadi. Qayta urining.</translation>
 <translation id="7923534281713082605">Ob-havo</translation>
 <translation id="7926080067315048321">Barcha vazifalarni vebdagi Google vazifalarida koʻring</translation>
 <translation id="7930731167419639574">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish internetsiz ishlaydi</translation>

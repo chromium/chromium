@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">සක්‍රිය කවුළුව වමේ ඈඳා ඇත.</translation>
 <translation id="1708345662127501511">මේසය: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ජාල සැකසීම්</translation>
-<translation id="171610090693716835">පෞද්ගලීකරණය කරන ලද නාභිගත වාදන ලැයිස්තු සමග නිවැරදි මාර්ගයේ සිටින්න. YouTube Music සහ YouTube, දැන්වීම්-රහිතව, මාස 3ක YouTube Premium සමග කිසිදු වියදමකින් තොරව ලබා ගන්න.</translation>
 <translation id="1719094688023114093">සජීවී සිරස්තල ක්‍රියාත්මකයි.</translation>
 <translation id="1720011244392820496">Wi-Fi සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1720230731642245863">හොට්ස්පොට් ක්‍රියා විරහිතයි</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">යාවත්කාලීනයක් ඇත</translation>
 <translation id="2416438829169535743">දසුනින් පිටවන්න ද?</translation>
 <translation id="2417486498593892439">ජාලයට පුරනය වන්න</translation>
+<translation id="2423619675829330672">PIN උත්සාහයන් ගණන වැඩියි. <ph name="TIME_LEFT" /> රැඳී සිට නැවත උත්සාහ කරන්න.</translation>
 <translation id="2426051945783024481">කැමරා රාමුව ස්වයංක්‍රීයව මධ්‍යගත වේ</translation>
 <translation id="2427507373259914951">වම්පස ක්ලික් කිරීම</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" බ්ලූටූත් උපාංගය යුගල කිරීමට අවසර පතයි. අනුමත කිරීමට පෙර, මෙම මුරවදන එම උපාංගයේ දිස් වූ බව තහවුරු කරගන්න: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">සියලු මේසවලින් කවුළු පෙන්වමින්, වත්මන් මේසයෙන් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="6337159624125741244">පුර්ණ-තිර විශාලකය ක්‍රියාත්මකයි</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
+<translation id="6340148837564298498">ඔබට ඔබේ PIN අංකය අමතක වූවා නම්, මෙම පරිශීලකයා ප්‍රතිසාධන කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">යෙදුම් යෝජනා</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> වෙත විකාශය කරමින්</translation>
 <translation id="6542891623636520977">ඉමෝජි, GIFs, සහ තවත්</translation>
+<translation id="6545382064335350438">ඔබේ PIN තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="6555373427270923730">ලිපින තීරුවෙහි වෙබ් ලිපිනයක් ටයිප් කර, අනතුරුව <ph name="MODIFIER" /><ph name="KEY" /> ඔබන්න</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 නව ස්ථාපනය</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">මෙම ගිනුමේ පරිපාලක විසින් බහු පිවිසුම් වලට අවසර දී නොමැත.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">උපාංග <ph name="DEVICECOUNT" /> ක් සම්බන්ධ කර ඇත</translation>
+<translation id="7921565901396407357">ඔබේ PIN සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="7923534281713082605">කාලගුණය</translation>
 <translation id="7926080067315048321">වෙබය මත Google කාර්ය මත සියලු කාර්යයන් බලන්න</translation>
 <translation id="7930731167419639574">කථනය දැන් ස්ථානීයව සකසන අතර අනුලේඛනය නොබැඳිව ක්‍රියා කරයි.</translation>

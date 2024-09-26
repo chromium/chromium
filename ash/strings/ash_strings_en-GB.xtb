@@ -215,7 +215,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1703117532528082099">Active window docked on left.</translation>
 <translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Network settings</translation>
-<translation id="171610090693716835">Stay on track with personalised Focus playlists. Get YouTube Music and YouTube, ad-free, with three months of YouTube Premium at no cost.</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Hotspot is off</translation>
@@ -398,6 +397,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2412593942846481727">Update available</translation>
 <translation id="2416438829169535743">Exit view?</translation>
 <translation id="2417486498593892439">Sign in to network</translation>
+<translation id="2423619675829330672">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again.</translation>
 <translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ No devices connected.</translation>
 <translation id="6330012934079202188">Showing windows from all desks; press the Up arrow key to show windows from the current desk</translation>
 <translation id="6337159624125741244">Full-screen magnifier is on</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">If you forgot your PIN, try recovering this user.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connected</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, then <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> or <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP SUGGESTIONS</translation>
@@ -1633,6 +1634,7 @@ No devices connected.</translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs and more</translation>
+<translation id="6545382064335350438">Your PIN still couldn't be verified. Try again.</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 New install</translation>
@@ -2029,6 +2031,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> devices connected</translation>
+<translation id="7921565901396407357">Your PIN couldn't be verified. Try again.</translation>
 <translation id="7923534281713082605">Weather</translation>
 <translation id="7926080067315048321">See all tasks on Google tasks on web</translation>
 <translation id="7930731167419639574">Speech is now processed locally and dictation works offline</translation>

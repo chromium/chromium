@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Weka kwenye orodha ya kusoma</translation>
 <translation id="1854463785401910334">Tafuta kwenye vichupo vilivyofunguliwa</translation>
 <translation id="1861067954551502701">{count,plural, =1{Nenosiri la {position} kati ya {count}}other{Nenosiri la {position} kati ya {count}}}</translation>
+<translation id="1861262398884155592">Folda hii haina chochote</translation>
 <translation id="1872096359983322073">Tochi</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Alika wanafamilia</translation>
@@ -605,6 +606,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
 <translation id="3982893814825393515">Ripoti tatizo…</translation>
 <translation id="398604237578616937">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />. Fungua menyu ya akaunti.</translation>
+<translation id="3986739045730058129">Nenda kwenye kichupo</translation>
 <translation id="3987993985790029246">Nakili kiungo</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="3994422733891749358">Chagua arifa unazotaka kupokea</translation>
@@ -673,6 +675,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4302061870579014542">Weka nafasi</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4309403553630140242">Gusa mara mbili ili upate maelezo zaidi</translation>
+<translation id="4320848494125124980">Za hivi majuzi</translation>
 <translation id="4324735664183300693">Ruhusu kupokea arifa</translation>
 <translation id="4328843285884395590">Hifadhi Yangu</translation>
 <translation id="4331177082088332784">Unaweza kudhibiti hili kwenye BEGIN_LINK Mipangilio ya Maudhui END_LINK</translation>
@@ -701,6 +704,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Namba ya kifurushi</translation>
 <translation id="4471472356135655769">Imeshindwa kuhamisha manenosiri</translation>
+<translation id="4474142134969976028">Hakuna matokeo yanayolingana</translation>
 <translation id="4474494258097106883">Imeundwa kwa ajili ya iPhone Yako</translation>
 <translation id="4488754974567924717">Tutakuarifu iwapo manenosiri yako yameathiriwa</translation>
 <translation id="4489536976005181779">{count,plural, =1{Ukurasa umewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}other{Kurasa zimewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}}</translation>
@@ -756,6 +760,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4699172675775169585">Picha na faili zilizoakibishwa</translation>
 <translation id="4717844083556844785">Ukurasa wa sasa wa wavuti uko katika hali ya faraghani</translation>
 <translation id="4719927025381752090">Jitolee kutafsiri</translation>
+<translation id="4720530280568305198">Chaguo lako limefunguliwa kwenye kichupo kipya</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4742407542027196863">Dhibiti manenosiri…</translation>
 <translation id="4742897645503301228">Kuficha kipengele cha Kufuatilia bei</translation>

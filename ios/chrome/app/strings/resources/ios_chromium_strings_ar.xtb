@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">‏فتح قائمة Chromium</translation>
 <translation id="12739128458173458">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى متصفِّح Chromium على كلا الجهازين.</translation>
 <translation id="1361748954329991663">‏إصدار Chromium قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chromium.</translation>
+<translation id="1383876407941801731">البحث</translation>
 <translation id="1423007117030725713">‏يمكنك بدء البحث في علامة تبويب جديدة على Chromium.</translation>
 <translation id="1431818719585918472">‏اسمح لمتصفّح Chromium بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="146407871188825689">‏استخدام متصفّح Chromium على جهاز iPad تلقائيًا</translation>
@@ -177,6 +178,7 @@
 <translation id="5571094606370987472">‏فتح علامات التبويب الأخيرة في Chromium</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">‏فتح آخر علامة تبويب في Chromium</translation>
+<translation id="5671188105328420281">‏معلومات بشأن استخدام متصفِّح Chromium</translation>
 <translation id="5688047395118852662">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chromium.</translation>
 <translation id="5700709190537129682">‏يتعذّر على متصفِّح Chromium التحقُّق من كلمات المرور.</translation>
 <translation id="584550191241316896">‏تم تسجيل الدخول إلى Chromium</translation>
@@ -218,6 +220,7 @@
 <translation id="6752854822223394465">‏تعمل مؤسستك حاليًا على إعداد Chromium...</translation>
 <translation id="6794054469102824109">‏يؤدي هذا الاختصار إلى فتح لعبة الديناصور في Chromium.</translation>
 <translation id="6820823224820483452">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
+<translation id="6831043979455480757">ترجمة</translation>
 <translation id="6852419005633611413">‏الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية</translation>
 <translation id="6852799557929001644">‏يمكنك الوصول إلى كلمات مرورك على Chromium وغيرها في التطبيقات الأخرى على هذا الجهاز.</translation>
 <translation id="6887138405044152640">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chromium على ذلك الجهاز.</translation>

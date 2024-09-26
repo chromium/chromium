@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Dodaj na popis za čitanje</translation>
 <translation id="1854463785401910334">Pretražite otvorene kartice</translation>
 <translation id="1861067954551502701">{count,plural, =1{Zaporka {position} od {count}}one{Zaporka {position} od {count}}few{Zaporka {position} od {count}}other{Zaporka {position} od {count}}}</translation>
+<translation id="1861262398884155592">Mapa je prazna</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Pozovite članove obitelji</translation>
@@ -605,6 +606,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3982893814825393515">Prijava problema…</translation>
 <translation id="398604237578616937">Prijavljeni ste kao <ph name="USER_EMAIL" />. Otvorite izbornik računa.</translation>
+<translation id="3986739045730058129">Otvori karticu</translation>
 <translation id="3987993985790029246">Kopiraj vezu</translation>
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
 <translation id="3994422733891749358">Odaberite obavijesti koje želite primati</translation>
@@ -702,6 +704,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4469324811108161144">Broj znakova u bilješkama ne smije biti veći od <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Broj paketa</translation>
 <translation id="4471472356135655769">Izvoz zaporki nije uspio</translation>
+<translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4474494258097106883">Razvijeno za vaš iPhone</translation>
 <translation id="4488754974567924717">Obavijestit ćemo vas ako su zaporke ugrožene</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stranica je dodana na vaš popis za čitanje na vašem računu, {email}}one{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}few{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}other{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}}</translation>
@@ -757,6 +760,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
 <translation id="4717844083556844785">Trenutačna web-stranica je u anonimnom načinu</translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
+<translation id="4720530280568305198">Vaš odabir otvorio se u novoj kartici</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4742407542027196863">Upravljaj zaporkama…</translation>
 <translation id="4742897645503301228">Sakrij stavku Praćenje cijene</translation>

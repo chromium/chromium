@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">リーディング リストに追加</translation>
 <translation id="1854463785401910334">開いているタブを検索</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} 件中 {position} 件目のパスワード}other{{count} 件中 {position} 件目のパスワード}}</translation>
+<translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">ファミリー メンバーの招待</translation>
@@ -703,6 +704,7 @@
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469834037720363704">荷物番号</translation>
 <translation id="4471472356135655769">パスワードをエクスポートできません</translation>
+<translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4474494258097106883">iPhone 向けの設計</translation>
 <translation id="4488754974567924717">パスワードが不正使用された場合はお知らせします</translation>
 <translation id="4489536976005181779">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストにページを追加しました}}</translation>

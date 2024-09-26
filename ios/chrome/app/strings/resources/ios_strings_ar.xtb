@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="1854463785401910334">البحث في علامات التبويب المفتوحة</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{position} من إجمالي كلمة مرور واحدة ({count})}zero{‫{position} من إجمالي {count} كلمة مرور}two{‫{position} من إجمالي كلمتَي مرور ({count})}few{‫{position} من إجمالي {count} كلمات مرور}many{‫{position} من إجمالي {count} كلمة مرور}other{‫{position} من إجمالي {count} كلمة مرور}}</translation>
+<translation id="1861262398884155592">هذا المجلد فارغ</translation>
 <translation id="1872096359983322073">الكشاف</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">دعوة أفراد العائلة</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3982893814825393515">الإبلاغ عن مشكلة…</translation>
 <translation id="398604237578616937">تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
+<translation id="3986739045730058129">الانتقال إلى علامة التبويب</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="3994422733891749358">اختيار الإشعارات التي تريد تلقّيها</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">رقم الطرد</translation>
 <translation id="4471472356135655769">يتعذّر تصدير كلمات المرور</translation>
+<translation id="4474142134969976028">ما مِن نتائج مطابقة</translation>
 <translation id="4474494258097106883">‏المتصفِّح مصمَّم خصيصًا لهواتف iPhone</translation>
 <translation id="4488754974567924717">إذا كان من المحتمل تعرّض كلمات مرورك للاختراق، سنُعلمك بذلك.</translation>
 <translation id="4489536976005181779">{count,plural, =1{تمت إضافة الصفحة إلى قائمة القراءة في حسابك، {email}.}zero{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}two{تمت إضافة الصفحتَين إلى قائمة القراءة في حسابك، {email}.}few{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}many{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}other{تمت إضافة الصفحات إلى قائمة القراءة في حسابك، {email}.}}</translation>
@@ -757,6 +760,7 @@
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
 <translation id="4717844083556844785">تُعرض صفحة الويب الحالية في وضع التصفّح المتخفي</translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
+<translation id="4720530280568305198">تمّ فتح العنصر الذي اخترته في علامة تبويب جديدة</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4742407542027196863">إدارة كلمات المرور…</translation>
 <translation id="4742897645503301228">إخفاء ميزة "تتبُّع السعر"</translation>

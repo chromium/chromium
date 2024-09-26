@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1066101356081285416">Chrome сіз кіретін сайттардағы бақылау нөмірлерін анықтап, сізге пакет туралы өзгерістерді "Жаңа қойынды" бетінен көрсетеді. Осы функцияны қамтамасыз ету және Google сауда-саттық функцияларын әркім үшін жетілдіру мақсатында пакетті бақылау нөмірі және веб-сайт атауы Google-ға жіберіледі. Мұны <ph name="BEGIN_LINK" />Пакетті қадағалау параметрлерінде<ph name="END_LINK" /> кез келген уақытта өзгертуге болады.</translation>
+<translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
 <translation id="1143896152279775643">Құпия сөзіңіз <ph name="EMAIL" /> аккаунтына арналған Google Құпия сөздер реттегішіне сақталады.</translation>
 <translation id="1146503048444965320">Chrome-да жаңа қойынды ашу</translation>
 <translation id="1166460004393506534">Chrome-дағы браузерді пайдалану деректерін жою</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome кеңесі: мекенжай жолағы орналасатын жерді таңдаңыз</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Енгізілген URL мекенжайларын Chrome-дағы бетбелгілеріңізге қосады.</translation>
+<translation id="1799920918471566157">Chrome-ды пайдалану кеңестері</translation>
 <translation id="1830634592642484976">Қазіргі уақытта бұл мекенжай Chrome браузерінде сақталған. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
 <translation id="1917964099031477364">Бұл аккаунт және кез келген сақталмаған дерек Chrome браузерінен және құрылғыдағы Google қолданбаларынан өшіріледі.</translation>
 <translation id="1919130412786645364">Chrome браузеріне кіруге рұқсат ету</translation>

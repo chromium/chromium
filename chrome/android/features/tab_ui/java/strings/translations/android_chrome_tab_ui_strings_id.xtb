@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranye</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1273910660700874265">Opsi grup tab <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.
+
+Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_GROUP" />", dan grup tersebut akan dihapus dari semua perangkat.</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>
 <translation id="1486715732399361704">Anda dapat menemukan semua grup tab di sini</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
+<translation id="5615302411300498438">Simpan grup ini untuk menambahkan tab nanti, atau keluar.
+
+Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Pulihkan tab}other{Pulihkan tab}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="8631711675211020168">Semua orang akan segera kehilangan akses ke grup tab <ph name="GROUP_NAME" />, dan grup tersebut akan dihapus dari semua perangkat</translation>
 <translation id="8633025649649592204">Aktivitas terbaru</translation>
+<translation id="8635399646025169806">Simpan grup tab?</translation>
 <translation id="870736955561925754">Tutup tab dan hapus grup?</translation>
 <translation id="8714939927607906138">Harga yang lebih rendah</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan lalu}}</translation>
+<translation id="8804742093141782941">Simpan grup</translation>
 <translation id="8820741577754260431">Lihat diskon di tab</translation>
 <translation id="8887921976452567404">Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>

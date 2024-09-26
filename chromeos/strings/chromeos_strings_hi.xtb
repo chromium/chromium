@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1343442362630695901">सॉल्ट लेक</translation>
 <translation id="1348657754632799065">रिकॉर्डिंग बार</translation>
+<translation id="1350909945461913813">अपने काम को सेव करना न भूलें</translation>
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
 <translation id="1371650399987522809">Google के एआई की मदद से बनाए गए वॉलपेपर के लिए सुझाव/राय दें या शिकायत करें</translation>
 <translation id="1374385338586507108">तय करें</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK टूल का वर्शन:</translation>
 <translation id="2016697457005847575">समस्या ठीक करने के तरीके आज़माएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
+<translation id="2041627599411887437">कोई थीम चुनें और अपने हिसाब से एआई इमेज जनरेट करने के लिए, अंडरलाइन किए गए शब्दों को चुनें.</translation>
 <translation id="2045814230297767491">कटलरी</translation>
 <translation id="2047316797244836561">स्क्रीन सेवर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">कोई आवाज़ पता नहीं लगाई जा सकी</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट से जुड़ी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> बनाने या देखने के लिए, प्रॉम्प्ट चुनें</translation>
 <translation id="2472215337771558851">ड्राफ़्ट लिखने या मौजूदा काम को बेहतर बनाने के लिए, Google के एआई की 'लिखने में मेरी मदद करो' सुविधा इस्तेमाल करें</translation>
 <translation id="2480572840229215612">केकड़े</translation>
 <translation id="248546197012830854">डिवाइस ऑफ़लाइन है. सहायता कॉन्टेंट देखने के लिए, वाई-फ़ाई नेटवर्क से कनेक्ट करें.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">कोई मिलता-जुलता नतीजा नहीं मिला</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
+<translation id="4486524074141928967">आपको <ph name="TIME" /> पर साइन आउट कर दिया जाएगा</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">ग्रे</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की जांच की गई</translation>
+<translation id="5613201299517339763">आपको साइन आउट कर दिया गया है</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5630438231335788050">बाओहाउस</translation>
 <translation id="5631759159893697722">संक्षेप</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
 <translation id="5938286923316838007">इस कॉन्टेंट के लिए, रिकॉर्डिंग के नाम नहीं बनाए जा सकते</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> के एडमिन ने इस <ph name="DEVICE_TYPE" /> को इस्तेमाल करने के लिए समय सेट किया है</translation>
 <translation id="594552776027197022">रैंडम कुंजी के जोड़े बनाएं</translation>
 <translation id="5946538341867151940">आपका डिवाइस अभी तक नेटवर्क से कनेक्ट नहीं है. अगर आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी, एक कस्टम एपीएन का सुझाव देती है, तो "नया एपीएन जोड़ें" चुनकर एपीएन की जानकारी दर्ज करें</translation>
 <translation id="5947266287934282605">अगर महीने का आखिरी दिन इस दिन से पहले का है, तो डेटा को महीने के आखिरी दिन रीसेट किया जाएगा</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">कोई और ग्रह</translation>
 <translation id="6359706544163531585">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="6359919876285606596">रिकॉर्डिंग मिटाने पर उसे वापस नहीं लाया जा सकेगा</translation>
+<translation id="6368342879959028556">“एआई की मदद से बनाएं” के विकल्प को चुनें और पसंद के मुताबिक कोई प्रॉम्प्ट लिखें. इसके अलावा, आपके पास “एआई से तैयार किए गए वॉलपेपर” को चुनकर कोई थीम इस्तेमाल करने का विकल्प भी होता है. इसके बाद, अपने हिसाब से एआई से तैयार किए गए वॉलपेपर जनरेट करने के लिए, अंडरलाइन किए गए शब्दों को चुनें.</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6373461326814131011">पॉन्ड</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
 <translation id="6462978824459367242">'एपीएन जोड़ें' बटन अब चालू है</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज को दोबारा स्कैन करना चाहते हैं?}=1{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}one{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}other{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}}</translation>
+<translation id="6468146470109254228">आपके हाल ही के तीन प्रॉम्प्ट और आउटपुट. इन प्रॉम्प्ट का इस्तेमाल सिर्फ़ तब किया जा सकता है, जब 'वॉलपेपर और स्टाइल' सुविधा का इस्तेमाल किया जा रहा हो.</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
 <translation id="6472979596862005515">नाव</translation>
 <translation id="64778964625672495">गहरे लाल</translation>
@@ -1131,6 +1139,17 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="66621959568103627">कोरल पिंक</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई इमेज के अलग-अलग और यूनीक विकल्प पाने के लिए, "वॉलपेपर के नए आइडिया दें" को चुनें.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई की मदद से वॉलपेपर बनाने पर, Google के एआई के सर्वर को प्रॉम्प्ट भेजा जाता है, ताकि इमेज जनरेट की जा सकें और प्रॉडक्ट को बेहतर बनाया जा सके. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          
+जनरेटिव एआई अभी प्रयोग के दौर में है और इस पर अभी काम चल रहा है. फ़िलहाल, यह सुविधा सभी लोगों के लिए उपलब्ध नहीं है.</translation>
 <translation id="6673898378497337661">कीबोर्ड की रोशनी बढ़ाएं</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6694534975463174713">लॉक करें</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1343442362630695901">lac salé</translation>
 <translation id="1348657754632799065">Barre d'enregistrement</translation>
+<translation id="1350909945461913813">Assurez-vous de sauvegarder tout travail</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1371650399987522809">Commentaires sur les fonds d'écran propulsés par l'IA de Google</translation>
 <translation id="1374385338586507108">Définir</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Version de la trousse SDK :</translation>
 <translation id="2016697457005847575">Essayer les étapes de dépannage</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images générées par l'IA.</translation>
 <translation id="2045814230297767491">coutellerie</translation>
 <translation id="2047316797244836561">Veuillez vous connecter à un réseau et actualiser la page pour afficher l'écran de veille.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Aucune voix détectée</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2468124392950503650">Sélectionnez la requête pour commencer votre création ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
 <translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
+<translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">gris</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
+<translation id="5613201299517339763">Vous avez été déconnecté</translation>
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="5938286923316838007">Impossible de créer des noms d'enregistrement pour ce contenu</translation>
 <translation id="5939518447894949180">Recommencer</translation>
+<translation id="5942727615796467094">L'administrateur <ph name="MANAGER" /> a configuré quand cet appareil (<ph name="DEVICE_TYPE" />) peut être utilisé</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
 <translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre fournisseur de services cellulaires recommande un nom de point d'accès personnalisé, entrez les informations du nom de point d'accès en sélectionnant « + Nouveau nom de point d'accès »</translation>
 <translation id="5947266287934282605">Si le dernier jour du mois est antérieur à ce jour, les données seront réinitialisées le dernier jour du mois</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">planète différente</translation>
 <translation id="6359706544163531585">Désactiver le thème clair</translation>
 <translation id="6359919876285606596">Cette action est permanente et irréversible</translation>
+<translation id="6368342879959028556">Lorsque vous sélectionnez « Créer avec l'IA », écrivez une requête personnalisée. Vous pouvez également sélectionner « Fonds d'écran IA » pour choisir un thème, puis sélectionner les mots soulignés pour personnaliser votre fond d'écran AI.</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="6373461326814131011">étang</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Numériser de nouveau la page?}=1{Numériser de nouveau la page {PAGE_NUMBER}?}one{Numériser de nouveau la page {PAGE_NUMBER}?}other{Numériser de nouveau les pages {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Vos trois requêtes et sorties les plus récentes. Vous pouvez y accéder uniquement lorsque vous utilisez Fond d'écran et style.</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6472979596862005515">bateaux</translation>
 <translation id="64778964625672495">rouge foncé</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="66621959568103627">rose corail</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+<ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Sélectionnez « Inspire-moi » pour obtenir plus d'options d'images uniques et variées générées par l'IA.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Lorsque vous créez avec l'IA, la requête est envoyée aux serveurs de l'IA de Google pour générer des images et améliorer le produit, sous réserve de la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+L'IA générative est expérimentale, en début de développement et sa disponibilité est actuellement limitée.</translation>
 <translation id="6673898378497337661">augmenter la luminosité du clavier</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6694534975463174713">Verrouiller</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Приспособи на скенираната област</translation>
 <translation id="1343442362630695901">солено езеро</translation>
 <translation id="1348657754632799065">Лента за снимање</translation>
+<translation id="1350909945461913813">Погришете се да го зачувате сработеното</translation>
 <translation id="1367951781824006909">Избери датотека</translation>
 <translation id="1371650399987522809">Повратни информации за тапет овозможен од Google AI</translation>
 <translation id="1374385338586507108">Дефинирајте</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Верзија на SDK:</translation>
 <translation id="2016697457005847575">Пробајте ги чекорите за решавање проблеми</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Изберете тема, па изберете ги подвлечените зборови за да ги персонализирате вашите слики создадени од AI.</translation>
 <translation id="2045814230297767491">прибор за јадење</translation>
 <translation id="2047316797244836561">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже штедачот на екранот.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Не е откриен говор</translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2468124392950503650">Изберете барање за да создавате или погледнете го <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водичот за барања<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користете „Помогни ми да напишам“ за да создадете нацрт или да рафинирате постојна ставка, овозможено од Google AI</translation>
 <translation id="2480572840229215612">ракови</translation>
 <translation id="248546197012830854">Уредот е офлајн. Поврзете се на Wi-Fi мрежа за да ги видите содржините за помош.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Нема резултати што се совпаѓаат</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
+<translation id="4486524074141928967">Ќе се одјавите во <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја на интерфејсот</translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">сива</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5600027863942488546">Копчето <ph name="KEY_NAME" /> е тестирано</translation>
+<translation id="5613201299517339763">Одјавени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">апстракт</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="5938286923316838007">Не може да се создадат имиња на снимки за содржиниве</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
+<translation id="5942727615796467094">Администраторот на <ph name="MANAGER" /> поставил кога може да се користи овој <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
 <translation id="5946538341867151940">Сѐ уште не сте поврзани. Ако вашиот мобилен оператор препорачува приспособено APN, внесете ги податоците за APN така што ќе изберете „+ Нова APN“</translation>
 <translation id="5947266287934282605">Ако последниот ден во месецот е пред овој ден, мобилниот интернет ќе се ресетира на последниот ден во месецот</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">друга планета</translation>
 <translation id="6359706544163531585">Оневозможи светла тема</translation>
 <translation id="6359919876285606596">Дејствово е трајно и не може да се врати</translation>
+<translation id="6368342879959028556">Кога ќе изберете „Создавање со AI“, напишете приспособено барање. Или може да изберете „AI-тапети“ за да изберете тема, па да ги изберете подвлечените зборови за да го персонализирате вашиот AI-тапет.</translation>
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6373461326814131011">езерце</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
 <translation id="6462978824459367242">Копчето „Додај“ во APN сега е овозможено</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се скенира страницата пак?}=1{Да се скенира страницата {PAGE_NUMBER} пак?}one{Да се скенира страницата {PAGE_NUMBER} пак?}other{Да се скенира страницата {PAGE_NUMBER} пак?}}</translation>
+<translation id="6468146470109254228">Вашите 3 најнови барања и излезни податоци. До нив може да пристапите само додека ја користите функцијата „Тапети и стил“.</translation>
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="6472979596862005515">чамци</translation>
 <translation id="64778964625672495">темноцрвена</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картичка</translation>
 <translation id="66621959568103627">коралнорозова</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Кога создавате со AI, барањето се испраќа до серверите на Google AI за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политиката за приватност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративната AI е во експериментална фаза и во моментов има ограничена достапност.</translation>
 <translation id="6673898378497337661">зголемување на осветленоста на тастатурата</translation>
 <translation id="6692996468359469499">Добивајте информации поврзани со вашиот избор</translation>
 <translation id="6694534975463174713">брава</translation>

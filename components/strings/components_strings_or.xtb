@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2239100178324503013">ବର୍ତ୍ତମାନ ପଠାନ୍ତୁ</translation>
 <translation id="2241693394036365668">ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
+<translation id="2242389809734574253">IBAN ସେଭ କରନ୍ତୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="2246264294482514010">10 x 12 ଇଞ୍ଚ</translation>
 <translation id="2246480341630108201">ତୁମ ବାପା କିମ୍ବା ମା ଏପର୍ଯ୍ୟନ୍ତ 'ଏହା ଠିକ୍ ଅଛି' ବୋଲି କହିନାହାଁନ୍ତି</translation>
 <translation id="2247789808226901522">କାର୍ଡର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
@@ -1020,7 +1021,7 @@
 <translation id="2882949212241984732">ଡବଲ୍-ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="2891963978019740012">Chromeରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="2893773853358652045">ଚତୁର୍ଥ ରୋଲ୍</translation>
-<translation id="2894137550885451583"><ph name="PRODUCT" /> ପାଇଁ <ph name="CURRENCY" />ରେ ଏହି ମୂଲ୍ୟ ଅଛି</translation>
+<translation id="2894137550885451583">ଏଗୁଡ଼ିକ ହେଉଛି <ph name="PRODUCT" /> ପାଇଁ <ph name="CURRENCY" /> ମୂଲ୍ୟ</translation>
 <translation id="2900528713135656174">ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2902312830803030883">ଅଧିକ କାର୍ଯ୍ୟ</translation>
 <translation id="2903493209154104877">ଠିକଣାଗୁଡ଼ିକ</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ଯାଞ୍ଚକରଣ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="3272643614306383237">1 MBରୁ କମ। କିଛି ସାଇଟ ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭିଜିଟରେ ଆହୁରି ଧୀରେ ଲୋଡ ହୋଇପାରେ।</translation>
 <translation id="3273738040255912340">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ଏବଂ ବ୍ରାଉଜରରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chromium ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN ସେଭ କରନ୍ତୁ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="3282085321714087552">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="ENROLLMENT_DOMAIN" />, ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛି।</translation>
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ</translation>
@@ -2122,6 +2124,7 @@
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
 <translation id="4882314601499260499">କୌଣସି ୟୁଜର ନୀତି ଲାଗୁ କରାଯାଇନାହିଁ। ୟୁଜର ନୀତିଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ, ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="LINK_BEGIN" />ଆପଣଙ୍କ ଡୋମେନକୁ ଯାଞ୍ଚ କରିବା<ph name="LINK_END" /> ଆବଶ୍ୟକ।</translation>
+<translation id="4883911187498618061">ଆପଣଙ୍କ ପ୍ରଶ୍ନ କିମ୍ବା ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="4885030148564729407">ହନିମୁନ ଏବଂ ରୋମାଣ୍ଟିକ ଭ୍ରମଣଗୁଡ଼ିକ</translation>
 <translation id="4885256590493466218">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4887406273302438710">Windows Hello ମାଧ୍ୟମରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
@@ -2581,6 +2584,7 @@
 <translation id="572328651809341494">ନିକଟର ଟାବ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5723873695528696965">ଆପଣଙ୍କ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରନ୍ତୁ</translation>
 <translation id="5725297205162868298">ସର୍ଟକଟ @ କେରେକ୍ଟର ସହ ଆରମ୍ଭ ହୋଇପାରିବ ନାହିଁ: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">ଉନ୍ନତ ପ୍ରିଣ୍ଟର ଫିଚରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚାରିପାରେ</translation>
 <translation id="5729442113829771034">ଶୈଶବ ଶିକ୍ଷା</translation>
 <translation id="5730040223043577876">ଯଦି ଆପଣ ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ଅନ୍ୟ ସାଇଟ୍‍‍ରେ ପୁନଃବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chrome ଏହାକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ୍ କରୁଛି।</translation>
 <translation id="5732392974455271431">ଆପଣଙ୍କ ଅଭିଭାବକ ଆପଣଙ୍କ ପାଇଁ ଏହାକୁ ଅନ୍‌ବ୍ଲକ୍ କରିପାରିବେ</translation>
@@ -2592,6 +2596,7 @@
 <translation id="5743684619253032786">ନେଲ କେୟାର ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="5745733273847572235">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="5750869797196646528">ହେଣ୍ଡ ଟ୍ରାକିଂ</translation>
+<translation id="5752327398324808817">ଗୋଟିଏ କିମ୍ବା ଦୁଇଟି ଶବ୍ଦ ଲେଖନ୍ତୁ</translation>
 <translation id="5759751709240058861">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବାକୁ</translation>
 <translation id="5763042198335101085">ଏକ ବୈଧ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
 <translation id="5764725887548570807">ଅବୈଧ ମୂଳ ଫର୍ମାଟ।</translation>
@@ -3086,6 +3091,7 @@
 <translation id="6671169470640320959">ଅଟୋ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="6671697161687535275">Chromiumରୁ ପରାମର୍ଶରୁ କାଢ଼ି ଦେବେ?</translation>
 <translation id="6677351035258626477">ଫାଷ୍ଟ ଫୁଡ</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ଏକ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}other{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}}</translation>
 <translation id="6681790815630918386">CVC ସେଭ କରାଯାଇଛି</translation>
 <translation id="6683022854667115063">ହେଡଫୋନଗୁଡ଼ିକ</translation>
 <translation id="6687230248707087982">ଏନଭେଲପ (ପ୍ଲେନ)</translation>
@@ -3102,6 +3108,7 @@
 <translation id="6696575039575740785">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6698097747703777657">ଆପଣଙ୍କ କୋଡ ପାଇନାହାଁନ୍ତି? <ph name="BEGIN_LINK" />ନୂଆ କୋଡ ପାଆନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ସୃଷ୍ଟିହେଲା:</translation>
+<translation id="6698769547327354196">Chromeରେ Pix ବନ୍ଦ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="67007264085648978">ଟାଇମ ସ୍କ୍ରବର</translation>
 <translation id="6702851555558236418">ଅଡିଓ ଏବଂ ମ୍ୟୁଜିକ ସଫ୍ଟୱେର</translation>
 <translation id="6702919718839027939">ବର୍ତ୍ତମାନ</translation>
@@ -3257,6 +3264,7 @@
 <translation id="6978236010531171013">ଯେ କୌଣସି ମତେ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="6978722349058177832">ଯଦି ଆପଣ ଏହି ଡିଭାଇସ ସେୟାର କରନ୍ତି, ତେବେ ଅଟୋଫିଲ ବ୍ୟବହାର କରି ଆପଣ ପ୍ରତ୍ୟେକ ଥର ପେମେଣ୍ଟ କରିବା ସମୟରେ Chromium ଆପଣଙ୍କୁ ଯାଞ୍ଚ କରିବାକୁ କହିପାରିବ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଆକ୍ସେସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6979440798594660689">ମ୍ୟୁଟ୍‌ (ଡିଫଲ୍ଟ)</translation>
 <translation id="6984270784814146224">ଲେବଲ ନଥିବା ଇମେଜ। ଟେକ୍ସଟକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି Google AI ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="6987806006823772670">ଏନଭେଲପ (କୋଟେଡ)</translation>
@@ -3402,6 +3410,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ବ୍ୟବସାୟିକ ଅପରେସନଗୁଡ଼ିକ</translation>
+<translation id="7244061187185055290">କିଛି ଶବ୍ଦରେ, ଆପଣ ଯାହା ସର୍ଚ୍ଚ କରୁଛନ୍ତି ତାହା ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="7251437084390964440">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗରେସନ୍‌ ONC ମାନାଙ୍କ ଅନୁୟାୟୀ ନାହିଁ। କନ୍‍ଫିଗରେସନ୍‌ର କିଛି ଅଂଶ ଇମ୍ପୋର୍ଟ କରାଯାଇନପାରେ।
 ଅତିରିକ୍ତ ବିବରଣୀ:
 <ph name="DEBUG_INFO" /></translation>
@@ -3782,7 +3791,6 @@
 <translation id="7935318582918952113">DOM ଡିଷ୍ଟିଲର୍</translation>
 <translation id="7937163678541954811">ଦ୍ରୁତ ଚେକଆଉଟ ପାଇଁ ଏହି କାର୍ଡର CVCକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ କରାଯିବ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
-<translation id="7938490694919717008">ଚେକଆଉଟ ସମୟରେ ଆପଣଙ୍କ କାର୍ଡ ପାଇଁ କେଉଁ ରିୱାର୍ଡ ଏବଂ ଲାଭ ଉପଲବ୍ଧ ଅଛି ତାହା ଦେଖନ୍ତୁ<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />କାର୍ଡର ଲାଭଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">ଏବେ ସୁଦ୍ଧା ସର୍ଭର୍‍‍ର ସାର୍ଟିଫିକେଟ୍‍‍ଟି ବୈଧ ନୁହେଁ।</translation>
 <translation id="7941628148012649605">ଏନଭେଲପ ଚାଉ 4</translation>
 <translation id="794169214536209644">କେଣ୍ଡି ଏବଂ ମିଠା</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1066101356081285416">మీరు చూసే సైట్‌లలోని ట్రాకింగ్ నంబర్‌లను Chrome గుర్తించి, కొత్త ట్యాబ్ పేజీలో మీ ప్యాకేజీ అప్‌డేట్‌లను చూపుతుంది. ఈ ఫీచర్‌ను అందించడానికి, అందరి కోసం షాపింగ్ ఫీచర్‌లను మెరుగుపరచడానికి ప్యాకేజీ ట్రాకింగ్ నంబర్, వెబ్‌సైట్ పేరు Googleకు పంపబడతాయి. మీరు దీనిని <ph name="BEGIN_LINK" />ప్యాకేజీ ట్రాకింగ్ సెట్టింగ్‌ల<ph name="END_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
+<translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
 <translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1146503048444965320">Chromeలో కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="1166460004393506534">Chromeలో బ్రౌజింగ్ డేటాను తొలగించండి</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome చిట్కా: మీ అడ్రస్ బార్ పొజిషన్‌ను ఎంచుకోండి</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeలో మీ బుక్‌మార్క్‌లకు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
+<translation id="1799920918471566157">Chrome చిట్కాలు</translation>
 <translation id="1830634592642484976">ఈ అడ్రస్ ప్రస్తుతం Chromeలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దానిని సేవ్ చేయండి.</translation>
 <translation id="1917964099031477364">ఈ పరికరంలో Chrome నుండి, అలాగే ఇతర Google యాప్‌ల నుండి ఈ ఖాతా, ఇంకా సేవ్ చేయబడని డేటా తీసివేయబడుతుంది.</translation>
 <translation id="1919130412786645364">Chrome సైన్-ఇన్‌ని అనుమతించండి</translation>

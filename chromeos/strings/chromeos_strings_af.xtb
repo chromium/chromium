@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Pas op skandeergebied</translation>
 <translation id="1343442362630695901">soutmeer</translation>
 <translation id="1348657754632799065">Opnamebalk</translation>
+<translation id="1350909945461913813">Maak seker om enige werk te stoor</translation>
 <translation id="1367951781824006909">Kies 'n lêer</translation>
 <translation id="1371650399987522809">Terugvoer vir muurpapier wat deur Google AI aangedryf is</translation>
 <translation id="1374385338586507108">Definieer</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-weergawe:</translation>
 <translation id="2016697457005847575">Probeer foutsporingstappe</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Kies ’n tema en kies dan die onderstreepte woorde om jou AI-prente te personaliseer.</translation>
 <translation id="2045814230297767491">eetgerei</translation>
 <translation id="2047316797244836561">Koppel asseblief aan ’n netwerk en herlaai die bladsy om sluimerskerm te bekyk.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Geen spraak bespeur nie</translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
+<translation id="2468124392950503650">Kies porboodskap om te skep of sien die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google AI</translation>
 <translation id="2480572840229215612">krappe</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Geen passende resultate nie</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
+<translation id="4486524074141928967">Jy sal om <ph name="TIME" /> afgemeld word</translation>
 <translation id="4500722292849917410">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van ’n wysigersleutel (ctrl, alt, shift, of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Koppelvlakkleur</translation>
 <translation id="4503223151711056411">Linkspyl</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grys</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-sleutel is getoets</translation>
+<translation id="5613201299517339763">Jy is afgemeld</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">opsomming</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Lêer nie gekry nie</translation>
 <translation id="5938286923316838007">Kan nie opnamename vir hierdie inhoud skep nie</translation>
 <translation id="5939518447894949180">Stel terug</translation>
+<translation id="5942727615796467094">Die <ph name="MANAGER" />-administrateur het gestel wanneer hierdie <ph name="DEVICE_TYPE" /> gebruik kan word</translation>
 <translation id="594552776027197022">Genereer ewekansige sleutelpaar</translation>
 <translation id="5946538341867151940">Jy is nog nie gekoppel nie. As jou selfoondiensverskaffer ’n gepasmaakte APN aanbeveel, kan jy “+ Nuwe APN” kies om die APN-inligting in te voer.</translation>
 <translation id="5947266287934282605">As die laaste dag van die maand voor hierdie dag is, sal die data op die laaste dag van die maand teruggestel word</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">ander planeet</translation>
 <translation id="6359706544163531585">Deaktiveer ligtema</translation>
 <translation id="6359919876285606596">Hierdie handeling is permanent en kan nie ontdoen word nie</translation>
+<translation id="6368342879959028556">Skryf ’n gepasmaakte porboodskap wanneer jy “Skep met AI” kies. Of jy kan “AI-muurpapiere” kies om ’n tema te kies en dan die onderstreepte woorde kies om jou AI-muurpapier te personaliseer.</translation>
 <translation id="636850387210749493">Onderneminginskrywing</translation>
 <translation id="6373461326814131011">dammetjie</translation>
 <translation id="6379086450106841622">Raakskerm</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Gaan na rekeninginstellings</translation>
 <translation id="6462978824459367242">Voeg APN By-knoppie is nou geaktiveer</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Herskandeer bladsy?}=1{Herskandeer bladsy {PAGE_NUMBER}?}other{Herskandeer bladsy {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Jou 3 mees onlangse porboodskappe en uitsette. Jy kan net toegang daartoe kry terwyl jy Muurpapier en Styl gebruik.</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6472979596862005515">bote</translation>
 <translation id="64778964625672495">donkerrooi</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6659594942844771486">Oortjie</translation>
 <translation id="66621959568103627">koraalpienk</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kies "Inspireer my" om meer unieke en verskillende opsies vir AI-prente te kry.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wanneer jy met AI skep, word die porboodskap na Google-bedieners toe gestuur om prente te genereer en die produk te verbeter, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiewe AI is eksperimenteel, in vroeë ontwikkeling, en het tans beperkte beskikbaarheid.</translation>
 <translation id="6673898378497337661">verhoog sleutelbordhelderheid</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6694534975463174713">sluit</translation>

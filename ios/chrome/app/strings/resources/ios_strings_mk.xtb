@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Додај во „Список за читање“</translation>
 <translation id="1854463785401910334">Пребарувајте низ отворените картички</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} од {count} лозинка}one{{position} од {count} лозинка}other{{position} од {count} лозинки}}</translation>
+<translation id="1861262398884155592">Папкава е празна</translation>
 <translation id="1872096359983322073">Светилка</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Поканете ги членовите на семејството</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">Поставете положба</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
+<translation id="4320848494125124980">Неодамнешно</translation>
 <translation id="4324735664183300693">Вклучете ги известувањата</translation>
 <translation id="4328843285884395590">Мој Drive</translation>
 <translation id="4331177082088332784">Со ова може да управувате во BEGIN_LINK Поставки за содржини END_LINK</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="4469834037720363704">Број на пакет</translation>
 <translation id="4471472356135655769">Лозинките не може да се извезат</translation>
+<translation id="4474142134969976028">Нема резултати што се совпаѓаат</translation>
 <translation id="4474494258097106883">Создаден за вашиот iPhone</translation>
 <translation id="4488754974567924717">Ќе ве известиме ако вашите лозинки се компромитирани</translation>
 <translation id="4489536976005181779">{count,plural, =1{Додадена е страница во вашиот „Список за читање“ на вашата сметка, {email}}one{Додадени се страници во вашиот „Список за читање“ на вашата сметка, {email}}other{Додадени се страници во вашиот „Список за читање“ на вашата сметка, {email}}}</translation>

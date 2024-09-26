@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Narancssárga</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1273910660700874265">A következő lapcsoport beállításai: <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.
+
+Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROUP" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
 <translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>
 <translation id="1486715732399361704">Itt találja az összes lapcsoportot</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport bezárása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport bezárása.}}</translation>
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
+<translation id="5615302411300498438">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle.
+
+Ha kilép, azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROUP" />” lapcsoporthoz.</translation>
 <translation id="5627941783489838464">Nincsenek lapfrissítések</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Lap visszaállítása}other{Lapok visszaállítása}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link a Chrome-ból}other{<ph name="TABS_COUNT_MANY" /> link a Chrome-ból}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> lap hozzáadva, <ph name="ANY_CLOSED" /> bezárva}other{<ph name="MANY_ADDED" /> lap hozzáadva, <ph name="ANY_CLOSED" /> bezárva}}</translation>
 <translation id="8631711675211020168">Mindenki azonnal elveszíti a hozzáférését a(z) <ph name="GROUP_NAME" /> lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
 <translation id="8633025649649592204">Legutóbbi tevékenységek</translation>
+<translation id="8635399646025169806">Megtartja a lapcsoportot?</translation>
 <translation id="870736955561925754">Bezárja a lapot, és törli a csoportot?</translation>
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8730999928494395583">Az ezeken az inkognitó lapokon végzett tevékenységei el lesznek távolítva erről az eszközről.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> hónapja létrehozva}other{<ph name="NUM_MONTHS_MANY" /> hónapja létrehozva}}</translation>
+<translation id="8804742093141782941">Csoport megtartása</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>
 <translation id="8887921976452567404">A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban.</translation>
 <translation id="8915916167043355778">Az összes bezárása</translation>

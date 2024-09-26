@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Унших жагсаалтад нэмэх</translation>
 <translation id="1854463785401910334">Нээлттэй табуудаас хайх</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}-н {position}-р нууц үг}other{{count}-н {position}-р нууц үг}}</translation>
+<translation id="1861262398884155592">Энэ фолдер хоосон байна</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Гэр бүлийн гишүүдийг урих</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3982893814825393515">Асуудлыг мэдээлэх…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" />-р нэвтэрсэн. Бүртгэлийн цэсийг нээнэ үү.</translation>
+<translation id="3986739045730058129">Таб руу очих</translation>
 <translation id="3987993985790029246">Холбоосыг хуулах</translation>
 <translation id="3992684624889376114">Энэ хуудасны тухай</translation>
 <translation id="3994422733891749358">Та хүлээн авахыг хүсэж буй мэдэгдлүүдээ сонгоно уу</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
 <translation id="4469834037720363704">Илгээмжийн дугаар</translation>
 <translation id="4471472356135655769">Нууц үгнүүдийг экспортлох боломжгүй</translation>
+<translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
 <translation id="4474494258097106883">Таны iPhone-д зориулан бүтээсэн</translation>
 <translation id="4488754974567924717">Таны нууц үгнүүд алдагдсан тохиолдолд бид танд мэдэгдэнэ</translation>
 <translation id="4489536976005181779">{count,plural, =1{Таны {email} бүртгэлийн унших жагсаалтад тань хуудас нэмсэн}other{Таны {email} бүртгэлийн унших жагсаалтад тань хуудаснууд нэмсэн}}</translation>
@@ -757,6 +760,7 @@
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4717844083556844785">Одоогийн веб хуудас Нууцлалтай горимд байна</translation>
 <translation id="4719927025381752090">Орчуулахыг санал болгох</translation>
+<translation id="4720530280568305198">Таны сонголтыг шинэ табд нээсэн</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4742407542027196863">Нууц үгийг удирдах...</translation>
 <translation id="4742897645503301228">Үнэ мөшгөхийг нуух</translation>

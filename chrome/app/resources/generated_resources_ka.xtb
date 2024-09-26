@@ -2922,6 +2922,7 @@
 <translation id="304644035656848980">თქვენი მიკროფონის წინასწარი ვერსია</translation>
 <translation id="3046910703532196514">ვებგვერდო, მთლიანი</translation>
 <translation id="304747341537320566">მეტყველების მოდულები</translation>
+<translation id="3047678109605649715">თქვენს მოწყობილობაში არ არის <ph name="LANGUAGE" /> ხმები. გაათავისუფლეთ მეხსიერების სივრცე თქვენს მოწყობილობაზე და ცადეთ ხელახლა.</translation>
 <translation id="3048336643003835855">HID მოწყობილობები, რომელთა მომწოდებელია <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">დაკვრა (k)</translation>
 <translation id="3048742847101793553">თქვენმა ორგანიზაციამ დაბლოკა ეს ფაილი, რადგან სკანირება ვერ მოხერხდა.</translation>
@@ -4163,6 +4164,7 @@
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />-ში სურათის ძ&amp;იება</translation>
 <translation id="3948334586359655083">ეს ჩანართი უკრავს აუდიოს</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />-ს შეუძლია მითითებულ საქაღალდეებში ფაილების რედაქტირება</translation>
+<translation id="3948985214866944547">მომხმარებელთა უმრავლესობა ბლოკავს ზუსტი მდებარეობის ამ საიტისთვის გაზიარებას</translation>
 <translation id="394984172568887996">IE-დან იმპორტირებული</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, ფაილების ჩამოტვირთვა უფრო უსაფრთხო რომ იყოს</translation>
 <translation id="3950820424414687140">შესვლა</translation>
@@ -5346,7 +5348,6 @@
 <translation id="4838327282952368871">არაამქვეყნიური</translation>
 <translation id="4838836835474292213">გაცვლის ბუფერზე წვდომა დაშვებულია</translation>
 <translation id="4838907349371614303">პაროლი განახლდა</translation>
-<translation id="4838958829619609362">არჩეული ტექსტი არ არის <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">&amp;შეინახე ვიდეო როგორც…</translation>
 <translation id="4839910546484524995">შეამოწმეთ თქვენი მოწყობილობა</translation>
 <translation id="4840096453115567876">მაინც გსურთ ინკოგნიტო რეჟიმიდან გასვლა?</translation>
@@ -5956,7 +5957,6 @@
 <translation id="5287425679749926365">თქვენი ანგარიშები</translation>
 <translation id="5288106344236929384">სხვა ქმედებები, წვდომის გასაღებთან დაკავშირებული ვარიანტები <ph name="USERNAME" />-ისთვის <ph name="DOMAIN" />-ზე</translation>
 <translation id="5288678174502918605">&amp;დახურული ჩანართის ხელახლა გახსნა</translation>
-<translation id="52895863590846877">არ არის <ph name="LANGUAGE" /> გვერდი</translation>
 <translation id="5290020561438336792">პერსონალური კომპიუტერი და გადაცემის მოწყობილობა სხვადასხვა Wi-Fi ქსელში (მაგ. 2,4 გჰც
     5 გჰც-ის საპირისპიროდ)</translation>
 <translation id="52912272896845572">პერსონალური გასაღების ფაილი არასწორია.</translation>
@@ -8098,7 +8098,6 @@
 <translation id="686366188661646310">გსურთ პაროლის წაშლა?</translation>
 <translation id="6863925886424789941">კოლოსეუმი</translation>
 <translation id="6865313869410766144">ფორმათა მონაცემების ავტომატური შევსება</translation>
-<translation id="6865598234501509159">არ არის <ph name="LANGUAGE" /> გვერდი</translation>
 <translation id="6865708901122695652">WebRTC მოვლენათა ჟურნალები (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">წყნარი</translation>
 <translation id="686664946474413495">ფერთა ტემპერატურა</translation>
@@ -8718,7 +8717,6 @@
 <translation id="7343372807593926528">გამოხმაურებამდე აღწერეთ პრობლემა.</translation>
 <translation id="7344585835349671209">HTTPS/SSL სერტიფიკატების მართვა თქვენს მოწყობილობაზე</translation>
 <translation id="7345706641791090287">დაადასტურეთ თქვენი პაროლი</translation>
-<translation id="7345919885156673810">არჩეული ტექსტი არ არის <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
 <translation id="7347751611463936647">ამ გაფართოების გამოსაყენებლად აკრიფეთ „<ph name="EXTENSION_KEYWORD" />“, შემდეგ TAB, შემდეგ ბრძანება ან საძიებო სიტყვა.</translation>
 <translation id="7347943691222276892">დააწკაპუნეთ <ph name="SUBPAGE_TITLE" />-დან გადასასვლელად.</translation>

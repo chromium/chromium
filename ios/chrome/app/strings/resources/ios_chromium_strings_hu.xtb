@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">A Chromium-menü megnyitása</translation>
 <translation id="12739128458173458">A lap másik eszközre való elküldéséhez jelentkezzen be a Chromiumba mindkét eszközön.</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
+<translation id="1383876407941801731">Keresés</translation>
 <translation id="1423007117030725713">Keresés indítása új Chromium-lapon.</translation>
 <translation id="1431818719585918472">Az inkognitó lapok zárolásának engedélyezése a Chromium számára.</translation>
 <translation id="146407871188825689">A Chromium használata iPaden alapértelmezés szerint</translation>
@@ -177,6 +178,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5571094606370987472">Megnyitja a Chromium legutóbbi lapjait.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">A legutóbbi lap megnyitása a Chromiumban</translation>
+<translation id="5671188105328420281">Chromium-tippek</translation>
 <translation id="5688047395118852662">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="584550191241316896">Bejelentkezve a Chromiumba</translation>
@@ -218,6 +220,7 @@ Megjegyzések:
 <translation id="6752854822223394465">A szervezete beállítja a Chromiumot…</translation>
 <translation id="6794054469102824109">Megnyitja a Chromium dinós játékát.</translation>
 <translation id="6820823224820483452">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
+<translation id="6831043979455480757">Fordítás</translation>
 <translation id="6852419005633611413">Gyorsabb hozzáférés a Chromiumhoz a főképernyő Dockjáról</translation>
 <translation id="6852799557929001644">Hozzáférhet Chromium-jelszavaihoz és még sok máshoz az erre az eszközre telepített más alkalmazásokban.</translation>
 <translation id="6887138405044152640">Ha szeretné elküldeni ezt a lapot egy másik eszközre, jelentkezzen be a Chromiumba az adott eszközön.</translation>

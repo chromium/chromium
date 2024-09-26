@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Voeg by leeslys</translation>
 <translation id="1854463785401910334">Deursoek oop oortjies</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} van {count} wagwoord}other{{position} van {count} wagwoorde}}</translation>
+<translation id="1861262398884155592">Hierdie vouer is leeg</translation>
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Nooi gesinslede</translation>
@@ -673,6 +674,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4302061870579014542">Stel posisie</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="4309403553630140242">Dubbeltik vir meer inligting</translation>
+<translation id="4320848494125124980">Onlangs</translation>
 <translation id="4324735664183300693">Skakel kennisgewings aan</translation>
 <translation id="4328843285884395590">My Drive</translation>
 <translation id="4331177082088332784">Jy kan dit bestuur in BEGIN_LINK inhoudinstellings END_LINK</translation>
@@ -701,6 +703,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4469324811108161144">Notas kan tot <ph name="CHARACTER_LIMIT" /> karakters stoor.</translation>
 <translation id="4469834037720363704">Pakkienommer</translation>
 <translation id="4471472356135655769">Kan nie wagwoorde uitvoer nie</translation>
+<translation id="4474142134969976028">Geen passende resultate nie</translation>
 <translation id="4474494258097106883">Gebou vir jou iPhone</translation>
 <translation id="4488754974567924717">Ons sal jou laat weet as jou wagwoorde gekompromitteer word</translation>
 <translation id="4489536976005181779">{count,plural, =1{Bladsy is by jou leeslys in jou rekening, {email}, gevoeg}other{Bladsye is by jou leeslys in jou rekening, {email}, gevoeg}}</translation>

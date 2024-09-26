@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ବାମପଟେ ଡକ କରାଯାଇଛି।</translation>
 <translation id="1708345662127501511">ଡେସ୍କ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ନେଟୱାର୍କ ସେଟିଂସ୍</translation>
-<translation id="171610090693716835">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ଫୋକସ ପ୍ଲେଲିଷ୍ଟଗୁଡ଼ିକ ସହିତ ଟ୍ରାକରେ ରୁହନ୍ତୁ। ବିନା ମୂଲ୍ୟରେ 3 ମାସର YouTube Premium ସହିତ ବିଜ୍ଞାପନ-ମୁକ୍ତ ଭାବେ YouTube Music ଏବଂ YouTube ପାଆନ୍ତୁ।</translation>
 <translation id="1719094688023114093">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ଚାଲୁ ଅଛି।</translation>
 <translation id="1720011244392820496">ୱାଇ-ଫାଇ ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1720230731642245863">ହଟସ୍ପଟ ବନ୍ଦ ଅଛି</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2416438829169535743">ଭ୍ୟୁରୁ ବାହାରି ଯିବେ?</translation>
 <translation id="2417486498593892439">ନେଟୱାର୍କରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="2423619675829330672">PIN ଲେଖି ଅନେକ ଥର ପ୍ରଚେଷ୍ଟା କରାଯାଇଛି। <ph name="TIME_LEFT" /> ଅପେକ୍ଷା କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2426051945783024481">କେମେରା ଫ୍ରେମ ସ୍ୱଚାଳିତ ଭାବେ ମଝିରେ ଅଛି</translation>
 <translation id="2427507373259914951">ବାମ କ୍ଲିକ୍</translation>
 <translation id="2429753432712299108">ବ୍ଲୁଥୁଥ୍ ଡିଭାଇସ୍ "<ph name="DEVICE_NAME" />" ପେୟାର୍ କରିବା ପାଇଁ ଅନୁମତି ଚାହିଁବ। ସ୍ୱୀକାର କରିବା ପୂର୍ବରୁ, ଦୟାକରି ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଏହି ପାସ୍‍କୀ ସେହି ଡିଭାଇସ୍‍‍ରେ ପ୍ରଦର୍ଶିତ ହୋଇଛି: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">ସମସ୍ତ ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାଯାଉଛି, ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ଅପ୍ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="6337159624125741244">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ ମେଗ୍ନିଫାୟର ଚାଲୁ ଅଛି</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ହେଉଛି <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଥିବା ଏକ ପରିଚାଳିତ ସେସନ୍</translation>
+<translation id="6340148837564298498">ଯଦି ଆପଣ ଆପଣଙ୍କ PIN ଭୁଲି ଯାଇଛନ୍ତି, ତେବେ ଏହି ୟୁଜରଙ୍କୁ ରିକଭର କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ତା'ପରେ <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> କିମ୍ବା <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ଆପ୍ ପରାମର୍ଶ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">ଡାଉନଲୋଡ ପାଇଁ <ph name="FILENAME" /> ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="6542891623636520977">ଇମୋଜି, GIF ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
+<translation id="6545382064335350438">ଆପଣଙ୍କ PINକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6555373427270923730">ଠିକଣା ବାରରେ ଏକ ୱେବ ଠିକଣା ଟାଇପ କରି <ph name="MODIFIER" /><ph name="KEY" />କୁ ଦବାନ୍ତୁ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />କୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="6559158502366839560">ଅଧିକ ଆପ୍ସ ଏବଂ ଗେମ୍ସକୁ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
@@ -2028,6 +2030,7 @@
 <translation id="7904094684485781019">ଏହି ଆକାଉଣ୍ଟର ବ୍ୟବସ୍ଥାପକ ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ପାଇଁ ଅନୁମତି ଦେଇନାହାନ୍ତି।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" />ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
+<translation id="7921565901396407357">ଆପଣଙ୍କ PINକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7923534281713082605">ପାଣିପାଗ</translation>
 <translation id="7926080067315048321">ୱେବରେ Google Tasksରେ ଥିବା ସମସ୍ତ ଟାସ୍କ ଦେଖନ୍ତୁ</translation>
 <translation id="7930731167419639574">ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେଉଛି ଏବଂ ଏହାର ଡିକ୍ଟେସନ୍ ଅଫଲାଇନରେ କାମ କରେ</translation>

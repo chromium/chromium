@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Активне вікно закріплено ліворуч.</translation>
 <translation id="1708345662127501511">Робочий стіл: "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
-<translation id="171610090693716835">Зберігайте концентрацію уваги завдяки персоналізованим спискам відтворення для зосередження. Отримайте YouTube Music і YouTube без реклами з безкоштовною пробною підпискою YouTube Premium на 3 місяці.</translation>
 <translation id="1719094688023114093">Живі субтитри ввімкнено.</translation>
 <translation id="1720011244392820496">Увімкніть синхронізацію Wi-Fi</translation>
 <translation id="1720230731642245863">Точку доступу вимкнено</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Доступне оновлення</translation>
 <translation id="2416438829169535743">Вийти?</translation>
 <translation id="2417486498593892439">Вхід у мережу</translation>
+<translation id="2423619675829330672">Забагато спроб ввести PIN-код. Зачекайте <ph name="TIME_LEFT" /> і повторіть спробу.</translation>
 <translation id="2426051945783024481">Камера центрується автоматично</translation>
 <translation id="2427507373259914951">Натиснути лівою кнопкою</translation>
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6337159624125741244">Повноекранну лупу ввімкнено</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Якщо ви забули PIN-код, спробуйте відновити його.</translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРОПОЗИЦІЇ ДОДАТКІВ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6542891623636520977">Смайли, зображення GIF тощо</translation>
+<translation id="6545382064335350438">PIN-код усе ще не вдається підтвердити. Повторіть спробу.</translation>
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Адміністратор цього облікового запису заборонив паралельний вхід.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Підключено пристроїв: <ph name="DEVICECOUNT" /></translation>
+<translation id="7921565901396407357">Не вдалося підтвердити PIN-код. Повторіть спробу.</translation>
 <translation id="7923534281713082605">Погода</translation>
 <translation id="7926080067315048321">Переглянути всі завдання на веб-сайті Google Завдання</translation>
 <translation id="7930731167419639574">Мовлення тепер обробляється лише на пристрої, а функція диктування працює в режимі офлайн</translation>

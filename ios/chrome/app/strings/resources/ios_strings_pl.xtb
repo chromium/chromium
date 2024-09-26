@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Dodaj do listy Do przeczytania</translation>
 <translation id="1854463785401910334">Wyszukiwanie w otwartych kartach</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} z {count} hasła}few{{position} z {count} haseł}many{{position} z {count} haseł}other{{position} z {count} hasła}}</translation>
+<translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
@@ -703,6 +704,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Numer przesyłki</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
+<translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
 <translation id="4488754974567924717">Jeśli Twoje hasła zostaną przejęte, damy Ci znać</translation>
 <translation id="4489536976005181779">{count,plural, =1{Dodano stronę do listy Do przeczytania na koncie {email}}few{Dodano strony do listy Do przeczytania na koncie {email}}many{Dodano strony do listy Do przeczytania na koncie {email}}other{Dodano strony do listy Do przeczytania na koncie {email}}}</translation>

@@ -3268,6 +3268,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
 <translation id="6978722349058177832">Se você compartilha este dispositivo, o Chromium pode pedir que você faça a verificação sempre que pagar usando o preenchimento automático</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">gerenciar o acesso a cookies de terceiros</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6984270784814146224">Imagem sem etiqueta. Extraindo texto com a tecnologia de IA do Google</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
@@ -3795,7 +3796,6 @@ Mais detalhes:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">O CVC desse cartão será criptografado e salvo no seu dispositivo para agilizar pagamentos</translation>
 <translation id="7937554595067888181">Expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais sobre os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Balas e doces</translation>

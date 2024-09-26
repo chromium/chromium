@@ -3493,6 +3493,7 @@
 <translation id="3487649228420469005">Скан хийж дууссан</translation>
 <translation id="3488199663160411179">нэр</translation>
 <translation id="3490695139702884919">Татаж байна... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Хэрэв та ПИН эсвэл нууц үгээ мартвал дотоод өгөгдлийг сэргээх боломжтой</translation>
 <translation id="3491669675709357988">Танай хүүхдийн бүртгэлийг Family Link-н эцэг эхийн хяналт дээр тохируулаагүй байна. Та тохируулгыг дуусгасныхаа дараа эцэг эхийн хяналтыг нэмж болно. Судлах апп дээрээс та эцэг эхийн хяналттай холбоотой мэдээллийг олж авах боломжтой.</translation>
 <translation id="3491678231052507920">Сайтууд ихэвчлэн таныг Виртуал Орчин (VR)-ны харилцан үйлдэлд оруулахын тулд таны виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашигладаг</translation>
 <translation id="3493043608231401654">Табын бүлгээс <ph name="TAB_TITLE" />-г хасах</translation>
@@ -5353,7 +5354,6 @@
 <translation id="4838327282952368871">Зүүд шиг</translation>
 <translation id="4838836835474292213">Түр санах ой унших хандалтыг зөвшөөрсөн</translation>
 <translation id="4838907349371614303">Нууц үгийг шинэчилсэн</translation>
-<translation id="4838958829619609362">Сонголт <ph name="LANGUAGE" />-р биш байна</translation>
 <translation id="4839303808932127586">Видеог ... хэлбэрээр хадгалах</translation>
 <translation id="4839910546484524995">Төхөөрөмжөө шалгана уу</translation>
 <translation id="4840096453115567876">Нууцлалтай горимоос ямартай ч гарах уу?</translation>
@@ -5963,7 +5963,6 @@
 <translation id="5287425679749926365">Таны бүртгэл</translation>
 <translation id="5288106344236929384">Бусад үйлдэл, <ph name="DOMAIN" /> дээрх <ph name="USERNAME" />-н passkey-н сонголт</translation>
 <translation id="5288678174502918605">Хаагдсан цонхнуудыг дахин нээх</translation>
-<translation id="52895863590846877">Хуудас <ph name="LANGUAGE" /> хэл дээр биш байна</translation>
 <translation id="5290020561438336792">PC болон дамжуулагч төхөөрөмж өөр өөр Wi-Fi сүлжээнд холбогдсон (ж.нь 2.4ГГц
     ба 5ГГц)</translation>
 <translation id="52912272896845572">Хувийн түлхүүр бүхий файл хүчин төгөлдөр бус байна.</translation>
@@ -8105,7 +8104,6 @@
 <translation id="686366188661646310">Нууц үгийг устгах уу?</translation>
 <translation id="6863925886424789941">Колизей</translation>
 <translation id="6865313869410766144">Autofill дээрх мэдээлэл</translation>
-<translation id="6865598234501509159">Хуудас <ph name="LANGUAGE" /> хэл дээр биш байна</translation>
 <translation id="6865708901122695652">WebRTC арга хэмжээний логууд (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Чимээгүй</translation>
 <translation id="686664946474413495">Өнгөний хэм</translation>
@@ -8725,7 +8723,6 @@
 <translation id="7343372807593926528">Санал хүсэлтийг илгээхийн өмнө асуудлыг тайлбарлана уу.</translation>
 <translation id="7344585835349671209">Өөрийн төхөөрөмж дээрх HTTPS/SSL сертификатуудыг удирдаарай</translation>
 <translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
-<translation id="7345919885156673810">Сонголт <ph name="LANGUAGE" />-р биш байна</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7347751611463936647">Энэ өргөтгөлийг ашиглахын тулд,  "<ph name="EXTENSION_KEYWORD" /> " гэж бичээд, ЦОНХ үүсгээд дараа нь командаа өгч эсвэл хайлтаа хийнэ үү.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" />-с шилжиж гарахын тулд товшино уу.</translation>
@@ -11436,7 +11433,7 @@
 <translation id="971774202801778802">Холбоосыг хадгалах</translation>
 <translation id="973473557718930265">Гарах</translation>
 <translation id="973558314812359997">Хулганын хэмжээ</translation>
-<translation id="97381968209917373"><ph name="CERT_NAME" /> гэрчилгээг устгах</translation>
+<translation id="97381968209917373"><ph name="CERT_NAME" /> сертификатыг устгах</translation>
 <translation id="975893173032473675">Орчуулах хэл</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> үгийг <ph name="CORRECTED_WORD" /> болгон автоматаар засахыг болих харилцах цонхыг харуулсан.  Хандахын тулд дээш сумыг, үл хэрэгсэхийн тулд escape-г дарна уу.</translation>
 <translation id="976572010712028687">Эцэг эх гэдгээ баталгаажуулна уу</translation>

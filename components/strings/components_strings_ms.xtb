@@ -379,6 +379,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1658111267661135323">TV &amp; Video</translation>
 <translation id="1658918301167915956">peranti bluetooth</translation>
 <translation id="1662550410081243962">Simpan dan lengkapkan kaedah pembayaran</translation>
+<translation id="1662980953334786797">Susunan yang sama</translation>
 <translation id="1663943134801823270">Kad dan alamat adalah daripada Chrome. Anda boleh mengurus kad dan alamat ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolimer Flekso</translation>
 <translation id="166624440456221306">Padamkan jadual perbandingan</translation>
@@ -1660,6 +1661,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4023431997072828269">Oleh sebab borang ini diserahkan menggunakan sambungan yang tidak selamat, maklumat anda akan dapat dilihat oleh orang lain.</translation>
 <translation id="4025325634010721551">Dasar dimuatkan semula</translation>
 <translation id="4025338605225449265">Mata Wang &amp; Pertukaran Asing</translation>
+<translation id="4025777154208238692">Tertib terbalik</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Penyerang dapat melihat dan mengubah<ph name="END_STRONG" /> maklumat yang anda hantar atau terima daripada laman tersebut.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Anda akan lebih selamat jika melawati laman ini kemudian<ph name="END_STRONG" /> jika anda menggunakan rangkaian awam. Terdapat kurang risiko daripada rangkaian yang dipercayai, seperti Wi-Fi rumah atau tempat kerja anda.
@@ -3797,7 +3799,6 @@ Butiran tambahan:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">CVC kad ini akan disulitkan dan disimpan pada peranti anda untuk semak keluar yang lebih pantas</translation>
 <translation id="7937554595067888181">Tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa menyemak keluar <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ketahui tentang manfaat kad<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Sijil pelayan masih belum sah.</translation>
 <translation id="7941628148012649605">Sampul Chou 4</translation>
 <translation id="794169214536209644">Kandi &amp; Gula-gula</translation>

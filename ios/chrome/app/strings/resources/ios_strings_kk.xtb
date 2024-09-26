@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Оқу тізіміне қосу</translation>
 <translation id="1854463785401910334">Ашық қойындылардан іздеу</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} құпия сөздің {position}}other{{count} құпия сөздің {position}}}</translation>
+<translation id="1861262398884155592">Бұл қалта бос</translation>
 <translation id="1872096359983322073">Шам</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Отбасы мүшелерін шақыру</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3982893814825393515">Мәселе туралы хабарлау…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> аккаунтымен кірдіңіз. Аккаунт мәзірін ашыңыз.</translation>
+<translation id="3986739045730058129">Қойындыға өту</translation>
 <translation id="3987993985790029246">Сілтемені көшіру</translation>
 <translation id="3992684624889376114">Осы бет туралы ақпарат</translation>
 <translation id="3994422733891749358">Алғыңыз келетін хабарландыруларды таңдаңыз</translation>
@@ -673,6 +675,7 @@
 <translation id="4302061870579014542">Орынды орнату</translation>
 <translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4309403553630140242">Толығырақ ақпарат алу үшін екі рет түртіңіз.</translation>
+<translation id="4320848494125124980">Соңғы</translation>
 <translation id="4324735664183300693">Хабарландыруларды қосу</translation>
 <translation id="4328843285884395590">Жеке Drive</translation>
 <translation id="4331177082088332784">Мұны BEGIN_LINK Контент параметрлері END_LINK ішінде басқара аласыз</translation>
@@ -701,6 +704,7 @@
 <translation id="4469324811108161144">Ескертпелерде <ph name="CHARACTER_LIMIT" /> таңбаға дейін болуы мүмкін.</translation>
 <translation id="4469834037720363704">Пакет нөмірі</translation>
 <translation id="4471472356135655769">Құпия сөздерді экспорттау мүмкін емес</translation>
+<translation id="4474142134969976028">Сәйкес нәтижелер табылмады</translation>
 <translation id="4474494258097106883">iPhone үшін әзірленген</translation>
 <translation id="4488754974567924717">Құпия сөздеріңіз ұрланса, сізге хабарлаймыз.</translation>
 <translation id="4489536976005181779">{count,plural, =1{Аккаунтыңыздағы ({email}) оқу тізіміне бет қосылды.}other{Аккаунтыңыздағы ({email}) оқу тізіміне беттер қосылды.}}</translation>
@@ -756,6 +760,7 @@
 <translation id="4699172675775169585">Кэштелген кескіндер мен файлдар</translation>
 <translation id="4717844083556844785">Ағымдағы веб-бет инкогнито режимінде</translation>
 <translation id="4719927025381752090">Аудармасын ұсыну</translation>
+<translation id="4720530280568305198">Таңдауыңыз жаңа қойындыда ашылды.</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4742407542027196863">Құпия сөздерді басқару...</translation>
 <translation id="4742897645503301228">"Бағаны бақылау" опциясын жасыру</translation>

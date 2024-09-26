@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">अ‍ॅक्टिव्ह विंडो डावीकडे डॉक केली आहे.</translation>
 <translation id="1708345662127501511">डेस्‍क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग्ज</translation>
-<translation id="171610090693716835">पर्सनलाइझ केलेल्या, एकाग्र करणाऱ्या गाण्यांच्या प्लेलिस्टसह लक्ष केंद्रित करा. कोणत्याही शुल्काशिवाय ३ महिन्यांच्या YouTube Premium सह जाहिरातमुक्त YouTube Music आणि YouTube मिळवा.</translation>
 <translation id="1719094688023114093">लाइव्ह कॅप्शन सुरू आहे.</translation>
 <translation id="1720011244392820496">वाय-फाय सिंक सुरू करा</translation>
 <translation id="1720230731642245863">हॉटस्पॉट बंद आहे</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">अपडेट उपलब्ध आहे</translation>
 <translation id="2416438829169535743">दृश्यामधून बाहेर पडायचे आहे का?</translation>
 <translation id="2417486498593892439">नेटवर्कमध्ये साइन इन करा</translation>
+<translation id="2423619675829330672">पिन पडताळणीचे खूप जास्त प्रयत्न. <ph name="TIME_LEFT" /> प्रतीक्षा करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="2426051945783024481">कॅमेराची फ्रेम आपोआप मध्यभागी आहे</translation>
 <translation id="2427507373259914951">लेफ्ट क्लिक करा</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. स्वीकार करण्यापूर्वी, कृपया त्या डिव्हाइसवर ही पासकी दर्शवली असल्याची पुष्टी करा: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">सर्व डेस्कवरील विंडो दाखवत आहे, सध्याच्या डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की प्रेस करा</translation>
 <translation id="6337159624125741244">फुल-स्क्रीन मॅग्निफायर सुरू आहे</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> हे सेशन <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
+<translation id="6340148837564298498">तुम्ही तुमचा पिन विसरला असल्यास, हा वापरकर्ता रिकव्‍हर करण्याचा प्रयत्न करा.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> कनेक्‍ट केले</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> त्यानंतर<ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> किंवा <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ॲप सूचना</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> डाउनलोड स्कॅन करत आहे</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
 <translation id="6542891623636520977">इमोजी, GIFs आणि आणखी बरेच काही</translation>
+<translation id="6545382064335350438">अजूनही तुमच्या पिनची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="6555373427270923730">ॲड्रेस बारमध्ये वेब अ‍ॅड्रेस टाइप करा आणि त्यानंतर <ph name="MODIFIER" /><ph name="KEY" /> प्रेस करा</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 नवीन इंस्टॉल केले आहे</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">या खात्याच्या ॲडमिनिस्ट्रेटरने एकाहून अधिक साइन इन ची परवानगी  रद्द केली आहे.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत</translation>
+<translation id="7921565901396407357">तुमच्या पिनची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="7923534281713082605">हवामान</translation>
 <translation id="7926080067315048321">वेबवर Google Tasks मध्ये सर्व टास्क पहा</translation>
 <translation id="7930731167419639574">स्पीचवर आता स्थानिक पातळीवर प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते</translation>

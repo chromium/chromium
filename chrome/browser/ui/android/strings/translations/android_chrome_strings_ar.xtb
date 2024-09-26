@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">عنوان إرسال الفواتير</translation>
 <translation id="228704530595896923">قائمة خيارات المشاركة</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{الاطّلاع على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{الاطّلاع على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="2297822946037605517">مشاركة هذه الصفحة</translation>
 <translation id="22981027763501686">يمكنك تفعيل المزامنة للحصول على الإشارات المرجعية والسجلّ وغير ذلك على أجهزتك الأخرى</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
@@ -1303,6 +1304,7 @@
 <translation id="6964300328304469089">الحساب الذي تم اختياره حاليًا هو "<ph name="NAME" />" ‏(<ph name="EMAIL" />). اختَر حسابًا.</translation>
 <translation id="696447261358045621">مغادرة وضع التصفُّح المتخفي</translation>
 <translation id="6965382102122355670">حسنًا</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{الاطّلاع على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}zero{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}two{الاطّلاع على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) مع نشاط جديد في مجموعات علامات التبويب المشتركة}few{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامات تبويب مع نشاط جديد في مجموعات علامات التبويب المشتركة}many{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}other{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب مع نشاط جديد في مجموعات علامات التبويب المشتركة}}</translation>
 <translation id="6971862865055170158">عدم الموافقة</translation>
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7896724475402191389">محتوى للأطفال - غير مفعّل</translation>
 <translation id="7903184275147100332">يُرجى الانتظار قليلًا</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{حظرت مؤسستك عملية تنزيل واحدة}zero{حظرت مؤسستك # عملية تنزيل}two{حظرت مؤسستك عمليتَي تنزيل}few{حظرت مؤسستك # عمليات تنزيل}many{حظرت مؤسستك # عملية تنزيل}other{حظرت مؤسستك # عملية تنزيل}}</translation>
 <translation id="7914399737746719723">تم تثبيت التطبيق.</translation>
 <translation id="7919123827536834358">ترجمة هذه اللغات تلقائيًا</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>

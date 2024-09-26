@@ -215,7 +215,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1703117532528082099">Aktívne okno je ukotvené vľavo.</translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavenia siete</translation>
-<translation id="171610090693716835">Zostaňte na správnej ceste vďaka prispôsobeným zoznamom skladieb na sústredenie. Získajte YouTube Music a YouTube bez reklám s odberom YouTube Premium na tri mesiace bez peňažného poplatku.</translation>
 <translation id="1719094688023114093">Živý prepis je zapnutý.</translation>
 <translation id="1720011244392820496">Zapnite Synchronizáciu Wi‑Fi</translation>
 <translation id="1720230731642245863">Hotspot je vypnutý</translation>
@@ -398,6 +397,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2412593942846481727">K dispozícii je aktualizácia</translation>
 <translation id="2416438829169535743">Chcete ukončiť zobrazenie?</translation>
 <translation id="2417486498593892439">Prihlásenie do siete</translation>
+<translation id="2423619675829330672">Príliš veľa pokusov o zadanie kódu PIN. Počkajte <ph name="TIME_LEFT" /> a skúste to znova.</translation>
 <translation id="2426051945783024481">Rám kamery sa automaticky umiestni do stredu</translation>
 <translation id="2427507373259914951">Kliknutie ľavým tlačidlom myši</translation>
 <translation id="2429753432712299108">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania. Skôr ako žiadosti vyhoviete, overte, či sa na danom zariadení zobrazuje nasledujúci prístupový kľúč: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6330012934079202188">Keď sa zobrazujú okná všetkých plôch, stlačením šípky nahor zobrazíte okná aktuálnej plochy</translation>
 <translation id="6337159624125741244">Celoplošná lupa je zapnutá</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relácia, ktorú riadi <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Ak ste zabudli kód PIN, skúste účet tohto používateľa obnoviť.</translation>
 <translation id="6344138931392227467">Bolo pripojené zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, potom <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> alebo <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">NÁVRHY APLIKÁCIÍ</translation>
@@ -1633,6 +1634,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6539852571005954999">Kontroluje sa stiahnutý súbor <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Prebieha prenášanie do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodži, gify a iné</translation>
+<translation id="6545382064335350438">Váš kód PIN sa stále nepodarilo overiť. Skúste to znova.</translation>
 <translation id="6555373427270923730">Zadajte do panela s adresou webovú adresu a potom stlačte <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nová inštalácia</translation>
@@ -2029,6 +2031,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7904094684485781019">Správca tohto účtu zakázal viacnásobné prihlásenie.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Pripojené zariadenia: <ph name="DEVICECOUNT" /></translation>
+<translation id="7921565901396407357">Váš kód PIN sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="7923534281713082605">Počasie</translation>
 <translation id="7926080067315048321">Zobraziť všetky úlohy Google na webe</translation>
 <translation id="7930731167419639574">Reč sa teraz spracúva miestne a diktovanie funguje offline</translation>

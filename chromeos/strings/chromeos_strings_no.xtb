@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1343442362630695901">saltsjø</translation>
 <translation id="1348657754632799065">Opptakslinje</translation>
+<translation id="1350909945461913813">Husk å lagre arbeidet ditt</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1371650399987522809">Tilbakemelding om bakgrunner basert på AI-løsninger fra Google</translation>
 <translation id="1374385338586507108">Definer</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-versjon:</translation>
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Velg et tema og deretter de understrekede ordene for å tilpasse AI-bildene.</translation>
 <translation id="2045814230297767491">bestikk</translation>
 <translation id="2047316797244836561">Koble til et nettverk og last inn siden på nytt for å se skjermspareren.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Ingen tale ble registrert</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2468124392950503650">Velg en forespørsel for å starte genereringen, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />veiledningen for forespørsler<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Bruk Hjelp meg å skrive til å lage utkast eller finjustere eksisterende tekst – basert på AI fra Google</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Ingen treff</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
+<translation id="4486524074141928967">Du blir logget av kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder en modifikatortast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grensesnittfarge</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grå</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-tasten er testet</translation>
+<translation id="5613201299517339763">Du er blitt logget av</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Fant ikke filen</translation>
 <translation id="5938286923316838007">Kan ikke lage opptaksnavn for dette innholdet</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
+<translation id="5942727615796467094">Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten kan brukes</translation>
 <translation id="594552776027197022">Generer tilfeldig nøkkelpar</translation>
 <translation id="5946538341867151940">Du er ikke koblet til ennå. Hvis mobiloperatøren din anbefaler et egendefinert APN, skriver du inn APN-informasjonen ved å velge «+ Nytt APN».</translation>
 <translation id="5947266287934282605">Hvis den siste dagen i måneden er før denne dagen, tilbakestilles dataene den siste dagen i måneden</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">en annen planet</translation>
 <translation id="6359706544163531585">Slå av lyst tema</translation>
 <translation id="6359919876285606596">Denne handlingen er permanent og kan ikke angres</translation>
+<translation id="6368342879959028556">Når du velger «Opprett med AI», skriver du en egendefinert forespørsel. Du kan også velge «AI-bakgrunn», velge et tema og deretter velge de understrekede ordene for å tilpasse AI-bakgrunnen.</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6373461326814131011">dam</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
 <translation id="6462978824459367242">Legg til APN-knappen er nå aktivert</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du skanne siden på nytt?}=1{Vil du skanne side {PAGE_NUMBER} på nytt?}other{Vil du skanne side {PAGE_NUMBER} på nytt?}}</translation>
+<translation id="6468146470109254228">De tre siste forespørslene og resultatene dine. Du kan bare bruke disse mens du bruker Bakgrunn og stil.</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6472979596862005515">båter</translation>
 <translation id="64778964625672495">mørkerød</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">korallrosa</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Velg «Inspirer meg» for å få mer unike og varierte alternativer for AI-bilder.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Når du lager innhold med AI, blir forespørselen sendt til Googles AI-tjenere for å generere bildene og forbedre produktet, i henhold til <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI er på forsøksstadiet og i en tidlig fase av utviklingen, og tilgjengeligheten er foreløpig begrenset.</translation>
 <translation id="6673898378497337661">tastaturlysstyrke opp</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6694534975463174713">lås</translation>

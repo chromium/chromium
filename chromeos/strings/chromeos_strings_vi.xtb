@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Vừa với vùng quét</translation>
 <translation id="1343442362630695901">hồ muối</translation>
 <translation id="1348657754632799065">Thanh ghi âm</translation>
+<translation id="1350909945461913813">Hãy nhớ lưu công việc của bạn</translation>
 <translation id="1367951781824006909">Chọn tệp</translation>
 <translation id="1371650399987522809">Phản hồi về hình nền dựa trên công nghệ AI của Google</translation>
 <translation id="1374385338586507108">Định nghĩa</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Phiên bản SDK:</translation>
 <translation id="2016697457005847575">Thử các bước khắc phục vấn đề</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Chọn một chủ đề, sau đó chọn các từ gạch chân để cá nhân hoá hình ảnh do AI tạo.</translation>
 <translation id="2045814230297767491">dao kéo</translation>
 <translation id="2047316797244836561">Vui lòng kết nối mạng và tải lại trang để xem trình bảo vệ màn hình.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Không phát hiện thấy lời nói nào</translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2448312741937722512">Loại</translation>
+<translation id="2468124392950503650">Chọn câu lệnh để sáng tạo hoặc xem <ph name="BEGIN_LINK_PROMPTING_GUIDE" />hướng dẫn viết câu lệnh<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
 <translation id="2480572840229215612">cua</translation>
 <translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Không có kết quả nào phù hợp</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4486524074141928967">Bạn sẽ bị đăng xuất lúc <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Không có phím tắt này. Nhấn một phím tắt mới dùng phím bổ trợ (ctrl, alt, shift hoặc <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Màu giao diện</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">xám</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="5600027863942488546">Đã thử phím <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">Bạn đã bị đăng xuất</translation>
 <translation id="5620281292257375798">Chỉ sử dụng nội bộ</translation>
 <translation id="5630438231335788050">phong trào nghệ thuật bauhaus</translation>
 <translation id="5631759159893697722">bản tóm tắt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
 <translation id="5938286923316838007">Không thể tạo tên bản ghi cho nội dung này</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
+<translation id="5942727615796467094">Quản trị viên <ph name="MANAGER" /> đã thiết lập thời điểm bạn có thể sử dụng <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="594552776027197022">Tạo cặp khoá ngẫu nhiên</translation>
 <translation id="5946538341867151940">Bạn chưa kết nối mạng. Nếu nhà mạng di động đề xuất thêm APN tuỳ chỉnh, hãy nhập thông tin APN bằng cách chọn "+ APN mới"</translation>
 <translation id="5947266287934282605">Nếu ngày cuối tháng đến trước ngày này, thì dữ liệu sẽ được đặt lại vào ngày cuối tháng</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">hành tinh khác</translation>
 <translation id="6359706544163531585">Tắt giao diện sáng</translation>
 <translation id="6359919876285606596">Thao tác này có hiệu lực vĩnh viễn và không thể huỷ</translation>
+<translation id="6368342879959028556">Khi bạn chọn "Sáng tạo bằng AI", hãy viết một câu lệnh tuỳ chỉnh. Hoặc bạn có thể chọn "Hình nền AI" để tìm chủ đề, sau đó chọn các từ gạch chân để cá nhân hoá Hình nền AI.</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="6373461326814131011">cái ao</translation>
 <translation id="6379086450106841622">Màn hình cảm ứng</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>
 <translation id="6462978824459367242">Nút Thêm APN hiện đã bật</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Quét lại trang?}=1{Quét lại trang {PAGE_NUMBER}?}other{Quét lại trang {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">3 câu lệnh và thông tin đầu ra gần đây nhất của bạn. Bạn chỉ có thể truy cập các câu lệnh và thông tin đầu ra này khi đang sử dụng tính năng Hình nền và phong cách.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">thuyền</translation>
 <translation id="64778964625672495">đỏ đậm</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659594942844771486">Thẻ</translation>
 <translation id="66621959568103627">hồng san hô</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Chọn "Truyền cảm hứng cho tôi" để xem thêm lựa chọn hình ảnh đa dạng và độc đáo do AI tạo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Khi bạn sáng tạo bằng AI, hệ thống sẽ gửi câu lệnh đến các máy chủ AI của Google để tạo hình ảnh và cải thiện sản phẩm theo <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Chính sách quyền riêng tư của Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI tạo sinh đang được thử nghiệm, vẫn đang trong quá trình phát triển ban đầu và hiện được cung cấp có giới hạn.</translation>
 <translation id="6673898378497337661">tăng độ sáng đèn bàn phím</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
 <translation id="6694534975463174713">khoá</translation>

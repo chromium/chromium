@@ -165,6 +165,7 @@
 <translation id="2945997411976714835">इंस्टॉल करने में गड़बड़ी हुई: इंस्टॉल करने की प्रोसेस शुरू नहीं हो सकी.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क में Chrome से साइन-इन करें</translation>
 <translation id="2970681950995291301">Chrome से अपना Google खाता हटाने के लिए, सेटिंग पेज में जाकर Chrome से साइन आउट करें</translation>
+<translation id="2994465299455873643">अगर <ph name="BROWSER_NAME" /> पुराना हो जाता है, तो यह एन्क्रिप्ट यानी सुरक्षित करने की सेवाएं और इसे सुरक्षित तरीके से वापस पाने की सुविधा देता है. अगर यह सेवा बंद है, तो हो सकता है कि <ph name="BROWSER_NAME" /> एन्क्रिप्ट यानी सुरक्षित किए गए डेटा को ऐक्सेस न कर पाए. साथ ही, <ph name="BROWSER_NAME" /> खुद को ठीक न कर पाए.</translation>
 <translation id="3018957014024118866">Chrome से भी डेटा मिटाएं (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex को अपडेट करने के लिए, इसे फिर से लॉन्च करें</translation>
 <translation id="3037838751736561277">Google Chrome पृष्ठभूमि मोड में है.</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">रिडिङ लिस्टमा हाल्नुहोस्</translation>
 <translation id="1854463785401910334">खुला ट्याबहरूमा खोज्नुहोस्</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} मध्ये {position} पासवर्ड}other{{count} मध्ये {position} पासवर्ड}}</translation>
+<translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1872096359983322073">टर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
 <translation id="1881621406744213161">परिवारका सदस्यहरूलाई निम्तो गर्नुहोस्</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">पोजिसन सेट गर्नुहोस्</translation>
 <translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
 <translation id="4309403553630140242">थप जानकारीका लागि डबल ट्याप गर्नुहोस्</translation>
+<translation id="4320848494125124980">हालसालैका</translation>
 <translation id="4324735664183300693">नोटिफिकेसन प्राप्त गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="4328843285884395590">मेरो ड्राइभ</translation>
 <translation id="4331177082088332784">तपाईं BEGIN_LINK सामग्रीसम्बन्धी सेटिङ END_LINKमा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4469834037720363704">प्याकेज नम्बर</translation>
 <translation id="4471472356135655769">पासवर्डहरू एक्स्पोर्ट गर्न सकिएन</translation>
+<translation id="4474142134969976028">कुनै पनि मिल्दोजुल्दो परिणाम भेटिएन</translation>
 <translation id="4474494258097106883">तपाईंको iPhone का लागि बनाइएको</translation>
 <translation id="4488754974567924717">तपाईंका पासवर्डहरू ह्याक वा चोरी भएका खण्डमा हामी तपाईंलाई त्यसका बारेमा जानकारी दिने छौँ</translation>
 <translation id="4489536976005181779">{count,plural, =1{यो पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{यी पेजहरू तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>

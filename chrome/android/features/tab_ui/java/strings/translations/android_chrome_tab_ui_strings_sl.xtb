@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranžna</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
 <translation id="1273910660700874265">Možnosti skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.
+
+Če jo izbrišete, bodo vsi takoj izgubili dostop do skupine zavihkov »<ph name="TITLE_OF_GROUP" />« in izbrisana bo iz vseh naprav.</translation>
 <translation id="1340839264183302272">Zapusti skupino</translation>
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
 <translation id="1486715732399361704">Vse skupine zavihkov so prikazane tukaj</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zapiranje skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Zapiranje skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Zapiranje skupine zavihkov z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Zapiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Zapiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ogled podatkov o trgovini, možnosti so na voljo pri vrhu zaslona</translation>
+<translation id="5615302411300498438">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo zapustite.
+
+Če zapustite skupino, boste takoj izgubili dostop do skupine zavihkov »<ph name="TITLE_OF_GROUP" />«.</translation>
 <translation id="5627941783489838464">Ni posodobitev zavihkov</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Obnovi zavihek}one{Obnovi zavihke}two{Obnovi zavihke}few{Obnovi zavihke}other{Obnovi zavihke}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> povezava iz Chroma}one{<ph name="TABS_COUNT_MANY" /> povezava iz Chroma}two{<ph name="TABS_COUNT_MANY" /> povezavi iz Chroma}few{<ph name="TABS_COUNT_MANY" /> povezave iz Chroma}other{<ph name="TABS_COUNT_MANY" /> povezav iz Chroma}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> zavihek je dodan, zaprtih: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> zavihek je dodan, zaprtih: <ph name="ANY_CLOSED" />}two{<ph name="MANY_ADDED" /> zavihka sta dodana, zaprtih: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> zavihki so dodani, zaprtih: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> zavihkov je dodanih, zaprtih: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Vsi bodo takoj izgubili dostop do skupine zavihkov <ph name="GROUP_NAME" /> in izbrisana bo iz vseh naprav</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
+<translation id="8635399646025169806">Želite ohraniti skupino zavihkov?</translation>
 <translation id="870736955561925754">Želite zapreti zavihek in izbrisati skupino?</translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_MONTHS_ONE" /> mesecem}one{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecem}two{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecema}few{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}other{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
+<translation id="8804742093141782941">Ohrani skupino</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>
 <translation id="8915916167043355778">Zapri vse</translation>

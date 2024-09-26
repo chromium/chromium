@@ -319,6 +319,7 @@
 <translation id="122082903575839559">سرٹیفیکیٹ دستخط الگورتھم</translation>
 <translation id="1221024147024329929">‏RSA مرموز کاری کے ساتھ PKCS #1 MD2</translation>
 <translation id="1221825588892235038">صرف انتخاب</translation>
+<translation id="1222835797152767346">‏سائن ان کرنا آسان بنانے کیلئے ایک PIN سیٹ کریں</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> کو لائسنس کی ضرورت ہے</translation>
 <translation id="1223853788495130632">آپ کا منتظم اس ترتیب کیلئے ایک مخصوص قدر کی تجویز کرتا ہے۔</translation>
 <translation id="1225177025209879837">درخواست پر کارروائی کی جا رہی ہے…</translation>
@@ -5344,7 +5345,6 @@
 <translation id="4838327282952368871">خیالی</translation>
 <translation id="4838836835474292213">کلپ بورڈ پڑھنے کی رسائی کی اجازت مل گئی</translation>
 <translation id="4838907349371614303">اپ ڈیٹ کردہ پاس ورڈ</translation>
-<translation id="4838958829619609362"><ph name="LANGUAGE" /> میں انتخاب دستیاب نہیں ہے</translation>
 <translation id="4839303808932127586">ویڈیو مح&amp;فوظ کریں بطور…</translation>
 <translation id="4839910546484524995">اپنا آلہ چیک کریں</translation>
 <translation id="4840096453115567876">بہر حال پوشیدگی وضع کو بند کریں؟</translation>
@@ -5954,7 +5954,6 @@
 <translation id="5287425679749926365">آپ کے اکاؤنٹس</translation>
 <translation id="5288106344236929384">مزید کارروائیاں، <ph name="DOMAIN" /> پر <ph name="USERNAME" /> کے لیے پاس کے اختیارات</translation>
 <translation id="5288678174502918605">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
-<translation id="52895863590846877">صفحہ <ph name="LANGUAGE" /> میں نہیں ہے</translation>
 <translation id="5290020561438336792">‏‫PC اور کاسٹنگ آلہ ایک ہی Wi-Fi نیٹ ورک پر ہیں (جیسے، 2.4GHz بمقابلہ 5GHz)</translation>
 <translation id="52912272896845572">نجی کلید کی فائل غلط ہے۔</translation>
 <translation id="5291739252352359682">‏یہ خصوصیت Chrome براؤزر میں میڈیا کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے (فی الحال انگریزی میں دستیاب ہے)۔ آڈیو اور کیپشنز پر مقامی طور پر کارروائی کی جاتی ہے اور یہ ہمیشہ آلے پر ہی رہتے ہیں۔</translation>
@@ -6408,6 +6407,7 @@
 <translation id="5624959475330585145">غیر محفوظ کنکشنز استعمال کرنے سے پہلے پوچھیں</translation>
 <translation id="5625225435499354052">‏Google Pay میں ترمیم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
+<translation id="5626172233890210551">اس کے بجائے پاس ورڈ استعمال کریں</translation>
 <translation id="5627832140542566187">ڈسپلے کی سمت بندی</translation>
 <translation id="5628434207686266338">آلہ کا پاس ورڈ سیٹ کریں</translation>
 <translation id="562935524653278697">آپ کے منتظم نے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی مطابقت پذیری غیر فعال کر دی ہے۔</translation>
@@ -7185,6 +7185,7 @@
 <translation id="6207937957461833379">ملک/علاقہ</translation>
 <translation id="6208521041562685716">موبائل ڈیٹا فعال کیا جا رہا ہے</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> میں محفوظ کرنے میں ناکام ہو گیا</translation>
+<translation id="6209767197996242814">اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="SETTINGS_LINK" />۔</translation>
 <translation id="6209838773933913227">کمپونینٹ اپ ڈیٹ ہو رہا ہے</translation>
 <translation id="6209908325007204267">‏آپ کے آلے میں Chrome انٹرپرائز اپ گریڈ شامل ہے، لیکن آپ کا صارف نام انٹرپرائز اکاؤنٹ سے وابستہ نہیں ہے۔ براہ کرم کسی ثانوی آلہ پر g.co/ChromeEnterpriseAccount ملاحظہ کرکے انٹرپرائز اکاؤنٹ بنائیں۔</translation>
 <translation id="6210282067670792090">ایڈریس بار میں، اس کی بورڈ شارٹ کٹ کو سرچ انجن اور سائٹ کی تلاش کے لیے شارٹ کٹ کے ساتھ استعمال کریں</translation>
@@ -8092,7 +8093,6 @@
 <translation id="686366188661646310">پاس ورڈ حذف کریں؟</translation>
 <translation id="6863925886424789941">کولوزیئم</translation>
 <translation id="6865313869410766144">آٹو فل فارم ڈیٹا</translation>
-<translation id="6865598234501509159">صفحہ <ph name="LANGUAGE" /> میں نہیں ہے</translation>
 <translation id="6865708901122695652">‏WebRTC ایونٹ لاگز (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">خاموش</translation>
 <translation id="686664946474413495">رنگ کا درجہ حرارت</translation>
@@ -8712,7 +8712,6 @@
 <translation id="7343372807593926528">براہ کرم تاثرات بھیجنے سے پہلے مسئلے کی توضیح کریں۔</translation>
 <translation id="7344585835349671209">‏اپنے آلے پر HTTPS/SSL سرٹیفکیٹس کا نظم کریں</translation>
 <translation id="7345706641791090287">اپنے پاس ورڈ کی توثیق کریں</translation>
-<translation id="7345919885156673810"><ph name="LANGUAGE" /> میں انتخاب دستیاب نہیں ہے</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7347751611463936647">یہ ایکسٹینشن استعمال کرنے کیلئے "<ph name="EXTENSION_KEYWORD" />"، پھر ٹیب، پھر اپنی کمانڈ یا تلاش ٹائپ کریں۔</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
@@ -10750,6 +10749,7 @@
 <translation id="8791534160414513928">‏اپنے براؤزنگ ٹریفک کے ساتھ ایک "Do Not Track" درخواست بھیجیں</translation>
 <translation id="8793390639824829328">سائٹس اس خصوصیت کو مشترکہ ٹیبز کو اسکرول اور زوم کرنے کے لیے استعمال کرتی ہیں</translation>
 <translation id="879413103056696865">ہاٹ اسپاٹ آن ہونے پر، آپ کا <ph name="PHONE_NAME" /> درج ذيل کام کرے گا:</translation>
+<translation id="8794548468611058947">‏سائن ان کرنے کیلئے اپنے Google اکاؤنٹ کا پاس ورڈ درج کرنے کے بجائے، آپ اس <ph name="DEVICE_TYPE" /> کیلئے ایک PIN تخلیق کر سکتے ہیں</translation>
 <translation id="8795916974678578410">نئی ونڈو</translation>
 <translation id="8796919761992612392">‏اپنے Chrome کو حسب ضرورت بنائیں</translation>
 <translation id="8797459392481275117">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>

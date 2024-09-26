@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
+<translation id="2242389809734574253">'IBAN സംരക്ഷിക്കുക' അടച്ചു.</translation>
 <translation id="2246264294482514010">10 x 12 ഇഞ്ച്</translation>
 <translation id="2246480341630108201">നിങ്ങളുടെ രക്ഷിതാവ് ഇതുവരെ അനുമതി നൽകിയിട്ടില്ല</translation>
 <translation id="2247789808226901522">കാർഡ് കാലഹരണപ്പെട്ടു</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> അക്ക പരിശോധിച്ചുറപ്പിക്കൽ കോഡ് നൽകുക</translation>
 <translation id="3272643614306383237">ഒരു MB-യിൽ കുറവാണ്. നിങ്ങൾ അടുത്ത തവണ സന്ദർശിക്കുമ്പോൾ ചില സെെറ്റുകൾ ലോഡ് ചെയ്യുന്നത് വളരെ പതുക്കെയായിരിക്കും.</translation>
 <translation id="3273738040255912340">നിങ്ങളുടെ അഡ്‌മിന് പ്രൊഫൈലിലും ബ്രൗസറിലും വിദൂരമായി മാറ്റങ്ങൾ വരുത്താനും റിപ്പോർട്ടിംഗിലൂടെ ബ്രൗസറിനെക്കുറിച്ചുള്ള വിവരങ്ങൾ വിശകലനം ചെയ്യാനും ആവശ്യമായ മറ്റ് ടാസ്‌ക്കുകൾ ചെയ്യാനും കഴിയും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">'IBAN സംരക്ഷിക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}other{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}}</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
@@ -2124,6 +2126,7 @@
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="4881808915112408168">24 x 31.5 ഇഞ്ച്</translation>
 <translation id="4882314601499260499">ഉപയോക്തൃ നയങ്ങളൊന്നും ബാധകമാക്കിയിട്ടില്ല. ഉപയോക്തൃ നയങ്ങൾ ചേർക്കാൻ, നിങ്ങളുടെ ഓർഗനൈസേഷൻ <ph name="LINK_BEGIN" />നിങ്ങളുടെ ഡൊമെയ്‌ൻ പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">നിങ്ങളുടെ ചോദ്യം അല്ലെങ്കിൽ പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="4885030148564729407">ഹണിമൂണുകൾ, റൊമാന്റിക് യാത്രകൾ</translation>
 <translation id="4885256590493466218">ചെക്ക്‌ഔട്ട് ചെയ്യുമ്പോൾ <ph name="CARD_DETAIL" /> ഉപയോഗിച്ച് പണമടയ്‌ക്കുക</translation>
 <translation id="4887406273302438710">Windows Hello ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
@@ -2583,6 +2586,7 @@
 <translation id="572328651809341494">അടുത്തിടെയുള്ള ടാബുകൾ</translation>
 <translation id="5723873695528696965">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ നിയന്ത്രിക്കുക, റീപ്രോഗ്രാം ചെയ്യുക</translation>
 <translation id="5725297205162868298">കുറുക്കുവഴി @ എന്ന പ്രതീകത്തിൽ ആരംഭിക്കാനാകില്ല: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">വിപുലമായ പ്രിന്റർ ഫീച്ചറുകൾ ഉപയോഗിക്കാനുള്ള അനുമതി തേടാം</translation>
 <translation id="5729442113829771034">പ്രാഥമിക ശിശു വിദ്യാഭ്യാസം</translation>
 <translation id="5730040223043577876">മറ്റ് സൈറ്റുകളിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="5732392974455271431">നിങ്ങൾക്ക് വേണ്ടി ഇത് അൺബ്ലോക്ക് ചെയ്യാൻ രക്ഷിതാക്കൾക്ക് കഴിയും</translation>
@@ -2594,6 +2598,7 @@
 <translation id="5743684619253032786">നഖ സംരക്ഷണ ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="5745733273847572235">നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
 <translation id="5750869797196646528">കൈകൾ ട്രാക്ക് ചെയ്യൽ</translation>
+<translation id="5752327398324808817">ഒന്നോ രണ്ടോ വാക്കുകൾ നൽകുക</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
@@ -3089,6 +3094,7 @@
 <translation id="6671169470640320959">ഓട്ടോമൊബൈൽ ഫിനാൻസിംഗ്</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6677351035258626477">ഫാസ്റ്റ് ഫുഡ്</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}other{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}}</translation>
 <translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6687230248707087982">എൻവലപ്പ് (പ്ലെയിൻ)</translation>
@@ -3105,6 +3111,7 @@
 <translation id="6696575039575740785">വെബ് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="6698097747703777657">കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">സൃഷ്ടിച്ചു:</translation>
+<translation id="6698769547327354196">Chrome-ൽ Pix ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="67007264085648978">ടൈം സ്‌ക്രബർ</translation>
 <translation id="6702851555558236418">ഓഡിയോ, സംഗീത സോഫ്റ്റ്‌വെയർ</translation>
 <translation id="6702919718839027939">ദൃശ്യമാക്കുക</translation>
@@ -3407,6 +3414,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ബിസിനസ് പ്രവർത്തനങ്ങൾ</translation>
+<translation id="7244061187185055290">നിങ്ങൾ തിരയുന്നതെന്താണെന്ന് ഏതാനും വാക്കുകളിൽ വിവരിക്കുക</translation>
 <translation id="7251437084390964440">നെറ്റ്‌വർക്ക് കോൺഫിഗറേഷൻ, ONC നിലവാരത്തിന് അനുസരിച്ചുള്ളതല്ല. കോൺഫിഗറേഷൻ ഭാഗങ്ങൾ ഇമ്പോർട്ട് ചെയ്‌തേക്കില്ല.
 കൂടുതൽ വിശദാംശങ്ങൾ:
 <ph name="DEBUG_INFO" /></translation>
@@ -3785,7 +3793,6 @@
 <translation id="7935318582918952113">DOM ഡിസ്‌റ്റിലർ</translation>
 <translation id="7937163678541954811">വേഗത്തിലുള്ള ചെക്ക്ഔട്ടിനായി ഈ കാർഡിന്റെ CVC എൻക്രിപ്റ്റ് ചെയ്ത് നിങ്ങളുടെ ഉപകരണത്തിൽ സംരക്ഷിക്കും</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
-<translation id="7938490694919717008">ചെക്കൗട്ട് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ കാർഡുകൾക്ക് ഏതൊക്കെ റിവാർഡുകളും ആനുകൂല്യങ്ങളും ലഭ്യമാണെന്ന് കാണിക്കുക <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />കാർഡ് ആനുകൂല്യങ്ങളെ കുറിച്ച് അറിയുക<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് ഇതുവരെയും സാധുതയുള്ളതല്ല.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">മിഠായിയും മധുര പലഹാരങ്ങളും</translation>

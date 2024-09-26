@@ -4154,6 +4154,7 @@
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948334586359655083">このタブは音声を再生しています</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
+<translation id="3948985214866944547">ほとんどのユーザーがこのサイトとの正確な位置情報の共有をブロックしています</translation>
 <translation id="394984172568887996">IE ブックマーク</translation>
 <translation id="3949999964543783947">ファイルのダウンロードの安全性を高めるために <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">ログイン</translation>
@@ -5334,7 +5335,6 @@
 <translation id="4838327282952368871">ドリーミー</translation>
 <translation id="4838836835474292213">クリップボードへの読み取りアクセスが許可されています</translation>
 <translation id="4838907349371614303">パスワードの更新完了</translation>
-<translation id="4838958829619609362">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="4839303808932127586">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4839910546484524995">デバイスを確認する</translation>
 <translation id="4840096453115567876">シークレット モードを終了してもよろしいですか？</translation>
@@ -5943,7 +5943,6 @@
 <translation id="5287425679749926365">お使いのアカウント</translation>
 <translation id="5288106344236929384">その他の操作、<ph name="DOMAIN" /> の <ph name="USERNAME" /> 用のパスキー オプション</translation>
 <translation id="5288678174502918605">閉じたタブを開く(&amp;E)</translation>
-<translation id="52895863590846877"><ph name="LANGUAGE" />のページではない場合</translation>
 <translation id="5290020561438336792">PC とキャスト デバイスが別の Wi-Fi ネットワーク（例: 2.4 GHz と 5 GHz）に接続されている</translation>
 <translation id="52912272896845572">秘密鍵ファイルが無効です。</translation>
 <translation id="5291739252352359682">Chrome ブラウザで再生するメディアの字幕を自動的に作成します（現在のところ英語に対応）音声と字幕はローカルで処理され、デバイスの外部へ送信されることはありません。</translation>
@@ -8081,7 +8080,6 @@
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6863925886424789941">コロッセオ</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
-<translation id="6865598234501509159"><ph name="LANGUAGE" />のページではない場合</translation>
 <translation id="6865708901122695652">WebRTC イベントログ（<ph name="WEBRTC_EVENT_LOG_COUNT" />）</translation>
 <translation id="686609795364435700">小さい</translation>
 <translation id="686664946474413495">色温度</translation>
@@ -8701,7 +8699,6 @@
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7344585835349671209">デバイスの HTTPS / SSL 証明書を管理します</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
-<translation id="7345919885156673810">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">この拡張機能を使用するには、「<ph name="EXTENSION_KEYWORD" />」と入力して Tab キーを押してからコマンドまたは検索キーワードを入力してください。</translation>
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>

@@ -702,6 +702,7 @@
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
+<translation id="2242389809734574253">IBAN को सेव करने की सुविधा बंद हो गई है.</translation>
 <translation id="2246264294482514010">10 x 12 इंच</translation>
 <translation id="2246480341630108201">आपके अभिभावक ने अब तक इस साइट को ऐक्सेस करने की अनुमति नहीं दी है</translation>
 <translation id="2247789808226901522">कार्ड की समयसीमा खत्म हो चुकी है</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3272112314896217187">पुष्टि करने के लिए <ph name="NUMBER_OF_DIGITS" /> अंकों वाला कोड डालें</translation>
 <translation id="3272643614306383237">1 एमबी से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
 <translation id="3273738040255912340">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chromium से बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN को सेव करने की सुविधा, पूरी स्क्रीन पर खोल दी गई है.</translation>
 <translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -2127,6 +2129,7 @@
 <translation id="4881695831933465202">खोलें</translation>
 <translation id="4881808915112408168">24 x 31.5 इंच</translation>
 <translation id="4882314601499260499">कोई उपयोगकर्ता नीति लागू नहीं है. उपयोगकर्ता नीतियां जोड़ने के लिए, आपके संगठन को <ph name="LINK_BEGIN" />आपके डोमेन की पुष्टि करनी होगी<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">अपना सवाल या प्रॉम्प्ट डालें</translation>
 <translation id="4885030148564729407">रोमैंटिक और हनीमून वाली जगहें</translation>
 <translation id="4885256590493466218">चेकआउट के दौरान <ph name="CARD_DETAIL" /> से पैसे चुकाएं</translation>
 <translation id="4887406273302438710">Windows Hello की मदद से पासवर्ड सुरक्षित रखें</translation>
@@ -2586,6 +2589,7 @@
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5723873695528696965">अपने एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करें</translation>
 <translation id="5725297205162868298">शॉर्टकट, @ वर्ण से शुरू नहीं हो सकता: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">साइट, प्रिंटर की बेहतर सुविधाओं को इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="5729442113829771034">बच्चों को दी जाने वाली शुरुआती शिक्षा</translation>
 <translation id="5730040223043577876">अगर आपने अपने पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो Chrome आपको उसे रीसेट करने का सुझाव देता है.</translation>
 <translation id="5732392974455271431">आपके अभिभावक इसे आपके लिए अनवरोधित कर सकते हैं</translation>
@@ -2597,6 +2601,7 @@
 <translation id="5743684619253032786">नाखून की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="5745733273847572235">साइट, आपकी जगह की जानकारी जानने की अनुमति मांग सकती है</translation>
 <translation id="5750869797196646528">हाथ ट्रैक करने की सुविधा</translation>
+<translation id="5752327398324808817">एक या दो शब्द डालें</translation>
 <translation id="5759751709240058861">कैमरे का इस्तेमाल करें और उसे मूव करें</translation>
 <translation id="5763042198335101085">मान्य ईमेल पता डालें</translation>
 <translation id="5764725887548570807">मूल फ़ॉर्मैट अमान्य है.</translation>
@@ -3092,6 +3097,7 @@
 <translation id="6671169470640320959">वाहनों के लिए क़र्ज़</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
 <translation id="6677351035258626477">फ़ास्ट फ़ूड</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}one{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}other{Chrome पर खरीदारी करते समय, विकल्पों के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}}</translation>
 <translation id="6681790815630918386">सीवीसी सेव किया गया</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6687230248707087982">एन्वेलप (प्लेन)</translation>
@@ -3108,6 +3114,7 @@
 <translation id="6696575039575740785">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति नहीं है</translation>
 <translation id="6698097747703777657">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">निर्मित:</translation>
+<translation id="6698769547327354196">Chrome में Pix की सुविधा बंद करने के लिए, अपनी <ph name="BEGIN_LINK1" />पेमेंट सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="67007264085648978">टाइम स्क्रबर</translation>
 <translation id="6702851555558236418">ऑडियो और म्यूज़िक सॉफ़्टवेयर</translation>
 <translation id="6702919718839027939">प्रज़ेंट</translation>
@@ -3410,6 +3417,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">बिज़नेस ऑपरेशंस</translation>
+<translation id="7244061187185055290">कम शब्दों में बताएं कि आपको क्या खोजना है</translation>
 <translation id="7251437084390964440">नेटवर्क कॉन्फ़िगरेशन ONC मानक के मुताबिक नहीं है. हो सकता है कि कॉन्फ़िगरेशन के कुछ हिस्से नहीं लाए गए हों.
 ज़्यादा जानकारी:
 <ph name="DEBUG_INFO" /></translation>
@@ -3790,7 +3798,6 @@
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
 <translation id="7937163678541954811">इस कार्ड के सीवीसी को एन्क्रिप्ट (सुरक्षित) करके आपके डिवाइस में सेव किया जाएगा, ताकि आप तेज़ी से चेकआउट कर सकें</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
-<translation id="7938490694919717008">चेकआउट के समय दिखाएं कि मेरे कार्ड के लिए कौन-कौनसे इनाम और फ़ायदे उपलब्ध हैं. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्ड से मिलने वाले फ़ायदों के बारे में जानें<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">सर्वर का प्रमाणपत्र अभी तक मान्य नहीं है.</translation>
 <translation id="7941628148012649605">चोउ 4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="794169214536209644">कैंडी और स्वीट्स</translation>

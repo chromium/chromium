@@ -10718,52 +10718,6 @@ Esta política solo tendrá efecto si se le asigna el valor true a la política 
 <translation id="9123464369663964441">Permitir que los usuarios añadan excepciones para permitir contenido mixto</translation>
 <translation id="9124770007620653639">No enviar nunca datos de fiabilidad de dominios a Google</translation>
 <translation id="9126331659955304300">Permitir que se seleccione el avatar del usuario desde el sistema de archivos local, la cámara o el perfil de Google.</translation>
-<translation id="9126491667911789829">Si se establece esta política, se especificará una lista de las aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, así como los usuarios que no podrán desinstalarlas ni desactivarlas.
-
-      Cada elemento de la lista de esta política es un objeto con un miembro obligatorio:
-      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
-
-      y 6 miembros opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (define cómo se abrirá la aplicación web; la opción predeterminada es que lo haga en una pestaña nueva)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (selecciona True si quieres crear accesos directos del escritorio
-      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (a partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la aplicación si no es una
-      aplicación web progresiva o PWA, o el nombre de la aplicación instalada
-      temporalmente si es una PWA, pero se requiere autenticación para que la
-      instalación pueda completarse. Si se proporcionan tanto
-      <ph name="CUSTOM_NAME_LABEL" /> como
-      <ph name="FALLBACK_APP_NAME_LABEL" />,
-      esta última se ignorará).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (a partir de la versión 99
-      de <ph name="PRODUCT_OS_NAME" /> y de la versión 112 en el resto de los sistemas operativos para ordenadores, puedes anular
-      de forma permanente el nombre de la aplicación en todas las aplicaciones web y PWAs).
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (a partir de la versión 99
-      de <ph name="PRODUCT_OS_NAME" /> y de la versión 112 en el resto de los sistemas operativos para ordenadores,
-      puedes anular el icono de las aplicaciones instaladas. Los iconos deben ser cuadrados,
-       con un tamaño máximo de 1 MB, y deben tener uno de los siguientes formatos: jpeg, png, gif, webp o ico.
-      El valor de hash debe ser el hash SHA256 del archivo de icono).
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (a partir de la versión 107 de
-      <ph name="PRODUCT_NAME" />). Si se habilita esta política, la <ph name="URL_LABEL" /> especificada
-      se instalará como un acceso directo, igual que si se hiciera mediante la opción "Crear acceso directo..."
-      de la GUI del navegador para ordenadores.
-      Ten en cuenta que, si se instala como acceso directo, no se actualizará si
-      cambia el archivo de manifiesto de <ph name="URL_LABEL" />.
-      Si esta política se inhabilita o no se establece, la aplicación web de la
-      <ph name="URL_LABEL" /> especificada se instalará de forma normal.
-
-      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9128095645860384292">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios no pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
 
           Si se inhabilita el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web de forma más lenta y que también se inhabiliten algunas partes de JavaScript, como WebAssembly. Al inhabilitarse el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web con una configuración más segura.

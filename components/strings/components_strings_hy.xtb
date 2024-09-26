@@ -3277,6 +3277,7 @@
 <translation id="6978236010531171013">Կիսվել</translation>
 <translation id="6978722349058177832">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, Chromium-ը կարող է խնդրել ձեզ հաստատել ամեն անգամ, երբ վճարում եք ինքնալրացման միջոցով</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">երրորդ կողմի քուքիների օգտագործման թույլտվությունը կառավարելու համար</translation>
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
 <translation id="6984270784814146224">Չպիտակված պատկեր։ Տեքստն արտահանվում է Google AI-ի միջոցով</translation>
 <translation id="6987806006823772670">Ծրար (կավճապատ)</translation>
@@ -3803,7 +3804,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Այս քարտի CVC կոդը կգաղտնագրվի և կպահվի ձեր սարքում՝ ավելի արագ վճարման համար</translation>
 <translation id="7937554595067888181">Վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Վճարումը ձևակերպելիս ցույց տալ, թե ինչ բոնուսներ և առավելություններ են հասանելի ձեր քարտերի համար <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Իմանալ ավելին քարտերի առավելությունների մասին<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Սերվերի վկայագիրը դեռ վավեր չէ:</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Կոնֆետներ և քաղցրավենիք</translation>

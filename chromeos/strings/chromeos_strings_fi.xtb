@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1343442362630695901">suolajärvi</translation>
 <translation id="1348657754632799065">Tallennuspalkki</translation>
+<translation id="1350909945461913813">Muista tallentaa työsi</translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
 <translation id="1371650399987522809">Palaute taustakuvasta, joka hyödyntää Googlen tekoälyä</translation>
 <translation id="1374385338586507108">Määritä</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-versio:</translation>
 <translation id="2016697457005847575">Kokeile ongelmanratkaisuohjeita</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Valitse teema ja sitten alleviivatut sanat, niin voit personoida AI-kuviasi.</translation>
 <translation id="2045814230297767491">ruokailuvälineet</translation>
 <translation id="2047316797244836561">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi näytönsäästäjän.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Puhetta ei havaittu</translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
+<translation id="2468124392950503650">Valitse kehote luodaksesi tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Käytä Auta minua kirjoittamaan ‐ominaisuutta luonnoksen kirjoittamiseen tai aiemmin luodun tehtävän viimeistelyyn Googlen tekoälyn avulla</translation>
 <translation id="2480572840229215612">ravut</translation>
 <translation id="248546197012830854">Laite on offline-tilassa. Muodosta yhteys Wi-Fi-verkkoon, niin näet ohjesisältöä.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Ei tuloksia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
+<translation id="4486524074141928967">Sinut kirjataan ulos klo <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">harmaa</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5600027863942488546">Näppäin testattu: <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">Sinut on kirjattu ulos</translation>
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Tiedostoa ei löydy</translation>
 <translation id="5938286923316838007">Tallenteiden nimiä ei voi luoda tälle sisällölle</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
+<translation id="5942727615796467094">Järjestelmänvalvoja (<ph name="MANAGER" />) on määrittänyt, milloin laitetta (<ph name="DEVICE_TYPE" />) voidaan käyttää</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
 <translation id="5946538341867151940">Yhteyttä ei vielä ole. Jos mobiilioperaattorisi suosittelee muokattua APN:ää, lisää APN-tiedot valitsemalla + Uusi APN.</translation>
 <translation id="5947266287934282605">Jos kuukauden viimeinen päivä on ennen tätä päivää, data nollataan kuukauden viimeisenä päivänä</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">eri planeetta</translation>
 <translation id="6359706544163531585">Poista vaalea teema käytöstä</translation>
 <translation id="6359919876285606596">Tämä toiminto on pysyvä, eikä sitä voi kumota.</translation>
+<translation id="6368342879959028556">Kirjoita oma kehote, kun valitset "Luo tekoälyn avulla". Voit myös valita "AI-taustakuvat", valita teema ja sitten alleviivatut sanat, niin voit personoida AI-taustakuvasi.</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6373461326814131011">lampi</translation>
 <translation id="6379086450106841622">Kosketusnäyttö</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Siirry tilin asetuksiin</translation>
 <translation id="6462978824459367242">Lisää APN ‐painike on nyt poistettu käytöstä</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skannataanko uudelleen?}=1{Skannataanko sivu {PAGE_NUMBER} uudelleen?}other{Skannataanko sivu {PAGE_NUMBER} uudelleen?}}</translation>
+<translation id="6468146470109254228">Kolme viimeisintä kehotetta ja tulosta. Näet nämä vain silloin, kun käytät Taustakuvaa ja tyyliä.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">veneet</translation>
 <translation id="64778964625672495">tummanpunainen</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659594942844771486">Välilehti</translation>
 <translation id="66621959568103627">korallinpunainen</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia AI-kuvavaihtoehtoja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kun käytät tekoälyä, kehote lähetetään Googlen tekoälypalvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiivinen tekoäly on kokeellinen ja se on vielä kehitysvaiheessa, ja sen saatavuus on tällä hetkellä rajoitettu.</translation>
 <translation id="6673898378497337661">lisää näppäimistön kirkkautta</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
 <translation id="6694534975463174713">lukko</translation>
@@ -1569,6 +1587,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8881098542468797602">Testi onnistui</translation>
 <translation id="8882789155418924367">pöllöt</translation>
 <translation id="8892443466059986410">Peru pikanäppäimen muokkaus</translation>
+<translation id="8897043028305808902">Tiedosto nimetty uudelleen</translation>
 <translation id="8898840733695078011">Signaalin vahvuus</translation>
 <translation id="8909114361904403025">nuoli ylös</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>

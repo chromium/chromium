@@ -167,6 +167,7 @@
 <translation id="2945997411976714835">इन्स्टल गर्ने क्रममा त्रुटि भयो: इन्स्टल गर्ने प्रक्रिया सुरु गर्न सकिएन।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome बाट आफ्नो Google खाता हटाउन "सेटिङ" पेजमा गई Chrome बाट साइन आउट गर्नुहोस्</translation>
+<translation id="2994465299455873643">इन्क्रिप्सन सेवाहरूका साथै <ph name="BROWSER_NAME" /> पुरानो भएका खण्डमा उक्त ब्राउजर रिकभर गर्ने सुरक्षित तरिका उपलब्ध गराउँछ। यो सेवा अफ गरिएका खण्डमा <ph name="BROWSER_NAME" /> ले इन्क्रिप्ट गरिएको डेटामाथि एक्सेस गुमाउन सक्छ र <ph name="BROWSER_NAME" /> स्वतः स्फूर्त रूपमा रिकभर नहुन सक्छ।</translation>
 <translation id="3018957014024118866">यो जानकारी Chrome बाट पनि मेटाउनुहोस् (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">तपाईं &amp;ChromeOS Flex अपडेट गर्न चाहनुहुन्छ भने रिलन्च गर्नुहोस्</translation>
 <translation id="3037838751736561277">Google Chrome पृष्ठभूमि मोडमा छ।</translation>
@@ -223,6 +224,7 @@
 <translation id="3673813398384385993">Chrome ले "<ph name="EXTENSION_NAME" />" मा मालवेयर भएको कुरा पत्ता लगाएको छ</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3697952514309507634">Chrome का अन्य प्रोफाइलहरू</translation>
+<translation id="3700276346088749847">आफ्नो खातामा सेभ गरिएको Chrome को डेटा मेटाउनुहोस्</translation>
 <translation id="3703994572283698466">ChromeOS पनि <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेभलपमेन्ट इनभारमेन्ट<ph name="END_LINK_LINUX_OSS" /> जस्तै अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
 <translation id="3716540481907974026">ChromeOS Flex को संस्करण</translation>
 <translation id="3718181793972440140">यसले यो डिभाइसको १ वस्तु मेट्नेछ। पछि आफ्नो डेटा प्राप्त गर्न Chrome मा <ph name="USER_EMAIL" /> को रूपमा साइन इन गर्नुहोस्।</translation>
@@ -294,6 +296,7 @@
 <translation id="4575717501879784448">तपाईंलाई अझ राम्रो ब्राउजिङ सुविधा प्रदान गर्न र स्रोतहरू खाली पार्न Chrome ले यी ट्याब निष्क्रिय बनाउन सक्छ।</translation>
 <translation id="459622048091363950">Chrome ले पहुँच प्राप्त गरेपछि, वेबसाइटहरू तपाईंसँग पहुँच माग्न सक्ने छन्।</translation>
 <translation id="4600710005438004015">Chrome लाई नवीनतम संस्करणमा अद्यावधिक गर्न सकिएन, जसका कारण तपाईं नयाँ सुविधाहरू तथा सुरक्षासम्बन्धी समाधानहरू चलाउनबाट वञ्चित भइराख्नुभएको छ।</translation>
+<translation id="4601439950572737842">तपाईंको पासफ्रेज प्रयोग गरी तपाईंको डेटा इन्क्रिप्ट गरिएको छ। आफ्नो Google खातामा Chrome को डेटा सेभ गर्न तथा सो डेटा प्रयोग गर्न तपाईंको पासफ्रेज हाल्नुहोस्।</translation>
 <translation id="4624065194742029982">Chrome को इन्कोग्निटो मोड</translation>
 <translation id="4627412468266359539">ऐच्छिक: Google लाई डाइग्नोस्टिक र प्रयोगसम्बन्धी डेटा स्वतः पठाएर ChromeOS Flex को पर्फर्मेन्स र यसका सुविधाहरूको गुणस्तर सुधार्न सघाउनुहोस्।</translation>
 <translation id="4633000520311261472">Chrome लाई झन छिटो बनाउनको लागि, हामीले <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मा सूचित नभएका र तपाइँलाई थाहा नहुँदै थपिएका केही विस्तारहरू असक्षम गर्‍यौँ।</translation>

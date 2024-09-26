@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1066101356081285416">Chrome ຈະກວດຫາໝາຍເລກການຕິດຕາມຢູ່ເວັບໄຊຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນອັບເດດກ່ຽວກັບພັດສະດຸໃຫ້ທ່ານເຫັນຢູ່ໜ້າແຖບໃໝ່. ລະບົບຈະສົ່ງໝາຍເລກຕິດຕາມພັດສະດຸ ແລະ ຊື່ເວັບໄຊໄປຫາ Google ເພື່ອໃຫ້ບໍລິການຄຸນສົມບັດນີ້ ແລະ ເພື່ອປັບປຸງຄຸນສົມບັດຕ່າງໆກ່ຽວກັບການຊື້ເຄື່ອງຂອງ Google ສຳລັບທຸກຄົນ. ທ່ານສາມາດອັບເດດຂໍ້ມູນນີ້ໄດ້ທຸກເວລາໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຕິດຕາມພັດສະດຸ<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="1143896152279775643">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">ເປີດແຖບໃໝ່ໃນ Chrome</translation>
 <translation id="1166460004393506534">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">ເຄັດລັບສຳລັບ Chrome: ເລືອກຕຳແໜ່ງຂອງແຖບທີ່ຢູ່ຂອງທ່ານ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ບຸກມາກຂອງທ່ານໃນ Chrome.</translation>
+<translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1830634592642484976">ປັດຈຸບັນທີ່ຢູ່ນີ້ຖືກບັນທຶກໃສ່ Chrome ແລ້ວ. ເພື່ອໃຊ້ມັນທົ່ວຜະລິດຕະພັນ Google, ໃຫ້ບັນທຶກມັນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chrome ແລະ ແອັບອື່ນຂອງ Google ໃນອຸປະກອນນີ້.</translation>
 <translation id="1919130412786645364">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chrome</translation>
@@ -70,6 +72,7 @@
 <translation id="2689064829982324496">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2703746758996815929">ເພື່ອຮັບເຄັດລັບ Chrome ທີ່ເປັນປະໂຫຍດ, ໃຫ້ເປີດການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າ iOS ຂອງທ່ານ.</translation>
+<translation id="2728851697704606655">ແປພາສາດ້ວຍ Google Lens</translation>
 <translation id="2736805085127235148">ຕອນນີ້ການແຈ້ງເຕືອນ Chrome ປິດຢູ່ໃນການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2754428955276778271">ຂໍ້ມູນ Chrome ບາງສ່ວນຂອງທ່ານຍັງບໍ່ໄດ້ຖືກບັນທຶກໃສ່ໃນບັນຊີ Google ຂອງທ່ານເທື່ອ.
 
@@ -247,6 +250,7 @@
 <translation id="7581063337314642333">ເຂົ້າເບິ່ງໂຄງຮ່າງຕາຕະລາງຂອງແຖບໃນ Chrome</translation>
 <translation id="7599894504325210080">ຂະຫຍາຍມຸມມອງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ຢູ່</translation>
 <translation id="7642373780953416937">ຮັບການແຈ້ງເຕືອນກ່ຽວກັບບັນຫາດ້ານຄວາມເປັນສ່ວນຕົວ ຫຼື ຄວາມປອດໄພທີ່ Chrome ກວດຫາໃຫ້ທ່ານໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="7660356333829433649">ກັບມາເບິ່ງບ່ອນນີ້ສຳລັບເຄັດລັບທີ່ເປັນປະໂຫຍດເພີ່ມເຕີມເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
 <translation id="7662994914830945754">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="7693590760643069321">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chrome ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="7698568245838009292">Chrome ຕ້ອງການເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
@@ -257,6 +261,7 @@
 <translation id="778855399387580014">ເລີ່ມການຊອກຫາໃນແຖບ Chrome ໃໝ່.</translation>
 <translation id="7792140019572081272">Chrome ຮັກສາຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃຫ້ປອດໄພດ້ວຍ Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
+<translation id="7861998090118873450">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານຢູ່ Chrome</translation>
 <translation id="7897703007638178753">ເບິ່ງແຖບຫຼ້າສຸດໃນ Chrome</translation>
 <translation id="7948283758957877064">ມີຫຍັງໃໝ່ໃນ Chrome</translation>
 <translation id="8000174216052461231">ເຄັດລັບສຳລັບ Chrome: ຮັບການຮັກສາຄວາມປອດໄພທີ່ເຂັ້ມງວດທີ່ສຸດຂອງ Chrome</translation>
@@ -292,6 +297,7 @@
 <translation id="8558480467877843976">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chrome ຕອນໃດກໍໄດ້ທີ່ທ່ານເລືອກເບິ່ງ ຫຼື ແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="8603022514504485810">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">ເປີດ “ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chrome”.</translation>
+<translation id="8673726683583791503">ຊື້ດ້ວຍ Google Lens</translation>
 <translation id="8727043961453758442">ຮັບປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="8765470054473112089">ເມື່ອທ່ານພິມໃນແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາ, Chrome ຈະສົ່ງສິ່ງທີ່ທ່ານພິມໄປຫາໂປຣແກຣມຊອກຫາຄ່າເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບການແນະນຳທີ່ດີຍິ່ງຂຶ້ນ. ສິ່ງນີ້ຖືກປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>

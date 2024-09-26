@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="1854463785401910334">खोले गए टैब में खोजें</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} में से {position} पासवर्ड}one{{count} में से {position} पासवर्ड}other{{count} में से {position} पासवर्ड}}</translation>
+<translation id="1861262398884155592">यह फ़ोल्डर खाली है</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">फ़ैमिली ग्रुप के सदस्यों को न्योता भेजें</translation>
@@ -702,6 +703,7 @@
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4469834037720363704">पैकेज नंबर</translation>
 <translation id="4471472356135655769">पासवर्ड एक्सपोर्ट नहीं किए जा सके</translation>
+<translation id="4474142134969976028">कोई मिलता-जुलता नतीजा नहीं मिला</translation>
 <translation id="4474494258097106883">आपके iPhone के लिए बनाया गया</translation>
 <translation id="4488754974567924717">अगर आपके पासवर्ड हैक हुए हैं या चोरी हुए हैं, तो हम आपको इसकी जानकारी देंगे</translation>
 <translation id="4489536976005181779">{count,plural, =1{आपके खाते, {email} की रीडिंग लिस्ट में पेज जोड़ा गया}one{आपके खाते, {email} की रीडिंग लिस्ट में पेज जोड़ा गया}other{आपके खाते, {email} की रीडिंग लिस्ट में पेज जोड़े गए}}</translation>

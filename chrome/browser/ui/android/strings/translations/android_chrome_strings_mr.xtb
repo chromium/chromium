@@ -634,6 +634,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवा</translation>
 <translation id="404352903042073578">निनावी गट</translation>
 <translation id="4044708993631234325">तळाशी असलेली शीट</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> साधारण टॅब आहे}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> साधारण टॅब आहेत}}</translation>
 <translation id="405365679581583349">Google Play सेवा अपडेट करा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">प्रथम, Chrome मधील पासवर्ड एक्सपोर्ट करा आणि हटवा</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ला <ph name="TOP_ORIGIN" /> साठी हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> साधारण टॅब}other{<ph name="TABS_COUNT_MANY" /> साधारण टॅब}}</translation>
 <translation id="7603168929588204083">चुकीची तारीख</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>
 <translation id="7612619742409846846">Google मध्ये हे म्हणून साइन इन केले</translation>

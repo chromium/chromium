@@ -2920,6 +2920,7 @@
 <translation id="304644035656848980">Преглед микрофона</translation>
 <translation id="3046910703532196514">Веб-страница, комплетна</translation>
 <translation id="304747341537320566">Механизми говора</translation>
+<translation id="3047678109605649715">Нема гласова (<ph name="LANGUAGE" />) на уређају. Ослободите простор на уређају и пробајте поново.</translation>
 <translation id="3048336643003835855">HID уређаји продавца <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пусти (k)</translation>
 <translation id="3048742847101793553">Организација је блокирала овај фајл јер скенирање није успело.</translation>
@@ -4161,6 +4162,7 @@
 <translation id="3948116654032448504">&amp;Потражи слику у претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Ова картица репродукује звук</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да мења датотеке у директоријумима у наставку</translation>
+<translation id="3948985214866944547">Већина људи блокира дељење прецизне локације за овај сајт</translation>
 <translation id="394984172568887996">Увезено из IE прегледача</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> да би преузимање фајлова било безбедније</translation>
 <translation id="3950820424414687140">Пријави ме</translation>
@@ -5344,7 +5346,6 @@
 <translation id="4838327282952368871">Чаробно</translation>
 <translation id="4838836835474292213">Приступ за читање привремене меморије је дозвољен</translation>
 <translation id="4838907349371614303">Лозинка је ажурирана</translation>
-<translation id="4838958829619609362">Избор није на језику <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Са&amp;чувај видео снимак као...</translation>
 <translation id="4839910546484524995">Проверите уређај</translation>
 <translation id="4840096453115567876">Желите да ипак изађете из режима без архивирања?</translation>
@@ -5954,7 +5955,6 @@
 <translation id="5287425679749926365">Налози</translation>
 <translation id="5288106344236929384">Још радњи, опција за приступни кôд за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">П&amp;оново отвори затворену картицу</translation>
-<translation id="52895863590846877">Језик ове странице није <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Рачунар и уређај за пребацивање на различите WiFi мреже (нпр. 2,4 GHz и 5 GHz)</translation>
 <translation id="52912272896845572">Датотека приватног кључа је неважећа.</translation>
 <translation id="5291739252352359682">Аутоматски прави титл за медије у Chrome прегледачу (тренутно је доступно на енглеском). Све аудио датотеке и титлови се обрађују локално и остају само на уређају.</translation>
@@ -8099,7 +8099,6 @@
 <translation id="686366188661646310">Желите да избришете лозинку?</translation>
 <translation id="6863925886424789941">Колосеум</translation>
 <translation id="6865313869410766144">Подаци Аутоматског попуњавања за обрасце</translation>
-<translation id="6865598234501509159">Језик ове странице није <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC евиденције догађаја (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Тихо</translation>
 <translation id="686664946474413495">Температура боја</translation>
@@ -8720,7 +8719,6 @@
 <translation id="7343372807593926528">Опишите проблем да бисте послали повратне информације.</translation>
 <translation id="7344585835349671209">Управљајте HTTPS/SSL сертификатима на уређају</translation>
 <translation id="7345706641791090287">Потврдите лозинку</translation>
-<translation id="7345919885156673810">Избор није на језику <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="7347751611463936647">Да бисте користили овај додатак, унесите „<ph name="EXTENSION_KEYWORD" />“ и притисните тастер TAB, а затим унесите команду или обавите претрагу.</translation>
 <translation id="7347943691222276892">Кликните да бисте напустили подстраницу <ph name="SUBPAGE_TITLE" />.</translation>

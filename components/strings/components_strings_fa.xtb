@@ -131,7 +131,7 @@
 <translation id="1227677022489889280">دلیلی برای جابه‌جا کردن ارائه دهید (الزامی)</translation>
 <translation id="1228893227497259893">‏شناسه entity نادرست</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (شناسایی خودکار)</translation>
-<translation id="1232569758102978740">بدون عنوان</translation>
+<translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1236081509407217141">‏VR مجاز باشد؟</translation>
 <translation id="1240347957665416060">نام دستگاهتان</translation>
 <translation id="124116460088058876">زبان‌های بیشتر</translation>
@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">تلویزیون و ویدیو</translation>
 <translation id="1658918301167915956">دستگاه‌های بلوتوث</translation>
 <translation id="1662550410081243962">ذخیره و تکمیل روش‌های پرداخت</translation>
+<translation id="1662980953334786797">ترتیب یکسان</translation>
 <translation id="1663943134801823270">‏کارت‌ها و نشانی‌ها از Chrome‌ هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="1664389769577564606">فتوپلیمر فلکسو</translation>
 <translation id="166624440456221306">حذف کردن جدول مقایسه</translation>
@@ -1659,6 +1660,7 @@
 <translation id="4023431997072828269">از آنجایی‌که این فرم درحال ارسال ازطریق اتصال ناامنی است، دیگران می‌توانند اطلاعات شما را ببینند.</translation>
 <translation id="4025325634010721551">خط‌مشی‌ها مجدد بار شد</translation>
 <translation id="4025338605225449265">تبادل خارجی و ارز</translation>
+<translation id="4025777154208238692">ترتیب معکوس</translation>
 <translation id="4027270464942389997">‏<ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />مهاجمان می‌توانند اطلاعاتی را که به سایت ارسال یا از آن دریافت می‌کنید ببینند و تغییر دهند.<ph name="END_STRONG" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />اگر از شبکه عمومی استفاده می‌کنید، ایمن‌تر است که بعداً از این سایت بازدید کنید.<ph name="END_STRONG" /> استفاده از شبکه‌های مورداعتماد مثل Wi-Fi خانه یا محل کار خطر کمتری دارند.
@@ -3796,7 +3798,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">برای تسویه‌حساب سریع‌تر، کد تأیید این کارت رمزگذاری خواهد شد و در دستگاهتان ذخیره می‌شود</translation>
 <translation id="7937554595067888181">در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
-<translation id="7938490694919717008">پاداش‌ها و مزایایی که در زمان تصفیه‌حساب برای کارت‌هایتان دردسترس است نشان داده می‌شود<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />با مزایای کارت آشنا شوید<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">گواهی سرور هنوز معتبر نیست.</translation>
 <translation id="7941628148012649605">پاکت چو ۴</translation>
 <translation id="794169214536209644">آب‌نبات و شیرینی</translation>

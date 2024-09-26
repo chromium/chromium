@@ -379,6 +379,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1658111267661135323">TV ir vaizdo įrašai</translation>
 <translation id="1658918301167915956">„Bluetooth“ įrenginiai</translation>
 <translation id="1662550410081243962">Išsaugoti ir užpildyti mokėjimo metodų informaciją</translation>
+<translation id="1662980953334786797">Ta pati tvarka</translation>
 <translation id="1663943134801823270">Kortelės ir adresai naudojami iš „Chrome“. Juos galite tvarkyti nuėję į <ph name="BEGIN_LINK" />Nustatymus<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Lankstusis fotopolimeras</translation>
 <translation id="166624440456221306">Ištrinti palyginimo lentelę</translation>
@@ -1660,6 +1661,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4023431997072828269">Kadangi ši forma teikiama naudojant nesaugų ryšį, jūsų informacija bus matoma kitiems.</translation>
 <translation id="4025325634010721551">Politika įkelta iš naujo</translation>
 <translation id="4025338605225449265">Valiuta ir užsienio valiutos keitimas</translation>
+<translation id="4025777154208238692">Atvirkštinė tvarka</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Atakų vykdytojai gali peržiūrėti ir keisti<ph name="END_STRONG" /> informaciją, kurią siunčiate svetainei arba gaunate iš jos.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Saugiausia šioje svetainėje apsilankyti vėliau<ph name="END_STRONG" />, jei naudojate viešąjį tinklą. Patikimas tinklas, pvz., namų ar darbo „Wi-Fi“ ryšys, kelia mažesnę riziką.
@@ -3797,7 +3799,6 @@ Papildoma išsami informacija:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Šios kortelės saugos kodas (CVC) bus šifruotas ir išsaugotas jūsų įrenginyje, kad galėtumėte greičiau atsiskaityti</translation>
 <translation id="7937554595067888181">Baigia galioti <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Atsiskaitant parodyti, kokios premijos ir privilegijos pasiekiamos kortelėms. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Sužinokite apie kortelių privilegijas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Serverio sertifikatas dar negalioja.</translation>
 <translation id="7941628148012649605">„Chou 4“ vokas</translation>
 <translation id="794169214536209644">Saldainiai ir saldumynai</translation>

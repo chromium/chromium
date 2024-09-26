@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Add to reading list</translation>
 <translation id="1854463785401910334">Search open tabs</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} of {count} password}other{{position} of {count} passwords}}</translation>
+<translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invite family members</translation>
@@ -605,6 +606,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3982893814825393515">Report an issue…</translation>
 <translation id="398604237578616937">Signed in as <ph name="USER_EMAIL" />. Open account menu.</translation>
+<translation id="3986739045730058129">Go to tab</translation>
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="3994422733891749358">Choose the notifications that you want to receive</translation>
@@ -673,6 +675,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
+<translation id="4320848494125124980">Recent</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
 <translation id="4328843285884395590">My Drive</translation>
 <translation id="4331177082088332784">You can manage this in BEGIN_LINK Content settings END_LINK</translation>
@@ -701,6 +704,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4469834037720363704">Parcel number</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
+<translation id="4474142134969976028">No matching results</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
 <translation id="4488754974567924717">If your passwords are compromised, we'll let you know</translation>
 <translation id="4489536976005181779">{count,plural, =1{Page added to your reading list in your account, {email}}other{Pages added to your reading list in your account, {email}}}</translation>
@@ -756,6 +760,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4717844083556844785">Current web page is on Incognito</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
+<translation id="4720530280568305198">Your selection opened in a new tab</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4742407542027196863">Manage passwords…</translation>
 <translation id="4742897645503301228">Hide Track price</translation>

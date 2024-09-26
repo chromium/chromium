@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1066101356081285416">Chrome-ը կճանաչի հետագծման համարները ձեր այցելած կայքերում և կցուցադրի առաքանու մասին թարմ տեղեկություններ նոր ներդիրի էջում։ Առաքանու հետագծման համարը և կայքի անվանումը կուղարկվեն Google-ին՝ այս գործառույթը տրամադրելու և Google-ում գնումների գործառույթները բոլորի համար բարելավելու նպատակով։ Ցանկացած ժամանակ <ph name="BEGIN_LINK" />Առաքանու հետագծման կարգավորումներում<ph name="END_LINK" /> կարող եք սա փոխել։</translation>
+<translation id="1086486568852410168">Որոնել Google Տեսապակու միջոցով</translation>
 <translation id="1143896152279775643">Գաղտնաբառը կպահվի <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="1146503048444965320">Բացել նոր ներդիր Chrome-ում</translation>
 <translation id="1166460004393506534">Ջնջել այցելությունների պատմությունը Chrome-ում։</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Խորհուրդ Chrome-ից․ ընտրեք հասցեագոտու դիրքը</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ավելացնում է մուտքագրված URL-ները Chrome-ի ձեր էջանիշներում։</translation>
+<translation id="1799920918471566157">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1830634592642484976">Այս հասցեն ներկայումս պահված է Chrome-ում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="USER_EMAIL" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
 <translation id="1917964099031477364">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chrome-ից և Google-ի մյուս հավելվածներից այս սարքում։</translation>
 <translation id="1919130412786645364">Թույլատրել մուտքը Chrome-ում</translation>

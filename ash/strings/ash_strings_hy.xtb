@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Ակտիվ պատուհանն ամրացված է ձախ կողմում։</translation>
 <translation id="1708345662127501511">Աշխատասեղան՝ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ցանցի կարգավորումներ</translation>
-<translation id="171610090693716835">Պահպանեք կենտրոնացումը անհատականացված երգացանկերի օգնությամբ։ Օգտվեք YouTube Music-ից և YouTube-ից առանց գովազդի՝ ստանալով 3 ամիս անվճար YouTube Premium-ից օգտվելու հնարավորություն։</translation>
 <translation id="1719094688023114093">Կենդանի ենթագրերը միացված են։</translation>
 <translation id="1720011244392820496">Միացրեք Wi-Fi համաժամացումը</translation>
 <translation id="1720230731642245863">Թեժ կետն անջատված է</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Հասանելի է նոր տարբերակը</translation>
 <translation id="2416438829169535743">Դուրս գա՞լ դիտակերպից</translation>
 <translation id="2417486498593892439">Մուտք գործեք ցանց</translation>
+<translation id="2423619675829330672">PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել։ Սպասեք <ph name="TIME_LEFT" /> և նորից փորձեք։</translation>
 <translation id="2426051945783024481">Տեսախցիկն ավտոմատ կերպով կենտրոնաբերվեց</translation>
 <translation id="2427507373259914951">Ձախ սեղմում</translation>
 <translation id="2429753432712299108">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Նախքան ընդունելը հաստատեք, որ սարքի վրա ցուցադրվում է այս կոդը` <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Ցուցադրվում են բոլոր աշխատասեղանների պատուհանները։ Սեղմեք վեր սլաքի ստեղնը՝ ընթացիկ աշխատասեղանից պատուհաններ ցուցադրելու համար։</translation>
 <translation id="6337159624125741244">Լիաէկրան խոշորացույցը միացված է</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
+<translation id="6340148837564298498">Եթե մոռացել եք ձեր PIN կոդը, փորձեք վերականգնել այս օգտատիրոջ հաշիվը։</translation>
 <translation id="6344138931392227467">Զուգակցվեց <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա՝ <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" />, ապա <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ՀԱՎԵԼՎԱԾՆԵՐԻ ԱՌԱՋԱՐԿՆԵՐ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="6542891623636520977">Էմոջիներ, GIF պատկերներ և այլն</translation>
+<translation id="6545382064335350438">Այդպես էլ չհաջողվեց հաստատել ձեր PIN կոդը։ Նորից փորձեք։</translation>
 <translation id="6555373427270923730">Հասցեագոտում մուտքագրեք վեբ հասցեն, ապա սեղմեք <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
 <translation id="7917760201509801422">Միացած է <ph name="DEVICECOUNT" /> սարք</translation>
+<translation id="7921565901396407357">Չհաջողվեց հաստատել ձեր PIN կոդը։ Նորից փորձեք։</translation>
 <translation id="7923534281713082605">Եղանակ</translation>
 <translation id="7926080067315048321">Դիտել բոլոր առաջադրանքները Google Tasks կայքում</translation>
 <translation id="7930731167419639574">Խոսքն այժմ մշակվում է այս սարքում, և թելադրումն աշխատում է առանց ինտերնետի։</translation>

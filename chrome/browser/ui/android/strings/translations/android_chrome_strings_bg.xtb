@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адрес за фактуриране</translation>
 <translation id="228704530595896923">Списък с опции за споделяне.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="22981027763501686">Синхронизирайте, за да получите своите отметки, история и др. на другите си устройства</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
@@ -634,6 +635,7 @@
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Група без име</translation>
 <translation id="4044708993631234325">Долен лист</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел с нова активност в споделените групи раздели}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела с нова активност в споделените групи раздели}}</translation>
 <translation id="405365679581583349">Актуализиране на услугите за Google Play</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -1300,6 +1302,7 @@
 <translation id="6964300328304469089">Понастоящем сте избрали: <ph name="NAME" /> (<ph name="EMAIL" />). Изберете профил.</translation>
 <translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел с нова активност в споделените групи раздели}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела с нова активност в споделените групи раздели}}</translation>
 <translation id="6971862865055170158">Отхвърляне</translation>
 <translation id="6978717888677691380">Блокирани от вас сайтове</translation>
 <translation id="6979737339423435258">За цялото време</translation>
@@ -1445,6 +1448,7 @@
 <translation id="7592322927044331376">Първо експортирайте и изтрийте паролите от Chrome</translation>
 <translation id="7594687499944811403">Разрешете на <ph name="EMBEDDED_ORIGIN" /> да потвърди самоличността ви за <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Операционна система</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела}}</translation>
 <translation id="7603168929588204083">Невалидна дата</translation>
 <translation id="7605594153474022051">Синхронизирането не работи</translation>
 <translation id="7612619742409846846">Влезли сте в Google като</translation>
@@ -1514,6 +1518,7 @@
 <translation id="7896724475402191389">Съдържание за млади умове – изключено</translation>
 <translation id="7903184275147100332">Това може да отнеме известно време</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 бе блокирано от организацията ви}other{# бяха блокирани от организацията ви}}</translation>
 <translation id="7914399737746719723">Приложението бе инсталирано</translation>
 <translation id="7919123827536834358">Автоматично превеждане от следните езици</translation>
 <translation id="7926975587469166629">Псевдоним на картата</translation>

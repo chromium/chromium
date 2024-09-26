@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1066101356081285416">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。荷物追跡番号とウェブサイト名は、この機能の提供と Google ショッピング機能の改善を目的として、Google に送信されます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />でいつでも変更できます。</translation>
+<translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1146503048444965320">Chrome で新しいタブを開く</translation>
 <translation id="1166460004393506534">Chrome の閲覧履歴データを削除する</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome のヒント: アドレスバーの位置を選択</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">入力した URL を Chrome のブックマークに追加します。</translation>
+<translation id="1799920918471566157">Chrome を使いこなすヒント</translation>
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="1917964099031477364">このアカウントと保存されていないデータは、Chrome やこのデバイスの他の Google アプリから削除されます。</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>

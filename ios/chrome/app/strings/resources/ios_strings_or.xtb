@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1854463785401910334">ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} ମଧ୍ଯରୁ {position} ନମ୍ବର ପାସୱାର୍ଡ}other{{count} ମଧ୍ୟରୁ {position} ନମ୍ବର ପାସୱାର୍ଡ}}</translation>
+<translation id="1861262398884155592">ଏହି ଫୋଲ୍ଡର୍‌ ଖାଲି ଅଟେ</translation>
 <translation id="1872096359983322073">ଟର୍ଚ୍ଚ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
 <translation id="1881621406744213161">ପରିବାରର ସଦସ୍ୟମାନଙ୍କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">ସ୍ଥିତି ସେଟ କରନ୍ତୁ</translation>
 <translation id="4304713468139749426">ପାସୱାର୍ଡ ମ୍ୟାନେଜର</translation>
 <translation id="4309403553630140242">ଅଧିକ ସୂଚନା ପାଇଁ ଦୁଇଥର ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="4320848494125124980">ବର୍ତ୍ତମାନର</translation>
 <translation id="4324735664183300693">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4328843285884395590">ମୋ ଡ୍ରାଇଭ</translation>
 <translation id="4331177082088332784">ଆପଣ ଏହାକୁ BEGIN_LINK ବିଷୟବସ୍ତୁ ସେଟିଂସ END_LINKରେ ପରିଚାଳନା କରିପାରିବେ</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">ନୋଟଗୁଡ଼ିକ <ph name="CHARACTER_LIMIT" />ଟି ପର୍ଯ୍ୟନ୍ତ କେରେକ୍ଟର ସେଭ କରିପାରିବ।</translation>
 <translation id="4469834037720363704">ପେକେଜ ନମ୍ବର</translation>
 <translation id="4471472356135655769">ପାସୱାର୍ଡ ଏକ୍ସପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="4474142134969976028">ମେଳ ହେଉଥିବା କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4474494258097106883">ଆପଣଙ୍କ iPhone ପାଇଁ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="4488754974567924717">ଯଦି ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଚୋରି ହୋଇଯାଏ, ତେବେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ</translation>
 <translation id="4489536976005181779">{count,plural, =1{ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା ଆପଣଙ୍କର ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠା ଯୋଗ କରାଯାଇଛି, {email}}other{ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା ଆପଣଙ୍କର ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଯୋଗ କରାଯାଇଛି, {email}}}</translation>

@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">เปิดเมนู Chromium</translation>
 <translation id="12739128458173458">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
+<translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1423007117030725713">เริ่มการค้นหาในแท็บใหม่ของ Chromium</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="146407871188825689">ใช้ Chromium ใน iPad โดยค่าเริ่มต้น</translation>
@@ -177,6 +178,7 @@
 <translation id="5571094606370987472">เปิดแท็บล่าสุดใน Chromium</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">เปิดแท็บล่าสุดของฉันใน Chromium</translation>
+<translation id="5671188105328420281">เคล็ดลับในการใช้ Chromium</translation>
 <translation id="5688047395118852662">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chromium ให้เกิดประโยชน์สูงสุด</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="584550191241316896">ลงชื่อเข้าใช้ Chromium แล้ว</translation>
@@ -218,6 +220,7 @@
 <translation id="6752854822223394465">องค์กรของคุณกำลังตั้งค่า Chromium...</translation>
 <translation id="6794054469102824109">เปิดเกมไดโนเสาร์ของ Chromium</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
+<translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6852419005633611413">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="6852799557929001644">เข้าถึงรหัสผ่าน Chromium และอีกมากมายจากแอปอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="6887138405044152640">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์นั้น</translation>

@@ -238,7 +238,7 @@
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">請嘗試解決疑難步驟</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">選擇主題並選取加上底線的字詞，即可打造個人化的 AI 圖像。</translation>
+<translation id="2041627599411887437">選擇主題並選取加上底線的字詞，即可個人化 AI 圖片。</translation>
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">如要查看螢幕保護程式，請連線至網絡並重新載入頁面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -688,7 +688,7 @@
 <translation id="4474142134969976028">找不到相符的結果</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
-<translation id="4486524074141928967">系統會在<ph name="TIME" /> 將你登出</translation>
+<translation id="4486524074141928967">系統會在<ph name="TIME" />將你登出</translation>
 <translation id="4500722292849917410">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左箭咀</translation>
@@ -977,7 +977,7 @@
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5938286923316838007">無法為此內容建立錄音名稱</translation>
 <translation id="5939518447894949180">重設</translation>
-<translation id="5942727615796467094"><ph name="MANAGER" /> 系統管理員已設定這部 <ph name="DEVICE_TYPE" /> 的使用時間</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> 管理員已設定此 <ph name="DEVICE_TYPE" /> 的使用時間</translation>
 <translation id="594552776027197022">產生隨機配對金鑰</translation>
 <translation id="5946538341867151940">您尚未連線。如果您的流動網絡供應商建議使用自訂 APN，請選取「+ 新增 APN」來輸入 APN 資料</translation>
 <translation id="5947266287934282605">如果當月最後一天早於這一天，系統會在當月最後一天重設資料</translation>
@@ -1069,7 +1069,7 @@
 <translation id="6352210854422428614">不同的行星</translation>
 <translation id="6359706544163531585">停用淺色主題背景</translation>
 <translation id="6359919876285606596">這是永久操作，無法復原。</translation>
-<translation id="6368342879959028556">如果選取「使用 AI 製作」，請自行輸入提示；如果選取「AI 桌布」，只要再選擇主題並選取加上底線的字詞，就能打造個人化的 AI 桌布。</translation>
+<translation id="6368342879959028556">如果選取 [以 AI 製作]，請自行輸入提示；如果選取 [AI 桌布]，只要再選擇主題並選取加上底線的字詞，就能個人化 AI 桌布。</translation>
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6373461326814131011">池塘</translation>
 <translation id="6379086450106841622">觸控螢幕</translation>
@@ -1142,13 +1142,13 @@
 <translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          選取「給我靈感」可獲得更多獨特而有變化的 AI 圖像選項。
+          選取 [給我驚喜] 即可取得更多獨特多變的 AI 圖像選項。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          使用 AI 製作內容時，系統會將提示傳送到 Google AI 伺服器，以生成圖像及提升產品品質。資料處理過程會遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。
+          運用 AI 製作內容時，系統會將提示傳送至 Google AI 伺服器，以便生成圖像及提升產品品質。在處理資料的過程中須遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 私隱權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          生成式 AI 為實驗功能，處於初期開發階段，目前未全面開放使用。</translation>
+          生成式 AI 是實驗版功能，仍在初期開發階段，目前僅供部分使用者使用。</translation>
 <translation id="6673898378497337661">校光鍵盤</translation>
 <translation id="6692996468359469499">取得您選取項目相關資料</translation>
 <translation id="6694534975463174713">鎖定</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
+<translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="1146503048444965320">在 Chrome 中打开新标签页</translation>
 <translation id="1166460004393506534">删除 Chrome 中的浏览数据</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome 提示：选择地址栏的位置</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">将输入的网址添加到您在 Chrome 中保存的书签。</translation>
+<translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Дадаць у спіс на прагляд</translation>
 <translation id="1854463785401910334">Пошук у адкрытых укладках</translation>
 <translation id="1861067954551502701">{count,plural, =1{Пароль {position} з {count}}one{Пароль {position} з {count}}few{Пароль {position} з {count}}many{Пароль {position} з {count}}other{Пароль {position} з {count}}}</translation>
+<translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Запрасіце ўдзельнікаў сямейнай групы</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4309403553630140242">Двойчы націсніце, каб даведацца больш</translation>
+<translation id="4320848494125124980">Нядаўнія</translation>
 <translation id="4324735664183300693">Уключыць апавяшчэнні</translation>
 <translation id="4328843285884395590">Мой Дыск</translation>
 <translation id="4331177082088332784">Змяніць выбар можна ў BEGIN_LINK наладах змесціва END_LINK</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">Максімальная колькасць сімвалаў, якія можа змяшчаць нататка, – <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469834037720363704">Нумар пасылкі</translation>
 <translation id="4471472356135655769">Не ўдалося экспартаваць паролі</translation>
+<translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
 <translation id="4474494258097106883">Распрацавана для iPhone</translation>
 <translation id="4488754974567924717">Мы паведамім вам, калі вашы паролі будуць раскрыты</translation>
 <translation id="4489536976005181779">{count,plural, =1{Старонка дададзена ў спіс на прагляд у вашым уліковым запісе ({email})}one{Старонкі дададзены ў спіс на прагляд у вашым уліковым запісе ({email})}few{Старонкі дададзены ў спіс на прагляд у вашым уліковым запісе ({email})}many{Старонкі дададзены ў спіс на прагляд у вашым уліковым запісе ({email})}other{Старонкі дададзены ў спіс на прагляд у вашым уліковым запісе ({email})}}</translation>

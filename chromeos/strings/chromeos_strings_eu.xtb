@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Egokitu eskanea daitekeen eremura</translation>
 <translation id="1343442362630695901">laku gazia</translation>
 <translation id="1348657754632799065">Grabaketaren barra</translation>
+<translation id="1350909945461913813">Ziurtatu lana gordetzen duzula</translation>
 <translation id="1367951781824006909">Aukeratu fitxategi bat</translation>
 <translation id="1371650399987522809">Google-ren AA bidezko horma-paperari buruzko oharrak</translation>
 <translation id="1374385338586507108">Definitu</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDKaren bertsioa:</translation>
 <translation id="2016697457005847575">Egin arazoa konpontzeko urratsak</translation>
 <translation id="202500043506723828">EIDa</translation>
+<translation id="2041627599411887437">Aukeratu gai bat eta hautatu azpimarratutako hitzak AAk sortutako irudiak pertsonalizatzeko.</translation>
 <translation id="2045814230297767491">mahai-tresnak</translation>
 <translation id="2047316797244836561">Konektatu sare batera eta kargatu berriro orria pantaila-babeslea ikusteko.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Ez da hizketarik hauteman</translation>
 <translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
 <translation id="2448312741937722512">Mota</translation>
+<translation id="2468124392950503650">Sortzeko, hautatu eskaera-mezu bat. Bestela, ikusi <ph name="BEGIN_LINK_PROMPTING_GUIDE" />eskaera-mezuen gida<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Erabili Idazteko laguntza zirriborro bat sortzeko edo jadanik daukazun testu bat hobetzeko, Google-ren AA bidez</translation>
 <translation id="2480572840229215612">karramarroak</translation>
 <translation id="248546197012830854">Gailua deskonektatuta dago. Konektatu wifi-sarera laguntza-edukia ikusteko.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Ez dago emaitzarik</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
+<translation id="4486524074141928967">Amaitu egin da saioa (<ph name="TIME" />)</translation>
 <translation id="4500722292849917410">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat tekla aldatzaile bat erabilita (Ktrl, Alt, Maius edo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfazearen kolorea</translation>
 <translation id="4503223151711056411">Ezkerrera gezi-tekla</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">kolore griseko</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> probatu da</translation>
+<translation id="5613201299517339763">Amaitu egin da saioa</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Ez da aurkitu fitxategia</translation>
 <translation id="5938286923316838007">Ezin dira sortu grabaketa-izenak eduki honetarako</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> domeinuaren administratzaileak <ph name="DEVICE_TYPE" /> hau noiz erabil daitekeen ezarri du</translation>
 <translation id="594552776027197022">Sortu ausazko gako pare bat</translation>
 <translation id="5946538341867151940">Oraindik ez zaude konektatuta. Telefonia mugikorreko operadoreak APN pertsonalizatu bat gomendatzen badu, idatzi APNaren informazioa "+ APN berria" hautatuta.</translation>
 <translation id="5947266287934282605">Hilabeteko azken eguna data hori baino lehenago bada, hilabeteko azken egunean berrezarriko dira datuak</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">beste planeta bat</translation>
 <translation id="6359706544163531585">Desgaitu gai argia</translation>
 <translation id="6359919876285606596">Ezin da desegin ekintza</translation>
+<translation id="6368342879959028556">"Sortu AA bidez" hautatzen duzunean, idatzi eskaera-mezu pertsonalizatu bat. Bestela, hautatu "AAko horma-paperak" gai bat aukeratzeko, eta, gero, hautatu azpimarratutako hitzak AAko horma-papera pertsonalizatzeko.</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="6373461326814131011">Urmael</translation>
 <translation id="6379086450106841622">Ukipen-pantaila</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>
 <translation id="6462978824459367242">APNa gehitzeko botoia gaitu da</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Berriro eskaneatu nahi duzu orria?}=1{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}other{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}}</translation>
+<translation id="6468146470109254228">Zure azken 3 eskaera-mezuak eta emaitzak. Horma-papera eta estiloa darabilzunean soilik erabil ditzakezu.</translation>
 <translation id="6472207088655375767">EBP</translation>
 <translation id="6472979596862005515">txalupak</translation>
 <translation id="64778964625672495">gorri ilun</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6659594942844771486">Fitxa</translation>
 <translation id="66621959568103627">koral-arrosa koloreko</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Hautatu "Inspira nazazu" AAk sortutako askotariko irudi esklusiboak eskuratzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AA erabilita irudiak sortzean, eskaera-mezua Google-ren AAren zerbitzarietara bidaltzen da irudiak sortzeko eta zerbitzua hobetzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Pribatutasun-gidalerroak<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> gordeta.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AA generatiboa esperimentala da, garapen-zikloaren fase goiztiar batean dago eta, oraingoz, erabilgarritasun mugatua du.</translation>
 <translation id="6673898378497337661">handitu teklatuaren distira</translation>
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6694534975463174713">sarraila</translation>

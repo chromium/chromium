@@ -215,7 +215,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1703117532528082099">Ventá activa fixada á esquerda.</translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuración de rede</translation>
-<translation id="171610090693716835">Concéntrate con listas de reprodución personalizadas. Desfruta de YouTube Music e YouTube, sen anuncios, con 3 meses de YouTube Premium sen custo económico.</translation>
 <translation id="1719094688023114093">A función Subtítulos instantáneos está activada.</translation>
 <translation id="1720011244392820496">Activar Sincronización wifi</translation>
 <translation id="1720230731642245863">A zona wifi está desactivada</translation>
@@ -398,6 +397,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
 <translation id="2416438829169535743">Queres saír da vista?</translation>
 <translation id="2417486498593892439">Inicia sesión na rede</translation>
+<translation id="2423619675829330672">Tentaches poñer o PIN demasiadas veces. Agarda <ph name="TIME_LEFT" /> e téntao de novo.</translation>
 <translation id="2426051945783024481">O encadramento da cámara centrouse automaticamente</translation>
 <translation id="2427507373259914951">Clic co botón esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Antes de aceptalo, confirma que se mostra esta clave de acceso nese dispositivo: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1578,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6330012934079202188">Estanse mostrando as ventás de todos os escritorios. Para que se mostren só as do actual, preme a tecla Frecha arriba</translation>
 <translation id="6337159624125741244">A lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> xestiona esta sesión (<ph name="DISPLAY_NAME" />)</translation>
+<translation id="6340148837564298498">Se esqueciches o PIN, proba a recuperar este usuario.</translation>
 <translation id="6344138931392227467">Conectouse o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e despois <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUXESTIÓNS DE APLICACIÓNS</translation>
@@ -1634,6 +1635,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6539852571005954999">Escaneando ficheiro <ph name="FILENAME" /> para descargalo</translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIF e moito máis</translation>
+<translation id="6545382064335350438">Aínda non se puido verificar o teu PIN. Téntao de novo.</translation>
 <translation id="6555373427270923730">Escribe un enderezo web na barra de enderezos e despois preme <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalación</translation>
@@ -2030,6 +2032,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
+<translation id="7921565901396407357">Non se puido verificar o teu PIN. Téntao de novo.</translation>
 <translation id="7923534281713082605">O tempo</translation>
 <translation id="7926080067315048321">Ver na Web todas as tarefas de Tarefas de Google</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>

@@ -379,6 +379,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1658111267661135323">TV e vídeo</translation>
 <translation id="1658918301167915956">dispositivos bluetooth</translation>
 <translation id="1662550410081243962">Guardar e preencher métodos de pagamento</translation>
+<translation id="1662980953334786797">A mesma ordem</translation>
 <translation id="1663943134801823270">Os cartões e os endereços são provenientes do Chrome. Pode geri-los nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexo</translation>
 <translation id="166624440456221306">Eliminar tabela de comparação</translation>
@@ -1659,6 +1660,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
 <translation id="4025325634010721551">Políticas atualizadas</translation>
 <translation id="4025338605225449265">Câmbios e moedas estrangeiras</translation>
+<translation id="4025777154208238692">Ordem inversa</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Os atacantes podem ver e alterar<ph name="END_STRONG" /> as informações enviadas ou recebidas do site.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />É mais seguro visitar este site mais tarde<ph name="END_STRONG" /> se estiver a usar uma rede pública. O risco de usar uma rede fidedigna, como o Wi-Fi doméstico ou do trabalho, é menor.
@@ -3795,7 +3797,6 @@ Detalhes adicionais:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">O Código de Segurança/CVC deste cartão vai ser encriptado e guardado no seu dispositivo para um pagamento mais rápido</translation>
 <translation id="7937554595067888181">Expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Mostre que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais acerca das vantagens dos cartões<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Doces e rebuçados</translation>

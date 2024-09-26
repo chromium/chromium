@@ -634,6 +634,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4042941173059740150">Magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupo na walang pangalan</translation>
 <translation id="4044708993631234325">Bottom sheet</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}one{<ph name="TABS_COUNT_MANY" /> karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}other{<ph name="TABS_COUNT_MANY" /> na karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}}</translation>
 <translation id="405365679581583349">I-update ang mga serbisyo ng Google Play</translation>
 <translation id="405399507749852140">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1445,6 +1446,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7592322927044331376">Una, i-export at i-delete ang mga password sa Chrome</translation>
 <translation id="7594687499944811403">Hayaan ang <ph name="EMBEDDED_ORIGIN" /> na patunayang ikaw ito para sa <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> karaniwang tab}one{<ph name="TABS_COUNT_MANY" /> karaniwang tab}other{<ph name="TABS_COUNT_MANY" /> na karaniwang tab}}</translation>
 <translation id="7603168929588204083">Invalid na petsa</translation>
 <translation id="7605594153474022051">Hindi gumagana ang pag-sync</translation>
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Lägg till i läslistan</translation>
 <translation id="1854463785401910334">Sök på öppna flikar</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} av {count} lösenord}other{{position} av {count} lösenord}}</translation>
+<translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjud in familjemedlemmar</translation>
@@ -702,6 +703,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4469834037720363704">Paketnummer</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
+<translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4474494258097106883">Byggd för iPhone</translation>
 <translation id="4488754974567924717">Vi meddelar dig om dina lösenord är utsatta</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sidan har lagts till i läslistan i kontot {email}}other{Sidorna har lagts till i läslistan i kontot {email}}}</translation>

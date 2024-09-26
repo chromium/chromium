@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1343442362630695901">slané jezero</translation>
 <translation id="1348657754632799065">Panel nahrávání</translation>
+<translation id="1350909945461913813">Nezapomeňte si uložit práci</translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
 <translation id="1371650399987522809">Zpětná vazba k tapetě vytvořené pomocí Googlu AI</translation>
 <translation id="1374385338586507108">Definovat</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Verze sady SDK:</translation>
 <translation id="2016697457005847575">Vyzkoušet postup odstraňování problémů</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Vyberte motiv a pak si obrázky od AI přizpůsobte výběrem podtržených slov.</translation>
 <translation id="2045814230297767491">příbory</translation>
 <translation id="2047316797244836561">Pokud chcete zobrazit spořič obrazovky, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nebyla zjištěna žádná řeč</translation>
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2468124392950503650">Vyberte pokyn nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce pokyny<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2480572840229215612">krabi</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Dotazu neodpovídají žádné výsledky</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
+<translation id="4486524074141928967">V <ph name="TIME" /> budete odhlášeni</translation>
 <translation id="4500722292849917410">Zkratka není k dispozici. Stiskněte novou zkratku s modifikační klávesou (ctrl, alt, shift nebo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Barva rozhraní</translation>
 <translation id="4503223151711056411">Šipka vlevo</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">šedá</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5600027863942488546">Klávesa <ph name="KEY_NAME" /> byla vyzkoušena</translation>
+<translation id="5613201299517339763">Byli jste odhlášeni</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
 <translation id="5938286923316838007">Názvy nahrávek tohoto obsahu se nepodařilo vytvořit</translation>
 <translation id="5939518447894949180">Resetovat</translation>
+<translation id="5942727615796467094">Administrátor domény <ph name="MANAGER" /> nastavil, kdy se tohle zařízení <ph name="DEVICE_TYPE" /> může používat</translation>
 <translation id="594552776027197022">Vygenerovat náhodnou dvojici klíčů</translation>
 <translation id="5946538341867151940">Ještě nejste připojeni. Pokud váš mobilní operátor doporučuje vlastní APN, zadejte informace o APN výběrem možnost „+ Nový přístupový bod (APN)“</translation>
 <translation id="5947266287934282605">V měsících, které mají méně než tento počet dní, se data resetují poslední den v měsíci</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">jiná planeta</translation>
 <translation id="6359706544163531585">Deaktivovat světlý motiv</translation>
 <translation id="6359919876285606596">Tato akce je trvalá a nelze ji vrátit zpět</translation>
+<translation id="6368342879959028556">Můžete vybrat Vytvořit pomocí AI a napsat vlastní pokyn. Nebo můžete vybrat AI tapety, zvolit motiv a pak AI tapetu upravit tím, že vyberete podtržená slova.</translation>
 <translation id="636850387210749493">Podniková registrace</translation>
 <translation id="6373461326814131011">rybník</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Přejít na nastavení účtu</translation>
 <translation id="6462978824459367242">Tlačítko k přidání APN je nyní aktivní</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}many{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Vaše tři nejnovější pokyny a výstupy. Jsou dostupné jen při používání funkce Tapety a styl.</translation>
 <translation id="6472207088655375767">Jednorázové heslo</translation>
 <translation id="6472979596862005515">čluny</translation>
 <translation id="64778964625672495">tmavě červená</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="66621959568103627">korálově růžová</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pomocí možnosti Inspiruj mě získáte další jedinečné a rozmanité možnosti obrázků od AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Při vytváření pomocí AI se pokyn odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativní umělá inteligence je experimentální, na počátku vývoje a v současné době má omezenou dostupnost.</translation>
 <translation id="6673898378497337661">zvýšit jas klávesnice</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6694534975463174713">zámek</translation>

@@ -215,7 +215,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1703117532528082099">Jendela yang aktif dikaitkan di kiri.</translation>
 <translation id="1708345662127501511">Desktop: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Setelan Jaringan</translation>
-<translation id="171610090693716835">Lakukan kegiatan dengan playlist untuk berfokus yang dipersonalisasi. Dapatkan YouTube Music dan YouTube bebas iklan dengan 3 bulan YouTube Premium tanpa biaya.</translation>
 <translation id="1719094688023114093">Teks Otomatis aktif.</translation>
 <translation id="1720011244392820496">Aktifkan Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Hotspot nonaktif</translation>
@@ -398,6 +397,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
 <translation id="2416438829169535743">Keluar dari tampilan?</translation>
 <translation id="2417486498593892439">Login ke jaringan</translation>
+<translation id="2423619675829330672">Terlalu banyak percobaan memasukkan PIN. Tunggu <ph name="TIME_LEFT" />, lalu coba lagi.</translation>
 <translation id="2426051945783024481">Bingkai kamera dipusatkan secara otomatis</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
 <translation id="2429753432712299108">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Sebelum menerima, konfirmasikan bahwa kunci sandi ini ditampilkan pada perangkat tersebut: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6330012934079202188">Menampilkan jendela dari semua desktop, tekan tombol Panah atas untuk menampilkan jendela dari desktop saat ini</translation>
 <translation id="6337159624125741244">Pembesar layar penuh aktif</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Jika Anda lupa PIN, coba pulihkan pengguna ini.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> terhubung</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, lalu <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SARAN APLIKASI</translation>
@@ -1633,6 +1634,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6539852571005954999">Download <ph name="FILENAME" /> yang sedang dipindai</translation>
 <translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF, dan lainnya</translation>
+<translation id="6545382064335350438">PIN Anda masih tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="6555373427270923730">Ketik alamat web di kolom URL, lalu tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Baru diinstal</translation>
@@ -2029,6 +2031,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> perangkat terhubung</translation>
+<translation id="7921565901396407357">PIN Anda tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="7923534281713082605">Cuaca</translation>
 <translation id="7926080067315048321">Lihat semua tugas di Google Tasks di web</translation>
 <translation id="7930731167419639574">Ucapan sekarang diproses secara lokal dan Dikte berfungsi secara offline</translation>

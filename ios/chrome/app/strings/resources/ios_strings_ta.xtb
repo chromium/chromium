@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="1854463785401910334">திறந்துள்ள பக்கங்களில் தேடுங்கள்</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} கடவுச்சொல்லில் {position}வது}other{{count} கடவுச்சொற்களில் {position}வது}}</translation>
+<translation id="1861262398884155592">இந்த ஃபோல்டரில் எதுவுமில்லை</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">குடும்ப உறுப்பினர்களை அழையுங்கள்</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">தோன்றும் இடத்தை அமை</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4309403553630140242">மேலும் தகவல்களுக்கு இருமுறை தட்டவும்</translation>
+<translation id="4320848494125124980">சமீபத்தியவை</translation>
 <translation id="4324735664183300693">அறிவிப்புகளை இயக்கு</translation>
 <translation id="4328843285884395590">எனது Drive</translation>
 <translation id="4331177082088332784">BEGIN_LINK உள்ளடக்க அமைப்புகள் END_LINK என்பதில் இதை நீங்கள் நிர்வகிக்கலாம்</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
 <translation id="4469834037720363704">பேக்கேஜ் எண்</translation>
 <translation id="4471472356135655769">கடவுச்சொற்களை ஏற்ற முடியவில்லை</translation>
+<translation id="4474142134969976028">பொருந்தும் முடிவுகள் இல்லை</translation>
 <translation id="4474494258097106883">iPhoneனுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="4488754974567924717">உங்கள் கடவுச்சொற்கள் களவாடப்பட்டிருந்தால் உங்களுக்குத் தெரியப்படுத்துவோம்</translation>
 <translation id="4489536976005181779">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள வாசிப்புப் பட்டியலில் பக்கம் சேர்க்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள வாசிப்புப் பட்டியலில் பக்கங்கள் சேர்க்கப்பட்டன}}</translation>

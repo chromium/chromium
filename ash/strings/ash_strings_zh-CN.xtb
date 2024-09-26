@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">将活动窗口停靠在左侧。</translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">网络设置</translation>
-<translation id="171610090693716835">使用个性化专注播放列表保持专注。免费试用 YouTube Premium 3 个月，畅享无广告干扰的 YouTube Music 和 YouTube。</translation>
 <translation id="1719094688023114093">“实时字幕”功能已开启。</translation>
 <translation id="1720011244392820496">开启 Wi-Fi 同步</translation>
 <translation id="1720230731642245863">热点已关闭</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">退出视图？</translation>
 <translation id="2417486498593892439">登录到网络</translation>
+<translation id="2423619675829330672">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />，然后重试。</translation>
 <translation id="2426051945783024481">相机取景画面已自动居中</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
@@ -1575,6 +1575,7 @@
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
 <translation id="6337159624125741244">全屏放大镜已开启</translation>
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
+<translation id="6340148837564298498">如果您忘记了 PIN 码，请尝试恢复此用户账号。</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6348449481487610270">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">应用推荐</translation>
@@ -1631,6 +1632,7 @@
 <translation id="6539852571005954999">正在扫描要下载的文件“<ph name="FILENAME" />”</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">表情符号、GIF 等</translation>
+<translation id="6545382064335350438">仍然无法验证您的 PIN 码。请重试。</translation>
 <translation id="6555373427270923730">在地址栏中输入网址，然后按 <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新安装</translation>
@@ -2027,6 +2029,7 @@
 <translation id="7904094684485781019">此账号的管理员已停用多账号登录。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">已连接 <ph name="DEVICECOUNT" /> 部设备</translation>
+<translation id="7921565901396407357">无法验证您的 PIN 码。请重试。</translation>
 <translation id="7923534281713082605">天气</translation>
 <translation id="7926080067315048321">在 Google Tasks 网页版上查看所有任务</translation>
 <translation id="7930731167419639574">现在，语音均在本地处理，语音输入内容可离线使用</translation>

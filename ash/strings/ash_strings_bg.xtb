@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Активният прозорец е прикрепен отляво.</translation>
 <translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
-<translation id="171610090693716835">Не губете фокуса с персонализирани плейлисти за концентрация. Получете достъп до YouTube Music и YouTube без реклами с членство в YouTube Premium за 3 месеца без парично заплащане.</translation>
 <translation id="1719094688023114093">Функцията „Надписи на живо“ е включена.</translation>
 <translation id="1720011244392820496">Включване на функцията за синхронизиране на Wi-Fi</translation>
 <translation id="1720230731642245863">Точката за достъп е изключена</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Налице е актуализация</translation>
 <translation id="2416438829169535743">Искате ли да излезете от изгледа?</translation>
 <translation id="2417486498593892439">Вход в мрежата</translation>
+<translation id="2423619675829330672">Твърде много опити за въвеждане на ПИН кода. Изчакайте <ph name="TIME_LEFT" /> и опитайте отново.</translation>
 <translation id="2426051945783024481">Рамката на камерата бе центрирана автоматично</translation>
 <translation id="2427507373259914951">Кликване с левия бутон</translation>
 <translation id="2429753432712299108">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Преди да приемете, моля, уверете се, че на него се показва следният ключ за достъп: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Показани са прозорци от всички работни кътове. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от текущия работен кът</translation>
 <translation id="6337159624125741244">Лупата за увеличаване на целия екран е включена</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Ако сте забравили ПИН кода си, опитайте да възстановите този потребител.</translation>
 <translation id="6344138931392227467">Установена е връзка с(ъс) <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, след което <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЖЕНИЯ ЗА ПРИЛОЖЕНИЯ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6542891623636520977">Емоджи, GIF файлове и др.</translation>
+<translation id="6545382064335350438">ПИН кодът ви пак не бе потвърден. Опитайте отново.</translation>
 <translation id="6555373427270923730">Въведете уеб адрес в адресната лента, след което натиснете <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Наскоро инсталирано</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Администраторът на този профил е забранил централизирания вход.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> свързани устройства</translation>
+<translation id="7921565901396407357">ПИН кодът ви не бе потвърден. Опитайте отново.</translation>
 <translation id="7923534281713082605">Времето</translation>
 <translation id="7926080067315048321">Преглед на всички задачи в Google Tasks в мрежата</translation>
 <translation id="7930731167419639574">Говорът вече се обработва локално, а диктуването работи офлайн</translation>

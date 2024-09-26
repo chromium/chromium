@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1066101356081285416">Chrome таны зочилсон сайтууд дээрх хяналтын дугааруудыг илрүүлэх бөгөөд Шинэ таб хуудсанд танд илгээмжийн шинэчлэлтийг харуулна. Энэ онцлогоор хангах болон Google-н худалдан авалтын онцлогуудыг хүн бүрд сайжруулахын тулд илгээмж хяналтын дугаар болон вебсайтын нэрийг Google рүү илгээнэ. Та үүнийг <ph name="BEGIN_LINK" />Илгээмж хянах тохиргоонд<ph name="END_LINK" /> хүссэн үедээ шинэчлэх боломжтой.</translation>
+<translation id="1086486568852410168">Google Lens-р хайх</translation>
 <translation id="1143896152279775643">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална.</translation>
 <translation id="1146503048444965320">Chrome-д шинэ таб нээх</translation>
 <translation id="1166460004393506534">Chrome дахь интернэтээр үзсэн өгөгдлийг устгах</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome-н зөвлөгөө: Хаяг оруулах хэсгийн байрлалаа сонгоно уу</translation>
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1790080846677398234">Таны Chrome-н хавчуургад оруулсан URL-уудыг нэмнэ.</translation>
+<translation id="1799920918471566157">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1830634592642484976">Энэ хаягийг одоогоор Chrome-д хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу.</translation>
 <translation id="1917964099031477364">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chrome болон энэ төхөөрөмж дээрх Google-н бусад аппаас хасна.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>

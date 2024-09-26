@@ -700,6 +700,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="2241693394036365668">Fichier téléchargé</translation>
+<translation id="2242389809734574253">Invite "Enregistrer l'IBAN" fermée.</translation>
 <translation id="2246264294482514010">10 x 12 pouces</translation>
 <translation id="2246480341630108201">Ton parent n'a pas encore donné son accord</translation>
 <translation id="2247789808226901522">Carte expirée</translation>
@@ -1238,6 +1239,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3272112314896217187">Saisissez le code de validation à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
 <translation id="3273738040255912340">Votre administrateur peut modifier à distance votre profil et votre navigateur, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. Il est aussi possible que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Invite "Enregistrer l'IBAN" ouverte à pleine hauteur.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé des infos, comme des paramètres ou des règles, aux sites Web suivants.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -2125,6 +2127,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4881808915112408168">24 x 31,5 pouces</translation>
 <translation id="4882314601499260499">Aucune règle relative aux utilisateurs n'est appliquée. Pour en ajouter, votre organisation doit <ph name="LINK_BEGIN" />valider votre domaine<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Saisissez votre question ou requête</translation>
 <translation id="4885030148564729407">Lunes de miel et escapades romantiques</translation>
 <translation id="4885256590493466218">Vous paierez avec "<ph name="CARD_DETAIL" />".</translation>
 <translation id="4887406273302438710">Protéger les mots de passe avec Windows Hello</translation>
@@ -2584,6 +2587,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723873695528696965">Contrôler et reprogrammer vos appareils MIDI</translation>
 <translation id="5725297205162868298">Le raccourci ne peut pas commencer par le caractère @ : "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Peut demander à utiliser les fonctionnalités avancées d'imprimante</translation>
 <translation id="5729442113829771034">Crèches et jardins d'enfants</translation>
 <translation id="5730040223043577876">L'équipe Chrome vous recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="5732392974455271431">Tes parents peuvent te le débloquer</translation>
@@ -2595,6 +2599,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5743684619253032786">Produits de soin pour les ongles</translation>
 <translation id="5745733273847572235">Peut demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>
+<translation id="5752327398324808817">Saisissez un ou deux mots</translation>
 <translation id="5759751709240058861">Utiliser et bouger la caméra</translation>
 <translation id="5763042198335101085">Saisissez une adresse e-mail valide</translation>
 <translation id="5764725887548570807">Format d'origine non valide.</translation>
@@ -3090,6 +3095,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6671169470640320959">Financement auto</translation>
 <translation id="6671697161687535275">Supprimer la suggestion de saisie de formulaire de Chromium ?</translation>
 <translation id="6677351035258626477">Restauration rapide</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Lorsque vous effectuez des achats sur Chrome, l'option <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affiche}one{Lorsque vous effectuez des achats sur Chrome, l'option <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affiche}other{Lorsque vous effectuez des achats sur Chrome, les options <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affichent}}</translation>
 <translation id="6681790815630918386">Code CVC enregistré</translation>
 <translation id="6683022854667115063">Casque audio</translation>
 <translation id="6687230248707087982">Enveloppe (ordinaire)</translation>
@@ -3106,6 +3112,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6696575039575740785">Installation d'applis Web non autorisée</translation>
 <translation id="6698097747703777657">Vous n'avez pas reçu votre code ? <ph name="BEGIN_LINK" />Obtenez-en un nouveau.<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Créé :</translation>
+<translation id="6698769547327354196">Pour désactiver Pix dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres de paiement<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Curseur de durée</translation>
 <translation id="6702851555558236418">Logiciels audio et musicaux</translation>
 <translation id="6702919718839027939">Présenter</translation>
@@ -3261,6 +3268,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6978236010531171013">Partager quand même</translation>
 <translation id="6978722349058177832">Si vous partagez cet appareil, Chromium peut vous demander de valider chaque fois que vous payez avec la saisie automatique</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">gérer l'accès aux cookies tiers</translation>
 <translation id="6979440798594660689">Coupé (par défaut)</translation>
 <translation id="6984270784814146224">Image sans libellé. Extraction du texte, optimisée par l'IA de Google…</translation>
 <translation id="6987806006823772670">Enveloppe (papier couché)</translation>
@@ -3408,6 +3416,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7243010569062352439"><ph name="PASSWORDS" /> ; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Activités commerciales</translation>
+<translation id="7244061187185055290">Décrivez en quelques mots ce que vous recherchez</translation>
 <translation id="7251437084390964440">La configuration du réseau ne respecte pas les normes de l'ONC. Il est possible que des parties de la configuration ne soient pas importées.
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
@@ -3788,7 +3797,6 @@ Informations supplémentaires :
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour accélérer le paiement</translation>
 <translation id="7937554595067888181">Date d'expiration : <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Affichez les récompenses et avantages disponibles avec vos cartes lors du paiement. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
 <translation id="7941628148012649605">Enveloppe Chou 4</translation>
 <translation id="794169214536209644">Bonbons et sucreries</translation>

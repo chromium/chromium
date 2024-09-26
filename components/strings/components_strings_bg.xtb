@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">Телевизия и видео</translation>
 <translation id="1658918301167915956">устройства с Bluetooth</translation>
 <translation id="1662550410081243962">Запазване и попълване на начини на плащане</translation>
+<translation id="1662980953334786797">Същият ред</translation>
 <translation id="1663943134801823270">Картите и адресите са от Chrome. Можете да ги управлявате от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Фотополимер за флексопечат</translation>
 <translation id="166624440456221306">Изтриване на таблицата за сравнение</translation>
@@ -700,6 +701,7 @@
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
 <translation id="2241693394036365668">Изтегляне на файл</translation>
+<translation id="2242389809734574253">Подканата за запазване на IBAN е затворена.</translation>
 <translation id="2246264294482514010">10 x 12 инча</translation>
 <translation id="2246480341630108201">Родителят ви още не е дал разрешение</translation>
 <translation id="2247789808226901522">Картата е изтекла</translation>
@@ -1238,6 +1240,7 @@
 <translation id="3272112314896217187">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за потвърждение</translation>
 <translation id="3272643614306383237">По-малко от 1 MB. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
 <translation id="3273738040255912340">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Подканата за запазване на IBAN е отворена на пълната височина.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Според администраторско правило отварянето на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило отварянето на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
@@ -1657,6 +1660,7 @@
 <translation id="4023431997072828269">Тъй като този формуляр се изпраща посредством незащитена връзка, информацията ви ще е видима за други хора.</translation>
 <translation id="4025325634010721551">Правилата са презаредени</translation>
 <translation id="4025338605225449265">Валути и обмен на валута</translation>
+<translation id="4025777154208238692">Обратен ред</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Хакерите могат да виждат и променят<ph name="END_STRONG" /> информацията, която изпращате или получавате от сайта.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Най-безопасно е да посетите този сайт по-късно<ph name="END_STRONG" />, ако използвате обществена мрежа. Рискът е по-малък при надеждна мрежа, като например домашната или служебната ви Wi-Fi мрежа.
@@ -2125,6 +2129,7 @@
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="4881808915112408168">24 x 31,5 инча</translation>
 <translation id="4882314601499260499">Не са приложени правила за потребители. За да добави такива правила, организацията ви трябва <ph name="LINK_BEGIN" />да потвърди домейна ви<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Въведете въпроса или подканата си</translation>
 <translation id="4885030148564729407">Пътувания за меден месец и романтични пътешествия</translation>
 <translation id="4885256590493466218">Плащане с <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
@@ -2584,6 +2589,7 @@
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723873695528696965">Контролиране и препрограмиране на MIDI устройствата ви</translation>
 <translation id="5725297205162868298">Прекият път „<ph name="SHORTCUT_NAME" />“ не може да започва със знака @</translation>
+<translation id="5728246486828755318">Може да извежда запитвания за използване на разширените функции на принтера</translation>
 <translation id="5729442113829771034">Предучилищно образование</translation>
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
@@ -2595,6 +2601,7 @@
 <translation id="5743684619253032786">Продукти за грижа за ноктите</translation>
 <translation id="5745733273847572235">Може да поиска достъп до местоположението ви</translation>
 <translation id="5750869797196646528">Проследяване на ръцете</translation>
+<translation id="5752327398324808817">Въведете една или две думи</translation>
 <translation id="5759751709240058861">Използване и местене на камерата ви</translation>
 <translation id="5763042198335101085">Въведете валиден имейл адрес</translation>
 <translation id="5764725887548570807">Форматът на източника е невалиден.</translation>
@@ -3090,6 +3097,7 @@
 <translation id="6671169470640320959">Финансиране на покупки на автомобили</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6677351035258626477">Бързо хранене</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опция}other{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опции}}</translation>
 <translation id="6681790815630918386">Кодът за проверка е запазен</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6687230248707087982">Плик (обикновен)</translation>
@@ -3106,6 +3114,7 @@
 <translation id="6696575039575740785">Инсталирането на уеб приложения не е разрешено</translation>
 <translation id="6698097747703777657">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Създадено:</translation>
+<translation id="6698769547327354196">За да изключите PIX в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Времеви плъзгач</translation>
 <translation id="6702851555558236418">Софтуер за музика и аудиозаписи</translation>
 <translation id="6702919718839027939">Представяне</translation>
@@ -3261,6 +3270,7 @@
 <translation id="6978236010531171013">Споделяне въпреки това</translation>
 <translation id="6978722349058177832">Ако споделяте това устройство, Chromium може да извежда запитване за потвърждаване всеки път, когато плащате чрез автоматично попълване</translation>
 <translation id="6979158407327259162">Google Диск</translation>
+<translation id="6979302985396162258">управление на достъпа до „бисквитки“ на трети страни</translation>
 <translation id="6979440798594660689">Заглушаване (стандартно)</translation>
 <translation id="6984270784814146224">Изображение без етикет. Текстът се извлича с помощта на AI на Google</translation>
 <translation id="6987806006823772670">Плик (с покритие)</translation>
@@ -3407,6 +3417,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Бизнес дейности</translation>
+<translation id="7244061187185055290">Опишете с няколко думи това, което търсите</translation>
 <translation id="7251437084390964440">Конфигурацията на мрежата не спазва стандарта на ONC. Възможно е части от нея да не са импортирани.
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
@@ -3787,7 +3798,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Кодът за проверка на тази карта ще бъде шифрован и запазен на устройството ви с цел по-бързо плащане</translation>
 <translation id="7937554595067888181">Изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Показване кои награди и предимства са налице за картите ви при плащане. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата на картите<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Сертификатът на сървъра още не е валиден.</translation>
 <translation id="7941628148012649605">Плик Chou 4</translation>
 <translation id="794169214536209644">Бонбони и сладкиши</translation>

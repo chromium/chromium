@@ -11075,52 +11075,6 @@ Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> e
 <translation id="9123464369663964441">Permitir que os usuários adicionem exceções para liberar conteúdo misto</translation>
 <translation id="9124770007620653639">Nunca enviar dados de confiabilidade do domínio para o Google</translation>
 <translation id="9126331659955304300">Permitir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
-<translation id="9126491667911789829">A definição da política especifica uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
-
-      Cada item da lista da política é um objeto com um elemento obrigatório:
-      <ph name="URL_LABEL" />, que é o URL do app da Web que vai ser instalado.
-
-      Além de seis elementos opcionais:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
-      para a maneira como o app da Web é aberto (o padrão é uma nova guia).
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
-      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do
-      <ph name="MS_WIN_NAME" />.
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (da versão 90 em diante do <ph name="PRODUCT_NAME" />)
-      permite substituir o nome do app se ele não for um
-      App Web Progressivo (PWA) ou o nome do app instalado
-      temporariamente se ele for um PWA, mas a autenticação for exigida antes de
-      concluir a instalação. Se um
-      <ph name="CUSTOM_NAME_LABEL" /> e um
-      <ph name="FALLBACK_APP_NAME_LABEL" /> forem fornecidos,
-      o segundo vai ser ignorado.
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
-      e da versão 112 em todos os outros sistemas operacionais de computador) permite substituir
-      permanentemente os nomes de todos os apps da Web e PWAs.
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
-      e da versão 112 em todos os outros sistemas operacionais de computador) permite
-      substituir o ícone dos apps instalados. Os ícones precisam ser quadrados,
-      ter no máximo 1 MB e estar em um destes formatos: jpeg, png, gif, webp, ico.
-      O valor de hash precisa ser o hash SHA256 do arquivo de ícone.
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (da versão 107 em diante
-      do <ph name="PRODUCT_NAME" />). Se ativado, o <ph name="URL_LABEL" />
-      fornecido vai ser instalado como um atalho, como se fosse feito pela opção "Criar atalho…"
-      na GUI do navegador para computador.
-      Observe que, quando instalado como um atalho, ele não será atualizado se o
-      manifesto no <ph name="URL_LABEL" /> mudar.
-      Se desativado ou não configurado, o app da Web no
-      <ph name="URL_LABEL" /> especificado vai ser instalado normalmente.
-
-      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9128095645860384292">Permite definir uma lista de padrões de URL que especificam sites sem permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
 
           Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente, e partes do próprio JavaScript poderão ser desativadas, incluindo o WebAssembly. Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web com uma configuração mais segura.

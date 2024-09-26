@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />Package tracking settings<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Open new tab in Chrome</translation>
 <translation id="1166460004393506534">Delete browsing data in Chrome</translation>
@@ -38,6 +39,7 @@ Things to consider:
 <translation id="1670609221633730681">Chrome tip: Choose your address bar position</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adds the inputted URLs to your bookmarks in Chrome.</translation>
+<translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1830634592642484976">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>

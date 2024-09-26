@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Otwórz menu Chromium</translation>
 <translation id="12739128458173458">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chromium.</translation>
 <translation id="1361748954329991663">Przeglądarka Chromium jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chromium.</translation>
+<translation id="1383876407941801731">Szukaj</translation>
 <translation id="1423007117030725713">Rozpocznij wyszukiwanie na nowej karcie Chromium.</translation>
 <translation id="1431818719585918472">Pozwól Chromium blokować karty incognito.</translation>
 <translation id="146407871188825689">Domyślnie używaj Chromium na iPada</translation>
@@ -177,6 +178,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5571094606370987472">Otwiera ostatnie karty w Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Otwórz moją ostatnio używaną kartę w Chromium</translation>
+<translation id="5671188105328420281">Chromium – wskazówki</translation>
 <translation id="5688047395118852662">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
 <translation id="584550191241316896">Zalogowano w Chromium</translation>
@@ -218,6 +220,7 @@ Pamiętaj, że:
 <translation id="6752854822223394465">Twoja organizacja konfiguruje Chromium…</translation>
 <translation id="6794054469102824109">Otwiera grę z dinozaurem w Chromium.</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
+<translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6852419005633611413">Szybszy dostęp do Chromium z Docka na ekranie głównym</translation>
 <translation id="6852799557929001644">Korzystaj z haseł w Chromium i innych ustawień w innych aplikacjach na tym urządzeniu.</translation>
 <translation id="6887138405044152640">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chromium.</translation>

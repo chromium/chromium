@@ -167,6 +167,7 @@
 <translation id="2945997411976714835">Грешка при инсталирането: Стартирането на инсталационния процес не бе успешно.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chrome</translation>
 <translation id="2970681950995291301">За да премахнете профила си в Google от Chrome, излезте от браузъра на страницата „Настройки“</translation>
+<translation id="2994465299455873643">Предоставя услуги за шифроване и сигурен начин за възстановяване на <ph name="BROWSER_NAME" />, ако браузърът вече не е актуален. Ако тази услуга е деактивирана, <ph name="BROWSER_NAME" /> може да загуби достъп до шифрованите данни и е възможно <ph name="BROWSER_NAME" /> да не успее да се възстанови.</translation>
 <translation id="3018957014024118866">Изтриване на данните и от Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Повторно стартиране за актуализиране на &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome работи на заден план.</translation>
@@ -223,6 +224,7 @@
 <translation id="3673813398384385993">Chrome установи, че „<ph name="EXTENSION_NAME" />“ съдържа злонамерен софтуер</translation>
 <translation id="3695446226812920698">Научете как</translation>
 <translation id="3697952514309507634">Други потребителски профили в Chrome</translation>
+<translation id="3700276346088749847">изчистете данните от Chrome в профила си</translation>
 <translation id="3703994572283698466">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Версия на ChromeOS Flex</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
@@ -294,6 +296,7 @@
 <translation id="4575717501879784448">Chrome може да деактивира тези раздели, за да подобри практическата ви работа при сърфиране и да освободи ресурси.</translation>
 <translation id="459622048091363950">След като Chrome получи достъп, уебсайтовете ще могат да искат достъп от вас.</translation>
 <translation id="4600710005438004015">Chrome не можа да се актуализира до най-новата версия. Това означава, че пропускате нови функции и корекции за сигурност.</translation>
+<translation id="4601439950572737842">Данните ви са шифровани с пропуска ви. Въведете го, за да използвате и запазвате данните от Chrome в профила си в Google.</translation>
 <translation id="4624065194742029982">Режим „инкогнито“ на Chrome</translation>
 <translation id="4627412468266359539">Незадължително: Помогнете за подобряването на функциите и ефективността на ChromeOS Flex, като автоматично изпращате до Google диагностични данни и данни за употребата.</translation>
 <translation id="4633000520311261472">За да направим Chrome по-безопасен, деактивирахме някои разширения, които не са посочени в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да са били добавени без ваше знание.</translation>

@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranssi</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1273910660700874265">Välilehtiryhmän (<ph name="TITLE_OF_GROUP" />) vaihtoehdot</translation>
+<translation id="1293272072740285747">Säilytä tämä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poista se, jos et enää tarvitse sitä.
+
+Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROUP" />", ja se poistetaan kaikilta laitteilta.</translation>
 <translation id="1340839264183302272">Poistu ryhmästä</translation>
 <translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
 <translation id="1486715732399361704">Löydät kaikki välilehtiryhmäsi täältä</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
+<translation id="5615302411300498438">Säilytä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai lähde siitä.
+
+Jos lähdet, menetät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Palauta välilehti}other{Palauta välilehdet}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="8631711675211020168">Kaikki menettävät välittömästi pääsyn välilehtiryhmään <ph name="GROUP_NAME" />, ja se poistetaan kaikilta laitteilta</translation>
 <translation id="8633025649649592204">Uusimmat tapahtumat</translation>
+<translation id="8635399646025169806">Säilytetäänkö välilehtiryhmä?</translation>
 <translation id="870736955561925754">Suljetaanko välilehti ja poistetaanko ryhmä?</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{Luotu <ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
+<translation id="8804742093141782941">Älä poista</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>

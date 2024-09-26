@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1066101356081285416">Chrome do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Numri i gjurmimit i pakos dhe emri i uebsajtit do të dërgohen te Google për të ofruar këtë veçori dhe për të përmirësuar veçoritë e blerjeve të Google për të gjithë. Mund ta përditësosh këtë në çdo kohë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Kërko me "Lenten e Google"</translation>
 <translation id="1143896152279775643">Fjalëkalimi yt do të ruhet në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Hap një skedë të re në Chrome</translation>
 <translation id="1166460004393506534">Fshi të dhënat e shfletimit në Chrome</translation>
@@ -37,6 +38,7 @@ Gjëra për të pasur parasysh:
 <translation id="1670609221633730681">Këshillë për Chrome: Zgjidh pozicionin e shiritit të adresave</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Shton URL-të e futura te faqeshënuesit në Chrome.</translation>
+<translation id="1799920918471566157">Këshilla për Chrome</translation>
 <translation id="1830634592642484976">Kjo adresë është ruajtur aktualisht në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chrome dhe nga aplikacionet e tjera në këtë pajisje.</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>

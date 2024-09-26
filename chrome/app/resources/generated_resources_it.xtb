@@ -4163,6 +4163,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3948116654032448504">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Questa scheda sta riproducendo contenuti audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
+<translation id="3948985214866944547">La maggior parte degli utenti blocca la condivisione della posizione esatta per questo sito</translation>
 <translation id="394984172568887996">Importati da IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> per rendere più sicuro il download dei file</translation>
 <translation id="3950820424414687140">Accedi</translation>
@@ -5345,7 +5346,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="4838836835474292213">Accesso alla lettura degli appunti consentito</translation>
 <translation id="4838907349371614303">Password aggiornata</translation>
-<translation id="4838958829619609362">La selezione non è in <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Sal&amp;va video come...</translation>
 <translation id="4839910546484524995">Controlla il dispositivo</translation>
 <translation id="4840096453115567876">Vuoi uscire comunque dalla modalità di navigazione in incognito?</translation>
@@ -5955,7 +5955,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5287425679749926365">I tuoi account</translation>
 <translation id="5288106344236929384">Altre azioni, opzioni password per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Riapri sch&amp;eda chiusa</translation>
-<translation id="52895863590846877">La pagina non è in <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">PC e dispositivo di trasmissione su diverse reti Wi-Fi (ad es. 2,4 GHz
     e 5 GHz)</translation>
 <translation id="52912272896845572">Il file della chiave privata non è valido.</translation>
@@ -8094,7 +8093,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6863925886424789941">Colosseo</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
-<translation id="6865598234501509159">La pagina non è in <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Log eventi WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Basso</translation>
 <translation id="686664946474413495">Temperatura del colore</translation>
@@ -8715,7 +8713,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7343372807593926528">Prima di inviare il feedback, descrivi il problema.</translation>
 <translation id="7344585835349671209">Gestisci i certificati HTTPS/SSL sul tuo dispositivo</translation>
 <translation id="7345706641791090287">Conferma la password</translation>
-<translation id="7345919885156673810">La selezione non è in <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">Per utilizzare questa estensione, digita "<ph name="EXTENSION_KEYWORD" />", quindi TAB, poi il tuo comando o la tua ricerca.</translation>
 <translation id="7347943691222276892">Fai clic per uscire da <ph name="SUBPAGE_TITLE" />.</translation>

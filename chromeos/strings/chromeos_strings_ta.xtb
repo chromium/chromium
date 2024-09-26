@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ஸ்கேன் செய்யும் பகுதிக்கு ஏற்பப் பொருத்து</translation>
 <translation id="1343442362630695901">உப்பு ஏரி</translation>
 <translation id="1348657754632799065">ரெக்கார்டிங் பட்டி</translation>
+<translation id="1350909945461913813">உங்கள் பணிகளைச் சேமித்திடுங்கள்</translation>
 <translation id="1367951781824006909">ஃபைலைத் தேர்வுசெய்க</translation>
 <translation id="1371650399987522809">Google AI உருவாக்கிய வால்பேப்பருக்கான கருத்து</translation>
 <translation id="1374385338586507108">வரையறை</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK பதிப்பு:</translation>
 <translation id="2016697457005847575">பிழையறிந்து திருத்தும் படிகளை முயன்று பார்க்கவும்</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">உங்கள் AI படங்களைப் பிரத்தியேகமாக்க, தீமினைத் தேர்வுசெய்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="2045814230297767491">வெட்டும் கருவிகள்</translation>
 <translation id="2047316797244836561">ஸ்கிரீன் சேவரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">பேச்சு கண்டறியப்படவில்லை</translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
+<translation id="2468124392950503650">உருவாக்க ஒரு ப்ராம்ப்ட்டைத் தேர்ந்தெடுங்கள் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட் வழிகாட்டியைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பாருங்கள்</translation>
 <translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
 <translation id="2480572840229215612">நண்டுகள்</translation>
 <translation id="248546197012830854">சாதனம் ஆஃப்லைனில் உள்ளது. உதவி உள்ளடக்கத்தைப் பார்க்க வைஃபை நெட்வொர்க்குடன் இணைக்கவும்.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">பொருந்தும் முடிவுகள் இல்லை</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4486524074141928967"><ph name="TIME" />க்கு வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="4500722292849917410">ஷார்ட்கட் இல்லை. ஒரு மாற்றி விசையை (ctrl, alt, shift அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4500966230243561393">இடைமுக வண்ணம்</translation>
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">சாம்பல்</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> பட்டன் சோதனை செய்யப்பட்டது</translation>
+<translation id="5613201299517339763">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
 <translation id="5630438231335788050">பௌஹாஸ்</translation>
 <translation id="5631759159893697722">சுருக்கம்</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">ஃபைல் இல்லை</translation>
 <translation id="5938286923316838007">ரெக்கார்டிங் பெயர்களை இந்த உள்ளடக்கத்திற்கு உருவாக்க முடியவில்லை</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
+<translation id="5942727615796467094"><ph name="DEVICE_TYPE" /> ஐ எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்</translation>
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5946538341867151940">நீங்கள் இன்னும் இணைக்கப்படவில்லை. உங்கள் மொபைல் நிறுவனம் பிரத்தியேக APNனைப் பரிந்துரைத்தால் "+ புதிய APN" என்பதைத் தேர்ந்தெடுத்து APN தகவல்களை டைப் செய்யவும்</translation>
 <translation id="5947266287934282605">மாதத்தின் கடைசி தேதி இந்த நாளுக்கு முன்னதாக இருந்தால், மாதத்தின் கடைசி தேதியில் தரவு மீட்டமைக்கப்படும்.</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">வேறொரு கிரகம்</translation>
 <translation id="6359706544163531585">லைட் தீமினை முடக்குதல்</translation>
 <translation id="6359919876285606596">இது நிரந்தரமானது, செயல்தவிர்க்க முடியாது.</translation>
+<translation id="6368342879959028556">“AI மூலம் உருவாக்கு” என்பதை நீங்கள் தேர்ந்தெடுத்தால் நீங்களே ஒரு ப்ராம்ப்ட்டை எழுதலாம். மாற்றாக, தீமினைத் தேர்வுசெய்ய “AI வால்பேப்பர்கள்” என்பதைத் தேர்ந்தெடுத்து அதன்பிறகு அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுப்பதன் மூலம் உங்கள் AI வால்பேப்பரைப் பிரத்தியேகமாக்கலாம்.</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
 <translation id="6373461326814131011">குளம்</translation>
 <translation id="6379086450106841622">டச்ஸ்கிரீன்</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="6462978824459367242">'APNனைச் சேர்' பட்டன் இப்போது இயக்கப்பட்டுள்ளது</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}}</translation>
+<translation id="6468146470109254228">உங்களின் மிகச் சமீபத்திய 3 ப்ராம்ப்ட்டுகள் மற்றும் வெளியீடுகள். வால்பேப்பர் &amp; ஸ்டைல் அம்சத்தைப் பயன்படுத்தும்போது மட்டுமே இவற்றை நீங்கள் அணுகலாம்.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">படகுகள்</translation>
 <translation id="64778964625672495">அடர் சிவப்பு</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">உலாவிப் பக்கம்</translation>
 <translation id="66621959568103627">பவள இளஞ்சிவப்பு</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நீங்கள் AI மூலம் உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, அது இன்னும் பரவலாகக் கிடைப்பதில்லை.</translation>
 <translation id="6673898378497337661">கீபோர்டு ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6694534975463174713">பூட்டு</translation>

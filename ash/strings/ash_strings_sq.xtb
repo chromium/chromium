@@ -215,7 +215,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1703117532528082099">Dritarja aktive u pozicionua në të majtë.</translation>
 <translation id="1708345662127501511">Tavolina e punës: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Cilësimet e rrjetit</translation>
-<translation id="171610090693716835">Vazhdo të ecësh përpara me listat e personalizuara për luajtje për përqendrimin. Merr YouTube Music dhe YouTube, pa reklama, me 3 muaj në YouTube Premium pa asnjë kosto.</translation>
 <translation id="1719094688023114093">"Titrat në çast" janë aktivë.</translation>
 <translation id="1720011244392820496">Aktivizo "Sinkronizimin e Wi-Fi"</translation>
 <translation id="1720230731642245863">Zona e qasjes për internet është joaktive</translation>
@@ -398,6 +397,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
 <translation id="2416438829169535743">Dëshiron të dalësh nga pamja?</translation>
 <translation id="2417486498593892439">Identifikohu në rrjet</translation>
+<translation id="2423619675829330672">Shumë përpjekje me kodin PIN. Prit <ph name="TIME_LEFT" /> dhe provo përsëri.</translation>
 <translation id="2426051945783024481">Kuadri i kamerës u vendos automatikisht në qendër</translation>
 <translation id="2427507373259914951">Klikimi me butonin majtas</translation>
 <translation id="2429753432712299108">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Përpara se të pranosh, konfirmo që ky çelës kalimi shfaqet në atë pajisje: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6330012934079202188">Po shfaqen dritaret nga të gjitha tavolinat e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga tavolina aktuale e punës</translation>
 <translation id="6337159624125741244">"Zmadhuesi i ekranit të plotë" është aktiv</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Nëse ke harruar kodin PIN, provo të rikuperosh këtë përdorues.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> u lidh</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, më pas <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGJERIMET E APLIKACIONEVE</translation>
@@ -1633,6 +1634,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6539852571005954999">Po skanohet shkarkimi: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, imazhe GIF etj.</translation>
+<translation id="6545382064335350438">Kodi PIN nuk mund të verifikohej ende. Provo përsëri.</translation>
 <translation id="6555373427270923730">Shkruaj një adresë uebi në shiritin e adresës dhe më pas shtyp <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalim i ri</translation>
@@ -2029,6 +2031,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7904094684485781019">Administratori për këtë faqe ka ndaluar identifikimin e shumëfishtë.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> pajisje të lidhura</translation>
+<translation id="7921565901396407357">Kodi PIN nuk mund të verifikohej. Provo përsëri.</translation>
 <translation id="7923534281713082605">Moti</translation>
 <translation id="7926080067315048321">Shiko të gjitha detyrat në Google Tasks në ueb</translation>
 <translation id="7930731167419639574">Ligjërimi përpunohet tani lokalisht dhe "Diktimi" punon offline</translation>

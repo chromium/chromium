@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
 <translation id="1343442362630695901">duzlu göl</translation>
 <translation id="1348657754632799065">Səsyazma paneli</translation>
+<translation id="1350909945461913813">İşləri yadda saxladığınıza əmin olun</translation>
 <translation id="1367951781824006909">Fayl seçin</translation>
 <translation id="1371650399987522809">Google AI tərəfindən dəstəklənən divar kağızı üçün rəy</translation>
 <translation id="1374385338586507108">Təyin edin</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK Versiyası:</translation>
 <translation id="2016697457005847575">Nasazlıqların aradan qaldırılması addımlarını sınayın</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Tema seçdikdən sonra Sİ şəkillərini fərdiləşdirmək üçün altından xətt çəkilən sözləri seçin.</translation>
 <translation id="2045814230297767491">süfrə aksesuarları</translation>
 <translation id="2047316797244836561">Ekran qoruyucusu görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nitq aşkarlanmadı</translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />Sorğu bələdçisini<ph name="END_LINK_PROMPTING_GUIDE" /> yaratmaq və ya görmək üçün sorğunu seçin</translation>
 <translation id="2472215337771558851">Qaralama yaratmaq və ya mövcud işi təkmilləşdirmək üçün Google AI tərəfindən dəstəklənən Yazı yardımını istifadə edin</translation>
 <translation id="2480572840229215612">krablar</translation>
 <translation id="248546197012830854">Cihaz oflayndır. Yardım məzmununa baxmaq üçün Wi-Fi şəbəkəsinə qoşulun.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Uyğun nəticə yoxdur</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
+<translation id="4486524074141928967"><ph name="TIME" /> radələrində hesabdan çıxacaqsınız</translation>
 <translation id="4500722292849917410">Qısayol əlçatan deyil. Dəyişdirici düymədən (ctrl, alt, shift və ya <ph name="META_KEY" />) istifadə edərək yeni qısayola basın.</translation>
 <translation id="4500966230243561393">İnterfeys rəngi</translation>
 <translation id="4503223151711056411">Sol ox</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">boz</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> düyməsi test edilib</translation>
+<translation id="5613201299517339763">Hesabdan çıxdınız</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
 <translation id="5938286923316838007">Bu kontent üçün qeyd adları yaratmaq mümkün deyil</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> administratoru bu <ph name="DEVICE_TYPE" /> cihazının istifadə oluna biləcəyi vaxtı təyin edib</translation>
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
 <translation id="5946538341867151940">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, "+Yeni APN" seçməklə APN məlumatını daxil edin</translation>
 <translation id="5947266287934282605">Ayın son günü bu gündən əvvəl olarsa, data ayın son günündə sıfırlanacaq</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">fərqli planet</translation>
 <translation id="6359706544163531585">İşıqlı temanı deaktiv edin</translation>
 <translation id="6359919876285606596">Bu əməliyyat daimidir və geri qaytarıla bilməz</translation>
+<translation id="6368342879959028556">"Sİ ilə yaradın" seçdiyiniz zaman fərdi sorğu yazın. Ya da mövzu seçmək üçün "Sİ divar kağızları" seçə, daha sonra Sİ divar kağızınızı fərdiləşdirmək üçün altından xətt çəkilmiş sözləri seçə bilərsiniz.</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="6373461326814131011">gölməçə</translation>
 <translation id="6379086450106841622">Taçskrin</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Hesab ayarlarına keçin</translation>
 <translation id="6462978824459367242">"APN əlavə edin" düyməsi aktivləşdirilib</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Səhifə yenidən skanlansın?}=1{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}other{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}}</translation>
+<translation id="6468146470109254228">Son 3 sorğu və nəticələriniz. Onlara yalnız ekran şəkli və dizaynlarından istifadə edərkən daxil ola bilərsiniz.</translation>
 <translation id="6472207088655375767">Birdəfəlik parol (OTP)</translation>
 <translation id="6472979596862005515">qayıqlar</translation>
 <translation id="64778964625672495">tünd-qırmızı</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Səkmə</translation>
 <translation id="66621959568103627">mərcan çəhrayısı</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Unikal və müxtəlif Sİ şəkilləri üçün "Təsadüfi" seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sİ ilə yaradıcılıq zamanı <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> uyğun olaraq şəkil yaratmaq və məhsul təkmilləşdirmək sorğusu Google Sİ serverlərinə göndərilir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yaradan Sİ təcrübidir, ilkin hazırlanma mərhələsindədir və hazırda məhdud əlçatanlığa malikdir.</translation>
 <translation id="6673898378497337661">klaviatura parlaqlığını artırın</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6694534975463174713">kilid</translation>

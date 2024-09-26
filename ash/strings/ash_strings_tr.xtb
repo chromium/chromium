@@ -215,7 +215,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1703117532528082099">Etkin pencere sola sabitlendi.</translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ağ Ayarları</translation>
-<translation id="171610090693716835">Kişiselleştirilmiş odaklanma listeleriyle zamanınızı yönetin. 3 ay boyunca ücretsiz YouTube Premium ile YouTube Music ve YouTube'u reklamsız kullanın.</translation>
 <translation id="1719094688023114093">Canlı Altyazı açık.</translation>
 <translation id="1720011244392820496">Wi-Fi Senkronizasyonu aç</translation>
 <translation id="1720230731642245863">Hotspot kapalı</translation>
@@ -398,6 +397,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
 <translation id="2416438829169535743">Görünümden çıkılsın mı?</translation>
 <translation id="2417486498593892439">Ağda oturum açın</translation>
+<translation id="2423619675829330672">Çok fazla sayıda PIN denemesi yapıldı. <ph name="TIME_LEFT" /> bekleyin ve tekrar deneyin.</translation>
 <translation id="2426051945783024481">Kamera çerçevesi otomatik olarak ortalandı</translation>
 <translation id="2427507373259914951">Sol tıklama</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Kabul etmeden önce şu cihazda gösterilen bu parolanın gösterildiğini onaylayın: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6330012934079202188">Tüm masalardaki pencereler gösteriliyor, mevcut masadaki pencerelerin gösterilmesi için Yukarı ok tuşuna basın</translation>
 <translation id="6337159624125741244">Tam ekran büyüteci açık</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" />, <ph name="MANAGER" /> tarafından yönetilen bir oturumdur</translation>
+<translation id="6340148837564298498">PIN'inizi unuttuysanız bu kullanıcıyı kurtarmayı deneyin.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> bağlandı</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ardından <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> veya <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">UYGULAMA ÖNERİLERİ</translation>
@@ -1633,6 +1634,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6539852571005954999">İndirilen dosya taranıyor: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> alıcısına gönderiliyor</translation>
 <translation id="6542891623636520977">Emojiler, GIF'ler ve daha fazlası</translation>
+<translation id="6545382064335350438">PIN'iniz hâlâ doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="6555373427270923730">Adres çubuğuna bir web adresi yazın, ardından <ph name="MODIFIER" /><ph name="KEY" /> tuşlarına basın</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Yeni yüklenmiş</translation>
@@ -2029,6 +2031,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> cihaz bağlandı</translation>
+<translation id="7921565901396407357">PIN'iniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="7923534281713082605">Hava durumu</translation>
 <translation id="7926080067315048321">Google Görevler'deki tüm görevleri web'de göster</translation>
 <translation id="7930731167419639574">Konuşma artık yerel olarak işlenip çevrimdışı olarak çalışacaktır</translation>

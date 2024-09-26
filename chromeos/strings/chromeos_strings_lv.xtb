@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
 <translation id="1343442362630695901">sālsezers</translation>
 <translation id="1348657754632799065">Ierakstīšanas josla</translation>
+<translation id="1350909945461913813">Noteikti saglabājiet savu darbu.</translation>
 <translation id="1367951781824006909">Izvēlēties failu</translation>
 <translation id="1371650399987522809">Atsauksmes par Google MI nodrošinātām fona tapetēm</translation>
 <translation id="1374385338586507108">Definīcija</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Izvēlieties tēmu un pēc tam atlasiet pasvītrotos vārdus, lai personalizētu savus MI attēlus.</translation>
 <translation id="2045814230297767491">galda piederumi</translation>
 <translation id="2047316797244836561">Lai skatītu ekrānsaudzētāju, izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Runa nav konstatēta</translation>
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
 <translation id="2448312741937722512">Tips</translation>
+<translation id="2468124392950503650">Atlasiet uzvedni, lai izveidotu vai skatītu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />norādījumus par uzvednēm<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="2472215337771558851">Lai izveidotu melnrakstu vai uzlabotu esošo darbu, izmantojiet funkciju “Palīdzība rakstīšanā”, ko nodrošina Google MI.</translation>
 <translation id="2480572840229215612">krabji</translation>
 <translation id="248546197012830854">Ierīce ir bezsaistē. Izveidojiet savienojumu ar Wi-Fi tīklu, lai skatītu palīdzības saturu.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Nav atbilstošu rezultātu</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4486524074141928967">Jūs tiksiet izrakstīts plkst. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot modificētājtaustiņu (Ctrl, Alt, Shift vai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Saskarnes krāsa</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">pelēka</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
+<translation id="5613201299517339763">Jūs tikāt izrakstīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">kopsavilkums</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Fails nav atrasts</translation>
 <translation id="5938286923316838007">Šim saturam nevar izveidot ierakstu nosaukumus.</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
+<translation id="5942727615796467094">Vietnes <ph name="MANAGER" /> administrators iestatīja šīs <ph name="DEVICE_TYPE" /> ierīces izmantošanas ierobežojumu.</translation>
 <translation id="594552776027197022">Ģenerēt nejauši izveidotu atslēgu pāri</translation>
 <translation id="5946538341867151940">Jūs vēl neesat izveidojis savienojumu. Ja mobilo sakaru operators iesaka pielāgotu APN, ievadiet APN informāciju, atlasot “+ Jauns APN”.</translation>
 <translation id="5947266287934282605">Ja mēneša pēdējā diena ir pirms šī datuma, dati tiks atiestatīti mēneša pēdējā dienā.</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">cita planēta</translation>
 <translation id="6359706544163531585">Atspējot gaišo motīvu</translation>
 <translation id="6359919876285606596">Šī darbība ir neatgriezeniska, un to nevar atsaukt.</translation>
+<translation id="6368342879959028556">Atlasot opciju “Izveidot, izmantojot MI”, rakstiet pielāgotu uzvedni. Vai arī atlasiet opciju “MI tapetes”, atlasiet vēlamo motīvu un pēc tam atlasiet pasvītrotos vārdus, lai personalizētu MI tapeti.</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
 <translation id="6373461326814131011">dīķis</translation>
 <translation id="6379086450106841622">Skārienekrāns</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>
 <translation id="6462978824459367242">APN pievienošanas poga tagad ir iespējota</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vai atkārtoti skenēt lapu?}=1{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}zero{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}one{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}other{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}}</translation>
+<translation id="6468146470109254228">Jūsu trīs pēdējās uzvednes un rezultāti. Varat piekļūt tikai tad, ja izmantojat funkciju “Fona tapete un stils”.</translation>
 <translation id="6472207088655375767">VRP</translation>
 <translation id="6472979596862005515">laivas</translation>
 <translation id="64778964625672495">tumši sarkanā</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6659594942844771486">Cilne</translation>
 <translation id="66621959568103627">koraļļsārta</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          a izveidei izmantojat MI, uzvedne tiek nosūtīta Google MI serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ģeneratīvais MI ir eksperimentāls, tas ir agrīnā izstrādes stadijā, un pašlaik tam ir ierobežota pieejamība.</translation>
 <translation id="6673898378497337661">palielināt tastatūras spilgtumu</translation>
 <translation id="6692996468359469499">Iespēja saņemt informāciju par atlasīto saturu</translation>
 <translation id="6694534975463174713">bloķēt</translation>
@@ -1569,6 +1587,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>
 <translation id="8882789155418924367">pūces</translation>
 <translation id="8892443466059986410">Atcelt saīsnes rediģēšanu</translation>
+<translation id="8897043028305808902">Fails ir pārdēvēts.</translation>
 <translation id="8898840733695078011">Signāla stiprums</translation>
 <translation id="8909114361904403025">augšupvērstais bulttaustiņš</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>

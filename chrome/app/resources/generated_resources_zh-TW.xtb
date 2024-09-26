@@ -3481,6 +3481,7 @@
 <translation id="3487649228420469005">掃描完成</translation>
 <translation id="3488199663160411179">名稱</translation>
 <translation id="3490695139702884919">下載中... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">可在你忘記 PIN 碼或密碼時還原本機內容</translation>
 <translation id="3491669675709357988">貴子女的帳戶並未設定 Family Link 家長監護功能。設定完成後，即可新增家長監護功能。您可以在「探索」應用程式中找到家長監護功能的相關資訊。</translation>
 <translation id="3491678231052507920">網站通常會使用虛擬實境裝置和資料讓你進入 VR 工作階段</translation>
 <translation id="3493043608231401654">將「<ph name="TAB_TITLE" />」從分頁群組中移除</translation>
@@ -4158,6 +4159,7 @@
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948334586359655083">這個分頁正在播放音訊</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可以編輯下列資料夾中的檔案</translation>
+<translation id="3948985214866944547">大多數使用者已封鎖這個網站的「分享精確位置」功能</translation>
 <translation id="394984172568887996">從 IE 匯入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
 <translation id="3950820424414687140">登入</translation>
@@ -5340,7 +5342,6 @@
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4838836835474292213">已允許讀取剪貼簿</translation>
 <translation id="4838907349371614303">已更新密碼</translation>
-<translation id="4838958829619609362">所選內容的語言不是<ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">將影片另存為(&amp;V)...</translation>
 <translation id="4839910546484524995">檢查裝置</translation>
 <translation id="4840096453115567876">確定要結束無痕模式嗎？</translation>
@@ -5950,7 +5951,6 @@
 <translation id="5287425679749926365">你的帳戶</translation>
 <translation id="5288106344236929384">其他操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 的密碼金鑰選項</translation>
 <translation id="5288678174502918605">重新開啟先前關閉的分頁(&amp;E)</translation>
-<translation id="52895863590846877">網頁原文不是<ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">電腦和投放裝置連上不同的 Wi-Fi 網路 (例如分別使用 2.4 GHz 和 5 GHz)</translation>
 <translation id="52912272896845572">秘密金鑰檔案無效。</translation>
 <translation id="5291739252352359682">在 Chrome 瀏覽器中自動建立媒體字幕 (目前僅支援英文)。系統只會在裝置中處理語音和字幕，絕對不會外洩。</translation>
@@ -8087,7 +8087,6 @@
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6863925886424789941">羅馬競技場</translation>
 <translation id="6865313869410766144">自動填入表單資料</translation>
-<translation id="6865598234501509159">網頁原文不是<ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC 事件記錄 (<ph name="WEBRTC_EVENT_LOG_COUNT" /> 筆)</translation>
 <translation id="686609795364435700">靜音</translation>
 <translation id="686664946474413495">色溫</translation>
@@ -8708,7 +8707,6 @@
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
 <translation id="7345706641791090287">確認你的密碼</translation>
-<translation id="7345919885156673810">所選內容的語言不是<ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，接著再輸入你的指令或搜尋項目。</translation>
 <translation id="7347943691222276892">按一下即可離開「<ph name="SUBPAGE_TITLE" />」。</translation>

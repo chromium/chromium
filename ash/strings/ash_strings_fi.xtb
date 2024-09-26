@@ -215,7 +215,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1703117532528082099">Aktiivinen ikkuna kiinnitetty vasemmalle</translation>
 <translation id="1708345662127501511">Työpöytä: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Verkkoasetukset</translation>
-<translation id="171610090693716835">Pidä tilanne hallussa personoitujen, keskittymiseen tarkoitettujen soittolistojen avulla. YouTube Music ja YouTube ilman mainoksia – 3 kuukautta YouTube Premiumia maksutta.</translation>
 <translation id="1719094688023114093">Livetekstitys on päällä.</translation>
 <translation id="1720011244392820496">Laita Wi-Fin synkronointi päälle</translation>
 <translation id="1720230731642245863">Hotspot on pois päältä</translation>
@@ -398,6 +397,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
 <translation id="2416438829169535743">Poistutaanko näkymästä?</translation>
 <translation id="2417486498593892439">Kirjaudu verkkoon</translation>
+<translation id="2423619675829330672">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä uudelleen.</translation>
 <translation id="2426051945783024481">Kameran kehys keskitetty automaattisesti</translation>
 <translation id="2427507373259914951">Ykköspainikkeen klikkaus</translation>
 <translation id="2429753432712299108">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Ennen kuin hyväksyt pyynnön, varmista, että laitteella näkyy tämä avain: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6330012934079202188">Näytetään kaikkien työpöytien ikkunat, näytä nykyisen työpöydän ikkunat painamalla ylänuolta</translation>
 <translation id="6337159624125741244">Koko näytön suurennus on päällä</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Jos olet unohtanut PIN-koodisi, kokeile palauttaa kyseinen käyttäjä.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> yhdistetty</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, sitten <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> tai <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SOVELLUSEHDOTUKSET</translation>
@@ -1633,6 +1634,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6539852571005954999">Latausta <ph name="FILENAME" /> skannataan</translation>
 <translation id="6542521951477560771">Suoratoistetaan: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojit, GIFit ja muuta</translation>
+<translation id="6545382064335350438">PIN-koodia ei voitu vieläkään vahvistaa. Yritä uudelleen.</translation>
 <translation id="6555373427270923730">Kirjoita verkko-osoite osoitepalkkiin ja paina <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Uusi asennus</translation>
@@ -2029,6 +2031,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7904094684485781019">Tämän tilin järjestelmänvalvoja on estänyt useisiin tileihin kirjautumisen.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> laitetta yhdistetty</translation>
+<translation id="7921565901396407357">PIN-koodia ei voitu vahvistaa. Yritä uudelleen.</translation>
 <translation id="7923534281713082605">Sää</translation>
 <translation id="7926080067315048321">Katso kaikki Google Tasksin verkkoversiossa</translation>
 <translation id="7930731167419639574">Puhe käsitellään nyt paikallisesti, ja sanelu toimii ilman verkkoyhteyttä</translation>

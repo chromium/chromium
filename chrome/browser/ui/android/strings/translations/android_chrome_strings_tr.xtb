@@ -634,6 +634,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> sitesinde <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kimliğinizle devam edin</translation>
 <translation id="404352903042073578">Adsız grup</translation>
 <translation id="4044708993631234325">Alt sayfa</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_ONE" /> standart sekme}other{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_MANY" /> standart sekme}}</translation>
 <translation id="405365679581583349">Google Play hizmetlerini güncelleyin</translation>
 <translation id="405399507749852140">Herhangi bir sitedeki fiyat düşüşüyle ilgili uyarıları alın</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
@@ -1445,6 +1446,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7592322927044331376">Önce şifreleri dışa aktarıp Chrome'dan silin</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> kaynağının <ph name="TOP_ORIGIN" /> için bu kişinin siz olduğunu doğrulamasına izin verin</translation>
 <translation id="7596558890252710462">İşletim sistemi</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standart sekme}other{<ph name="TABS_COUNT_MANY" /> standart sekme}}</translation>
 <translation id="7603168929588204083">Geçersiz tarih</translation>
 <translation id="7605594153474022051">Senkronizasyon çalışmıyor</translation>
 <translation id="7612619742409846846">Google'da şu hesapla oturum açıldı:</translation>

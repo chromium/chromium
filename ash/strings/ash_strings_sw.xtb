@@ -215,7 +215,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1703117532528082099">Dirisha linalotumika limepachikwa kushoto.</translation>
 <translation id="1708345662127501511">Eneokazi: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Mipangilio ya Mtandao</translation>
-<translation id="171610090693716835">Endelea kufuatilia ukitumia orodha ya muziki wa kuongeza umakini iliyowekewa mapendeleo. Pata YouTube Music na YouTube, bila matangazo, ukitumia YouTube Premium kwa miezi 3 bila malipo.</translation>
 <translation id="1719094688023114093">Kipengele cha Manukuu Papo Hapo kimewashwa.</translation>
 <translation id="1720011244392820496">Washa kipengele cha Usawazishaji Wi-Fi</translation>
 <translation id="1720230731642245863">Mtandao pepe umezimwa</translation>
@@ -398,6 +397,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2412593942846481727">Sasisho linapatikana</translation>
 <translation id="2416438829169535743">Ungependa kufunga mwonekano?</translation>
 <translation id="2417486498593892439">Ingia katika mtandao</translation>
+<translation id="2423619675829330672">Umejaribu kuweka PIN mara nyingi mno. Subiri kwa <ph name="TIME_LEFT" /> kisha ujaribu tena.</translation>
 <translation id="2426051945783024481">Fremu ya kamera imewekwa katikati kiotomatiki</translation>
 <translation id="2427507373259914951">Mbofyo wa kushoto</translation>
 <translation id="2429753432712299108">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Kabla hujakubali, tafadhali thibitisha kwamba nenosiri hili linaonyeshwa kwenye kifaa hicho: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6330012934079202188">Inaonyesha madirisha yaliyo kwenye maeneokazi yote, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye eneokazi la sasa</translation>
 <translation id="6337159624125741244">Kikuzaji cha skrini nzima kimewashwa</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ni kipindi kinachodhibitiwa ambacho kinadhibitiwa na <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Iwapo umesahau PIN, jaribu kurejesha akaunti ya mtumiaji huyu.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> imeunganishwa</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kisha <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> au <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">MAPENDEKEZO YA PROGRAMU</translation>
@@ -1633,6 +1634,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6539852571005954999">Inakagua kipakuliwa <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Tuma kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF na nyinginezo</translation>
+<translation id="6545382064335350438">Bado imeshindwa kuthibitisha PIN yako. Jaribu tena.</translation>
 <translation id="6555373427270923730">Andika anwani ya wavuti kwenye sehemu ya anwani, kisha ubonyeze <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Imesakinishwa hivi karibuni</translation>
@@ -2030,6 +2032,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7904094684485781019">Msimamizi wa akaunti hii ameondoa uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa</translation>
+<translation id="7921565901396407357">Imeshindwa kuthibitisha PIN yako. Jaribu tena.</translation>
 <translation id="7923534281713082605">Hali ya hewa</translation>
 <translation id="7926080067315048321">Angalia majukumu yote kwenye Google majukumu kwenye wavuti</translation>
 <translation id="7930731167419639574">Sasa matamshi yanachakatwa kwenye programu na kipengele cha Kuandika kwa Kutamka kinafanya kazi nje ya mtandao</translation>

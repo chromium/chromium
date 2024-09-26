@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Føj til læseliste</translation>
 <translation id="1854463785401910334">Søg i åbne faner</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} af {count} adgangskode}one{{position} af {count} adgangskode}other{{position} af {count} adgangskoder}}</translation>
+<translation id="1861262398884155592">Denne mappe er tom</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
@@ -605,6 +606,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3982893814825393515">Rapportér et problem…</translation>
 <translation id="398604237578616937">Logget ind som <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
+<translation id="3986739045730058129">Gå til fane</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="3994422733891749358">Vælg de notifikationer, du gerne vil modtage</translation>
@@ -702,6 +704,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="4469834037720363704">Pakkenummer</translation>
 <translation id="4471472356135655769">Der kan ikke eksporteres adgangskoder</translation>
+<translation id="4474142134969976028">Der er ingen matchende resultater</translation>
 <translation id="4474494258097106883">Udviklet til din iPhone</translation>
 <translation id="4488754974567924717">Hvis dine adgangskoder kompromitteres, kontakter vi dig</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{Siden blev føjet til din læseliste på kontoen {email}}other{Siderne blev føjet til din læseliste på kontoen {email}}}</translation>
@@ -757,6 +760,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4717844083556844785">Den aktuelle webside er i inkognitotilstand</translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
+<translation id="4720530280568305198">Dit valg blev åbnet i en ny fane</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4742407542027196863">Administrer adgangskoder…</translation>
 <translation id="4742897645503301228">Skjul Overvåg pris</translation>

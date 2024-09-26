@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Προσθήκη σε λίστα ανάγν.</translation>
 <translation id="1854463785401910334">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} από {count} κωδικό πρόσβασης}other{{position} από {count} κωδικούς πρόσβασης}}</translation>
+<translation id="1861262398884155592">Αυτός ο φάκελος είναι άδειος</translation>
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Προσκαλέστε μέλη της οικογένειας</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="4309403553630140242">Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
+<translation id="4320848494125124980">Πρόσφατα</translation>
 <translation id="4324735664183300693">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4328843285884395590">Το Drive μου</translation>
 <translation id="4331177082088332784">Μπορείτε να διαχειριστείτε αυτήν τη δυνατότητα από τις BEGIN_LINK Ρυθμίσεις περιεχομένου END_LINK</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">Μπορούν να αποθηκευτούν έως και <ph name="CHARACTER_LIMIT" /> χαρακτήρες στις σημειώσεις.</translation>
 <translation id="4469834037720363704">Αριθμός πακέτου</translation>
 <translation id="4471472356135655769">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
+<translation id="4474142134969976028">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4474494258097106883">Δημιουργήθηκε για το iPhone</translation>
 <translation id="4488754974567924717">Θα σας ειδοποιήσουμε σε περίπτωση παραβίασης των κωδικών πρόσβασής σας</translation>
 <translation id="4489536976005181779">{count,plural, =1{Η σελίδα προστέθηκε στη λίστα ανάγνωσης στον λογαριασμό σας, {email}}other{Οι σελίδες προστέθηκαν στη λίστα ανάγνωσης στον λογαριασμό σας, {email}}}</translation>

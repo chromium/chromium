@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
+<translation id="1293272072740285747">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai dzēsiet to, ja tā vairs nav nepieciešama.
+
+Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļņu grupai “<ph name="TITLE_OF_GROUP" />”, un tā tiks izdzēsta no visām ierīcēm.</translation>
 <translation id="1340839264183302272">Pamest grupu</translation>
 <translation id="1419023007528516122">Tādējādi šī grupa tiks neatgriezeniski dzēsta no jūsu ierīces</translation>
 <translation id="1486715732399361704">Šeit varat skatīt visas savas ciļņu grupas.</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
+<translation id="5615302411300498438">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai pametiet to.
+
+Ja pametīsiet grupu, jūs nekavējoties zaudēsiet piekļuvi ciļņu grupai “<ph name="TITLE_OF_GROUP" />”.</translation>
 <translation id="5627941783489838464">Nav ciļņu atjauninājumu</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Atjaunot cilni}zero{Atjaunot cilnes}one{Atjaunot cilnes}other{Atjaunot cilnes}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> saite no pārlūka Chrome}zero{<ph name="TABS_COUNT_MANY" /> saišu no pārlūka Chrome}one{<ph name="TABS_COUNT_MANY" /> saite no pārlūka Chrome}other{<ph name="TABS_COUNT_MANY" /> saites no pārlūka Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota; aizvērtas: <ph name="ANY_CLOSED" />}zero{<ph name="MANY_ADDED" /> cilnes pievienotas; aizvērtas: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> cilne pievienota; aizvērtas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> cilnes pievienotas; aizvērtas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Visi lietotāji nekavējoties zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un tā tiks izdzēsta no visām ierīcēm.</translation>
 <translation id="8633025649649592204">Pēdējās darbības</translation>
+<translation id="8635399646025169806">Vai paturēt ciļņu grupu?</translation>
 <translation id="870736955561925754">Vai aizvērt cilni un dzēst grupu?</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8730999928494395583">Jūsu darbības šajās inkognito cilnēs tiks noņemtas no šīs ierīces</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_MONTHS_ONE" /> mēneša}zero{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}one{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēneša}other{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}}</translation>
+<translation id="8804742093141782941">Paturēt grupu</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>
 <translation id="8887921976452567404">Aizvērtās cilnes un grupas var atkārtoti atvērt sadaļās “Nesen atvērtās cilnes” un “Ciļņu grupas”.</translation>
 <translation id="8915916167043355778">Aizvērt visu</translation>

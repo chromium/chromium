@@ -224,6 +224,7 @@
 <translation id="3673813398384385993">Chrome-ը «<ph name="EXTENSION_NAME" />» ընդլայնման մեջ վնասագիր է հայտնաբերել</translation>
 <translation id="3695446226812920698">Իմանալ ինչպես</translation>
 <translation id="3697952514309507634">Այլ Chrome պրոֆիլներ</translation>
+<translation id="3700276346088749847">մաքրեք Chrome-ի տվյալները ձեր հաշվից</translation>
 <translation id="3703994572283698466">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="3716540481907974026">ChromeOS Flex-ի տարբերակը</translation>
 <translation id="3718181793972440140">1 տարր ձեր սարքից կջնջվի: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
@@ -294,6 +295,7 @@
 <translation id="4575717501879784448">Chrome-ը կարող է ապակտիվացնել այս ներդիրները՝ դիտարկման որակը բարձրացնելու և ռեսուրսներ ազատելու համար։</translation>
 <translation id="459622048091363950">Երբ Chrome-ը հասանելիություն ստանա, կայքերը կկարողանան ձեզնից հասանելիություն խնդրել։</translation>
 <translation id="4600710005438004015">Չհաջողվեց տեղադրել Chrome-ի վերջին տարբերակը, որը թարմացվել է նոր գործառույթներով և անվտանգության բարելավումներով:</translation>
+<translation id="4601439950572737842">Ձեր տվյալները գաղտնագրված են անցաբառով։ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը։</translation>
 <translation id="4624065194742029982">Chrome ինկոգնիտո</translation>
 <translation id="4627412468266359539">Ըստ ցանկության. օգնեք բարելավել ChromeOS Flex-ի գործառույթներն ու աշխատանքը՝ Google-ին ավտոմատ կերպով ուղարկելով օգտագործման և դիագնոստիկ տվյալները։</translation>
 <translation id="4633000520311261472">Chrome-ն ավելի ապահով դարձնելու համար անջատվել են որոշ ընդլայնումներ, որոնք թվարկված չեն <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող են ավելացված լինել առանց ձեր իմացության։</translation>

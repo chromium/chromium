@@ -700,6 +700,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
+<translation id="2242389809734574253">Save IBAN closed.</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
 <translation id="2246480341630108201">Your parent hasn't said that it's OK yet</translation>
 <translation id="2247789808226901522">Card expired</translation>
@@ -1238,6 +1239,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3272112314896217187">Enter <ph name="NUMBER_OF_DIGITS" />-digit verification code</translation>
 <translation id="3272643614306383237">Less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="3273738040255912340">Your administrator can make changes to your profile and browser remotely, analyse information about the browser through reporting and perform other necessary tasks. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Save IBAN opened at full height.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -2125,6 +2127,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4881695831933465202">Open</translation>
 <translation id="4881808915112408168">24.0 in x 31.5 in</translation>
 <translation id="4882314601499260499">No user policies applied. To add user policies, your organisation must <ph name="LINK_BEGIN" />verify your domain<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Enter your question or prompt</translation>
 <translation id="4885030148564729407">Honeymoons and romantic getaways</translation>
 <translation id="4885256590493466218">Pay with <ph name="CARD_DETAIL" /> at checkout</translation>
 <translation id="4887406273302438710">Protect passwords with Windows Hello</translation>
@@ -2584,6 +2587,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723873695528696965">Control and reprogramme your MIDI devices</translation>
 <translation id="5725297205162868298">Shortcut can't start with the @ character: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Can ask to use advanced printer features</translation>
 <translation id="5729442113829771034">Early childhood education</translation>
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
 <translation id="5732392974455271431">Your parents can unblock it for you</translation>
@@ -2595,6 +2599,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5743684619253032786">Nail care products</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
+<translation id="5752327398324808817">Enter a word or two</translation>
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5764725887548570807">Invalid origin format.</translation>
@@ -3090,6 +3095,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6671169470640320959">Auto Financing</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
 <translation id="6677351035258626477">Fast Food</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as an option}other{When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}}</translation>
 <translation id="6681790815630918386">CVC saved</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6687230248707087982">Envelope (plain)</translation>
@@ -3106,6 +3112,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6696575039575740785">Install web apps not allowed</translation>
 <translation id="6698097747703777657">Didn't receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Created:</translation>
+<translation id="6698769547327354196">To turn off Pix in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Time scrubber</translation>
 <translation id="6702851555558236418">Audio and music software</translation>
 <translation id="6702919718839027939">Present</translation>
@@ -3261,6 +3268,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6978236010531171013">Share anyway</translation>
 <translation id="6978722349058177832">If you share this device, Chromium can ask you to verify every time that you pay using autofill</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">manage access to third-party cookies</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
 <translation id="6984270784814146224">Unlabelled image. Extracting text, powered by Google AI</translation>
 <translation id="6987806006823772670">Envelope (coated)</translation>
@@ -3407,6 +3415,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Business operations</translation>
+<translation id="7244061187185055290">In a few words, describe what you're searching for</translation>
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
@@ -3787,7 +3796,6 @@ Additional details:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Sweets</translation>

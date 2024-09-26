@@ -320,6 +320,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="122082903575839559">Algoritmo de assinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 com criptografia RSA</translation>
 <translation id="1221825588892235038">Apenas seleção</translation>
+<translation id="1222835797152767346">Defina um PIN para facilitar o login</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1223853788495130632">Seu administrador recomenda um valor específico para esta configuração.</translation>
 <translation id="1225177025209879837">Processando solicitação...</translation>
@@ -5358,7 +5359,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4838327282952368871">Sonho</translation>
 <translation id="4838836835474292213">Acesso de leitura à área de transferência permitido</translation>
 <translation id="4838907349371614303">Senha atualizada</translation>
-<translation id="4838958829619609362">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Sal&amp;var vídeo como...</translation>
 <translation id="4839910546484524995">Verificar seu dispositivo</translation>
 <translation id="4840096453115567876">Sair do modo de navegação anônima mesmo assim?</translation>
@@ -5968,7 +5968,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5287425679749926365">Suas contas</translation>
 <translation id="5288106344236929384">Mais ações, opções de senha de acesso para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">R&amp;eabrir guia fechada</translation>
-<translation id="52895863590846877">A página não está em <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">PC e dispositivo de transmissão em diferentes redes Wi-Fi (por exemplo, 2,4 GHz
     ou 5 GHz)</translation>
 <translation id="52912272896845572">O arquivo de chave privada é inválido.</translation>
@@ -6425,6 +6424,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5624959475330585145">Perguntar antes de usar conexões não seguras</translation>
 <translation id="5625225435499354052">Editar no Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
+<translation id="5626172233890210551">Usar a senha</translation>
 <translation id="5627832140542566187">Orientação da tela</translation>
 <translation id="5628434207686266338">Defina a senha do dispositivo</translation>
 <translation id="562935524653278697">Seu administrador desativou a sincronização dos seus favoritos, histórico, senhas e outras configurações.</translation>
@@ -7202,6 +7202,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6207937957461833379">País/Região</translation>
 <translation id="6208521041562685716">Ativando dados móveis</translation>
 <translation id="6208725777148613371">Falha ao salvar no <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Se você esqueceu a senha longa ou quer mudar essa configuração, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Atualizando componente</translation>
 <translation id="6209908325007204267">Seu dispositivo inclui um Upgrade do Chrome Enterprise, mas seu nome de usuário não está associado a uma conta corporativa. Acesse g.co/ChromeEnterpriseAccount em outro dispositivo para criar uma conta corporativa.</translation>
 <translation id="6210282067670792090">Na barra de endereço, use essa tecla com atalhos de mecanismos de pesquisa e da pesquisa em sites</translation>
@@ -8111,7 +8112,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="686366188661646310">Excluir senha?</translation>
 <translation id="6863925886424789941">Coliseu</translation>
 <translation id="6865313869410766144">Preenchimento automático de dados de formulário</translation>
-<translation id="6865598234501509159">A página não está em <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Logs de eventos WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Silencioso</translation>
 <translation id="686664946474413495">Temperatura da cor</translation>
@@ -8732,7 +8732,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
 <translation id="7344585835349671209">Gerenciar certificados HTTPS/SSL no dispositivo</translation>
 <translation id="7345706641791090287">Confirmar sua senha</translation>
-<translation id="7345919885156673810">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
 <translation id="7347751611463936647">Para usar esta extensão, digite "<ph name="EXTENSION_KEYWORD" />" e, em seguida, pressione a tecla TAB e insira seu comando ou termo de pesquisa.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
@@ -10772,6 +10771,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8791534160414513928">Enviar a observação "Do Not Track" em seu tráfego de navegação</translation>
 <translation id="8793390639824829328">Os sites usam esse recurso para rolar a tela e aplicar zoom nas guias compartilhadas</translation>
 <translation id="879413103056696865">Enquanto o ponto de acesso estiver ativado, seu <ph name="PHONE_NAME" /> vai:</translation>
+<translation id="8794548468611058947">Em vez de digitar a senha da sua Conta do Google para fazer login, você pode criar um PIN para este <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Nova janela</translation>
 <translation id="8796919761992612392">&amp;Personalizar o Chrome</translation>
 <translation id="8797459392481275117">Nunca traduzir este site</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">添加到阅读清单</translation>
 <translation id="1854463785401910334">在打开的标签页中搜索</translation>
 <translation id="1861067954551502701">{count,plural, =1{第 {position} 个建议密码，共 {count} 个}other{第 {position} 个建议密码，共 {count} 个}}</translation>
+<translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">邀请家庭成员</translation>
@@ -605,6 +606,7 @@
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3982893814825393515">报告问题…</translation>
 <translation id="398604237578616937">目前登录的账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
+<translation id="3986739045730058129">前往标签页</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="3994422733891749358">选择要接收的通知</translation>
@@ -673,6 +675,7 @@
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
+<translation id="4320848494125124980">近期</translation>
 <translation id="4324735664183300693">开启通知</translation>
 <translation id="4328843285884395590">我的云端硬盘</translation>
 <translation id="4331177082088332784">您可以在BEGIN_LINK内容设置END_LINK中管理此设置</translation>
@@ -701,6 +704,7 @@
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469834037720363704">包裹编号</translation>
 <translation id="4471472356135655769">无法导出密码</translation>
+<translation id="4474142134969976028">没有符合条件的结果</translation>
 <translation id="4474494258097106883">专为 iPhone 打造</translation>
 <translation id="4488754974567924717">如果您的密码已泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
@@ -756,6 +760,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4717844083556844785">当前网页处于无痕模式</translation>
 <translation id="4719927025381752090">提供翻译</translation>
+<translation id="4720530280568305198">您选择的内容已在新标签页中打开</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="4742897645503301228">隐藏“跟踪价格”</translation>

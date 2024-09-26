@@ -4164,6 +4164,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3948116654032448504">Pe&amp;squisar Imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Este separador está a reproduzir áudio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar ficheiros nas seguintes pastas</translation>
+<translation id="3948985214866944547">A maioria das pessoas bloqueia a partilha da localização exata para este site</translation>
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar a transferência de ficheiros mais segura</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
@@ -5347,7 +5348,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4838327282952368871">Sonhador</translation>
 <translation id="4838836835474292213">Acesso de leitura à área de transferência permitido</translation>
 <translation id="4838907349371614303">Palavra-passe atualizada</translation>
-<translation id="4838958829619609362">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Guardar &amp;vídeo como...</translation>
 <translation id="4839910546484524995">Verifique o dispositivo</translation>
 <translation id="4840096453115567876">Quer sair do Modo de navegação anónima mesmo assim?</translation>
@@ -5957,7 +5957,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5287425679749926365">As suas contas</translation>
 <translation id="5288106344236929384">Mais ações, opções de token de acesso para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Voltar a Abrir o S&amp;eparador Fechado</translation>
-<translation id="52895863590846877">A página não está em <ph name="LANGUAGE" />.</translation>
 <translation id="5290020561438336792">PC e dispositivo de transmissão em redes Wi-Fi diferentes (por exemplo, 2,4 GHz
     vs. 5 GHz)</translation>
 <translation id="52912272896845572">O ficheiro de chave privada é inválido.</translation>
@@ -8100,7 +8099,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="686366188661646310">Eliminar a palavra-passe?</translation>
 <translation id="6863925886424789941">Coliseu</translation>
 <translation id="6865313869410766144">Dados de formulário de preenchimento automático</translation>
-<translation id="6865598234501509159">A página não está em <ph name="LANGUAGE" />.</translation>
 <translation id="6865708901122695652">Registos de eventos WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Baixo</translation>
 <translation id="686664946474413495">Temperatura da cor</translation>
@@ -8721,7 +8719,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
 <translation id="7344585835349671209">Faça a gestão de certificados HTTPS/SSL no seu dispositivo</translation>
 <translation id="7345706641791090287">Confirmar a palavra-passe</translation>
-<translation id="7345919885156673810">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">Para utilizar esta extensão, escreva "<ph name="EXTENSION_KEYWORD" />", prima TAB e, em seguida, introduza o seu comando ou pesquisa.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9032,6 +9029,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7566118625369982896">Gerir links para aplicações do Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Criar combinação de teclas</translation>
+<translation id="7568759527730933493">Use uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). Esta opção usa um fornecedor de serviços geridos em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> As ligações seguras não são usadas para alguns domínios configurados pelo seu administrador.</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">A atualizar</translation>
 <translation id="7569983096843329377">Preto</translation>
@@ -9194,6 +9192,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7676867886086876795">Envie a sua voz para a Google para permitir a introdução por voz em qualquer campo de texto.</translation>
 <translation id="7678588695732963732">Repor todas as autorizações dos dispositivos USB?</translation>
 <translation id="7679171213002716280">Existem <ph name="PRINTER_COUNT" /> impressoras geridas.</translation>
+<translation id="7679895819123160382">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O <ph name="PRODUCT_NAME" /> usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). As ligações seguras não são usadas para alguns domínios configurados pelo seu administrador.</translation>
 <translation id="7680416688940118410">Calibração do ecrã tátil</translation>
 <translation id="7681095912841365527">O site pode utilizar o Bluetooth.</translation>
 <translation id="7681597159868843240">Normalmente, os sites utilizam os sensores de movimentos do seu dispositivo para funcionalidades como realidade virtual ou monitorização de fitness</translation>
@@ -9592,6 +9591,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7955105108888461311">Perguntar presencialmente</translation>
 <translation id="7955177647836564772">Se o Smart Lock estiver ativado e o telemóvel estiver desbloqueado, não precisa de introduzir uma palavra-passe ou um PIN</translation>
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
+<translation id="7956918070009672177">Não existem vozes em <ph name="LANGUAGE" /> no dispositivo. Ligue-se à Internet e tente novamente.</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
 <translation id="7958157896921135832">Aumentar tamanho do tipo de letra</translation>
 <translation id="7958828865373988933">Se quiser criar uma chave de acesso para <ph name="APP_NAME" /> numa chave de segurança USB, insira-a e toque nela agora</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="1854463785401910334">کھلے ٹیبز تلاش کریں</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{count} پاس ورڈ میں سے {position}}other{‫{count} پاس ورڈز میں سے {position}}}</translation>
+<translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />۔</translation>
 <translation id="1881621406744213161">فیملی ممبرز کو دعوت دیں</translation>
@@ -674,6 +675,7 @@
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4309403553630140242">مزيد معلومات کے لیے دوبار تھپتھپائيں</translation>
+<translation id="4320848494125124980">حالیہ</translation>
 <translation id="4324735664183300693">اطلاعات آن کریں</translation>
 <translation id="4328843285884395590">میری ڈرائیو</translation>
 <translation id="4331177082088332784">‏آپ BEGIN_LINK مواد کی ترتیبات END_LINK میں اس کا نظم کر سکتے ہیں</translation>
@@ -702,6 +704,7 @@
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4469834037720363704">پیکیج نمبر</translation>
 <translation id="4471472356135655769">پاس ورڈز برآمد نہیں ہو سکتے</translation>
+<translation id="4474142134969976028">کوئی مماثل نتیجہ نہیں ہے</translation>
 <translation id="4474494258097106883">‏آپ کے iPhone کے لیے بنایا گیا</translation>
 <translation id="4488754974567924717">اگر آپ کے پاس ورڈز کے ساتھ چھیڑ چھاڑ کیا گیا ہے تو ہم آپ کو اس کی اطلاع دیں گے</translation>
 <translation id="4489536976005181779">{count,plural, =1{صفحہ آپ کے اکاؤنٹ میں آپ کی پڑھنے کی فہرست میں شامل کیا گیا، {email}}other{صفحات کو آپ کے اکاؤنٹ میں آپ کی پڑھنے کی فہرست میں شامل کیا گیا، {email}}}</translation>

@@ -4162,6 +4162,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3948116654032448504">&amp;Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Această filă redă conținut audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> poate edita fișierele din următoarele dosare</translation>
+<translation id="3948985214866944547">Majoritatea utilizatorilor blochează afișarea locației exacte pentru acest site</translation>
 <translation id="394984172568887996">Importate din IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pentru descărcarea mai sigură a fișierelor</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
@@ -5344,7 +5345,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4838327282952368871">Visare</translation>
 <translation id="4838836835474292213">Accesul de citire la clipboard este permis</translation>
 <translation id="4838907349371614303">Parola s-a actualizat</translation>
-<translation id="4838958829619609362">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Sal&amp;vează videoclipul ca...</translation>
 <translation id="4839910546484524995">Verifică dispozitivul</translation>
 <translation id="4840096453115567876">Ieși oricum din modul incognito?</translation>
@@ -5954,7 +5954,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5287425679749926365">Conturile dvs.</translation>
 <translation id="5288106344236929384">Mai multe acțiuni, opțiuni pentru cheia de acces pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">R&amp;edeschide fila închisă</translation>
-<translation id="52895863590846877">Pagina nu este în <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">PC și dispozitiv de proiecție în rețele Wi-Fi diferite (de exemplu, 2,4 GHz vs. 5 GHz)</translation>
 <translation id="52912272896845572">Fișierul cu cheia privată este nevalid.</translation>
 <translation id="5291739252352359682">Creează automat subtitrări pentru conținut media în browserul Chrome (disponibile momentan în limba engleză). Conținutul audio și subtitrările sunt procesate local și nu părăsesc niciodată dispozitivul.</translation>
@@ -8097,7 +8096,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="686366188661646310">Ștergi parola?</translation>
 <translation id="6863925886424789941">Colosseum</translation>
 <translation id="6865313869410766144">Datele salvate pentru completarea automată a formularelor</translation>
-<translation id="6865598234501509159">Pagina nu este în <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Jurnale de evenimente WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Încet</translation>
 <translation id="686664946474413495">Temperatura culorii</translation>
@@ -8718,7 +8716,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7343372807593926528">Descrie problema înainte de a trimite feedback.</translation>
 <translation id="7344585835349671209">Gestionează certificatele HTTPS/SSL pe dispozitiv</translation>
 <translation id="7345706641791090287">Confirmă parola</translation>
-<translation id="7345919885156673810">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7347751611463936647">Pentru a utiliza această extensie, introdu „<ph name="EXTENSION_KEYWORD" />”, apoi apasă pe TAB și folosește comanda sau căutarea.</translation>
 <translation id="7347943691222276892">Dă clic pentru a părăsi pagina <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9029,6 +9026,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7566118625369982896">Gestionează linkurile aplicației Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Creează o combinație de taste</translation>
+<translation id="7568759527730933493">Folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Acest lucru folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Conexiunile securizate nu sunt folosite pentru anumite domenii configurate de administrator.</translation>
 <translation id="756876171895853918">Personalizează avatarul</translation>
 <translation id="7568790562536448087">Se actualizează</translation>
 <translation id="7569983096843329377">Negru</translation>
@@ -9191,6 +9189,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7676867886086876795">Trimite-ți vocea la Google pentru a permite dictarea în orice câmp de text.</translation>
 <translation id="7678588695732963732">Resetezi toate permisiunile pentru dispozitivul USB?</translation>
 <translation id="7679171213002716280">Sunt disponibile <ph name="PRINTER_COUNT" /> imprimante gestionate.</translation>
+<translation id="7679895819123160382">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. <ph name="PRODUCT_NAME" /> folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Conexiunile securizate nu sunt folosite pentru anumite domenii configurate de administrator.</translation>
 <translation id="7680416688940118410">Calibrarea ecranului tactil</translation>
 <translation id="7681095912841365527">Site-ul poate folosi Bluetooth</translation>
 <translation id="7681597159868843240">Site-urile folosesc de obicei senzorii de mișcare ai dispozitivului pentru funcții cum ar fi realitatea virtuală sau monitorizarea activității de fitness</translation>
@@ -9589,6 +9588,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7955105108888461311">Întreabă în persoană</translation>
 <translation id="7955177647836564772">Dacă Smart Lock este activat și telefonul este deblocat, nu este nevoie să introduci parola sau codul PIN</translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
+<translation id="7956918070009672177">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
 <translation id="7958157896921135832">Mărește dimensiunea fontului</translation>
 <translation id="7958828865373988933">Dacă vrei să creezi o cheie de acces pentru <ph name="APP_NAME" /> pe o cheie de securitate USB, introdu-o și atinge-o acum</translation>

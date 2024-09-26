@@ -320,6 +320,7 @@
 <translation id="122082903575839559">Վկայագրի ստորագրության ալգորիթմ</translation>
 <translation id="1221024147024329929">PKCS #1 MD2` RSA գաղտնագրումով</translation>
 <translation id="1221825588892235038">Միայն ընտրվածը</translation>
+<translation id="1222835797152767346">Ստեղծեք PIN կոդ, որպեսզի ավելի հեշտ մուտք գործեք</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
 <translation id="1223853788495130632">Ադմինիստրատորը խորհուրդ է տալիս այս կարգավորման համար որոշակի արժեք ընտրել:</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
@@ -5341,7 +5342,6 @@
 <translation id="4838327282952368871">Երազային</translation>
 <translation id="4838836835474292213">Սեղմատախտակի ընթերցումը թույլատրվեց</translation>
 <translation id="4838907349371614303">Գաղտնաբառը փոխվեց</translation>
-<translation id="4838958829619609362">Ընտրված տարրը հասանելի չէ <ph name="LANGUAGE" /> լեզվով</translation>
 <translation id="4839303808932127586">Պա&amp;հել տեսանյութը որպես…</translation>
 <translation id="4839910546484524995">Ստուգեք ձեր սարքը</translation>
 <translation id="4840096453115567876">Մինևնույն է փակե՞լ ինկոգնիտո պատուհանը։</translation>
@@ -5952,7 +5952,6 @@
 <translation id="5287425679749926365">Ձեր հաշիվները</translation>
 <translation id="5288106344236929384">Ավելի շատ գործողություններ, մուտքի բանալիների տարբերակներ <ph name="USERNAME" /> օգտատիրոջ համար <ph name="DOMAIN" /> տիրույթում</translation>
 <translation id="5288678174502918605">Նո&amp;րից բացել փակված ներդիրը</translation>
-<translation id="52895863590846877">Էջը <ph name="LANGUAGE" /> չէ</translation>
 <translation id="5290020561438336792">Համակարգիչը և հեռարձակման սարքը տարբեր Wi-Fi ցանցերի են միացած (օր.՝ մեկը 2,4 ԳՀց, մյուսը՝ 5 ԳՀց)</translation>
 <translation id="52912272896845572">Մասնավոր բանալիների ֆայլը սխալ է:</translation>
 <translation id="5291739252352359682">Chrome դիտարկիչում ավտոմատ ստեղծում է ենթագրեր մեդիա ֆայլերի համար (այս պահին հասանելի է անգլերեն լեզվով)։ Աուդիո ֆայլերն ու ենթագրերը մշակվում և պահվում են միայն ձեր սարքում։</translation>
@@ -6405,6 +6404,7 @@
 <translation id="5624959475330585145">Հարցնել նախքան ոչ ապահով միացում օգտագործելը</translation>
 <translation id="5625225435499354052">Փոփոխել Google Pay-ում</translation>
 <translation id="5626134646977739690">Անուն՝</translation>
+<translation id="5626172233890210551">Օգտագործել գաղտնաբառ</translation>
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
 <translation id="5628434207686266338">Սահմանեք սարքի գաղտնաբառը</translation>
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
@@ -7181,6 +7181,7 @@
 <translation id="6207937957461833379">Երկիր/տարածաշրջան</translation>
 <translation id="6208521041562685716">Բջջային ինտերնետն ակտիվացվեց</translation>
 <translation id="6208725777148613371">Չհաջողվեց պահել «<ph name="WEB_DRIVE" />» ցուցակում – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="SETTINGS_LINK" />։</translation>
 <translation id="6209838773933913227">Բաղադրիչի թարմացում</translation>
 <translation id="6209908325007204267">Ձեր սարքում առկա է Chrome Enterprise-ի արտոնագիր, բայց ձեր օգտանունը կապված չէ կազմակերպության հաշվի հետ։ Մեկ այլ սարքով անցեք g.co/ChromeEnterpriseAccount էջ և ստեղծեք կազմակերպության հաշիվ։</translation>
 <translation id="6210282067670792090">Հասցեագոտում օգտագործեք այս ստեղնային դյուրանցումը և որոնողական համակարգերի ու կայքերում որոնման համար դյուրանցումները։</translation>
@@ -8090,7 +8091,6 @@
 <translation id="686366188661646310">Ջնջե՞լ գաղտնաբառը</translation>
 <translation id="6863925886424789941">Կոլիզեում</translation>
 <translation id="6865313869410766144">Ինքնալցման տվյալներ</translation>
-<translation id="6865598234501509159">Էջը <ph name="LANGUAGE" /> չէ</translation>
 <translation id="6865708901122695652">WebRTC իրադարձությունների մատյաններ (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Ցածր</translation>
 <translation id="686664946474413495">Գունային ջերմություն</translation>
@@ -8710,7 +8710,6 @@
 <translation id="7343372807593926528">Կարծիքն ուղարկելուց առաջ նկարագրեք խնդիրը։</translation>
 <translation id="7344585835349671209">Կառավարել HTTPS/SSL հավաստագրերը ձեր սարքում</translation>
 <translation id="7345706641791090287">Հաստատեք ձեր գաղտնաբառը</translation>
-<translation id="7345919885156673810">Ընտրված տարրը հասանելի չէ <ph name="LANGUAGE" /> լեզվով</translation>
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="7347751611463936647">Այս ընդլայնումն օգտագործելու համար մուտքագրեք «<ph name="EXTENSION_KEYWORD" />», ապա TAB, ապա հրամանը կամ որոնումը:</translation>
 <translation id="7347943691222276892">Սեղմեք՝ <ph name="SUBPAGE_TITLE" /> էջից դուրս գալու համար։</translation>
@@ -10748,6 +10747,7 @@
 <translation id="8791534160414513928">Ուղարկել «Do Not Track» հարցումը ելքային հոսքի հետ</translation>
 <translation id="8793390639824829328">Կայքերն օգտագործում են այս գործառույթը՝ ընդհանուր ներդիրների մասշտաբը ոլորումով փոփոխելու համար</translation>
 <translation id="879413103056696865">Երբ միացնեք թեժ կետը, «<ph name="PHONE_NAME" />» սարքը՝</translation>
+<translation id="8794548468611058947">Որպեսզի մուտք գործեք, ձեր Google հաշվի գաղտնաբառը մուտքագրելու փոխարեն կարող եք PIN կոդ ստեղծել <ph name="DEVICE_TYPE" /> սարքի համար</translation>
 <translation id="8795916974678578410">New Window</translation>
 <translation id="8796919761992612392">Ա&amp;նհատականացրեք ձեր Chrome-ը</translation>
 <translation id="8797459392481275117">Երբեք չթարգմանել այս կայքը</translation>

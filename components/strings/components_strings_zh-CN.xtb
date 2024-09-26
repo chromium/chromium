@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="2241693394036365668">下载文件</translation>
+<translation id="2242389809734574253">保存 IBAN 的底部动作条已关闭。</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
 <translation id="2246480341630108201">你的家长尚未表示同意</translation>
 <translation id="2247789808226901522">银行卡已过期</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3272112314896217187">输入 <ph name="NUMBER_OF_DIGITS" /> 位数的验证码</translation>
 <translation id="3272643614306383237">小于 1 MB。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="3273738040255912340">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">保存 IBAN 的底部动作条已全屏打开。</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这个文件}other{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这些文件}}</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="3286372614333682499">纵向</translation>
@@ -2121,6 +2123,7 @@
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
 <translation id="4882314601499260499">未应用任何用户政策。若要添加用户政策，贵组织必须<ph name="LINK_BEGIN" />验证您的域名<ph name="LINK_END" />。</translation>
+<translation id="4883911187498618061">请输入问题或提示</translation>
 <translation id="4885030148564729407">蜜月与浪漫旅行</translation>
 <translation id="4885256590493466218">结账时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
@@ -2580,6 +2583,7 @@
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5723873695528696965">控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="5725297205162868298">快捷字词不得以 @ 字符开头：“<ph name="SHORTCUT_NAME" />”</translation>
+<translation id="5728246486828755318">可以请求使用高级打印机功能</translation>
 <translation id="5729442113829771034">儿童早期教育</translation>
 <translation id="5730040223043577876">如果您在其他网站上重复使用了您的密码，Chrome 建议您重置该密码。</translation>
 <translation id="5732392974455271431">您的父母可为您取消屏蔽此网站</translation>
@@ -2591,6 +2595,7 @@
 <translation id="5743684619253032786">指甲护理产品</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
 <translation id="5750869797196646528">手部跟踪</translation>
+<translation id="5752327398324808817">请输入一到两个字词</translation>
 <translation id="5759751709240058861">使用和移动您的摄像头</translation>
 <translation id="5763042198335101085">请输入有效的电子邮件地址</translation>
 <translation id="5764725887548570807">源格式无效。</translation>
@@ -3085,6 +3090,7 @@
 <translation id="6671169470640320959">汽车贷款</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6677351035258626477">快餐</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{当您在 Chrome 中购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}other{当您在 Chrome 中购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}}</translation>
 <translation id="6681790815630918386">已保存银行卡验证码 (CVC)</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6687230248707087982">信封（普通）</translation>
@@ -3101,6 +3107,7 @@
 <translation id="6696575039575740785">不允许安装 Web 应用</translation>
 <translation id="6698097747703777657">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">创建时间：</translation>
+<translation id="6698769547327354196">如需在 Chrome 中关闭 Pix，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">时间滑块</translation>
 <translation id="6702851555558236418">音频与音乐软件</translation>
 <translation id="6702919718839027939">演示</translation>
@@ -3256,6 +3263,7 @@
 <translation id="6978236010531171013">仍然共享</translation>
 <translation id="6978722349058177832">如果您与他人共用此设备，在您每次使用自动填充功能付款时，Chromium 都会要求您进行验证</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
+<translation id="6979302985396162258">管理对第三方 Cookie 的使用权限</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6984270784814146224">无标签的图片。正在提取文本，由 Google AI 赋能</translation>
 <translation id="6987806006823772670">信封（涂布纸）</translation>
@@ -3402,6 +3410,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />；<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">经营活动</translation>
+<translation id="7244061187185055290">请简要描述您要搜索的内容</translation>
 <translation id="7251437084390964440">网络配置不符合 ONC 标准，因此它的某些部分可能会无法导入。
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
@@ -3782,7 +3791,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">此卡的银行卡验证码 (CVC) 将会被加密并保存到您的设备上，以便您更快捷地结账</translation>
 <translation id="7937554595067888181">到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">在结账时显示凭您的卡可以享受哪些奖励和福利。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />了解凭卡可享受的福利<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">服务器的证书尚未生效。</translation>
 <translation id="7941628148012649605">Chou 4 信封</translation>
 <translation id="794169214536209644">糖果与甜点</translation>

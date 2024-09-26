@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1066101356081285416">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಪ್ಯಾಕೇಜ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. ಈ ಫೀಚರ್ ಅನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಪ್ರತಿಯೊಬ್ಬರಿಗೂ Google ಶಾಪಿಂಗ್ ಫೀಚರ್‌ಗಳನ್ನು ಸುಧಾರಿಸಲು ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆ ಮತ್ತು ವೆಬ್‌ಸೈಟ್ ಹೆಸರನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬಹುದು.</translation>
+<translation id="1086486568852410168">Google Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಿ</translation>
 <translation id="1143896152279775643">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1146503048444965320">Chrome ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1166460004393506534">Chrome ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome ಸಲಹೆ: ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಆರಿಸಿ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome ನಲ್ಲಿರುವ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಇನ್‌ಪುಟ್ ಮಾಡಲಾದ URL ಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
+<translation id="1799920918471566157">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1830634592642484976">ಈ ವಿಳಾಸವನ್ನು ಪ್ರಸ್ತುತವಾಗಿ Chrome ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">ಈ ಸಾಧನ ಮತ್ತು ಯಾವುದೇ ಉಳಿಸದ ಡೇಟಾವನ್ನು Chrome ಮತ್ತು ಈ ಸಾಧನದಲ್ಲಿರುವ ಇತರ Google ಆ್ಯಪ್‌ಗಳಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="1919130412786645364">Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>

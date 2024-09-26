@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">الملاءمة مع منطقة المسح الضوئي</translation>
 <translation id="1343442362630695901">بحيرة مالحة</translation>
 <translation id="1348657754632799065">شريط التسجيل</translation>
+<translation id="1350909945461913813">احرص على حفظ أي تغييرات</translation>
 <translation id="1367951781824006909">اختيار ملف</translation>
 <translation id="1371650399987522809">‏ملاحظات حول الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="1374385338586507108">تعريف</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">‏يمكنك اختيار مظهر والنقر على الكلمات التي تحتها خط لتخصيص صورك التي أنشأها الذكاء الاصطناعي (AI).</translation>
 <translation id="2045814230297767491">أدوات مائدة</translation>
 <translation id="2047316797244836561">يُرجى الاتصال بشبكة وإعادة تحميل الصفحة لعرض شاشة الاستراحة.</translation>
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">لم يتم رصد أي كلام</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
+<translation id="2468124392950503650">اختَر طلبًا لإنشاء الصور أو اطّلِع على <ph name="BEGIN_LINK_PROMPTING_GUIDE" />دليل الطلبات<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏حسِّن نصًا سبقت كتابته أو أنشئ مسوّدة باستخدام ميزة "مساعدة في الكتابة" التي تستند إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="2480572840229215612">حيوانات سلطعون</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">ما مِن نتائج مطابقة</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
+<translation id="4486524074141928967">سيتمّ تسجيل خروجك في <ph name="TIME" /></translation>
 <translation id="4500722292849917410">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">رمادي</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600027863942488546">تم اختبار المفتاح <ph name="KEY_NAME" />.</translation>
+<translation id="5613201299517339763">لقد سجّلت الخروج</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5630438231335788050">فن الباوهاوس</translation>
 <translation id="5631759159893697722">نبذة مختصرة</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
 <translation id="5938286923316838007">يتعذّر إنشاء أسماء تسجيلات لهذا المحتوى</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
+<translation id="5942727615796467094">ضبطَ مشرف <ph name="MANAGER" /> وقتًا لاستخدام جهاز <ph name="DEVICE_TYPE" /> خلاله</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5946538341867151940">‏لم يتصل جهازك بالشبكة بعد. إذا اقترح مشغّل شبكة الجوّال اسمًا مخصصًا لنقطة الوصول (APN)، أدخِل معلومات APN من خلال اختيار "إضافة اسم نقطة وصول جديد".</translation>
 <translation id="5947266287934282605">إذا كان آخر يوم من الشهر قبل هذا اليوم، ستتم إعادة ضبط البيانات في آخر يوم من الشهر</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">كوكب مختلف</translation>
 <translation id="6359706544163531585">إيقاف المظهر الفاتح</translation>
 <translation id="6359919876285606596">هذا الإجراء نهائي ولا يمكن التراجع عنه</translation>
+<translation id="6368342879959028556">‏عند اختيار "الإنشاء باستخدام الذكاء الاصطناعي (AI)"، اكتب طلبًا مخصّصًا. أو يمكنك أيضًا اختيار "خلفيات قائمة على الذكاء الاصطناعي" لاختيار مظهر ثمّ النقر على الكلمات التي تحتها خط لتخصيص خلفيتك القائمة على الذكاء الاصطناعي.</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="6373461326814131011">بِركة صناعية</translation>
 <translation id="6379086450106841622">الشاشة التي تعمل باللمس</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">الانتقال إلى إعدادات الحساب</translation>
 <translation id="6462978824459367242">‏زر "إضافة اسم نقطة الوصول" (APN) مفعّل الآن</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}many{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
+<translation id="6468146470109254228">هي آخر 3 طلبات ونواتجها. ولا يمكنك الوصول إلى هذه الطلبات إلا أثناء استخدام ميزة "الخلفية والأسلوب".</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="6472979596862005515">قوارب</translation>
 <translation id="64778964625672495">أحمر داكن</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659594942844771486">‏مفتاح Tab</translation>
 <translation id="66621959568103627">وردي مرجاني</translation>
+<translation id="6667885109186363316">‏<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          للحصول على صور كثيرة ومتنوعة من إنشاء الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          عند إنشاء الصور باستخدام الذكاء الاصطناعي، يتم إرسال الطلب إلى خوادم الذكاء الاصطناعي من Google لإنشاء الصور وتحسين المنتج، ويخضع ذلك لـ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />سياسة خصوصية Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ما زال الذكاء الاصطناعي التوليدي في المرحلة التجريبية ومراحل التطوير الأولى ويتوفّر حاليًا بشكل محدود.</translation>
 <translation id="6673898378497337661">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
 <translation id="6694534975463174713">رمز القفل</translation>

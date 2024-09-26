@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Narančasta</translation>
 <translation id="125153950246128346">Dodirnite za prikaz druge kartice</translation>
 <translation id="1273910660700874265">Opcije grupe kartica za <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Sačuvajte ovu grupu da biste kasnije dodali kartice ili je izbrišite ako vam više nije potrebna.
+
+Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_OF_GROUP" /> i izbrisat će se sa svih uređaja.</translation>
 <translation id="1340839264183302272">Napusti grupu</translation>
 <translation id="1419023007528516122">Time ćete trajno izbrisati grupu s uređaja</translation>
 <translation id="1486715732399361704">Ovdje možete pronaći sve svoje grupe kartica</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zatvorite grupu kartica s <ph name="TABS_COUNT_ONE" /> karticom, <ph name="COLOR_NAME" /> boja.}one{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> karticom, <ph name="COLOR_NAME" /> boja.}few{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja.}other{Zatvorite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja.}}</translation>
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
+<translation id="5615302411300498438">Sačuvajte ovu grupu da biste kasnije dodali kartice ili je napustite.
+
+Ako napustite grupu, odmah ćete izgubiti pristup grupi kartica <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Nema ažuriranja kartica</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Vrati karticu}one{Vrati kartice}few{Vrati kartice}other{Vrati kartice}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> veza iz Chromea}one{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}few{<ph name="TABS_COUNT_MANY" /> veze iz Chromea}other{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Dodana je <ph name="ONE_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}one{Dodana je <ph name="MANY_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}few{Dodane su <ph name="MANY_ADDED" /> kartice, zatvoreno: <ph name="ANY_CLOSED" />}other{Dodano je <ph name="MANY_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i izbrisat će se sa svih uređaja</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
+<translation id="8635399646025169806">Sačuvati grupu kartica?</translation>
 <translation id="870736955561925754">Želite li zatvoriti karticu i izbrisati grupu?</translation>
 <translation id="8714939927607906138">Niža cijena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8730999928494395583">Vaša aktivnost na tim anonimnim karticama uklonit će se s ovog uređaja</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Izrađeno prije <ph name="NUM_MONTHS_ONE" /> mjesec}one{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjesec}few{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjeseca}other{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjeseci}}</translation>
+<translation id="8804742093141782941">Zadrži grupu</translation>
 <translation id="8820741577754260431">Pogledajte pad cijena na karticama</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>

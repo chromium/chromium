@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Откройте меню Chromium.</translation>
 <translation id="12739128458173458">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chromium.</translation>
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>
+<translation id="1383876407941801731">Поиск</translation>
 <translation id="1423007117030725713">Искать в новой вкладке Chromium</translation>
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
 <translation id="146407871188825689">Используйте Chromium по умолчанию на iPad</translation>
@@ -177,6 +178,7 @@
 <translation id="5571094606370987472">Открывает недавние вкладки в Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Открыть последнюю вкладку в Chromium</translation>
+<translation id="5671188105328420281">Советы по работе с Chromium</translation>
 <translation id="5688047395118852662">Карточка с предложениями о том, как наиболее эффективно использовать Chromium.</translation>
 <translation id="5700709190537129682">Не удается проверить пароли в Chromium.</translation>
 <translation id="584550191241316896">Вы вошли в Chromium</translation>
@@ -218,6 +220,7 @@
 <translation id="6752854822223394465">Ваша организация настраивает браузер Chromium…</translation>
 <translation id="6794054469102824109">Открыть игру Chromium Dino.</translation>
 <translation id="6820823224820483452">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра.</translation>
+<translation id="6831043979455480757">Перевести</translation>
 <translation id="6852419005633611413">Добавьте Chromium на панель Dock для быстрого доступа</translation>
 <translation id="6852799557929001644">Получайте доступ к паролям и другим данным Chromium в приложениях на этом устройстве.</translation>
 <translation id="6887138405044152640">Чтобы отправить вкладку на другое устройство, войдите на нем в Chromium.</translation>

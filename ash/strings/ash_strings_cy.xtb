@@ -215,7 +215,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1703117532528082099">Mae'r ffenestr weithredol wedi'i docio ar y chwith.</translation>
 <translation id="1708345662127501511">Desg: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Gosodiadau Rhwydwaith</translation>
-<translation id="171610090693716835">Aros ar y trywydd iawn gyda rhestri chwarae canolbwyntio personol. Cael YouTube Music a YouTube, heb hysbysebion, gyda 3 mis o YouTube Premium heb unrhyw gost.</translation>
 <translation id="1719094688023114093">Mae Capsiynau Byw ymlaen.</translation>
 <translation id="1720011244392820496">Troi Cysoni Wi-Fi ymlaen</translation>
 <translation id="1720230731642245863">Mae'r Boethfan wedi'i diffodd</translation>
@@ -398,6 +397,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2412593942846481727">Mae diweddariad ar gael</translation>
 <translation id="2416438829169535743">Gadael gwedd?</translation>
 <translation id="2417486498593892439">Mewngofnodwch i'r rhwydwaith</translation>
+<translation id="2423619675829330672">Gormod o geisiadau PIN. Arhoswch <ph name="TIME_LEFT" /> a rhowch gynnig arall arni.</translation>
 <translation id="2426051945783024481">Mae fframio camera wedi'i ganoli yn awtomatig</translation>
 <translation id="2427507373259914951">Clic chwith</translation>
 <translation id="2429753432712299108">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Cyn derbyn, cadarnhewch fod y cod pass hwn yn cael ei ddangos ar y ddyfais honno: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6330012934079202188">Wrthi'n dangos ffenestri o bob desg, pwyswch y fysell Saeth i fyny i ddangos ffenestri o'r ddesg bresennol</translation>
 <translation id="6337159624125741244">Mae chwyddwydr sgrîn lawn ymlaen</translation>
 <translation id="6338485349199627913">Mae <ph name="DISPLAY_NAME" /> yn sesiwn a reolir gan <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Os ydych wedi anghofio eich PIN, ceisiwch adfer y defnyddiwr hwn.</translation>
 <translation id="6344138931392227467">Mae <ph name="DEVICE_NAME" /> wedi'i chysylltu</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> yna <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> neu <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">AWGRYMIADAU APIAU</translation>
@@ -1633,6 +1634,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6539852571005954999">Wrthi'n sganio'r lawrlwythiad <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Wrthi'n castio i <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF, a rhagor</translation>
+<translation id="6545382064335350438">Nid oedd modd dilysu'ch PIN o hyd. Rhowch gynnig arall arni.</translation>
 <translation id="6555373427270923730">Teipiwch gyfeiriad gwe yn y bar cyfeiriad, yna pwyswch <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Gosodiad newydd</translation>
@@ -2029,6 +2031,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7904094684485781019">Mae gweinyddwr y cyfrif hwn wedi gwrthod mewngofnodi i fwy nag un cyfrif.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu</translation>
+<translation id="7921565901396407357">Ni fu modd dilysu'ch PIN. Rhowch gynnig arall arni.</translation>
 <translation id="7923534281713082605">Tywydd</translation>
 <translation id="7926080067315048321">Gweld yr holl dasgau ar dasgau Google ar y we</translation>
 <translation id="7930731167419639574">Mae Llefarydd bellach yn cael ei brosesu'n lleol ac mae Arddweud yn gweithio all-lein</translation>

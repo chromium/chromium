@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">TV și video</translation>
 <translation id="1658918301167915956">dispozitive Bluetooth</translation>
 <translation id="1662550410081243962">Salvează și completează metodele de plată</translation>
+<translation id="1662980953334786797">Aceeași ordine</translation>
 <translation id="1663943134801823270">Cardurile și adresele sunt din Chrome. Le poți gestiona în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolimer Flexo</translation>
 <translation id="166624440456221306">Șterge tabelul de comparație</translation>
@@ -1659,6 +1660,7 @@
 <translation id="4023431997072828269">Întrucât formularul este trimis printr-o conexiune care nu este securizată, informațiile tale vor vizibile pentru alte persoane.</translation>
 <translation id="4025325634010721551">Politicile au fost reîncărcate</translation>
 <translation id="4025338605225449265">Valute și schimb valutar</translation>
+<translation id="4025777154208238692">Ordine inversă</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Atacatorii pot să vadă și să modifice<ph name="END_STRONG" /> informațiile pe care le trimiți sau le primești de la site.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Cel mai sigur este să accesezi site-ul mai târziu<ph name="END_STRONG" /> dacă folosești o rețea publică. Riscul este mai mic într-o rețea de încredere, cum ar fi rețeaua Wi-Fi de acasă sau de la serviciu.
@@ -3796,7 +3798,6 @@ Detalii suplimentare:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Codul CVC al acestui card va fi criptat și salvat pe dispozitivul tău pentru finalizarea mai rapidă a achiziției</translation>
 <translation id="7937554595067888181">Expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Arată ce recompense și beneficii sunt disponibile pentru carduri la finalizarea achiziției <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Află despre beneficiile cardurilor<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certificatul serverului nu este încă valid.</translation>
 <translation id="7941628148012649605">Plic Chou 4</translation>
 <translation id="794169214536209644">Bomboane și dulciuri</translation>

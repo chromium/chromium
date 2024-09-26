@@ -167,6 +167,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2945997411976714835">Chyba inštalácie: proces inštalátora sa nespustil.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chrome</translation>
 <translation id="2970681950995291301">Ak chcete odstrániť svoj účet Google z Chromu, odhláste sa z Chromu na stránke Nastavenia</translation>
+<translation id="2994465299455873643">Poskytuje služby šifrovania a bezpečný spôsob obnovenia prehliadača <ph name="BROWSER_NAME" />, ak je jeho verzia zastaraná. V prípade deaktivácie tejto služby môže <ph name="BROWSER_NAME" /> stratiť prístup k šifrovaným údajom a <ph name="BROWSER_NAME" /> sa zrejme nebude môcť samočinne obnoviť.</translation>
 <translation id="3018957014024118866">Odstrániť aj údaje z Chromu (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Znova spustiť a aktualizovať &amp;Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome je v režime na pozadí.</translation>
@@ -223,6 +224,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3673813398384385993">Chrome zistil, že <ph name="EXTENSION_NAME" /> obsahuje malvér</translation>
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3697952514309507634">Ďalšie profily Chromu</translation>
+<translation id="3700276346088749847">vymažte údaje Chromu vo svojom účte</translation>
 <translation id="3703994572283698466">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzia systému Chrome OS Flex</translation>
 <translation id="3718181793972440140">Táto akcia odstráni zo zariadenia jednu položku. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
@@ -293,6 +295,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4575717501879784448">Chrome môže tieto karty deaktivovať, aby zlepšil prehliadanie a uvoľnil zdroje.</translation>
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
+<translation id="4601439950572737842">Údaje sú šifrované pomocou vašej prístupovej frázy. Ak chcete používať a ukladať údaje Chromu do svojho účtu Google, zadajte ju.</translation>
 <translation id="4624065194742029982">Režim inkognito Chromu</translation>
 <translation id="4627412468266359539">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chrome OS Flex automatickým odosielaním diagnostík a údajov o používaní do Googlu.</translation>
 <translation id="4633000520311261472">Z dôvodu vyššej bezpečnosti prehliadača Chrome sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>

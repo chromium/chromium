@@ -701,7 +701,7 @@
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
-<translation id="2242389809734574253">已關閉儲存 IBAN 的底部功能表。</translation>
+<translation id="2242389809734574253">閂咗儲存 IBAN 嘅底部工作表。</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
 <translation id="2246480341630108201">家長尚未核准</translation>
 <translation id="2247789808226901522">信用卡過期</translation>
@@ -1240,7 +1240,7 @@
 <translation id="3272112314896217187">請輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="3272643614306383237">小於 1 MB。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="3273738040255912340">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="3273757719652748628">已完整開啟儲存 IBAN 的底部功能表。</translation>
+<translation id="3273757719652748628">打開咗儲存 IBAN 嘅底部工作表，宜家顯示喺成個畫面。</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -1659,7 +1659,7 @@
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
 <translation id="4025325634010721551">重新載入咗政策</translation>
 <translation id="4025338605225449265">貨幣和外幣兌換</translation>
-<translation id="4025777154208238692">反轉順序</translation>
+<translation id="4025777154208238692">反向順序</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />攻擊者可以查看和更改<ph name="END_STRONG" />你從網站傳送或接收的資料。
       <ph name="LIST_ITEM" />如果你正使用公共網絡，<ph name="BEGIN_STRONG" />最安全的做法是稍後才瀏覽此網站<ph name="END_STRONG" />。受信任網絡 (例如家用或公司 Wi-Fi) 的風險相對較低。
@@ -2588,7 +2588,7 @@
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723873695528696965">控制 MIDI 裝置及將其重新編程</translation>
 <translation id="5725297205162868298">快速指令不可以 @ 字元開始：「<ph name="SHORTCUT_NAME" />」</translation>
-<translation id="5728246486828755318">可以要求使用進階印表機功能</translation>
+<translation id="5728246486828755318">可以要求使用進階打印機功能</translation>
 <translation id="5729442113829771034">幼兒教育</translation>
 <translation id="5730040223043577876">如果您已在其他網站上重用密碼，Chrome 建議您重設密碼。</translation>
 <translation id="5732392974455271431">您的家長可以為您解除封鎖此網站</translation>
@@ -2600,7 +2600,7 @@
 <translation id="5743684619253032786">指甲護理產品</translation>
 <translation id="5745733273847572235">可要求您提供位置</translation>
 <translation id="5750869797196646528">手部追蹤</translation>
-<translation id="5752327398324808817">輸入一到兩個字詞</translation>
+<translation id="5752327398324808817">輸入一至兩個字</translation>
 <translation id="5759751709240058861">使用和移動相機</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
@@ -3096,7 +3096,7 @@
 <translation id="6671169470640320959">汽車貸款</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
 <translation id="6677351035258626477">快餐</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{在 Chrome 中進行購買交易時可選擇 <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{在 Chrome 中進行購買交易時可選擇 <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6681790815630918386">已儲存 CVC</translation>
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6687230248707087982">信封 (普通紙)</translation>
@@ -3797,7 +3797,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">此付款卡的 CVC 經已加密並儲存至你的裝置，以便快速結帳</translation>
 <translation id="7937554595067888181">到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">結帳時顯示付款卡可享有哪些獎賞和禮遇 <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />進一步瞭解付款卡禮遇<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">伺服器憑證尚未生效。</translation>
 <translation id="7941628148012649605">Chou 4 信封</translation>
 <translation id="794169214536209644">糖果及甜品</translation>

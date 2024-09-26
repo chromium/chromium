@@ -379,6 +379,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1658111267661135323">TV i videozapisi</translation>
 <translation id="1658918301167915956">Bluetooth uređaji</translation>
 <translation id="1662550410081243962">Spremi i popuni načine plaćanja</translation>
+<translation id="1662980953334786797">Isti redoslijed</translation>
 <translation id="1663943134801823270">Kartice i adrese dolaze iz Chromea. Njima možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Flexo fotopolimer</translation>
 <translation id="166624440456221306">Izbriši tablicu za usporedbu</translation>
@@ -1658,6 +1659,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4023431997072828269">Budući da se ovaj obrazac šalje vezom koja nije sigurna, vaši će podaci biti vidljivi drugima.</translation>
 <translation id="4025325634010721551">Pravila su ponovno učitana</translation>
 <translation id="4025338605225449265">Valute i strani tečajevi</translation>
+<translation id="4025777154208238692">Obrnuti redoslijed</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Napadači mogu vidjeti i mijenjati<ph name="END_STRONG" /> podatke koje šaljete na web-lokaciju ili primate s nje.
       <ph name="LIST_ITEM" />Ako upotrebljavate javnu mrežu, <ph name="BEGIN_STRONG" />tu je web-lokaciju najsigurnije posjetiti kasnije<ph name="END_STRONG" />. Pouzdane mreže, poput vaše kućne ili poslovne Wi-Fi mreže, manje su rizične.
@@ -3795,7 +3797,6 @@ Dodatne pojedinosti:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">CVC te kartice šifrirat će se i spremiti na vaš uređaj radi brže naplate</translation>
 <translation id="7937554595067888181">Istječe <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Pri naplati pokažite nagrade i pogodnosti koje su dostupne za vaše kartice <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više o pogodnostima kartice<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certifkat poslužitelja još nije valjan.</translation>
 <translation id="7941628148012649605">Omotnica Chou 4</translation>
 <translation id="794169214536209644">Slatkiši</translation>

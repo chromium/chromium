@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
 <translation id="2241693394036365668">Fayl endirilir</translation>
+<translation id="2242389809734574253">Qapalı IBAN-ı yadda saxlayın.</translation>
 <translation id="2246264294482514010">10 x 12 düym</translation>
 <translation id="2246480341630108201">Valideyniniz hələ icazə verməyib</translation>
 <translation id="2247789808226901522">Kartın müddəti bitib</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> rəqəmli doğrulama kodunu daxil edin</translation>
 <translation id="3272643614306383237">1 MB-dən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
 <translation id="3273738040255912340">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chromium-dan kənarda da idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Tam hündürlükdə açılan IBAN-ı yadda saxlayın.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator siyasəti bu faylı burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}other{Administrator siyasəti bu faylları burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Təşkilatınız <ph name="ENROLLMENT_DOMAIN" /> aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -2121,6 +2123,7 @@
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4881808915112408168">24 x 31,5 düym</translation>
 <translation id="4882314601499260499">Heç bir istifadəçi siyasəti tətbiq edilməyib. İstifadəçi siyasətləri əlavə etmək üçün təşkilatınız <ph name="LINK_BEGIN" />domeninizi doğrulamalıdır<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Sualınızı və ya sorğunuzu daxil edin</translation>
 <translation id="4885030148564729407">Bal Ayı və Romantik Səyahətlər</translation>
 <translation id="4885256590493466218">Ödəniş zamanı <ph name="CARD_DETAIL" /> ilə ödəyin</translation>
 <translation id="4887406273302438710">Parolları Windows Hello ilə qoruyun</translation>
@@ -2580,6 +2583,7 @@
 <translation id="572328651809341494">Son panellər</translation>
 <translation id="5723873695528696965">MIDI cihazlarını idarə edin və təkrar proqramlaşdırın</translation>
 <translation id="5725297205162868298">Qısayol @ simvolu ilə başlaya bilməz: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Təkmil printer xüsusiyyətlərindən istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="5729442113829771034">Erkən Uşaqlıq Təhsili</translation>
 <translation id="5730040223043577876">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="5732392974455271431">Valideynləriniz kilidi aça bilər</translation>
@@ -2591,6 +2595,7 @@
 <translation id="5743684619253032786">Dırnaq Baxım Məhsulları</translation>
 <translation id="5745733273847572235">Saytlar məkanınıza daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
+<translation id="5752327398324808817">Bir və ya iki söz daxil edin</translation>
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
@@ -3086,6 +3091,7 @@
 <translation id="6671169470640320959">Avtomobil maliyyəsi</translation>
 <translation id="6671697161687535275">Təkliflər Chromium'dan silinsin?</translation>
 <translation id="6677351035258626477">Fastfud</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-da alış-veriş etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}other{Chrome-da alış-veriş etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}}</translation>
 <translation id="6681790815630918386">CVC yadda saxlandı</translation>
 <translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6687230248707087982">Zərf (sadə)</translation>
@@ -3102,6 +3108,7 @@
 <translation id="6696575039575740785">Veb-tətbiqlərin quraşdırılmasına icazə verilmədi</translation>
 <translation id="6698097747703777657">Kod əldə etmədiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Yaradılıb:</translation>
+<translation id="6698769547327354196">Chrome-da Pix-i söndürmək üçün <ph name="BEGIN_LINK1" />ödəniş ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="67007264085648978">Vaxt sürüşdürücüsü</translation>
 <translation id="6702851555558236418">Audio və Musiqi Proqramları</translation>
 <translation id="6702919718839027939">Təqdim edin</translation>
@@ -3257,6 +3264,7 @@
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
 <translation id="6978722349058177832">Bu cihazı paylaşsanız, avto doldurma istifadə edərək hər dəfə ödəniş etdiyiniz zaman Chromium doğrulamağınızı istəyə bilər</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6979302985396162258">üçüncü tərəf kukilərinə girişi idarə edin</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
 <translation id="6984270784814146224">Etiketsiz şəkil. Mətn çıxarılır. Google Sİ tərəfindən dəstəklənir</translation>
 <translation id="6987806006823772670">Zərf (örtüklü)</translation>
@@ -3402,6 +3410,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Biznes Əməliyyatları</translation>
+<translation id="7244061187185055290">Nə axtardığınızı bir neçə sözlə təsvir edin</translation>
 <translation id="7251437084390964440">Şəbəkə konfiqurasiyası ONC standartına uyğun deyil. Konfiqurasiyanın hissələri import edilə bilməz.
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
@@ -3782,7 +3791,6 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Bu kartın CVC-si şifrələnəcək və sürətli ödəmə üçün cihazda yadda saxlanacaq</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
-<translation id="7938490694919717008">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Kart imtiyazları haqqında ətraflı məlumat<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Server sertifikatı hələ etibarlı deyil.</translation>
 <translation id="7941628148012649605">Zərf Çou 4</translation>
 <translation id="794169214536209644">Konfet və şirniyyatlar</translation>

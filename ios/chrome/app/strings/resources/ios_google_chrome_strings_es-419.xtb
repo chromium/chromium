@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1066101356081285416">Chrome detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Google para proporcionar esta función y mejorar las funciones de Google Shopping para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir una pestaña nueva en Chrome</translation>
 <translation id="1166460004393506534">Borrar los datos de navegación en Chrome</translation>
@@ -38,6 +39,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1670609221633730681">Sugerencia para Chrome: Elige la posición de la barra de direcciones</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Agrega las URL ingresadas a tus favoritos en Chrome.</translation>
+<translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Bæta við leslista</translation>
 <translation id="1854463785401910334">Leita í opnum flipum</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} af {count} aðgangsorði}one{{position} af {count} aðgangsorði}other{{position} af {count} aðgangsorðum}}</translation>
+<translation id="1861262398884155592">Mappan er tóm</translation>
 <translation id="1872096359983322073">Ljós</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjóddu fjölskyldumeðlimum</translation>
@@ -673,6 +674,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4302061870579014542">Stilla stöðu</translation>
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4309403553630140242">Ýttu tvisvar til að fá frekari upplýsingar.</translation>
+<translation id="4320848494125124980">Nýlegt</translation>
 <translation id="4324735664183300693">Kveikja á tilkynningum</translation>
 <translation id="4328843285884395590">Drifið mitt</translation>
 <translation id="4331177082088332784">Þú getur stjórnað þessu í BEGIN_LINK efnisstillingunum END_LINK</translation>
@@ -701,6 +703,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4469324811108161144">Glósur geta verið allt að <ph name="CHARACTER_LIMIT" /> stafir að lengd.</translation>
 <translation id="4469834037720363704">Pakkanúmer</translation>
 <translation id="4471472356135655769">Ekki tókst að flytja út aðgangsorð</translation>
+<translation id="4474142134969976028">Engar niðurstöður fundust</translation>
 <translation id="4474494258097106883">Sérhannað fyrir iPhone</translation>
 <translation id="4488754974567924717">Við látum þig vita ef aðgangsorðin þín eru í hættu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Síðu bætt við leslistann á reikningnum þínum, {email}}one{Síðum bætt við leslistann á reikningnum þínum, {email}}other{Síðum bætt við leslistann á reikningnum þínum, {email}}}</translation>

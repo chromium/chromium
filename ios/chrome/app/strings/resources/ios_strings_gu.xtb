@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="1854463785401910334">ખુલ્લા ટૅબમાં શોધો</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}માંથી {position} નંબરનો પાસવર્ડ}one{{count}માંથી {position} નંબરનો પાસવર્ડ}other{{count}માંથી {position} નંબરનો પાસવર્ડ}}</translation>
+<translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">કુટુંબના સભ્યોને આમંત્રિત કરો</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">સ્થાન સેટ કરો</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
+<translation id="4320848494125124980">તાજેતરની</translation>
 <translation id="4324735664183300693">નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="4328843285884395590">મારી ડ્રાઇવ</translation>
 <translation id="4331177082088332784">તમે આને BEGIN_LINK કન્ટેન્ટ સેટિંગ END_LINKમાં જઈને મેનેજ કરી શકશો</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144">પાસવર્ડની નોંધમાં <ph name="CHARACTER_LIMIT" /> જેટલા અક્ષર સાચવી શકાય છે.</translation>
 <translation id="4469834037720363704">પૅકેજ નંબર</translation>
 <translation id="4471472356135655769">પાસવર્ડ નિકાસ કરી શકતા નથી</translation>
+<translation id="4474142134969976028">કોઈ મેળ ખાતું પરિણામ નથી</translation>
 <translation id="4474494258097106883">તમારા iPhone માટે બનાવાયેલું</translation>
 <translation id="4488754974567924717">જો તમારા પાસવર્ડ સાથે ચેડાં કરવામાં આવ્યા હોય, તો અમે તમને જણાવીશું</translation>
 <translation id="4489536976005181779">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં પેજ ઉમેરાયું}one{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં પેજ ઉમેરાયું}other{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં પેજ ઉમેરાયા}}</translation>

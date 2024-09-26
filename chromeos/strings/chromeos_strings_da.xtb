@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1343442362630695901">saltsø</translation>
 <translation id="1348657754632799065">Optagelsesbjælke</translation>
+<translation id="1350909945461913813">Sørg for at gemme dit arbejde</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
 <translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Google AI</translation>
 <translation id="1374385338586507108">Definer</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-version:</translation>
 <translation id="2016697457005847575">Prøv fejlfindingstrinnene</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Vælg et tema, og vælg derefter de understregede ord for at foretage personlig tilpasning af dine AI-billeder.</translation>
 <translation id="2045814230297767491">bestik</translation>
 <translation id="2047316797244836561">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Der blev ikke registreret indtaling</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2468124392950503650">Vælg en prompt, eller tjek <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptvejledningen<ph name="END_LINK_PROMPTING_GUIDE" /> for at oprette et AI-billede</translation>
 <translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Der er ingen matchende resultater</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4486524074141928967">Du logges ud kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grænsefladefarve</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grå</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5600027863942488546">Du har testet tasten <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">Du er logget ud</translation>
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="5938286923316838007">Der kan ikke oprettes optagelsesnavne til dette indhold</translation>
 <translation id="5939518447894949180">Nulstil</translation>
+<translation id="5942727615796467094">Administratoren af <ph name="MANAGER" /> har angivet, hvornår denne <ph name="DEVICE_TYPE" /> kan bruges</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
 <translation id="5946538341867151940">Du har ikke oprettet forbindelse endnu. Hvis dit mobilselskab anbefaler et tilpasset APN, skal du angive APN-oplysningerne ved at vælge "+ Nyt APN"</translation>
 <translation id="5947266287934282605">Hvis den sidste dag i måneden ligger før denne dato, nulstilles dataene den sidste dag i måneden</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">en anden planet</translation>
 <translation id="6359706544163531585">Deaktiver Lyst tema</translation>
 <translation id="6359919876285606596">Denne handling er permanent og kan ikke fortrydes</translation>
+<translation id="6368342879959028556">Når du vælger "Opret ved hjælp af AI", skal du angive en tilpasset prompt. Du kan også vælge "AI-baggrunde" for at vælge et tema og derefter vælge de understregede ord for at foretage personlig tilpasning af din AI-baggrund.</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
 <translation id="6373461326814131011">dam</translation>
 <translation id="6379086450106841622">Touchskærm</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Gå til kontoindstillinger</translation>
 <translation id="6462978824459367242">Knappen Tilføj APN er nu aktiveret</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du scanne siden igen?}=1{Vil du scanne side {PAGE_NUMBER} igen?}one{Rescan page {PAGE_NUMBER}?}other{Vil du scanne side {PAGE_NUMBER} igen?}}</translation>
+<translation id="6468146470109254228">Dine 3 seneste prompter og output. Du kan kun tilgå dem, mens du bruger Baggrund og stil.</translation>
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="6472979596862005515">både</translation>
 <translation id="64778964625672495">mørkerød</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="66621959568103627">koralpink</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Google AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI er eksperimentel, under udvikling og har i øjeblikket begrænset tilgængelighed.</translation>
 <translation id="6673898378497337661">øg tastaturets lysstyrke</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6694534975463174713">lås</translation>

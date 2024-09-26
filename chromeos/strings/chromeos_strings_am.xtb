@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1343442362630695901">የጨው ሀይቅ</translation>
 <translation id="1348657754632799065">የቀረጻ አሞሌ</translation>
+<translation id="1350909945461913813">ማንኛውንም ሥራ ማስቀመጥዎን ያረጋግጡ</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
 <translation id="1371650399987522809">በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ ልጣፍ ግብረመልስ</translation>
 <translation id="1374385338586507108">ግለጽ</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">የኤስዲኬ ስሪት፦</translation>
 <translation id="2016697457005847575">የመላ ፍለጋ እርምጃዎችን ይሞክሩ</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">የእርስዎን የሰው ሠራሽ አስተውሎት ምስሎች ግላዊ ለማድረግ አንድ ገፅታ ይምረጡ እና ከዚያ የተሰመረባቸውን ቃላት ይምረጡ።</translation>
 <translation id="2045814230297767491">መቁረጫዎች</translation>
 <translation id="2047316797244836561">እባክዎ ከአውታረ መረብ ጋር ይገናኙ እና የማያ ገፅ ማቆያን ለማየት ገጹን እንደገና ይጫኑ።</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">ምንም ንግግር አልተገኘም</translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">ዓይነት</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />የጥያቄ መመሪያውን<ph name="END_LINK_PROMPTING_GUIDE" /> ለመፍጠር ወይም ለማየት ጥያቄ ይምረጡ</translation>
 <translation id="2472215337771558851">በGoogle ሰው ሰራሽ አስተውሎት የተጎላበተ፣ ረቂቅ ለመፍጠር ወይም የነበረን ስራ ለማጥራት እንድጽፍ እርዳኝን ይጠቀሙ</translation>
 <translation id="2480572840229215612">ሸርጣኖች</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">ምንም የሚዛመዱ ውጤቶች የሉም</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
+<translation id="4486524074141928967"><ph name="TIME" /> ላይ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4500966230243561393">የበይነገጽ ቀለም</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">ግራጫ</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
+<translation id="5613201299517339763">ዘግተው እንዲወጡ ተደርገዋል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5630438231335788050">ባውሃስ</translation>
 <translation id="5631759159893697722">ረቂቅ</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
 <translation id="5938286923316838007">ለዚህ መለያ የቀረጻ ስሞችን መፍጠር አልተቻለም</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
+<translation id="5942727615796467094">የ<ph name="MANAGER" /> አስተዳዳሪው <ph name="DEVICE_TYPE" /> መቼ ጥቅም ላይ መዋል እንደሚችል አቀናብረዋል</translation>
 <translation id="594552776027197022">የዘፈቀደ የቁልፍ ጥምር አመንጭ</translation>
 <translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
 <translation id="5947266287934282605">የወሩ የመጨረሻ ቀን ከዚህ ቀን በፊት ከሆነ ውሂብ በወሩ የመጨረሻ ቀን ዳግም ይጀመራል</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">የተለየ ፕላኔት</translation>
 <translation id="6359706544163531585">ነጣ ያለ ገጽታን አሰናክል</translation>
 <translation id="6359919876285606596">ይህ እርምጃ ቋሚ ነው እና ሊቀለበስ አይችልም</translation>
+<translation id="6368342879959028556">«በሰው ሠራሽ አስተውሎት ፍጠር» የሚለውን ሲመርጡ ብጁ ጥያቄ ይጻፉ። ወይም የእርስዎን ሰው ሠራሽ አስተውሎት ልጣፍ ግላዊ ለማድረግ ገፅታ ለመምረጥ እና ከዚያ የተሰመረባቸውን ቃላት ለመምረጥ «ሰው ሠራሽ አስተውሎት ልጣፎች» የሚለውን መምረጥ ይችላሉ።</translation>
 <translation id="636850387210749493">የድርጅት ምዝገባ</translation>
 <translation id="6373461326814131011">ኩሬ</translation>
 <translation id="6379086450106841622">መነካት የሚችል ማያ</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">ወደ የመለያ ቅንብሮች ሂድ</translation>
 <translation id="6462978824459367242">ኤፒኤን አክል አዝራር አሁን ነቅቷል</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ገፅ ዳግም ይቃኝ?}=1{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}one{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}other{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}}</translation>
+<translation id="6468146470109254228">የእርስዎ 3 በጣም የቅርብ ጊዜ ጥያቄዎች እና ውጤቶች። እነዚህን መድረስ የሚችሉት ልጣፍ እና ቅጥ በሚጠቀሙበት ጊዜ ብቻ ነው።</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="6472979596862005515">ጀልባዎች</translation>
 <translation id="64778964625672495">ደማቅ ቀይ</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
 <translation id="6659594942844771486">ትር</translation>
 <translation id="66621959568103627">ኮራል ሮዝ</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ተጨማሪ ልዩ እና የተለያዩ የሰው ሰራሽ አስተውሎት ምስሎች አማራጮችን ለማግኘት «አነሳሳኝ» የሚለውን ይምረጡ።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          በሰው ሠራሽ አስተውሎት ሲፈጥሩ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ለGoogle ግላዊነት መመሪያ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ተገዢ በሆነ መልኩ ምስሎችን እንዲያመነጩ እና ምርቱን እንዲያሻሽሉ ጥያቄው ወደ የGoogle ሰው ሠራሽ አስተውሎት አገልጋዮች ይላካል።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ሰው ሠራሽ አስተውሎት አመንጪ የሙከራ፣ በግንባታ ጅማሬ ላይ ያለ እና በአሁኑ ጊዜ ውሱን ተገኚነት ያለው ነው።</translation>
 <translation id="6673898378497337661">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
 <translation id="6692996468359469499">ከእርስዎ ምርጫ ጋር የተገናኘ መረጃ ያግኙ</translation>
 <translation id="6694534975463174713">ቁልፍ</translation>
@@ -1569,6 +1587,7 @@
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>
 <translation id="8882789155418924367">ጉጉቶች</translation>
 <translation id="8892443466059986410">የአቋራጭ ማርትዕን ሰርዝ</translation>
+<translation id="8897043028305808902">ፋይል እንደገና ተሰይሟል</translation>
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>
 <translation id="8909114361904403025">ላይ ቀስት</translation>
 <translation id="8910721771319628100">ነባሪ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ ገደብ በላይ ነው</translation>

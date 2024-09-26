@@ -266,6 +266,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2278052315791335171">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
 <translation id="228704530595896923">Popis opcija za dijeljenje.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Pogledajte <ph name="TABS_COUNT_ONE" /> karticu}one{Pogledajte <ph name="TABS_COUNT_MANY" /> karticu}few{Pogledajte <ph name="TABS_COUNT_MANY" /> kartice}other{Pogledajte <ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
 <translation id="22981027763501686">Sinkronizirajte kako biste svoje oznake, povijest i još mnogo toga dobili na drugim uređajima</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilni uređaj</translation>
@@ -1301,6 +1302,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6964300328304469089">Trenutačno je odabrano: <ph name="NAME" />, <ph name="EMAIL" />. Odaberite račun.</translation>
 <translation id="696447261358045621">Napusti anonimni način</translation>
 <translation id="6965382102122355670">U redu</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Pogledajte <ph name="TABS_COUNT_ONE" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}one{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}few{Pogledajte <ph name="TABS_COUNT_MANY" /> standardne kartice s novom aktivnošću u dijeljenim grupama kartica}other{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnih kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
 <translation id="6971862865055170158">Nemoj odobriti</translation>
 <translation id="6978717888677691380">Web-lokacije koje ste blokirali</translation>
 <translation id="6979737339423435258">Cijelo vrijeme</translation>
@@ -1516,6 +1518,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7896724475402191389">Sadržaj za mlade umove – isključen</translation>
 <translation id="7903184275147100332">To može malo potrajati</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 preuzimanje blokirala je vaša organizacija}one{# preuzimanje blokirala je vaša organizacija}few{# preuzimanja blokirala je vaša organizacija}other{# preuzimanja blokirala je vaša organizacija}}</translation>
 <translation id="7914399737746719723">Aplikacija je instalirana</translation>
 <translation id="7919123827536834358">Automatski prevedi ove jezike</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>

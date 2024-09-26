@@ -3974,6 +3974,11 @@ có thể gửi báo cáo doanh nghiệp từ các điểm cuối này.
 <translation id="3989829840000169163">Chặn các điểm tiện ích cũ của trình duyệt</translation>
 <translation id="3990391739475801018">Chế độ tiết kiệm pin sẽ tắt.</translation>
 <translation id="3990834929384096140">Không thực thi tính năng loại bỏ tiếng vọng âm thanh của hệ thống</translation>
+<translation id="3992082233013655355">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ định một danh sách các ứng dụng web tách biệt (IWA) tự động cài đặt.
+      IWA là những ứng dụng có các thuộc tính bảo mật hữu ích mà các trang web thông thường không có. Các ứng dụng này có trong Gói web đã ký. Khoá công khai của Gói web đã ký được dùng để tạo Mã nhận dạng gói web giúp xác định IWA.
+      Cho đến nay, chính sách này chỉ áp dụng cho Phiên khách được quản lý.
+
+      Mỗi mục trong danh sách của chính sách này là một đối tượng có hai trường bắt buộc: tệp kê khai cập nhật <ph name="URL_LABEL" /> và Mã nhận dạng gói web của Ứng dụng web tách biệt. Mỗi mục cũng có thể có một trường tuỳ chọn với tên kênh phát hành IWA. Nếu bạn chưa đặt "update_channel" thì giá trị "default" sẽ được sử dụng.</translation>
 <translation id="3994043824457743421">Cho thông báo giữa trang xuất hiện trên trang Thẻ mới</translation>
 <translation id="399433537808390819">Không cung cấp Chế độ màn hình hợp nhất cho người dùng</translation>
 <translation id="3995880046827722248">Manifest v2 bị vô hiệu hoá</translation>
@@ -10522,6 +10527,7 @@ Nếu bạn Tắt chính sách, thì hệ thống sẽ chỉ gửi dữ liệu p
 <translation id="8890438048579188548">Ẩn cảnh báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Tắt tính năng báo cáo thông tin về hệ thống của thiết bị</translation>
 <translation id="8892286064305622118">Dung lượng ổ đĩa trống cần có cho <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">Tên kênh cập nhật/phát hành của IWA. Giá trị này có thể là chuỗi bất kỳ; không áp dụng các hạn chế. Nếu người dùng không cung cấp giá trị thì kênh "default" sẽ được sử dụng.</translation>
 <translation id="8892783613915541293">Số lần trì hoãn và các hành động cần thực hiện khi thiết bị ở trạng thái rảnh và chạy bằng nguồn điện AC</translation>
 <translation id="8897796778265450949">Giới hạn thời gian mà một người dùng được xác thực qua GAIA khi không có SAML có thể đăng nhập ở chế độ ngoại tuyến</translation>
 <translation id="889814528399907891">Cho phép người dùng bật <ph name="LACROS_NAME" /> và đặt trình duyệt này làm trình duyệt chính</translation>
@@ -10852,52 +10858,6 @@ Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name=
 <translation id="9123464369663964441">Cho phép người dùng thêm trường hợp ngoại lệ để cho phép nội dung hỗn hợp</translation>
 <translation id="9124770007620653639">Không bao giờ gửi dữ liệu về độ tin cậy của miền cho Google</translation>
 <translation id="9126331659955304300">Cho phép tính năng lựa chọn hình đại diện của người dùng từ hệ thống tệp, máy ảnh và hồ sơ trên Google</translation>
-<translation id="9126491667911789829">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách ứng dụng web tự động cài đặt mà không cần sự can thiệp của người dùng, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt đi.
-
-      Mỗi mục trong danh sách của chính sách này là một đối tượng chứa một thành phần bắt buộc:
-      <ph name="URL_LABEL" /> (URL của ứng dụng web sẽ cài đặt)
-
-      và 6 thành phần không bắt buộc:
-      – <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (chỉ định cách mở ứng dụng web – mặc định là một thẻ mới)
-
-      – <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (chọn Đúng nếu bạn muốn tạo lối tắt trên màn hình <ph name="LINUX_OS_NAME" /> và
-      <ph name="MS_WIN_NAME" />).
-
-      – <ph name="FALLBACK_APP_NAME_LABEL" />
-      (Kể từ <ph name="PRODUCT_NAME" /> phiên bản 90,
-      bạn có thể ghi đè tên ứng dụng nếu tên đó không phải là một
-      Ứng dụng web tiến bộ (PWA) hoặc ghi đè tên ứng dụng tạm thời
-      được cài đặt nếu tên đó là một PWA nhưng cần xác thực trước khi
-      hoàn tất quá trình cài đặt. Nếu hệ thống cung cấp cả chính sách
-      <ph name="CUSTOM_NAME_LABEL" /> và
-      <ph name="FALLBACK_APP_NAME_LABEL" />,
-      thì chính sách thứ hai sẽ bị bỏ qua.)
-
-      – <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (Kể từ <ph name="PRODUCT_OS_NAME" />
-      phiên bản 99 và phiên bản 112 trên tất cả các hệ điều hành máy tính khác, bạn có thể
-      ghi đè vĩnh viễn tên ứng dụng cho tất cả các ứng dụng web và PWA.)
-
-      – <ph name="CUSTOM_ICON_LABEL" />
-      (Kể từ <ph name="PRODUCT_OS_NAME" />
-      phiên bản 99 và phiên bản 112 trên tất cả các hệ điều hành máy tính khác, bạn có thể
-      ghi đè biểu tượng ứng dụng của các ứng dụng cần cài đặt. Các biểu tượng phải là hình vuông,
-      có kích thước tối đa 1 MB và thuộc một trong các định dạng sau: jpeg, png, gif, webp, ico.
-      Giá trị băm phải là hàm băm SHA256 của tệp biểu tượng.)
-
-      – <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (Kể từ <ph name="PRODUCT_NAME" />
-      phiên bản 107). Nếu được bật, <ph name="URL_LABEL" /> đã cho
-      sẽ được cài đặt dưới dạng lối tắt, như thể được thực hiện thông qua lựa chọn "Tạo lối tắt..."
-      trong GUI (Giao diện người dùng đồ hoạ) của trình duyệt dành cho máy tính.
-      Lưu ý rằng khi được cài đặt dưới dạng lối tắt, nhãn URL này sẽ không được cập nhật nếu
-      tệp kê khai trong <ph name="URL_LABEL" /> thay đổi.
-      Nếu bị tắt hoặc không được đặt, ứng dụng web tại
-      <ph name="URL_LABEL" /> đã cho sẽ được cài đặt bình thường.
-
-      Xem <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> để biết cách ghim ứng dụng vào kệ <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9128095645860384292">Cho phép bạn thiết lập một danh sách mẫu URL trang web để chỉ định các trang web không được phép chạy JavaScript bật trình biên dịch JIT (Just In Time).
 
           Việc tắt JavaScript JIT có nghĩa là <ph name="PRODUCT_NAME" /> có thể hiển thị nội dung trên web chậm hơn và cũng có thể vô hiệu hoá các phần của JavaScript (bao gồm cả WebAssembly). Việc tắt JavaScript JIT có thể cho phép <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web ở một cấu hình an toàn hơn.

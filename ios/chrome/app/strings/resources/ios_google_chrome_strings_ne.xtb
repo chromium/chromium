@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1066101356081285416">Chrome ले तपाईं जाने साइटहरूमा ट्र्याकिङ नम्बर पत्ता लगाउने छ र तपाईंलाई नयाँ ट्याब पेजमा प्याकेजसम्बन्धी अद्यावधिक जानकारी देखाउने छ। यो सुविधा प्रदान गर्न र सबैका निम्ति Google Shopping का सुविधाहरूको गुणस्तर सुधार गर्न प्याकेज ट्र्याकिङ नम्बर र वेबसाइटको नाम Google मा पठाइने छन्। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />प्याकेज ट्र्याकिङसम्बन्धी सेटिङ<ph name="END_LINK" />मा गई यो कुरा परिवर्तन गर्न सक्नुहुन्छ।</translation>
+<translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="1143896152279775643">तपाईंको पासवर्ड <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
 <translation id="1146503048444965320">Chrome मा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="1166460004393506534">Chrome को ब्राउजिङ डेटा मेटाउनुहोस्</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome सम्बन्धी सुझाव: आफ्नो एड्रेस बार कहाँ राख्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">यसले इनपुट गरिएका URL हरू Chrome मा भएका तपाईंका बुकमार्कमा हाल्छ।</translation>
+<translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1830634592642484976">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="USER_EMAIL" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="1917964099031477364">यो खाता र सेभ नगरिएका सबै डेटा Chrome र यो डिभाइसमा भएका Google का अन्य एपहरूबाट हटाइने छन्।</translation>
 <translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>

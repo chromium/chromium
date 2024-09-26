@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">স্কেনৰ ক্ষেত্ৰত খাপ খুৱাওক</translation>
 <translation id="1343442362630695901">লুণীয়া পানীৰ হ্ৰদ</translation>
 <translation id="1348657754632799065">ৰেকৰ্ডিঙৰ দণ্ড</translation>
+<translation id="1350909945461913813">আপোনাৰ কাম ছেভ কৰাটো নিশ্চিত কৰক</translation>
 <translation id="1367951781824006909">কোনো ফাইল বাছনি কৰক</translation>
 <translation id="1371650399987522809">Google AIৰ দ্বাৰা চালিত ৱালপেপাৰৰ বাবে মতামত</translation>
 <translation id="1374385338586507108">সংজ্ঞায়িত কৰক</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDKৰ সংস্কৰণ:</translation>
 <translation id="2016697457005847575">সমস্যা নিবাৰণৰ পদক্ষেপসমূহ কাৰ্যকৰী কৰি চাওক</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">এটা থীম বাছনি কৰক আৰু তাৰ পাছত আপোনাৰ AI প্ৰতিচ্ছবিসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দসমূহ বাছনি কৰক।</translation>
 <translation id="2045814230297767491">চামুচ, কাটা চামুচ ইত্যাদি</translation>
 <translation id="2047316797244836561">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু স্ক্ৰীন ছেভাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">কোনো কথন চিনাক্ত কৰা হোৱা নাই</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্পট্‌ গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> সৃষ্টি কৰিবলৈ বা চাবলৈ প্ৰম্পট্‌ বাছনি কৰক</translation>
 <translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
 <translation id="2480572840229215612">কেঁকোৰা</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
@@ -494,7 +497,7 @@
 <translation id="3502426834823382181">আটাইবোৰ এপ্‌ চাওক</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />কাৰ্যদক্ষতাৰ ট্ৰে’চ ডেটা<ph name="END_LINK1" /> পঠিয়াওক</translation>
 <translation id="3517001332549868749">ChromeOSৰ আপডে’ট</translation>
-<translation id="3522508178835057262">এতিয়াৰ বাবে, <ph name="MAX_WORD_LENGTH" /> টাতকৈ বেছি শব্দৰ ট্ৰেন্সক্ৰিপ্ট সমৰ্থন নকৰে</translation>
+<translation id="3522508178835057262">এতিয়া <ph name="MAX_WORD_LENGTH" /> টাতকৈ বেছি শব্দৰ ট্ৰেন্সক্ৰিপ্ট সমৰ্থন নকৰে</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="353214771040290298">সম্পাদনা সম্পন্ন হৈছে</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">মিল থকা কোনো ফলাফল নাই</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4486524074141928967">আপোনাক <ph name="TIME" />ত ছাইন আউট কৰোৱা হ’ব</translation>
 <translation id="4500722292849917410">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>
@@ -712,7 +716,7 @@
 <translation id="4602266091140407479">মাইক</translation>
 <translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
-<translation id="4623061655523261501">ৰেকৰ্ডিঙৰ নাম সৃষ্টি কৰা হৈছে</translation>
+<translation id="4623061655523261501">ৰেকৰ্ডিঙৰ নাম সফলভাৱে সৃষ্টি কৰা হৈছে</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>
 <translation id="4644611440022666152">অন কৰক আৰু ডাউনল’ড কৰক</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">ধোঁৱাবৰণীয়া</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> কী পৰীক্ষা কৰা হৈছে</translation>
+<translation id="5613201299517339763">আপোনাক ছাইন আউট কৰোৱা হৈছে</translation>
 <translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5630438231335788050">বাউহাউছ</translation>
 <translation id="5631759159893697722">সাৰাংশ</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">ফাইলটো পোৱা নগ’ল</translation>
 <translation id="5938286923316838007">এই সমলটোৰ বাবে ৰেকৰ্ডিঙৰ নাম সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
+<translation id="5942727615796467094">এই <ph name="DEVICE_TYPE" />টো কেতিয়া ব্যৱহাৰ কৰিব পাৰি <ph name="MANAGER" /> প্ৰশাসকে সেয়া ছেট কৰিছে</translation>
 <translation id="594552776027197022">যাদৃচ্ছিক কী পেয়াৰ সৃষ্টি কৰক</translation>
 <translation id="5946538341867151940">আপুনি এতিয়ালৈকে সংযুক্ত হোৱা নাই। যদি আপোনাৰ ম'বাইলৰ বাহকে এটা কাষ্টম এপিএন চুপাৰিছ কৰে, "+ নতুন এপিএন" বাছনি কৰি এপিএনৰ তথ্যখিনি দিয়ক</translation>
 <translation id="5947266287934282605">যদি মাহটোৰ শেষৰ দিনটো এই দিনটোৰ আগৰ, ডেটা মাহটোৰ শেষ দিনটোত ৰিছেট কৰা হ’ব</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">অন্য গ্ৰহ</translation>
 <translation id="6359706544163531585">পাতল ৰঙৰ থীম অক্ষম কৰক</translation>
 <translation id="6359919876285606596">এই কাৰ্যটো স্থায়ী আৰু ইয়াক আনডু কৰিব নোৱাৰি</translation>
+<translation id="6368342879959028556">আপুনি “AIৰ জৰিয়তে সৃষ্টি কৰক” বাছনি কৰিলে এটা কাষ্টম প্ৰম্পট্‌ লিখক। বা আপুনি এটা থীম বাছনি কৰিবলৈ “AI ৱালপেপাৰ” বাছনি কৰিব পাৰে আৰু তাৰ পাছত আপোনাৰ AI ৱালপেপাৰ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দবোৰ বাছনি কৰিব পাৰে।</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="6373461326814131011">পুখুৰী</translation>
 <translation id="6379086450106841622">টাচ্‌স্ক্ৰীন</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">একাউণ্টৰ ছেটিঙলৈ যাওক</translation>
 <translation id="6462978824459367242">এতিয়া APN যোগ কৰাৰ বুটামটো এতিয়া সক্ষম কৰা হৈছে</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}}</translation>
+<translation id="6468146470109254228">আপোনাৰ ৩ টা আটাইতকৈ শেহতীয়া প্ৰম্পট্‌ আৰু ফলাফল। আপুনি ৱালপেপাৰ আৰু ষ্টাইল ব্যৱহাৰ কৰি থাকিলেহে এয়া এক্সেছ কৰিব পাৰে।</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">নাও</translation>
 <translation id="64778964625672495">গাঢ় ৰঙা</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659594942844771486">ব্ৰাউজাৰ টেব</translation>
 <translation id="66621959568103627">প্ৰৱালৰ দৰে গুলপীয়া</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          অধিক অদ্বিতীয় আৰু বিচিত্ৰ AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          যেতিয়া আপুনি AIৰ জৰিয়তে সৃষ্টি কৰে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুসৰি প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ তথা প্ৰ’ডাক্টটো উন্নত কৰিবলৈ প্ৰম্পট্‌টো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI সম্পৰীক্ষামূলক, যিটো বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
 <translation id="6673898378497337661">কীব’ৰ্ডৰ উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="6692996468359469499">আপুনি বাছনি সম্পর্কীয় তথ্য পাওক</translation>
 <translation id="6694534975463174713">লক কৰক</translation>

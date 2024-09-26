@@ -215,7 +215,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1703117532528082099">Aktīvais logs ir dokots kreisajā pusē.</translation>
 <translation id="1708345662127501511">Darbvieta: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Tīkla iestatījumi</translation>
-<translation id="171610090693716835">Sekojiet savam mērķim ar personalizētiem atskaņošanas sarakstiem uzmanības koncentrēšanai. Iegūstiet YouTube Music un YouTube bez reklāmām, izmantojot YouTube Premium trīs mēnešus bez maksas.</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
 <translation id="1720230731642245863">Tīklājs ir izslēgts</translation>
@@ -398,6 +397,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
 <translation id="2416438829169535743">Vai iziet no skata?</translation>
 <translation id="2417486498593892439">Pierakstīties tīklā</translation>
+<translation id="2423619675829330672">Pārāk daudz PIN ievadīšanas mēģinājumu. Kādu laiku nogaidiet (<ph name="TIME_LEFT" />) un mēģiniet vēlreiz.</translation>
 <translation id="2426051945783024481">Kameras kadrs tiek automātiski centrēts</translation>
 <translation id="2427507373259914951">Noklikšķināt ar peles kreiso pogu</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
@@ -1577,6 +1577,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6330012934079202188">Tiek rādīti visu darbvietu logi. Nospiediet augšupvērsto bultiņu, lai tiktu rādīti pašreizējās darbvietas logi.</translation>
 <translation id="6337159624125741244">Pilnekrāna lupa ir ieslēgta</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
+<translation id="6340148837564298498">Ja aizmirsāt PIN, mēģiniet atkopt šo lietotāja kontu.</translation>
 <translation id="6344138931392227467">Izveidots savienojums ar ierīci <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> un pēc tam <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> vai <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">LIETOTŅU IETEIKUMI</translation>
@@ -1633,6 +1634,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6539852571005954999">Notiek lejupielādes faila “<ph name="FILENAME" />” pārbaude</translation>
 <translation id="6542521951477560771">Notiek apraide uz ierīci <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emocijzīmes, GIF attēli u. c.</translation>
+<translation id="6545382064335350438">Joprojām nevarēja verificēt jūsu PIN. Mēģiniet vēlreiz.</translation>
 <translation id="6555373427270923730">Ierakstiet tīmekļa adresi adreses joslā un pēc tam nospiediet <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Jauna instalācija</translation>
@@ -2029,6 +2031,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7904094684485781019">Šī konta administrators nav atļāvis vairākkārtēju pierakstīšanos.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Pievienotas <ph name="DEVICECOUNT" /> ierīces</translation>
+<translation id="7921565901396407357">Nevarēja verificēt jūsu PIN. Mēģiniet vēlreiz.</translation>
 <translation id="7923534281713082605">Laikapstākļi</translation>
 <translation id="7926080067315048321">Skatīt visus uzdevumus lietotnē Google uzdevumi tīmeklī</translation>
 <translation id="7930731167419639574">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē.</translation>

@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની પ્રક્રિયા શરૂ થવામાં નિષ્ફળ રહી.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="2970681950995291301">Chromeમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સેટિંગ પેજમાં જઈને Chromeમાંથી સાઇન આઉટ કરો</translation>
+<translation id="2994465299455873643">એન્ક્રિપ્શનની સેવાઓ અને <ph name="BROWSER_NAME" />ને રિકવર કરવા માટે કોઈ સલામત રીત પ્રદાન કરે છે, જો તેની તારીખ સિંકમાં ન રહે. જો આ સેવાને બંધ કરવામાં આવે, તો કદાચ <ph name="BROWSER_NAME" /> એન્ક્રિપ્ટેડ ડેટાનો ઍક્સેસ ગુમાવી શકે છે તેમજ કદાચ <ph name="BROWSER_NAME" /> પોતાને રિકવર ન પણ કરી શકે.</translation>
 <translation id="3018957014024118866">Chrome (<ph name="URL" />)માંથી પણ ડેટા ડિલીટ કરો</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex અપડેટ કરવા માટે ફરીથી લૉન્ચ કરો</translation>
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
 <translation id="3695446226812920698">જાણો કેવી રીતે</translation>
 <translation id="3697952514309507634">અન્ય Chrome પ્રોફાઇલ</translation>
+<translation id="3700276346088749847">તમારા એકાઉન્ટમાંનો Chrome ડેટા સાફ કરો</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">તમારા બ્રાઉઝિંગ અનુભવને બહેતર બનાવવા અને સંસાધનોનો ઉપયોગ ઘટાડવા માટે, Chrome આ ટૅબને નિષ્ક્રિય કરી શકે છે.</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
+<translation id="4601439950572737842">તમારો ડેટા તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="4624065194742029982">Chrome છૂપો મોડ</translation>
 <translation id="4627412468266359539">વૈકલ્પિક: Googleને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને ChromeOS Flexની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
 <translation id="4633000520311261472">Chrome ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>

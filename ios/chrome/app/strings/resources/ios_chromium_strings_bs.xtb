@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Otvorite meni Chromiuma.</translation>
 <translation id="12739128458173458">Da pošaljete ovu karticu na drugi uređaj, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="1361748954329991663">Chromium je zastario. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Storeu<ph name="END_LINK" />, moguće je da vaš uređaj više ne podržava nove verzije Chromiuma.</translation>
+<translation id="1383876407941801731">Traži</translation>
 <translation id="1423007117030725713">Započnite pretraživanje na novoj kartici Chromiuma.</translation>
 <translation id="1431818719585918472">Omogućite Chromiumu da zaključa vaše anonimne kartice.</translation>
 <translation id="146407871188825689">Koristite Chromium na iPadu prema zadanim postavkama</translation>
@@ -177,6 +178,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5571094606370987472">Otvaranje nedavnih kartica u Chromiumu.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Otvaranje posljednje kartice u Chromiumu</translation>
+<translation id="5671188105328420281">Savjeti za Chromium</translation>
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
@@ -218,6 +220,7 @@ Stvari za razmatranje:
 <translation id="6752854822223394465">Vaša organizacija postavlja Chromium...</translation>
 <translation id="6794054469102824109">Otvara igru Dinosaur u Chromiumu.</translation>
 <translation id="6820823224820483452">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
+<translation id="6831043979455480757">Prevedi</translation>
 <translation id="6852419005633611413">Brže pristupajte Chromiumu s trake na početnom ekranu</translation>
 <translation id="6852799557929001644">Pristupajte lozinkama u Chromiumu i ostalom u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6887138405044152640">Da pošaljete ovu karticu na drugi uređaj, na njemu se prijavite u Chromium.</translation>

@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
 <translation id="2970681950995291301">Одјавете се од Chrome на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chrome</translation>
+<translation id="2994465299455873643">Обезбедува услуги за шифрирање и безбеден клуч за враќање на <ph name="BROWSER_NAME" /> ако застари. Ако е оневозможена услугава, <ph name="BROWSER_NAME" /> може да го изгуби пристапот до шифрираните податоци, поради што <ph name="BROWSER_NAME" /> може да не може да се врати.</translation>
 <translation id="3018957014024118866">Избриши ги и податоците од Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Рестартирај за да се ажурира &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
 <translation id="3695446226812920698">Дознајте како</translation>
 <translation id="3697952514309507634">Други профили на Chrome</translation>
+<translation id="3700276346088749847">избришете ги податоците од Chrome во вашата сметка</translation>
 <translation id="3703994572283698466">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Верзија на ChromeOS Flex</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">Chrome може да ги деактивира картичкиве за да го подобри вашето доживување со прелистувањето и да ослободи ресурси.</translation>
 <translation id="459622048091363950">Ако Chrome има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="4600710005438004015">Chrome не може да се ажурира на најновата верзија и поради тоа ги пропуштате новите функции и безбедносни поправки.</translation>
+<translation id="4601439950572737842">Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
 <translation id="4624065194742029982">„Инкогнито“ на Chrome</translation>
 <translation id="4627412468266359539">Незадолжително: помогнете да се подобрат функциите и изведбата на ChromeOS Flex со автоматско испраќање дијагностички податоци и податоци за користењето во Google.</translation>
 <translation id="4633000520311261472">За Chrome да биде побезбеден, оневозможивме неколку наставки што не се наведени во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби се додадени без ваше знаење.</translation>

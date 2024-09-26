@@ -322,6 +322,7 @@
 <translation id="122082903575839559">Алгарытм подпісу сертыфіката</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 з шыфраваннем RSA</translation>
 <translation id="1221825588892235038">Толькі вылучанае</translation>
+<translation id="1222835797152767346">Задайце PIN-код, каб уваходзіць прасцей</translation>
 <translation id="1223484782328004593">Для работы праграмы <ph name="APP_NAME" /> патрабуецца ліцэнзія</translation>
 <translation id="1223853788495130632">Ваш адміністратар рэкамендуе канкрэтнае значэнне для гэтай налады.</translation>
 <translation id="1225177025209879837">Ідзе апрацоўка запыту...</translation>
@@ -5343,7 +5344,6 @@
 <translation id="4838327282952368871">Летуценны</translation>
 <translation id="4838836835474292213">Доступ да чытання буфера абмену дадзены</translation>
 <translation id="4838907349371614303">Пароль зменены</translation>
-<translation id="4838958829619609362">Мова выбранага фрагмента – не <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">За&amp;хаваць відэа як...</translation>
 <translation id="4839910546484524995">Праверце сваю прыладу</translation>
 <translation id="4840096453115567876">Усё роўна выйсці з рэжыму інкогніта?</translation>
@@ -5953,7 +5953,6 @@
 <translation id="5287425679749926365">Вашы ўліковыя запісы</translation>
 <translation id="5288106344236929384">Іншыя дзеянні, параметры ключа доступу для карыстальніка <ph name="USERNAME" /> дамена <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Паў&amp;торна адкрыць закрытыя ўкладкі</translation>
-<translation id="52895863590846877">Мова старонкі – не <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">ПК і прылада для трансляцыі падключаны да розных сетак Wi-Fi (напрыклад, 2,4 ГГц і 5 ГГц)</translation>
 <translation id="52912272896845572">Няправільны файл закрытага ключа.</translation>
 <translation id="5291739252352359682">Аўтаматычнае стварэнне субцітраў для мультымедыйных файлаў у браўзеры Chrome (зараз падтрымліваецца англійская мова). Аўдыяфайлы і субцітры апрацоўваюцца і захоўваюцца толькі на прыладзе.</translation>
@@ -6408,6 +6407,7 @@
 <translation id="5624959475330585145">Запытваць дазвол, перш чым выкарыстоўваць неабароненае падключэнне</translation>
 <translation id="5625225435499354052">Змяніць даныя ў Google Pay</translation>
 <translation id="5626134646977739690">Назва:</translation>
+<translation id="5626172233890210551">Выкарыстаць пароль</translation>
 <translation id="5627832140542566187">Арыентацыя дысплэя</translation>
 <translation id="5628434207686266338">Задайце пароль прылады</translation>
 <translation id="562935524653278697">Адміністратар выключыў сінхранізацыю закладак, гісторыі, пароляў і іншых налад.</translation>
@@ -7185,6 +7185,7 @@
 <translation id="6207937957461833379">Краіна або рэгіён</translation>
 <translation id="6208521041562685716">Ідзе актывацыя мабільнай перадачы даных</translation>
 <translation id="6208725777148613371">Не ўдалося захаваць элемент у сэрвісе "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Калі вы забылі фразу-пароль ці хочаце змяніць гэту наладу, можаце <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Абнаўленне кампанента</translation>
 <translation id="6209908325007204267">Прылада ўключае ў сябе ліцэнзію Chrome Enterprise, але ваша імя карыстальніка не звязана з карпаратыўным уліковым запісам. Стварыце карпаратыўны ўліковы запіс, наведаўшы старонку g.co/ChromeEnterpriseAccount з іншай прылады.</translation>
 <translation id="6210282067670792090">Выкарыстоўвайце ў адрасным радку гэта спалучэнне клавіш разам з камандамі, каб выкарыстоўваць канкрэтныя пошукавыя сістэмы і выконваць пошук на асобных сайтах</translation>
@@ -8098,7 +8099,6 @@
 <translation id="686366188661646310">Выдаліць пароль?</translation>
 <translation id="6863925886424789941">Калізей</translation>
 <translation id="6865313869410766144">Даныя для аўтазапаўнення</translation>
-<translation id="6865598234501509159">Мова старонкі – не <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Журналы падзей WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Ціха</translation>
 <translation id="686664946474413495">Тэмпература колеру</translation>
@@ -8718,7 +8718,6 @@
 <translation id="7343372807593926528">Перш чым адправіць водгук, апішыце праблему.</translation>
 <translation id="7344585835349671209">Кіраванне сертыфікатамі HTTPS/SSL на прыладзе</translation>
 <translation id="7345706641791090287">Пацвердзіце пароль</translation>
-<translation id="7345919885156673810">Мова выбранага фрагмента – не <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">Каб выкарыстаць гэта пашырэнне, увядзіце "<ph name="EXTENSION_KEYWORD" />", потым націсніце Tab, пасля чаго ўвядзіце каманду або пошукавы запыт.</translation>
 <translation id="7347943691222276892">Каб пакінуць старонку "<ph name="SUBPAGE_TITLE" />", націсніце тут.</translation>
@@ -10759,6 +10758,7 @@
 <translation id="8791534160414513928">Адпраўляць запыт Do Not Track пры праглядзе старонак у інтэрнэце</translation>
 <translation id="8793390639824829328">Гэта функцыя ўплывае на тое, ці могуць сайты змяняць маштаб і прагортваць змесціва абагуленых укладак</translation>
 <translation id="879413103056696865">Калі хот-спот уключаны, прылада <ph name="PHONE_NAME" /> будзе:</translation>
+<translation id="8794548468611058947">Стварыце PIN-код для гэтай прылады (<ph name="DEVICE_TYPE" />) і выкарыстоўвайце яго для ўваходу замест пароля Уліковага запісу Google</translation>
 <translation id="8795916974678578410">Новае акно</translation>
 <translation id="8796919761992612392">&amp;Наладзіць Chrome</translation>
 <translation id="8797459392481275117">Ніколі не перакладаць гэты сайт</translation>

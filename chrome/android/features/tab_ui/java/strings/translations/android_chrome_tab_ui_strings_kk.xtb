@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Қызғылт сары</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> қойындылар тобының опциялары</translation>
+<translation id="1293272072740285747">Бұл топты кейінірек қойындылар қосу үшін сақтап қойыңыз. Қажет болмаса, жойыңыз.
+
+Жойсаңыз, барлығы "<ph name="TITLE_OF_GROUP" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>
 <translation id="1340839264183302272">Топтан шығу</translation>
 <translation id="1419023007528516122">Бұл жағдайда топ құрылғыңыздан біржола жойылады.</translation>
 <translation id="1486715732399361704">Барлық қойындылар топтары осы жерде болады.</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}}</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
+<translation id="5615302411300498438">Бұл топты кейінірек қойындылар қосу үшін сақтап қойыңыз. Одан шығып кетуге болады.
+
+Шығып кетсеңіз, "<ph name="TITLE_OF_GROUP" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз.</translation>
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Қойындыны қалпына келтіру}other{Қойындыларды қалпына келтіру}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
 <translation id="8631711675211020168">Барлығы <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
+<translation id="8635399646025169806">Қойындылар тобын қалдыру керек пе?</translation>
 <translation id="870736955561925754">Қойындыны жауып, топты жою қажет пе?</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8730999928494395583">Бұл инкогнито қойындыларындағы әрекетіңіз осы құрылғыдан өшіріледі.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай бұрын жасалды.}other{<ph name="NUM_MONTHS_MANY" /> ай бұрын жасалды.}}</translation>
+<translation id="8804742093141782941">Топты қалдыру</translation>
 <translation id="8820741577754260431">Баға төмендеген кезде, оны қойындыдан көріңіз.</translation>
 <translation id="8887921976452567404">Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады.</translation>
 <translation id="8915916167043355778">Барлығын жабу</translation>

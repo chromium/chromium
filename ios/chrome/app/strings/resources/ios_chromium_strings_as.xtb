@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Chromiumৰ মেনুখন খোলক</translation>
 <translation id="12739128458173458">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="1361748954329991663">Chromium পুৰণি হৈছে। <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ত কোনো আপডে’ট নাথাকিলে এয়া সম্ভৱ যে আপোনাৰ ডিভাইচটোৱে Chromiumৰ নতুন সংস্কৰণসমূহ আৰু সমৰ্থন নকৰে।</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1423007117030725713">Chromiumৰ নতুন টেবত সন্ধান আৰম্ভ কৰক।</translation>
 <translation id="1431818719585918472">Chromiumক আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰিবলৈ দিয়ক।</translation>
 <translation id="146407871188825689">ডিফ’ল্ট হিচাপে iPadত Chromium ব্যৱহাৰ কৰক</translation>
@@ -177,6 +178,7 @@
 <translation id="5571094606370987472">Chromiumৰ শেহতীয়া টেব খোলে।</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Chromiumত মোৰ শেহতীয়া টেব খোলক</translation>
+<translation id="5671188105328420281">Chromiumৰ কিটিপ</translation>
 <translation id="5688047395118852662">এই কাৰ্ডখনে আপোনাক Chromiumৰ পৰা কেনেকৈ পাৰ্যমানে উপকৃত হ’ব পাৰি তাৰ পৰামৰ্শ দেখুৱায়।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="584550191241316896">Chromiumত ছাইন ইন কৰক</translation>
@@ -218,6 +220,7 @@
 <translation id="6752854822223394465">আপোনাৰ প্ৰতিষ্ঠানে Chromium ছেট আপ কৰি আছে...</translation>
 <translation id="6794054469102824109">Chromium Dino গে’মটো খোলে।</translation>
 <translation id="6820823224820483452">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6852419005633611413">আপোনাৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chromium এক্সেছ কৰক</translation>
 <translation id="6852799557929001644">এই ডিভাইচটোত থকা অন্য এপত আপোনাৰ Chromiumৰ পাছৱৰ্ড আৰু অধিক বস্তু এক্সেছ কৰক।</translation>
 <translation id="6887138405044152640">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, তাত Chromiumত ছাইন ইন কৰক।</translation>
@@ -292,7 +295,7 @@
 <translation id="8860548555286245440">ইনক’গনিট’ত Chromiumত URL খোলক</translation>
 <translation id="8866191443434488382">Chromiumএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Chromiumলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="8880024619507699923">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
-<translation id="8900052431807804054">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষাৰ পাওক</translation>
+<translation id="8900052431807804054">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা পাওক</translation>
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}}</translation>
 <translation id="8963279154877372067">মূল্য কমাৰ সতৰ্কবাৰ্তা লাভ কৰিবলৈ Chromiumৰ জাননীৰ অনুমতি দিয়ক</translation>

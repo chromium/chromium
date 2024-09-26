@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Az aktív ablak a bal oldalon van dokkolva.</translation>
 <translation id="1708345662127501511">Asztal: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Hálózati beállítások</translation>
-<translation id="171610090693716835">A személyre szabott, összpontosítást elősegítő lejátszási listákkal fókuszált maradhat. Élvezze a hirdetésmentes YouTube Musicot és YouTube-ot a három hónapig díjmentes YouTube Premiummal.</translation>
 <translation id="1719094688023114093">Az Élő feliratozás be van kapcsolva.</translation>
 <translation id="1720011244392820496">Wi-Fi szinkronizálásának bekapcsolása</translation>
 <translation id="1720230731642245863">A hotspot ki van kapcsolva</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
 <translation id="2416438829169535743">Kilép a nézetből?</translation>
 <translation id="2417486498593892439">Bejelentkezés a hálózatba</translation>
+<translation id="2423619675829330672">Túl sokszor próbálkozott a PIN-kód megadásával. <ph name="TIME_LEFT" /> várakozást követően próbálja meg újra.</translation>
 <translation id="2426051945783024481">Keret automatikusan középre igazítva</translation>
 <translation id="2427507373259914951">Kattintás bal egérgombbal</translation>
 <translation id="2429753432712299108">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Mielőtt elfogadná, ellenőrizze, hogy ez a biztonsági kód látható-e azon az eszközön is: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1578,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6330012934079202188">Most az összes asztal ablakait mutatja; az aktuális asztal ablakainak megjelenítéséhez nyomja meg a felfelé nyilat</translation>
 <translation id="6337159624125741244">A teljes képernyős nagyító be van kapcsolva</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
+<translation id="6340148837564298498">Ha elfelejtette PIN-kódját, próbálja meg helyreállítani ezt a felhasználói fiókot.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> csatlakoztatva</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, majd <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> vagy <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ALKALMAZÁSJAVASLATOK</translation>
@@ -1634,6 +1635,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6539852571005954999">Folyamatban van a következő letöltés ellenőrzése: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Küldés ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojik, GIF-ek és egyebek</translation>
+<translation id="6545382064335350438">PIN-kódjának ellenőrzése még mindig nem sikerült. Próbálkozzon újra.</translation>
 <translation id="6555373427270923730">Gépelje be a címsávba az internetcímet, majd nyomja le a(z) <ph name="MODIFIER" /><ph name="KEY" /> billentyűkombinációt</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Frissen telepítve</translation>
@@ -2030,6 +2032,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7904094684485781019">A fiók rendszergazdája letiltotta a többfiókos bejelentkezést.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> csatlakoztatott eszköz</translation>
+<translation id="7921565901396407357">PIN-kódjának ellenőrzése nem sikerült. Próbálkozzon újra.</translation>
 <translation id="7923534281713082605">Időjárás</translation>
 <translation id="7926080067315048321">Az összes Google Task-feladat megtekintése az interneten</translation>
 <translation id="7930731167419639574">A beszéd feldolgozása helyben történik, a diktálás pedig offline működik.</translation>

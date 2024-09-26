@@ -634,6 +634,7 @@
 <translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Ομάδα χωρίς όνομα</translation>
 <translation id="4044708993631234325">Φύλλο κάτω μέρους</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> τυπική καρτέλα με νέα δραστηριότητα σε ομάδες κοινόχρηστων καρτελών}other{<ph name="TABS_COUNT_MANY" /> τυπικές καρτέλες με νέα δραστηριότητα σε ομάδες κοινόχρηστων καρτελών}}</translation>
 <translation id="405365679581583349">Ενημέρωση των υπηρεσιών Google Play</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">Αρχικά, εξαγάγετε και διαγράψτε τους κωδικούς πρόσβασης από το Chrome</translation>
 <translation id="7594687499944811403">Επιτρέψτε στο <ph name="EMBEDDED_ORIGIN" /> να επαληθεύσει την ταυτότητά σας για το <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Λειτουργικό σύστημα</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> τυπική καρτέλα}other{<ph name="TABS_COUNT_MANY" /> τυπικές καρτέλες}}</translation>
 <translation id="7603168929588204083">Μη έγκυρη ημερομηνία</translation>
 <translation id="7605594153474022051">Ο συγχρονισμός δεν λειτουργεί</translation>
 <translation id="7612619742409846846">Έχετε συνδεθεί στην Google ως</translation>

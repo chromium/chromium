@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1343442362630695901">ଲୁଣି ହ୍ରଦ</translation>
 <translation id="1348657754632799065">ରେକର୍ଡିଂ ବାର</translation>
+<translation id="1350909945461913813">ଯେ କୌଣସି ୱାର୍କ ସେଭ କରିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
 <translation id="1371650399987522809">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର ପାଇଁ ମତାମତ</translation>
 <translation id="1374385338586507108">ପରିଭାଷିତ କରନ୍ତୁ</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK ସଂସ୍କରଣ:</translation>
 <translation id="2016697457005847575">ଟ୍ରବୁଲସୁଟିଂ ଷ୍ଟେପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">ଏକ ଥିମ ବାଛନ୍ତୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ଇମେଜଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="2045814230297767491">କଟଲେରି</translation>
 <translation id="2047316797244836561">ସ୍କ୍ରିନ ସେଭର ଦେଖିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">କୌଣସି ସ୍ପିଚକୁ ଚିହ୍ନଟ କରାଯାଇନାହିଁ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ତିଆରି କରିବା କିମ୍ବା ଦେଖିବା ପାଇଁ ପ୍ରମ୍ପ୍ଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2472215337771558851">ଏକ ଡ୍ରାଫ୍ଟ ତିଆରି କରିବା କିମ୍ବା Google AI ଦ୍ୱାରା ପରିଚାଳିତ ପୂର୍ବରୁ ଥିବା କାର୍ଯ୍ୟକୁ ରିଫାଇନ କରିବା ପାଇଁ 'ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2480572840229215612">କଙ୍କଡ଼ା</translation>
 <translation id="248546197012830854">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି। ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖିବାକୁ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">ମେଳ ହେଉଥିବା କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4486524074141928967">ଆପଣଙ୍କୁ <ph name="TIME" />ରେ ସାଇନ ଆଉଟ କରାଯିବ</translation>
 <translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">ଧୂସର</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
+<translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
 <translation id="5631759159893697722">ସାରାଂଶ</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5938286923316838007">ଏହି ବିଷୟବସ୍ତୁ ପାଇଁ ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
+<translation id="5942727615796467094">ଏହି <ph name="DEVICE_TYPE" />କୁ କେତେବେଳେ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା <ph name="MANAGER" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି</translation>
 <translation id="594552776027197022">ରେଣ୍ଡମ କୀପେୟାର ସୃଷ୍ଟି କରନ୍ତୁ</translation>
 <translation id="5946538341867151940">ଏପର୍ଯ୍ୟନ୍ତ ଆପଣ କନେକ୍ଟ ନାହାଁନ୍ତି। ଯଦି ଆପଣଙ୍କ ମୋବାଇଲ କେରିଅର ଏକ କଷ୍ଟମ APN ସୁପାରିଶ କରେ, ତେବେ "+ ନୂଆ APN"କୁ ଚୟନ କରି APN ସୂଚନା ଲେଖନ୍ତୁ</translation>
 <translation id="5947266287934282605">ଯଦି ମାସର ଶେଷ ଦିନ ଏହି ଦିନ ପୂର୍ବରୁ ହୋଇଥାଏ, ତେବେ ମାସର ଶେଷ ଦିନରେ ଡାଟା ରିସେଟ ହେବ</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">ଭିନ୍ନ ଗ୍ରହ</translation>
 <translation id="6359706544163531585">ହାଲୁକା ଥିମକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6359919876285606596">ଏହି କାର୍ଯ୍ୟ ସ୍ଥାୟୀ ଅଟେ ଏବଂ ଏହାକୁ ଅନଡୁ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="6368342879959028556">ଆପଣ “AI ମାଧ୍ୟମରେ ତିଆରି କରନ୍ତୁ”କୁ ଚୟନ କରିବା ସମୟରେ ଏକ କଷ୍ଟମ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ। କିମ୍ବା ଏକ ଥିମ ଚୟନ କରିବାକୁ ଆପଣ "AI ୱାଲପେପରଗୁଡ଼ିକୁ" ଚୟନ କରିପାରିବେ ଏବଂ ତା'ପରେ ଆପଣଙ୍କ AI ୱାଲପେପରକୁ ପର୍ସନାଲାଇଜ କରିବାକୁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡଡ଼ିକୁ ଚୟନ କରିପାରିବେ।</translation>
 <translation id="636850387210749493">ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ନାମାଙ୍କନ</translation>
 <translation id="6373461326814131011">ପୋଖରୀ</translation>
 <translation id="6379086450106841622">ଟଚସ୍କ୍ରିନ୍</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6462978824459367242">'APN ଯୋଗ କରନ୍ତୁ' ବଟନକୁ ବର୍ତ୍ତମାନ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}}</translation>
+<translation id="6468146470109254228">ଆପଣଙ୍କର 3 ବର୍ତ୍ତମାନର ପ୍ରମ୍ପ୍ଟ ଏବଂ ଆଉଟପୁଟ। ଆପଣ ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ବ୍ୟବହାର କରିବା ସମୟରେ କେବଳ ଏଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ନୌକାଗୁଡ଼ିକ</translation>
 <translation id="64778964625672495">ଗାଢ଼ ଲାଲ</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="66621959568103627">କୋରାଲ ପିଙ୍କ</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଆପଣ AI ମାଧ୍ୟମରେ ତିଆରି କରିବା ସମୟରେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅନୁଯାୟୀ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ଡେଭେଲପମେଣ୍ଟର ପ୍ରାରମ୍ଭିକ ପର୍ଯ୍ୟାୟରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ଉପଲବ୍ଧତା ସୀମିତ ଅଟେ।</translation>
 <translation id="6673898378497337661">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6694534975463174713">ଲକ୍ କରନ୍ତୁ</translation>

@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">ဖွင့်ထားသည့်ဝင်းဒိုးကို ဘယ်ဖက်တွင် နေရာချလိုက်သည်။</translation>
 <translation id="1708345662127501511">မျက်နှာပြင်နေရာ - <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ကွန်ရက်ဆက်တင်များ</translation>
-<translation id="171610090693716835">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော အာရုံစိုက်ပလေးလစ်များဖြင့် အလုပ်ပြီးအောင်လုပ်လိုက်ပါ။ ကြော်ငြာမဲ့ YouTube Music နှင့် YouTube ကို YouTube Premium ဖြင့် ၃ လ အခမဲ့ရယူပါ။</translation>
 <translation id="1719094688023114093">'တိုက်ရိုက်စာတန်း' ကို ဖွင့်ထားသည်။</translation>
 <translation id="1720011244392820496">'Wi-Fi စင့်ခ်' ဖွင့်ခြင်း</translation>
 <translation id="1720230731642245863">ဟော့စပေါ့ ပိတ်လိုက်သည်</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">အပ်ဒိတ် ရနိုင်သည်</translation>
 <translation id="2416438829169535743">မြင်ကွင်းမှ ထွက်မလား။</translation>
 <translation id="2417486498593892439">ကွန်ရက်သို့ လက်မှတ်ထိုးဝင်ခြင်း</translation>
+<translation id="2423619675829330672">ပင်နံပါတ် ထည့်သွင်းသည့်အကြိမ်ရေ များလွန်းသည်။ <ph name="TIME_LEFT" /> စောင့်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2426051945783024481">ကင်မရာဘောင်ကို အလယ်တွင် အလိုအလျောက်ထားလိုက်သည်</translation>
 <translation id="2427507373259914951">ဘယ်ဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" ဘလူးတုရှ် စက်ပစ္စည်းသည် တွဲရန်ခွင့်ပြုချက် လိုသည်။ လက်မခံမှီ၊ ဤလျှို့ဝှက်ကီးသည် ၎င်း၏မျက်နှာပြင်ပေါ်တွင် ပေါ်မပေါ် ကျေးဇူးပြု၍ အတည်ပြုပါ: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြနေသည်၊ လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="6337159624125741244">ဖန်သားပြင်အပြည့် မှန်ဘီလူး ဖွင့်ထားသည်</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
+<translation id="6340148837564298498">ပင်နံပါတ်မေ့သွားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ထို့နောက် <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> (သို့) <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">အက်ပ်အကြံပြုချက်များ</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> ဒေါင်းလုဒ်ဖိုင်ကို စစ်ဆေးနေသည်</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> သို့ ကာစ် လုပ်နေသည်</translation>
 <translation id="6542891623636520977">အီမိုဂျီ၊ GIF စသည်</translation>
+<translation id="6545382064335350438">သင့်စကားဝှက်ကို အတည်ပြု၍မရသေးပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6555373427270923730">လိပ်စာဘားထဲတွင် ဝဘ်လိပ်စာကို ရိုက်ထည့်ပြီး <ph name="MODIFIER" /><ph name="KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 အသစ်ထည့်သွင်းမှု</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">ဤ အကောင့်၏ စီမံခန့်ခွဲသူမှ လက်မှတ်ထိုးဝင်ရာက်မှုများကို ပိတ်ပင်ထားပါသည်။</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">စက်ပစ္စည်း <ph name="DEVICECOUNT" /> ခု ချိတ်ဆက်ထားသည်</translation>
+<translation id="7921565901396407357">သင့်စကားဝှက်ကို အတည်ပြု၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7923534281713082605">မိုးလေဝသ</translation>
 <translation id="7926080067315048321">ဝဘ်ပေါ်ရှိ Google Tasks တွင် လုပ်ဆောင်စရာအားလုံးကို ကြည့်နိုင်သည်</translation>
 <translation id="7930731167419639574">တိုက်ရိုက်စာတန်းကို ယခု စက်အတွင်းမှာပင် လုပ်ဆောင်နေပြီး နှုတ်တိုက်ချပေးခြင်းကို အော့ဖ်လိုင်းသုံးနိုင်ပါပြီ</translation>

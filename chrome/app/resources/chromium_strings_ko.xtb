@@ -45,6 +45,7 @@
 이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="167397405791113306">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chromium 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
+<translation id="1709772298389099340"><ph name="BROWSER_NAME" />에 승격된 권한을 제공합니다.</translation>
 <translation id="1715127912119967311">Chromium은 이러한 기능을 개선하도록 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
 <translation id="17264556997921157">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chromium에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>

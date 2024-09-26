@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tryk for at se en anden fane</translation>
 <translation id="1273910660700874265">Valgmuligheder for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Behold denne gruppe for at tilføje faner senere, eller slet den, hvis du ikke længere skal bruge den.
+
+Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph name="TITLE_OF_GROUP" />", og den slettes fra alle enheder.</translation>
 <translation id="1340839264183302272">Forlad gruppe</translation>
 <translation id="1419023007528516122">Denne handling sletter gruppen permanent fra din enhed</translation>
 <translation id="1486715732399361704">Du kan finde alle dine fanegrupper her</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Luk fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="5556417849629758491">Se butiksoplysninger. Valgmuligheden findes øverst på skærmen</translation>
+<translation id="5615302411300498438">Behold denne gruppe for at tilføje faner senere, eller forlad den.
+
+Hvis du forlader gruppen, mister du øjeblikkeligt adgangen til fanegruppen "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Ingen faneopdateringer</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Gendan fane}one{Gendan fane}other{Gendan faner}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}one{<ph name="TABS_COUNT_MANY" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> links fra Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane blev tilføjet, og <ph name="ANY_CLOSED" /> blev lukket}one{<ph name="MANY_ADDED" /> fane blev tilføjet, og <ph name="ANY_CLOSED" /> blev lukket}other{<ph name="MANY_ADDED" /> faner blev tilføjet, og <ph name="ANY_CLOSED" /> blev lukket}}</translation>
 <translation id="8631711675211020168">Alle mister øjeblikkeligt adgangen til fanegruppen <ph name="GROUP_NAME" />, og den slettes fra alle enheder</translation>
 <translation id="8633025649649592204">Seneste aktivitet</translation>
+<translation id="8635399646025169806">Vil du beholde fanegruppen?</translation>
 <translation id="870736955561925754">Vil du lukke fanen og slette gruppen?</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8730999928494395583">Din aktivitet i disse inkognitofaner fjernes fra denne enhed</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Oprettet for <ph name="NUM_MONTHS_ONE" /> måned siden}one{Oprettet for <ph name="NUM_MONTHS_MANY" /> måned siden}other{Oprettet for <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
+<translation id="8804742093141782941">Behold gruppen</translation>
 <translation id="8820741577754260431">Se prisfald på dine faner</translation>
 <translation id="8887921976452567404">Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper.</translation>
 <translation id="8915916167043355778">Luk alle</translation>

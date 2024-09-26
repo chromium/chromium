@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Añadir a lista de lectura</translation>
 <translation id="1854463785401910334">Buscar en pestañas abiertas</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} contraseña}other{{position} de {count} contraseñas}}</translation>
+<translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invita a miembros de la familia</translation>
@@ -673,6 +674,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
+<translation id="4320848494125124980">Recientes</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
 <translation id="4328843285884395590">Mi unidad</translation>
 <translation id="4331177082088332784">Puedes gestionar esto en BEGIN_LINKConfiguración de contenidoEND_LINK</translation>
@@ -701,6 +703,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469834037720363704">Número de paquete</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
+<translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
 <translation id="4488754974567924717">Si se vulneran tus contraseñas, te avisaremos</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>

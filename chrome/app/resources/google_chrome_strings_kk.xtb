@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">Орнату қатесі: орнату процесі басталмады.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Желіге кіру – Chrome</translation>
 <translation id="2970681950995291301">Chrome-нан Google аккаунтын өшіру үшін Chrome-нан "Параметрлер" бетінде шығыңыз.</translation>
+<translation id="2994465299455873643">Шифрлау қызметтерін және ескірген <ph name="BROWSER_NAME" /> браузерін қалпына келтірудің қауіпсіз әдісін ұсынады. Бұл қызмет өшірілсе, <ph name="BROWSER_NAME" /> шифрланған деректерге кіру мүмкіндігін жоғалтып, <ph name="BROWSER_NAME" /> өздігінен қалпына келе алмауы мүмкін.</translation>
 <translation id="3018957014024118866">Деректерді Chrome-нан (<ph name="URL" />) да жою</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex жүйесін жаңарту үшін оны қайта іске қосу</translation>
 <translation id="3037838751736561277">Google Chrome фондық режимде.</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтімінде зиянды бағдарлама бар екенін анықтады.</translation>
 <translation id="3695446226812920698">Әдісін білу</translation>
 <translation id="3697952514309507634">Chrome басқа профильдері</translation>
+<translation id="3700276346088749847">аккаунтыңыздағы Chrome деректерін жойыңыз.</translation>
 <translation id="3703994572283698466">ChromeOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="3716540481907974026">ChromeOS Flex нұсқасы</translation>
 <translation id="3718181793972440140">Құрылғыдан 1 элемент жойылады. Деректерді кейінірек алу үшін Chrome браузеріне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
@@ -295,6 +297,7 @@
 <translation id="4575717501879784448">Chrome браузерді пайдалану мүмкіндігін жақсарту және ресурстарды босату үшін бұл қойындыларды әрекетсіз қыла алады.</translation>
 <translation id="459622048091363950">Chrome браузерінің кіру рұқсаты болса, веб-сайттар сізден кіру рұқсатын сұрай алады.</translation>
 <translation id="4600710005438004015">Chrome браузерінің ең соңғы нұсқасы орнатылмады, сондықтан жаңа мүмкіндіктер мен қауіпсіздікке қатысты түзетілген функцияларды пайдалана алмайсыз.</translation>
+<translation id="4601439950572737842">Деректер құпия фразаңызбен шифрланды. Google аккаунтыңызда Chrome деректерін пайдалану және сақтау үшін оны енгізіңіз.</translation>
 <translation id="4624065194742029982">Chrome-ның инкогнито режимі</translation>
 <translation id="4627412468266359539">Міндетті емес: диагностика және пайдалану туралы деректі Google-ға автоматты түрде жіберу арқылы ChromeOS Flex операциялық жүйесінің функциялары мен жұмыс өнімділігін жақсартуға көмектесіңіз.</translation>
 <translation id="4633000520311261472">Chrome қауіпсіз ету үшін <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ішінде көрсетілмеген және сізге білдірмей қосылған болуы мүмкін кейбір кеңейтімдерді өшірдік.</translation>

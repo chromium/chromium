@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Shto te lista e leximit</translation>
 <translation id="1854463785401910334">Kërko skedat e hapura</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} nga {count} fjalëkalim}other{{position} nga {count} fjalëkalime}}</translation>
+<translation id="1861262398884155592">Kjo dosje është bosh</translation>
 <translation id="1872096359983322073">Elektriku</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Fto anëtarët e familjes</translation>
@@ -673,6 +674,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
+<translation id="4320848494125124980">Të fundit</translation>
 <translation id="4324735664183300693">Aktivizo njoftimet</translation>
 <translation id="4328843285884395590">Disku im</translation>
 <translation id="4331177082088332784">Mund ta menaxhosh këtë te BEGIN_LINK Cilësimet e përmbajtjes END_LINK</translation>
@@ -701,6 +703,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="4469834037720363704">Numri i pakos</translation>
 <translation id="4471472356135655769">Fjalëkalimet nuk mund të eksportohen</translation>
+<translation id="4474142134969976028">Nuk përputhet asnjë rezultat</translation>
 <translation id="4474494258097106883">Krijuar për iPhone tënd</translation>
 <translation id="4488754974567924717">Nëse fjalëkalimet e tua janë komprometuar, do të të njoftojmë</translation>
 <translation id="4489536976005181779">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{Faqet u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>

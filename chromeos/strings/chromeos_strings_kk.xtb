@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1343442362630695901">тұзды көл</translation>
 <translation id="1348657754632799065">Жазу жолағы</translation>
+<translation id="1350909945461913813">Барлық жұмысты сақтағаныңызға көз жеткізіңіз.</translation>
 <translation id="1367951781824006909">Файлды таңдау</translation>
 <translation id="1371650399987522809">Google AI технологиясына негізделген тұсқағазға қатысты пікір</translation>
 <translation id="1374385338586507108">Анықтау</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK нұсқасы:</translation>
 <translation id="2016697457005847575">Ақауларды жою қадамдарын орындап көріңіз</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">AI суреттерін жекелендіру үшін тақырып таңдап, асты сызылған сөздерді таңдаңыз.</translation>
 <translation id="2045814230297767491">асүй құралдары</translation>
 <translation id="2047316797244836561">Скринсейверді көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Сөйлесім анықталмады.</translation>
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
 <translation id="2448312741937722512">Түрі</translation>
+<translation id="2468124392950503650">Нұсқауды таңдап, <ph name="BEGIN_LINK_PROMPTING_GUIDE" />нұсқау жазу туралы анықтамалық<ph name="END_LINK_PROMPTING_GUIDE" /> жасаңыз немесе қараңыз.</translation>
 <translation id="2472215337771558851">Нобай жасау немесе бар жұмысты жақсарту үшін Google AI ұсынған "Жазуға көмек керек" функциясын пайдаланыңыз.</translation>
 <translation id="2480572840229215612">теңіз шаяндары</translation>
 <translation id="248546197012830854">Құрылғы офлайн режимде. Анықтамалық контентті көру үшін Wi-Fi желісіне қосылыңыз.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Сәйкес нәтижелер табылмады</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4486524074141928967">Мына уақытта аккаунттан шығарыласыз: <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift немесе <ph name="META_KEY" />) пайдаланып, жаңа тіркесімді басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейс түсі</translation>
 <translation id="4503223151711056411">Сол бағыт пернесі</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">сұр</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> пернесі тексерілді.</translation>
+<translation id="5613201299517339763">Аккаунттан шығарылдыңыз.</translation>
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5630438231335788050">баухауз</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Файл табылмады.</translation>
 <translation id="5938286923316838007">Бұл контент үшін жазылған есімдер жасау мүмкін емес.</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> әкімшісі осы <ph name="DEVICE_TYPE" /> құрылғысын пайдалануға болатын мерзімді белгіледі.</translation>
 <translation id="594552776027197022">Кездейсоқ кілттер жұбын жасау</translation>
 <translation id="5946538341867151940">Сіз әлі қосылмағансыз. Мобильдік оператор басқа APN ұсынса, "+ Жаңа APN" опциясын таңдау арқылы APN туралы ақпаратты енгізіңіз.</translation>
 <translation id="5947266287934282605">Айдың соңғы күні ағымдағы күннен бұрын келсе, деректер айдың соңында бастапқы күйіне келтіріледі</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">басқа планета</translation>
 <translation id="6359706544163531585">Жарық режимді өшіру</translation>
 <translation id="6359919876285606596">Бұл әрекетті қайтару мүмкін емес.</translation>
+<translation id="6368342879959028556">"AI көмегімен жасау" тармағын таңдағанда, арнаулы сұрауды жазыңыз. Болмаса тақырыпты таңдау үшін "AI тұсқағаздары" опциясын таңдап, содан кейін AI тұсқағазын жекелендіру мақсатында асты сызылған сөздерді таңдауға болады.</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="6373461326814131011">тоған</translation>
 <translation id="6379086450106841622">Сенсорлық экран</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Аккаунт параметрлеріне өту</translation>
 <translation id="6462978824459367242">APN қосу түймесі қосылды.</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бетті қайта сканерлеу керек пе?}=1{{PAGE_NUMBER}-бетті қайта сканерлеу керек пе?}other{{PAGE_NUMBER}-бетті қайта сканерлеу керек пе?}}</translation>
+<translation id="6468146470109254228">Ең соңғы 3 нұсқау мен шығыс дерек. Оларға "Тұсқағаз және стиль" функциясын пайдаланған кезде ғана кіре аласыз.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">қайықтар</translation>
 <translation id="64778964625672495">қою қызыл</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="66621959568103627">маржан қызғылт</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI көмегімен контент жасаған кезіңізде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google AI серверлеріне жіберіледі.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасампаз AI — әзірлеу циклінің бастапқы сатысындағы, әзірше тек кейбір пайдаланушыларға ұсынылатын эксперименттік функция.</translation>
 <translation id="6673898378497337661">пернетақта жарықтығын арттыру</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6694534975463174713">құлыптау</translation>

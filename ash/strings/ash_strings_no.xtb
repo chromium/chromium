@@ -215,7 +215,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1703117532528082099">Det aktive vinduet er festet på venstre side.</translation>
 <translation id="1708345662127501511">Skrivebord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nettverksinnstillinger</translation>
-<translation id="171610090693716835">Hold deg på rett spor med personlig tilpassede fokus-spillelister. Få YouTube Music og YouTube uten annonser med 3 måneder med YouTube Premium kostnadsfritt.</translation>
 <translation id="1719094688023114093">Direkteteksting er på.</translation>
 <translation id="1720011244392820496">Slå på wifi-synkronisering</translation>
 <translation id="1720230731642245863">Wifi-sonen er av</translation>
@@ -398,6 +397,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
 <translation id="2416438829169535743">Vil du gå ut av visningen?</translation>
 <translation id="2417486498593892439">Logg på nettverket</translation>
+<translation id="2423619675829330672">For mange PIN-kodeforsøk. Vent <ph name="TIME_LEFT" />, og prøv på nytt.</translation>
 <translation id="2426051945783024481">Kamerarammen er midtstilt automatisk</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2429753432712299108">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Før du godtar dette, må du bekrefte at denne tilgangskoden vises på den aktuelle enheten: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6330012934079202188">Viser vinduer fra alle skrivebord. Trykk på oppoverpiltasten for å vise vinduer fra det nåværende skrivebordet</translation>
 <translation id="6337159624125741244">Forstørrelse av hele skjermen er på</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en administrert økt som administreres av <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Hvis du har glemt PIN-koden, kan du prøve å gjenopprette denne brukeren.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> er tilkoblet</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, deretter <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APPFORSLAG</translation>
@@ -1633,6 +1634,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6539852571005954999">Nedlastingen skannes: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojier, GIF-er med mer</translation>
+<translation id="6545382064335350438">PIN-koden kunne fremdeles ikke verifiseres. Prøv på nytt.</translation>
 <translation id="6555373427270923730">Skriv inn en nettadresse i adressefeltet, og trykk deretter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nylig installert</translation>
@@ -2029,6 +2031,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> enheter er tilkoblet</translation>
+<translation id="7921565901396407357">PIN-koden kunne ikke verifiseres. Prøv på nytt.</translation>
 <translation id="7923534281713082605">Været</translation>
 <translation id="7926080067315048321">Se alle gjøremål på Google Huskeliste på nettet</translation>
 <translation id="7930731167419639574">Tale behandles nå lokalt, og diktering fungerer uten nett</translation>

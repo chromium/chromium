@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Adaugă în lista de lecturi</translation>
 <translation id="1854463785401910334">Caută în filele deschise</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} din {count} parolă}few{{position} din {count} parole}other{{position} din {count} de parole}}</translation>
+<translation id="1861262398884155592">Acest dosar este gol</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invită membrii familiei</translation>
@@ -702,6 +703,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4469324811108161144">Notele pot conține până la <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="4469834037720363704">Numărul coletului</translation>
 <translation id="4471472356135655769">Nu se pot exporta parole</translation>
+<translation id="4474142134969976028">Niciun rezultat</translation>
 <translation id="4474494258097106883">Creat pentru iPhone</translation>
 <translation id="4488754974567924717">Te vom anunța dacă îți sunt compromise parolele</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina a fost adăugată în lista de lecturi din contul tău, {email}}few{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}other{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}}</translation>

@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Avaa Chromiumin valikko</translation>
 <translation id="12739128458173458">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
 <translation id="1361748954329991663">Chromium on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromiumin uusia versioita.</translation>
+<translation id="1383876407941801731">Haku</translation>
 <translation id="1423007117030725713">Aloita haku uudella Chromium-välilehdellä.</translation>
 <translation id="1431818719585918472">Anna Chromiumin lukita incognito-välilehtesi.</translation>
 <translation id="146407871188825689">Käytä Chromiumia oletuksena iPadilla</translation>
@@ -177,6 +178,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5571094606370987472">Avaa Chromiumin viimeaikaiset välilehdet.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Avaa edellinen välilehti Chromiumissa</translation>
+<translation id="5671188105328420281">Vinkkejä Chromiumin käyttöön</translation>
 <translation id="5688047395118852662">Tässä kortissa on ehdotuksia Chromiumin hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
 <translation id="584550191241316896">Kirjautuneena Chromiumiin</translation>
@@ -218,6 +220,7 @@ Huomioitavaa:
 <translation id="6752854822223394465">Organisaatiosi ottaa käyttöön Chromiumia…</translation>
 <translation id="6794054469102824109">Avaa Chromiumin Dino-pelin.</translation>
 <translation id="6820823224820483452">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
+<translation id="6831043979455480757">Käännä</translation>
 <translation id="6852419005633611413">Käytä Chromiumia nopeammin aloitusnäytön alapalkista</translation>
 <translation id="6852799557929001644">Käytä esimerkiksi Chromium-salasanoja tällä laitteella muissa sovelluksissa.</translation>
 <translation id="6887138405044152640">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu sillä Chromiumiin.</translation>

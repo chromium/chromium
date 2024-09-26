@@ -634,6 +634,7 @@
 <translation id="4042941173059740150">Працягвайце выкарыстоўваць сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" для доступу да вэб-сайта <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Група без назвы</translation>
 <translation id="4044708993631234325">Ніжні аркуш</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная ўкладка з новым дзеяннем у абагуленых групах укладак}one{<ph name="TABS_COUNT_MANY" /> стандартная ўкладка з новым дзеяннем у абагуленых групах укладак}few{<ph name="TABS_COUNT_MANY" /> стандартныя ўкладкі з новым дзеяннем у абагуленых групах укладак}many{<ph name="TABS_COUNT_MANY" /> стандартных укладак з новым дзеяннем у абагуленых групах укладак}other{<ph name="TABS_COUNT_MANY" /> стандартнай укладкі з новым дзеяннем у абагуленых групах укладак}}</translation>
 <translation id="405365679581583349">Абнавіце сэрвісы Google Play</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">Спачатку экспартуйце і выдаліце паролі з Chrome</translation>
 <translation id="7594687499944811403">Дазвольце сайту <ph name="EMBEDDED_ORIGIN" /> спраўдзіць вашу асобу для сайта <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Аперацыйная сістэма</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная ўкладка}one{<ph name="TABS_COUNT_MANY" /> стандартная ўкладка}few{<ph name="TABS_COUNT_MANY" /> стандартныя ўкладкі}many{<ph name="TABS_COUNT_MANY" /> стандартных укладак}other{<ph name="TABS_COUNT_MANY" /> стандартнай укладкі}}</translation>
 <translation id="7603168929588204083">Няправільная дата</translation>
 <translation id="7605594153474022051">Сінхранізацыя не працуе</translation>
 <translation id="7612619742409846846">Уваход у Google выкананы ад імя</translation>

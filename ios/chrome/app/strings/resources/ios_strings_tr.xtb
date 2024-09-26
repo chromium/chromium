@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Okuma listesine ekle</translation>
 <translation id="1854463785401910334">Açık sekmelerde ara</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position}/{count} şifre}other{{position}/{count} şifre}}</translation>
+<translation id="1861262398884155592">Bu klasör boş</translation>
 <translation id="1872096359983322073">Flaş</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Aile bireylerini davet edin</translation>
@@ -673,6 +674,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4302061870579014542">Konumu ayarla</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4309403553630140242">Daha fazla bilgi için iki kez dokunun</translation>
+<translation id="4320848494125124980">En son</translation>
 <translation id="4324735664183300693">Bildirimleri etkinleştir</translation>
 <translation id="4328843285884395590">Drive'ım</translation>
 <translation id="4331177082088332784">Bunu BEGIN_LINK İçerik Ayarları END_LINK bölümünden yönetebilirsiniz</translation>
@@ -701,6 +703,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4469324811108161144">En fazla <ph name="CHARACTER_LIMIT" /> karakterden oluşan notlar kaydedilebilir.</translation>
 <translation id="4469834037720363704">Kargo numarası</translation>
 <translation id="4471472356135655769">Şifreler dışa aktarılamıyor</translation>
+<translation id="4474142134969976028">Eşleşen sonuç yok</translation>
 <translation id="4474494258097106883">iPhone'unuz için Geliştirildi</translation>
 <translation id="4488754974567924717">Şifrelerinizin güvenliği ihlal edilirse size haber veririz</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sayfa, {email} hesabınızdaki Okuma Listenize eklendi}other{Sayfalar, {email} hesabınızdaki Okuma Listenize eklendi}}</translation>

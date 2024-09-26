@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ເລີ່ມຂັ້ນຕອນຂອງຕົວຕິດຕັ້ງບໍ່ສຳເລັດ.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - Chrome</translation>
 <translation id="2970681950995291301">ເພື່ອລຶບບັນຊີ Google ຂອງທ່ານອອກຈາກ Chrome, ໃຫ້ອອກຈາກລະບົບ Chrome ໃນໜ້າການຕັ້ງຄ່າ</translation>
+<translation id="2994465299455873643">ໃຫ້ບໍລິການເຂົ້າລະຫັດ ແລະ ວິທີທີ່ປອດໄພໃນການກູ້ຄືນ <ph name="BROWSER_NAME" /> ຫາກເປັນເວີຊັນເກົ່າແລ້ວ. ຫາກປິດໃຊ້ບໍລິການນີ້, <ph name="BROWSER_NAME" /> ອາດສູນເສຍສິດເຂົ້າເຖິງຂໍ້ມູນທີ່ໄດ້ຖືກເຂົ້າລະຫັດ ແລະ <ph name="BROWSER_NAME" /> ອາດບໍ່ສາມາດກູ້ຄືນຕົວເອງໄດ້.</translation>
 <translation id="3018957014024118866">ລຶບຂໍ້ມູນອອກຈາກ Chrome (<ph name="URL" />) ນຳ</translation>
 <translation id="3019382870990049182">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chrome ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
 <translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3697952514309507634">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
+<translation id="3700276346088749847">ລຶບລ້າງຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="3703994572283698466">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ, ຮວມທັງ <ph name="BEGIN_LINK_LINUX_OSS" />ສະພາບແວດລ້ອມການພັດທະນາ Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ເວີຊັນ ChromeOS Flex</translation>
 <translation id="3718181793972440140">ນີ້ຈະລຶບ 1 ລາຍການອອກຈາກວິດີໂອນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">Chrome ສາມາດເຮັດໃຫ້ແຖບເຫຼົ່ານີ້ບໍ່ເຮັດວຽກເພື່ອປັບປຸງປະສົບການໃນການເລືອກເບິ່ງຂອງທ່ານ ແລະ ຊ່ວຍປະຢັດຊັບພະຍາກອນ.</translation>
 <translation id="459622048091363950">ເມື່ອ Chrome ມີການເຂົ້າເຖິງ, ເວັບໄຊຈະສາມາດຮ້ອງຂໍການເຂົ້າເຖິງນຳທ່ານ.</translation>
 <translation id="4600710005438004015">Chrome ບໍ່ສາມາດອັບເດດເປັນເວີຊັນຫຼ້າສຸດໄດ້, ສະນັ້ນທ່ານກຳລັງພາດຄຸນສົມບັດ ແລະ ການແກ້ໄຂດ້ານຄວາມປອດໄພໃໝ່ໆຢູ່.</translation>
+<translation id="4601439950572737842">ຂໍ້ມູນຂອງທ່ານໄດ້ຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="4624065194742029982">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chrome</translation>
 <translation id="4627412468266359539">ຕົວເລືອກເສີມ: ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ ChromeOS Flex ໂດຍການສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ໄປໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="4633000520311261472">ເພື່ອເຮັດໃຫ້  Chrome ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນຂະຫຍາຍທີ່ບໍ່ໄດ້ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>

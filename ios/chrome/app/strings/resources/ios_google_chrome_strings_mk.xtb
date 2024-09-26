@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1066101356081285416">Chrome ќе ги открива броевите за следење на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Бројот за следење пакети и името на веб-сајтот ќе се испратат до Google за да се обезбеди функцијава и да се подобрат функциите за купување за сите. Ова може да го ажурирате кога сакате во <ph name="BEGIN_LINK" />Поставките за следење пакети<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Пребарувајте со Google Lens</translation>
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отворете нова картичка во Chrome</translation>
 <translation id="1166460004393506534">Избришете ги податоците од прелистување во Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Совет за Chrome: изберете ја положбата на лентата за адреси</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ги додава внесените URL-адреси во вашите обележувачи во Chrome.</translation>
+<translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1830634592642484976">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Сметкава и сите незачувани податоци ќе се отстранат од Chrome и другите апликации на Google на уредов.</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>

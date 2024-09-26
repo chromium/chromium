@@ -379,6 +379,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1658111267661135323">TV y video</translation>
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Guardar y completar formas de pago</translation>
+<translation id="1662980953334786797">Mismo orden</translation>
 <translation id="1663943134801823270">Las tarjetas y direcciones provienen de Chrome. Puedes administrarlas en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
 <translation id="166624440456221306">Borrar tabla de comparación</translation>
@@ -700,6 +701,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="2241693394036365668">Se descargó un archivo</translation>
+<translation id="2242389809734574253">Se cerró el mensaje para guardar el IBAN.</translation>
 <translation id="2246264294482514010">25.4 × 30.5 cm (10 × 12 in)</translation>
 <translation id="2246480341630108201">Tu madre o padre aún no dió su aprobación</translation>
 <translation id="2247789808226901522">Se venció la tarjeta</translation>
@@ -1239,6 +1241,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3272112314896217187">Ingresa el código de verificación de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
 <translation id="3273738040255912340">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">El mensaje para guardar el IBAN está totalmente abierto.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -1658,6 +1661,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
 <translation id="4025325634010721551">Se volvieron a cargar las políticas</translation>
 <translation id="4025338605225449265">Monedas y cambio de divisas</translation>
+<translation id="4025777154208238692">Invertir orden</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Los atacantes pueden ver y cambiar<ph name="END_STRONG" /> la información que envías o recibes del sitio.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Lo más seguro es visitar este sitio más tarde<ph name="END_STRONG" /> si usas una red pública. Una red de confianza, como la red Wi-Fi de tu casa o trabajo, presenta menos riesgos.
@@ -2126,6 +2130,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">61 × 80 cm (24 × 31.5 in)</translation>
 <translation id="4882314601499260499">No se aplicaron políticas del usuario. Para agregar políticas del usuario, tu organización debe <ph name="LINK_BEGIN" />verificar tu dominio<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Ingresa tu pregunta o instrucción</translation>
 <translation id="4885030148564729407">Lunas de miel y escapadas románticas</translation>
 <translation id="4885256590493466218">Pagar con <ph name="CARD_DETAIL" /> en la confirmación de la compra</translation>
 <translation id="4887406273302438710">Protege las contraseñas con Windows Hello</translation>
@@ -2585,6 +2590,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723873695528696965">Controlar y reprogramar tus dispositivos MIDI</translation>
 <translation id="5725297205162868298">El atajo no puede comenzar con el carácter @: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Puede solicitar permiso para usar funciones avanzadas de impresoras</translation>
 <translation id="5729442113829771034">Educación infantil</translation>
 <translation id="5730040223043577876">Chrome te recomienda que restablezcas tu contraseña si la volviste a usar en otros sitios.</translation>
 <translation id="5732392974455271431">Tus padres pueden desbloquearlo por ti</translation>
@@ -2596,6 +2602,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5743684619253032786">Productos para el cuidado de las uñas</translation>
 <translation id="5745733273847572235">Puede solicitar permiso para utilizar tu ubicación</translation>
 <translation id="5750869797196646528">Seguimiento de manos</translation>
+<translation id="5752327398324808817">Ingresa una o dos palabras</translation>
 <translation id="5759751709240058861">Usar y mover la cámara</translation>
 <translation id="5763042198335101085">Escribe una dirección de correo electrónico válida</translation>
 <translation id="5764725887548570807">El formato de origen no es válido.</translation>
@@ -3091,6 +3098,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6671169470640320959">Financiación de automóviles</translation>
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
 <translation id="6677351035258626477">Comida rápida</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Cuando realices compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opción}other{Cuando realices compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opciones}}</translation>
 <translation id="6681790815630918386">Se guardó el CVC</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6687230248707087982">Sobre (liso)</translation>
@@ -3107,6 +3115,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6696575039575740785">No se permite instalar apps web</translation>
 <translation id="6698097747703777657">¿No recibiste el código? <ph name="BEGIN_LINK" />Obtener uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
+<translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a la <ph name="BEGIN_LINK1" />configuración de pagos<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Punto de arrastre de tiempo</translation>
 <translation id="6702851555558236418">Software de música y audio</translation>
 <translation id="6702919718839027939">Presente</translation>
@@ -3262,6 +3271,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6978236010531171013">Compartir de todos modos</translation>
 <translation id="6978722349058177832">Si compartes este dispositivo, Chromium podrá pedirte que realices la verificación cada vez que pagues con la función Autocompletar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">administrar el acceso a cookies de terceros</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6984270784814146224">Imagen sin etiquetas. Extrayendo texto con la tecnología de IA de Google</translation>
 <translation id="6987806006823772670">Sobre (recubierto)</translation>
@@ -3408,6 +3418,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operaciones comerciales</translation>
+<translation id="7244061187185055290">Describe en pocas palabras lo que estás buscando</translation>
 <translation id="7251437084390964440">La configuración de red no cumple con el estándar ONC. Es posible que no se importen algunas partes de la configuración.
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
@@ -3788,7 +3799,6 @@ Detalles adicionales:
 <translation id="7935318582918952113">Filtro de DOM</translation>
 <translation id="7937163678541954811">Se encriptará el CVC de esta tarjeta y se guardará en tu dispositivo para agilizar las confirmaciones de compras</translation>
 <translation id="7937554595067888181">Fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Muestra qué recompensas y beneficios están disponibles para tus tarjetas durante la confirmación de la compra <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información sobre los beneficios de las tarjetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">El certificado del servidor aún no es válido.</translation>
 <translation id="7941628148012649605">Sobre Chou n.º 4</translation>
 <translation id="794169214536209644">Dulces y golosinas</translation>

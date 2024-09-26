@@ -215,7 +215,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1703117532528082099">Fenêtre active épinglée à gauche.</translation>
 <translation id="1708345662127501511">Bureau : <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Paramètres du réseau</translation>
-<translation id="171610090693716835">Restez concentré grâce à des playlists personnalisées. Bénéficiez de YouTube Music et YouTube sans publicité avec 3 mois de YouTube Premium sans frais.</translation>
 <translation id="1719094688023114093">Sous-titres instantanés activés.</translation>
 <translation id="1720011244392820496">Activer Sync Wi-Fi</translation>
 <translation id="1720230731642245863">Le point d'accès est désactivé</translation>
@@ -398,6 +397,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2412593942846481727">Mise à jour disponible</translation>
 <translation id="2416438829169535743">Quitter la vue ?</translation>
 <translation id="2417486498593892439">Se connecter au réseau</translation>
+<translation id="2423619675829330672">Trop de tentatives de saisie de code infructueuses. Patientez <ph name="TIME_LEFT" /> et réessayez.</translation>
 <translation id="2426051945783024481">Cadre de la caméra centré automatiquement</translation>
 <translation id="2427507373259914951">Clic gauche</translation>
 <translation id="2429753432712299108">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
@@ -1577,6 +1577,7 @@ Aucun appareil connecté.</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6337159624125741244">La loupe plein écran est activée</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Si vous avez oublié votre code, essayez de récupérer cet utilisateur.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connecté(s)</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, puis <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
@@ -1633,6 +1634,7 @@ Aucun appareil connecté.</translation>
 <translation id="6539852571005954999">Téléchargement en cours d'analyse : <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Diffusion vers <ph name="RECEIVER_NAME" />…</translation>
 <translation id="6542891623636520977">Emoji, GIF et plus</translation>
+<translation id="6545382064335350438">Impossible de valider votre code pour la deuxième fois. Réessayez.</translation>
 <translation id="6555373427270923730">Saisissez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
@@ -2030,6 +2032,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> appareils connectés</translation>
+<translation id="7921565901396407357">Impossible de valider votre code. Réessayez.</translation>
 <translation id="7923534281713082605">Météo</translation>
 <translation id="7926080067315048321">Voir toutes les tâches Google Tasks sur le Web</translation>
 <translation id="7930731167419639574">Les paroles sont maintenant traitées localement et la dictée fonctionne hors connexion.</translation>

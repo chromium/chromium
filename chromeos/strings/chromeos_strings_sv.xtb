@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Anpassa till området som ska skannas</translation>
 <translation id="1343442362630695901">saltsjö</translation>
 <translation id="1348657754632799065">Inspelningsfält</translation>
+<translation id="1350909945461913813">Kom ihåg att spara ditt arbete</translation>
 <translation id="1367951781824006909">Välj fil</translation>
 <translation id="1371650399987522809">Feedback om bakgrund som drivs av Googles AI</translation>
 <translation id="1374385338586507108">Definiera</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-version:</translation>
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Välj ett tema och välj sedan de understrukna orden för att anpassa AI-bilderna.</translation>
 <translation id="2045814230297767491">bestick</translation>
 <translation id="2047316797244836561">Anslut till ett nätverk och läs in sidan igen för att se skärmsläckaren.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Inget tal har identifierats</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2468124392950503650">Välj en prompt för att skapa eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
+<translation id="4486524074141928967">Du loggas ut kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med en specialtangent (Ctrl, Alt, Skift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Gränssnittsfärg</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grå</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> har testats</translation>
+<translation id="5613201299517339763">Du har loggats ut</translation>
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Filen hittades inte</translation>
 <translation id="5938286923316838007">Det går inte att skapa inspelningsnamn för det här innehållet</translation>
 <translation id="5939518447894949180">Återställ</translation>
+<translation id="5942727615796467094">Administratören för <ph name="MANAGER" /> har angett när denna <ph name="DEVICE_TYPE" /> kan användas</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
 <translation id="5946538341867151940">Du är inte ansluten än. Om din mobiloperatör rekommenderar en anpassad APN anger du APN-uppgifterna genom att välja + Ny APN</translation>
 <translation id="5947266287934282605">Om den sista dagen i månaden infaller före den här dagen återställs data den sista dagen i månaden</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">annan planet</translation>
 <translation id="6359706544163531585">Inaktivera ljust tema</translation>
 <translation id="6359919876285606596">Åtgärden är permanent och går inte att ångra</translation>
+<translation id="6368342879959028556">När du väljer Skapa med AI skriver du en anpassad prompt. Du kan även välja AI-bakgrunder för att välja ett tema och sedan välja de understrukna orden för att anpassa AI-bakgrunden.</translation>
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="6373461326814131011">damm</translation>
 <translation id="6379086450106841622">Pekskärm</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
 <translation id="6462978824459367242">Knappen Lägg till APN har aktiverats</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vill du skanna om sidan?}=1{Vill du skanna om sidan {PAGE_NUMBER}?}other{Vill du skanna om sidan {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Dina tre senaste promptar och output. Du kan bara komma åt dem när du använder Bakgrund och stil.</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
 <translation id="6472979596862005515">båtar</translation>
 <translation id="64778964625672495">mörkröd</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="66621959568103627">korallrosa</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          När du skapar med AI skickas prompten till Googles AI-servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI är experimentell, under utveckling och har för närvarande begränsad tillgänglighet.</translation>
 <translation id="6673898378497337661">öka ljusstyrkan på tangentbordet</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6694534975463174713">lås</translation>
@@ -1569,6 +1587,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8882789155418924367">ugglor</translation>
 <translation id="8892443466059986410">Avbryt redigering av kortkommando</translation>
+<translation id="8897043028305808902">Filnamnet har bytts</translation>
 <translation id="8898840733695078011">Signalstyrka</translation>
 <translation id="8909114361904403025">uppåtpil</translation>
 <translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>

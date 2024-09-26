@@ -319,6 +319,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="122082903575839559">Algoritmo de firma de certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con cifrado RSA</translation>
 <translation id="1221825588892235038">Solo contenido seleccionado</translation>
+<translation id="1222835797152767346">Configura un PIN para que sea más fácil iniciar sesión</translation>
 <translation id="1223484782328004593">Para usar <ph name="APP_NAME" />, se necesita una licencia</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta opción.</translation>
 <translation id="1225177025209879837">Procesando solicitud...</translation>
@@ -5343,7 +5344,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4838327282952368871">De ensueño</translation>
 <translation id="4838836835474292213">Se ha permitido el acceso de lectura al portapapeles</translation>
 <translation id="4838907349371614303">Contraseña actualizada</translation>
-<translation id="4838958829619609362">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Gu&amp;ardar vídeo como...</translation>
 <translation id="4839910546484524995">Comprueba tu dispositivo</translation>
 <translation id="4840096453115567876">¿Salir del modo Incógnito de todas formas?</translation>
@@ -5953,7 +5953,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5287425679749926365">Tus cuentas</translation>
 <translation id="5288106344236929384">Más acciones, opciones de llave de acceso para <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Volv&amp;er a abrir pestaña cerrada</translation>
-<translation id="52895863590846877">La página no está en <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">PC y dispositivo de emisión en distintas redes Wi-Fi (por ejemplo, una de 2,4 GHz y otra de 5 GHz)</translation>
 <translation id="52912272896845572">El archivo de clave privada no es válido.</translation>
 <translation id="5291739252352359682">Crea subtítulos de forma automática para elementos multimedia en el navegador Chrome (actualmente está disponible en inglés). Tanto el audio como los subtítulos se procesan en el propio dispositivo y nunca se envían a otra parte.</translation>
@@ -6408,6 +6407,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5624959475330585145">Preguntar antes de usar conexiones no seguras</translation>
 <translation id="5625225435499354052">Editar en Google Pay</translation>
 <translation id="5626134646977739690">Nombre:</translation>
+<translation id="5626172233890210551">Usar una contraseña</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
 <translation id="5628434207686266338">Definir contraseña del dispositivo</translation>
 <translation id="562935524653278697">Tu administrador ha inhabilitado la sincronización de tus marcadores, tus contraseñas, tu historial y otros ajustes.</translation>
@@ -7185,6 +7185,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6207937957461833379">País o región</translation>
 <translation id="6208521041562685716">Se están activando los datos móviles</translation>
 <translation id="6208725777148613371">No se ha podido guardar en <ph name="WEB_DRIVE" />. <ph name="INTERRUPT_REASON" />.</translation>
+<translation id="6209767197996242814">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Actualización del componente</translation>
 <translation id="6209908325007204267">Tu dispositivo incluye una Licencia de Chrome Enterprise, pero tu nombre de usuario no está asociado a ninguna cuenta de empresa. Accede a g.co/ChromeEnterpriseAccount desde otro dispositivo para crear una cuenta de empresa.</translation>
 <translation id="6210282067670792090">En la barra de direcciones, usa este atajo de teclado con atajos para buscadores y búsquedas en sitios</translation>
@@ -8092,7 +8093,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="686366188661646310">¿Eliminar contraseña?</translation>
 <translation id="6863925886424789941">El Coliseo</translation>
 <translation id="6865313869410766144">Datos para autocompletar formularios</translation>
-<translation id="6865598234501509159">La página no está en <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Registros de eventos de WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Silencio</translation>
 <translation id="686664946474413495">Temperatura del color</translation>
@@ -8713,7 +8713,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7343372807593926528">Describe el problema antes de enviar tus comentarios.</translation>
 <translation id="7344585835349671209">Gestiona los certificados HTTPS/SSL de tu dispositivo</translation>
 <translation id="7345706641791090287">Confirma tu contraseña</translation>
-<translation id="7345919885156673810">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7347751611463936647">Para utilizar esta extensión, escribe "<ph name="EXTENSION_KEYWORD" />", pulsa el tabulador e introduce el comando o la búsqueda que desees.</translation>
 <translation id="7347943691222276892">Haz clic para salir de <ph name="SUBPAGE_TITLE" />.</translation>
@@ -10752,6 +10751,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8791534160414513928">Enviar una solicitud "Do Not Track" con tu tráfico de navegación</translation>
 <translation id="8793390639824829328">Los sitios usan esta función para desplazarse por las pestañas compartidas y ampliarlas</translation>
 <translation id="879413103056696865">Mientras el punto de acceso esté activo, tu <ph name="PHONE_NAME" />:</translation>
+<translation id="8794548468611058947">En lugar de introducir la contraseña de tu cuenta de Google para iniciar sesión, puedes crear un PIN para este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8795916974678578410">Nueva ventana</translation>
 <translation id="8796919761992612392">Personalizar Chrome a t&amp;u gusto</translation>
 <translation id="8797459392481275117">No traducir nunca este sitio web</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1343442362630695901">liqen i kripur</translation>
 <translation id="1348657754632799065">Shiriti i regjistrimit</translation>
+<translation id="1350909945461913813">Sigurohu që të ruash çdo punë</translation>
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
 <translation id="1371650399987522809">Komentet për imazhin e sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="1374385338586507108">Përkufizo</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Versioni i SDK-së:</translation>
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Zgjidh një temë dhe më pas zgjidh fjalët e nënvizuara për të personalizuar imazhet nga IA-ja.</translation>
 <translation id="2045814230297767491">artikuj tavoline</translation>
 <translation id="2047316797244836561">Lidhu në një rrjet dhe ringarko faqen për të parë mbrojtësin e ekranit.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nuk u zbulua ligjërim</translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
+<translation id="2468124392950503650">Zgjidh kërkesën për të krijuar ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin e kërkesave<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Përdor "Më ndihmo të shkruaj" për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="2480572840229215612">gaforre</translation>
 <translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Nuk përputhet asnjë rezultat</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
+<translation id="4486524074141928967">Do të dalësh nga llogaria në <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">gri</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
+<translation id="5613201299517339763">Ke dalë nga llogaria</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Skedari nuk u gjet</translation>
 <translation id="5938286923316838007">Nuk mund të krijohen emrat e regjistrimit për këtë përmbajtje</translation>
 <translation id="5939518447894949180">Rivendos</translation>
+<translation id="5942727615796467094">Administratori i <ph name="MANAGER" /> ka caktuar se kur mund të përdoret kjo pajisje <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Gjenero çift të rastësishëm çelësash</translation>
 <translation id="5946538341867151940">Nuk je lidhur ende. Nëse operatori yt celular rekomandon një APN të personalizuar, fut informacionet e APN-së duke zgjedhur "+ APN e re"</translation>
 <translation id="5947266287934282605">Nëse dita e fundit e muajit është para kësaj dite, të dhënat do të rivendosen në ditën e fundit të muajit</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">planet tjetër</translation>
 <translation id="6359706544163531585">Çaktivizo temën e ndriçuar</translation>
 <translation id="6359919876285606596">Ky veprim është i përhershëm dhe nuk mund të zhbëhet</translation>
+<translation id="6368342879959028556">Kur zgjedh "Krijo me IA-në", shkruaj një kërkesë të personalizuar. Ndryshe, mund të zgjedhësh "Imazhet e sfondit nga IA-ja", të zgjedhësh një temë dhe më pas të zgjedhësh fjalët e nënvizuara për të personalizuar imazhin e sfondit nga IA-ja.</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="6373461326814131011">pellg</translation>
 <translation id="6379086450106841622">Ekrani me prekje</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
 <translation id="6462978824459367242">Butoni "Shto APN-në" është aktivizuar tani</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Të skanohet përsëri faqja?}=1{Të skanohet përsëri faqja {PAGE_NUMBER}?}other{Të skanohet përsëri faqja {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">3 kërkesat dhe daljet e tua më të fundit. Mund të kesh qasje te këto vetëm ndërsa përdor "Imazhin e sfondit dhe stilin".</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">varka</translation>
 <translation id="64778964625672495">e kuqe e errët</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659594942844771486">Skeda</translation>
 <translation id="66621959568103627">rozë korali</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Zgjidh "Më frymëzo" për të marrë opsione më të larmishme dhe më unike për imazhet nga IA-ja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kur krijon me IA-në, kërkesa dërgohet te serverët e IA-së së Google për të gjeneruar imazhe dhe për të përmirësuar produktin, sipas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />"Politikës së privatësisë" të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          IA-ja gjeneruese është eksperimentale, në fazë të hershme zhvillimi dhe ka aktualisht disponueshmëri të kufizuar.</translation>
 <translation id="6673898378497337661">ngritja e ndriçimit të tastierës</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6694534975463174713">kyç</translation>

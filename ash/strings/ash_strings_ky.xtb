@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Активдүү терезе сол жакка бекитилди.</translation>
 <translation id="1708345662127501511">Иш такта: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Тармак параметрлери</translation>
-<translation id="171610090693716835">Жекелештирилген ойнотмо тизмелер ишиңизге ынтаа коюуга жардам берет. YouTube Premium аркылуу YouTube Music жана YouTube кызматтарында жарнамалар көрсөтүлбөйт. Алгачкы 3 ай акысыз.</translation>
 <translation id="1719094688023114093">Ыкчам коштомо жазуулар күйүк.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync'ти күйгүзүү</translation>
 <translation id="1720230731642245863">Байланыш түйүнү өчүк</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Жаңы версия бар</translation>
 <translation id="2416438829169535743">Көрүнүштөн чыгасызбы?</translation>
 <translation id="2417486498593892439">Тармакка кирүү</translation>
+<translation id="2423619675829330672">PIN код өтө көп жолу киргизилди. <ph name="TIME_LEFT" /> күтүп, кайталап көрүңүз.</translation>
 <translation id="2426051945783024481">Камеранын алкагы автоматтык түрдө ортого коюлду</translation>
 <translation id="2427507373259914951">Сол баскычын чыкылдатуу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат суроодо. Уруксат берүүдөн мурун, төмөнкү купуя сөз айкашы түзмөгүңүздө көрүнүп тургандыгын ырастаңыз: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">Бардык иш такталардагы терезелер көрсөтүлүп жатат. Учурдагы иш тактадагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="6337159624125741244">Толук экран лупасы күйүк</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
+<translation id="6340148837564298498">Эгер PIN кодду унутуп калсаңыз, бул колдонуучуну калыбына келтирип көрүңүз.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> туташты</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> же <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">Скандалган <ph name="FILENAME" /> жүктөлүп алынууда</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> экранына чыгаруу</translation>
 <translation id="6542891623636520977">Быйтыкчалар, GIF'тер жана башкалар</translation>
+<translation id="6545382064335350438">PIN кодуңуз дагы эле ырасталган жок. Кайра аракет кылыңыз.</translation>
 <translation id="6555373427270923730">Веб даректи дарек тилкесине киргизип, <ph name="MODIFIER" /><ph name="KEY" /> баскычтарын басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңы колдонмо орнотулду</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">Администратор бул аккаунтка бир нече профиль менен кирүүгө тыюу салган.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> түзмөк туташып турат</translation>
+<translation id="7921565901396407357">PIN кодуңуз ырасталган жок. Кайра аракет кылыңыз.</translation>
 <translation id="7923534281713082605">Аба ырайы</translation>
 <translation id="7926080067315048321">Интернеттеги Google Tasks кызматындагы бардык жасалчу иштерди көрүү</translation>
 <translation id="7930731167419639574">Кеп эми түзмөктө иштетилип, Текстти айтып терүү оффлайнда иштейт</translation>

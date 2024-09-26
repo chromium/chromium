@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abre unha pestana nova en Chrome</translation>
 <translation id="1166460004393506534">Elimina os datos de navegación en Chrome</translation>
@@ -38,6 +39,7 @@ Cuestións que debes ter en conta:
 <translation id="1670609221633730681">Consello de Chrome: Escolle a posición da barra de enderezos</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Engade os URL introducidos aos teus marcadores de Chrome.</translation>
+<translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1830634592642484976">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1917964099031477364">Esta conta e os datos que estean sen gardar quitaranse de Chrome e das aplicacións de Google deste dispositivo.</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>

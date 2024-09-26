@@ -5346,7 +5346,6 @@
 <translation id="4838327282952368871">Мечтательное</translation>
 <translation id="4838836835474292213">Доступ к буферу обмена открыт</translation>
 <translation id="4838907349371614303">Пароль обновлен</translation>
-<translation id="4838958829619609362">Выделенный текст не на этом языке: <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Со&amp;хранить видео как...</translation>
 <translation id="4839910546484524995">Проверьте устройство</translation>
 <translation id="4840096453115567876">Вы действительно хотите выйти из режима инкогнито?</translation>
@@ -5956,7 +5955,6 @@
 <translation id="5287425679749926365">Аккаунты</translation>
 <translation id="5288106344236929384">Другие действия и настройки ключа доступа для пользователя <ph name="USERNAME" /> домена <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Открыть закрытую вкладку</translation>
-<translation id="52895863590846877">Язык страницы – не <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Устройство для трансляции и ПК подключены к разным сетям Wi-Fi (например, одна использует частоту 2,4 ГГц,
     а другая – 5 ГГц)</translation>
 <translation id="52912272896845572">Файл закрытого ключа недействителен.</translation>
@@ -8104,7 +8102,6 @@
 <translation id="686366188661646310">Удаление пароля</translation>
 <translation id="6863925886424789941">Колизей</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
-<translation id="6865598234501509159">Язык страницы – не <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Журналы событий WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Тихо</translation>
 <translation id="686664946474413495">Цветовая температура</translation>
@@ -8725,7 +8722,6 @@
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
 <translation id="7344585835349671209">Управление сертификатами HTTPS/SSL на устройстве</translation>
 <translation id="7345706641791090287">Подтвердите пароль</translation>
-<translation id="7345919885156673810">Выделенный текст не на этом языке: <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7347751611463936647">Чтобы использовать это расширение, введите "<ph name="EXTENSION_KEYWORD" />", нажмите клавишу табуляции, а затем введите команду или поисковый запрос.</translation>
 <translation id="7347943691222276892">Нажмите, чтобы покинуть подстраницу "<ph name="SUBPAGE_TITLE" />".</translation>
@@ -9769,7 +9765,7 @@
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="8077749280021225629">Также удалить данные о работе в браузере (<ph name="URL" />). При этом вы выйдете из аккаунта на сайте <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
-<translation id="80790299200510644">Поиск картинок</translation>
+<translation id="80790299200510644">Поиск по изображениям</translation>
 <translation id="80798452873915119">Разрешить сайтам запрашивать управление окнами на всех ваших экранах</translation>
 <translation id="8080028325999236607">Закрыть все вкладки</translation>
 <translation id="808089508890593134">Google</translation>

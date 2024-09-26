@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Adicionar à Lista de leitura</translation>
 <translation id="1854463785401910334">Pesquise nos separadores abertos</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} palavra-passe}other{{position} de {count} palavras-passe}}</translation>
+<translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Convide membros da família</translation>
@@ -703,6 +704,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4469834037720363704">Número da encomenda</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
+<translation id="4474142134969976028">Sem resultados</translation>
 <translation id="4474494258097106883">Concebido para o iPhone</translation>
 <translation id="4488754974567924717">Informamos se as suas palavras-passe estiverem comprometidas</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>

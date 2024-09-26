@@ -331,7 +331,7 @@
 <translation id="1230417814058465809">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از محافظت پیشرفته استفاده کنید.</translation>
 <translation id="1231426483209637778">دفعه بعدی که از <ph name="DEVICE_TYPE" /> استفاده کنید، شبکه‌تان را به‌خاطر می‌آوریم</translation>
 <translation id="1231572247662419826">سایت‌ها می‌توانند برای ضبط کردن و استفاده از ورودی موشواره درخواست کنند</translation>
-<translation id="1232569758102978740">بدون عنوان</translation>
+<translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1233497634904001272">برای تکمیل درخواست، دوباره کلید ایمنی را لمس کنید.</translation>
 <translation id="1233721473400465416">زبان و کشور</translation>
 <translation id="1234736487471201993">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
@@ -729,7 +729,7 @@
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1525740877599838384">‏فقط از Wi-Fi برای تعیین مکان استفاده شود</translation>
 <translation id="152629053603783244">‏بازراه‌اندازی Linux</translation>
-<translation id="1526560967942511387">سند بدون عنوان</translation>
+<translation id="1526560967942511387">سند بی‌عنوان</translation>
 <translation id="1527336312600375509">نرخ بازآوری نمایشگر</translation>
 <translation id="152913213824448541">مخاطبین «هم‌رسانی با اطراف»</translation>
 <translation id="1529769834253316556">ارتفاع خط</translation>
@@ -1487,7 +1487,7 @@
 <translation id="2037486735086318591">برای تبادل فایل با افرادی که در اطرافتان هستند، <ph name="FEATURE_NAME" /> را راه‌اندازی کنید</translation>
 <translation id="2039464276165755892">وقتی فرد دیگری شناسایی می‌شود، محتوای اعلان پنهان شود</translation>
 <translation id="2040460856718599782">وای! هنگام اصالت‌سنجی شما مشکلی پیش آمد. لطفاً اطلاعات کاربری ورود به سیستمتان را دوباره بررسی کرده و دوباره امتحان نمایید.</translation>
-<translation id="2040822390690632244">به‌روزرسانی‌ها، راهنما، گزینه‌های توسعه‌دهنده</translation>
+<translation id="2040822390690632244">به‌روزرسانی‌ها، راهنما، گزینه‌های توسعه‌دهندگان</translation>
 <translation id="2040894699575719559">مکان مسدود شد</translation>
 <translation id="2041246176170574368">‏به‌روزرسانی‌های امنیتی به‌زودی به‌اتمام می‌رسد. هنگام خرید Chromebook جدید ۵۰ دلار یا بیشتر تخفیف بگیرید.</translation>
 <translation id="2042279886444479655">نمایه‌های فعال</translation>
@@ -3494,6 +3494,7 @@
 <translation id="3487649228420469005">اسکن انجام شد</translation>
 <translation id="3488199663160411179">نام</translation>
 <translation id="3490695139702884919">در حال بارگیری… <ph name="PERCENT" />٪</translation>
+<translation id="3491171603443463516">اگر پین یا گذرواژه‌تان را فراموش کردید، می‌توانید داده‌های محلی را بازیابی کنید</translation>
 <translation id="3491669675709357988">‏حساب فرزندتان برای کنترل‌های والدین Family Link راه‌اندازی نشده است. بعد از تکمیل راه‌اندازی، می‌توانید کنترل‌های والدین را اضافه کنید. می‌توانید اطلاعات را در کنترل‌های والدین در برنامه «کاوش» پیدا کنید.</translation>
 <translation id="3491678231052507920">‏سایت‌ها معمولاً از داده‌ها و دستگاه‌های واقعیت مجازی استفاده می‌کنند تا به شما اجازه دهند به جلسه‌های VR وارد شوید</translation>
 <translation id="3493043608231401654">برداشتن <ph name="TAB_TITLE" /> از گروه برگه</translation>
@@ -4172,6 +4173,7 @@
 <translation id="3948116654032448504">&amp;جستجوی <ph name="SEARCH_ENGINE" /> برای تصویر</translation>
 <translation id="3948334586359655083">این برگه درحال پخش صدا است</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> می‌تواند فایل‌های این پوشه‌ها را ویرایش کند:</translation>
+<translation id="3948985214866944547">اکثر افراد هم‌رسانی مکان دقیق را برای این سایت مسدود می‌کنند</translation>
 <translation id="394984172568887996">‏وارد شده از IE</translation>
 <translation id="3949999964543783947">برای ایمن‌تر کردن بارگیری فایل‌ها، <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
@@ -5355,7 +5357,6 @@
 <translation id="4838327282952368871">رؤیایی</translation>
 <translation id="4838836835474292213">دسترسی برای خواندن محتوای بریده‌دان مجاز شد</translation>
 <translation id="4838907349371614303">گذرواژه به‌روزرسانی شد</translation>
-<translation id="4838958829619609362">مورد انتخاب‌شده به زبان <ph name="LANGUAGE" /> نیست</translation>
 <translation id="4839303808932127586">ذ&amp;خیره فایل ویدیو  به‌عنوان...</translation>
 <translation id="4839910546484524995">دستگاهتان را بررسی کنید</translation>
 <translation id="4840096453115567876">درهرصورت از «حالت ناشناس» خارج می‌شوید؟</translation>
@@ -5965,7 +5966,6 @@
 <translation id="5287425679749926365">حساب‌های شما</translation>
 <translation id="5288106344236929384">کنش‌های بیشتر، گزینه‌های گذرکلید برای <ph name="USERNAME" /> در <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">با&amp;ز کردن مجدد برگه بسته</translation>
-<translation id="52895863590846877">صفحه به زبان <ph name="LANGUAGE" /> نیست</translation>
 <translation id="5290020561438336792">‏رایانه شخصی و دستگاه پخش در شبکه‌های مختلف Wi-Fi هستند (برای نمونه ۲٫۴ گیگاهرتز
     درمقابل ۵ گیگاهرتز)</translation>
 <translation id="52912272896845572">فایل کلید خصوصی نامعتبر است.</translation>
@@ -8109,7 +8109,6 @@
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6863925886424789941">کولوسئوم</translation>
 <translation id="6865313869410766144">تکمیل خودکار داده‌های فرم</translation>
-<translation id="6865598234501509159">صفحه به زبان <ph name="LANGUAGE" /> نیست</translation>
 <translation id="6865708901122695652">‏گزارش وقایع WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">بی‌صدا</translation>
 <translation id="686664946474413495">دمای رنگ</translation>
@@ -8730,7 +8729,6 @@
 <translation id="7343372807593926528">لطفاً قبل‌از ارسال بازخورد، مشکل را شرح دهید.</translation>
 <translation id="7344585835349671209">‏مدیریت گواهینامه‌های HTTPS/SSL در دستگاه</translation>
 <translation id="7345706641791090287">گذرواژه‌تان را تأیید کنید</translation>
-<translation id="7345919885156673810">مورد انتخاب‌شده به زبان <ph name="LANGUAGE" /> نیست</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="7347751611463936647">‏برای استفاده از این برنامهٔ افزودنی، "<ph name="EXTENSION_KEYWORD" />"، سپس TAB و نظر یا جستجوی خود را تایپ کنید.</translation>
 <translation id="7347943691222276892">برای خارج شدن از <ph name="SUBPAGE_TITLE" />، کلیک کنید.</translation>
@@ -9041,6 +9039,7 @@
 <translation id="7566118625369982896">‏مدیریت پیوندهای برنامه Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">ایجاد ترکیب کلید</translation>
+<translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="756876171895853918">سفارشی کردن چهرک</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
 <translation id="7569983096843329377">سیاه</translation>
@@ -9203,6 +9202,7 @@
 <translation id="7676867886086876795">‏صدایتان را برای Google ارسال کنید تا بتوانید هر فیلد نوشتاری را با دیکته کردن پر کنید.</translation>
 <translation id="7678588695732963732">‏همه اجازه‌های دستگاه USB بازنشانی شود؟</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> چاپگر مدیریت‌شده وجود دارد.</translation>
+<translation id="7679895819123160382">‏شرایط را سخت‌تر کنید تا افرادی که به ترافیک اینترنت شما دسترسی دارند نتوانند سایت‌هایی را که بازدید می‌کنید ببینند. <ph name="PRODUCT_NAME" /> برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="7680416688940118410">تنظیم صفحه لمسی</translation>
 <translation id="7681095912841365527">سایت می‌تواند از بلوتوث استفاده کند</translation>
 <translation id="7681597159868843240">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مثل واقعیت مجازی یا ردیابی تناسب اندام از حسگرهای حرکتی دستگاه استفاده می‌کنند</translation>
@@ -9600,6 +9600,7 @@
 <translation id="7955105108888461311">درخواست حضوری</translation>
 <translation id="7955177647836564772">‏اگر Smart Lock روشن باشد و قفل تلفنتان باز باشد، لازم نیست گذرواژه یا پین را وارد کنید</translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
+<translation id="7956918070009672177">هیچ صدایی به زبان <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>
 <translation id="7958157896921135832">افزایش اندازه قلم</translation>
 <translation id="7958828865373988933">‏اگر می‌خواهید گذرکلیدی برای <ph name="APP_NAME" /> در کلید ایمنی USB ایجاد کنید، آن را اکنون وارد و لمس کنید</translation>
@@ -10264,7 +10265,7 @@
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> دیگر از سیستم خارج می‌شوید</translation>
 <translation id="8429928917752180743">گزینه‌های بیشتر برای <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">نمایش ضربه‌ها</translation>
+<translation id="8431190899827883166">نمایش تک‌ضرب‌ها</translation>
 <translation id="843173223122814223">ایجاد پس‌زمینه با هوش مصنوعی</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8434109185104929038">محل مطالعه</translation>

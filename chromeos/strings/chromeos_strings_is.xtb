@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1343442362630695901">salt stöðuvatn</translation>
 <translation id="1348657754632799065">Upptökustika</translation>
+<translation id="1350909945461913813">Gakktu úr skugga um að vista vinnuna þína</translation>
 <translation id="1367951781824006909">Velja skrá</translation>
 <translation id="1371650399987522809">Ábending um veggfóður sem er knúið af gervigreind Google</translation>
 <translation id="1374385338586507108">Skilgreina</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Útgáfa forritunarverkfæra:</translation>
 <translation id="2016697457005847575">Prófaðu skref úrræðaleitar</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Veldu þema og síðan undirstrikuðu orðin til að sérsníða gervigreindarmyndirnar þínar.</translation>
 <translation id="2045814230297767491">hnífapör</translation>
 <translation id="2047316797244836561">Tengstu neti og endurhladdu síðunni til að sjá skjávara.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Ekkert tal greindist</translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
+<translation id="2468124392950503650">Veldu skipun til að búa til mynd eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Notaðu rithjálp til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google</translation>
 <translation id="2480572840229215612">krabbar</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Engar niðurstöður fundust</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
+<translation id="4486524074141928967">Þú verður skráð(ur) út kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift eða <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Litur viðmóts</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grár</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5600027863942488546">Lykillinn <ph name="KEY_NAME" /> var prófaðu</translation>
+<translation id="5613201299517339763">Þú hefur verið skráð(ur) út</translation>
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5630438231335788050">bauhausstíl</translation>
 <translation id="5631759159893697722">ágrip</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
 <translation id="5938286923316838007">Ekki er hægt að búa til upptökuheiti fyrir þetta efni</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
+<translation id="5942727615796467094">Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þessa <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
 <translation id="5946538341867151940">Tenging er ekki til staðar ennþá. Ef símafyrirtækið þitt mælir með sérsniðnum aðgangsstað skaltu slá inn upplýsingar um aðgangsstaðinn með því að velja „+ Nýr aðgangsstaður“</translation>
 <translation id="5947266287934282605">Ef síðasti dagur mánaðarins er fyrir þennan dag eru gögnin endurstillt á síðasta dag mánaðarins</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">önnur pláneta</translation>
 <translation id="6359706544163531585">Slökkva á ljósu þema</translation>
 <translation id="6359919876285606596">Þessi aðgerð er varanleg og ekki er hægt að afturkalla hana</translation>
+<translation id="6368342879959028556">Ef þú velur „Búa til með gervigreind“ skrifarðu þína eigin skipun. Að öðrum kosti geturðu valið „Gervigreindarveggfóður“ til að velja þema og síðan undirstrikuðu orðin til að sérsníða gervigreindarveggfóðrið þitt.</translation>
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
 <translation id="6373461326814131011">tjörn</translation>
 <translation id="6379086450106841622">Snertiskjár</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Fara í reikningsstillingar</translation>
 <translation id="6462978824459367242">Nú er hægt að bæta við hnappi fyrir aðgangsstað</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skanna aftur síðu?}=1{Skanna aftur síðu {PAGE_NUMBER}?}one{Skanna aftur síðu {PAGE_NUMBER}?}other{Skanna aftur síðu {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Síðustu þrjár skipanir þínar og frálög Á meðan þú notar veggfóður og stíl hefurðu aðeins aðgang að þessum.</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
 <translation id="6472979596862005515">bátar</translation>
 <translation id="64778964625672495">dökkrauð(ur)</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6659594942844771486">Flipi</translation>
 <translation id="66621959568103627">kóralbleikur</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti gervigreindarmynda.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Þegar þú býrð til efni með aðstoð gervigreindar er skipunin þín send til gervigreindarþjóna Google til að búa til myndir og bæta vöruna í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Skapandi gervigreind er á tilraunastigi, á fyrstu stigum þróunar og stendur ekki öllum til boða eins og er.</translation>
 <translation id="6673898378497337661">auka birtustig lyklaborðs</translation>
 <translation id="6692996468359469499">Fá upplýsingar í tengslum við val þitt</translation>
 <translation id="6694534975463174713">lás</translation>
@@ -1569,6 +1587,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8881098542468797602">Próf tókst</translation>
 <translation id="8882789155418924367">uglur</translation>
 <translation id="8892443466059986410">Hætta við að breyta flýtileið</translation>
+<translation id="8897043028305808902">Skrá fékk nýtt heiti</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>
 <translation id="8909114361904403025">ör upp</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>

@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Lisää lukulistalle</translation>
 <translation id="1854463785401910334">Hae avoimilta välilehdiltä</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position}/{count} salasana}other{{position}/{count} salasanaa}}</translation>
+<translation id="1861262398884155592">Tämä kansio on tyhjä</translation>
 <translation id="1872096359983322073">Taskulamppu</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Kutsu perheenjäseniä</translation>
@@ -605,6 +606,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3982893814825393515">Ilmoita ongelmasta…</translation>
 <translation id="398604237578616937">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
+<translation id="3986739045730058129">Siirry välilehdelle</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="3994422733891749358">Valitse, mitä ilmoituksia haluat saada</translation>
@@ -673,6 +675,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4309403553630140242">Katso lisätietoja kaksoisnapauttamalla</translation>
+<translation id="4320848494125124980">Viimeaikaiset</translation>
 <translation id="4324735664183300693">Laita ilmoitukset päälle</translation>
 <translation id="4328843285884395590">Oma Drive</translation>
 <translation id="4331177082088332784">Voit hallita tätä BEGIN_LINK Sisältöasetuksissa END_LINK</translation>
@@ -701,6 +704,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4469324811108161144">Muistiinpanoissa voi olla enintään <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="4469834037720363704">Paketin numero</translation>
 <translation id="4471472356135655769">Salasanojen vienti epäonnistui</translation>
+<translation id="4474142134969976028">Ei tuloksia</translation>
 <translation id="4474494258097106883">Suunniteltu iPhonelle</translation>
 <translation id="4488754974567924717">Kerromme, jos salasanojasi vaarantuu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sivu lisätty lukulistalle tililläsi: {email}}other{Sivut lisätty lukulistalle tililläsi: {email}}}</translation>
@@ -756,6 +760,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4699172675775169585">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="4717844083556844785">Nykyinen verkkosivu on incognito-tilassa</translation>
 <translation id="4719927025381752090">Tarjoudu kääntämään</translation>
+<translation id="4720530280568305198">Valintasi avattiin uudella välilehdellä</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4742407542027196863">Ylläpidä salasanoja…</translation>
 <translation id="4742897645503301228">Piilota "Hintaseuranta"</translation>

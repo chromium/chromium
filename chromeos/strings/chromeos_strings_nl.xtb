@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1343442362630695901">zoutmeer</translation>
 <translation id="1348657754632799065">Opnamebalk</translation>
+<translation id="1350909945461913813">Zorg dat je je werk opslaat</translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1371650399987522809">Feedback voor achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="1374385338586507108">Definiëren</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Kies een thema en selecteer de onderstreepte woorden om je AI-afbeeldingen te personaliseren.</translation>
 <translation id="2045814230297767491">bestek</translation>
 <translation id="2047316797244836561">Maak verbinding met een netwerk en laad de pagina opnieuw om de screensaver te bekijken.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Geen spraak waargenomen</translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2468124392950503650">Selecteer een prompt die je wilt maken of bekijk de <ph name="BEGIN_LINK_PROMPTING_GUIDE" />handleiding voor prompts<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help me met schrijven om een conceptversie te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
 <translation id="2480572840229215612">krabben</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
+<translation id="4486524074141928967">Je wordt uitgelogd om <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfacekleur</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grijs</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5600027863942488546">De toets <ph name="KEY_NAME" /> is getest</translation>
+<translation id="5613201299517339763">Je bent uitgelogd</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">uittreksel</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
 <translation id="5938286923316838007">Kan geen opnamenamen maken voor deze content</translation>
 <translation id="5939518447894949180">Resetten</translation>
+<translation id="5942727615796467094">De beheerder van <ph name="MANAGER" /> heeft ingesteld wanneer dit <ph name="DEVICE_TYPE" /> kan worden gebruikt</translation>
 <translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
 <translation id="5946538341867151940">Je hebt nog geen verbinding. Als je mobiele provider een aangepaste APN aanbeveelt, geef je de APN-gegevens op door '+ Nieuwe APN' te selecteren</translation>
 <translation id="5947266287934282605">Als de laatste dag van de maand vóór deze dag valt, worden de gegevens gereset op de laatste dag van de maand</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">andere planeet</translation>
 <translation id="6359706544163531585">Licht thema uitzetten</translation>
 <translation id="6359919876285606596">Deze actie is definitief en kan niet ongedaan worden gemaakt</translation>
+<translation id="6368342879959028556">Als je Maken met AI selecteert, schrijf je een aangepaste prompt. Je kunt ook AI-achtergronden selecteren om een thema te kiezen en dan de onderstreepte woorden selecteren om je AI-achtergrond te personaliseren.</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6373461326814131011">vijver</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Naar Accountinstellingen gaan</translation>
 <translation id="6462978824459367242">De knop APN toevoegen staat nu aan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pagina opnieuw scannen?}=1{Pagina {PAGE_NUMBER} opnieuw scannen?}other{Pagina {PAGE_NUMBER} opnieuw scannen?}}</translation>
+<translation id="6468146470109254228">Je 3 meest recente prompts en resultaten. Je hebt hier alleen toegang toe als je Achtergrond en stijl gebruikt.</translation>
 <translation id="6472207088655375767">Eenmalig wachtwoord</translation>
 <translation id="6472979596862005515">boten</translation>
 <translation id="64778964625672495">donkerrood</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6659594942844771486">Browsertabblad</translation>
 <translation id="66621959568103627">koraalroze</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+<ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Selecteer Inspireer me voor meer unieke en gevarieerde opties voor AI-afbeeldingen.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Als je iets maakt met AI, wordt de prompt naar de AI-servers van Google gestuurd om afbeeldingen te genereren en het product te verbeteren, in overeenstemming met het <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Privacybeleid van Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt beschikbaar.</translation>
 <translation id="6673898378497337661">helderheid van toetsenbord verhogen</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6694534975463174713">slot</translation>
@@ -1569,6 +1587,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8881098542468797602">Test geslaagd</translation>
 <translation id="8882789155418924367">uilen</translation>
 <translation id="8892443466059986410">Bewerken van snelkoppeling annuleren</translation>
+<translation id="8897043028305808902">Naam van bestand gewijzigd</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
 <translation id="8909114361904403025">pijl-omhoog</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>

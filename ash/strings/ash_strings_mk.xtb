@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">Активниот прозорец е приклучен на док на левата страна.</translation>
 <translation id="1708345662127501511">Работна површина: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Поставки за мрежата</translation>
-<translation id="171610090693716835">Бидете во тек со персонализираните плејлисти за „Режим за концентрација“. Добијте YouTube Music и YouTube, без реклами, со YouTube Premium во период од 3 месеци бесплатно.</translation>
 <translation id="1719094688023114093">„Автоматските титлови“ се вклучени.</translation>
 <translation id="1720011244392820496">Вклучете синхронизирање на Wi-Fi</translation>
 <translation id="1720230731642245863">Точката на пристап е исклучена</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">Достапно е ажурирање</translation>
 <translation id="2416438829169535743">Да се излезе од приказот?</translation>
 <translation id="2417486498593892439">Најавете се на мрежа</translation>
+<translation id="2423619675829330672">Премногу обиди за автентикација со погрешен PIN. Почекајте <ph name="TIME_LEFT" />, па обидете се повторно.</translation>
 <translation id="2426051945783024481">Кадарот на камерата автоматски се центрира</translation>
 <translation id="2427507373259914951">Лев клик</translation>
 <translation id="2429753432712299108">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Пред да прифатите, потврдете дека оваа шифра се покажува на уредот: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1578,7 @@
 <translation id="6330012934079202188">Се прикажуваат прозорци од сите работни површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од тековната работна површина</translation>
 <translation id="6337159624125741244">„Лупата за цел екран“ е вклучена</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Ако сте го заборавиле PIN-кодот, обидете се да го вратите овој корисник.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> – поврзано</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потоа <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЗИ ЗА АПЛИКАЦИИ</translation>
@@ -1634,6 +1635,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> се скенира за преземање</translation>
 <translation id="6542521951477560771">Емитување на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Емоџија, GIF-датотеки и друго</translation>
+<translation id="6545382064335350438">PIN-кодот сѐ уште не може да се потврди. Обидете се повторно.</translation>
 <translation id="6555373427270923730">Напишете веб-адреса во лентата за адреси, а потоа притиснете <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нова инсталација</translation>
@@ -2030,6 +2032,7 @@
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Поврзани се <ph name="DEVICECOUNT" /> уреди</translation>
+<translation id="7921565901396407357">PIN-кодот не може да се потврди. Обидете се повторно.</translation>
 <translation id="7923534281713082605">Временска прогноза</translation>
 <translation id="7926080067315048321">Видете ги сите задачи во Google Tasks на интернет</translation>
 <translation id="7930731167419639574">Говорот сега се обработува локално и „Диктирањето“ функционира офлајн</translation>

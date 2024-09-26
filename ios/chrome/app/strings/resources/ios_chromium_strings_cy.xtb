@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Agorwch y ddewislen Chromium</translation>
 <translation id="12739128458173458">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
 <translation id="1361748954329991663">Mae Chromium yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chromium mwyach.</translation>
+<translation id="1383876407941801731">Chwilio</translation>
 <translation id="1423007117030725713">Dechrau chwiliad mewn tab Chromium newydd.</translation>
 <translation id="1431818719585918472">Caniatáu i Chromium gloi eich tabiau Anhysbys.</translation>
 <translation id="146407871188825689">Defnyddio Chromium ar iPad yn Ddiofyn</translation>
@@ -177,6 +178,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cy
 <translation id="5571094606370987472">Yn Agor y Tabiau Diweddar Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Agor fy nhab diweddaraf yn Chromium</translation>
+<translation id="5671188105328420281">Awgrymiadau Chromium</translation>
 <translation id="5688047395118852662">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="584550191241316896">Wedi mewngofnodi i Chromium</translation>
@@ -218,6 +220,7 @@ Pethau i'w hystyried:
 <translation id="6752854822223394465">Mae'ch sefydliad wrthi'n gosod Chromium…</translation>
 <translation id="6794054469102824109">Yn Agor Gêm Dino Chromium.</translation>
 <translation id="6820823224820483452">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory.</translation>
+<translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6852419005633611413">Cael mynediad at Chromium yn gyflymach o'ch doc sgrîn hafan</translation>
 <translation id="6852799557929001644">Gallwch gael mynediad at eich cyfrineiriau Chromium a rhagor ar draws apiau eraill ar y ddyfais hon.</translation>
 <translation id="6887138405044152640">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chromium yno.</translation>

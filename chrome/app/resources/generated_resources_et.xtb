@@ -3488,6 +3488,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3487649228420469005">Kontroll on tehtud</translation>
 <translation id="3488199663160411179">nimi</translation>
 <translation id="3490695139702884919">Allalaadimine … <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Kohalikud andmed saab taastada, kui oma PIN-i või parooli unustate</translation>
 <translation id="3491669675709357988">Teie lapse kontol pole Family Linki vanemlikku järelevalvet seadistatud. Saate vanemliku järelevalve lisada pärast seadistuse lõpuleviimist. Teavet vanemliku järelevalve kohta leiate rakendusest Avastamine.</translation>
 <translation id="3491678231052507920">Saidid kasutavad teie VR-seadmeid ja -andmeid tavaliselt VR-seansi käivitamiseks</translation>
 <translation id="3493043608231401654">Eemalda <ph name="TAB_TITLE" /> vahelehegrupist</translation>
@@ -5349,7 +5350,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4838327282952368871">Unistav</translation>
 <translation id="4838836835474292213">Lubati juurdepääs lõikelaua lugemiseks</translation>
 <translation id="4838907349371614303">Parooli värskendati</translation>
-<translation id="4838958829619609362">Valik ei ole <ph name="LANGUAGE" /> keeles</translation>
 <translation id="4839303808932127586">Sa&amp;lvesta video nimega ...</translation>
 <translation id="4839910546484524995">Seadme kontrollimine</translation>
 <translation id="4840096453115567876">Kas sulgeda ikka inkognito režiim?</translation>
@@ -5959,7 +5959,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5287425679749926365">Teie kontod</translation>
 <translation id="5288106344236929384">Rohkem toiminguid, pääsuvõtme valikud kasutaja <ph name="USERNAME" /> jaoks domeenis <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Ava suletud vaheleht &amp;uuesti</translation>
-<translation id="52895863590846877">Leht ei ole <ph name="LANGUAGE" /> keeles</translation>
 <translation id="5290020561438336792">Arvuti ja ülekandeseade on erinevates WiFi-võrkudes (nt 2,4 GHz
     vs. 5 GHz)</translation>
 <translation id="52912272896845572">Privaatvõtme fail on kehtetu.</translation>
@@ -8101,7 +8100,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="686366188661646310">Kas kustutada parool?</translation>
 <translation id="6863925886424789941">Kolosseum</translation>
 <translation id="6865313869410766144">Vormi automaattäite andmed</translation>
-<translation id="6865598234501509159">Leht ei ole <ph name="LANGUAGE" /> keeles</translation>
 <translation id="6865708901122695652">WebRTC sündmuselogid (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Vaikne</translation>
 <translation id="686664946474413495">Värvitemperatuur</translation>
@@ -8722,7 +8720,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7343372807593926528">Enne tagasiside saatmist kirjeldage probleemi.</translation>
 <translation id="7344585835349671209">HTTPS-/SSL-sertifikaatide haldamine oma seadmes</translation>
 <translation id="7345706641791090287">Kinnitage oma parool</translation>
-<translation id="7345919885156673810">Valik ei ole <ph name="LANGUAGE" /> keeles</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7347751611463936647">Selle laiendi kasutamiseks tippige <ph name="EXTENSION_KEYWORD" />, seejärel TAB ja käsk või otsing.</translation>
 <translation id="7347943691222276892">Klõpsake, et lehelt <ph name="SUBPAGE_TITLE" /> lahkuda.</translation>

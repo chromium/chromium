@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">वाचन सूचीमध्ये जोडा</translation>
 <translation id="1854463785401910334">उघडलेल्या टॅबमध्ये शोधा</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} पैकी {position} क्रमांकाचा पासवर्ड}other{{count} पैकी {position} क्रमांकाचा पासवर्ड}}</translation>
+<translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">कुटुंब सदस्यांना आमंत्रित करा</translation>
@@ -673,6 +674,7 @@
 <translation id="4302061870579014542">स्थान सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
+<translation id="4320848494125124980">अलीकडील</translation>
 <translation id="4324735664183300693">नोटिफिकेशन सुरू करा</translation>
 <translation id="4328843285884395590">माझे ड्राइव्ह</translation>
 <translation id="4331177082088332784">तुम्ही हे BEGIN_LINK आशय सेटिंग्ज END_LINK मध्ये व्यवस्थापित करू शकता</translation>
@@ -701,6 +703,7 @@
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4469834037720363704">पॅकेज क्रमांक</translation>
 <translation id="4471472356135655769">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>
+<translation id="4474142134969976028">जुळणारे परिणाम नाहीत</translation>
 <translation id="4474494258097106883">तुमच्या iPhone साठी तयार केलेले</translation>
 <translation id="4488754974567924717">तुमचे पासवर्ड धोक्यात आले असल्यास, आम्ही तुम्हाला कळवू</translation>
 <translation id="4489536976005181779">{count,plural, =1{पेज तुमच्या खात्यामधील वाचन सूचीमध्ये जोडले आहे, {email}}other{पेज तुमच्या खात्यामधील वाचन सूचीमध्ये जोडली आहेत, {email}}}</translation>

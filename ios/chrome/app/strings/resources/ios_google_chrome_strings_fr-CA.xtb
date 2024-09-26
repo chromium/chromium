@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités d'achat Google pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Rechercher avec Lentille Google</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="1166460004393506534">Supprimer les données de navigation dans Chrome</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Astuce Chrome : Choisissez la position de votre barre d'adresse</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL entrées à vos favoris dans Chrome.</translation>
+<translation id="1799920918471566157">Astuces de Chrome</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Ce compte et toutes les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>

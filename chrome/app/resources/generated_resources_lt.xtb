@@ -4179,6 +4179,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3948116654032448504">&amp;Ieškoti vaizdo sistemoje „<ph name="SEARCH_ENGINE" />“</translation>
 <translation id="3948334586359655083">Šiame skirtuke leidžiamas garso įrašas</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> gali redaguoti toliau nurodytuose aplankuose esančius failus</translation>
+<translation id="3948985214866944547">Dauguma žmonių blokuoja tikslios vietovės bendrinimą šioje svetainėje</translation>
 <translation id="394984172568887996">Importuota iš „IE“</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, kad failai būtų atsisiunčiami saugiau</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
@@ -5362,7 +5363,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4838327282952368871">Svajinga</translation>
 <translation id="4838836835474292213">Iškarpinės skaitymo prieiga leidžiama</translation>
 <translation id="4838907349371614303">Slaptažodis atnaujintas</translation>
-<translation id="4838958829619609362">Pasirinkto teksto kalba nėra <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Iš&amp;saugoti vaizdo įrašą kaip...</translation>
 <translation id="4839910546484524995">Patikrinkite įrenginį</translation>
 <translation id="4840096453115567876">Vis tiek išjungti inkognito režimą?</translation>
@@ -5972,7 +5972,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5287425679749926365">Jūsų paskyros</translation>
 <translation id="5288106344236929384">Daugiau veiksmų, naudotojo <ph name="USERNAME" /> slaptažodžio parinktys domene <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">I&amp;š naujo atidaryti uždarytą skirtuką</translation>
-<translation id="52895863590846877">Puslapis rodomas ne <ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">Asmeninis kompiuteris ir perdavimo įrenginys prijungti prie skirtingų „Wi-Fi“ tinklų (pvz., 2,4 GHz
     ir 5 GHz)</translation>
 <translation id="52912272896845572">Asmeninio rakto failas neteisingas.</translation>
@@ -8121,7 +8120,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="686366188661646310">Ištrinti slaptažodį?</translation>
 <translation id="6863925886424789941">Koliziejus</translation>
 <translation id="6865313869410766144">Automatinio pildymo formos duomenys</translation>
-<translation id="6865598234501509159">Puslapis rodomas ne <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">„WebRTC“ įvykių žurnalai (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Tyliai</translation>
 <translation id="686664946474413495">Spalvų temperatūra</translation>
@@ -8742,7 +8740,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7343372807593926528">Prieš išsiųsdami atsiliepimą, kuo išsamiau apibūdinkite problemą.</translation>
 <translation id="7344585835349671209">Tvarkykite HTTPS / SSL sertifikatus įrenginyje</translation>
 <translation id="7345706641791090287">Patvirtinkite slaptažodį</translation>
-<translation id="7345919885156673810">Pasirinkto teksto kalba nėra <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7347751611463936647">Jei norite naudoti šį plėtinį, įveskite „<ph name="EXTENSION_KEYWORD" />“, tada paspauskite TABULIAVIMO klavišą ir įveskite komandą ar paieškos terminą.</translation>
 <translation id="7347943691222276892">Spustelėkite, kad išeitumėte iš papildomo puslapio „<ph name="SUBPAGE_TITLE" />“.</translation>
@@ -9053,6 +9050,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7566118625369982896">„Play“ programų nuorodų tvarkymas</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Sukurti klavišų derinį</translation>
+<translation id="7568759527730933493">Naudokite saugų ryšį, kai ieškoma svetainės IP adreso DNS (domenų pavadinimų sistemoje). Tam naudojamas valdomas paslaugos teikėjas adresu <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Saugūs ryšiai nenaudojami kai kuriuose administratoriaus sukonfigūruotuose domenuose.</translation>
 <translation id="756876171895853918">Tinkinti pseudoportretą</translation>
 <translation id="7568790562536448087">Atnaujinama</translation>
 <translation id="7569983096843329377">Juoda</translation>
@@ -9215,6 +9213,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7676867886086876795">Balsas siunčiamas į sistemą „Google“, kad bet kuriame teksto lauke būtų galima diktuoti tekstą.</translation>
 <translation id="7678588695732963732">Iš naujo nustatyti visus USB įrenginio leidimus?</translation>
 <translation id="7679171213002716280">Tvarkomų spausdintuvų skaičius: <ph name="PRINTER_COUNT" />.</translation>
+<translation id="7679895819123160382">Žmonėms, turintiems prieigą prie jūsų srauto internete, bus sunkiau sužinoti, kuriose svetainėse lankotės. „<ph name="PRODUCT_NAME" />“ naudoja saugų ryšį ieškodama svetainės IP adreso DNS (domenų pavadinimų sistemoje). Saugūs ryšiai nenaudojami kai kuriuose administratoriaus sukonfigūruotuose domenuose.</translation>
 <translation id="7680416688940118410">Jutiklinio ekrano kalibravimas</translation>
 <translation id="7681095912841365527">Svetainė gali naudoti „Bluetooth“</translation>
 <translation id="7681597159868843240">Paprastai svetainėse naudojami įrenginio judesio jutikliai vykdant tokias funkcijas kaip virtualioji realybė ar mankštos stebėjimas</translation>
@@ -9613,6 +9612,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
 <translation id="7955177647836564772">Jei „Smart Lock“ įjungta ir telefonas atrakintas, slaptažodžio ar PIN kodo įvesti nereikia</translation>
 <translation id="7956373551960864128">Išsaugoti spausdintuvai</translation>
+<translation id="7956918070009672177">Jūsų įrenginyje nėra balsų šia kalba: <ph name="LANGUAGE" />. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
 <translation id="7957074856830851026">Žr. įrenginio informaciją, pvz., jo serijos numerį ar ištekliaus ID</translation>
 <translation id="7958157896921135832">Padidinti šrifto dydį</translation>
 <translation id="7958828865373988933">Jei norite sukurti programos „<ph name="APP_NAME" />“ prieigos raktą USB saugos rakte, įdėkite ir palieskite jį dabar</translation>

@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">فعال ونڈو بائیں طرف ڈاک کی ہوئی ہے۔</translation>
 <translation id="1708345662127501511">ڈیسک: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">نیٹ ورک کی ترتیبات</translation>
-<translation id="171610090693716835">‏ذاتی نوعیت کی فوکس والی پلے لسٹس کے ساتھ اپنے کام مکمل کریں۔ بغیر کسی قیمت کے 3 ماہ کے YouTube Premium کے ساتھ، اشتہارات سے پاک، YouTube Music اور YouTube حاصل کریں۔</translation>
 <translation id="1719094688023114093">لائیو کیپشن آن ہے۔</translation>
 <translation id="1720011244392820496">‏Wi-Fi سِنک آن کریں</translation>
 <translation id="1720230731642245863">ہاٹ اسپاٹ آف ہے</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">اپ ڈیٹ دستیاب ہے</translation>
 <translation id="2416438829169535743">منظر سے باہر نکلیں؟</translation>
 <translation id="2417486498593892439">نیٹ ورک میں سائن ان کریں</translation>
+<translation id="2423619675829330672">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2426051945783024481">کیمرے کا فریم خودکار طور پر بیچ میں کر دیا گیا ہے</translation>
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
 <translation id="2429753432712299108">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" کو جوڑا بنانے کی اجازت درکار ہوگی۔ قبول کرنے سے پہلے، براہ کرم توثیق کریں کہ یہ پاس کلید اس آلہ پر دکھائی دے رہی ہے: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">تمام ڈیسکس سے ونڈوز دکھائی جا رہی ہیں موجودہ ڈیسک سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="6337159624125741244">فُل اسکرین میگنیفائر آن کریں</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> کے زیر انتظام ایک نظم کردہ سیشن ہے</translation>
+<translation id="6340148837564298498">‏اگر آپ اپنا PIN بھول گئے ہیں تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> منسلک ہے</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پر <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ایپ کی تجاویز</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">اسکین ہونے والی <ph name="FILENAME" /> کو ڈاؤن لوڈ کریں</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="6542891623636520977">‏ایموجیز، ‏GIFs اور بہت کچھ</translation>
+<translation id="6545382064335350438">‏آپ کے PIN کی اب بھی توثیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559158502366839560">مزید ایپس اور گیمز دریافت کریں</translation>
@@ -2028,6 +2030,7 @@
 <translation id="7904094684485781019">اس اکاؤنٹ کے منتظم نے متعدد سائن ان کی اجازت ختم کر دی ہے۔</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
+<translation id="7921565901396407357">‏آپ کے PIN کی توثیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7923534281713082605">موسم</translation>
 <translation id="7926080067315048321">‏ویب پر Google Tasks کے تمام ٹاسکس دیکھیں</translation>
 <translation id="7930731167419639574">اسپیچ اب مقامی طور پر پروسیس کی جاتی ہے اور ڈکٹیشن آف لائن کام کرتا ہے</translation>

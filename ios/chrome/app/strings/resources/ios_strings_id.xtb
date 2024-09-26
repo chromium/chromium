@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Tambahkan ke daftar bacaan</translation>
 <translation id="1854463785401910334">Telusuri tab yang terbuka</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} dari {count} sandi}other{{position} dari {count} sandi}}</translation>
+<translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Undang anggota keluarga</translation>
@@ -605,6 +606,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3982893814825393515">Melaporkan masalah…</translation>
 <translation id="398604237578616937">Login sebagai <ph name="USER_EMAIL" />. Buka menu akun.</translation>
+<translation id="3986739045730058129">Buka tab</translation>
 <translation id="3987993985790029246">Salin link</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
 <translation id="3994422733891749358">Pilih notifikasi yang ingin diterima</translation>
@@ -673,6 +675,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4309403553630140242">Ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
+<translation id="4320848494125124980">Terbaru</translation>
 <translation id="4324735664183300693">Aktifkan notifikasi</translation>
 <translation id="4328843285884395590">Drive Saya</translation>
 <translation id="4331177082088332784">Anda dapat mengelolanya di BEGIN_LINK Setelan Konten END_LINK</translation>
@@ -701,6 +704,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4469324811108161144">Catatan dapat menyimpan hingga <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="4469834037720363704">Nomor paket</translation>
 <translation id="4471472356135655769">Tidak dapat mengekspor sandi</translation>
+<translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
 <translation id="4474494258097106883">Dibuat untuk iPhone Anda</translation>
 <translation id="4488754974567924717">Jika sandi dibobol, kami akan memberi tahu Anda</translation>
 <translation id="4489536976005181779">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
@@ -756,6 +760,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4717844083556844785">Halaman web saat ini sedang dalam mode Samaran</translation>
 <translation id="4719927025381752090">Tawarkan penerjemahan</translation>
+<translation id="4720530280568305198">Pilihan Anda dibuka di tab baru</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4742407542027196863">Kelola sandi...</translation>
 <translation id="4742897645503301228">Sembunyikan Pantau harga</translation>

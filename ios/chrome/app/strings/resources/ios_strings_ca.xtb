@@ -184,6 +184,7 @@
 <translation id="1853236860984942211">Afegeix a la llista de lectura</translation>
 <translation id="1854463785401910334">Cerca a les pestanyes obertes</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} d’{count} contrasenya}other{{position} de {count} contrasenyes}}</translation>
+<translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1872096359983322073">Llanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Convida membres de la família</translation>
@@ -703,6 +704,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="4469834037720363704">Número de paquet</translation>
 <translation id="4471472356135655769">No es poden exportar les contrasenyes</translation>
+<translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
 <translation id="4474494258097106883">Creat per a l'iPhone</translation>
 <translation id="4488754974567924717">Si les teves contrasenyes estan en perill, t'avisarem</translation>
 <translation id="4489536976005181779">{count,plural, =1{La pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{Les pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>

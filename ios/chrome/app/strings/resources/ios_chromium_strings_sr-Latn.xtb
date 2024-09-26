@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Otvorite Chromium meni</translation>
 <translation id="12739128458173458">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="1361748954329991663">Chromium je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chromium-a.</translation>
+<translation id="1383876407941801731">Pretraži</translation>
 <translation id="1423007117030725713">Započnite pretragu na novoj Chromium kartici.</translation>
 <translation id="1431818719585918472">Dozvolite Chromium-u da zaključa kartice bez arhiviranja.</translation>
 <translation id="146407871188825689">Podrazumevano koristite Chromium na iPad-u</translation>
@@ -49,6 +50,7 @@
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Ova adresa je trenutno sačuvana u Chromium-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">To znači da će Chromium svaki put zahtevati sajt za računar.</translation>
+<translation id="2270466829363945454">Kupujte</translation>
 <translation id="2313870531055795960">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chromium-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="231828342043114302">Da biste dobijali personalizovani sadržaj na osnovu interesovanja, prijavite se u Chromium.</translation>
 <translation id="2326738825692478496">Neki Chromium podaci još nisu sačuvani na Google nalogu.
@@ -129,6 +131,7 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="4432744876818348753">Prijavite se da biste iskoristili Chromium na najbolji način.</translation>
 <translation id="4445228361214254027">Organizacija je isključila mogućnost korišćenja i čuvanja Chromium podataka na Google nalogu. Novi obeleživači, lozinke i drugi sadržaj će se čuvati samo na ovom uređaju.</translation>
 <translation id="4498832288620833153">Dodaje unete URL-ove na listu za čitanje u Chromium-u.</translation>
+<translation id="4508268628669724828">Vratite se ovde za još korisnih saveta o tome kako da iskoristite Chromium na najbolji način.</translation>
 <translation id="452436063477828504">Uverite se da uvek možete da koristite Chromium podatke na Google nalogu</translation>
 <translation id="4527452566931097835">Želite da podesite Chromium kao podrazumevani pregledač?</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -177,6 +180,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="5571094606370987472">Otvara Chromium nedavne kartice.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Otvaranje moje najnovije kartice u Chromium-u</translation>
+<translation id="5671188105328420281">Saveti za Chromium</translation>
 <translation id="5688047395118852662">Ova kartica vam prikazuje predloge o tome kako da iskoristite Chromium-a na najbolji način.</translation>
 <translation id="5700709190537129682">Chromium ne može da vam proverava lozinke</translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
@@ -218,6 +222,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="6752854822223394465">Vaša organizacija podešava Chromium...</translation>
 <translation id="6794054469102824109">Otvara igru Chromium dinosaurus.</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="6831043979455480757">Prevedi</translation>
 <translation id="6852419005633611413">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu</translation>
 <translation id="6852799557929001644">Pristupajte Chromium lozinkama i ostalim funkcijama u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6887138405044152640">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chromium tamo.</translation>
@@ -238,6 +243,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7228180817326917122">Savet za Chromium: Odaberite položaj trake za adresu</translation>
 <translation id="725427773388857052">Chromium može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
 <translation id="7269362888766543920">Neki programski dodaci izazivaju otkazivanje Chromium-a. Probajte da ih deinstalirate.</translation>
+<translation id="7279391168585141365">Sačuvajte lozinke u Chromium-u</translation>
 <translation id="7285031092584344905">Pristupajte Chromium lozinkama i ostalim funkcijama u drugim aplikacijama.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Izabrani podaci su uklonjeni iz Chromium-a i sa sinhronizovanih uređaja. Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti u drugim Google uslugama na history.google.com.</translation>

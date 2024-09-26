@@ -10638,53 +10638,6 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
 <translation id="9123464369663964441">Nutzern erlauben, Ausnahmen hinzuzufügen, um gemischte Inhalte zuzulassen</translation>
 <translation id="9124770007620653639">Daten zur Domainzuverlässigkeit nie an Google senden</translation>
 <translation id="9126331659955304300">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil zulassen</translation>
-<translation id="9126491667911789829">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
-
-      Jedes Listenelement der Richtlinie ist ein Objekt, das aus der erforderlichen Komponente
-      „<ph name="URL_LABEL" />“ (der URL der Web-App, die installiert werden soll)
-
-      und sechs optionalen Komponenten besteht:
-      – „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
-      (legt fest, wie die Web-App geöffnet wird – standardmäßig auf einem neuen Tab)
-
-      – „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
-      (auf „True“ setzen, wenn du Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
-      <ph name="MS_WIN_NAME" /> erstellen möchtest)
-
-      – „<ph name="FALLBACK_APP_NAME_LABEL" />“
-      (Ab <ph name="PRODUCT_NAME" /> Version 90 –
-      ermöglicht, den App-Namen zu überschreiben, wenn es keine
-      progressive Web-App (PWA) ist oder es eine temporär installierte PWA ist,
-      für die vor Abschluss der Installation
-      eine Authentifizierung erforderlich ist. Wenn sowohl
-      „<ph name="CUSTOM_NAME_LABEL" />“ als auch
-      „<ph name="FALLBACK_APP_NAME_LABEL" />“ angegeben sind,
-      wird Letzteres ignoriert.)
-
-      – „<ph name="OVERRIDE_APP_NAME_LABEL" />“
-      (Ab <ph name="PRODUCT_OS_NAME" />
-      Version 99 und Version 112 unter allen anderen Desktop-Betriebssystemen – ermöglicht,
-      den App-Namen für alle Web-Apps und PWAs dauerhaft zu überschreiben.
-
-      – „<ph name="CUSTOM_ICON_LABEL" />“
-      (Ab <ph name="PRODUCT_OS_NAME" />
-      Version 99 und Version 112 unter allen anderen Desktop-Betriebssystemen – ermöglicht,
-      das App-Symbol installierter Apps zu überschreiben. Die
-      Symbole müssen quadratisch und maximal 1 MB groß sein und in einem der folgenden
-      Formate vorliegen: JPEG, PNG, GIF, WEBP, ICO.
-      Der Hashwert muss der SHA256-Hash der Symboldatei sein.)
-
-      – „<ph name="INSTALL_AS_SHORTCUT_LABEL" />“
-      (Ab <ph name="PRODUCT_NAME" />
-      Version 107.) Bei Aktivierung wird die jeweilige URL (<ph name="URL_LABEL" />)
-      als Verknüpfung – wie bei Verwendung der Option „Verknüpfung erstellen…“ –
-      auf dem GUI des Desktop-Browsers installiert.
-      Hinweis: Wenn sie als Verknüpfung installiert wird, wird sie nicht aktualisiert, wenn sich das
-      Manifest in „<ph name="URL_LABEL" />“ ändert.
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Web-App bei der jeweiligen URL
-      („<ph name="URL_LABEL" />“) normal installiert.
-
-      In „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ wird beschrieben, wie du Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage anpinnen kannst.</translation>
 <translation id="9128095645860384292">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) nicht ausführen dürfen.
 
           Wenn JavaScript JIT deaktiviert ist, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer und Teile von JavaScript, einschließlich WebAssembly, werden eventuell deaktiviert. Außerdem darf <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise in einer sichereren Konfiguration rendern, sollte JavaScript JIT deaktiviert sein.

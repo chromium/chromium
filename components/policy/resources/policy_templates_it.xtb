@@ -10819,28 +10819,6 @@ Questo criterio ha effetto soltanto se il criterio <ph name="FULL_RESTORE_ENABLE
 <translation id="9123464369663964441">Consenti agli utenti di aggiungere eccezioni per consentire contenuti misti</translation>
 <translation id="9124770007620653639">Non inviare mai a Google dati relativi all'attendibilità dei domini</translation>
 <translation id="9126331659955304300">Consenti la selezione di avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
-<translation id="9126491667911789829">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
-
-      Ogni voce del criterio è un oggetto con un componente obbligatorio:
-      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
-
-      e 6 componenti facoltativi:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione. Se vengono impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo verrà ignorato).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire definitivamente il nome dell'app per tutte le app web e le app web progressive).
-
-      - <ph name="CUSTOM_ICON_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire l'icona delle app installate. Le icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti formati: jpeg, png, gif, webp, ico.
-      Il valore hash deve essere l'hash SHA256 del file dell'icona).
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" /> (a partire dalla versione 107 di <ph name="PRODUCT_NAME" />). Se il criterio viene attivato, l'<ph name="URL_LABEL" /> specificato verrà installato come scorciatoia, come se l'azione fosse stata compiuta tramite l'opzione "Crea scorciatoia…" nella GUI del browser desktop.
-      Tieni presente che se viene installato come scorciatoia, non verrà aggiornato se il file manifest in <ph name="URL_LABEL" /> cambia.
-      Se il criterio viene disattivato o se non viene configurato, l'app web all'<ph name="URL_LABEL" /> specificato verrà installata normalmente.
-
-      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app nella barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9128095645860384292">Consente di impostare un elenco di pattern URL che specificano i siti non autorizzati a eseguire JavaScript con il compilatore JIT (Just In Time) attivato.
 
           Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe eseguire il rendering dei contenuti web più lentamente e disattivare inoltre alcune parti di JavaScript, incluso WebAssembly. Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe essere in grado di eseguire il rendering dei contenuti web in una configurazione più sicura.

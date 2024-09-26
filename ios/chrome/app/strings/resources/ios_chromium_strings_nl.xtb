@@ -12,6 +12,7 @@
 <translation id="1260702988262336471">Het Chromium-menu openen</translation>
 <translation id="12739128458173458">Als je dit tabblad naar een ander apparaat wilt sturen, log je op beide apparaten in bij Chromium.</translation>
 <translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
+<translation id="1383876407941801731">Zoeken</translation>
 <translation id="1423007117030725713">Start een zoekopdracht op een nieuw Chromium-tabblad.</translation>
 <translation id="1431818719585918472">Laat Chromium je incognitotabbladen vergrendelen.</translation>
 <translation id="146407871188825689">Chromium standaard gebruiken op de iPad</translation>
@@ -177,6 +178,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5571094606370987472">Opent de recente Chromium-tabbladen.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Mijn nieuwste tabblad openen in Chromium</translation>
+<translation id="5671188105328420281">Chromium-tips</translation>
 <translation id="5688047395118852662">Op deze kaart zie je suggesties voor hoe je het maximale uit Chromium kunt halen.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="584550191241316896">Ingelogd bij Chromium</translation>
@@ -218,6 +220,7 @@ Aandachtspunten:
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
 <translation id="6794054469102824109">Opent de Chromium Dino-game.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
+<translation id="6831043979455480757">Vertalen</translation>
 <translation id="6852419005633611413">Open Chromium sneller via het dock op het startscherm</translation>
 <translation id="6852799557929001644">Krijg toegang tot je Chromium-wachtwoorden en meer in andere apps op dit apparaat.</translation>
 <translation id="6887138405044152640">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chromium.</translation>

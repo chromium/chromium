@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir nova guia no Chrome</translation>
 <translation id="1166460004393506534">Excluir dados de navegação no Chrome</translation>
@@ -38,6 +39,7 @@ Considerações:
 <translation id="1670609221633730681">Dica do Chrome: escolha a posição da barra de endereço</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
+<translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>

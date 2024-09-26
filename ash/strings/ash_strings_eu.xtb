@@ -215,7 +215,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1703117532528082099">Ezkerrean ainguratu da leiho aktiboa.</translation>
 <translation id="1708345662127501511">Lan-eremua: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Sarearen ezarpenak</translation>
-<translation id="171610090693716835">Egin lan planifikatu duzun bezala, kontzentratzeko erreprodukzio-zerrenda pertsonalizatuekin. Lortu YouTube Music eta YouTube iragarkirik gabe, YouTube Premium 3 hilabetez kosturik gabe izanda.</translation>
 <translation id="1719094688023114093">Istanteko azpitituluak aktibatuta daude.</translation>
 <translation id="1720011244392820496">Aktibatu Wifi-sinkronizazioa</translation>
 <translation id="1720230731642245863">Wifi-gunea desaktibatuta dago</translation>
@@ -398,6 +397,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2412593942846481727">Eguneratu egin daiteke</translation>
 <translation id="2416438829169535743">Ikuspegitik irten nahi duzu?</translation>
 <translation id="2417486498593892439">Hasi saioa sarean</translation>
+<translation id="2423619675829330672">PINa idazteko saiakera gehiegi egin dituzu. Itxaron <ph name="TIME_LEFT" /> eta saiatu berriro.</translation>
 <translation id="2426051945783024481">Erdiratu da automatikoki kamerako markoa</translation>
 <translation id="2427507373259914951">Egin klik ezkerreko botoiarekin</translation>
 <translation id="2429753432712299108">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Onartu aurretik, berretsi gailu horretan pasakode hau agertzen dela: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1578,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6330012934079202188">Lan-eremu guztietako leihoak daude ikusgai. Une honetako lan-eremuko leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="6337159624125741244">Gaitu da Pantaila osoko lupa</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
+<translation id="6340148837564298498">PINa ahaztu bazaizu, saiatu erabiltzaile hau berreskuratzen.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gailua konektatu da</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />; ondoren, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> edo <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APLIKAZIOEN IRADOKIZUNAK</translation>
@@ -1634,6 +1635,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> eskaneatzen deskargatu ahal izateko</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> gailura igortzen</translation>
 <translation id="6542891623636520977">Emojiak, GIFak eta beste</translation>
+<translation id="6545382064335350438">Oraindik ezin izan da egiaztatu PINa. Saiatu berriro.</translation>
 <translation id="6555373427270923730">Idatzi web-helbide bat helbide-barran eta, gero, sakatu <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Berriki instalatu da</translation>
@@ -2030,6 +2032,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7904094684485781019">Kontu honen administratzaileak saio bat baino gehiago hasteko baimenak kendu ditu.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> gailu daude konektatuta</translation>
+<translation id="7921565901396407357">Ezin izan da egiaztatu PINa. Saiatu berriro.</translation>
 <translation id="7923534281713082605">Eguraldia</translation>
 <translation id="7926080067315048321">Ikusi zeregin guztiak Google Zereginak zerbitzuaren sareko bertsioan</translation>
 <translation id="7930731167419639574">Hizketa gailuan bertan prozesatzen da orain eta diktaketak konexiorik gabe funtzionatzen du</translation>

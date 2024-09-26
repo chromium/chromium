@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1066101356081285416">Chrome, उन साइटों पर ट्रैकिंग नंबरों का पता लगाएगा जिन पर आपने विज़िट किया है और आपको 'नया टैब' पेज पर पैकेज के अपडेट दिखाएगा. यह सुविधा उपलब्ध कराने के लिए, पैकेज ट्रैकिंग नंबर और वेबसाइट का नाम Google को भेजा जाएगा. इससे, Google Shopping से जुड़ी सुविधाओं को सभी के लिए बेहतर बनाया जा सकेगा. <ph name="BEGIN_LINK" />पैकेज ट्रैकिंग से जुड़ी सेटिंग<ph name="END_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
+<translation id="1086486568852410168">Google Lens की मदद से खोजें</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> के लिए आपके पासवर्ड को Google पासवर्ड मैनेजर में सेव किया जाएगा.</translation>
 <translation id="1146503048444965320">Chrome में नया टैब खोलें</translation>
 <translation id="1166460004393506534">Chrome से ब्राउज़िंग डेटा मिटाएं</translation>
@@ -38,6 +39,7 @@
 <translation id="1670609221633730681">Chrome के बारे में सलाह: पता बार की जगह चुनें</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">डाले गए यूआरएल को Chrome में आपके बुकमार्क में जोड़ता है.</translation>
+<translation id="1799920918471566157">Chrome से जुड़ी सलाह</translation>
 <translation id="1830634592642484976">फ़िलहाल, यह पता Chrome में सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="USER_EMAIL" /> में सेव करें.</translation>
 <translation id="1917964099031477364">इस डिवाइस पर यह खाता और वह डेटा जो सेव नहीं है, Chrome और दूसरे Google ऐप्लिकेशन से हटा दिए जाएंगे.</translation>
 <translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>

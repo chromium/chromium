@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ପ୍ରକ୍ରିୟା ଆରମ୍ଭ ହେବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="2970681950995291301">Chromeରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="2994465299455873643">ଯଦି <ph name="BROWSER_NAME" /> ପୁରୁଣା ହୋଇଯାଏ, ତେବେ ଏହାକୁ ରିକଭର କରିବା ପାଇଁ ଏନକ୍ରିପସନ ସେବାଗୁଡ଼ିକ ଏବଂ ଏକ ସୁରକ୍ଷିତ ଉପାୟ ପ୍ରଦାନ କରେ। ଯଦି ଏହି ସେବାକୁ ଅକ୍ଷମ କରାଯାଏ, ତେବେ <ph name="BROWSER_NAME" /> ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ଆକ୍ସେସ ହରାଇପାରେ ଏବଂ <ph name="BROWSER_NAME" /> ସ୍ୱତଃ ରିକଭର ହେବା ପାଇଁ ସକ୍ଷମ ହୋଇନପାରେ।</translation>
 <translation id="3018957014024118866">Chrome (<ph name="URL" />)ରୁ ମଧ୍ୟ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flexକୁ ଅପଡେଟ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3037838751736561277">Google Chrome ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"ରେ ମାଲୱେର୍ ଥିବା Chrome ଜାଣିବାକୁ ପାଇଛି</translation>
 <translation id="3695446226812920698">କିପରି ହେବ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="3697952514309507634">ଅନ୍ୟ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>
+<translation id="3700276346088749847">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3703994572283698466">ChromeOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭେଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ସଂସ୍କରଣ</translation>
 <translation id="3718181793972440140">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହା 1ଟି ଆଇଟମ୍ ଡିଲିଟ୍ ହୋଇଯିବ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromeରେ <ph name="USER_EMAIL" />ଭାବରେ ସାଇନ୍ ଇନ୍‌ କରନ୍ତୁ।</translation>
@@ -295,6 +297,7 @@
 <translation id="4575717501879784448">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ଏବଂ ରିସୋର୍ସଗୁଡ଼ିକୁ ଖାଲି କରିବା ପାଇଁ Chrome ଏହି ଟାବଗୁଡ଼ିକୁ ନିଷ୍କ୍ରିୟ କରିପାରେ।</translation>
 <translation id="459622048091363950">ଥରେ Chromeକୁ ଆକ୍‌ସେସ୍ ମିଳିଗଲା ପରେ, ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଆପଣଙ୍କୁ ଆକ୍‌ସେସ୍ ମାଗିବାକୁ ସମର୍ଥ ହେବେ।</translation>
 <translation id="4600710005438004015">Chrome ନବୀନତମ ସଂସ୍କରଣରେ ଅପ୍‌ଡେଟ୍ କରିପାରିଲା ନାହିଁ, ତେଣୁ ଆପଣ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଏବଂ ସୁରକ୍ଷା ସମସ୍ୟାର ସମାଧାନରୁ ବଞ୍ଚିତ ହେଉଛନ୍ତି।</translation>
+<translation id="4601439950572737842">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଡାଟାକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="4624065194742029982">Chrome ଇନକଗ୍ନିଟୋ</translation>
 <translation id="4627412468266359539">ଇଚ୍ଛାଧୀନ: Googleକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ ଓ ବ୍ୟବହାର ଡାଟା ପଠାଇ ChromeOS Flex ଫିଚର ଓ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="4633000520311261472">Chromeକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ, ଆମେ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନଥିବା ଏବଂ ଆପଣଙ୍କର ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥିବା କିଛି ଏକ୍ସ‌ଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିଦେଇଛୁ।</translation>

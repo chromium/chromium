@@ -215,7 +215,6 @@
 <translation id="1703117532528082099">સક્રિય વિન્ડોને ડાબે ડૉક કરી.</translation>
 <translation id="1708345662127501511">ડેસ્કટૉપ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">નેટવર્ક સેટિંગ</translation>
-<translation id="171610090693716835">મનગમતા બનાવેલા ફોકસ પ્લેલિસ્ટ વડે કાર્ય કરવાનું ચાલુ રાખો. વિના મૂલ્યે YouTube Premiumના 3 મહિના સાથે જાહેરાતમુક્ત YouTube Music અને YouTube મેળવો.</translation>
 <translation id="1719094688023114093">લાઇવ કૅપ્શનની સુવિધા ચાલુ છે.</translation>
 <translation id="1720011244392820496">વાઇ-ફાઇ સિંક ચાલુ કરો</translation>
 <translation id="1720230731642245863">હૉટસ્પૉટ બંધ છે</translation>
@@ -398,6 +397,7 @@
 <translation id="2412593942846481727">અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="2416438829169535743">શું વ્યૂમાંથી બહાર નીકળીએ?</translation>
 <translation id="2417486498593892439">નેટવર્ક પર સાઇન ઇન કરો</translation>
+<translation id="2423619675829330672">પિન વડે ઘણા બધા પ્રયાસો. <ph name="TIME_LEFT" /> રાહ જુઓ અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2426051945783024481">કૅમેરાની ફ્રેમને ઑટોમૅટિક રીતે મધ્યમાં ગોઠવવામાં આવે છે</translation>
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
 <translation id="2429753432712299108">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. સ્વીકારતાં પહેલાં, કૃપા કરીને તે ડિવાઇસ પર બતાવેલ આ પાસકીની પુષ્ટિ કરો: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="6330012934079202188">બધી ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, વર્તમાન ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="6337159624125741244">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર ચાલુ છે</translation>
 <translation id="6338485349199627913">મેનેજ કરાયેલું સત્ર <ph name="DISPLAY_NAME" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="6340148837564298498">જો તમે તમારો પિન ભૂલી ગયા હો, તો આ વપરાશકર્તાને રિકવર કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> કનેક્ટ થયું</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> પછી <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> અથવા <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ઍપ સૂચનો</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6539852571005954999">ડાઉનલોડ <ph name="FILENAME" /> સ્કૅન કરી રહ્યું છે</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6542891623636520977">ઇમોજી, GIFs અને વધુ</translation>
+<translation id="6545382064335350438">તમારો પિન હજી પણ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6555373427270923730">ઍડ્રેસ બારમાં વેબ ઍડ્રેસ ટાઇપ કરો, પછી <ph name="MODIFIER" />+<ph name="KEY" /> દબાવો</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 નવી ઇન્સ્ટૉલ કરી છે</translation>
@@ -2029,6 +2031,7 @@
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ કર્યા</translation>
+<translation id="7921565901396407357">તમારો પિન ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7923534281713082605">હવામાન</translation>
 <translation id="7926080067315048321">બધા કાર્યો વેબ પર Google Tasks પર જુઓ</translation>
 <translation id="7930731167419639574">સ્પીચ પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને ડિક્ટેશનની સુવિધા ઑફલાઇન કામ કરે છે</translation>

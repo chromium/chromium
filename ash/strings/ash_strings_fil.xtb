@@ -215,7 +215,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1703117532528082099">Naka-dock sa kaliwa ang aktibong window.</translation>
 <translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Mga Network Setting</translation>
-<translation id="171610090693716835">Tuloy lang sa ginagawa mo gamit ang mga naka-personalize na playlist para sa pag-focus. Kunin ang YouTube Music at YouTube, na walang ad, at may 3 buwang YouTube Premium na libre.</translation>
 <translation id="1719094688023114093">Naka-on ang Instant Caption.</translation>
 <translation id="1720011244392820496">I-on ang Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Naka-off ang Hotspot</translation>
@@ -398,6 +397,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2412593942846481727">May available na update</translation>
 <translation id="2416438829169535743">Lumabas sa view?</translation>
 <translation id="2417486498593892439">Mag-sign in sa network</translation>
+<translation id="2423619675829330672">Masyado nang maraming pagsubok sa PIN. Maghintay nang <ph name="TIME_LEFT" /> at subukan ulit.</translation>
 <translation id="2426051945783024481">Awtomatikong napupunta sa gitna ang camera frame</translation>
 <translation id="2427507373259914951">Mag-left click</translation>
 <translation id="2429753432712299108">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares . Bago tanggapin, pakikumpirma na ipinapakita ang passkey na ito sa device na iyon: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Walang nakakonektang device.</translation>
 <translation id="6330012934079202188">Ipinapakita ang mga window mula sa lahat ng desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa kasalukuyang desk</translation>
 <translation id="6337159624125741244">Naka-on ang full-screen magnifier</translation>
 <translation id="6338485349199627913">Ang <ph name="DISPLAY_NAME" /> ay isang session na pinapamahalaan ng <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Kung makalimutan mo ang iyong PIN, subukang i-recover ang user na ito.</translation>
 <translation id="6344138931392227467">Nakonekta ang <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> pagkatapos ay <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">MGA IMINUMUNGKAHING APP</translation>
@@ -1633,6 +1634,7 @@ Walang nakakonektang device.</translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Mga emoji, GIF, at higit pa</translation>
+<translation id="6545382064335350438">Hindi pa rin ma-verify ang iyong PIN. Subukan ulit.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Kaka-install lang</translation>
@@ -2028,6 +2030,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7904094684485781019">Hindi pinayagan ng administrator para sa account na ito ang multiple na pag-sign in.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> (na) device ang nakakonekta</translation>
+<translation id="7921565901396407357">Hindi ma-verify ang iyong PIN. Subukan ulit.</translation>
 <translation id="7923534281713082605">Lagay ng Panahon</translation>
 <translation id="7926080067315048321">Tingnan ang lahat ng gawain sa Google Tasks sa web</translation>
 <translation id="7930731167419639574">Lokal nang ipinoproseso ang speech at gumagana offline ang Dictation.</translation>

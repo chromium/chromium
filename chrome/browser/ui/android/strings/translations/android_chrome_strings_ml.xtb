@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="SITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല</translation>
 <translation id="2286841657746966508">ബില്ലിംഗ് വിലാസം</translation>
 <translation id="228704530595896923">പങ്കിടൽ ഓപ്ഷനുകളുടെ ലിസ്റ്റ്.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് കാണുക}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ കാണുക}}</translation>
 <translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="22981027763501686">ബുക്ക്‌മാർക്കുകളും ചരിത്രവും മറ്റും നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ ലഭിക്കാൻ സമന്വയിപ്പിക്കുക</translation>
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> നിലവിൽ തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="696447261358045621">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് കാണുക}other{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ കാണുക}}</translation>
 <translation id="6971862865055170158">അംഗീകരിക്കരുത്</translation>
 <translation id="6978717888677691380">നിങ്ങൾ ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">പ്രായപൂർത്തിയാകാത്തവർക്കുള്ള ഉള്ളടക്കം - ഓഫാണ്</translation>
 <translation id="7903184275147100332">ഇതിന് ഒരു മിനിറ്റ് എടുത്തേക്കാം</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{നിങ്ങളുടെ സ്ഥാപനം ഒരെണ്ണം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}other{നിങ്ങളുടെ സ്ഥാപനം # എണ്ണം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="7914399737746719723">ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്തു</translation>
 <translation id="7919123827536834358">ഈ ഭാഷകൾ സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>

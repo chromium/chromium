@@ -215,7 +215,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1703117532528082099">Aktivno okno je zasidrano na levi.</translation>
 <translation id="1708345662127501511">Namizje: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Omrežne nastavitve</translation>
-<translation id="171610090693716835">Ostanite na tekočem z osebno prilagojenimi seznami predvajanja za osredotočanje. Zagotovite si YouTube Music in YouTube brez oglasov s 3 meseci naročnine YouTube Premium brez stroškov.</translation>
 <translation id="1719094688023114093">Samodejni podnapisi so vklopljeni.</translation>
 <translation id="1720011244392820496">Vklop sinhronizacije poverilnic za Wi-Fi</translation>
 <translation id="1720230731642245863">Dostopna točka je izklopljena</translation>
@@ -398,6 +397,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
 <translation id="2416438829169535743">Želite zapreti pogled?</translation>
 <translation id="2417486498593892439">Prijava v omrežje</translation>
+<translation id="2423619675829330672">Preveč poskusov vnosa kode PIN. Počakajte <ph name="TIME_LEFT" /> in poskusite znova.</translation>
 <translation id="2426051945783024481">Okvir fotoaparata je samodejno na sredini.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. Preden sprejmete, se prepričajte, da je na napravi prikazano to geslo: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1577,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6330012934079202188">Prikaz oken z vseh namizij, pritisnite tipko s puščico gor, če želite prikazati okna s trenutnega namizja</translation>
 <translation id="6337159624125741244">Celozaslonska lupa je vklopljena</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana seja, ki jo upravlja domena <ph name="MANAGER" />.</translation>
+<translation id="6340148837564298498">Če ste pozabili kodo PIN, poskusite obnoviti tega uporabnika.</translation>
 <translation id="6344138931392227467">Naprava <ph name="DEVICE_NAME" /> je povezana</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, nato <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ali <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">PREDLOGI ZA APLIKACIJE</translation>
@@ -1633,6 +1634,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6539852571005954999">Pregledovanje prenosa: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Predvajanje v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodžiji, GIF-i in drugo</translation>
+<translation id="6545382064335350438">Kode PIN še vedno ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="6555373427270923730">Vnesite spletni naslov v naslovno vrstico, nato pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova namestitev</translation>
@@ -2029,6 +2031,7 @@ Nova namestitev</translation>
 <translation id="7904094684485781019">Skrbnik tega računa je onemogočil prijavo z več računi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezane naprave (<ph name="DEVICECOUNT" />)</translation>
+<translation id="7921565901396407357">Vaše kode PIN ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="7923534281713082605">Vreme</translation>
 <translation id="7926080067315048321">Ogled vseh opravil v Google Opravilih v spletu</translation>
 <translation id="7930731167419639574">Govor se zdaj obdela lokalno in narek deluje brez povezave.</translation>

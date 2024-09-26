@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tap to see another tab</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab group options</translation>
+<translation id="1293272072740285747">Keep this group to add tabs later or delete it if you no longer need it.
+
+If you delete it, everyone will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group and it will be deleted from all devices.</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1419023007528516122">This will permanently delete the group from your device</translation>
 <translation id="1486715732399361704">You can find all your tab groups here</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
+<translation id="5615302411300498438">Keep this group to add tabs later, or leave.
+
+If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group.</translation>
 <translation id="5627941783489838464">No tab updates</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restore tab}other{Restore tabs}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="8631711675211020168">Everyone will immediately lose access to the <ph name="GROUP_NAME" /> tab group, and it will be deleted from all devices</translation>
 <translation id="8633025649649592204">Recent activity</translation>
+<translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="870736955561925754">Close tab and delete group?</translation>
 <translation id="8714939927607906138">Lower price</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Created <ph name="NUM_MONTHS_ONE" /> month ago}other{Created <ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
+<translation id="8804742093141782941">Keep group</translation>
 <translation id="8820741577754260431">See price drops on your tabs</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>

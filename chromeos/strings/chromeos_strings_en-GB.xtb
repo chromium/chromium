@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1343442362630695901">salt lake</translation>
 <translation id="1348657754632799065">Recording bar</translation>
+<translation id="1350909945461913813">Make sure that you save any work</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1371650399987522809">Feedback for wallpaper powered by Google AI</translation>
 <translation id="1374385338586507108">Define</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK version:</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Choose a theme and then select the underlined words to personalise your AI images.</translation>
 <translation id="2045814230297767491">cutlery</translation>
 <translation id="2047316797244836561">Please connect to a network and reload the page to view screen saver.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">No speech detected</translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2468124392950503650">Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE" />prompt guide<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Use Help me write to create a draft or refine existing work, powered by Google AI</translation>
 <translation id="2480572840229215612">crabs</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
@@ -685,6 +688,7 @@
 <translation id="4474142134969976028">No matching results</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
+<translation id="4486524074141928967">You will be signed out at <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift or <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interface colour</translation>
 <translation id="4503223151711056411">Left arrow</translation>
@@ -908,6 +912,7 @@
 <translation id="5595623927872580850">grey</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
+<translation id="5613201299517339763">You've been signed out</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -972,6 +977,7 @@
 <translation id="5931523347251946569">File not found</translation>
 <translation id="5938286923316838007">Can't create recording names for this content</translation>
 <translation id="5939518447894949180">Reset</translation>
+<translation id="5942727615796467094">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5946538341867151940">You are not connected yet. If your mobile operator recommends a custom APN, enter the APN information by selecting '+ New APN'</translation>
 <translation id="5947266287934282605">If the last day of the month is before this day, data will be reset on the last day of the month</translation>
@@ -1063,6 +1069,7 @@
 <translation id="6352210854422428614">different planet</translation>
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="6359919876285606596">This action is permanent and can't be undone</translation>
+<translation id="6368342879959028556">When you select 'Create with AI', write a custom prompt. Or, you can select 'AI wallpapers' to choose a theme and then select the underlined words to personalise your AI wallpaper.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6373461326814131011">pond</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1086,6 +1093,7 @@
 <translation id="6447630859861661624">Go to account settings</translation>
 <translation id="6462978824459367242">Add APN button is now enabled</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{Rescan page {PAGE_NUMBER}?}other{Rescan page {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Your three most recent prompts and outputs. You can only access these while you're using Wallpaper and style.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">boats</translation>
 <translation id="64778964625672495">dark red</translation>
@@ -1131,6 +1139,16 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">coral pink</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Select 'Inspire me' to get more unique and varied AI images options.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="6673898378497337661">keyboard brightness up</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6694534975463174713">lock</translation>

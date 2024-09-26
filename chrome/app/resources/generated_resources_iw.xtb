@@ -3496,6 +3496,7 @@
 <translation id="3487649228420469005">הסריקה הסתיימה</translation>
 <translation id="3488199663160411179">שם</translation>
 <translation id="3490695139702884919">‏מתבצעת הורדה… ‎<ph name="PERCENT" />%‎</translation>
+<translation id="3491171603443463516">ניתן לשחזר את הנתונים המקומיים במקרה שקוד האימות או הסיסמה נשכחו</translation>
 <translation id="3491669675709357988">‏בחשבון של הילד או הילדה שלך לא מוגדרת בקרת הורים של Family Link. יש לך אפשרות להוסיף בקרת הורים לאחר סיום ההגדרה. באפליקציה 'מה חדש ב-Chromebook' מפורט מידע נוסף על בקרת הורים.</translation>
 <translation id="3491678231052507920">‏אתרים משתמשים בדרך כלל בנתונים ובמכשירים של מציאות מדומה כדי לאפשר כניסה לפעילויות VR</translation>
 <translation id="3493043608231401654">הסרה של <ph name="TAB_TITLE" /> מקבוצת הכרטיסיות</translation>
@@ -5358,7 +5359,6 @@
 <translation id="4838327282952368871">חלומי</translation>
 <translation id="4838836835474292213">גישת הקריאה אל הלוח מותרת</translation>
 <translation id="4838907349371614303">הסיסמה עודכנה</translation>
-<translation id="4838958829619609362">בחירה בשפה שאינה <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">שמ&amp;ירת סרטון כ...</translation>
 <translation id="4839910546484524995">צריך לבדוק את המכשיר</translation>
 <translation id="4840096453115567876">לצאת מהמצב האנונימי בכל זאת?</translation>
@@ -5968,7 +5968,6 @@
 <translation id="5287425679749926365">החשבונות שלך</translation>
 <translation id="5288106344236929384">עוד פעולות ואפשרויות למפתחות גישה לחשבון <ph name="USERNAME" /> ב-<ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">פתיחה &amp;מחדש של הכרטיסייה שנסגרה</translation>
-<translation id="52895863590846877">הדף לא ב<ph name="LANGUAGE" /></translation>
 <translation id="5290020561438336792">‏מחשב ומכשיר Cast ברשתות Wi-Fi שונות (לדוגמה, ‎2.4 GHz
     לעומת ‎5 GHz)</translation>
 <translation id="52912272896845572">קובץ המפתח הפרטי אינו חוקי</translation>
@@ -8114,7 +8113,6 @@
 <translation id="686366188661646310">למחוק את הסיסמה?</translation>
 <translation id="6863925886424789941">הקולוסיאום</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
-<translation id="6865598234501509159">הדף לא ב<ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">‏יומני אירועים של WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">נמוכה</translation>
 <translation id="686664946474413495">טמפרטורת צבע</translation>
@@ -8735,7 +8733,6 @@
 <translation id="7343372807593926528">יש לתאר את הבעיה לפני שליחת המשוב.</translation>
 <translation id="7344585835349671209">‏ניהול אישורי HTTPS/SSL במכשיר שלך</translation>
 <translation id="7345706641791090287">עליך לאשר את הסיסמה שלך</translation>
-<translation id="7345919885156673810">בחירה בשפה שאינה <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7347751611463936647">‏כדי להשתמש בתוסף הזה, יש להקליד "<ph name="EXTENSION_KEYWORD" />" ואז "TAB", ולאחר מכן להקליד את הפקודה או את מונח החיפוש.</translation>
 <translation id="7347943691222276892">אפשר ללחוץ על הלחצן הזה כדי לצאת מדף המשנה <ph name="SUBPAGE_TITLE" />.</translation>

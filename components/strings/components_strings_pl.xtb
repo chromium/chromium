@@ -379,6 +379,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1658111267661135323">TV i wideo</translation>
 <translation id="1658918301167915956">urządzenia Bluetooth</translation>
 <translation id="1662550410081243962">Zapisuj i automatycznie uzupełniaj informacje o formach płatności</translation>
+<translation id="1662980953334786797">Ta sama kolejność</translation>
 <translation id="1663943134801823270">Karty i adresy pochodzą z Chrome. Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolimerowa płyta fleksograficzna</translation>
 <translation id="166624440456221306">Usuń tabelę porównawczą</translation>
@@ -1659,6 +1660,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4023431997072828269">Twoje dane będą widoczne dla innych, ponieważ połączenie używane do przesłania formularza nie jest bezpieczne.</translation>
 <translation id="4025325634010721551">Zasady zostały załadowane ponownie</translation>
 <translation id="4025338605225449265">Waluty i wymiana walut</translation>
+<translation id="4025777154208238692">Odwrotna kolejność</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Atakujący mogą zobaczyć i zmienić<ph name="END_STRONG" /> informacje, które wysyłasz do witryny lub które z niej odbierasz.
       <ph name="LIST_ITEM" />Jeśli korzystasz z sieci publicznej, <ph name="BEGIN_STRONG" />najlepiej będzie odwiedzić tę witrynę później<ph name="END_STRONG" />. W zaufanej sieci, np. w domu lub pracy, ryzyko jest mniejsze.
@@ -3796,7 +3798,6 @@ Dodatkowe informacje:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim urządzeniu – umożliwi to szybsze płatności</translation>
 <translation id="7937554595067888181">Ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Więcej informacji o korzyściach z karty<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certyfikat serwera nie jest jeszcze ważny.</translation>
 <translation id="7941628148012649605">Koperta Chou 4</translation>
 <translation id="794169214536209644">Słodycze</translation>

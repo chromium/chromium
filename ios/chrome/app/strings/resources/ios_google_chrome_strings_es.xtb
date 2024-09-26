@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1066101356081285416">Chrome detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. El número de seguimiento del envío y el nombre del sitio web se enviarán a Google para ofrecer esta función y mejorar las funciones de compra de Google para todos. Puedes actualizar esta información en cualquier momento en la <ph name="BEGIN_LINK" />configuración de Seguimiento de envíos<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1143896152279775643">Tu contraseña se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir nueva pestaña en Chrome</translation>
 <translation id="1166460004393506534">Eliminar los datos de navegación en Chrome</translation>
@@ -38,6 +39,7 @@ Notas importantes:
 <translation id="1670609221633730681">Consejo de Chrome: elige la posición de la barra de direcciones</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Añade las URLs introducidas a tus marcadores de Chrome.</translation>
+<translation id="1799920918471566157">Consejos de Chrome</translation>
 <translation id="1830634592642484976">Actualmente, esta dirección está guardada en Chrome. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
