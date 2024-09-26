@@ -153,10 +153,17 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   /**
    * Returns whether the extension's action menu button should be displayed.
    */
-  private showActionMenu_(): boolean {
-    // TODO(crbug.com/339061151): Action menu should be visible for unsupported
-    // stage if there is a recommendationsUrl for the extension.
-    return this.mv2ExperimentStage !== Mv2ExperimentStage.UNSUPPORTED;
+  private showActionMenu_(extension: chrome.developerPrivate.ExtensionInfo):
+      boolean {
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return true;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return !!extension.recommendationsUrl;
+    }
   }
 
   /**
@@ -164,14 +171,32 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * should be displayed.
    */
   private showExtensionFindAlternativeAction_(): boolean {
-    // Button is only visible for the disabled stage iff extension has a
-    // recommendations url.
-    // TODO(crbug.com/339061151): Action should also be visible for the
-    // unsupported stage.
-    return this.mv2ExperimentStage ===
-        Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
-        this.extensionWithActionMenuOpened_ &&
-        !!this.extensionWithActionMenuOpened_.recommendationsUrl;
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+        return false;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return this.extensionWithActionMenuOpened_ &&
+            !!this.extensionWithActionMenuOpened_.recommendationsUrl;
+    }
+  }
+
+  /**
+   * Returns whether the keep button in the extension's action menu should be
+   * displayed.
+   */
+  private showExtensionKeepAction_(): boolean {
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return true;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return false;
+    }
   }
 
   /**
@@ -179,9 +204,16 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * displayed.
    */
   private showExtensionRemoveAction_(): boolean {
-    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING &&
-        this.extensionWithActionMenuOpened_ &&
-        !this.extensionWithActionMenuOpened_.mustRemainInstalled;
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+        return this.extensionWithActionMenuOpened_ &&
+            !this.extensionWithActionMenuOpened_.mustRemainInstalled;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return false;
+    }
   }
 
   /**
@@ -251,7 +283,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
     assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension');
+      'Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension');
     const recommendationsUrl: string|undefined =
         event.model.item.recommendationsUrl;
     assert(!!recommendationsUrl);
@@ -299,10 +331,20 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * extension whose find alternative action is clicked.
    */
   private onFindAlternativeExtensionActionClick_(): void {
-    assert(
-        this.mv2ExperimentStage === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        assertNotReached();
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+        break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension');
+        break;
+    }
+
     const recommendationsUrl: string|undefined =
         this.extensionWithActionMenuOpened_.recommendationsUrl;
     assert(!!recommendationsUrl);

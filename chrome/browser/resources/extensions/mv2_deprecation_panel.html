@@ -67,7 +67,7 @@
               on-click="onExtensionActionMenuClick_"
               title="$i18n{moreOptions}"
               aria-label="[[getActionMenuButtonLabelFor_(item.name)]]"
-              hidden$="[[!showActionMenu_(mv2ExperimentStage)]]">
+              hidden$="[[!showActionMenu_(item, mv2ExperimentStage)]]">
           </cr-icon-button>
         </div>
       </div>
@@ -81,7 +81,8 @@
         Find alternatives
       </button>
       <button class="dropdown-item" id="keepAction"
-          on-click="onKeepExtensionActionClick_">
+          on-click="onKeepExtensionActionClick_"
+          hidden$="[[!showExtensionKeepAction_(mv2ExperimentStage)]]">
         $i18n{mv2DeprecationPanelKeepForNowButton}
       </button>
       <button class="dropdown-item" id="removeAction"

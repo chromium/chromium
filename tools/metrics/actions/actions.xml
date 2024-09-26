@@ -10601,6 +10601,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action
+    name="Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the find alternative button for an extension in
+    chrome://extensions during the MV2 'unsupported' experiment stage.
+  </description>
+</action>
+
+<action
     name="Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension.DetailPage">
   <owner>emiliapaz@chomium.org</owner>
   <owner>extensions-core@chromium.org</owner>
