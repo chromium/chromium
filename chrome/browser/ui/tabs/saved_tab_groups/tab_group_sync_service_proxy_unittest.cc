@@ -474,7 +474,8 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabGroupMapping) {
   const base::Uuid sync_id = retrieved_group->saved_guid();
 
   tab_groups::TabGroupId new_local_id = tab_groups::TabGroupId::GenerateNew();
-  service()->UpdateLocalTabGroupMapping(sync_id, new_local_id);
+  service()->UpdateLocalTabGroupMapping(sync_id, new_local_id,
+                                        OpeningSource::kOpenedFromRevisitUi);
 
   retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());
@@ -495,7 +496,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveLocalTabGroupMapping) {
   EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
 
   const base::Uuid sync_id = retrieved_group->saved_guid();
-  service()->RemoveLocalTabGroupMapping(local_id);
+  service()->RemoveLocalTabGroupMapping(local_id, ClosingSource::kClosedByUser);
 
   retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());

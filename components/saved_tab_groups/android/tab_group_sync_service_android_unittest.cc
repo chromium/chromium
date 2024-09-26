@@ -325,15 +325,18 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
   auto j_group_id = UuidToJavaString(env, group_id);
 
   // Update the mapping.
-  EXPECT_CALL(tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(Eq(group_id), Eq(test_tab_group_id_)));
+  EXPECT_CALL(
+      tab_group_sync_service_,
+      UpdateLocalTabGroupMapping(Eq(group_id), Eq(test_tab_group_id_),
+                                 Eq(OpeningSource::kAutoOpenedFromSync)));
   Java_TabGroupSyncServiceAndroidUnitTest_testUpdateLocalTabGroupMapping(
       AttachCurrentThread(), j_test_, j_group_id,
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_));
 
   // Remove the mapping.
   EXPECT_CALL(tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(Eq(test_tab_group_id_)));
+              RemoveLocalTabGroupMapping(Eq(test_tab_group_id_),
+                                         Eq(ClosingSource::kDeletedByUser)));
   Java_TabGroupSyncServiceAndroidUnitTest_testRemoveLocalTabGroupMapping(
       AttachCurrentThread(), j_test_,
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_));

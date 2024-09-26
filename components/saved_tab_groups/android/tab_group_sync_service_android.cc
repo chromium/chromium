@@ -312,20 +312,25 @@ void TabGroupSyncServiceAndroid::UpdateLocalTabGroupMapping(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
     const JavaParamRef<jstring>& j_sync_id,
-    const JavaParamRef<jobject>& j_local_id) {
+    const JavaParamRef<jobject>& j_local_id,
+    jint j_opening_source) {
   auto sync_id = JavaStringToUuid(env, j_sync_id);
   auto local_id =
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_id);
-  tab_group_sync_service_->UpdateLocalTabGroupMapping(sync_id, local_id);
+  auto opening_source = static_cast<OpeningSource>(j_opening_source);
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(sync_id, local_id,
+                                                      opening_source);
 }
 
 void TabGroupSyncServiceAndroid::RemoveLocalTabGroupMapping(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_local_id) {
+    const JavaParamRef<jobject>& j_local_id,
+    jint j_closing_source) {
   auto local_id =
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_id);
-  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_id);
+  auto closing_source = static_cast<ClosingSource>(j_closing_source);
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_id, closing_source);
 }
 
 void TabGroupSyncServiceAndroid::UpdateLocalTabId(

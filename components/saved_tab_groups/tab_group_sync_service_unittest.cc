@@ -73,7 +73,7 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void,
               ConnectLocalTabGroup,
-              (const base::Uuid&, const LocalTabGroupID&));
+              (const base::Uuid&, const LocalTabGroupID&, OpeningSource));
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
@@ -312,7 +312,8 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
 
   // Now close out the group from tab model and notify service.
   // The entry should be cleaned up from prefs.
-  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_);
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_,
+                                                      ClosingSource::kUnknown);
 
   deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
   EXPECT_EQ(0u, deleted_ids.size());
@@ -457,10 +458,11 @@ TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
 TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   EXPECT_CALL(*coordinator_,
-              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id,
+                                   OpeningSource::kOpenedFromRevisitUi))
       .Times(1);
-  tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
-                                                local_id);
+  tab_group_sync_service_->ConnectLocalTabGroup(
+      group_2_.saved_guid(), local_id, OpeningSource::kOpenedFromRevisitUi);
 }
 
 TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
@@ -468,13 +470,16 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
   tab_group_sync_service_->SetIsInitializedForTesting(false);
 
   // Expect ConnectLocalTabGroup to not be called before init.
-  EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, _)).Times(0);
+  EXPECT_CALL(*coordinator_,
+              ConnectLocalTabGroup(_, _, OpeningSource::kAutoOpenedFromSync))
+      .Times(0);
 
-  tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
-                                                local_id);
+  tab_group_sync_service_->ConnectLocalTabGroup(
+      group_2_.saved_guid(), local_id, OpeningSource::kAutoOpenedFromSync);
   // Initialize model and connect the group.
   EXPECT_CALL(*coordinator_,
-              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id,
+                                   OpeningSource::kAutoOpenedFromSync))
       .Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
   task_environment_.RunUntilIdle();
@@ -485,8 +490,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
   LocalTabGroupID local_id_4 = test::GenerateRandomTabGroupID();
   ASSERT_FALSE(group_4_.local_group_id().has_value());
 
-  tab_group_sync_service_->UpdateLocalTabGroupMapping(group_4_.saved_guid(),
-                                                      local_id_4);
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      group_4_.saved_guid(), local_id_4, OpeningSource::kUnknown);
 
   auto retrieved_group =
       tab_group_sync_service_->GetGroup(group_4_.saved_guid());
@@ -507,8 +512,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_AfterInit) {
   LocalTabGroupID local_id_2 = test::GenerateRandomTabGroupID();
-  tab_group_sync_service_->UpdateLocalTabGroupMapping(group_1_.saved_guid(),
-                                                      local_id_2);
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      group_1_.saved_guid(), local_id_2, OpeningSource::kUnknown);
 
   auto retrieved_group = tab_group_sync_service_->GetGroup(local_id_2);
   EXPECT_TRUE(retrieved_group.has_value());
@@ -525,7 +530,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_AfterInit) {
 TEST_F(TabGroupSyncServiceTest, RemoveLocalTabGroupMapping) {
   auto retrieved_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_TRUE(retrieved_group.has_value());
-  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_);
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_,
+                                                      ClosingSource::kUnknown);
 
   retrieved_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_FALSE(retrieved_group.has_value());
@@ -1060,11 +1066,14 @@ TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
   ASSERT_EQ(3u, all_groups.size());
 
   tab_group_sync_service_->UpdateLocalTabGroupMapping(
-      all_groups[0].saved_guid(), test::GenerateRandomTabGroupID());
+      all_groups[0].saved_guid(), test::GenerateRandomTabGroupID(),
+      OpeningSource::kUnknown);
   tab_group_sync_service_->UpdateLocalTabGroupMapping(
-      all_groups[1].saved_guid(), test::GenerateRandomTabGroupID());
+      all_groups[1].saved_guid(), test::GenerateRandomTabGroupID(),
+      OpeningSource::kUnknown);
   tab_group_sync_service_->UpdateLocalTabGroupMapping(
-      all_groups[2].saved_guid(), test::GenerateRandomTabGroupID());
+      all_groups[2].saved_guid(), test::GenerateRandomTabGroupID(),
+      OpeningSource::kUnknown);
 
   // Groups are inserted FILO style (like a stack data structure).
   all_groups = tab_group_sync_service_->GetAllGroups();

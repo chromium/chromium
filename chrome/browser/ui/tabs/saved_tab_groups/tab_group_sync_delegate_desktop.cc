@@ -225,7 +225,8 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   tab_strip_model->AddToGroupForRestore(tab_indices, tab_group_id);
 
-  service_->UpdateLocalTabGroupMapping(saved_group.saved_guid(), tab_group_id);
+  service_->UpdateLocalTabGroupMapping(saved_group.saved_guid(), tab_group_id,
+                                       OpeningSource::kOpenedFromRevisitUi);
 
   TabGroup* const tab_group =
       tab_strip_model->group_model()->GetTabGroup(tab_group_id);

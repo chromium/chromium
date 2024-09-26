@@ -395,12 +395,13 @@ void TabGroupSyncServiceImpl::OpenTabGroup(
 
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   if (!is_initialized_) {
     VLOG(2) << __func__ << " Invoked before init";
-    pending_actions_.emplace_back(
-        base::BindOnce(&TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping,
-                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    pending_actions_.emplace_back(base::BindOnce(
+        &TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping,
+        weak_ptr_factory_.GetWeakPtr(), sync_id, local_id, opening_source));
     return;
   }
 
@@ -411,10 +412,19 @@ void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
   RemoveLocallyClosedGroupIdFromPref(sync_id);
 
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
+
+  // Record metrics.
+  EventDetails event_details(TabGroupEvent::kTabGroupOpened);
+  event_details.local_tab_group_id = local_id;
+  event_details.opening_source = opening_source;
+
+  const SavedTabGroup* group = model_->Get(local_id);
+  metrics_logger_->LogEvent(event_details, group, nullptr);
 }
 
 void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    ClosingSource closing_source) {
   VLOG(2) << __func__;
   RemoveDeletedGroupIdFromPref(local_id);
 
@@ -427,6 +437,12 @@ void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
   AddLocallyClosedGroupIdToPref(group->saved_guid());
 
   model_->OnGroupClosedInTabStrip(local_id);
+
+  // Record metrics.
+  EventDetails event_details(TabGroupEvent::kTabGroupClosed);
+  event_details.local_tab_group_id = local_id;
+  event_details.closing_source = closing_source;
+  metrics_logger_->LogEvent(event_details, group, nullptr);
 }
 
 void TabGroupSyncServiceImpl::UpdateLocalTabId(
@@ -445,17 +461,18 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 
 void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   if (!is_initialized_) {
     VLOG(2) << __func__ << " Invoked before init";
-    pending_actions_.emplace_back(
-        base::BindOnce(&TabGroupSyncServiceImpl::ConnectLocalTabGroup,
-                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    pending_actions_.emplace_back(base::BindOnce(
+        &TabGroupSyncServiceImpl::ConnectLocalTabGroup,
+        weak_ptr_factory_.GetWeakPtr(), sync_id, local_id, opening_source));
     return;
   }
 
   VLOG(2) << __func__;
-  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id, opening_source);
 }
 
 bool TabGroupSyncServiceImpl::IsRemoteDevice(

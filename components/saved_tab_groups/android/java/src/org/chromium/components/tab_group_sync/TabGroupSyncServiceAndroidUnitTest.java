@@ -214,12 +214,12 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testUpdateLocalTabGroupMapping(String syncId, LocalTabGroupId localId) {
-        mService.updateLocalTabGroupMapping(syncId, localId);
+        mService.updateLocalTabGroupMapping(syncId, localId, OpeningSource.AUTO_OPENED_FROM_SYNC);
     }
 
     @CalledByNative
     public void testRemoveLocalTabGroupMapping(LocalTabGroupId localId) {
-        mService.removeLocalTabGroupMapping(localId);
+        mService.removeLocalTabGroupMapping(localId, ClosingSource.DELETED_BY_USER);
     }
 
     @CalledByNative

@@ -274,7 +274,8 @@ int TabsCloser::CloseTabs() {
       if (saved_group) {
         local_to_saved_group_ids_.insert(
             std::make_pair(local_id, saved_group->saved_guid()));
-        sync_service->RemoveLocalTabGroupMapping(local_id);
+        sync_service->RemoveLocalTabGroupMapping(
+            local_id, tab_groups::ClosingSource::kCloseAllTabs);
       }
     }
   }
@@ -330,7 +331,8 @@ int TabsCloser::UndoCloseTabs() {
       tab_groups_to_delete.insert(tab_group);
       continue;
     }
-    sync_service->ConnectLocalTabGroup(saved_id, local_id);
+    sync_service->ConnectLocalTabGroup(
+        saved_id, local_id, tab_groups::OpeningSource::kUndoCloseAllTabs);
   }
   for (const TabGroup* tab_group : tab_groups_to_delete) {
     web_state_list->DeleteGroup(tab_group);

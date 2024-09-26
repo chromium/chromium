@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -38,11 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
-import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
-import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
@@ -149,17 +146,14 @@ public class TabGroupSyncUtilsUnitTest {
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(
                 mTabGroupSyncService, mTabGroupModelFilter);
 
-        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_2);
-
-        // Verify metrics.
-        ArgumentCaptor<EventDetails> eventDetailsCaptor =
-                ArgumentCaptor.forClass(EventDetails.class);
-        verify(mTabGroupSyncService).recordTabGroupEvent(eventDetailsCaptor.capture());
-        EventDetails eventDetails = eventDetailsCaptor.getValue();
-        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
-        assertEquals(LOCAL_TAB_GROUP_ID_2, eventDetails.localGroupId);
-        assertEquals(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE, eventDetails.closingSource);
+        verify(mTabGroupSyncService, never())
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE));
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_2),
+                        eq(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE));
     }
 
     @Test
@@ -179,7 +173,8 @@ public class TabGroupSyncUtilsUnitTest {
 
         // Shouldn't crash and never called.
         verify(mTabGroupModelFilter, never()).getRootIdFromStableId(any());
-        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService, never())
+                .removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1), anyInt());
     }
 
     @Test

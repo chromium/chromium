@@ -266,7 +266,7 @@ void SavedTabGroupModelListener::ResumeLocalObservation() {
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
-  service_->RemoveLocalTabGroupMapping(tab_group_id);
+  service_->RemoveLocalTabGroupMapping(tab_group_id, ClosingSource::kUnknown);
   local_tab_group_listeners_.erase(tab_group_id);
 }
 

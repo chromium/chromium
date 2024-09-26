@@ -96,13 +96,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
-                                  const LocalTabGroupID& local_id) override;
-  void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id) override;
+                                  const LocalTabGroupID& local_id,
+                                  OpeningSource opening_source) override;
+  void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id,
+                                  ClosingSource closing_source) override;
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
   void ConnectLocalTabGroup(const base::Uuid& sync_id,
-                            const LocalTabGroupID& local_id) override;
+                            const LocalTabGroupID& local_id,
+                            OpeningSource opening_source) override;
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;

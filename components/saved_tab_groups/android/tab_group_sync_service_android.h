@@ -123,10 +123,12 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   void UpdateLocalTabGroupMapping(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_caller,
                                   const JavaParamRef<jstring>& j_sync_id,
-                                  const JavaParamRef<jobject>& j_local_id);
+                                  const JavaParamRef<jobject>& j_local_id,
+                                  jint j_opening_source);
   void RemoveLocalTabGroupMapping(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_caller,
-                                  const JavaParamRef<jobject>& j_local_id);
+                                  const JavaParamRef<jobject>& j_local_id,
+                                  jint j_closing_source);
   void UpdateLocalTabId(JNIEnv* env,
                         const JavaParamRef<jobject>& j_caller,
                         const JavaParamRef<jobject>& j_group_id,

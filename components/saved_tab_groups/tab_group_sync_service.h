@@ -158,17 +158,24 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                             std::unique_ptr<TabGroupActionContext> context) = 0;
 
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
+  // `opening_source` and `closing_source` refer to the user actions and
+  // callsites that result in invoking these methods.
   virtual void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
-                                          const LocalTabGroupID& local_id) = 0;
-  virtual void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id) = 0;
+                                          const LocalTabGroupID& local_id,
+                                          OpeningSource opening_source) = 0;
+  virtual void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id,
+                                          ClosingSource closing_source) = 0;
   virtual void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                                 const base::Uuid& sync_tab_id,
                                 const LocalTabID& local_tab_id) = 0;
 
   // Called from the UI layer such as tab group restore from recent tabs or undo
   // tab group closure to reconnect a local tab group to a saved tab group.
+  // `opening_source` refers to the callsite that results in invoking this
+  // method.
   virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
-                                    const LocalTabGroupID& local_id) = 0;
+                                    const LocalTabGroupID& local_id,
+                                    OpeningSource opening_source) = 0;
 
   // Attribution related methods.
   // Helper method to determine whether a given cache guid corresponds to a

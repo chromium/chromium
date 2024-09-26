@@ -56,14 +56,16 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void,
               UpdateLocalTabGroupMapping,
-              (const base::Uuid&, const LocalTabGroupID&));
-  MOCK_METHOD(void, RemoveLocalTabGroupMapping, (const LocalTabGroupID&));
+              (const base::Uuid&, const LocalTabGroupID&, OpeningSource));
+  MOCK_METHOD(void,
+              RemoveLocalTabGroupMapping,
+              (const LocalTabGroupID&, ClosingSource));
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
   MOCK_METHOD(void,
               ConnectLocalTabGroup,
-              (const base::Uuid&, const LocalTabGroupID&));
+              (const base::Uuid&, const LocalTabGroupID&, OpeningSource));
   MOCK_METHOD(bool,
               IsRemoteDevice,
               (const std::optional<std::string>&),

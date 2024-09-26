@@ -95,14 +95,12 @@ public class LocalTabGroupMutationHelper {
         LocalTabGroupId localTabGroupId =
                 TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
         assert localTabGroupId != null : "Local tab group ID is null after creating a group!";
-        mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, localTabGroupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(
+                tabGroup.syncId, localTabGroupId, openingSource);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(
                     localTabGroupId, syncTabId, tabIdMappings.get(syncTabId));
         }
-
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ true, openingSource, localTabGroupId);
     }
 
     /**
@@ -237,9 +235,7 @@ public class LocalTabGroupMutationHelper {
         getTabModel().closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
 
         // Remove mapping from service. Collect metrics before that.
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ false, closingSource, tabGroupId);
-        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
+        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);
     }
 
     private List<Tab> findLocalTabsNotInSyncPostStartup(SavedTabGroup savedTabGroup) {

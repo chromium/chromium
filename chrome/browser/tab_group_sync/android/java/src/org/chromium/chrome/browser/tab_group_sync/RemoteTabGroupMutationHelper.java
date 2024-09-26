@@ -140,9 +140,7 @@ public class RemoteTabGroupMutationHelper {
     public void handleCommittedTabGroupClosure(LocalTabGroupId groupId, boolean wasHiding) {
         int closingSource =
                 wasHiding ? ClosingSource.CLOSED_BY_USER : ClosingSource.DELETED_BY_USER;
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ false, closingSource, groupId);
-        mTabGroupSyncService.removeLocalTabGroupMapping(groupId);
+        mTabGroupSyncService.removeLocalTabGroupMapping(groupId, closingSource);
         if (!wasHiding) {
             // When deleting drop the group from sync entirely.
             removeGroup(groupId);

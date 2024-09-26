@@ -93,7 +93,8 @@ void CloseTabGroupLocally(const TabGroup* tab_group,
                           TabGroupSyncService* sync_service) {
   // `sync_service` is nullptr in incognito.
   if (sync_service && sync_service->GetGroup(tab_group->tab_group_id())) {
-    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id());
+    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id(),
+                                             ClosingSource::kClosedByUser);
   }
   CloseAllWebStatesInGroup(*web_state_list, tab_group,
                            WebStateList::CLOSE_USER_ACTION);

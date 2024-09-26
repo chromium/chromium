@@ -253,8 +253,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           // This is done automatically for the old service, not the new one.
           std::optional<tab_groups::SavedTabGroup> s =
               tab_group_service->GetGroup(group_id.value());
-          tab_group_service->ConnectLocalTabGroup(s->saved_guid(),
-                                                  group_id.value());
+          tab_group_service->ConnectLocalTabGroup(
+              s->saved_guid(), group_id.value(),
+              tab_groups::OpeningSource::kOpenedFromTabRestore);
         }
       }
     }

@@ -719,7 +719,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroup) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillRepeatedly(Return(TestSavedGroup()));
 
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
   web_state_list->DeleteGroup(group);
@@ -741,7 +741,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillRepeatedly([&saved_group] { return saved_group; });
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .WillOnce([&saved_group] { saved_group = std::nullopt; });
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveTab(tab_group_id, _)).Times(0);
@@ -771,7 +771,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()));
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
   web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);

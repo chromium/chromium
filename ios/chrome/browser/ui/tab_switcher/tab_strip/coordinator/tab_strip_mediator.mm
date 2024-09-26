@@ -293,7 +293,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
     afterMoveWebStateList->CreateGroup({afterMoveIndex}, visualData,
                                        localGroupID);
-    _tabGroupSyncService->UpdateLocalTabGroupMapping(savedID, localGroupID);
+    _tabGroupSyncService->UpdateLocalTabGroupMapping(
+        savedID, localGroupID, tab_groups::OpeningSource::kCancelCloseLastTab);
 
     // In case the tab has changed (URL or title), update it.
     _tabGroupSyncService->UpdateLocalTabId(
@@ -733,7 +734,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // group.
       if (!group->range().contains(indexToKeep) &&
           _tabGroupSyncService->GetGroup(group->tab_group_id())) {
-        _tabGroupSyncService->RemoveLocalTabGroupMapping(group->tab_group_id());
+        _tabGroupSyncService->RemoveLocalTabGroupMapping(
+            group->tab_group_id(), tab_groups::ClosingSource::kCloseOtherTabs);
         closedGroupCount++;
       }
     }
@@ -1005,7 +1007,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
             const base::Uuid savedID =
                 _tabGroupSyncService->GetGroup(localID)->saved_guid();
 
-            _tabGroupSyncService->RemoveLocalTabGroupMapping(localID);
+            _tabGroupSyncService->RemoveLocalTabGroupMapping(
+                localID, tab_groups::ClosingSource::kCloseLastTab);
 
             // Trying to move the last tab of group.
             TabStripLastTabDraggedAlertCommand* command =

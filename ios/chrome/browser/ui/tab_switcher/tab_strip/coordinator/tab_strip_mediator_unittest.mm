@@ -743,7 +743,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -768,7 +768,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -793,7 +793,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -817,7 +817,7 @@ TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
       builder.GetTabGroupForIdentifier('1')->tab_group_id();
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id)).Times(0);
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id))
+              RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
@@ -1191,7 +1191,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
 
   const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
   SavedTabGroup saved_group = TestSavedGroup(saved_id);
-  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
       .WillRepeatedly(Return(saved_group));
@@ -1243,7 +1243,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
 
   const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
   SavedTabGroup saved_group = TestSavedGroup(saved_id);
-  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
       .WillRepeatedly(Return(saved_group));
@@ -1353,7 +1353,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
 
   // Make sure the service is updated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
@@ -1408,7 +1408,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
       .WillOnce(Return(saved_group));
 
   // Make sure that no updates are done to the service.
-  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _))
+  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabId(_, _, _)).Times(0);
   EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _)).Times(0);
@@ -1458,7 +1458,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
 
   // Make sure the service is udpated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
@@ -1521,7 +1521,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
 
   // Make sure the service is udpated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),

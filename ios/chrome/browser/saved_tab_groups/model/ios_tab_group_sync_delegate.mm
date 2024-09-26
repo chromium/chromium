@@ -553,7 +553,8 @@ std::optional<LocalTabGroupID> IOSTabGroupSyncDelegate::CreateLocalTabGroupImpl(
   // Do the association on the server before creating it in the WebStateList to
   // avoid creating another group in the service.
   sync_service_->UpdateLocalTabGroupMapping(saved_tab_group.saved_guid(),
-                                            local_group_id);
+                                            local_group_id,
+                                            OpeningSource::kAutoOpenedFromSync);
   for (auto const& [sync_tab_id, local_tab_id] : sync_to_local_tab_mapping) {
     sync_service_->UpdateLocalTabId(local_group_id, sync_tab_id, local_tab_id);
   }

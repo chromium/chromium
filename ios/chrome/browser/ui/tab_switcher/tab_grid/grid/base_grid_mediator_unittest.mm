@@ -56,6 +56,7 @@
 #import "url/gurl.h"
 
 using tab_groups::TabGroupId;
+using testing::_;
 
 namespace {
 
@@ -800,7 +801,8 @@ TEST_P(BaseGridMediatorTest, UnGroup) {
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
   EXPECT_EQ(3, web_state_list->count());
 
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id)).Times(0);
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id, _))
+      .Times(0);
 
   [mediator_ ungroupTabGroup:group];
   EXPECT_EQ(0u, web_state_list->GetGroups().size());
@@ -829,7 +831,8 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
   EXPECT_EQ(1u, other_web_state_list->GetGroups().size());
   EXPECT_EQ(7, other_web_state_list->count());
 
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id)).Times(0);
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id, _))
+      .Times(0);
 
   [mediator_ ungroupTabGroup:group];
   EXPECT_EQ(0u, other_web_state_list->GetGroups().size());
@@ -857,7 +860,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
 
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
       .WillOnce(testing::Return(TestSavedGroup()));
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
 
   [mediator_ closeItemsWithTabIDs:{} groupIDs:{tab_group_id} tabCount:1];
@@ -883,7 +886,7 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
 
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
       .WillOnce(testing::Return(TestSavedGroup()));
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
 
   [mediator_ closeItemWithIdentifier:[GridItemIdentifier
@@ -915,7 +918,7 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
 
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
       .WillOnce(testing::Return(TestSavedGroup()));
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
 
   [mediator_
@@ -967,8 +970,8 @@ TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
       .WillOnce(testing::Return(TestSavedGroup()));
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id_2))
       .WillOnce(testing::Return(TestSavedGroup()));
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_1));
-  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_2));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_1, _));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_2, _));
   EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id_1)).Times(0);
   EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id_2)).Times(0);
 

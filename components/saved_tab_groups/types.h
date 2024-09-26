@@ -52,10 +52,29 @@ enum class TriggerSource {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
 enum class OpeningSource {
   kUnknown = 0,
+  // Triggered by opening a tab group from the revisit UI surface.
   kOpenedFromRevisitUi = 1,
+  // Android / iOS only. Triggered when a new group added from sync is
+  // auto-opened.
   kAutoOpenedFromSync = 2,
+  // Desktop only. Triggered by restoring a tab group from the recently closed
+  // tabs UI surface. The group could be either of two states: (a) deleted from
+  // sync (b) exists in sync, but closed locally.
   kOpenedFromTabRestore = 3,
-  kMaxValue = kOpenedFromTabRestore,
+  // iOS only. Triggered by undo action on close all tabs on the regular tab
+  // grid.
+  kUndoCloseAllTabs = 4,
+  // iOS only. Triggered when user cancels the tab group closure from the dialog
+  // shown when the last tab was closed in a group in tab strip.
+  kCancelCloseLastTab = 5,
+  // Desktop only. Triggered when a group's local ID is reconnected with its
+  // sync ID on session restore.
+  kConnectOnSessionRestore = 6,
+  // Desktop only. Triggered when a unsaved group from v1 implementation is
+  // migrated to autosave.
+  kAutoSaveOnSessionRestoreForV1Group = 7,
+
+  kMaxValue = kAutoSaveOnSessionRestoreForV1Group,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpenReason)
 
@@ -64,12 +83,25 @@ enum class OpeningSource {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
 enum class ClosingSource {
   kUnknown = 0,
+  // Android / iOS only. Group was closed by user.
   kClosedByUser = 1,
+  // Android / iOS only. Group was explicitly deleted by user.
   kDeletedByUser = 2,
+  // Android / iOS only. Group was deleted from sync.
   kDeletedFromSync = 3,
+  // Android / iOS only. Group was closed on startup since it had been already
+  // deleted from sync.
   kCleanedUpOnStartup = 4,
+  // Android / iOS only. Group was closed when the last chrome instance was
+  // closed.
   kCleanedUpOnLastInstanceClosure = 5,
-  kMaxValue = kCleanedUpOnLastInstanceClosure,
+  // iOS only. Triggered when user selects close all tabs on the tab grid.
+  kCloseAllTabs = 6,
+  // iOS only. Triggered when user selects Close Other Tabs.
+  kCloseOtherTabs = 7,
+  // iOS only. Triggered when user closes the last tab in a group in tab strip.
+  kCloseLastTab = 8,
+  kMaxValue = kCloseLastTab,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupCloseReason)
 

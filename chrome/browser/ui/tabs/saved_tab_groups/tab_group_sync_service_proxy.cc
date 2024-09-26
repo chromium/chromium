@@ -209,12 +209,14 @@ void TabGroupSyncServiceProxy::OpenTabGroup(
 
 void TabGroupSyncServiceProxy::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   service_->model()->OnGroupOpenedInTabStrip(sync_id, local_id);
 }
 
 void TabGroupSyncServiceProxy::RemoveLocalTabGroupMapping(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    ClosingSource closing_source) {
   service_->model()->OnGroupClosedInTabStrip(local_id);
 }
 
@@ -229,7 +231,8 @@ void TabGroupSyncServiceProxy::UpdateLocalTabId(
 
 void TabGroupSyncServiceProxy::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   service_->ConnectRestoredGroupToSaveId(sync_id, local_id);
 }
 

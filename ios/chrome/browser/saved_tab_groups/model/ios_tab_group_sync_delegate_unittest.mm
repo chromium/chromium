@@ -251,7 +251,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
   EXPECT_CALL(*mock_service_,
-              UpdateLocalTabGroupMapping(saved_tab_group_id, _));
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _,
+                                         OpeningSource::kAutoOpenedFromSync));
 
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kFirstTabId, _));
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kSecondTabId, _));
@@ -291,7 +292,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
   EXPECT_CALL(*mock_service_,
-              UpdateLocalTabGroupMapping(saved_tab_group_id, _));
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _, _));
 
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kFirstTabId, _));
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kSecondTabId, _));
@@ -331,7 +332,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
   EXPECT_CALL(*mock_service_,
-              UpdateLocalTabGroupMapping(saved_tab_group_id, _));
+              UpdateLocalTabGroupMapping(saved_tab_group_id, _,
+                                         OpeningSource::kAutoOpenedFromSync));
 
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kFirstTabId, _));
   EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kSecondTabId, _));

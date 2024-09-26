@@ -126,12 +126,8 @@ public final class TabGroupSyncUtils {
             if (savedTabGroup.localId == null) continue;
 
             if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
-                tabGroupSyncService.removeLocalTabGroupMapping(savedTabGroup.localId);
-                recordTabGroupOpenCloseMetrics(
-                        tabGroupSyncService,
-                        /* open= */ false,
-                        ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE,
-                        savedTabGroup.localId);
+                tabGroupSyncService.removeLocalTabGroupMapping(
+                        savedTabGroup.localId, ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE);
             }
         }
     }

@@ -1008,7 +1008,9 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     if (sync_id) {
       const base::Uuid& sync_guid = base::Uuid::ParseLowercase(sync_id.value());
-      service->ConnectLocalTabGroup(sync_guid, local_id);
+      service->ConnectLocalTabGroup(
+          sync_guid, local_id,
+          tab_groups::OpeningSource::kConnectOnSessionRestore);
     } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
       // Default save any groups that are not saved yet. This happens when
       // a user goes from V1 of SavedTabGroups to V2 through an update.
@@ -1021,7 +1023,9 @@ class SessionRestoreImpl : public BrowserListObserver {
       if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
         // Ensure we listen for changes to the newly created group.
         // This is done automatically for the old service, not the new one.
-        service->ConnectLocalTabGroup(sync_guid, local_id);
+        service->ConnectLocalTabGroup(
+            sync_guid, local_id,
+            tab_groups::OpeningSource::kAutoSaveOnSessionRestoreForV1Group);
       }
     }
   }

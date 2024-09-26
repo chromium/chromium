@@ -234,7 +234,8 @@ void FakeTabGroupSyncService::OpenTabGroup(
 
 void FakeTabGroupSyncService::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   std::optional<int> index = GetIndexOf(local_id);
   if (!index.has_value()) {
     return;
@@ -244,7 +245,8 @@ void FakeTabGroupSyncService::UpdateLocalTabGroupMapping(
 }
 
 void FakeTabGroupSyncService::RemoveLocalTabGroupMapping(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    ClosingSource closing_source) {
   std::optional<int> index = GetIndexOf(local_id);
   if (!index.has_value()) {
     return;
@@ -275,7 +277,8 @@ void FakeTabGroupSyncService::UpdateLocalTabId(
 
 void FakeTabGroupSyncService::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    OpeningSource opening_source) {
   std::optional<int> index = GetIndexOf(sync_id);
   if (!index.has_value()) {
     return;
