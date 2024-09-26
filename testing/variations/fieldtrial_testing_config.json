@@ -7956,6 +7956,21 @@
             ]
         }
     ],
+    "DescribeIt": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240924",
+                    "enable_features": [
+                        "ReadAloudServerExperiments"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeskBarWindowOcclusionOptimization": [
         {
             "platforms": [
