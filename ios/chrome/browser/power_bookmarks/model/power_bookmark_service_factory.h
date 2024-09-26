@@ -18,9 +18,6 @@ class PowerBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static power_bookmarks::PowerBookmarkService* GetForProfile(
       ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static power_bookmarks::PowerBookmarkService* GetForBrowserState(
-      ProfileIOS* profile);
   static PowerBookmarkServiceFactory* GetInstance();
 
   PowerBookmarkServiceFactory(const PowerBookmarkServiceFactory&) = delete;
