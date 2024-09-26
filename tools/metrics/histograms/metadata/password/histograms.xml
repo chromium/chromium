@@ -2241,6 +2241,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.UserAction"
+    enum="PasswordMigrationWarningUserActions" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histograms logs the action that the user performed in the password
+    access loss warning sheet. Recorded exactly when the action takes place.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
     enum="BooleanSuccess" expires_after="2025-03-09">
   <owner>ioanap@chromium.org</owner>

@@ -27999,6 +27999,12 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="A credential was filled via all passwords sheet"/>
 </enum>
 
+<enum name="PasswordAccessLossWarningUserActions">
+  <int value="0" label="The main action was taken"/>
+  <int value="1" label="The help center link was opened"/>
+  <int value="2" label="The sheet was dismissed"/>
+</enum>
+
 <enum name="PasswordBubbleDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>
