@@ -460,28 +460,21 @@ const CGFloat kMenuSymbolSize = 18;
 
 #pragma mark - LensOverlayConsentViewControllerDelegate
 
-- (void)consentViewController:(LensOverlayConsentViewController*)viewController
-    didFinishWithTermsAccepted:(BOOL)accepted {
+- (void)didTapPrimaryActionButton {
   self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kLensOverlayConditionsAccepted, accepted);
+      prefs::kLensOverlayConditionsAccepted, true);
+  _consentViewController = nil;
 
-  if (accepted) {
-    RecordAction(
-        base::UserMetricsAction("Mobile.LensOverlay.Consent.Accepted"));
-    // consentViewController is still presented, so the strong reference can be
-    // removed here.
-    _consentViewController = nil;
+  __weak __typeof(self) weakSelf = self;
+  [_containerViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf handleConsentViewControllerDismissed];
+                         }];
+}
 
-    __weak __typeof(self) weakSelf = self;
-    [_containerViewController
-        dismissViewControllerAnimated:YES
-                           completion:^{
-                             [weakSelf handleConsentViewControllerDismissed];
-                           }];
-  } else {
-    RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Denied"));
-    [self destroyLensUI:YES];
-  }
+- (void)didTapSecondaryActionButton {
+  [self destroyLensUI:YES];
 }
 
 - (void)didPressLearnMore {
@@ -783,7 +776,6 @@ const CGFloat kMenuSymbolSize = 18;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.largestUndimmedDetentIdentifier =
       [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.prefersGrabberVisible = YES;
 
   __weak LensOverlayConsentViewController* weakConsentViewController =
       _consentViewController;

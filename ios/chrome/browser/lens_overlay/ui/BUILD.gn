@@ -41,6 +41,8 @@ source_set("view_controller") {
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
