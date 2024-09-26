@@ -9823,7 +9823,9 @@
                 {
                     "name": "BrowserProcessOnly",
                     "params": {
-                        "quarantine_capacity_in_bytes": "1048576",
+                        "object_size_threshold_in_bytes": "1024",
+                        "quarantine_capacity_for_large_objects_in_bytes": "102400",
+                        "quarantine_capacity_for_small_objects_in_bytes": "946176",
                         "sampling_frequency": "100",
                         "target_processes": "browser_only"
                     },
@@ -9834,7 +9836,9 @@
                 {
                     "name": "NonRendererProcesses",
                     "params": {
-                        "quarantine_capacity_in_bytes": "1048576",
+                        "object_size_threshold_in_bytes": "1024",
+                        "quarantine_capacity_for_large_objects_in_bytes": "102400",
+                        "quarantine_capacity_for_small_objects_in_bytes": "946176",
                         "sampling_frequency": "100",
                         "target_processes": "non_renderer"
                     },
