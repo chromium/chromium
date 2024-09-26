@@ -157,7 +157,6 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
     use_protobuf_full = true
-    deps = [ "//third_party/protobuf:protobuf_full" ]
   }
 
   static_library("gl_lpm_shader_to_string") {
