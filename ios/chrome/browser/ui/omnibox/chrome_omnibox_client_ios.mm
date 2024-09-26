@@ -189,7 +189,7 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
   // different URL than what is prerendered.
   if (state == OMNIBOX_FOCUS_NONE) {
     PrerenderService* service =
-        PrerenderServiceFactory::GetForBrowserState(browser_state_);
+        PrerenderServiceFactory::GetForProfile(browser_state_);
     if (service) {
       service->CancelPrerender();
     }
@@ -215,7 +215,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
   }
 
   PrerenderService* service =
-      PrerenderServiceFactory::GetForBrowserState(browser_state_);
+      PrerenderServiceFactory::GetForProfile(browser_state_);
   if (!service) {
     return;
   }

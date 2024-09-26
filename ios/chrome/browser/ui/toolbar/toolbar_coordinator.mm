@@ -172,8 +172,8 @@
   }
 
   [self updateToolbarsLayout];
-  _prerenderService = PrerenderServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  _prerenderService =
+      PrerenderServiceFactory::GetForProfile(self.browser->GetProfile());
 
   [super start];
   self.started = YES;

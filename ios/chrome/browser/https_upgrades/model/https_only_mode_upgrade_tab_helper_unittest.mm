@@ -107,8 +107,8 @@ class HttpsOnlyModeUpgradeTabHelperTest
 
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         &web_state_, browser_state_->GetPrefs(),
-        PrerenderServiceFactory::GetForBrowserState(browser_state_.get()),
-        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_.get()));
+        PrerenderServiceFactory::GetForProfile(browser_state_.get()),
+        HttpsUpgradeServiceFactory::GetForProfile(browser_state_.get()));
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
   }
 

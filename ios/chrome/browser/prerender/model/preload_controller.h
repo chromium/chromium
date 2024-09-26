@@ -38,11 +38,11 @@ class WebState;
 @property(nonatomic, readonly, getter=isEnabled) BOOL enabled;
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
+- (instancetype)initWithProfile:(ProfileIOS*)profile;
 
-// Called when the browser state this object was initialized with is being
+// Called when the profile this object was initialized with is being
 // destroyed.
-- (void)browserStateDestroyed;
+- (void)profileDestroyed;
 
 // Prerenders the given `url` with the given `transition`.  Normally, prerender
 // requests are fulfilled after a short delay, to prevent unnecessary prerenders

@@ -17,9 +17,6 @@ class PrerenderService;
 // profile.
 class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PrerenderService* GetForBrowserState(ProfileIOS* profile);
-
   static PrerenderService* GetForProfile(ProfileIOS* profile);
   static PrerenderServiceFactory* GetInstance();
 

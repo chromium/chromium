@@ -85,9 +85,8 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 
 // Returns true if the primary account is subject to parental controls and the
 // URL filtering control has been enabled.
-bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  return browserState &&
-         supervised_user::IsSubjectToParentalControls(browserState);
+bool IsSubjectToParentalControls(ProfileIOS* profile) {
+  return profile && supervised_user::IsSubjectToParentalControls(profile);
 }
 
 // Returns whether `url` can be prerendered.
@@ -215,8 +214,8 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   std::unique_ptr<PreloadManageAccountsDelegate> _manageAccountsDelegate;
 }
 
-// The ChromeBrowserState passed on initialization.
-@property(nonatomic) ChromeBrowserState* browserState;
+// The ProfileIOS passed on initialization.
+@property(nonatomic) ProfileIOS* profile;
 
 // Redefine property as readwrite.  The URL that is prerendered in `_webState`.
 // This can be different from the value returned by WebState last committed
@@ -267,21 +266,20 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
 
 @implementation PreloadController
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  DCHECK(profile);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if ((self = [super init])) {
-    _browserState = browserState;
+    _profile = profile;
     _networkPredictionSetting =
         static_cast<prerender_prefs::NetworkPredictionSetting>(
-            _browserState->GetPrefs()->GetInteger(
-                prefs::kNetworkPredictionSetting));
+            _profile->GetPrefs()->GetInteger(prefs::kNetworkPredictionSetting));
     _isOnCellularNetwork = net::NetworkChangeNotifier::IsConnectionCellular(
         net::NetworkChangeNotifier::GetConnectionType());
     _webStateDelegate = std::make_unique<web::WebStateDelegateBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _observerBridge = std::make_unique<PrefObserverBridge>(self);
-    _prefChangeRegistrar.Init(_browserState->GetPrefs());
+    _prefChangeRegistrar.Init(_profile->GetPrefs());
     _observerBridge->ObserveChangesForPreference(
         prefs::kNetworkPredictionSetting, &_prefChangeRegistrar);
     _dialogPresenter = std::make_unique<PreloadJavaScriptDialogPresenter>(self);
@@ -318,7 +316,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
       ios::device_util::IsSingleCoreDevice() ||
       !ios::device_util::RamIsAtLeast512Mb() ||
       net::NetworkChangeNotifier::IsOffline() ||
-      IsSubjectToParentalControls(_browserState)) {
+      IsSubjectToParentalControls(_profile)) {
     return false;
   }
 
@@ -353,7 +351,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
 
 #pragma mark - Public
 
-- (void)browserStateDestroyed {
+- (void)profileDestroyed {
   [self cancelPrerender];
   _connectionTypeObserver.reset();
 }
@@ -445,8 +443,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   _policyDeciderBridge.reset();
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForProfile(
-              self.browserState)) {
+          ios::AccountConsistencyServiceFactory::GetForProfile(self.profile)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
   }
 
@@ -546,7 +543,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
     // The logic is simpler if both preferences changes are handled equally.
     self.networkPredictionSetting =
         static_cast<prerender_prefs::NetworkPredictionSetting>(
-            self.browserState->GetPrefs()->GetInteger(
+            self.profile->GetPrefs()->GetInteger(
                 prefs::kNetworkPredictionSetting));
 
     switch (self.networkPredictionSetting) {
@@ -618,7 +615,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
 
   // TODO(crbug.com/40726702): The correct way is to always get the
   // webStateToReplace from the delegate. however this is not possible because
-  // there is only one delegate per browser state.
+  // there is only one delegate per profile.
   if (!webStateToReplace) {
     webStateToReplace = [self.delegate webStateToReplace];
   }
@@ -646,8 +643,7 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   _webState->SetWebUsageEnabled(true);
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForProfile(
-              self.browserState)) {
+          ios::AccountConsistencyServiceFactory::GetForProfile(self.profile)) {
     accountConsistencyService->SetWebStateHandler(
         _webState.get(), _manageAccountsDelegate.get());
   }

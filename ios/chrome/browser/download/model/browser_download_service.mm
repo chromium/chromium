@@ -41,9 +41,8 @@ void BrowserDownloadService::OnDownloadCreated(
     web::WebState* web_state,
     std::unique_ptr<web::DownloadTask> task) {
   // When a prerendered page tries to download a file, cancel the download.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   if (prerender_service &&
       prerender_service->IsWebStatePrerendered(web_state)) {
     return;

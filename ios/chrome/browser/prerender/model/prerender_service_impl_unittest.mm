@@ -16,9 +16,9 @@ namespace {
 class PrerenderServiceImplTest : public PlatformTest {
  public:
   PrerenderServiceImplTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    service_ = std::make_unique<PrerenderServiceImpl>(browser_state_.get());
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    service_ = std::make_unique<PrerenderServiceImpl>(profile_.get());
   }
 
   PrerenderServiceImplTest(const PrerenderServiceImplTest&) = delete;
@@ -28,7 +28,7 @@ class PrerenderServiceImplTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<PrerenderService> service_;
   web::FakeWebState web_state_;
 };
