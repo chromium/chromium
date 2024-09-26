@@ -34,7 +34,7 @@ public class SimpleHorizontalLayoutViewTest {
     private View mLargeView;
     private View mDynamicView;
 
-    class SimpleHorizontalLayoutViewForTest extends SimpleHorizontalLayoutView {
+    static class SimpleHorizontalLayoutViewForTest extends SimpleHorizontalLayoutView {
         private int mCurrentDirection = View.LAYOUT_DIRECTION_LTR;
 
         SimpleHorizontalLayoutViewForTest(Context context) {

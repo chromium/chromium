@@ -340,7 +340,7 @@ public class ExternalNavigationHandler {
     protected class QueryIntentActivitiesSupplier extends IntentBasedSupplier<List<ResolveInfo>> {
         // We need the query to include non-default intent filters, but should not return
         // them for clients that don't explicitly need to check non-default filters.
-        private class QueryNonDefaultSupplier extends LazySupplier<List<ResolveInfo>> {
+        private static class QueryNonDefaultSupplier extends LazySupplier<List<ResolveInfo>> {
             public QueryNonDefaultSupplier(Intent intent) {
                 super(
                         () ->

@@ -60,7 +60,7 @@ import java.util.concurrent.TimeoutException;
 public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
 
     /** Custom mock for TrainingInfo. */
-    class FakeTrainingInfo extends TrainingInfo {
+    static class FakeTrainingInfo extends TrainingInfo {
         public String recordHistory = "";
 
         FakeTrainingInfo(SuggestionEntry entry, long requestId) {

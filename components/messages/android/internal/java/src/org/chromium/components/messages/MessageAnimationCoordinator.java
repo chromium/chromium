@@ -337,7 +337,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                 action, messageState.handler.getMessageIdentifier());
     }
 
-    class MessageAnimationListener extends CancelAwareAnimatorListener {
+    static class MessageAnimationListener extends CancelAwareAnimatorListener {
         private final Runnable mOnFinished;
 
         public MessageAnimationListener(Runnable onFinished) {

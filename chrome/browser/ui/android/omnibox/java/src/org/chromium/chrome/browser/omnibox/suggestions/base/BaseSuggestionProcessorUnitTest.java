@@ -55,7 +55,7 @@ import java.util.Optional;
         manifest = Config.NONE,
         shadows = {ShadowLog.class})
 public class BaseSuggestionProcessorUnitTest {
-    private class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
+    private static class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         private final Context mContext;
 
         public TestBaseSuggestionProcessor(

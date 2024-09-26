@@ -41,7 +41,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class BaseButtonDataProviderTest {
-    private class TestButtonDataProvider extends BaseButtonDataProvider {
+    private static class TestButtonDataProvider extends BaseButtonDataProvider {
         public TestButtonDataProvider(
                 Supplier<Tab> activeTabSupplier,
                 @Nullable ModalDialogManager modalDialogManager,

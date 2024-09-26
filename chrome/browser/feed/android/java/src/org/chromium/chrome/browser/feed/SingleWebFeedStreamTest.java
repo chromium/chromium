@@ -636,7 +636,7 @@ public class SingleWebFeedStreamTest {
                 mContentManager.getItemCount());
     }
 
-    class StubSnackbarController implements FeedActionsHandler.SnackbarController {
+    static class StubSnackbarController implements FeedActionsHandler.SnackbarController {
         Runnable mOnActionFinished;
         Runnable mOnDismissNoActionFinished;
 

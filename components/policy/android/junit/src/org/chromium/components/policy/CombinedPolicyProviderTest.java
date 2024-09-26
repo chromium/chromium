@@ -51,7 +51,7 @@ public class CombinedPolicyProviderTest {
      * Dummy concrete class. Needed because PolicyProvider has final functions that cannot be
      * stubbed and is abstract so can't be directly instantiated to be spied upon.
      */
-    class DummyPolicyProvider extends PolicyProvider {
+    static class DummyPolicyProvider extends PolicyProvider {
         public DummyPolicyProvider() {}
 
         @Override

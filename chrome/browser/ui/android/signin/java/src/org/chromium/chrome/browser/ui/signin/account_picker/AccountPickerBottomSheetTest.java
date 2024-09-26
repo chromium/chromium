@@ -1730,7 +1730,7 @@ public class AccountPickerBottomSheetTest {
         return onViewWaiting(allOf(matcher, isDisplayed()));
     }
 
-    private class CustomDeviceLockActivityLauncher implements DeviceLockActivityLauncher {
+    private static class CustomDeviceLockActivityLauncher implements DeviceLockActivityLauncher {
         private WindowAndroid.IntentCallback mCallback;
         private boolean mLaunched;
 

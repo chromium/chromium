@@ -48,7 +48,7 @@ public class TabletCaptureStateTokenTest {
     private final TabletCaptureStateToken mDefaultTabletToken =
             new TabletCaptureStateTokenBuilder().build();
 
-    private class MockImageButtonBuilder {
+    private static class MockImageButtonBuilder {
         private final ImageButton mImageButton;
         private final ColorStateList mColorStateList;
 
@@ -108,7 +108,7 @@ public class TabletCaptureStateTokenTest {
         }
     }
 
-    private class TabletCaptureStateTokenBuilder {
+    private static class TabletCaptureStateTokenBuilder {
         private ImageButton mHomeButton =
                 new MockImageButtonBuilder().withDrawable(DEFAULT_HOME_BUTTON_DRAWABLE).build();
         private ImageButton mBackwardButton =

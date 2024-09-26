@@ -141,7 +141,7 @@ public class DialogOverlayCoreTest {
     }
 
     /** Host impl that counts calls to it. */
-    class HostMock implements DialogOverlayCore.Host {
+    static class HostMock implements DialogOverlayCore.Host {
         private Surface mSurface;
         private int mDestroyedCount;
 

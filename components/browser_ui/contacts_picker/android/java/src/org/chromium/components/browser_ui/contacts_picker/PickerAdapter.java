@@ -40,7 +40,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
      * and some multi-line text that goes with it, so clicks on either text line should be treated
      * as clicks for the checkbox (hence the onclick forwarding).
      */
-    class TopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class TopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TopView mItemView;
 
         public TopViewHolder(TopView itemView) {

@@ -39,7 +39,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class VariationsSeedHolderTest {
-    private class TestHolder extends VariationsSeedHolder {
+    private static class TestHolder extends VariationsSeedHolder {
         private final CallbackHelper mWriteFinished; // notified after each writeSeedIfNewer
         private final CallbackHelper mUpdateFinished; // notified after each updateSeed
 

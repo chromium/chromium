@@ -139,7 +139,7 @@ public class TaskInfoTest {
         periodicTask.getTimingInfo().accept(visitor);
     }
 
-    private class CheckTimingInfoVisitor implements TaskInfo.TimingInfoVisitor {
+    private static class CheckTimingInfoVisitor implements TaskInfo.TimingInfoVisitor {
         private final Long mStartOrIntervalOrTriggerMs;
         private final Long mEndOrFlexMs;
         private final boolean mExpires;

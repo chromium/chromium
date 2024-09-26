@@ -23,7 +23,7 @@ public class JavaScriptExecutionViewAction implements ViewAction {
     String mScript;
     public MyCallback callback;
 
-    public class MyCallback implements ValueCallback<String> {
+    public static class MyCallback implements ValueCallback<String> {
         public String returnValue;
 
         @Override

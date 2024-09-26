@@ -63,7 +63,7 @@ public class RedirectHandler {
     }
 
     /** Captures the state of the initial navigation in a Navigation Chain. */
-    public class InitialNavigationState {
+    public static class InitialNavigationState {
         public final boolean isRendererInitiated;
         public final boolean isFromReload;
         public final boolean isFromTyping;

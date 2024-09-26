@@ -911,7 +911,7 @@ public class LoadUrlTest extends AwParameterizedTest {
         }
     }
 
-    class TestAwContentsClientTestDependencyFactory
+    static class TestAwContentsClientTestDependencyFactory
             extends AwActivityTestRule.TestDependencyFactory {
         @Override
         public AwContents createAwContents(

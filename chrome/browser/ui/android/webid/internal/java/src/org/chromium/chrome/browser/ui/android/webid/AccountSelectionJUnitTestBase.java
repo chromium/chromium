@@ -53,7 +53,7 @@ public class AccountSelectionJUnitTestBase {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    class RpContextEntry {
+    static class RpContextEntry {
         public int mValue;
         public int mTitleId;
 

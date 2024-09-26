@@ -407,7 +407,6 @@ public class VariationsSeedFetcher {
                         VariationsCompressionUtils.applyDeltaPatch(previousSeedData, deltaPatch);
 
                 // Parse seed to make sure the decompression was successful.
-                VariationsSeed.parseFrom(patchedSeed);
 
                 return patchedSeed;
             } catch (IOException e) {

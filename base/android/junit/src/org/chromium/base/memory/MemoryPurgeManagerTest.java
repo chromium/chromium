@@ -36,7 +36,7 @@ public class MemoryPurgeManagerTest {
                         MemoryPurgeManager.BACKGROUND_DURATION_HISTOGRAM_NAME);
             };
 
-    private class MemoryPurgeManagerForTest extends MemoryPurgeManager {
+    private static class MemoryPurgeManagerForTest extends MemoryPurgeManager {
         public MemoryPurgeManagerForTest(int initialState) {
             super();
             mApplicationState = initialState;

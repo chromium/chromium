@@ -56,7 +56,7 @@ public class SingleActionMessageTest {
 
     private static Activity sActivity;
 
-    private class MockDurationProvider implements MessageAutodismissDurationProvider {
+    private static class MockDurationProvider implements MessageAutodismissDurationProvider {
         private long mDuration;
 
         public MockDurationProvider(long duration) {

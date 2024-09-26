@@ -157,7 +157,7 @@ public class NetworkChangeNotifierTest {
     /** Mocks out calls to the ConnectivityManager. */
     private class MockConnectivityManagerDelegate extends ConnectivityManagerDelegate {
         // A network we're pretending is currently connected.
-        private class MockNetwork {
+        private static class MockNetwork {
             // Network identifier
             final int mNetId;
             // Transport, one of android.net.NetworkCapabilities.TRANSPORT_*

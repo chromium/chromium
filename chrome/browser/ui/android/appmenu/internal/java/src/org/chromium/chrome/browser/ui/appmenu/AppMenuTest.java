@@ -1189,7 +1189,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 () -> mAppMenuHandler.getAppMenu().finishAnimationsForTests());
     }
 
-    private class TestActivityLifecycleDispatcher implements ActivityLifecycleDispatcher {
+    private static class TestActivityLifecycleDispatcher implements ActivityLifecycleDispatcher {
         public CallbackHelper observerRegisteredCallbackHelper = new CallbackHelper();
 
         @Override

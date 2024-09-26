@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.UNIT_TESTS)
 public class BackPressManagerTest {
 
-    private class EmptyBackPressHandler implements BackPressHandler {
+    private static class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
 
         @Override
@@ -40,7 +40,7 @@ public class BackPressManagerTest {
         }
     }
 
-    private class FailedBackPressHandler extends EmptyBackPressHandler {
+    private static class FailedBackPressHandler extends EmptyBackPressHandler {
         @Override
         public @BackPressResult int handleBackPress() {
             return BackPressResult.FAILURE;

@@ -105,14 +105,14 @@ public class PwaBottomSheetController
     private WebContentsObserver mWebContentsObserver;
 
     /** The ViewHolder for the view's Screenshots RecyclerView. */
-    private class ScreenshotViewHolder extends RecyclerView.ViewHolder {
+    private static class ScreenshotViewHolder extends RecyclerView.ViewHolder {
         public ScreenshotViewHolder(View itemView) {
             super(itemView);
         }
     }
 
     /** The Adapter for the view's Screenshots RecyclerView. */
-    class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
+    static class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
         private Context mContext;
         private ArrayList<Bitmap> mScreenshots;
 

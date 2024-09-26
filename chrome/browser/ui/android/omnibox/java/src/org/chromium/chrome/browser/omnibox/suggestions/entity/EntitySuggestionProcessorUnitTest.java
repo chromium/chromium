@@ -77,7 +77,7 @@ public class EntitySuggestionProcessorUnitTest {
      * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
      * processSuggestion and validate suggestions.
      */
-    class SuggestionTestHelper {
+    static class SuggestionTestHelper {
         // Stores created AutocompleteMatch
         protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.

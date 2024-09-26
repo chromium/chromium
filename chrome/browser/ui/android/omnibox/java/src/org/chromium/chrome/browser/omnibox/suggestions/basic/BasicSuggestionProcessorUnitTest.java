@@ -116,7 +116,7 @@ public class BasicSuggestionProcessorUnitTest {
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
 
-    private class BookmarkPredicate implements BasicSuggestionProcessor.BookmarkState {
+    private static class BookmarkPredicate implements BasicSuggestionProcessor.BookmarkState {
         boolean mState;
 
         @Override

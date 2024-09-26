@@ -53,7 +53,7 @@ public class TrackExitReasonsOfInterestTest {
         mTestSupplier.mState = AppState.UNKNOWN;
     }
 
-    public class MockAwContentsLifecycleNotifier {
+    public static class MockAwContentsLifecycleNotifier {
         public @AppState int mState;
 
         public MockAwContentsLifecycleNotifier() {

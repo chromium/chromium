@@ -63,7 +63,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
     private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
 
-    private class GenerateUriCallback extends CallbackHelper implements Callback<Uri> {
+    private static class GenerateUriCallback extends CallbackHelper implements Callback<Uri> {
         private Uri mImageUri;
 
         public Uri getImageUri() {
@@ -77,7 +77,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
     }
 
-    private class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
+    private static class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
         @Override
         public void run() {
             notifyCalled();

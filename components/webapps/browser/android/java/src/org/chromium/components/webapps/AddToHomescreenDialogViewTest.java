@@ -37,7 +37,7 @@ public class AddToHomescreenDialogViewTest {
     private static final String TEST_URL = "youtube.com";
     private static final String TEST_NATIVE_ADD_TEXT = "Install";
 
-    private class MockModalDialogManager extends ModalDialogManager {
+    private static class MockModalDialogManager extends ModalDialogManager {
         private PropertyModel mShownDialogModel;
         private PropertyModel mDismissedDialogModel;
         private int mDismissalCause;

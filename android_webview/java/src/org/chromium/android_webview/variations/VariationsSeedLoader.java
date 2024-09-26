@@ -388,7 +388,7 @@ public class VariationsSeedLoader {
         public void onServiceDisconnected(ComponentName name) {}
     }
 
-    private class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
+    private static class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
         @Override
         public void reportVariationsServiceMetrics(Bundle metricsBundle) {
             VariationsServiceMetricsHelper metrics =

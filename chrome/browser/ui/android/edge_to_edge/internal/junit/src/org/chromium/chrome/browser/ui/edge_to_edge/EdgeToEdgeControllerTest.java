@@ -760,7 +760,7 @@ public class EdgeToEdgeControllerTest {
     // TODO: Verify that the value of the updated insets returned from the
     //  OnApplyWindowInsetsListener is correct.
 
-    private class MockPadAdjuster implements EdgeToEdgePadAdjuster {
+    private static class MockPadAdjuster implements EdgeToEdgePadAdjuster {
         private int mInset;
 
         MockPadAdjuster() {}

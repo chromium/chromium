@@ -30,7 +30,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OfflineItemFilterTest {
-    private class OfflineItemFilterImpl extends OfflineItemFilter {
+    private static class OfflineItemFilterImpl extends OfflineItemFilter {
         private final Set<OfflineItem> mFilteredItems = new HashSet<>();
 
         public OfflineItemFilterImpl(OfflineItemFilterSource source) {

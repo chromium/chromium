@@ -61,7 +61,7 @@ public class WebApkServiceConnectionManagerTest {
     private TestExecutor mTestExecutor = new TestExecutor();
     private WebApkServiceConnectionManager mConnectionManager;
 
-    private class TestCallback implements WebApkServiceConnectionManager.ConnectionCallback {
+    private static class TestCallback implements WebApkServiceConnectionManager.ConnectionCallback {
         public boolean mGotResult;
         public IBinder mService;
 

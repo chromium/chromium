@@ -32,7 +32,7 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
 public class BackPressManagerUnitTest {
 
-    private class EmptyBackPressHandler implements BackPressHandler {
+    private static class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
         private CallbackHelper mCallbackHelper = new CallbackHelper();
 

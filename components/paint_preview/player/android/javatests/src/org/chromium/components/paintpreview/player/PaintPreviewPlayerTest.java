@@ -79,7 +79,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     .build();
 
     /** LinkClickHandler implementation for caching the last URL that was clicked. */
-    public class TestLinkClickHandler implements LinkClickHandler {
+    public static class TestLinkClickHandler implements LinkClickHandler {
         GURL mUrl;
 
         @Override

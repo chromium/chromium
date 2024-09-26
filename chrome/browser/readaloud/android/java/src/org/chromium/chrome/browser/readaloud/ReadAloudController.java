@@ -189,7 +189,7 @@ public class ReadAloudController
         ResettersForTesting.register(() -> sClock = oldValue);
     }
 
-    private class ReadabilityInfo {
+    private static class ReadabilityInfo {
         private final boolean mIsReadable;
         private final long mResponseTimestamp;
         private final boolean mTimepointsSupported;

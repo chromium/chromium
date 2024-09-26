@@ -35,7 +35,7 @@ public class SimpleVerticalLayoutViewTest {
     private View mSmallView;
     private View mLargeView;
 
-    class SimpleVerticalLayoutViewForTest extends SimpleVerticalLayoutView {
+    static class SimpleVerticalLayoutViewForTest extends SimpleVerticalLayoutView {
         SimpleVerticalLayoutViewForTest(Context context) {
             super(context);
         }

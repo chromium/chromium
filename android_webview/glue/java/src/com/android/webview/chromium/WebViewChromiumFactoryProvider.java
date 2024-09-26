@@ -180,7 +180,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private ServiceWorkerController mServiceWorkerController;
 
-    public class InitInfo {
+    public static class InitInfo {
         // Timestamp of init start and duration, used in the
         // 'WebView.Startup.CreationTime.Stage1.FactoryInit' trace event.
         public long mStartTime;

@@ -1044,7 +1044,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     private ViewHolder prepareMockViewHolder(PropertyModel model, View itemView, int position) {
-        ViewHolder viewHolder = spy(mSimpleAdapter.new ViewHolder(itemView, /* binder= */ null));
+        ViewHolder viewHolder = spy(new ViewHolder(itemView, /* binder= */ null));
         when(viewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
         when(viewHolder.getAdapterPosition()).thenReturn(position);
         viewHolder.model = model;

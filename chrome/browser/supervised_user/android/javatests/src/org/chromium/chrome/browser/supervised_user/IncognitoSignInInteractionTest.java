@@ -37,7 +37,7 @@ public class IncognitoSignInInteractionTest {
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
     /** Waits until the Incognito Tab is closed. */
-    private class TabClosedWaiter extends EmptyTabObserver {
+    private static class TabClosedWaiter extends EmptyTabObserver {
         private CallbackHelper mCallbackHelper;
 
         public TabClosedWaiter() {

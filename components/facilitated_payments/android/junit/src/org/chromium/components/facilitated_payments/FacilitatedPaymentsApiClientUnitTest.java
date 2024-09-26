@@ -29,7 +29,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     /** A delegate for receiving the responses from the API. */
-    public class TestDelegate implements FacilitatedPaymentsApiClient.Delegate {
+    public static class TestDelegate implements FacilitatedPaymentsApiClient.Delegate {
         public boolean mIsAvailableChecked;
         public boolean mIsAvailable;
 
@@ -96,7 +96,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     /** A fake implementation of the API client, which always succeeds. */
-    public class FakeApiClient extends FacilitatedPaymentsApiClient {
+    public static class FakeApiClient extends FacilitatedPaymentsApiClient {
         /** Creates an instance of a fake implementation of the API client. */
         public FakeApiClient(Delegate delegate) {
             super(delegate);
@@ -119,7 +119,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     /** A factory for creating a fake implementation of the API client, which always succeeds. */
-    public class FakeApiClientFactory implements FacilitatedPaymentsApiClient.Factory {
+    public static class FakeApiClientFactory implements FacilitatedPaymentsApiClient.Factory {
         @Override
         public FacilitatedPaymentsApiClient factoryCreate(
                 RenderFrameHost renderFrameHost, FacilitatedPaymentsApiClient.Delegate delegate) {

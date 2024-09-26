@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
 public class VariationsSeedServerTest {
     private File mTempFile;
 
-    private class StubSeedServerCallback extends IVariationsSeedServerCallback.Stub {
+    private static class StubSeedServerCallback extends IVariationsSeedServerCallback.Stub {
         public CallbackHelper helper = new CallbackHelper();
         public Bundle metrics;
 

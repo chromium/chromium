@@ -419,7 +419,7 @@ public class AwVariationsSeedFetcher extends JobService {
             return new FetchSeedOutput(shouldFinish, needsReschedule, /* cancelled= */ false);
         }
 
-        private class FetchSeedOutput {
+        private static class FetchSeedOutput {
             private boolean mShouldFinish;
             private boolean mNeedsReschedule;
             private boolean mCancelled;

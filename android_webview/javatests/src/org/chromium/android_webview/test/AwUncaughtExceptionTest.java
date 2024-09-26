@@ -72,7 +72,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 };
     }
 
-    private class BackgroundThread extends Thread {
+    private static class BackgroundThread extends Thread {
         private Looper mLooper;
 
         BackgroundThread(String name) {

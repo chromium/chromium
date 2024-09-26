@@ -65,7 +65,7 @@ public class TabListItemAnimatorUnitTest {
         when(itemView.getTranslationX()).thenReturn(0f);
         when(itemView.getTranslationY()).thenReturn(0f);
         when(itemView.getVisibility()).thenReturn(View.VISIBLE);
-        var viewHolder = mAdapter.new ViewHolder(itemView, TabListItemAnimatorUnitTest::emptyBind);
+        var viewHolder = new ViewHolder(itemView, TabListItemAnimatorUnitTest::emptyBind);
         PropertyModel model =
                 new PropertyModel.Builder(new PropertyKey[] {CARD_TYPE, USE_SHRINK_CLOSE_ANIMATION})
                         .with(CARD_TYPE, modelType)

@@ -55,7 +55,7 @@ public class ChromeOriginVerifierTest {
     private Origin mHttpOrigin;
     private TestExternalAuthUtils mExternalAuthUtils;
 
-    private class TestExternalAuthUtils extends ExternalAuthUtils {
+    private static class TestExternalAuthUtils extends ExternalAuthUtils {
         private List<Pair<String, Origin>> mAllowlist = new ArrayList<>();
 
         public void addToAllowlist(String packageName, Origin origin) {
