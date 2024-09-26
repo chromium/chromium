@@ -68,7 +68,6 @@ class SafeBrowsingPrivateApiUnitTest;
 }  // namespace extensions
 
 namespace safe_browsing {
-class VerdictCacheManager;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 class DownloadProtectionService;
 #endif
@@ -242,9 +241,6 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // function, but it's still useful so that TestSafeBrowsingService can
   // override it.
   virtual V4ProtocolConfig GetV4ProtocolConfig() const;
-
-  // Get the cache manager by profile.
-  VerdictCacheManager* GetVerdictCacheManager(Profile* profile) const;
 
  protected:
   // Creates the safe browsing service.  Need to initialize before using.
