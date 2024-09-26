@@ -114,8 +114,8 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
       capture_delegate_->SetNativeCapture();
   }
 
-  for (aura::client::CaptureClientObserver& observer : observers_)
-    observer.OnCaptureChanged(old_capture_window, capture_window_);
+  observers_.Notify(&aura::client::CaptureClientObserver::OnCaptureChanged,
+                    old_capture_window, capture_window_);
 }
 
 void CaptureController::ReleaseCapture(aura::Window* window) {

@@ -121,8 +121,8 @@ void CursorManager::ShowCursor() {
     delegate_->SetVisibility(state_on_unlock_->visible(), this);
     if (GetCursor().type() != ui::mojom::CursorType::kNone) {
       // If the cursor is a visible type, notify the observers.
-      for (auto& observer : observers_)
-        observer.OnCursorVisibilityChanged(true);
+      observers_.Notify(
+          &aura::client::CursorClientObserver::OnCursorVisibilityChanged, true);
     }
   }
 }
@@ -133,8 +133,8 @@ void CursorManager::HideCursor() {
   if (cursor_lock_count_ == 0 &&
       IsCursorVisible() != state_on_unlock_->visible()) {
     delegate_->SetVisibility(state_on_unlock_->visible(), this);
-    for (auto& observer : observers_)
-      observer.OnCursorVisibilityChanged(false);
+    observers_.Notify(
+        &aura::client::CursorClientObserver::OnCursorVisibilityChanged, false);
   }
 }
 
@@ -146,8 +146,8 @@ void CursorManager::SetCursorSize(ui::CursorSize cursor_size) {
   state_on_unlock_->set_cursor_size(cursor_size);
   if (GetCursorSize() != state_on_unlock_->cursor_size()) {
     delegate_->SetCursorSize(state_on_unlock_->cursor_size(), this);
-    for (auto& observer : observers_)
-      observer.OnCursorSizeChanged(cursor_size);
+    observers_.Notify(&aura::client::CursorClientObserver::OnCursorSizeChanged,
+                      cursor_size);
   }
 }
 
@@ -181,8 +181,8 @@ bool CursorManager::IsMouseEventsEnabled() const {
 
 void CursorManager::SetDisplay(const display::Display& display) {
   display_ = display;
-  for (auto& observer : observers_)
-    observer.OnCursorDisplayChanged(display);
+  observers_.Notify(&aura::client::CursorClientObserver::OnCursorDisplayChanged,
+                    display);
 
   delegate_->SetDisplay(display, this);
 }
@@ -252,10 +252,9 @@ void CursorManager::CommitCursor(gfx::NativeCursor cursor) {
 void CursorManager::CommitVisibility(bool visible) {
   // TODO(tdanderson): Find a better place for this so we don't
   // notify the observers more than is necessary.
-  for (auto& observer : observers_) {
-    observer.OnCursorVisibilityChanged(
-        GetCursor().type() == ui::mojom::CursorType::kNone ? false : visible);
-  }
+  observers_.Notify(
+      &aura::client::CursorClientObserver::OnCursorVisibilityChanged,
+      GetCursor().type() == ui::mojom::CursorType::kNone ? false : visible);
   current_state_->SetVisible(visible);
 }
 
@@ -274,9 +273,9 @@ gfx::Size CursorManager::GetSystemCursorSize() const {
 void CursorManager::CommitSystemCursorSize(
     const gfx::Size& system_cursor_size) {
   current_state_->set_system_cursor_size(system_cursor_size);
-  for (auto& observer : observers_) {
-    observer.OnSystemCursorSizeChanged(system_cursor_size);
-  }
+  observers_.Notify(
+      &aura::client::CursorClientObserver::OnSystemCursorSizeChanged,
+      system_cursor_size);
 }
 
 void CursorManager::SetCursorImpl(gfx::NativeCursor cursor, bool forced) {
@@ -287,8 +286,9 @@ void CursorManager::SetCursorImpl(gfx::NativeCursor cursor, bool forced) {
     delegate_->SetCursor(state_on_unlock_->cursor(), this);
     bool is_visible = cursor.type() != ui::mojom::CursorType::kNone;
     if (is_visible != previously_visible) {
-      for (auto& observer : observers_)
-        observer.OnCursorVisibilityChanged(is_visible);
+      observers_.Notify(
+          &aura::client::CursorClientObserver::OnCursorVisibilityChanged,
+          is_visible);
     }
   }
 }
