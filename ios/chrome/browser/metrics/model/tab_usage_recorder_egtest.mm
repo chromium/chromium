@@ -488,7 +488,15 @@ void SwitchToNormalMode() {
 
 // Test that the USER_DID_NOT_WAIT metric is not logged when the user opens
 // and closes the settings UI while the evicted tab is still reloading.
-- (void)testEvictedTabReloadSettingsAndBack {
+// TODO(crbug.com/369787152): The test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testEvictedTabReloadSettingsAndBack \
+  FLAKY_testEvictedTabReloadSettingsAndBack
+#else
+#define MAYBE_testEvictedTabReloadSettingsAndBack \
+  testEvictedTabReloadSettingsAndBack
+#endif
+- (void)MAYBE_testEvictedTabReloadSettingsAndBack {
   std::map<GURL, std::string> responses;
   const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
   responses[slowURL] = "Slow Page";
