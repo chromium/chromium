@@ -18,4 +18,8 @@ bool ShellWebViewGuestDelegate::HandleContextMenu(
 
 void ShellWebViewGuestDelegate::OnShowContextMenu(int request_id) {}
 
+bool ShellWebViewGuestDelegate::NavigateToURLShouldBlock(const GURL& url) {
+  return false;
+}
+
 }  // namespace extensions

@@ -13,6 +13,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest_delegate.h"
 
+class GURL;
 class RenderViewContextMenuBase;
 
 namespace extensions {
@@ -31,6 +32,7 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
+  bool NavigateToURLShouldBlock(const GURL& url) override;
 
   WebViewGuest* web_view_guest() const { return web_view_guest_; }
 

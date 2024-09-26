@@ -17,6 +17,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "url/gurl.h"
 
 using guest_view::GuestViewEvent;
 
@@ -102,6 +103,21 @@ void ChromeWebViewGuestDelegate::OnShowContextMenu(int request_id) {
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(guest_web_contents());
   menu_delegate->ShowMenu(std::move(pending_menu_));
+}
+
+bool ChromeWebViewGuestDelegate::NavigateToURLShouldBlock(const GURL& url) {
+  CHECK(web_view_guest());
+
+  // Controlled Frame further restricts allowed schemes to http, https, blob,
+  // data, and about.
+  if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    if (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme) &&
+        !url.SchemeIs(url::kDataScheme) && !url.SchemeIs(url::kBlobScheme) &&
+        !url.SchemeIs(url::kAboutScheme)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace extensions

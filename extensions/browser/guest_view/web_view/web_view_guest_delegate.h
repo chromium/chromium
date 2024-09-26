@@ -8,6 +8,8 @@
 #include "base/functional/callback.h"
 #include "components/guest_view/browser/guest_view_base.h"
 
+class GURL;
+
 namespace content {
 class RenderFrameHost;
 struct ContextMenuParams;
@@ -30,6 +32,10 @@ class WebViewGuestDelegate {
 
   // Shows the context menu for the guest.
   virtual void OnShowContextMenu(int request_id) = 0;
+
+  // Called during `LoadURLWithParams` to check whether delegates have more
+  // scheme blocks in place.
+  virtual bool NavigateToURLShouldBlock(const GURL& url) = 0;
 };
 
 }  // namespace extensions
