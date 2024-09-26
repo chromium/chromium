@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/layout/layout_image.h"
+
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -43,6 +45,37 @@ TEST_F(LayoutImageTest, NeedsVisualOverflowRecalc) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(img_layer->NeedsVisualOverflowRecalc());
+}
+
+TEST_F(LayoutImageTest, IsUnsizedImage) {
+  SetBodyInnerHTML(R"HTML(
+    <body>
+      <!-- explicit sizing -->
+      <img width="100" height="100" id="a-fixed">
+      <!-- without explicit sizing. -->
+      <img width="100" style="height: 100px;" id="b-fixed">
+      <img width="100" id="c-UNSIZED">
+      <img style="aspect-ratio: 1 / 1;" id="d-UNSIZED">
+      <!-- aspect ratio with at least width or height specified -->
+      <img width="100" style="aspect-ratio: 1 / 1;"  id="e-fixedish">
+    </body>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  std::map<std::string, bool> expected = {{"a-fixed", false},
+                                          {"b-fixed", false},
+                                          {"c-UNSIZED", true},
+                                          {"d-UNSIZED", true},
+                                          {"e-fixedish", false}};
+
+  for (const auto& [id, expectedIsUnsized] : expected) {
+    LayoutObject* obj = GetLayoutObjectByElementId(id.c_str());
+    ASSERT_NE(obj, nullptr);
+    LayoutImage* img = DynamicTo<LayoutImage>(obj);
+    ASSERT_NE(img, nullptr);
+    bool isUnsized = img->IsUnsizedImage();
+    EXPECT_EQ(isUnsized, expectedIsUnsized);
+  }
 }
 
 }  // namespace blink
