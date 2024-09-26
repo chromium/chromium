@@ -238,10 +238,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kBrowsingTopicsFirstTimeoutRetryDelay);
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
-// Suppresses console errors for CORS problems which report an associated
-// inspector issue anyway.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCORSErrorsIssueOnly);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCacheStorageCodeCacheHintHeader);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kCacheStorageCodeCacheHintHeaderName;

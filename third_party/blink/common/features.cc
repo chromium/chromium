@@ -417,12 +417,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "first_timeout_retry_delay",
                    base::Minutes(1));
 
-// Suppresses console errors for CORS problems which report an associated
-// inspector issue anyway.
-BASE_FEATURE(kCORSErrorsIssueOnly,
-             "CORSErrorsIssueOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, code cache is produced asynchronously from the script execution
 // (https://crbug.com/1260908).
 BASE_FEATURE(kCacheCodeOnIdle,

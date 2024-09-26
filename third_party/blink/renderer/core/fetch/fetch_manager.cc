@@ -1163,10 +1163,7 @@ bool FetchLoaderBase::AddConsoleMessage(
     std::optional<base::UnguessableToken> issue_id) {
   if (execution_context_->IsContextDestroyed())
     return false;
-  bool issue_only =
-      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly) &&
-      issue_id;
-  if (!message.empty() && !issue_only) {
+  if (!message.empty()) {
     // CORS issues are reported via network service instrumentation, with the
     // exception of early errors reported in FileIssueAndPerformNetworkError.
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
