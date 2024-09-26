@@ -2017,6 +2017,7 @@
     {
       // Enables deal support within auctions.
       name: "FledgeAuctionDealSupport",
+      status: "test",
     },
     {
       name: "FledgeBiddingAndAuctionServerAPI",
