@@ -136,7 +136,7 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
 
   auto& resolvers = audio_context_->GetSetSinkIdResolver();
   resolvers.pop_front();
-  if (!resolvers.empty()) {
+  if (!resolvers.empty() && (audio_context_->PendingDeviceListUpdates() == 0)) {
     // Prevent potential stack overflow under heavy load by scheduling the next
     // resolver start asynchronously instead of invoking it directly.
     auto next_start_task = WTF::BindOnce(

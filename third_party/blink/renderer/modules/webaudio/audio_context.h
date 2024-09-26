@@ -153,6 +153,11 @@ class MODULES_EXPORT AudioContext final
   // https://wicg.github.io/web_audio_playout
   void TransferAudioFrameStatsTo(AudioFrameStatsAccumulator& receiver);
 
+  // Get the number of pending device list updates, to allow waiting until the
+  // device list is refrehsed before using it.  A value of 0 means no updates
+  // are pending.
+  int PendingDeviceListUpdates();
+
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
@@ -251,7 +256,8 @@ class MODULES_EXPORT AudioContext final
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
                              video_input_capabilities,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
-                             audio_input_capabilities);
+                             audio_input_capabilities)
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // A helper function used to update `v8_sink_id_` whenever `sink_id_` is
   // updated.
@@ -364,6 +370,12 @@ class MODULES_EXPORT AudioContext final
   // If a sink ID is given via the constructor or `setSinkId()` method,
   // this is set to `true`.
   bool is_sink_id_given_ = false;
+
+  // The number of pending device list updates, to allow waiting until the
+  // device list is refrehsed before using it.  A value of 0 means no updates
+  // are pending.
+  int pending_device_list_updates_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };

@@ -656,7 +656,8 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
   } else {
     // MediaDeviceService is initialized, so we can start a resolver if it is
     // the only request in the queue.
-    if (set_sink_id_resolvers_.size() == 1) {
+    if (set_sink_id_resolvers_.size() == 1 &&
+        (pending_device_list_updates_ == 0)) {
       resolver->Start();
     }
   }
@@ -1000,7 +1001,21 @@ base::TimeDelta AudioContext::PlatformBufferDuration() const {
 
 void AudioContext::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
   microphone_permission_status_ = status;
+  if (is_media_device_service_initialized_) {
+    CHECK_LT(pending_device_list_updates_, std::numeric_limits<int>::max());
+    pending_device_list_updates_++;
+    media_device_service_->EnumerateDevices(
+        /* audio input */ false,
+        /* video input */ false,
+        /* audio output */ true,
+        /* request_video_input_capabilities */ false,
+        /* request_audio_input_capabilities */ false,
+        WTF::BindOnce(&AudioContext::DevicesEnumerated,
+                      WrapWeakPersistent(this)));
+  }
 }
 
 void AudioContext::DidInitialPermissionCheck(
@@ -1071,6 +1086,8 @@ void AudioContext::NotifySetSinkIdIsDone(
 }
 
 void AudioContext::InitializeMediaDeviceService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
   auto* execution_context = GetExecutionContext();
 
   execution_context->GetBrowserInterfaceBroker().GetInterface(
@@ -1086,6 +1103,8 @@ void AudioContext::InitializeMediaDeviceService() {
 
   is_media_device_service_initialized_ = true;
 
+  CHECK_LT(pending_device_list_updates_, std::numeric_limits<int>::max());
+  pending_device_list_updates_++;
   media_device_service_->EnumerateDevices(
       /* audio input */ false,
       /* video input */ false,
@@ -1113,9 +1132,12 @@ void AudioContext::DevicesEnumerated(
   OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOutput,
                    output_devices);
 
+  CHECK_GT(pending_device_list_updates_, 0);
+  pending_device_list_updates_--;
+
   // Start the first resolver in the queue once `output_device_ids_` is
   // initialized from `OnDeviceChanged()` above.
-  if (!set_sink_id_resolvers_.empty()) {
+  if (!set_sink_id_resolvers_.empty() && (pending_device_list_updates_ == 0)) {
     set_sink_id_resolvers_.front()->Start();
   }
 }
@@ -1233,6 +1255,12 @@ void AudioContext::TransferAudioFrameStatsTo(
     AudioFrameStatsAccumulator& receiver) {
   DeferredTaskHandler::GraphAutoLocker locker(this);
   receiver.Absorb(audio_frame_stats_);
+}
+
+int AudioContext::PendingDeviceListUpdates() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
+  return pending_device_list_updates_;
 }
 
 void AudioContext::HandleRenderError() {
