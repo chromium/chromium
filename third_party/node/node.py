@@ -5,6 +5,7 @@
 
 from os import path as os_path
 import platform
+import re
 import subprocess
 import sys
 import os
@@ -32,9 +33,25 @@ def RunNode(cmd_parts, stdout=None):
   stdout, stderr = process.communicate()
 
   if process.returncode != 0:
+    # TODO(https://crbug.com/365027672): Delete this when eslint v9 migration is
+    # finished.
+    # Suppress the deterministic eslint migration warning.
+    eslint_warning = (
+      "\\(node:\\d*\\)"
+      " ESLintRCWarning: You are using an eslintrc configuration file, which is"
+      " deprecated and support will be removed in v10.0.0. Please migrate to an"
+      " eslint.config.js file. See"
+      " https://eslint.org/docs/latest/use/configure/migration-guide for"
+      " details.[\r]?[\n]"
+      "\\(Use `node --trace-warnings ...` to show where the warning was"
+      " created\\)[\r]?[\n]"
+    )
+    stderr = re.sub(eslint_warning, '', stderr).strip()
+
     # Handle cases where stderr is empty, even though the command failed, for
     # example https://github.com/microsoft/TypeScript/issues/615
     err = stderr if len(stderr) > 0 else stdout
+
     raise RuntimeError('Command \'%s\' failed\n%s' % (' '.join(cmd), err))
 
   return stdout

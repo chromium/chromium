@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 
 def Run(os_path=None, args=None):
   try:
@@ -18,6 +19,7 @@ def Run(os_path=None, args=None):
   finally:
     sys.path = old_sys_path
 
+  os.environ["ESLINT_USE_FLAT_CONFIG"] = "false"
   return node.RunNode([
       node_modules.PathToEsLint(),
       '--quiet',

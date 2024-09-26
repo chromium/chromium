@@ -121,6 +121,7 @@ module.exports = {
     'parser': './third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
     'plugins': [
       '@typescript-eslint',
+      '@stylistic',
     ],
     'rules': {
       'no-unused-vars': 'off',
@@ -128,6 +129,7 @@ module.exports = {
         'error', {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '.*',
         }
       ],
 
@@ -140,7 +142,7 @@ module.exports = {
 
       // https://google.github.io/styleguide/tsguide.html#automatic-semicolon-insertion
       'semi': 'off',
-      '@typescript-eslint/semi': ['error'],
+      '@stylistic/semi': ['error'],
 
       // https://google.github.io/styleguide/tsguide.html#arrayt-type
       '@typescript-eslint/array-type': ['error', {
@@ -242,7 +244,7 @@ module.exports = {
       ],
 
       // https://google.github.io/styleguide/tsguide.html#member-property-declarations
-      '@typescript-eslint/member-delimiter-style': ['error', {
+      '@stylistic/member-delimiter-style': ['error', {
         multiline: {
           delimiter: 'comma',
           requireLast: true,
@@ -266,8 +268,7 @@ module.exports = {
       }],
 
       // https://google.github.io/styleguide/tsguide.html#wrapper-types
-      '@typescript-eslint/ban-types': ['error', {
-        extendDefaults: false,
+      '@typescript-eslint/no-restricted-types': ['error', {
         types: {
           String: {
             message: 'Use string instead',
@@ -295,5 +296,24 @@ module.exports = {
       // https://google.github.io/styleguide/tsguide.html#ts-ignore
       '@typescript-eslint/ban-ts-comment': ['error', {'ts-ignore': true}],
     }
-  }]
+  }],
+
+  'ignorePatterns': [
+    // Ignore because eslint doesn't understand // <if expr>
+    'chrome/browser/resources/gaia_auth_host/authenticator.js',
+    'chrome/browser/resources/gaia_auth_host/password_change_authenticator.js',
+    'chrome/browser/resources/gaia_auth_host/saml_username_autofill.js',
+
+    // Ignore because of https://crbug.com/1033337
+    'chrome/test/data/webui/chromeos/async_gen.js',
+    'chrome/test/data/webui/chromeos/cr_focus_row_behavior_interactive_test.js',
+    'chrome/test/data/webui/chromeos/**/*_browsertest.js',
+
+    // ESLint is disabled for camera_app_ui and recorder_app_ui as they
+    // used a custom eslint plugin that does not work with the latest eslint,
+    // and they had complex eslint rc files that have not been updated to the
+    // latest eslint. See https://crbug.com/368085620.
+    'ash/webui/camera_app_ui/resources/**',
+    'ash/webui/recorder_app_ui/resources/**',
+  ]
 };
