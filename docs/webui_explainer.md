@@ -685,6 +685,8 @@ build_webui("build") {
     "browser_proxy.ts",
   ]
 
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/donuts:mojo_bindings_ts__generator" ]
   mojo_files = [
