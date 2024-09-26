@@ -773,7 +773,9 @@ def main():
   ldflags = []
 
   targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
-  projects = 'clang;lld;clang-tools-extra'
+  projects = 'clang;lld'
+  if not args.no_tools:
+    projects += ';clang-tools-extra'
   if args.bolt:
     projects += ';bolt'
 
