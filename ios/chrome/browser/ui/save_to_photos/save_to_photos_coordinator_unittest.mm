@@ -173,7 +173,7 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
   SaveToPhotosCoordinator* coordinator = CreateSaveToPhotosCoordinator();
 
   PhotosService* photosService =
-      PhotosServiceFactory::GetForBrowserState(browser_state_.get());
+      PhotosServiceFactory::GetForProfile(browser_state_.get());
   PrefService* prefService = browser_state_->GetPrefs();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(

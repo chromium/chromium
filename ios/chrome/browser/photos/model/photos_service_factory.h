@@ -17,9 +17,6 @@ class PhotosService;
 // Profile.
 class PhotosServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PhotosService* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static PhotosService* GetForProfile(ProfileIOS* profile);
   static PhotosServiceFactory* GetInstance();
 

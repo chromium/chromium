@@ -82,7 +82,7 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   PhotosService* photosService =
-      PhotosServiceFactory::GetForBrowserState(browserState);
+      PhotosServiceFactory::GetForProfile(browserState);
   PrefService* prefService = browserState->GetPrefs();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);

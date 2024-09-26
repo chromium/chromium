@@ -560,7 +560,7 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   PhotosService* photosService =
-      PhotosServiceFactory::GetForBrowserState(_browserState);
+      PhotosServiceFactory::GetForProfile(_browserState);
   bool shouldShowDownloadsSettings =
       photosService && photosService->IsSupported();
   if (IsInactiveTabsAvailable()) {

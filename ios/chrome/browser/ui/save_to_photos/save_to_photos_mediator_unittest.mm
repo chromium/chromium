@@ -165,7 +165,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Create a SaveToPhotosMediator with services from the test browser state.
   SaveToPhotosMediator* CreateSaveToPhotosMediator() {
     PhotosService* photos_service =
-        PhotosServiceFactory::GetForBrowserState(browser_state_.get());
+        PhotosServiceFactory::GetForProfile(browser_state_.get());
     PrefService* pref_service = browser_state_->GetPrefs();
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
@@ -192,7 +192,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Returns the TestPhotosService tied to the browser state.
   TestPhotosService* GetTestPhotosService() {
     return static_cast<TestPhotosService*>(
-        PhotosServiceFactory::GetForBrowserState(browser_state_.get()));
+        PhotosServiceFactory::GetForProfile(browser_state_.get()));
   }
 
   // Returns the FakeImageFetchTabHelper tied to the WebState.

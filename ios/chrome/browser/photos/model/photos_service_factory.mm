@@ -15,11 +15,6 @@
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
 // static
-PhotosService* PhotosServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 PhotosService* PhotosServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<PhotosService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -46,16 +41,14 @@ std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
   PhotosServiceConfiguration* configuration =
       [[PhotosServiceConfiguration alloc] init];
   ApplicationContext* application_context = GetApplicationContext();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   configuration.singleSignOnService =
       application_context->GetSingleSignOnService();
-  configuration.prefService = chrome_browser_state->GetPrefs();
+  configuration.prefService = profile->GetPrefs();
   configuration.identityManager =
-      IdentityManagerFactory::GetForProfile(chrome_browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   configuration.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          chrome_browser_state);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   return ios::provider::CreatePhotosService(configuration);
 }
 

@@ -10,21 +10,19 @@
 
 class PhotosServiceFactoryTest : public PlatformTest {
  protected:
-  PhotosServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+  PhotosServiceFactoryTest() : profile_(TestProfileIOS::Builder().Build()) {}
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Checks that the same instance is returned for on-the-record and
-// off-the-record browser states.
-TEST_F(PhotosServiceFactoryTest, BrowserStateRedirectedInIncognito) {
+// off-the-record profile.
+TEST_F(PhotosServiceFactoryTest, ProfileRedirectedInIncognito) {
   PhotosService* on_the_record_service =
-      PhotosServiceFactory::GetForBrowserState(browser_state_.get());
+      PhotosServiceFactory::GetForProfile(profile_.get());
   PhotosService* off_the_record_service =
-      PhotosServiceFactory::GetForBrowserState(
-          browser_state_->GetOffTheRecordChromeBrowserState());
+      PhotosServiceFactory::GetForProfile(profile_->GetOffTheRecordProfile());
   EXPECT_TRUE(on_the_record_service != nullptr);
   EXPECT_EQ(on_the_record_service, off_the_record_service);
 }
