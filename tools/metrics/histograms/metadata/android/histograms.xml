@@ -182,12 +182,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".VrServicesUpgrade"/>
 </variants>
 
-<variants name="MinimizeAppAndCloseTabTypeVariants">
-  <variant name="CloseTab"/>
-  <variant name="MinimizeApp"/>
-  <variant name="MinimizeAppAndCloseTab"/>
-</variants>
-
 <variants name="ScrollScenarios">
   <variant name="FeedScrolling" summary="feed scroll."/>
   <variant name="WebviewScrolling"
@@ -718,21 +712,6 @@ chromium-metrics-reviews@google.com.
     times for a single back press event if there are multiple failed handlers.
     Android only.
   </summary>
-</histogram>
-
-<histogram
-    name="Android.BackPress.Failure.{MinimizeAppAndCloseTabTypeVariants}"
-    enum="MinimizeAppAndCloseTabType" expires_after="2024-09-22">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
-  <summary>
-    Recorded when the user invokes a back navigation and there is a discrepancy
-    between system back arm group and non system back arm group. The system back
-    group is supposed to record {MinimizeAppAndCloseTabTypeVariants} but wrongly
-    records another value.
-  </summary>
-  <token key="MinimizeAppAndCloseTabTypeVariants"
-      variants="MinimizeAppAndCloseTabTypeVariants"/>
 </histogram>
 
 <histogram name="Android.BackPress.Intercept.CustomTab{Task}"
