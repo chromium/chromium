@@ -249,9 +249,9 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        chrome::IsIncognitoProcess(),
-        IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
-        IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
+        IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+        IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
+        RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
   }
@@ -278,7 +278,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      chrome::IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+      IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
       IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
       RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),

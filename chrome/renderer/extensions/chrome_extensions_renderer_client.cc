@@ -64,7 +64,7 @@ void ChromeExtensionsRendererClient::Create() {
 }
 
 bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {
-  return chrome::IsIncognitoProcess();
+  return ::IsIncognitoProcess();
 }
 
 int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
