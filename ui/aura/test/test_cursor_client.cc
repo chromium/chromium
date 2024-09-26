@@ -40,14 +40,14 @@ void TestCursorClient::SetCursorForced(gfx::NativeCursor cursor) {
 
 void TestCursorClient::ShowCursor() {
   visible_ = true;
-  for (aura::client::CursorClientObserver& observer : observers_)
-    observer.OnCursorVisibilityChanged(true);
+  observers_.Notify(
+      &aura::client::CursorClientObserver::OnCursorVisibilityChanged, true);
 }
 
 void TestCursorClient::HideCursor() {
   visible_ = false;
-  for (aura::client::CursorClientObserver& observer : observers_)
-    observer.OnCursorVisibilityChanged(false);
+  observers_.Notify(
+      &aura::client::CursorClientObserver::OnCursorVisibilityChanged, false);
 }
 
 void TestCursorClient::SetCursorSize(ui::CursorSize cursor_size) {}

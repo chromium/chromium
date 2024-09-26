@@ -92,8 +92,7 @@ class EventObserverAdapter : public ui::EventHandler,
 // Env, public:
 
 Env::~Env() {
-  for (EnvObserver& observer : observers_)
-    observer.OnWillDestroyEnv();
+  observers_.Notify(&EnvObserver::OnWillDestroyEnv);
 
   if (this == g_primary_instance)
     g_primary_instance = nullptr;
@@ -265,20 +264,17 @@ bool Env::Init() {
 }
 
 void Env::NotifyWindowInitialized(Window* window) {
-  for (EnvObserver& observer : observers_)
-    observer.OnWindowInitialized(window);
+  observers_.Notify(&EnvObserver::OnWindowInitialized, window);
 }
 
 void Env::NotifyHostInitialized(WindowTreeHost* host) {
   window_tree_hosts_.push_back(host);
-  for (EnvObserver& observer : observers_)
-    observer.OnHostInitialized(host);
+  observers_.Notify(&EnvObserver::OnHostInitialized, host);
 }
 
 void Env::NotifyHostDestroyed(WindowTreeHost* host) {
   std::erase(window_tree_hosts_, host);
-  for (EnvObserver& observer : observers_)
-    observer.OnHostDestroyed(host);
+  observers_.Notify(&EnvObserver::OnHostDestroyed, host);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

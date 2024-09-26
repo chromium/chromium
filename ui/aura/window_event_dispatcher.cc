@@ -79,17 +79,16 @@ WindowEventDispatcher::ObserverNotifier::ObserverNotifier(
     WindowEventDispatcher* dispatcher,
     const ui::Event& event)
     : dispatcher_(dispatcher) {
-  for (WindowEventDispatcherObserver& observer :
-       Env::GetInstance()->window_event_dispatcher_observers()) {
-    observer.OnWindowEventDispatcherStartedProcessing(dispatcher, event);
-  }
+  Env::GetInstance()->window_event_dispatcher_observers().Notify(
+      &WindowEventDispatcherObserver::OnWindowEventDispatcherStartedProcessing,
+      dispatcher, event);
 }
 
 WindowEventDispatcher::ObserverNotifier::~ObserverNotifier() {
-  for (WindowEventDispatcherObserver& observer :
-       Env::GetInstance()->window_event_dispatcher_observers()) {
-    observer.OnWindowEventDispatcherFinishedProcessingEvent(dispatcher_);
-  }
+  Env::GetInstance()->window_event_dispatcher_observers().Notify(
+      &WindowEventDispatcherObserver::
+          OnWindowEventDispatcherFinishedProcessingEvent,
+      dispatcher_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -822,10 +821,10 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
 
   if (!dispatch_details.dispatcher_destroyed) {
     dispatching_held_event_ = nullptr;
-    for (WindowEventDispatcherObserver& observer :
-         Env::GetInstance()->window_event_dispatcher_observers()) {
-      observer.OnWindowEventDispatcherDispatchedHeldEvents(this);
-    }
+    Env::GetInstance()->window_event_dispatcher_observers().Notify(
+        &WindowEventDispatcherObserver::
+            OnWindowEventDispatcherDispatchedHeldEvents,
+        this);
     if (did_dispatch_held_move_event_callback_)
       std::move(did_dispatch_held_move_event_callback_).Run();
   }
@@ -1077,8 +1076,9 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
     // The event is invalid - ignore it.
     event->StopPropagation();
     event->DisableSynchronousHandling();
-    for (auto& observer : env->window_event_dispatcher_observers())
-      observer.OnWindowEventDispatcherIgnoredEvent(this);
+    env->window_event_dispatcher_observers().Notify(
+        &WindowEventDispatcherObserver::OnWindowEventDispatcherIgnoredEvent,
+        this);
     return DispatchDetails();
   }
 

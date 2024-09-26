@@ -395,9 +395,8 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
   occluded_region_ = occluded_region;
   MaybeUpdateCompositorVisibilityForNativeOcclusion();
 
-  for (WindowTreeHostObserver& observer : observers_) {
-    observer.OnOcclusionStateChanged(this, state, occluded_region);
-  }
+  observers_.Notify(&WindowTreeHostObserver::OnOcclusionStateChanged, this,
+                    state, occluded_region);
 }
 
 void WindowTreeHost::UpdateRootWindowSize() {
@@ -590,8 +589,7 @@ void WindowTreeHost::OnAcceleratedWidgetAvailable() {
 void WindowTreeHost::OnHostMovedInPixels() {
   TRACE_EVENT0("ui", "WindowTreeHost::OnHostMovedInPixels");
 
-  for (WindowTreeHostObserver& observer : observers_)
-    observer.OnHostMovedInPixels(this);
+  observers_.Notify(&WindowTreeHostObserver::OnHostMovedInPixels, this);
 }
 
 void WindowTreeHost::OnHostResizedInPixels(
@@ -617,13 +615,11 @@ void WindowTreeHost::OnHostResizedInPixels(
   // GetBoundsInPixels() in such case.
   UpdateCompositorScaleAndSize(new_size_in_pixels);
 
-  for (WindowTreeHostObserver& observer : observers_)
-    observer.OnHostResized(this);
+  observers_.Notify(&WindowTreeHostObserver::OnHostResized, this);
 }
 
 void WindowTreeHost::OnHostWorkspaceChanged() {
-  for (WindowTreeHostObserver& observer : observers_)
-    observer.OnHostWorkspaceChanged(this);
+  observers_.Notify(&WindowTreeHostObserver::OnHostWorkspaceChanged, this);
 }
 
 void WindowTreeHost::OnHostDisplayChanged() {
@@ -635,8 +631,7 @@ void WindowTreeHost::OnHostDisplayChanged() {
 }
 
 void WindowTreeHost::OnHostCloseRequested() {
-  for (WindowTreeHostObserver& observer : observers_)
-    observer.OnHostCloseRequested(this);
+  observers_.Notify(&WindowTreeHostObserver::OnHostCloseRequested, this);
 }
 
 void WindowTreeHost::OnHostLostWindowCapture() {
@@ -830,15 +825,15 @@ void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
 
 void WindowTreeHost::OnFrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {
-  for (auto& observer : observers_)
-    observer.OnCompositingFrameSinksToThrottleUpdated(this, ids);
+  observers_.Notify(
+      &WindowTreeHostObserver::OnCompositingFrameSinksToThrottleUpdated, this,
+      ids);
 }
 
 void WindowTreeHost::OnSetPreferredRefreshRate(ui::Compositor*,
                                                float preferred_refresh_rate) {
-  for (auto& observer : observers_) {
-    observer.OnSetPreferredRefreshRate(this, preferred_refresh_rate);
-  }
+  observers_.Notify(&WindowTreeHostObserver::OnSetPreferredRefreshRate, this,
+                    preferred_refresh_rate);
 }
 
 }  // namespace aura
