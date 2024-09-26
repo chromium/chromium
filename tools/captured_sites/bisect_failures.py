@@ -243,7 +243,8 @@ def DoBisect(bad_hash, good_hash, site_name, print_only=False):
   build_command_text = build_command.print()
 
   run_command = captured_sites_commands.initiate_command('run')
-  run_command.build(['-r', '-b'] + site_name)
+  # -r:Use Release version, -b:Run In Background', -u:Use Bot Timeout (3 min).
+  run_command.build(['-r', '-b', '-u'] + site_name)
   run_command_text = run_command.print()
 
   print(f'Will bisect from {good_hash} to {bad_hash}.')

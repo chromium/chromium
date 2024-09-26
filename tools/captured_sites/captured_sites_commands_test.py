@@ -169,32 +169,32 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'refresh', ['google'],
             ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1')
         ],
         [
             'refresh', ['-r', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1')
         ],
         [
             'refresh', ['-b', 'google'],
             ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --test-'
-             'launcher-interactive --enable-pixel-output-in-tests --vmodule=cap'
+             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
              'tured_sites_test_utils=2,cache_replayer=1,autofill_captured_sites'
              '_interactive_uitest=1')
         ],
         [
             'refresh', ['-r', '-s', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1 --test-launcher-summary-output=/tmp/captured_sites/local_te'
              'st_results/google_output.json 2>&1 | tee /tmp/captured_sites/loca'
@@ -207,8 +207,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
                 'pipe', '-w', 'google'
             ],
             ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --test-'
-             'launcher-interactive --enable-pixel-output-in-tests --vmodule=cap'
+             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
              'tured_sites_test_utils=2,autofill_download_manager=1,form_cache=1'
              ',autofill_agent=1,autofill_handler=1,form_structure=1,cache_repla'
              'yer=2,autofill_captured_sites_interactive_uitest=1 --gtest_also_r'
@@ -226,16 +226,16 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'run', ['google'],
             ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1')
         ],
         [
             'run', ['-r', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1')
         ],
@@ -243,19 +243,30 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
             'run', ['-b', 'google'],
             ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
              'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --test-launcher-interactive --enable-pixel-output-in-tests --vmo'
+             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
              'dule=captured_sites_test_utils=2,cache_replayer=1,autofill_captur'
              'ed_sites_interactive_uitest=1')
         ],
         [
             'run', ['-r', '-s', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1 --test-launcher-summary-output=/tmp/captured_sites/'
              'local_test_results/google_output.json 2>&1 | tee /tmp/captured_si'
              'tes/local_test_results/google_capture.log')
+        ],
+        [
+            'run', ['-r', '-s', '-u', 'google'],
+            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --ui-test-action-max-timeout=180000 --test-launch'
+             'er-timeout=180000 --vmodule=captured_sites_test_utils=2,cache_rep'
+             'layer=1,autofill_captured_sites_interactive_uitest=1 --test-launc'
+             'her-summary-output=/tmp/captured_sites/local_test_results/google_'
+             'output.json 2>&1 | tee /tmp/captured_sites/local_test_results/goo'
+             'gle_capture.log')
         ],
         [
             'run',
@@ -265,7 +276,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
             ],
             ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
              'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --test-launcher-interactive --enable-pixel-output-in-tests --vmo'
+             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
              'dule=captured_sites_test_utils=2,autofill_download_manager=1,form'
              '_cache=1,autofill_agent=1,autofill_handler=1,form_structure=1,cac'
              'he_replayer=2,autofill_captured_sites_interactive_uitest=1 --gtes'
