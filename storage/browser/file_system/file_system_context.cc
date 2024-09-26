@@ -632,9 +632,7 @@ bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
     return false;
   if (url.type() == kFileSystemTypeTemporary)
     return true;
-  if (url.type() == kFileSystemTypePersistent &&
-      base::FeatureList::IsEnabled(
-          features::kEnablePersistentFilesystemInIncognito)) {
+  if (url.type() == kFileSystemTypePersistent) {
     return true;
   }
   return !is_incognito_ || !FileSystemContext::IsSandboxFileSystem(url.type());

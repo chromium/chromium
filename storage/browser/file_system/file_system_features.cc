@@ -6,11 +6,6 @@
 
 namespace storage::features {
 
-// Enables persistent Filesystem API in incognito mode.
-BASE_FEATURE(kEnablePersistentFilesystemInIncognito,
-             "EnablePersistentFilesystemInIncognito",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Creates FileSystemContexts in incognito mode. This is used to run web tests
 // in incognito mode to ensure feature parity for FileSystemAccessAccessHandles.
 BASE_FEATURE(kIncognitoFileSystemContextForTesting,

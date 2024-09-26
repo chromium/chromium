@@ -62,15 +62,6 @@ void SandboxFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                           ResolveURLCallback callback) {
   DCHECK(CanHandleType(url.type()));
   DCHECK(delegate_);
-  if (delegate_->file_system_options().is_incognito() &&
-      url.type() != kFileSystemTypeTemporary &&
-      !base::FeatureList::IsEnabled(
-          features::kEnablePersistentFilesystemInIncognito)) {
-    // TODO(kinuko): return an isolated temporary directory.
-    std::move(callback).Run(GURL(), std::string(),
-                            base::File::FILE_ERROR_SECURITY);
-    return;
-  }
 
   delegate_->OpenFileSystem(
       url.GetBucket(), url.type(), mode, std::move(callback),
