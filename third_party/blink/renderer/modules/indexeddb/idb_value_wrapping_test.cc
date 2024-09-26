@@ -15,9 +15,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -532,12 +530,6 @@ TEST(IDBValueUnwrapperTest, Compression) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << "Testing string " << test_case.bytes);
 
-    base::test::ScopedFeatureList enable_feature_list;
-    enable_feature_list.InitAndEnableFeatureWithParameters(
-        features::kIndexedDBCompressValuesWithSnappy,
-        {{"compression-threshold",
-          base::StringPrintf("%i", test_case.compression_threshold)}});
-
     V8TestingScope scope;
     NonThrowableExceptionState non_throwable_exception_state;
     v8::Local<v8::Value> v8_value =
@@ -581,9 +573,8 @@ TEST(IDBValueUnwrapperTest, Compression) {
 }
 
 // Verifies that the decompression code should still run and succeed on
-// compressed data even if the flag is disabled. This is required to be able to
-// decompress existing data that has been persisted to disk if/when compression
-// is later disabled.
+// compressed data. This is required to be able to decompress existing data that
+// has been persisted to disk if/when compression is later disabled.
 TEST(IDBValueUnwrapperTest, Decompression) {
   test::TaskEnvironment task_environment;
   Vector<WebBlobInfo> blob_infos;
@@ -591,8 +582,6 @@ TEST(IDBValueUnwrapperTest, Decompression) {
   V8TestingScope scope;
   v8::Local<v8::Value> v8_value;
   {
-    base::test::ScopedFeatureList enable_feature_list{
-        features::kIndexedDBCompressValuesWithSnappy};
     NonThrowableExceptionState non_throwable_exception_state;
     std::string bytes = base::StrCat(std::vector<std::string>(100u, "abcd"));
     v8_value = v8::String::NewFromUtf8(scope.GetIsolate(), bytes.c_str(),
@@ -601,6 +590,7 @@ TEST(IDBValueUnwrapperTest, Decompression) {
     IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
                             SerializedScriptValue::SerializeOptions::kSerialize,
                             non_throwable_exception_state);
+    wrapper.set_compression_threshold_for_test(100);
     wrapper.DoneCloning();
     Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
         wrapper.TakeBlobDataHandles();
@@ -609,13 +599,7 @@ TEST(IDBValueUnwrapperTest, Decompression) {
   }
 
   {
-    base::test::ScopedFeatureList disable_feature_list;
-    disable_feature_list.InitAndDisableFeature(
-        features::kIndexedDBCompressValuesWithSnappy);
-    EXPECT_FALSE(base::FeatureList::IsEnabled(
-        features::kIndexedDBCompressValuesWithSnappy));
-
-    // Complete round trip to v8 value with compression disabled.
+    // Complete round trip to v8 value.
     auto value =
         std::make_unique<IDBValue>(std::move(buffer), std::move(blob_infos));
     value->SetIsolate(scope.GetIsolate());

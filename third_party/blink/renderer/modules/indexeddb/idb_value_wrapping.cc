@@ -14,10 +14,8 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -173,21 +171,11 @@ void IDBValueWrapper::DoneCloning() {
 }
 
 bool IDBValueWrapper::ShouldCompress(size_t uncompressed_length) const {
-  static int field_trial_threshold =
-      features::kIndexedDBCompressValuesWithSnappyCompressionThreshold.Get();
-  return base::FeatureList::IsEnabled(
-             features::kIndexedDBCompressValuesWithSnappy) &&
-         uncompressed_length >=
-             compression_threshold_override_.value_or(static_cast<size_t>(
-                 field_trial_threshold < 0 ? mojom::blink::kIDBWrapThreshold
-                                           : field_trial_threshold));
+  return uncompressed_length >= compression_threshold_override_.value_or(
+                                    mojom::blink::kIDBWrapThreshold);
 }
 
 void IDBValueWrapper::MaybeCompress() {
-  if (!base::FeatureList::IsEnabled(
-          features::kIndexedDBCompressValuesWithSnappy)) {
-    return;
-  }
 
   DCHECK(wire_data_buffer_.empty());
   const size_t wire_data_size = wire_data_.size();

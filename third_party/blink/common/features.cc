@@ -1136,15 +1136,6 @@ BASE_FEATURE(kImageLoadingPrioritizationFix,
              "ImageLoadingPrioritizationFix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIndexedDBCompressValuesWithSnappy,
-             "IndexedDBCompressValuesWithSnappy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int>
-    kIndexedDBCompressValuesWithSnappyCompressionThreshold{
-        &features::kIndexedDBCompressValuesWithSnappy,
-        /*name=*/"compression-threshold",
-        /*default_value=*/-1};
-
 BASE_FEATURE(kInputPredictorTypeChoice,
              "InputPredictorTypeChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
