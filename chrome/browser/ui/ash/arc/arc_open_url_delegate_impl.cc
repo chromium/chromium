@@ -116,6 +116,7 @@ constexpr auto kOSSettingsMap = base::MakeFixedFlatMap<ChromePage,
      chromeos::settings::mojom::kSmartPrivacySubpagePath},
     {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
     {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath},
+    {ChromePage::NETWORKS, chromeos::settings::mojom::kNetworkSectionPath},
 });
 
 constexpr auto kBrowserSettingsMap =
