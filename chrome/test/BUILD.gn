@@ -2013,6 +2013,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/user_annotations:browser_tests",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -5379,9 +5380,10 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
-      sources +=
-          [ "../browser/ui/webui/whats_new/whats_new_fetcher_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/webui/whats_new:mojo_bindings" ]
+      deps += [
+        "//chrome/browser/ui/webui/whats_new:browser_tests",
+        "//chrome/browser/ui/webui/whats_new:mojo_bindings",
+      ]
     }
   }
 }
@@ -9758,10 +9760,6 @@ test("unit_tests") {
       "../browser/enterprise/signin/token_managed_profile_creation_delegate_unittest.cc",
       "../browser/enterprise/signin/user_policy_oidc_signin_service_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
-      "../browser/ui/webui/whats_new/whats_new_handler_unittest.cc",
-      "../browser/ui/webui/whats_new/whats_new_registrar_unittest.cc",
-      "../browser/ui/webui/whats_new/whats_new_storage_service_impl_unittest.cc",
-      "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 
     deps += [
@@ -9778,6 +9776,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/key_management/installer:unit_tests",
       "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests",
       "../browser/ui/webui/whats_new:mojo_bindings",
+      "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/user_education/webui:webui",
     ]
   }
@@ -10553,6 +10552,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

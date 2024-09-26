@@ -193,6 +193,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/whats_new",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

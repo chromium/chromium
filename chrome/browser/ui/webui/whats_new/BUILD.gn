@@ -1,4 +1,10 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android && !is_fuchsia)
 
 mojom("mojo_bindings") {
   sources = [ "whats_new.mojom" ]
@@ -8,4 +14,128 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+}
+
+source_set("whats_new") {
+  sources = [ "whats_new_util.h" ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "whats_new_fetcher.h",
+      "whats_new_handler.h",
+      "whats_new_registrar.h",
+      "whats_new_storage_service_impl.h",
+      "whats_new_ui.h",
+    ]
+    public_deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/user_education/webui",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//ui/base",
+      "//ui/webui",
+      "//ui/webui/resources/js/browser_command:mojo_bindings",
+    ]
+  }
+}
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [ "whats_new_util.cc" ]
+
+  deps = [
+    ":whats_new",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//chrome/common:version_header",
+    "//components/prefs",
+    "//net",
+    "//ui/base:features",
+    "//url",
+  ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "whats_new_fetcher.cc",
+      "whats_new_handler.cc",
+      "whats_new_registrar.cc",
+      "whats_new_storage_service_impl.cc",
+      "whats_new_ui.cc",
+    ]
+    deps += [
+      "//chrome/browser:global_features",
+      "//chrome/browser/resources/whats_new:resources",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/common:version_header",
+      "//components/bookmarks/common",
+      "//components/history_embeddings",
+      "//components/user_education/common",
+      "//components/variations/service",
+    ]
+  }
+}
+
+if (is_linux || is_mac || is_win) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "whats_new_handler_unittest.cc",
+      "whats_new_registrar_unittest.cc",
+      "whats_new_storage_service_impl_unittest.cc",
+      "whats_new_util_unittest.cc",
+    ]
+    deps = [
+      ":mojo_bindings",
+      ":whats_new",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/common:version_header",
+      "//chrome/test:test_support",
+      "//components/feature_engagement/public",
+      "//components/user_education/common",
+      "//components/user_education/webui",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "whats_new_fetcher_browsertest.cc" ]
+    deps = [
+      ":whats_new",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:global_features",
+      "//chrome/common:version_header",
+      "//chrome/test:test_support_ui",
+      "//components/user_education/common",
+      "//components/user_education/webui",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

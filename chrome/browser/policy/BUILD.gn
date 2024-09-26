@@ -481,7 +481,10 @@ source_set("browser_tests") {
     # tabs policy are win/mac/linux only.
     sources += [ "test/promotional_tabs_enabled_policy_browsertest.cc" ]
 
-    deps += [ "//chrome/common:version_header" ]
+    deps += [
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/common:version_header",
+    ]
   }
 
   if (!is_android && !is_chromeos_ash) {

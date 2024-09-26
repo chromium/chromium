@@ -1807,8 +1807,6 @@ static_library("ui") {
       "webui/webui_gallery/webui_gallery_ui.h",
       "webui/webui_util_desktop.cc",
       "webui/webui_util_desktop.h",
-      "webui/whats_new/whats_new_util.cc",
-      "webui/whats_new/whats_new_util.h",
     ]
 
     if (is_chrome_branded) {
@@ -1906,6 +1904,9 @@ static_library("ui") {
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/util",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/ui/webui/whats_new:impl",
       "//chrome/browser/ui/window_sizer",
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/user_annotations",
@@ -2041,6 +2042,7 @@ static_library("ui") {
 
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui/webui/whats_new:impl",
 
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/window_sizer:impl",
@@ -3278,16 +3280,6 @@ static_library("ui") {
       "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
-      "webui/whats_new/whats_new_fetcher.cc",
-      "webui/whats_new/whats_new_fetcher.h",
-      "webui/whats_new/whats_new_handler.cc",
-      "webui/whats_new/whats_new_handler.h",
-      "webui/whats_new/whats_new_registrar.cc",
-      "webui/whats_new/whats_new_registrar.h",
-      "webui/whats_new/whats_new_storage_service_impl.cc",
-      "webui/whats_new/whats_new_storage_service_impl.h",
-      "webui/whats_new/whats_new_ui.cc",
-      "webui/whats_new/whats_new_ui.h",
     ]
 
     deps += [
