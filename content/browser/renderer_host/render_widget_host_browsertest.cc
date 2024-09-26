@@ -1554,8 +1554,8 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
     auto test_config = GetParam();
     switch (test_config) {
       case TestConfig::kSameDoc: {
-        first_url_ = "/session_history/fragment.html";
-        second_url_ = "/session_history/fragment.html#a";
+        first_url_ = "/changing_color.html#red";
+        second_url_ = "/changing_color.html#green";
         break;
       }
       case TestConfig::kBFCacheEnabled: {
@@ -1595,15 +1595,9 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
 
 }  // namespace
 
-// TODO(crbug.com/362200328): Re-enable test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ItemSequenceNumberExpected DISABLED_ItemSequenceNumberExpected
-#else
-#define MAYBE_ItemSequenceNumberExpected ItemSequenceNumberExpected
-#endif
 IN_PROC_BROWSER_TEST_P(
     RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
-    MAYBE_ItemSequenceNumberExpected) {
+    ItemSequenceNumberExpected) {
   ASSERT_TRUE(NavigateToURL(shell(), FirstURL()));
   ASSERT_TRUE(NavigateToURL(shell(), SecondURL()));
 
