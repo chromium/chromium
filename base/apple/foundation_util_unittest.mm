@@ -474,13 +474,13 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 
 TEST(FoundationUtilTest, NSDataToSpan) {
   {
-    NS_VALID_UNTIL_END_OF_SCOPE NSData* data = [NSData data];
+    NSData* data = [NSData data];
     span<const uint8_t> span = NSDataToSpan(data);
     EXPECT_TRUE(span.empty());
   }
 
   {
-    NS_VALID_UNTIL_END_OF_SCOPE NSMutableData* data = [NSMutableData data];
+    NSMutableData* data = [NSMutableData data];
     span<uint8_t> span = NSMutableDataToSpan(data);
     EXPECT_TRUE(span.empty());
   }
@@ -488,15 +488,14 @@ TEST(FoundationUtilTest, NSDataToSpan) {
   const char buffer[4] = {0, CHAR_MAX, 0, CHAR_MAX};
 
   {
-    NS_VALID_UNTIL_END_OF_SCOPE NSData* data =
-        [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    NSData* data = [NSData dataWithBytes:buffer length:sizeof(buffer)];
     span<const uint8_t> span = NSDataToSpan(data);
     EXPECT_THAT(span, ElementsAreArray(buffer));
   }
 
   {
-    NS_VALID_UNTIL_END_OF_SCOPE NSMutableData* data =
-        [NSMutableData dataWithBytes:buffer length:sizeof(buffer)];
+    NSMutableData* data = [NSMutableData dataWithBytes:buffer
+                                                length:sizeof(buffer)];
     span<uint8_t> span = NSMutableDataToSpan(data);
     EXPECT_THAT(span, ElementsAreArray(buffer));
     span[0] = 123;

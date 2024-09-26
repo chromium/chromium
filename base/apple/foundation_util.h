@@ -300,18 +300,22 @@ BASE_EXPORT FilePath CFURLToFilePath(CFURLRef url);
 [[nodiscard]] BASE_EXPORT bool CFRangeToNSRange(CFRange range,
                                                 NSRange* range_out);
 
-// Returns an immutable `base::span<const uint8_t>` pointing to the memory
-// owned by `data`. `data` must outlive the returned span.
-// Returns an empty span if `data` is nil or empty.
+// Returns an immutable `base::span<const uint8_t>` pointing to the memory owned
+// by `data`. Returns an empty span if `data` is nil or empty.
+//
+// The resulting span will be valid until the top-most autorelease pool is
+// popped. Ensure that the span does not outlive that autorelease pool.
 inline span<const uint8_t> NSDataToSpan(NSData* data) {
   // SAFETY: `NSData` guarantees that `bytes` is exactly `length` in size.
   return UNSAFE_BUFFERS(
       make_span(static_cast<const uint8_t*>(data.bytes), data.length));
 }
 
-// Returns a mutable `base::span<uint8_t>` pointing to the memory
-// owned by `data`. `data` must outlive the returned span.
-// Returns an empty span if `data` is nil or empty.
+// Returns a mutable `base::span<uint8_t>` pointing to the memory owned by
+// `data`. Returns an empty span if `data` is nil or empty.
+//
+// The resulting span will be valid until the top-most autorelease pool is
+// popped. Ensure that the span does not outlive that autorelease pool.
 inline span<uint8_t> NSMutableDataToSpan(NSMutableData* data) {
   // SAFETY: `NSMutableData` guarantees that `mutableBytes` is exactly `length`
   // in size.
