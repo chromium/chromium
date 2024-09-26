@@ -6,12 +6,14 @@
 
 #include <errno.h>
 #include <sys/ioctl.h>
+#include <sys/prctl.h>
 
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
@@ -29,6 +31,7 @@ struct local_dma_buf_sync {
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::Error;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
@@ -113,6 +116,13 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_getcpu:
 #endif
       return Allow();
+#if defined(__arm__) || defined(__aarch64__)
+    case __NR_prctl: {
+      const Arg<int> option(0);
+      return If(option == PR_SVE_GET_VL, Allow())
+          .Else(BPFBasePolicy::EvaluateSyscall(sysno));
+    }
+#endif
     case __NR_prlimit64:
       // See crbug.com/662450 and setrlimit comment above.
       return RestrictPrlimit(GetPolicyPid());

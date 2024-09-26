@@ -37,4 +37,8 @@
 #define PR_SET_PTRACER_ANY ((unsigned long)-1)
 #endif
 
+#if !defined(PR_SVE_GET_VL)
+#define PR_SVE_GET_VL 51
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_PRCTL_H_
