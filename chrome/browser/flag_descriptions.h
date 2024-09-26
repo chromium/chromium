@@ -1392,9 +1392,6 @@ extern const char kLegacyTechReportEnableCookieIssueReportsDescription[];
 extern const char kLegacyTechReportTopLevelUrlName[];
 extern const char kLegacyTechReportTopLevelUrlDescription[];
 
-extern const char kLensRegionSearchStaticPageName[];
-extern const char kLensRegionSearchStaticPageDescription[];
-
 extern const char kLensOverlayName[];
 extern const char kLensOverlayDescription[];
 
@@ -1412,18 +1409,6 @@ extern const char kLensImageTranslateDescription[];
 
 extern const char kLinkedServicesSettingName[];
 extern const char kLinkedServicesSettingDescription[];
-
-extern const char kCscCompanionEnablePageContentName[];
-extern const char kCscCompanionEnablePageContentDescription[];
-
-extern const char kCscForceCompanionPinnedStateName[];
-extern const char kCscForceCompanionPinnedStateDescription[];
-
-extern const char kCscSidePanelCompanionName[];
-extern const char kCscSidePanelCompanionDescription[];
-
-extern const char kCscVisualQuerySuggestionsName[];
-extern const char kCscVisualQuerySuggestionsDescription[];
 
 extern const char kLensOnQuickActionSearchWidgetName[];
 extern const char kLensOnQuickActionSearchWidgetDescription[];

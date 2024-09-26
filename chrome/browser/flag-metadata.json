@@ -1923,21 +1923,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "csc-companion-enable-page-content",
-    "owners": ["manukh@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "csc-force-companion-pinned-state",
-    "owners": ["stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "csc-side-panel-companion",
-    "owners": ["stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "css-gamut-mapping",
     "owners": ["ccameron@google.com", "aaronhk@google.com", "chrome-canvas-team@google.com"],
     "expiry_milestone": 126
@@ -3519,11 +3504,6 @@
     "name": "enable-lens-overlay-translate-button",
     "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
-  },
-  {
-    "name": "enable-lens-region-search-static-page",
-    "owners": ["juanmojica@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 126
   },
   {
     "name": "enable-lens-standalone",

@@ -2462,12 +2462,6 @@ const char kLegacyTechReportTopLevelUrlDescription[] =
     "allow browser trace back to the top level URL instead and populate the "
     "Frame URL in the `frame_url` field on the API.";
 
-const char kLensRegionSearchStaticPageName[] =
-    "Use a static page with the Lens region search feature.";
-const char kLensRegionSearchStaticPageDescription[] =
-    "Enables use of a static page in a new tab when using the Lens region "
-    "search feature.";
-
 const char kLensOverlayName[] = "Lens overlay";
 const char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";
@@ -2491,19 +2485,6 @@ const char kLensImageTranslateDescription[] =
 const char kLinkedServicesSettingName[] = "Linked Services Setting";
 const char kLinkedServicesSettingDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";
-
-const char kCscCompanionEnablePageContentName[] = "CSC Page Contents";
-const char kCscCompanionEnablePageContentDescription[] =
-    "Share the page contents with Chrome search companion.";
-
-const char kCscForceCompanionPinnedStateName[] = "CSC Pin State";
-const char kCscForceCompanionPinnedStateDescription[] = "";
-
-const char kCscSidePanelCompanionName[] = "CSC";
-const char kCscSidePanelCompanionDescription[] = "Chrome search companion.";
-
-const char kCscVisualQuerySuggestionsName[] = "CSC-VSS";
-const char kCscVisualQuerySuggestionsDescription[] = "";
 
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
