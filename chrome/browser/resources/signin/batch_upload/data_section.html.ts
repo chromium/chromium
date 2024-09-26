@@ -11,23 +11,28 @@ export function getHtml(this: DataSectionElement) {
   return html`
     <div class="data-section">
       <div class="data-section-header">
-        <div class="data-section-title">
+        <div id="sectionTitle">
           ${this.getSectionTitle_()}
         </div>
-        <cr-expand-button class="expand-button" no-hover
-            @click="${this.onExpandClicked_}">
+        <cr-expand-button id="expandButton" no-hover
+            ?hidden="${this.disabled_}"
+            ?expanded="${this.expanded_}"
+            @expanded-changed="${this.onExpandChanged_}">
         </cr-expand-button>
-        <div class="separator"></div>
-        <cr-toggle class="toggle" checked></cr-toggle>
+        <div id="separator" ?hidden="${this.disabled_}"></div>
+        <cr-toggle id="toggle"
+            @checked-changed=${this.onToggleChanged_}
+            ?checked="${!this.disabled_}">
+        </cr-toggle>
       </div>
-      <cr-collapse id="collapse" class="data-items-collapse"
-          .opened="${this.expanded_}">
-        <div class="data-items-list">
+      <cr-collapse id="collapse" .opened="${this.expanded_}">
+        <div id="data-items-list">
           ${this.dataContainer.dataItems.map((item) =>
           html`
           <div class="data-item">
-            <cr-checkbox class="item-checkbox" checked
+            <cr-checkbox class="item-checkbox"
                 data-id="${item.id}"
+                ?checked="${this.isCheckboxChecked_(item.id)}"
                 @change="${this.onCheckedChanged_}"/>
             <div class="data-item-content">
               <img class="item-icon" alt="Item icon" src="${item.iconUrl}">

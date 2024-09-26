@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -28,6 +29,10 @@ function createEmptyContainer(): DataContainer {
 
 export interface DataSectionElement {
   $: {
+    sectionTitle: HTMLElement,
+    expandButton: CrExpandButtonElement,
+    separator: HTMLElement,
+    toggle: CrToggleElement,
     collapse: CrCollapseElement,
   };
 }
@@ -49,14 +54,18 @@ export class DataSectionElement extends CrLitElement {
     return {
       dataContainer: {type: Object},
       expanded_: {type: Boolean},
+      disabled_: {type: Boolean},
       dataSelectedCount_: {type: Number},
     };
   }
 
   // Data to be displayed.
   dataContainer: DataContainer = createEmptyContainer();
+
   // If the collapse section is exapnded.
   protected expanded_: boolean = false;
+  // If the section toggle is off.
+  protected disabled_: boolean = false;
 
   // Map containing the ids of the selected items in the section. Initialized
   // with all the ids of the section.
@@ -67,14 +76,13 @@ export class DataSectionElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.initializeSection_();
-
-    this.requestUpdate();
+    this.initializeSectionOutput_();
   }
 
   // Initializes the output variable based on the input.
-  // Expected to be called once.
-  private initializeSection_() {
+  private initializeSectionOutput_() {
+    this.dataSelected.clear();
+
     // And any section should not be empty.
     assert(
         this.dataContainer.dataItems !== undefined &&
@@ -93,45 +101,85 @@ export class DataSectionElement extends CrLitElement {
     this.dataSelectedCount_ = this.dataSelected.size;
   }
 
-  protected getSectionTitle_(): string {
-    return this.dataContainer.sectionTitle + ' (' + this.dataSelectedCount_ +
-        ')';
+  // Resets the element to the default based on the disabled state.
+  private resetWithState_(disabled: boolean) {
+    if (disabled) {
+      this.dataSelected.clear();
+      this.dataSelectedCount_ = 0;
+    } else {
+      this.initializeSectionOutput_();
+    }
+    this.expanded_ = false;
+    this.disabled_ = disabled;
   }
 
-  protected onExpandClicked_(e: Event) {
-    const currentTarget = e.currentTarget as CrExpandButtonElement;
-    // Opposite to make sure the icon matches the expansion.
-    this.expanded_ = !currentTarget.expanded;
+  // Secondary part of the title as '(N)' with N being the number of item
+  // selected if greater than 0; otherwise return an empty string.
+  private getSectionTitleExtraInfo_() {
+    if (this.dataSelectedCount_ === 0) {
+      return '';
+    }
 
+    return ' (' + this.dataSelectedCount_ + ')';
+  }
+
+  protected getSectionTitle_(): string {
+    return this.dataContainer.sectionTitle + this.getSectionTitleExtraInfo_();
+  }
+
+  // Needs to react to both property change (through a reset) and user action.
+  protected onExpandChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
+
+    const collapseElement =
+        this.shadowRoot!.querySelector<CrCollapseElement>('#collapse')!;
     // Listen to the collapse transition end to properly update the container
     // height.
     // TODO(b/363205568): this is currently not smooth; potentially listening to
     // several updates, or computing the final height and triggering it
     // immediately.
     const updateViewHeight = (e: Event) => {
-      if (e.composedPath()[0] === this.$.collapse) {
-        this.$.collapse.removeEventListener('transitionend', updateViewHeight);
+      if (e.composedPath()[0] === collapseElement) {
+        collapseElement.removeEventListener('transitionend', updateViewHeight);
         // Request parent container to update its height.
-        this.dispatchEvent(
-            new CustomEvent('update-view-height', {composed: true}));
+        this.fire('update-view-height');
       }
     };
-    this.$.collapse.addEventListener('transitionend', updateViewHeight);
+    collapseElement.addEventListener('transitionend', updateViewHeight);
+  }
+
+  // Needs to react to both property change (through a reset caused from all
+  // checkboxes being unselected) and user action.
+  protected onToggleChanged_(e: CustomEvent<{value: boolean}>) {
+    this.resetWithState_(/*disabled=*/ !e.detail.value);
+
+    // Notify the parent with the new toggle value.
+    this.fire('toggle-changed', {toggle: e.detail.value});
+  }
+
+  protected isCheckboxChecked_(itemId: number): boolean {
+    return this.dataSelected.has(itemId);
   }
 
   protected onCheckedChanged_(e: CustomEvent<boolean>) {
     const currentTarget = e.currentTarget as HTMLElement;
     const itemId = Number(currentTarget.dataset['id']);
 
-    // Add or remove the items from the output set based on the checkbox value.
+    // Checkbox on.
     if (e.detail) {
       this.dataSelected.add(itemId);
-    } else {
-      this.dataSelected.delete(itemId);
+      // Triggers update of the section title.
+      this.dataSelectedCount_ = this.dataSelected.size;
+      return;
     }
 
-    // Triggers update of the section title.
+    // Checkbox off.
+    this.dataSelected.delete(itemId);
     this.dataSelectedCount_ = this.dataSelected.size;
+    // If this is the last item unchecked then disable and reset the section.
+    if (this.dataSelectedCount_ === 0) {
+      this.resetWithState_(/*disabled=*/ true);
+    }
   }
 }
 

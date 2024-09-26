@@ -22,9 +22,10 @@
   align-items: center;
   display: flex;
   flex-direction: row;
+  height: 32px;
 }
 
-.data-section-title {
+#sectionTitle {
   color: var(--cr-primary-text-color);
   display: flex;
   font-size: 1rem;
@@ -33,18 +34,18 @@
   width: 100%;
 }
 
-.separator {
+#separator {
   border-inline-start: var(--cr-separator-line);
   flex-shrink: 0;
   height: 32px;
   margin: 0 16px;
 }
 
-.toggle {
+#toggle {
   margin-inline-start: 10px;
 }
 
-.data-items-list {
+#data-items-list {
   display: flex;
   flex-direction: column;
   margin-top: 12px;

@@ -9,7 +9,7 @@ import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_che
 import {assert} from '//resources/js/assert.js';
 import {BatchUploadBrowserProxyImpl} from 'chrome://batch-upload/batch_upload.js';
 import type {BatchUploadAppElement, DataContainer, DataItem, DataSectionElement, PageRemote} from 'chrome://batch-upload/batch_upload.js';
-import {assertDeepEquals, assertEquals, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBatchUploadBrowserProxy} from './test_batch_upload_browser_proxy.js';
@@ -121,9 +121,8 @@ suite('BatchUploadViewTest', function() {
 
   test('ClickSave', async function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#save-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#save-button')!.click();
+
+    batchUploadApp.$.saveButton.click();
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
@@ -133,11 +132,10 @@ suite('BatchUploadViewTest', function() {
     assertDeepEquals(expectedSelectedItemsIds, idsToMove);
   });
 
-  test('ClickClose', function() {
+  test('ClickCancel', function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#close-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#close-button')!.click();
+    assertTrue(isChildVisible(batchUploadApp, '#cancelButton'));
+    batchUploadApp.$.cancelButton.click();
     return testBatchUploadProxy.handler.whenCalled('close');
   });
 
@@ -172,9 +170,7 @@ suite('BatchUploadViewTest', function() {
     await microtasksFinished();
 
     // Click Save.
-    assertTrue(isChildVisible(batchUploadApp, '#save-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#save-button')!.click();
+    batchUploadApp.$.saveButton.click();
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
@@ -191,13 +187,17 @@ suite('BatchUploadViewTest', function() {
     const firstSection = getSectionElement(firstIndex);
     assertTrue(isVisible(firstSection));
 
-    // Get all checkboxes for each sections ordered.
+    // Get the section checkboxes ordered.
     const firstSectionCheckboxes =
         firstSection.shadowRoot!.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(
         getTotalNumberOfItemsInSection(firstIndex),
         firstSectionCheckboxes.length);
+
+    const firstToggle = firstSection.$.toggle;
+    // First toggle is enabled by default.
+    assertTrue(firstToggle.checked);
 
     // Unselect the first and second item, making the first section completely
     // unselected.
@@ -209,10 +209,11 @@ suite('BatchUploadViewTest', function() {
     secondCheckbox.click();
     await microtasksFinished();
 
+    // First section should now be marked as disabled.
+    assertFalse(firstToggle.checked);
+
     // Click Save.
-    assertTrue(isChildVisible(batchUploadApp, '#save-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#save-button')!.click();
+    batchUploadApp.$.saveButton.click();
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
@@ -221,5 +222,90 @@ suite('BatchUploadViewTest', function() {
     // keep the consistency of the input/output.
     const expectedSelectedItemsIds = [[], [1]];
     assertDeepEquals(expectedSelectedItemsIds, idsToMove);
+  });
+
+  test('ClickSaveWithToggledOffSections', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const firstIndex = 0;
+    const firstSection = getSectionElement(firstIndex);
+    assertTrue(isVisible(firstSection));
+
+    const firstToggle = firstSection.$.toggle;
+    // First toggle is enabled by default.
+    assertTrue(firstToggle.checked);
+
+    // Disable first section.
+    assertTrue(firstToggle.checked);
+    firstToggle.click();
+    await microtasksFinished();
+
+    // Click Save.
+    batchUploadApp.$.saveButton.click();
+    const idsToMove =
+        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    assertEquals(idsToMove.length, TEST_DATA.length);
+    // A section with the toggle off should still appear as empty even if
+    // it had some selected items before the toggle off.
+    const expectedSelectedItemsIds = [[], [1]];
+    assertDeepEquals(expectedSelectedItemsIds, idsToMove);
+  });
+
+  test('TogglingOffAllSectionsShouldDisableSave', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const saveButton = batchUploadApp.$.saveButton;
+    // By default save is enabled.
+    assertFalse(saveButton.disabled);
+
+    const dataSections =
+        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+    assertEquals(dataSections.length, TEST_DATA.length);
+
+    // Disable all toggles.
+    for (let i = 0; i < dataSections.length; ++i) {
+      const toggle = dataSections[i]!.$.toggle;
+      assertTrue(toggle.checked);
+      toggle.click();
+    }
+    await microtasksFinished();
+
+    // After updates the button should now be disabled.
+    assertTrue(saveButton.disabled);
+  });
+
+  test('UncheckingAllCheckboxesShouldDisableSave', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const saveButton = batchUploadApp.$.saveButton;
+    // By default save is enabled.
+    assertFalse(saveButton.disabled);
+
+    const dataSections =
+        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+    assertEquals(dataSections.length, TEST_DATA.length);
+
+    // Unckeck all checkboxes of each section to toggle the sections off.
+    for (let i = 0; i < dataSections.length; ++i) {
+      const section = getSectionElement(i);
+
+      const toggle = section.$.toggle;
+      assertTrue(toggle.checked);
+
+      const checkboxes =
+          section.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+              '.item-checkbox');
+      for (let j = 0; j < checkboxes.length; ++j) {
+        const checkbox = checkboxes[j]!;
+        assertTrue(checkbox.checked);
+        checkbox.click();
+      }
+      await microtasksFinished();
+      assertFalse(toggle.checked);
+    }
+
+    // With all section toggled off by unchecking the inner checkboxes, the
+    // button should be disabled.
+    assertTrue(saveButton.disabled);
   });
 });
