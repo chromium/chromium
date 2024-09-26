@@ -134,12 +134,6 @@ inline constexpr char kPrivacySandboxManuallyControlled[] =
 // have accepted the confirmation dialog.
 inline constexpr char kSyncRequested[] = "sync.requested";
 
-// Deprecated 10/2023.
-// A boolean used to track whether the user has tapped on any of the keyboard
-// accessories when the autofill branding is visible.
-const char kAutofillBrandingKeyboardAccessoriesTapped[] =
-    "ios.autofill.branding.keyboard_accessory_tapped";
-
 // Deprecated 12/2023.
 const char kSigninLastAccounts[] = "ios.signin.last_accounts";
 const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
@@ -602,8 +596,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kAutofillBrandingIconAnimationRemainingCount, 2);
   // Register other autofill branding prefs.
   registry->RegisterIntegerPref(prefs::kAutofillBrandingIconDisplayCount, 0);
-  registry->RegisterBooleanPref(kAutofillBrandingKeyboardAccessoriesTapped,
-                                false);
 
   registry->RegisterIntegerPref(
       prefs::kIosCredentialProviderPromoLastActionTaken, -1);
@@ -1113,8 +1105,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
-  // Added 10/2023.
-  prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
 
   // Added 01/2024.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
