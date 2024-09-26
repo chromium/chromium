@@ -362,7 +362,7 @@
         aria-describedby="a11yAssociation enable-toggle-tooltip"
         checked="[[isEnabled_(data.state)]]"
         on-change="onEnableToggleChange_"
-        disabled$="[[!isEnableToggleEnabled_(data.*)]]"
+        disabled$="[[!isEnableToggleEnabled_(data.*, mv2ExperimentStage)]]"
         hidden$="[[!showEnableToggle_(data.*)]]">
     </cr-toggle>
   </div>

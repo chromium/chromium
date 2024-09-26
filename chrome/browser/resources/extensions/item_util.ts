@@ -7,6 +7,8 @@ import './strings.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
+
 // This `SafetyCheckWarningReason` enum should match the enum of the same
 // name defined in the developer_private.idl and enums.xml files.
 export enum SafetyCheckWarningReason {
@@ -76,7 +78,8 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
  *     enabled.
  */
 export function userCanChangeEnablement(
-    item: chrome.developerPrivate.ExtensionInfo): boolean {
+    item: chrome.developerPrivate.ExtensionInfo,
+    mv2ExperimentStage: Mv2ExperimentStage): boolean {
   // User doesn't have permission.
   if (!item.userMayModify) {
     return false;
@@ -87,6 +90,12 @@ export function userCanChangeEnablement(
       item.disableReasons.updateRequired ||
       item.disableReasons.publishedInStoreRequired ||
       item.disableReasons.blockedByPolicy) {
+    return false;
+  }
+  // Item is disabled when MV2 deprecation is on 'unsupported' experiment stage
+  // and the extension is disabled due to unsupported manifest version.
+  if (item.disableReasons.unsupportedManifestVersion &&
+      mv2ExperimentStage === Mv2ExperimentStage.UNSUPPORTED) {
     return false;
   }
   // An item with dependent extensions can't be disabled (it would bork the

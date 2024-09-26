@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
 import type {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {Mv2ExperimentStage, navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -367,6 +367,28 @@ suite('ExtensionDetailViewTest', function() {
     assertFalse(toggle.disabled);
     item.set('data.disableReasons.custodianApprovalRequired', false);
     flush();
+  });
+
+  test('MV2DeprecationDisabledExtension', function() {
+    const toggle = item.$.enableToggle;
+
+    // Extension toggle is visible and enabled for MV2 experiment is 'disable
+    // with re-enable' and extension is disabled due to unsupported manifest
+    // version.
+    item.set('mv2ExperimentStage_', Mv2ExperimentStage.DISABLE_WITH_REENABLE);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertTrue(isVisible(toggle));
+    assertFalse(toggle.disabled);
+
+    // Extension toggle is visible and disabled when MV2 experiment is
+    // 'unsupported' and extension is disabled due to unsupported manifest
+    // version.
+    item.set('mv2ExperimentStage_', Mv2ExperimentStage.UNSUPPORTED);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertTrue(isVisible(toggle));
+    assertTrue(toggle.disabled);
   });
 
   test('ClickableElements', async function() {

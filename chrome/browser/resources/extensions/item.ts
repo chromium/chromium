@@ -29,6 +29,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import type {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
@@ -127,6 +128,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   inDevMode: boolean;
   safetyCheckShowing: boolean;
   data: chrome.developerPrivate.ExtensionInfo;
+  mv2ExperimentStage: Mv2ExperimentStage;
   private showingDetails_: boolean;
   private firstInspectView_: chrome.developerPrivate.ExtensionView;
 
@@ -236,7 +238,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private isEnableToggleEnabled_(): boolean {
-    return userCanChangeEnablement(this.data);
+    return userCanChangeEnablement(this.data, this.mv2ExperimentStage);
   }
 
   /** @return Whether the reload button should be shown. */

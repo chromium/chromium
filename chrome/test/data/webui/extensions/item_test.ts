@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extension-item. */
 
 import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {Mv2ExperimentStage, navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -421,6 +421,24 @@ suite('ExtensionItemTest', function() {
     assertFalse(item.$.enableToggle.disabled);
     item.set('data.disableReasons.custodianApprovalRequired', false);
     flush();
+
+    // MV2 deprecation tests cases.
+    // Extension toggle is visible and enabled when MV2 experiment is 'disable
+    // with re-enable' and extension is disabled due to unsupported manifest
+    // version.
+    item.set('mv2ExperimentStage', Mv2ExperimentStage.DISABLE_WITH_REENABLE);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#enableToggle', true);
+    assertFalse(item.$.enableToggle.disabled);
+    // Extension toggle is visible and disabled when MV2 experiment is
+    // 'unsupported' and extension is disabled due to unsupported manifest
+    // version.
+    item.set('mv2ExperimentStage', Mv2ExperimentStage.UNSUPPORTED);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#enableToggle', true);
+    assertTrue(item.$.enableToggle.disabled);
   });
 
   test('RemoveButton', function() {

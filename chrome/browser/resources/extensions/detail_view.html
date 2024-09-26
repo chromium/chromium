@@ -312,7 +312,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             aria-describedby="name enable-toggle-tooltip"
             checked="[[isEnabled_(data.state)]]"
             on-change="onEnableToggleChange_"
-            disabled$="[[!isEnableToggleEnabled_(data.*)]]"
+            disabled$="[[!isEnableToggleEnabled_(data.*, mv2ExperimentStage_)]]"
             hidden$="[[!showEnableToggle_(data.*)]]">
         </cr-toggle>
         <cr-tooltip id="enable-toggle-tooltip" for="enableToggle"

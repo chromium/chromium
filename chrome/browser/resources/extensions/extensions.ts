@@ -25,6 +25,7 @@ export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
 export {LoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
 export {ExtensionsMv2DeprecationPanelElement} from './mv2_deprecation_panel.js';
+export {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 export {Dialog, navigation, NavigationHelper, Page, PageState} from './navigation_helper.js';
 export {ExtensionsOptionsDialogElement, OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';
 export {ExtensionsPackDialogElement, PackDialogDelegate} from './pack_dialog.js';

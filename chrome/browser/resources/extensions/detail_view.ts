@@ -294,7 +294,7 @@ export class ExtensionsDetailViewElement extends
   }
 
   private isEnableToggleEnabled_(): boolean {
-    return userCanChangeEnablement(this.data);
+    return userCanChangeEnablement(this.data, this.mv2ExperimentStage_);
   }
 
   private hasDependentExtensions_(): boolean {

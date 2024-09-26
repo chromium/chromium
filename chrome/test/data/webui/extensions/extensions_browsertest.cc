@@ -261,6 +261,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
   RunTestCase("SupervisedUserDisableReasons");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       MV2DeprecationDisabledExtension) {
+  RunTestCase("MV2DeprecationDisabledExtension");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, ClickableElements) {
   RunTestCase("ClickableElements");
 }
