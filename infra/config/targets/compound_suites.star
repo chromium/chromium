@@ -210,29 +210,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Like chromium_linux_rel_isolated_scripts above, but should only
-# include test suites that aren't affected by things like extra GN args
-# (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
-# chromium_linux_rel_isolated_scripts if you're setting up a new builder.
-# This group should only be used across ~3 builders.
-targets.legacy_compound_suite(
-    name = "chromium_linux_rel_isolated_scripts_once",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "desktop_once_isolated_scripts",
-        "linux_specific_chromium_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "pytype_tests",
-        "telemetry_perf_unittests_isolated_scripts",
-        "vulkan_swiftshader_isolated_scripts",
-        "chromium_web_tests_high_dpi_isolated_scripts",
-        # TODO(crbug.com/40287410): Remove this once the BackgroundResourceFetch
-        # feature launches.
-        "chromium_web_tests_brfetch_isolated_scripts",
-    ],
-)
-
 targets.legacy_compound_suite(
     name = "chromium_mac_gtests",
     basic_suites = [

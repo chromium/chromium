@@ -1358,88 +1358,6 @@
       },
     },
 
-    'chromium_web_tests_brfetch_isolated_scripts': {
-      'brfetch_blink_web_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'blink_tests_write_run_histories',
-          ],
-          'args': [
-            '--flag-specific=background-resource-fetch',
-            '--skipped=always',
-            '--num-retries=3',
-          ],
-          'merge': {
-            'script': '//third_party/blink/tools/merge_web_test_results.py',
-            'args': [
-              '--verbose',
-            ],
-          },
-        },
-        'test': 'blink_web_tests',
-        'results_handler': 'layout tests',
-        'ci_only': True,
-        'swarming': {
-          'shards': 1,
-        },
-        'experiment_percentage': 100,
-      },
-      'brfetch_blink_wpt_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'blink_tests_write_run_histories',
-          ],
-          'args': [
-            '--flag-specific=background-resource-fetch',
-            '--skipped=always',
-            '--num-retries=3',
-          ],
-          'merge': {
-            'script': '//third_party/blink/tools/merge_web_test_results.py',
-            'args': [
-              '--verbose',
-            ],
-          },
-        },
-        'test': 'blink_wpt_tests',
-        'results_handler': 'layout tests',
-        'ci_only': True,
-        'swarming': {
-          'shards': 3,
-        },
-        'experiment_percentage': 100,
-      },
-      'brfetch_headless_shell_wpt_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'blink_tests_write_run_histories',
-          ],
-          'args': [
-            '--flag-specific=background-resource-fetch',
-            '--skipped=always',
-            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-          ],
-          'merge': {
-            'script': '//third_party/blink/tools/merge_web_test_results.py',
-            'args': [
-              '--verbose',
-            ],
-          },
-        },
-        'test': 'headless_shell_wpt',
-        'results_handler': 'layout tests',
-        'ci_only': True,
-        'swarming': {
-          'shards': 1,
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
     'chromium_web_tests_graphite_isolated_scripts': {
       'graphite_enabled_blink_web_tests': {
         'test_common': {
@@ -6176,19 +6094,6 @@
       'mojo_python_unittests_isolated_scripts',
       'pytype_tests',
       'telemetry_perf_unittests_isolated_scripts_xvfb',
-      'vulkan_swiftshader_isolated_scripts',
-    ],
-
-    'chromium_linux_rel_isolated_scripts_once': [
-      'chromedriver_py_tests_isolated_scripts',
-      'chromium_web_tests_brfetch_isolated_scripts',
-      'chromium_web_tests_high_dpi_isolated_scripts',
-      'desktop_chromium_isolated_scripts',
-      'desktop_once_isolated_scripts',
-      'linux_specific_chromium_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'pytype_tests',
-      'telemetry_perf_unittests_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
     ],
 

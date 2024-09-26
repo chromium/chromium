@@ -2932,8 +2932,10 @@
   {
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.android.star
+    # //infra/config/subprojects/ci/chromium.gpu.star
     #   Android Release (Pixel 2)
+    #   GPU Linux Builder
+    #   Linux Release (NVIDIA)
     'name': 'chromium.gpu',
     'forbid_script_tests': True,
     'mixins': [
@@ -2953,25 +2955,11 @@
           'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
-      'GPU Linux Builder': {},
       'GPU Linux Builder (dbg)': {},
       'GPU Mac Builder': {},
       'GPU Mac Builder (dbg)': {},
       'Linux Debug (NVIDIA)': {
         'browser_config': 'debug',
-        'os_type': 'linux',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-          # TODO(crbug.com/331756538): Specify the puppet_production mixin once
-          # testing is moved to Ubuntu 22.
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
-        },
-      },
-      'Linux Release (NVIDIA)': {
-        'browser_config': 'release',
         'os_type': 'linux',
         'mixins': [
           'linux_nvidia_gtx_1660_stable',
@@ -3715,8 +3703,10 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.linux.star
+    #   Linux Builder
     #   Linux Builder (Wayland)
     #   Linux Builder (dbg)
+    #   Linux Tests
     #   Linux Tests (Wayland)
     #   Linux Tests (dbg)(1)
     'name': 'chromium.linux',
@@ -3728,27 +3718,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'leak_detection_isolated_scripts',
-        },
-      },
-      'Linux Builder': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_linux_scripts',
-        }
-      },
-      'Linux Tests': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts_once',
         },
       },
       # For documentation, see //services/network/README.md.

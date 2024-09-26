@@ -155,7 +155,8 @@
           "builder": "Linux Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-rel/targets"
     }
   },
   "$build/code_coverage": {

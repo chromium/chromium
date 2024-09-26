@@ -1322,39 +1322,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_web_tests_brfetch_isolated_scripts",
-    tests = {
-        # brfetch_blink_web_tests provides coverage for
-        # running Layout Tests with BackgroundResourceFetch feature.
-        "brfetch_blink_web_tests": targets.legacy_test_config(
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-            experiment_percentage = 100,
-        ),
-        # brfetch_blink_wpt_tests provides coverage for
-        # running Layout Tests with BackgroundResourceFetch feature.
-        "brfetch_blink_wpt_tests": targets.legacy_test_config(
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-            experiment_percentage = 100,
-        ),
-        # brfetch_headless_shell_wpt_tests provides coverage for
-        # running WPTs with BackgroundResourceFetch feature.
-        "brfetch_headless_shell_wpt_tests": targets.legacy_test_config(
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromium_web_tests_graphite_isolated_scripts",
     tests = {
         "graphite_enabled_blink_web_tests": targets.legacy_test_config(

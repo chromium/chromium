@@ -140,14 +140,6 @@
       'win11-arm64-dbg-tests',
     ],
     'modifications': {
-      'Linux Tests': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
       'Mac Tests Siso FYI': {
         'swarming': {
           'dimensions': {
@@ -400,14 +392,6 @@
       'win11-arm64-dbg-tests',
     ],
     'modifications': {
-      'Linux Tests': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'Mac Tests Siso FYI': {
         'swarming': {
           'dimensions': {
@@ -698,15 +682,6 @@
       'Linux MSan Tests': {
         'swarming': {
           'shards': 23,
-        },
-      },
-      'Linux Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 20,
         },
       },
       'Mac ASan 64 Tests (1)': {
@@ -1175,12 +1150,6 @@
         'swarming': {
           'shards': 30,
         },
-      },
-      'Linux Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
@@ -2565,11 +2534,6 @@
   },
   'not_site_per_process_blink_web_tests': {
     'modifications': {
-      'Linux Tests': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-        ],
-      },
       'linux-code-coverage': {
         'args': [
           '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
@@ -3089,7 +3053,6 @@
       # Disabled due to dbus crashes crbug.com/927465
       'Linux FYI Release (Intel UHD 630)',
       'Linux FYI Release (NVIDIA)',
-      'Linux Release (NVIDIA)',
     ],
   },
   'telemetry_chromium_minidump_unittests': {
@@ -3122,12 +3085,6 @@
   },
   'telemetry_perf_unittests': {
     'modifications': {
-      'Linux Tests': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
       'Mac11 Tests': {
         'ci_only': True,
       },
@@ -3296,11 +3253,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'Linux Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
       },
       'Mac ASan 64 Tests (1)': {
         'swarming': {
@@ -3509,7 +3461,6 @@
   },
   'webdriver_wpt_tests': {
     'remove_from': [
-      'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
       'linux-rel-cft',
     ],
   },

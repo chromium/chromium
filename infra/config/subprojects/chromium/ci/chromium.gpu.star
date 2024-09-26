@@ -186,6 +186,7 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
@@ -425,6 +426,26 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_linux_telemetry_tests",
+        ],
+        mixins = [
+            "linux_nvidia_gtx_1660_stable",
+            # TODO(crbug.com/331756538): Specify the puppet_production mixin
+            # once testing is moved to Ubuntu 22.
+        ],
+        per_test_modifications = {
+            "tab_capture_end2end_tests": targets.remove(
+                reason = "Disabled due to dbus crashes crbug.com/927465",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",

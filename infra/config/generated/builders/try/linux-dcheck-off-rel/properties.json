@@ -151,7 +151,8 @@
           "builder": "Linux Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-dcheck-off-rel/targets"
     }
   },
   "$build/reclient": {
