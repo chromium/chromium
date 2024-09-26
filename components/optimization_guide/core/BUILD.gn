@@ -43,6 +43,7 @@ static_library("model_executor") {
       "bert_model_executor.h",
       "model_execution_timeout_watchdog.cc",
       "model_execution_timeout_watchdog.h",
+      "signature_model_executor.h",
       "tflite_model_executor.h",
     ]
   }

@@ -154,6 +154,9 @@ BASE_FEATURE(kCpssQuietChipTextUpdate,
              "CpssQuietChipTextUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCpssUseTfliteSignatureRunner,
+             "CpssUseTfliteSignatureRunner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 namespace feature_params {
 

@@ -88,6 +88,9 @@ BASE_DECLARE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kCpssQuietChipTextUpdate);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kCpssUseTfliteSignatureRunner);
+
 }  // namespace features
 namespace feature_params {
 

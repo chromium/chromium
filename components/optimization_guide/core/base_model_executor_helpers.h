@@ -60,6 +60,13 @@ class GenericModelExecutionTask
     return maybe_output.value();
   }
 
+  tflite::impl::SignatureRunner* GetSignatureRunner(const char* signature_key) {
+    return this->GetTfLiteEngine()
+        ->interpreter_wrapper()
+        ->get()
+        ->GetSignatureRunner(signature_key);
+  }
+
  protected:
   // BaseTaskApi:
   absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
