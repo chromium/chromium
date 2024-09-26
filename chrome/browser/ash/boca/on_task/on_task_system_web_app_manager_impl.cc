@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
@@ -146,13 +147,13 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
   window_tracker->InitializeBrowserInfoForTracking(browser);
 }
 
-void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
+SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
     SessionID window_id,
     GURL url,
     OnTaskBlocklist::RestrictionLevel restriction_level) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
-    return;
+    return SessionID::InvalidValue();
   }
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
   navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
@@ -162,10 +163,35 @@ void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
   if (!window_tracker) {
-    return;
+    return SessionID::InvalidValue();
   }
   window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
       tab, url, restriction_level);
+  return sessions::SessionTabHelper::IdForTab(tab);
+}
+
+void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
+    SessionID window_id,
+    const base::flat_set<SessionID>& tab_ids_to_remove) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  if (!window_tracker) {
+    return;
+  }
+  // TODO (b/358197253): Add logic to prevent force closing tabs that are
+  // actively being used by consumers.
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+    if (tab_ids_to_remove.contains(tab_id)) {
+      browser->tab_strip_model()->DetachAndDeleteWebContentsAt(idx);
+    }
+  }
 }
 
 }  // namespace ash::boca

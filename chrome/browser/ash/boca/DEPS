@@ -16,6 +16,8 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service/launch_result_type.h",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  "+chrome/browser/gcm/gcm_profile_service_factory.h",
+  "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles/profile.h",
@@ -37,7 +39,5 @@ include_rules = [
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/test/base/browser_with_test_window_test.h",
-  "+components/sessions/core/session_id.h",
-  "+chrome/browser/gcm/gcm_profile_service_factory.h",
-  "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
+  "+components/sessions",
 ]

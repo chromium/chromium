@@ -152,6 +152,12 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
   }
 }
 
+void LockedSessionWindowTracker::OnTabWillBeRemoved(
+    content::WebContents* contents,
+    int index) {
+  on_task_blocklist()->RemoveParentFilter(contents);
+}
+
 // BrowserListObserver Implementation
 void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
   if (browser == browser_) {

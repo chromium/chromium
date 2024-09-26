@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
@@ -49,11 +50,16 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               SetWindowTrackerForSystemWebAppWindow,
               (SessionID window_id),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(SessionID,
               CreateBackgroundTabWithUrl,
               (SessionID window_id,
                GURL url,
                OnTaskBlocklist::RestrictionLevel restriction_level),
+              (override));
+  MOCK_METHOD(void,
+              RemoveTabsWithTabIds,
+              (SessionID window_id,
+               const base::flat_set<SessionID>& tab_ids_to_remove),
               (override));
 };
 
@@ -138,15 +144,16 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
 
 TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .Times(3)
       .WillRepeatedly(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
-      .Times(1);
+      .WillOnce(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
-      .Times(1);
+      .WillOnce(Return(kTabId_2));
 
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
@@ -156,7 +163,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
 
 TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnBundleUpdated) {
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .Times(3)
       .WillRepeatedly(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_, CreateBackgroundTabWithUrl(_, _, _))
       .Times(0);
@@ -170,6 +176,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnBundleUpdated) {
 TEST_F(OnTaskSessionManagerTest,
        TabsCreatedAfterSWALaunchedWhenSessionStartsAndBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillOnce(Return(
@@ -194,12 +202,12 @@ TEST_F(OnTaskSessionManagerTest,
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
-      .Times(1)
-      .InSequence(s);
+      .InSequence(s)
+      .WillOnce(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
-      .Times(1)
-      .InSequence(s);
+      .InSequence(s)
+      .WillOnce(Return(kTabId_2));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetWindowTrackerForSystemWebAppWindow(kWindowId))
       .Times(1)
@@ -218,33 +226,38 @@ TEST_F(OnTaskSessionManagerTest,
 
 TEST_F(OnTaskSessionManagerTest, ShouldApplyRestrictionsToTabsOnBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+  const SessionID kTabId_3 = SessionID::NewUnique();
+  const SessionID kTabId_4 = SessionID::NewUnique();
+  const SessionID kTabId_5 = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl1),
                   OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
-      .Times(1);
+      .WillOnce(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl2),
                   OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
-      .Times(1);
+      .WillOnce(Return(kTabId_2));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl3),
                   OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation))
-      .Times(1);
+      .WillOnce(Return(kTabId_3));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl4),
                   OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation))
-      .Times(1);
+      .WillOnce(Return(kTabId_4));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
                   kWindowId, GURL(kTestUrl5),
                   OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
-      .Times(1);
+      .WillOnce(Return(kTabId_5));
 
   ::boca::Bundle bundle;
   ::boca::ContentConfig* const content_config_1 =
@@ -275,12 +288,13 @@ TEST_F(OnTaskSessionManagerTest, ShouldApplyRestrictionsToTabsOnBundleUpdated) {
 
 TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .Times(2)
       .WillRepeatedly(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
-      .Times(1);
+      .WillOnce(Return(kTabId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetWindowTrackerForSystemWebAppWindow(kWindowId))
       .Times(1);
@@ -292,6 +306,56 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
   bundle.add_content_configs()->set_url(kTestUrl1);
   bundle.set_locked(true);
   session_manager_->OnBundleUpdated(bundle);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
+      .WillOnce(Return(kTabId_2));
+
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  session_manager_->OnBundleUpdated(bundle_1);
+
+  ::boca::Bundle bundle_2;
+  bundle_2.add_content_configs()->set_url(kTestUrl1);
+  bundle_2.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnBundleUpdated(bundle_2);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+  const base::flat_set<SessionID> kTabIds = {kTabId_2};
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
+      .WillOnce(Return(kTabId_2));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              RemoveTabsWithTabIds(kWindowId, kTabIds))
+      .Times(1);
+
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  bundle_1.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnBundleUpdated(bundle_1);
+
+  ::boca::Bundle bundle_2;
+  bundle_2.add_content_configs()->set_url(kTestUrl1);
+  session_manager_->OnBundleUpdated(bundle_2);
 }
 
 }  // namespace

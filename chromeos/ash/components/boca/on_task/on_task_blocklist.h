@@ -81,6 +81,9 @@ class OnTaskBlocklist {
   // triggered on an active tab change or when the current tab changes.
   void RefreshForUrlBlocklist(content::WebContents* tab);
 
+  // Remove the `tab` from the `parent_tab_to_nav_filters_`;
+  void RemoveParentFilter(content::WebContents* tab);
+
   // Remove the `tab` from the `child_tab_to_nav_filters_`;
   void RemoveChildFilter(content::WebContents* tab);
 

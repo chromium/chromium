@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -164,6 +165,40 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
           ->parent_tab_to_nav_filters()[sessions::SessionTabHelper::IdForTab(
               web_contents)],
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       RemoveTabsWithTabIds) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Boca homepage is by default opened.
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Create tab from the url and verify that Boca has the tab.
+  const SessionID tab_id = system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->session_id(), GURL(kTestUrl),
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  content::WebContents* const web_contents_1 =
+      boca_app_browser->tab_strip_model()->GetWebContentsAt(1);
+  content::TestNavigationObserver observer(web_contents_1);
+  observer.Wait();
+  EXPECT_EQ(web_contents_1->GetLastCommittedURL(), GURL(kTestUrl));
+
+  // Remove tab with the tab id and verify that Boca no longer has the tab.
+  const base::flat_set<SessionID> tab_ids_to_remove = {tab_id};
+  system_web_app_manager.RemoveTabsWithTabIds(boca_app_browser->session_id(),
+                                              tab_ids_to_remove);
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+  content::WebContents* const web_contents_2 =
+      boca_app_browser->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_NE(web_contents_2->GetLastCommittedURL(), GURL(kTestUrl));
 }
 
 }  // namespace

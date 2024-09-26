@@ -210,6 +210,13 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
       std::move(blocklist_source));
 }
 
+void OnTaskBlocklist::RemoveParentFilter(content::WebContents* tab) {
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+  if (tab_id.is_valid() && base::Contains(parent_tab_to_nav_filters_, tab_id)) {
+    parent_tab_to_nav_filters_.erase(tab_id);
+  }
+}
+
 void OnTaskBlocklist::RemoveChildFilter(content::WebContents* tab) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (tab_id.is_valid() && base::Contains(child_tab_to_nav_filters_, tab_id)) {

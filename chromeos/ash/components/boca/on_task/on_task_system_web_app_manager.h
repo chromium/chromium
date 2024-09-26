@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/core/session_id.h"
@@ -44,10 +45,15 @@ class OnTaskSystemWebAppManager {
 
   // Creates a background tab with the given URL and restriction_level in the
   // specified Boca SWA window.
-  virtual void CreateBackgroundTabWithUrl(
+  virtual SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,
       OnTaskBlocklist::RestrictionLevel restriction_level) = 0;
+
+  // Removes tabs with the given tab ids in the specified Boca SWA window.
+  virtual void RemoveTabsWithTabIds(
+      SessionID window_id,
+      const base::flat_set<SessionID>& tab_ids_to_remove) = 0;
 
  protected:
   OnTaskSystemWebAppManager() = default;

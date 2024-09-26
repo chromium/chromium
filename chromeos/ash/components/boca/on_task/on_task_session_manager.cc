@@ -24,7 +24,10 @@ namespace ash::boca {
 namespace {
 
 // Delay in seconds before we attempt to add a tab.
-constexpr int kRetryAddTabTime = 3;
+constexpr base::TimeDelta kAddTabRetryDelay = base::Seconds(3);
+
+// Delay in seconds before we attempt to remove a tab.
+constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(3);
 
 OnTaskBlocklist::RestrictionLevel NavigationTypeToRestrictionLevel(
     ::boca::LockedNavigationOptions::NavigationType navigation_type) {
@@ -73,17 +76,28 @@ void OnTaskSessionManager::OnSessionStarted(
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
+  provider_url_tab_ids_map_.clear();
 }
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_set<GURL> current_urls_set;
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());
     const GURL url(content_config.url());
+    current_urls_set.insert(url);
+
+    // No need to add the tab if the tab is already tracked as opened in the
+    // SWA.
+    if (provider_url_tab_ids_map_.contains(url)) {
+      continue;
+    }
     OnTaskBlocklist::RestrictionLevel restriction_level;
     if (content_config.has_locked_navigation_options()) {
       ::boca::LockedNavigationOptions_NavigationType navigation_type =
@@ -94,8 +108,21 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
     // TODO (b/358197253): Stop the window tracker briefly while adding the new
     // tabs before resuming it.
-    system_web_app_launch_helper_->AddTab(url, restriction_level);
+    system_web_app_launch_helper_->AddTab(
+        url, restriction_level,
+        base::BindOnce(&OnTaskSessionManager::OnTabAdded,
+                       weak_ptr_factory_.GetWeakPtr(), url));
   }
+
+  for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+    if (!current_urls_set.contains(provider_sent_url)) {
+      system_web_app_launch_helper_->RemoveTab(
+          tab_ids,
+          base::BindOnce(&OnTaskSessionManager::OnTabRemoved,
+                         weak_ptr_factory_.GetWeakPtr(), provider_sent_url));
+    }
+  }
+
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
@@ -123,21 +150,46 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(
     GURL url,
-    OnTaskBlocklist::RestrictionLevel restriction_level) {
+    OnTaskBlocklist::RestrictionLevel restriction_level,
+    base::OnceCallback<void(SessionID)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SystemWebAppLaunchHelper::AddTab,
-                       weak_ptr_factory_.GetWeakPtr(), url, restriction_level),
-        base::Seconds(kRetryAddTabTime));
+                       weak_ptr_factory_.GetWeakPtr(), url, restriction_level,
+                       std::move(callback)),
+        kAddTabRetryDelay);
     return;
   }
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
-    system_web_app_manager_->CreateBackgroundTabWithUrl(window_id, url,
-                                                        restriction_level);
+    const SessionID tab_id =
+        system_web_app_manager_->CreateBackgroundTabWithUrl(window_id, url,
+                                                            restriction_level);
+    std::move(callback).Run(tab_id);
+  }
+}
+
+void OnTaskSessionManager::SystemWebAppLaunchHelper::RemoveTab(
+    const base::flat_set<SessionID>& tab_ids_to_remove,
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (launch_in_progress_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SystemWebAppLaunchHelper::RemoveTab,
+                       weak_ptr_factory_.GetWeakPtr(), tab_ids_to_remove,
+                       std::move(callback)),
+        kRemoveTabRetryDelay);
+    return;
+  }
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
+    std::move(callback).Run();
   }
 }
 
@@ -160,6 +212,22 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
         /*pinned=*/true, window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/false, window_id);
+  }
+}
+
+void OnTaskSessionManager::OnTabAdded(GURL url, SessionID tab_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (tab_id.is_valid()) {
+    base::flat_set<SessionID>& tab_ids = provider_url_tab_ids_map_[url];
+    tab_ids.insert(tab_id);
+  }
+}
+
+void OnTaskSessionManager::OnTabRemoved(GURL url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (provider_url_tab_ids_map_.contains(url)) {
+    // TODO(b/368105857): Remove child tabs.
+    provider_url_tab_ids_map_.erase(url);
   }
 }
 

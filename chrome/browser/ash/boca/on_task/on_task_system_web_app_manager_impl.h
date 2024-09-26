@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_IMPL_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -34,10 +35,13 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
   void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
-  void CreateBackgroundTabWithUrl(
+  SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,
       OnTaskBlocklist::RestrictionLevel restriction_level) override;
+  void RemoveTabsWithTabIds(
+      SessionID window_id,
+      const base::flat_set<SessionID>& tab_ids_to_remove) override;
 
  private:
   raw_ptr<Profile> profile_;
