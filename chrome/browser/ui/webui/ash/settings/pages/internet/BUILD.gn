@@ -16,6 +16,7 @@ static_library("internet") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/tether",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/services/network_config/public/cpp",

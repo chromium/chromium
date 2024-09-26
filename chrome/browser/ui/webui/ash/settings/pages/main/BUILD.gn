@@ -19,6 +19,7 @@ static_library("main") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/settings",
   ]
 
   deps = [

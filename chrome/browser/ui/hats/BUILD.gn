@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/safety_hub",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",

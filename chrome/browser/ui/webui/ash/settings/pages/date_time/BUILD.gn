@@ -22,6 +22,7 @@ static_library("date_time") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/settings",
     "//components/prefs",

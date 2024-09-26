@@ -216,6 +216,8 @@ source_set("android") {
     "unused_site_permissions_bridge.h",
   ]
 
+  public_deps = [ "//chrome/browser/ui/safety_hub" ]
+
   deps = [
     ":jni_headers",
     "//chrome/browser/profiles:profile",
@@ -242,6 +244,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions:permissions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/safety_hub",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

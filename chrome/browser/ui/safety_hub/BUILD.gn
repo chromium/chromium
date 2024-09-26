@@ -1,0 +1,287 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("safety_hub") {
+  sources = [
+    "abusive_notification_permissions_manager.h",
+    "menu_notification.h",
+    "menu_notification_service.h",
+    "menu_notification_service_factory.h",
+    "notification_permission_review_service.h",
+    "notification_permission_review_service_factory.h",
+    "safe_browsing_result.h",
+    "safety_hub_constants.h",
+    "safety_hub_prefs.h",
+    "safety_hub_service.h",
+    "safety_hub_util.h",
+    "unused_site_permissions_service.h",
+    "unused_site_permissions_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/site_engagement/content",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "password_status_check_result_android.h" ]
+
+    public_deps += [ "//components/prefs" ]
+  } else {
+    sources += [
+      "card_data_helper.h",
+      "extensions_result.h",
+      "password_status_check_result.h",
+      "password_status_check_service.h",
+      "password_status_check_service_factory.h",
+      "safety_hub_hats_service.h",
+      "safety_hub_hats_service_factory.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/ui/hats",
+      "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/ui",
+      "//extensions/browser",
+    ]
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "abusive_notification_permissions_manager.cc",
+    "menu_notification.cc",
+    "menu_notification_service.cc",
+    "menu_notification_service_factory.cc",
+    "notification_permission_review_service.cc",
+    "notification_permission_review_service_factory.cc",
+    "safe_browsing_result.cc",
+    "safety_hub_constants.cc",
+    "safety_hub_prefs.cc",
+    "safety_hub_service.cc",
+    "safety_hub_util.cc",
+    "unused_site_permissions_service.cc",
+    "unused_site_permissions_service_factory.cc",
+  ]
+
+  deps = [
+    ":safety_hub",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui/hats",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/site_engagement/content",
+  ]
+
+  if (is_android) {
+    sources += [ "password_status_check_result_android.cc" ]
+  } else {
+    sources += [
+      "card_data_helper.cc",
+      "extensions_result.cc",
+      "password_status_check_result.cc",
+      "password_status_check_service.cc",
+      "password_status_check_service_factory.cc",
+      "safety_hub_hats_service.cc",
+      "safety_hub_hats_service_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/webui/settings",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser/leak_detection",
+      "//components/password_manager/core/browser/ui",
+      "//extensions/browser",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "safety_hub_test_util.cc",
+    "safety_hub_test_util.h",
+  ]
+
+  public_deps = [
+    ":safety_hub",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/permissions",
+    "//components/content_settings/core/common",
+    "//components/sync_preferences:test_support",
+    "//services/network:test_support",
+  ]
+
+  if (enable_extensions) {
+    public_deps += [
+      "//chrome/browser/extensions",
+      "//extensions/common",
+    ]
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//extensions:test_support",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "mock_safe_browsing_database_manager.cc",
+      "mock_safe_browsing_database_manager.h",
+    ]
+
+    public_deps += [
+      "//components/safe_browsing/core/browser/db:database_manager",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "unused_site_permissions_service_browsertest.cc" ]
+
+    deps = [
+      ":safety_hub",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/content_settings/core/common:features",
+      "//components/permissions:permissions_common",
+      "//components/safe_browsing/core/common:features",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "menu_notification_service_unittest.cc",
+    "menu_notification_unittest.cc",
+    "safe_browsing_result_unittest.cc",
+  ]
+
+  deps = [
+    ":safety_hub",
+    ":test_support",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/permissions",
+    "//chrome/browser/ui/hats",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+
+  if (is_android) {
+    sources += [ "password_status_check_result_android_unittest.cc" ]
+  } else {
+    sources += [
+      "abusive_notification_permissions_manager_unittest.cc",
+      "card_data_helper_unittest.cc",
+      "extensions_result_unittest.cc",
+      "notification_permission_review_service_unittest.cc",
+      "password_status_check_result_unittest.cc",
+      "password_status_check_service_unittest.cc",
+      "safety_hub_hats_service_unittest.cc",
+      "safety_hub_service_unittest.cc",
+      "unused_site_permissions_service_unittest.cc",
+    ]
+
+    deps += [
+      "//base/test:test_support",
+      "//chrome/app:branded_strings",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/hats:test_support",
+      "//components/content_settings/core/common:features",
+      "//components/crx_file",
+      "//components/history/core/browser",
+      "//components/history/core/test",
+      "//components/keyed_service/core",
+      "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
+      "//components/password_manager/core/common",
+      "//components/permissions:test_support",
+      "//components/prefs",
+      "//components/safe_browsing/core/browser/db:util",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/site_engagement/content",
+      "//components/ukm:test_support",
+      "//components/ukm/content",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/network:test_support",
+      "//testing/gmock",
+      "//url",
+    ]
+  }
+}

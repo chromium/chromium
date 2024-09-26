@@ -162,6 +162,7 @@ static_library("safe_browsing") {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/safety_hub",
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
@@ -206,6 +207,8 @@ static_library("safe_browsing") {
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/ui/safety_hub" ]
     if (safe_browsing_mode == 1) {
       # "Safe Browsing Full" files in addition to the "basic" ones to use for
       # full safe browsing. This has some in common with "mobile."

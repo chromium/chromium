@@ -22,6 +22,7 @@ static_library("search") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/audio",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/quick_answers/public/cpp",

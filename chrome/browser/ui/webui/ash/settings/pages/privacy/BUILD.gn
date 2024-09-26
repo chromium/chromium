@@ -28,6 +28,7 @@ static_library("privacy") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/login/auth",
     "//components/metrics",

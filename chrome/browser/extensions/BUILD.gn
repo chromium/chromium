@@ -709,6 +709,7 @@ source_set("extensions") {
 
     "//chrome/browser/feedback",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/safety_hub",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -796,6 +797,7 @@ source_set("extensions") {
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//components/cbor:cbor",

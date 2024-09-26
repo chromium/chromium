@@ -28,6 +28,7 @@ static_library("people") {
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
     "//components/account_manager_core",

@@ -22,6 +22,7 @@ static_library("bluetooth") {
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//device/bluetooth",
     "//ui/gfx",
   ]

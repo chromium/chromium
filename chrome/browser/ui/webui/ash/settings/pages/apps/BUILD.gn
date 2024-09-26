@@ -25,6 +25,7 @@ static_library("apps") {
     "//base",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/services/app_service",
     "//mojo/public/cpp/bindings",

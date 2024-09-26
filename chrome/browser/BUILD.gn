@@ -1804,6 +1804,7 @@ static_library("browser") {
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiles:profile_statistics_impl",
     "//chrome/browser/signin:impl",
+    "//chrome/browser/ui/safety_hub:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1965,6 +1966,8 @@ static_library("browser") {
     "//chrome/browser/ui/hats:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
@@ -4244,6 +4247,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:impl",
       "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
@@ -4375,6 +4380,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin:impl",
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/importer:impl",
+      "//chrome/browser/ui/webui/settings:impl",
     ]
 
     #!is_android

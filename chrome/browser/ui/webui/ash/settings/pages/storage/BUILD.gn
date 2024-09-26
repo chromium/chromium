@@ -21,6 +21,7 @@ static_library("storage") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui/webui/ash/settings/calculator",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/disks",
     "//third_party/re2",
   ]
