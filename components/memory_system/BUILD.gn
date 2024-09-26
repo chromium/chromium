@@ -44,6 +44,7 @@ source_set("memory_system") {
     "//base",
     "//base/allocator:buildflags",
     "//components/gwp_asan/buildflags",
+    "//components/sampling_profiler:profile_params",
   ]
 
   if (enable_gwp_asan) {

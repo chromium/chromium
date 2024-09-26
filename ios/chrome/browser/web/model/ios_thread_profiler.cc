@@ -15,8 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -28,13 +26,15 @@
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "base/process/port_provider_mac.h"
 #endif
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
-using CallStackProfileParams = base::CallStackProfileParams;
+using CallStackProfileParams = sampling_profiler::CallStackProfileParams;
 using StackSamplingProfiler = base::StackSamplingProfiler;
 
 namespace {
@@ -63,8 +63,8 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    base::ProfilerProcessType process) {
-  if (process != base::ProfilerProcessType::kRenderer) {
+    sampling_profiler::ProfilerProcessType process) {
+  if (process != sampling_profiler::ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
   }
   static const base::SampleMetadata process_backgrounded(
@@ -153,8 +153,8 @@ IOSThreadProfiler::~IOSThreadProfiler() {
 std::unique_ptr<IOSThreadProfiler>
 IOSThreadProfiler::CreateAndStartOnMainThread() {
   DCHECK(!g_main_thread_instance);
-  auto instance =
-      base::WrapUnique(new IOSThreadProfiler(base::ProfilerThreadType::kMain));
+  auto instance = base::WrapUnique(
+      new IOSThreadProfiler(sampling_profiler::ProfilerThreadType::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -168,7 +168,8 @@ void IOSThreadProfiler::SetMainThreadTaskRunner(
 }
 
 // static
-void IOSThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
+void IOSThreadProfiler::StartOnChildThread(
+    sampling_profiler::ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<IOSThreadProfiler>>
@@ -222,9 +223,9 @@ IOSThreadProfiler::GetSamplingParams() {
 // The process in previous paragraph continues until the IOSThreadProfiler is
 // destroyed prior to thread exit.
 IOSThreadProfiler::IOSThreadProfiler(
-    base::ProfilerThreadType thread,
+    sampling_profiler::ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
-    : process_(base::ProfilerProcessType::kBrowser),
+    : process_(sampling_profiler::ProfilerProcessType::kBrowser),
       thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(

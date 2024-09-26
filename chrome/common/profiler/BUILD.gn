@@ -33,13 +33,12 @@ source_set("profiler") {
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
+    "//components/sampling_profiler",
     "//components/version_info:version_info",
     "//content/public/common",
     "//extensions/buildflags",
     "//third_party/abseil-cpp:absl",
   ]
-
-  public_deps = [ "//components/sampling_profiler" ]
 
   if (is_android) {
     deps += [
@@ -74,6 +73,7 @@ source_set("unit_tests") {
     "//chrome/common:non_code_constants",
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",
+    "//components/sampling_profiler",
     "//components/version_info:version_info",
     "//content/public/common",
     "//extensions/buildflags",

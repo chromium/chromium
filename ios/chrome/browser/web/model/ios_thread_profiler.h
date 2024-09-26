@@ -14,13 +14,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "components/sampling_profiler/process_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -87,7 +87,7 @@ class IOSThreadProfiler {
   // Creates a profiler for a child thread and immediately starts it. This
   // should be called from a task posted on the child thread immediately after
   // thread start. The thread will be profiled until exit.
-  static void StartOnChildThread(base::ProfilerThreadType thread);
+  static void StartOnChildThread(sampling_profiler::ProfilerThreadType thread);
 
   // Sets the callback to use for reporting browser process profiles. This
   // indirection is required to avoid a dependency on unnecessary metrics code
@@ -113,7 +113,7 @@ class IOSThreadProfiler {
   // Creates the profiler. The task runner will be supplied for child threads
   // but not for main threads.
   IOSThreadProfiler(
-      base::ProfilerThreadType thread,
+      sampling_profiler::ProfilerThreadType thread,
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
 
@@ -135,8 +135,8 @@ class IOSThreadProfiler {
   // Creates a new periodic profiler and initiates a collection with it.
   void StartPeriodicSamplingCollection();
 
-  const base::ProfilerProcessType process_;
-  const base::ProfilerThreadType thread_;
+  const sampling_profiler::ProfilerProcessType process_;
+  const sampling_profiler::ProfilerThreadType thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 

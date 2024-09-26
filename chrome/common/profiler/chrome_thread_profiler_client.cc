@@ -8,13 +8,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "content/public/common/content_switches.h"
 
 base::StackSamplingProfiler::SamplingParams
@@ -24,7 +24,7 @@ ChromeThreadProfilerClient::GetSamplingParams() {
 
 std::unique_ptr<base::ProfileBuilder>
 ChromeThreadProfilerClient::CreateProfileBuilder(
-    base::CallStackProfileParams profile_params,
+    sampling_profiler::CallStackProfileParams profile_params,
     metrics::WorkIdRecorder* work_id_recorder,
     base::OnceClosure builder_completed_callback) {
   return std::make_unique<metrics::CallStackProfileBuilder>(
@@ -37,12 +37,13 @@ ChromeThreadProfilerClient::GetUnwindersFactory() {
 }
 
 bool ChromeThreadProfilerClient::IsProfilerEnabledForCurrentProcessAndThread(
-    base::ProfilerThreadType thread) {
+    sampling_profiler::ProfilerThreadType thread) {
   return ThreadProfilerConfiguration::Get()
       ->IsProfilerEnabledForCurrentProcessAndThread(thread);
 }
 
-base::ProfilerProcessType ChromeThreadProfilerClient::GetProcessType(
+sampling_profiler::ProfilerProcessType
+ChromeThreadProfilerClient::GetProcessType(
     const base::CommandLine& command_line) {
   return GetProfilerProcessType(command_line);
 }

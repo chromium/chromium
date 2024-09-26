@@ -19,7 +19,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/current_process.h"
-#include "base/profiler/process_type.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -109,6 +108,7 @@
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -1409,7 +1409,7 @@ void ChromeContentRendererClient::PostIOThreadCreated(
   io_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kIo));
+                     sampling_profiler::ProfilerThreadType::kIo));
 }
 
 void ChromeContentRendererClient::PostCompositorThreadCreated(
@@ -1417,7 +1417,7 @@ void ChromeContentRendererClient::PostCompositorThreadCreated(
   compositor_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kCompositor));
+                     sampling_profiler::ProfilerThreadType::kCompositor));
   // Enable stack sampling for tracing.
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.
@@ -1745,7 +1745,7 @@ void ChromeContentRendererClient::
     WillInitializeServiceWorkerContextOnWorkerThread() {
   // This is called on the service worker thread.
   sampling_profiler::ThreadProfiler::StartOnChildThread(
-      base::ProfilerThreadType::kServiceWorker);
+      sampling_profiler::ProfilerThreadType::kServiceWorker);
 }
 
 void ChromeContentRendererClient::

@@ -30,7 +30,6 @@
 #include "base/profiler/frame.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
-#include "base/profiler/process_type.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
@@ -44,6 +43,7 @@
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/switches.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -52,7 +52,7 @@ namespace heap_profiling {
 
 namespace {
 
-using ProcessType = base::ProfilerProcessType;
+using ProcessType = sampling_profiler::ProfilerProcessType;
 
 // The heap profiler for this process. HeapProfilerController will set this on
 // creation, and reset it to nullptr on destruction, so that it's always unset
@@ -325,7 +325,7 @@ void HeapProfilerController::SetFirstSnapshotCallbackForTesting(
 
 void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
     base::CommandLine* command_line,
-    base::ProfilerProcessType child_process_type,
+    ProcessType child_process_type,
     int child_process_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(process_type_, ProcessType::kBrowser);
@@ -367,7 +367,7 @@ void HeapProfilerController::TakeSnapshotInChildProcess(
 // static
 void HeapProfilerController::AppendCommandLineSwitchForTesting(
     base::CommandLine* command_line,
-    base::ProfilerProcessType child_process_type,
+    ProcessType child_process_type,
     int child_process_id,
     BrowserProcessSnapshotController* snapshot_controller) {
   AppendCommandLineSwitchInternal(command_line, child_process_type,
@@ -377,7 +377,7 @@ void HeapProfilerController::AppendCommandLineSwitchForTesting(
 // static
 void HeapProfilerController::AppendCommandLineSwitchInternal(
     base::CommandLine* command_line,
-    base::ProfilerProcessType child_process_type,
+    ProcessType child_process_type,
     int child_process_id,
     BrowserProcessSnapshotController* snapshot_controller) {
   CHECK_NE(child_process_type, ProcessType::kBrowser);
@@ -463,9 +463,10 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
                                  samples.size());
 
   base::ModuleCache module_cache;
-  base::CallStackProfileParams params(
-      process_type, base::ProfilerThreadType::kUnknown,
-      base::CallStackProfileParams::Trigger::kPeriodicHeapCollection,
+  sampling_profiler::CallStackProfileParams params(
+      process_type, sampling_profiler::ProfilerThreadType::kUnknown,
+      sampling_profiler::CallStackProfileParams::Trigger::
+          kPeriodicHeapCollection,
       time_since_profiler_creation);
   metrics::CallStackProfileBuilder profile_builder(params);
 

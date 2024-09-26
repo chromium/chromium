@@ -33,7 +33,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/profiler/process_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -153,6 +152,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -1229,7 +1229,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kIo));
+                     sampling_profiler::ProfilerThreadType::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_PROCESS_TYPE_H_
-#define BASE_PROFILER_PROCESS_TYPE_H_
+#ifndef COMPONENTS_SAMPLING_PROFILER_PROCESS_TYPE_H_
+#define COMPONENTS_SAMPLING_PROFILER_PROCESS_TYPE_H_
 
-namespace base {
-
-// TODO(crbug.com/354124876): Revisit whether these enums needs to live in
-// //base, once the core logic has been moved.
+namespace sampling_profiler {
 
 // The type of process which is profiled.
 enum class ProfilerProcessType {
@@ -43,6 +40,6 @@ enum class ProfilerThreadType {
   kMax = kServiceWorker,
 };
 
-}  // namespace base
+}  // namespace sampling_profiler
 
-#endif  // BASE_PROFILER_PROCESS_TYPE_H_
+#endif  // COMPONENTS_SAMPLING_PROFILER_PROCESS_TYPE_H_

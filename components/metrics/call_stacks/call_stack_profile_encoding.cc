@@ -5,48 +5,49 @@
 #include "components/metrics/call_stacks/call_stack_profile_encoding.h"
 
 #include "base/notreached.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
 
-Process ToExecutionContextProcess(base::ProfilerProcessType process) {
+Process ToExecutionContextProcess(
+    sampling_profiler::ProfilerProcessType process) {
   switch (process) {
-    case base::ProfilerProcessType::kUnknown:
+    case sampling_profiler::ProfilerProcessType::kUnknown:
       return UNKNOWN_PROCESS;
-    case base::ProfilerProcessType::kBrowser:
+    case sampling_profiler::ProfilerProcessType::kBrowser:
       return BROWSER_PROCESS;
-    case base::ProfilerProcessType::kRenderer:
+    case sampling_profiler::ProfilerProcessType::kRenderer:
       return RENDERER_PROCESS;
-    case base::ProfilerProcessType::kGpu:
+    case sampling_profiler::ProfilerProcessType::kGpu:
       return GPU_PROCESS;
-    case base::ProfilerProcessType::kUtility:
+    case sampling_profiler::ProfilerProcessType::kUtility:
       return UTILITY_PROCESS;
-    case base::ProfilerProcessType::kNetworkService:
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
       return NETWORK_SERVICE_PROCESS;
-    case base::ProfilerProcessType::kZygote:
+    case sampling_profiler::ProfilerProcessType::kZygote:
       return ZYGOTE_PROCESS;
-    case base::ProfilerProcessType::kSandboxHelper:
+    case sampling_profiler::ProfilerProcessType::kSandboxHelper:
       return SANDBOX_HELPER_PROCESS;
-    case base::ProfilerProcessType::kPpapiPlugin:
+    case sampling_profiler::ProfilerProcessType::kPpapiPlugin:
       return PPAPI_PLUGIN_PROCESS;
   }
   NOTREACHED_IN_MIGRATION();
   return UNKNOWN_PROCESS;
 }
 
-Thread ToExecutionContextThread(base::ProfilerThreadType thread) {
+Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
   switch (thread) {
-    case base::ProfilerThreadType::kUnknown:
+    case sampling_profiler::ProfilerThreadType::kUnknown:
       return UNKNOWN_THREAD;
-    case base::ProfilerThreadType::kMain:
+    case sampling_profiler::ProfilerThreadType::kMain:
       return MAIN_THREAD;
-    case base::ProfilerThreadType::kIo:
+    case sampling_profiler::ProfilerThreadType::kIo:
       return IO_THREAD;
-    case base::ProfilerThreadType::kCompositor:
+    case sampling_profiler::ProfilerThreadType::kCompositor:
       return COMPOSITOR_THREAD;
-    case base::ProfilerThreadType::kServiceWorker:
+    case sampling_profiler::ProfilerThreadType::kServiceWorker:
       return SERVICE_WORKER_THREAD;
   }
   NOTREACHED_IN_MIGRATION();
@@ -54,19 +55,21 @@ Thread ToExecutionContextThread(base::ProfilerThreadType thread) {
 }
 
 SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
-    base::CallStackProfileParams::Trigger trigger) {
+    sampling_profiler::CallStackProfileParams::Trigger trigger) {
   switch (trigger) {
-    case base::CallStackProfileParams::Trigger::kUnknown:
+    case sampling_profiler::CallStackProfileParams::Trigger::kUnknown:
       return SampledProfile::UNKNOWN_TRIGGER_EVENT;
-    case base::CallStackProfileParams::Trigger::kProcessStartup:
+    case sampling_profiler::CallStackProfileParams::Trigger::kProcessStartup:
       return SampledProfile::PROCESS_STARTUP;
-    case base::CallStackProfileParams::Trigger::kJankyTask:
+    case sampling_profiler::CallStackProfileParams::Trigger::kJankyTask:
       return SampledProfile::JANKY_TASK;
-    case base::CallStackProfileParams::Trigger::kThreadHung:
+    case sampling_profiler::CallStackProfileParams::Trigger::kThreadHung:
       return SampledProfile::THREAD_HUNG;
-    case base::CallStackProfileParams::Trigger::kPeriodicCollection:
+    case sampling_profiler::CallStackProfileParams::Trigger::
+        kPeriodicCollection:
       return SampledProfile::PERIODIC_COLLECTION;
-    case base::CallStackProfileParams::Trigger::kPeriodicHeapCollection:
+    case sampling_profiler::CallStackProfileParams::Trigger::
+        kPeriodicHeapCollection:
       return SampledProfile::PERIODIC_HEAP_COLLECTION;
   }
   NOTREACHED_IN_MIGRATION();

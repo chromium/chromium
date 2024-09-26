@@ -16,7 +16,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/path_service.h"
-#import "base/profiler/process_type.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
@@ -43,6 +42,7 @@
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "components/sampling_profiler/process_type.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_metrics_logger_impl.h"
@@ -258,8 +258,8 @@ void IOSChromeMainParts::PreCreateThreads() {
   // consistency with other main delegates where the browser process is denoted
   // this way.
   memory_system::Initializer()
-      .SetProfilingClientParameters(channel,
-                                    base::ProfilerProcessType::kBrowser)
+      .SetProfilingClientParameters(
+          channel, sampling_profiler::ProfilerProcessType::kBrowser)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kDynamic,
                                memory_system::DispatcherParameters::

@@ -8,11 +8,11 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 
 namespace {
 
@@ -27,14 +27,14 @@ class DefaultPlatformConfiguration
       std::optional<version_info::Channel> release_channel) const override;
 
   double GetChildProcessPerExecutionEnableFraction(
-      base::ProfilerProcessType process) const override;
+      sampling_profiler::ProfilerProcessType process) const override;
 
-  std::optional<base::ProfilerProcessType> ChooseEnabledProcess()
+  std::optional<sampling_profiler::ProfilerProcessType> ChooseEnabledProcess()
       const override;
 
   bool IsEnabledForThread(
-      base::ProfilerProcessType process,
-      base::ProfilerThreadType thread,
+      sampling_profiler::ProfilerProcessType process,
+      sampling_profiler::ProfilerThreadType thread,
       std::optional<version_info::Channel> release_channel) const override;
 
  protected:
@@ -81,8 +81,8 @@ DefaultPlatformConfiguration::GetEnableRates(
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
-    base::ProfilerProcessType process) const {
-  DCHECK_NE(base::ProfilerProcessType::kBrowser, process);
+    sampling_profiler::ProfilerProcessType process) const {
+  DCHECK_NE(sampling_profiler::ProfilerProcessType::kBrowser, process);
 
   // Profile all supported processes in browser test mode.
   if (browser_test_mode_enabled()) {
@@ -90,11 +90,11 @@ double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
   }
 
   switch (process) {
-    case base::ProfilerProcessType::kGpu:
-    case base::ProfilerProcessType::kNetworkService:
+    case sampling_profiler::ProfilerProcessType::kGpu:
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
       return 1.0;
 
-    case base::ProfilerProcessType::kRenderer:
+    case sampling_profiler::ProfilerProcessType::kRenderer:
       // Run the profiler in 20% of the processes to collect roughly as many
       // profiles for renderer processes as browser processes.
       return 0.2;
@@ -104,15 +104,15 @@ double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
   }
 }
 
-std::optional<base::ProfilerProcessType>
+std::optional<sampling_profiler::ProfilerProcessType>
 DefaultPlatformConfiguration::ChooseEnabledProcess() const {
   // Ignore the setting, sampling more than one process.
   return std::nullopt;
 }
 
 bool DefaultPlatformConfiguration::IsEnabledForThread(
-    base::ProfilerProcessType process,
-    base::ProfilerThreadType thread,
+    sampling_profiler::ProfilerProcessType process,
+    sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
   // Enable for all supported threads.
   return true;
@@ -153,41 +153,47 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
       std::optional<version_info::Channel> release_channel) const override;
 
   double GetChildProcessPerExecutionEnableFraction(
-      base::ProfilerProcessType process) const override;
+      sampling_profiler::ProfilerProcessType process) const override;
 
-  std::optional<base::ProfilerProcessType> ChooseEnabledProcess()
+  std::optional<sampling_profiler::ProfilerProcessType> ChooseEnabledProcess()
       const override;
 
   bool IsEnabledForThread(
-      base::ProfilerProcessType process,
-      base::ProfilerThreadType thread,
+      sampling_profiler::ProfilerProcessType process,
+      sampling_profiler::ProfilerThreadType thread,
       std::optional<version_info::Channel> release_channel) const override;
 
  private:
   // Whether profiling is enabled on a thread type for Android DEV channel.
-  const base::flat_map<base::ProfilerThreadType, bool> thread_enabled_on_dev_;
+  const base::flat_map<sampling_profiler::ProfilerThreadType, bool>
+      thread_enabled_on_dev_;
 };
 
 AndroidPlatformConfiguration::AndroidPlatformConfiguration(
     bool browser_test_mode_enabled,
     base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback)
     : DefaultPlatformConfiguration(browser_test_mode_enabled),
-      thread_enabled_on_dev_(base::MakeFlatMap<base::ProfilerThreadType, bool>(
-          []() {
-            std::vector<base::ProfilerThreadType> threads;
-            for (int i = 0;
-                 i <= static_cast<int>(base::ProfilerThreadType::kMax); i++) {
-              threads.push_back(static_cast<base::ProfilerThreadType>(i));
-            }
-            return threads;
-          }(),
-          {},
-          [&](base::ProfilerThreadType thread) {
-            // Only enable 25% of threads on Dev channel as analysis
-            // shows 25% thread enable rate will give us sufficient
-            // resolution (100us).
-            return std::make_pair(thread, is_enabled_on_dev_callback.Run(0.25));
-          })) {}
+      thread_enabled_on_dev_(
+          base::MakeFlatMap<sampling_profiler::ProfilerThreadType, bool>(
+              []() {
+                std::vector<sampling_profiler::ProfilerThreadType> threads;
+                for (int i = 0;
+                     i <= static_cast<int>(
+                              sampling_profiler::ProfilerThreadType::kMax);
+                     i++) {
+                  threads.push_back(
+                      static_cast<sampling_profiler::ProfilerThreadType>(i));
+                }
+                return threads;
+              }(),
+              {},
+              [&](sampling_profiler::ProfilerThreadType thread) {
+                // Only enable 25% of threads on Dev channel as analysis
+                // shows 25% thread enable rate will give us sufficient
+                // resolution (100us).
+                return std::make_pair(thread,
+                                      is_enabled_on_dev_callback.Run(0.25));
+              })) {}
 
 ThreadProfilerPlatformConfiguration::RelativePopulations
 AndroidPlatformConfiguration::GetEnableRates(
@@ -218,23 +224,23 @@ AndroidPlatformConfiguration::GetEnableRates(
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
-    base::ProfilerProcessType process) const {
+    sampling_profiler::ProfilerProcessType process) const {
   // Unconditionally profile child processes that match ChooseEnabledProcess().
   return 1.0;
 }
 
-std::optional<base::ProfilerProcessType>
+std::optional<sampling_profiler::ProfilerProcessType>
 AndroidPlatformConfiguration::ChooseEnabledProcess() const {
   // Weights are set such that we will receive similar amount of data from
   // each process type. The value is calculated based on Canary/Dev channel
   // data collected when all process are sampled.
   const struct {
-    base::ProfilerProcessType process;
+    sampling_profiler::ProfilerProcessType process;
     int weight;
   } process_enable_weights[] = {
-      {base::ProfilerProcessType::kBrowser, 50},
-      {base::ProfilerProcessType::kGpu, 40},
-      {base::ProfilerProcessType::kRenderer, 10},
+      {sampling_profiler::ProfilerProcessType::kBrowser, 50},
+      {sampling_profiler::ProfilerProcessType::kGpu, 40},
+      {sampling_profiler::ProfilerProcessType::kRenderer, 10},
   };
 
   int total_weight = 0;
@@ -257,14 +263,14 @@ AndroidPlatformConfiguration::ChooseEnabledProcess() const {
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(
-    base::ProfilerProcessType process,
-    base::ProfilerThreadType thread,
+    sampling_profiler::ProfilerProcessType process,
+    sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   // For now, we only enable SSM in the Browser process and Main thread on
   // Android 64, since Libunwindstack doesn't support JavaScript.
-  if (!(process == base::ProfilerProcessType::kBrowser &&
-        thread == base::ProfilerThreadType::kMain)) {
+  if (!(process == sampling_profiler::ProfilerProcessType::kBrowser &&
+        thread == sampling_profiler::ProfilerThreadType::kMain)) {
     return false;
   }
 #endif

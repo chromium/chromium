@@ -465,6 +465,7 @@ if (!is_cronet_build) {
 
     deps = [
       "//base:base",
+      "//components/sampling_profiler:profile_params",
       "//third_party/metrics_proto",
     ]
   }
@@ -485,6 +486,7 @@ if (!is_cronet_build) {
     deps = [
       "//base",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//components/sampling_profiler:profile_params",
       "//mojo/public/cpp/base:protobuf_support",
       "//third_party/metrics_proto",
     ]
@@ -588,6 +590,7 @@ if (!is_cronet_build) {
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/network_time:network_time_test_support",
       "//components/prefs:test_support",
+      "//components/sampling_profiler:profile_params",
       "//components/sync:test_support",
       "//components/sync/base",
       "//components/variations",

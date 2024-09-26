@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/profiler/process_type.h"
+#include "base/profiler/stack_sampler.h"
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -16,6 +16,7 @@
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -81,7 +82,7 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
 }
 
 bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
-    base::ProfilerThreadType thread) const {
+    sampling_profiler::ProfilerThreadType thread) const {
   return IsProfilerEnabledForCurrentProcess() &&
          platform_configuration_->IsEnabledForThread(
              GetProfilerProcessType(*base::CommandLine::ForCurrentProcess()),
@@ -125,7 +126,7 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
 }
 
 bool ThreadProfilerConfiguration::IsProfilerEnabledForChildProcess(
-    base::ProfilerProcessType child_process) const {
+    sampling_profiler::ProfilerProcessType child_process) const {
   const auto& config = absl::get<BrowserProcessConfiguration>(configuration_);
 
   const double enable_fraction =
@@ -177,7 +178,7 @@ bool ThreadProfilerConfiguration::EnableForVariationGroup(
 // static
 bool ThreadProfilerConfiguration::IsProcessGloballyEnabled(
     const ThreadProfilerConfiguration::BrowserProcessConfiguration& config,
-    base::ProfilerProcessType process) {
+    sampling_profiler::ProfilerProcessType process) {
   return !config.process_type_to_sample.has_value() ||
          process == *config.process_type_to_sample;
 }
@@ -231,8 +232,8 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
       relative_populations =
           platform_configuration.GetEnableRates(release_channel);
 
-  const std::optional<base::ProfilerProcessType> process_type_to_sample =
-      platform_configuration.ChooseEnabledProcess();
+  const std::optional<sampling_profiler::ProfilerProcessType>
+      process_type_to_sample = platform_configuration.ChooseEnabledProcess();
 
   CHECK_EQ(0, relative_populations.experiment % 2);
   return {
@@ -260,9 +261,9 @@ ThreadProfilerConfiguration::GenerateChildProcessConfiguration(
 // static
 ThreadProfilerConfiguration::Configuration
 ThreadProfilerConfiguration::GenerateConfiguration(
-    base::ProfilerProcessType process,
+    sampling_profiler::ProfilerProcessType process,
     const ThreadProfilerPlatformConfiguration& platform_configuration) {
-  if (process == base::ProfilerProcessType::kBrowser) {
+  if (process == sampling_profiler::ProfilerProcessType::kBrowser) {
     return GenerateBrowserProcessConfiguration(platform_configuration);
   }
 

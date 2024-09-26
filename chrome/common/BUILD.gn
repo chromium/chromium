@@ -228,6 +228,7 @@ static_library("common_lib") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_search_api",
+    "//components/sampling_profiler",
     "//components/services/app_service",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",

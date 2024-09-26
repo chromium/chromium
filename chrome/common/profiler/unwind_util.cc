@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
@@ -21,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) && \
@@ -155,7 +155,7 @@ class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
 void RequestUnwindPrerequisitesInstallation(
     version_info::Channel channel,
     UnwindPrerequisitesDelegate* prerequites_delegate) {
-  CHECK_EQ(base::ProfilerProcessType::kBrowser,
+  CHECK_EQ(sampling_profiler::ProfilerProcessType::kBrowser,
            GetProfilerProcessType(*base::CommandLine::ForCurrentProcess()));
   if (AreUnwindPrerequisitesAvailable(channel, prerequites_delegate)) {
     return;

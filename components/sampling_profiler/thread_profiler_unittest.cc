@@ -12,7 +12,7 @@
 namespace sampling_profiler {
 namespace {
 
-class TestScheduler : public sampling_profiler::PeriodicSamplingScheduler {
+class TestScheduler : public PeriodicSamplingScheduler {
  public:
   TestScheduler(base::TimeDelta sampling_duration,
                 double fraction_of_execution_time_to_sample)

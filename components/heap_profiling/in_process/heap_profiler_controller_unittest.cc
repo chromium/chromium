@@ -31,7 +31,6 @@
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/profiler/process_type.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,6 +56,7 @@
 #include "components/heap_profiling/in_process/switches.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -120,7 +120,7 @@ namespace {
 
 using FeatureRef = base::test::FeatureRef;
 using FeatureRefAndParams = base::test::FeatureRefAndParams;
-using ProcessType = base::ProfilerProcessType;
+using ProcessType = sampling_profiler::ProfilerProcessType;
 using ProcessTypeSet =
     base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
 using ProfileCollectorCallback =

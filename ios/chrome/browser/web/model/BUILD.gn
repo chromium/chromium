@@ -261,6 +261,7 @@ source_set("web_internal") {
     "//components/prefs",
     "//components/previous_session_info",
     "//components/resources",
+    "//components/sampling_profiler:profile_params",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/supervised_user/core/browser",

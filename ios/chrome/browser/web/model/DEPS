@@ -76,6 +76,7 @@ specific_include_rules = {
   ],
   "chrome_main_parts\.(h|mm)": [
     "+components/memory_system",
+    "+components/sampling_profiler",
   ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
@@ -86,6 +87,9 @@ specific_include_rules = {
   # TODO:(crbug.com/891834) Remove this exception.
   "http_auth_egtest\.mm": [
     "+ios/web/public/test/http_server",
+  ],
+  "ios_thread_profiler\.(h|cc)": [
+    "+components/sampling_profiler",
   ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

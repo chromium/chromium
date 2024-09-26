@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -27,13 +26,12 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler_client.h"
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 #include "base/process/port_provider_mac.h"
 #endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
-
-using CallStackProfileParams = base::CallStackProfileParams;
 
 namespace sampling_profiler {
 namespace {
@@ -62,8 +60,8 @@ bool IsCurrentProcessBackgrounded() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    base::ProfilerProcessType process) {
-  if (process != base::ProfilerProcessType::kRenderer) {
+    ProfilerProcessType process) {
+  if (process != ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
   }
   static const base::SampleMetadata process_backgrounded(
@@ -158,7 +156,7 @@ std::unique_ptr<ThreadProfiler> ThreadProfiler::CreateAndStartOnMainThread() {
       GetClient()->IsSingleProcess(*base::CommandLine::ForCurrentProcess());
   DCHECK(!g_main_thread_instance || is_single_process);
   auto instance =
-      base::WrapUnique(new ThreadProfiler(base::ProfilerThreadType::kMain));
+      base::WrapUnique(new ThreadProfiler(ProfilerThreadType::kMain));
   if (!g_main_thread_instance) {
     g_main_thread_instance = instance.get();
   }
@@ -186,7 +184,7 @@ void ThreadProfiler::SetAuxUnwinderFactory(
 }
 
 // static
-void ThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
+void ThreadProfiler::StartOnChildThread(ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>
@@ -233,7 +231,7 @@ ThreadProfilerClient* ThreadProfiler::GetClient() {
 // The process in previous paragraph continues until the ThreadProfiler is
 // destroyed prior to thread exit.
 ThreadProfiler::ThreadProfiler(
-    base::ProfilerThreadType thread,
+    ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
     : process_(
           GetClient()->GetProcessType(*base::CommandLine::ForCurrentProcess())),
@@ -274,7 +272,7 @@ ThreadProfiler::ThreadProfiler(
 std::unique_ptr<base::StackSamplingProfiler>
 ThreadProfiler::CreateSamplingProfiler(
     base::StackSamplingProfiler::SamplingParams sampling_params,
-    base::CallStackProfileParams::Trigger trigger,
+    CallStackProfileParams::Trigger trigger,
     base::OnceClosure builder_completed_callback) {
   return std::make_unique<base::StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(), sampling_params,

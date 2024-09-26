@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
-#define BASE_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
+#ifndef COMPONENTS_SAMPLING_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
+#define COMPONENTS_SAMPLING_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
 
-#include "base/base_export.h"
-#include "base/profiler/process_type.h"
 #include "base/time/time.h"
+#include "components/sampling_profiler/process_type.h"
 
-namespace base {
+namespace sampling_profiler {
 
 // Parameters to pass back to the metrics provider.
 // TODO(crbug.com/354124876): Revisit whether this type needs to live in //base,
 // once the core logic has been moved.
-struct BASE_EXPORT CallStackProfileParams {
+struct CallStackProfileParams {
   // The event that triggered the profile collection.
   enum class Trigger {
     kUnknown,
@@ -30,10 +29,11 @@ struct BASE_EXPORT CallStackProfileParams {
   // otherwise. A valid trigger should always be specified.
   constexpr CallStackProfileParams() = default;
 
-  constexpr CallStackProfileParams(ProfilerProcessType process,
-                                   ProfilerThreadType thread,
-                                   Trigger trigger,
-                                   TimeDelta time_offset = TimeDelta())
+  constexpr CallStackProfileParams(
+      ProfilerProcessType process,
+      ProfilerThreadType thread,
+      Trigger trigger,
+      base::TimeDelta time_offset = base::TimeDelta())
       : process(process),
         thread(thread),
         trigger(trigger),
@@ -50,9 +50,9 @@ struct BASE_EXPORT CallStackProfileParams {
 
   // The time of the profile, since roughly the start of the process being
   // profiled. 0 indicates that the time is not reported.
-  TimeDelta time_offset;
+  base::TimeDelta time_offset;
 };
 
-}  // namespace base
+}  // namespace sampling_profiler
 
-#endif  // BASE_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
+#endif  // COMPONENTS_SAMPLING_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
