@@ -506,6 +506,7 @@ include_rules = [
   "+ash/constants",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",
+  "+ash/login/ui/management_disclosure_field_trial.h",
   "+ash/public",
   "+ash/webui",
 

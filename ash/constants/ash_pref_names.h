@@ -1983,6 +1983,13 @@ inline constexpr char kCameraAppDevToolsOpen[] =
 inline constexpr char kRecoveryFactorBehavior[] =
     "ash.recovery.recovery_factor_behavior";
 
+// A boolean pref that specifies if the the improved management disclosure
+// should be shown on the login/lock screen. When pref is set to true the
+// improved management disclosure is shown. Otherwise it is the existing
+// disclosure.
+inline constexpr char kImprovedManagementDisclosure[] =
+    "ash.login.improved_management_disclosure";
+
 // Pref which stores ICCIDs of cellular networks that have been migrated to the
 // APN Revamp feature.
 inline constexpr char kApnMigratedIccids[] = "ash.cellular.apn_migrated_iccids";

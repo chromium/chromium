@@ -1696,6 +1696,12 @@ BASE_FEATURE(kImprovedLoginErrorHandling,
              "ImprovedLoginErrorHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to show new management disclosure UI page instead of the
+// management warning bubble.
+BASE_FEATURE(kImprovedManagementDisclosure,
+             "ImprovedManagementDisclosure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Instant Hotspot on Nearby. b/303121363.
 BASE_FEATURE(kInstantHotspotOnNearby,
              "InstantHotspotOnNearby",

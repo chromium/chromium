@@ -32,6 +32,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
+#include "ash/login/ui/management_disclosure_field_trial.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
@@ -256,6 +257,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   quick_pair::ScanningEnabledProvider::RegisterLocalStatePrefs(registry);
   InputDeviceSettingsMetadataManager::RegisterLocalStatePrefs(registry);
   BluetoothDeviceStatusUiHandler::RegisterLocalStatePrefs(registry);
+  management_disclosure_field_trial::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
