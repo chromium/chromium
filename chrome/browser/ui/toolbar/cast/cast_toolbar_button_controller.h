@@ -100,7 +100,7 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
 
   // Adds or removes the Cast icon to/from the toolbar if necessary,
   // depending on whether or not we have issues, local routes or a dialog.
-  virtual void MaybeAddOrRemoveAction();
+  virtual void MaybeToggleIconVisibility();
 
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.

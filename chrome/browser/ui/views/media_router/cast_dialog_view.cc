@@ -17,6 +17,8 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
@@ -58,11 +60,13 @@ CastDialogView::CastDialogView(
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
-    MediaRouterDialogActivationLocation activation_location)
+    MediaRouterDialogActivationLocation activation_location,
+    actions::ActionItem* action_item)
     : BubbleDialogDelegateView(anchor_view, anchor_position),
       controller_(controller),
       profile_(profile),
-      metrics_(start_time, activation_location, profile) {
+      metrics_(start_time, activation_location, profile),
+      action_item_(action_item) {
   DCHECK(profile);
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -74,8 +78,14 @@ CastDialogView::CastDialogView(
 }
 
 CastDialogView::~CastDialogView() {
-  if (controller_)
+  if (controller_) {
     controller_->RemoveObserver(this);
+  }
+  if (features::IsToolbarPinningEnabled()) {
+    if (action_item_) {
+      action_item_->SetIsShowingBubble(false);
+    }
+  }
 }
 
 std::u16string CastDialogView::GetWindowTitle() const {

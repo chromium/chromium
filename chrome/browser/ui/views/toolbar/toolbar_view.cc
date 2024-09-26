@@ -370,8 +370,11 @@ void ToolbarView::Init() {
     toolbar_divider = std::make_unique<views::View>();
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
-  if (media_router::MediaRouterEnabled(browser_->profile()))
-    cast = media_router::CastToolbarButton::Create(browser_);
+  if (!features::IsToolbarPinningEnabled()) {
+    if (media_router::MediaRouterEnabled(browser_->profile())) {
+      cast = media_router::CastToolbarButton::Create(browser_);
+    }
+  }
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
@@ -709,6 +712,16 @@ views::Button* ToolbarView::GetChromeLabsButton() const {
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
+}
+
+ToolbarButton* ToolbarView::GetCastButton() const {
+  if (features::IsToolbarPinningEnabled()) {
+    return pinned_toolbar_actions_container()
+               ? pinned_toolbar_actions_container()->GetButtonFor(
+                     kActionRouteMedia)
+               : nullptr;
+  }
+  return cast_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

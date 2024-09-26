@@ -47,6 +47,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
+#include "components/media_router/browser/media_router_dialog_controller.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -479,15 +481,28 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
 
     root_action_item_->AddChild(
-        ChromeMenuAction(base::BindRepeating(
-                             [](Browser* browser, actions::ActionItem* item,
-                                actions::ActionInvocationContext context) {
-                               // TODO(b/323962377): Add functionality.
-                             },
-                             base::Unretained(browser)),
-                         kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-                         IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT,
-                         kCastChromeRefreshIcon)
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  media_router::MediaRouterDialogController* dialog_controller =
+                      media_router::MediaRouterDialogController::
+                          GetOrCreateForWebContents(
+                              browser->tab_strip_model()
+                                  ->GetActiveWebContents());
+                  if (dialog_controller->IsShowingMediaRouterDialog()) {
+                    dialog_controller->HideMediaRouterDialog();
+                  } else {
+                    // TODO(b/356468503): Figure out how to capture action
+                    // invocation location.
+                    dialog_controller->ShowMediaRouterDialog(
+                        media_router::MediaRouterDialogActivationLocation::
+                            TOOLBAR);
+                  }
+                },
+                base::Unretained(browser)),
+            kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+            IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
             .SetEnabled(chrome::CanRouteMedia(browser))
             .Build());
 

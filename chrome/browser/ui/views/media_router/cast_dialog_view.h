@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
@@ -53,7 +54,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
                  CastDialogController* controller,
                  Profile* profile,
                  const base::Time& start_time,
-                 MediaRouterDialogActivationLocation activation_location);
+                 MediaRouterDialogActivationLocation activation_location,
+                 actions::ActionItem* action_item = nullptr);
   ~CastDialogView() override;
   CastDialogView(const CastDialogView&) = delete;
   CastDialogView& operator=(const CastDialogView&) = delete;
@@ -198,6 +200,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // Records UMA metrics for the dialog's behavior.
   CastDialogMetrics metrics_;
+
+  // The action item tied to this dialog and its anchor view.
+  // Used to handle bubble re-opening issues with Pinned Toolbar Buttons.
+  const raw_ptr<actions::ActionItem> action_item_ = nullptr;
 
   // The sink that the user has selected to cast to. If the user is using
   // multiple sinks at the same time, the last activated sink is used.

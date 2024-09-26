@@ -170,7 +170,7 @@ class ToolbarView : public views::AccessiblePaneView,
   PerformanceInterventionButton* performance_intervention_button() const {
     return performance_intervention_button_;
   }
-  media_router::CastToolbarButton* cast_button() const { return cast_; }
+  ToolbarButton* GetCastButton() const;
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container() const {
     return pinned_toolbar_actions_container_;
   }
