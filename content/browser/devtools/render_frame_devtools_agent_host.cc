@@ -491,9 +491,16 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
     if (IsAttached()) {
       UpdateRawHeadersAccess(frame_tree_node_->current_frame_host());
     }
-    // UpdateFrameHost may destruct |this|.
-    protect = this;
-    UpdateFrameHost(frame_tree_node_->current_frame_host());
+
+    // Same-document navigations don't get a new RFH, so there isn't really
+    // anything to update here. Eagerly updating the tracked RFH is harmful,
+    // since the same-document navigation may interleave with cross-document
+    // navigations, e.g. if triggered from an unload handler.
+    if (!request->IsSameDocument()) {
+      // UpdateFrameHost may destruct |this|.
+      protect = this;
+      UpdateFrameHost(frame_tree_node_->current_frame_host());
+    }
 
     if (navigation_requests_.empty()) {
       for (DevToolsSession* session : sessions())
