@@ -8128,3 +8128,19 @@ crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-docum
 
 # These will not pass until the linked task is resolved.
 crbug.com/368038561 external/wpt/css/css-scroll-snap-2/scroll-start-target/* [ Failure ]
+
+# Temporarily disable to land crrev.com/c/5823431
+crbug.com/345248263 http/tests/devtools/console/console-big-array.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-call-getter-on-proto.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-dir-es6.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-format-array-prototype.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-format-es6-2.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-functions.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/console-log-short-hand-method.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/viewport-testing/console-clicking-messages.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/console/viewport-testing/console-key-links.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
+crbug.com/345248263 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
+
