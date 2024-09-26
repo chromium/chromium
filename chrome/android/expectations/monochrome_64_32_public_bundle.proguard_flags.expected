@@ -598,7 +598,7 @@
     <init>(android.app.Application);
 }
 
-# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_savedstate_android_java/proguard.txt
 -keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
     <init>(androidx.lifecycle.SavedStateHandle);
 }
