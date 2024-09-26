@@ -458,4 +458,21 @@
   <message name="IDS_MANAGEMENT_DIALOG_THINGS_TO_CONSIDER_SUBTITLE" desc="Subtitle of a section of things to consider regarding that an admin can do an see while managing the browser and profile.">
     What this means
   </message>
+
+  <!-- Managed profile required interstitial -->
+  <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_TAB_TITLE" desc="The title of the tab of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+    Profile management
+  </message>
+  <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING" desc="The heading of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+    Your organization, <ph name="MANAGER">$1<ex>manager.com</ex></ph>, requires you to sign in using a specific profile
+  </message>
+  <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_UNKNOWN_MANAGER_HEADING" desc="The heading of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+    Your organization requires you to sign in using a specific profile.
+  </message>
+  <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH" desc="The main text of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+    To continue, sign in to <ph name="EMAIL">$1<ex>alice@example.com</ex></ph>, then setup a new profile
+  </message>
+  <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_SIGNIN" desc="The text of primary button of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+    Sign in
+  </message>
 </grit-part>
