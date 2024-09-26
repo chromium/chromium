@@ -1722,7 +1722,7 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
 // smaller than maximum supported decodes as advertiszed by decoder.
 BASE_FEATURE(kVideoDecodeBatching,
              "VideoDecodeBatching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Safety switch to allow us to revert to the previous behavior of using the
 // restored bounds for PiP windows, rather than the window bounds.  If this
