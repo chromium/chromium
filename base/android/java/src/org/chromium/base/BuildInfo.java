@@ -101,6 +101,9 @@ public class BuildInfo {
     /** Whether we're running on an Android Foldable OS device or not. */
     public final boolean isFoldable;
 
+    /** Whether we're running on an Android Desktop OS device or not. */
+    public final boolean isDesktop;
+
     /**
      * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
      */
@@ -176,6 +179,7 @@ public class BuildInfo {
             isFoldable ? "1" : "0",
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Build.SOC_MANUFACTURER : "",
             isDebugApp() ? "1" : "0",
+            isDesktop ? "1" : "0",
         };
     }
 
@@ -391,6 +395,8 @@ public class BuildInfo {
         this.isFoldable =
                 Build.VERSION.SDK_INT >= VERSION_CODES.R
                         && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
+
+        this.isDesktop = pm.hasSystemFeature(PackageManager.FEATURE_PC);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

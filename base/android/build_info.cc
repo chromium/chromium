@@ -91,7 +91,8 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       vulkan_deqp_level_(GetIntParam(params, 30)),
       is_foldable_(GetIntParam(params, 31)),
       soc_manufacturer_(StrDupParam(params, 32)),
-      is_debug_app_(GetIntParam(params, 33)) {}
+      is_debug_app_(GetIntParam(params, 33)),
+      is_desktop_(GetIntParam(params, 34)) {}
 
 BuildInfo::~BuildInfo() = default;
 
