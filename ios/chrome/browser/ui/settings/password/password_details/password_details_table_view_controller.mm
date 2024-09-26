@@ -59,11 +59,6 @@ using password_manager::metrics_util::PasswordNoteAction;
 
 namespace {
 
-// Crash key to investigate the content of the context menu configuration
-// identifier when it can't successfully be casted to an NSNumber.
-crash_reporter::CrashKeyString<64> configuration_identifier_crash_key(
-    "iOS password details configuration identifier");
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
   SectionIdentifierSite,
@@ -750,8 +745,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
         configurationWithIdentifier:[NSNumber numberWithInt:itemType]
                         sourcePoint:editMenuLocation];
     [self.interactionMenu presentEditMenuWithConfiguration:configuration];
-    base::RecordAction(
-        base::UserMetricsAction("MobilePasswordDetailsShowCopyContextMenu"));
   }
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   else {
@@ -1471,14 +1464,11 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     API_AVAILABLE(ios(16)) {
   NSUInteger itemType =
       [base::apple::ObjCCast<NSNumber>(configuration.identifier) intValue];
-  // TODO(crbug.com/343291599): Clean up crash key and
-  // DumpWithoutCrashing when finished with the investigation.
-  if (!itemType) {
-    std::string configurationIdentifierString = base::SysNSStringToUTF8(
-        [NSString stringWithFormat:@"%@", configuration.identifier]);
-    configuration_identifier_crash_key.Set(configurationIdentifierString);
-    base::debug::DumpWithoutCrashing();
 
+  // If `configuration.identifier` can't be casted to an NSNumber, it probably
+  // means that the current function was triggered by the system, and so it
+  // shouldn't be acted upon.
+  if (!itemType) {
     return nil;
   }
 

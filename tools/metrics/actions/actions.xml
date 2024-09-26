@@ -24138,14 +24138,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobilePasswordDetailsShowCopyContextMenu">
-  <owner>noemies@google.com</owner>
-  <description>
-    Reported when user taps a Password Details row that causes the Copy context
-    menu to be shown. iOS only.
-  </description>
-</action>
-
 <action name="MobilePasswordDetailsViewPassword">
   <owner>noemies@google.com</owner>
   <description>
