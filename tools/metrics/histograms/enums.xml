@@ -33969,6 +33969,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="121" label="AsyncClipboard"/>
   <int value="122" label="HTMLUnsafeMethods"/>
   <int value="123" label="ClipboardUnsanitizedFormats"/>
+  <int value="124" label="Aborting"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -463,6 +463,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kAsyncClipboard},
           {WebFeature::kHtmlClipboardApiUnsanitizedRead,
            WebDXFeature::kClipboardUnsanitizedFormats},
+          {WebFeature::kV8AbortController_Constructor, WebDXFeature::kAborting},
+          {WebFeature::kV8AbortSignal_Abort_Method, WebDXFeature::kAborting},
+          {WebFeature::kAbortSignalTimeout, WebDXFeature::kAborting},
       }};
 
   return *kMap;
