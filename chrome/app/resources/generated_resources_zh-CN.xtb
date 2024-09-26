@@ -3263,7 +3263,7 @@
 <translation id="3321460131042519426">启用自动换行</translation>
 <translation id="3321494112580110651">找不到您的打印机？</translation>
 <translation id="3321776060736518525">来源：<ph name="APP_URL" /></translation>
-<translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
+<translation id="3323521181261657960">恭喜！您获得了更多的屏幕使用时间</translation>
 <translation id="3325930488268995856">已连接 Microsoft OneDrive</translation>
 <translation id="3325995804968971809">风格</translation>
 <translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
@@ -3565,7 +3565,7 @@
 <translation id="3552780134252864554">退出时清除</translation>
 <translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
-<translation id="3557101512409028104">通过 Family Link 设置网站限制和设备使用时间限制</translation>
+<translation id="3557101512409028104">通过 Family Link 设置网站限制和屏幕使用时间限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">停止将屏幕投放到“<ph name="DEVICE_NAME" />”</translation>
@@ -4368,7 +4368,7 @@
 <translation id="4099874310852108874">发生了网络错误。</translation>
 <translation id="4100020874626534113">允许灵活的变音符分配。例如，您可输入“anhs”或“asnh”来获取“ánh”。</translation>
 <translation id="4100733287846229632">设备存储空间严重不足</translation>
-<translation id="4100853287411968461">已设定新的设备使用时间上限</translation>
+<translation id="4100853287411968461">已设定新的屏幕使用时间上限</translation>
 <translation id="4101352914005291489">隐藏的 SSID</translation>
 <translation id="4102906002417106771">重启以执行 Powerwash</translation>
 <translation id="4103644672850109428">屏幕阅读器、放大功能</translation>
