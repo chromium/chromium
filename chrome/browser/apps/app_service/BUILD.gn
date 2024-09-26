@@ -12,6 +12,8 @@ source_set("app_service") {
     "app_icon_source.cc",
     "app_icon_source.h",
     "app_service_proxy.h",
+    "app_service_proxy_base.cc",
+    "app_service_proxy_base.h",
     "app_service_proxy_factory.cc",
     "app_service_proxy_factory.h",
     "app_service_proxy_forward.h",
@@ -31,8 +33,14 @@ source_set("app_service") {
     "paused_apps.h",
     "policy_util.cc",
     "policy_util.h",
+    "publisher_host.cc",
+    "publisher_host.h",
     "publishers/app_publisher.cc",
     "publishers/app_publisher.h",
+    "publishers/extension_apps.cc",
+    "publishers/extension_apps.h",
+    "publishers/extension_apps_base.cc",
+    "publishers/extension_apps_base.h",
     "publishers/extension_apps_enable_flow.cc",
     "publishers/extension_apps_enable_flow.h",
     "publishers/extension_apps_util.cc",
@@ -364,44 +372,10 @@ source_set("app_service") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "app_service_proxy_lacros.cc",
-      "app_service_proxy_lacros.h",
-      "metrics/website_metrics.cc",
-      "metrics/website_metrics.h",
-      "metrics/website_metrics_service_lacros.cc",
-      "metrics/website_metrics_service_lacros.h",
-    ]
-
-    deps += [
-      "//chromeos/lacros",
-      "//components/keep_alive_registry",
-      "//components/webapps/browser",
-      "//services/metrics/public/cpp:ukm_builders",
-      "//ui/wm",
-    ]
-  }
-
   if (!is_chromeos) {
     sources += [
       "app_service_proxy_desktop.cc",
       "app_service_proxy_desktop.h",
-    ]
-  }
-
-  if (!is_chromeos_lacros) {
-    sources += [
-      # TODO(crbug.com/40251315): Make this safe to include in lacros by removing
-      # redefinition of types in app_service_proxy_lacros.
-      "app_service_proxy_base.cc",
-      "app_service_proxy_base.h",
-      "publisher_host.cc",
-      "publisher_host.h",
-      "publishers/extension_apps.cc",
-      "publishers/extension_apps.h",
-      "publishers/extension_apps_base.cc",
-      "publishers/extension_apps_base.h",
     ]
   }
 }
@@ -431,6 +405,7 @@ source_set("unit_tests") {
     "app_service_proxy_unittest.cc",
     "intent_util_unittest.cc",
     "launch_utils_unittest.cc",
+    "publishers/app_publisher_unittest.cc",
     "publishers/publisher_unittest.cc",
   ]
 
@@ -561,15 +536,6 @@ source_set("unit_tests") {
       "//components/webapk:proto",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "app_service_proxy_lacros_unittest.cc",
-      "metrics/website_metrics_service_lacros_unittest.cc",
-    ]
-  } else {
-    sources += [ "publishers/app_publisher_unittest.cc" ]
-  }
 }
 
 source_set("test_support") {
@@ -601,13 +567,6 @@ source_set("test_support") {
     deps += [
       "//chrome/browser/ash/login/users:test_support",
       "//components/webapk:proto",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "mock_crosapi_app_service_proxy.cc",
-      "mock_crosapi_app_service_proxy.h",
     ]
   }
 }
