@@ -77,12 +77,28 @@ class PrivacySandboxSurveyDesktopControllerLaunchSurveyTest
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
-                       LaunchesSurveyOnNtp) {
+                       SurveyNotLaunchedOnFirstNtp) {
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _))
+      .Times(0);
+
+  // Navigation to the first NTP should not trigger the sentiment survey.
+  browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
+                       SurveyLaunchedOnSecondNtp) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _));
 
-  // Navigation to NTP, triggering check for the sentiment survey.
   browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  // Navigation to the 2nd instance of a NTP should trigger the sentiment
+  // survey.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
