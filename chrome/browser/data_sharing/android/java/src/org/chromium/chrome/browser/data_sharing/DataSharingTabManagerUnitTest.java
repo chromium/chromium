@@ -308,6 +308,7 @@ public class DataSharingTabManagerUnitTest {
         verify(mTabGroupSyncService).removeObserver(any());
     }
 
+    @Test
     public void testCreateFlowWithExistingGroup() {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);

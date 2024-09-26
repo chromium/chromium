@@ -170,6 +170,8 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertEquals(mView.mRefreshIcon.getVisibility(), View.GONE);
     }
 
+    @Test
+    @SmallTest
     public void testUpdateProposedPlusAddress() {
         PropertyModel model =
                 PlusAddressCreationCoordinator.createDefaultModel(

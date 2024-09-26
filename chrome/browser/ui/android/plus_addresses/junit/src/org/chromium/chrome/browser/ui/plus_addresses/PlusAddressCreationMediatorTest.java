@@ -122,6 +122,7 @@ public final class PlusAddressCreationMediatorTest {
         assertEquals(mModel.get(ERROR_STATE_INFO), ERROR_STATE);
     }
 
+    @Test
     public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {
         mMediator.hideRefreshButton();
         assertFalse(mModel.get(REFRESH_ICON_VISIBLE));
