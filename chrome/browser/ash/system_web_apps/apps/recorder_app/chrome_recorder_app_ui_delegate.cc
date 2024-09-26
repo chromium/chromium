@@ -31,11 +31,14 @@ void ChromeRecorderAppUIDelegate::InstallSoda(
   raw_ptr<PrefService> global_prefs = g_browser_process->local_state();
 
   auto* soda_installer = speech::SodaInstaller::GetInstance();
-  soda_installer->Init(profile_prefs, global_prefs);
-
-  if (soda_installer->IsSodaDownloading(language_code)) {
-    return;
-  }
+  // InstallSoda and InstallLanguage calls DLC download, which will ignore
+  // duplicate request, so this is safe without checking if an ongoing install
+  // is in progress.
+  // TODO: b/369730074 - Ideally we should also remember whether user enabled
+  // transcription in a user pref, and ask SODA to preload on ash launch (in
+  // `IsAnyFeatureUsingSodaEnabled`) if it's enabled so the app can get
+  // transcription faster.
+  soda_installer->InstallSoda(global_prefs);
   soda_installer->InstallLanguage(speech::GetLanguageName(language_code),
                                   g_browser_process->local_state());
 }
