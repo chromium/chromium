@@ -17,20 +17,13 @@ found in the LICENSE file.
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:visibility="gone" />
 
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/toolbar_shadow_height"
-      android:layout_gravity="bottom"
-      android:background="@drawable/modern_toolbar_shadow"
-      android:scaleY="-1" />
-
   <org.chromium.ui.widget.ButtonCompat
       android:id="@+id/site_settings_zoom_clear_all_zoom_levels_button"
-      style="@style/TextButton"
-      android:layout_width="match_parent"
+      style="@style/FilledButton"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:paddingBottom="@dimen/default_favicon_size"
-      android:paddingTop="@dimen/default_favicon_size"
+      android:layout_gravity="end"
+      android:layout_margin="@dimen/page_zoom_site_settings_delete_button_padding"
       android:text="@string/site_settings_clear_all_zoom_levels_button_text"
       app:verticalInset="@dimen/section_tab_selected_bg_elevation" />
 </merge>

@@ -200,11 +200,11 @@ class WebsitePreference extends ChromeImageViewPreference {
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             // Create and set the delete button for this preference.
             setImageView(
-                    R.drawable.btn_close,
+                    R.drawable.ic_delete_white_24dp,
                     getContext()
                             .getResources()
                             .getString(
-                                    R.string.webstorage_delete_data_content_description,
+                                    R.string.site_settings_delete_zoom_level_content_description,
                                     buildTitle()),
                     (OnClickListener)
                             view -> {
@@ -270,14 +270,15 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            TextView summaryText = (TextView) holder.findViewById(android.R.id.summary);
             long readableZoomLevel =
                     Math.round(
                             100
                                     * PageZoomUtils.convertZoomFactorToZoomLevel(
                                             mSite.getZoomFactor()));
-            usageText.setText(getContext().getString(R.string.page_zoom_level, readableZoomLevel));
-            usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
-            usageText.setVisibility(View.VISIBLE);
+            summaryText.setText(
+                    getContext().getString(R.string.page_zoom_level, readableZoomLevel));
+            summaryText.setVisibility(View.VISIBLE);
             setViewClickable(false);
         }
 

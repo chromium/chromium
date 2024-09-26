@@ -245,7 +245,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                         .getString(
                                                 R.string
                                                         .site_settings_clear_all_zoom_levels_warning))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.clear)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.delete)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,

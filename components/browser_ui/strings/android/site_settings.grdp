@@ -338,9 +338,8 @@
   <message name="IDS_STORAGE_DELETE_SITE_STORAGE_TITLE" desc="Title of delete storage dialogs used in a couple different places to confirm deleting site storage data. [CHAR_LIMIT=24]">
     Delete site data?
   </message>
-  <!-- TODO(crbug.com/40919531): Add proper strings and make them translateable. -->
-  <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" translateable="false" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
-    Clear all zoom levels?
+  <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
+    Delete saved zoom levels
   </message>
   <message name="IDS_STORAGE_DELETE_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will delete website storage.">
     Delete
@@ -853,15 +852,17 @@
 
   <!-- ZOOM -->
 
-  <!-- TODO(crbug.com/40919531): Add proper strings and make them translateable. -->
-  <message name="IDS_SITE_SETTINGS_EMPTY_ZOOM_LEVELS_MESSAGE" translateable="false" desc="Text to display when there are no saved zooms">
-    Websites with a saved zoom appear here
+  <message name="IDS_SITE_SETTINGS_EMPTY_ZOOM_LEVELS_MESSAGE" desc="Text to display when there are no saved zooms">
+    Sites that you save a custom zoom level for will appear here
   </message>
-  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_BUTTON_TEXT" translateable="false" desc="Title of a button in the storage UI used to clear all zoom data. [CHAR_LIMIT=24]">
-    Clear all zooms
+  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_BUTTON_TEXT" desc="Title of a button in the storage UI used to clear all zoom data. [CHAR_LIMIT=24]">
+    Delete all
   </message>
-  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_WARNING" translateable="false" desc="Explanation of the sites that zoom is being cleared for">
-    This will clear all the zoom levels listed on this page.
+  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_WARNING" desc="Explanation of the sites that zoom is being cleared for">
+    This will reset all the sites in your list to the default zoom
+  </message>
+  <message name="IDS_SITE_SETTINGS_DELETE_ZOOM_LEVEL_CONTENT_DESCRIPTION" desc="Content description for the button that deletes the zoom level for a site">
+    Delete saved zoom level
   </message>
 
   <!-- USB -->
