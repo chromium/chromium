@@ -335,15 +335,6 @@ void FakeTabGroupSyncService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeTabGroupSyncService::SetCoordinator(
-    std::unique_ptr<TabGroupSyncCoordinator> coordinator) {
-  CHECK(!coordinator_);
-  coordinator_ = std::move(coordinator);
-  if (IsTabGroupSyncCoordinatorEnabled()) {
-    AddObserver(coordinator_.get());
-  }
-}
-
 void FakeTabGroupSyncService::PrepareFakeSavedTabGroups() {
   AddGroup(CreateGroup(u"1RemoteGroup"));
   AddGroup(CreateGroup(u"2RemoteGroup"));
