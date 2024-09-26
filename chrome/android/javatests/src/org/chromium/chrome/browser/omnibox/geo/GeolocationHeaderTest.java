@@ -260,14 +260,7 @@ public class GeolocationHeaderTest {
         mOmniboxTestUtils.requestFocus();
         mOmniboxTestUtils.typeText("aaaaaaaaaa", false);
         mOmniboxTestUtils.waitAnimationsComplete();
-        // We use the existance of the GeolocationHeader.sFirstLocation field to indicate whether
-        // there has been a location request yet.
-        if (shouldPrimeHeader) {
-            Assert.assertNotEquals(
-                    Long.MAX_VALUE, GeolocationHeader.getFirstLocationTimeForTesting());
-        } else {
-            Assert.assertEquals(Long.MAX_VALUE, GeolocationHeader.getFirstLocationTimeForTesting());
-        }
+        Assert.assertEquals(shouldPrimeHeader, GeolocationHeader.isGeolocationPrimedForTesting());
     }
 
     private void assertHeaderState(String header, long locationTime, boolean shouldBeNull) {

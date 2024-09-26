@@ -100,7 +100,6 @@ public class GeolocationHeaderUnitTest {
                     .setMobileNetworkCode(23)
                     .setTimestamp(20L)
                     .build();
-    private static int sRefreshVisibleNetworksRequests;
     private static int sRefreshLastKnownLocation;
 
     public @Rule JniMocker mocker = new JniMocker();
@@ -122,8 +121,6 @@ public class GeolocationHeaderUnitTest {
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         GeolocationTracker.setLocationAgeForTesting(null);
-        GeolocationHeader.setLocationSourceForTesting(
-                GeolocationHeader.LocationSource.HIGH_ACCURACY);
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getProfile()).thenReturn(mProfileMock);
@@ -139,7 +136,6 @@ public class GeolocationHeaderUnitTest {
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
                 .thenReturn("https://example.com/");
-        sRefreshVisibleNetworksRequests = 0;
         sRefreshLastKnownLocation = 0;
         ShadowLocationServices.sFusedLocationProviderClient = mLocationProviderClient;
     }
@@ -169,39 +165,12 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationHighAccuracy() {
-        GeolocationHeader.setLocationSourceForTesting(
-                GeolocationHeader.LocationSource.HIGH_ACCURACY);
-        // Visible networks should be included
-        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
-    }
-
-    @Test
-    public void testGetGeoHeaderOldLocationBatterySaving() {
-        GeolocationHeader.setLocationSourceForTesting(
-                GeolocationHeader.LocationSource.BATTERY_SAVING);
-        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
-    }
-
-    @Test
-    public void testGetGeoHeaderOldLocationGpsOnly() {
-        GeolocationHeader.setLocationSourceForTesting(GeolocationHeader.LocationSource.GPS_ONLY);
-        // In GPS only mode, networks should never be included.
-        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
-    }
-
-    @Test
-    public void testGetGeoHeaderOldLocationLocationOff() {
-        GeolocationHeader.setLocationSourceForTesting(
-                GeolocationHeader.LocationSource.LOCATION_OFF);
-        // If the location switch is off, networks should never be included (old location might).
+    public void testGetGeoHeaderOld() {
         checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
     }
 
     @Test
     public void testGetGeoHeaderOldLocationAppPermissionDenied() {
-        GeolocationHeader.setLocationSourceForTesting(
-                GeolocationHeader.LocationSource.HIGH_ACCURACY);
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
         // Nothing should be included when app permission is missing.
         checkOldLocation(null);
@@ -212,7 +181,6 @@ public class GeolocationHeaderUnitTest {
     public void testPrimeLocationForGeoHeader() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(1, sRefreshLastKnownLocation);
-        assertEquals(1, sRefreshVisibleNetworksRequests);
     }
 
     @Test
@@ -221,7 +189,6 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(0, sRefreshLastKnownLocation);
-        assertEquals(0, sRefreshVisibleNetworksRequests);
     }
 
     @Test
@@ -233,7 +200,6 @@ public class GeolocationHeaderUnitTest {
                 .thenReturn(ContentSettingValues.ASK);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(0, sRefreshLastKnownLocation);
-        assertEquals(0, sRefreshVisibleNetworksRequests);
     }
 
     @Test
@@ -263,7 +229,6 @@ public class GeolocationHeaderUnitTest {
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
         assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation());
         assertEquals(0, sRefreshLastKnownLocation);
-        assertEquals(1, sRefreshVisibleNetworksRequests);
 
         GeolocationHeader.stopListeningForLocationUpdates();
         verify(mLocationProviderClient).removeLocationUpdates(mLocationListenerCaptor.getValue());
@@ -275,7 +240,6 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
 
         assertEquals(1, sRefreshLastKnownLocation);
-        assertEquals(2, sRefreshVisibleNetworksRequests);
     }
 
     private void checkOldLocation(String expectedHeader) {
@@ -309,9 +273,7 @@ public class GeolocationHeaderUnitTest {
     @Implements(VisibleNetworksTracker.class)
     public static class ShadowVisibleNetworksTracker {
         @Implementation
-        public static void refreshVisibleNetworks(final Context context) {
-            sRefreshVisibleNetworksRequests++;
-        }
+        public static void refreshVisibleNetworks(final Context context) {}
     }
 
     /** Shadow for GeolocationTracker */
