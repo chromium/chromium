@@ -37,8 +37,6 @@ public class TabGroupColorFaviconProvider {
     static final String TAG = "TabGroupColorFaviconProvider";
     static final int TAB_GROUP_FAVICON_COLOR_LEVEL = 1;
     static final int TAB_GROUP_FAVICON_SHARE_ICON_LEVEL = 2;
-    static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
-    static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
     private final Context mContext;
 
     private TabGroupSyncService mTabGroupSyncService;

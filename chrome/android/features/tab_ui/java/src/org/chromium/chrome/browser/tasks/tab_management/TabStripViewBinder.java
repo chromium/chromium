@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_DEFAULT_ALPHA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_SELECTED_ALPHA;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -30,6 +27,9 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab strip. */
 class TabStripViewBinder {
+    private static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
+    private static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
+
     /**
      * Partially or fully update the given ViewHolder based on the given model over propertyKey.
      * @param model The model to use.
