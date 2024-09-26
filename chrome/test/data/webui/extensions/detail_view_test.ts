@@ -801,11 +801,18 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(!!findAlternativeButton);
     assertFalse(isVisible(findAlternativeButton));
 
-    // Remove button is always visible.
+    // Remove button is hidden if extension must remain installed.
+    item.set('data.mustRemainInstalled', true);
+    flush();
     const removeButton =
         item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
             .querySelector<HTMLButtonElement>('.remove-button');
     assertTrue(!!removeButton);
+    assertFalse(isVisible(removeButton));
+
+    // Remove button is visible if extension doesn't need to remain installed.
+    item.set('data.mustRemainInstalled', false);
+    flush();
     assertTrue(isVisible(removeButton));
 
     // Click on the remove button, and verify it triggered the correct delegate
@@ -901,11 +908,18 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(!!findAlternativeButton);
     assertFalse(isVisible(findAlternativeButton));
 
-    // Remove button is always visible.
+    // Remove button is hidden if extension must remain installed.
+    item.set('data.mustRemainInstalled', true);
+    flush();
     const removeButton =
         item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
             .querySelector<HTMLButtonElement>('.remove-button');
     assertTrue(!!removeButton);
+    assertFalse(isVisible(removeButton));
+
+    // Remove button is visible if extension doesn't need to remain installed.
+    item.set('data.mustRemainInstalled', false);
+    flush();
     assertTrue(isVisible(removeButton));
 
     // Click on the remove button, and verify it triggered the correct delegate

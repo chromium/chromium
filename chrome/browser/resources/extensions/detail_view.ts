@@ -136,14 +136,15 @@ export class ExtensionsDetailViewElement extends
       /** Whether the remove button in the mv2 deprecation message is shown. */
       showMv2DeprecationRemoveButton_: {
         type: Boolean,
-        computed: 'computeShowMv2DeprecationRemoveButton_(mv2ExperimentStage_)',
+        computed: 'computeShowMv2DeprecationRemoveButton_(' +
+            'mv2ExperimentStage_, data.mustRemainInstalled)',
       },
 
       /** Whether the action menu in the mv2 deprecation message is shown. */
       showMv2DeprecationActionMenu_: {
         type: Boolean,
         computed: 'computeShowMv2DeprecationActionMenu_(' +
-          'mv2ExperimentStage_, showMv2DeprecationFindAlternativeAction_)',
+            'mv2ExperimentStage_, showMv2DeprecationFindAlternativeAction_)',
       },
 
       /**
@@ -153,7 +154,7 @@ export class ExtensionsDetailViewElement extends
       showMv2DeprecationFindAlternativeAction_: {
         type: Boolean,
         computed: 'computeShowMv2DeprecationFindAlternativeAction_(' +
-          'mv2ExperimentStage_, data.recommendationsUrl)',
+            'mv2ExperimentStage_, data.recommendationsUrl)',
       },
 
       /**
@@ -593,11 +594,14 @@ export class ExtensionsDetailViewElement extends
    * displayed.
    */
   private computeShowMv2DeprecationRemoveButton_(): boolean {
-    // TODO(crbug.com/339061151): We should only show remove button if extension
-    // can be uninstalled.
-    return this.mv2ExperimentStage_ ===
-        Mv2ExperimentStage.DISABLE_WITH_REENABLE ||
-        this.mv2ExperimentStage_ === Mv2ExperimentStage.UNSUPPORTED;
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        return false;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return !this.data.mustRemainInstalled;
+    }
   }
 
   /**
