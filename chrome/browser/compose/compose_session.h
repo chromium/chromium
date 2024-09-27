@@ -354,6 +354,10 @@ class ComposeSession
   // Reason that a compose session was exited, used for quality logging.
   optimization_guide::proto::FinalStatus final_status_{
       optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED};
+  // Success status of a completed compose session, used for quality logging.
+  optimization_guide::proto::FinalModelStatus final_model_status_{
+      optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_UNSPECIFIED};
 
   // Tracks how long a session has been open.
   std::unique_ptr<base::ElapsedTimer> session_duration_;

@@ -322,7 +322,8 @@ ComposeSession::~ComposeSession() {
   if (close_reason_ == compose::ComposeSessionCloseReason::kAbandoned) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
-
+    final_model_status_ =
+        optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
     final_status_ =
         optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT;
   }
@@ -340,6 +341,10 @@ ComposeSession::~ComposeSession() {
     most_recent_error_log_
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
+    most_recent_error_log_
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_final_model_status(final_model_status_);
+
     optimization_guide::ModelQualityLogEntry::Upload(
         std::move(most_recent_error_log_));
   } else if (auto last_response_state = LastResponseState();
@@ -347,6 +352,8 @@ ComposeSession::~ComposeSession() {
     if (auto* log_entry = last_response_state->modeling_log_entry()) {
       log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->set_final_status(final_status_);
+      log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->set_final_model_status(final_model_status_);
       last_response_state->UploadModelQualityLogs();
     }
   }
@@ -1234,18 +1241,26 @@ void ComposeSession::SetCloseReason(
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       session_events_.close_clicked = true;
       break;
     case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       break;
     case compose::ComposeSessionCloseReason::kExceededMaxDuration:
     case compose::ComposeSessionCloseReason::kAbandoned:
       final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       break;
     case compose::ComposeSessionCloseReason::kInsertedResponse:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_SUCCESS;
       session_events_.inserted_results = true;
       if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
         session_events_.edited_result_inserted = true;

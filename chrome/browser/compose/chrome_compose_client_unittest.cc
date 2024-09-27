@@ -3627,7 +3627,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
         logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
       })));
 
-  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
 
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(3u, uploaded_logs().size());
@@ -3639,6 +3639,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
       uploaded_logs()[2]->compose().quality().session_id();
   EXPECT_EQ(kSessionIdHigh, session_id3.high());
   EXPECT_EQ(kSessionIdLow, session_id3.low());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS,
+      uploaded_logs()[1]->compose().quality().final_model_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
@@ -3931,6 +3934,10 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
   ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
             uploaded_logs()[0]->compose().quality().user_feedback());
+
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE,
+      uploaded_logs()[0]->compose().quality().final_model_status());
 
   // Check that the histogram was sent for request feedback.
   histograms().ExpectUniqueSample(
