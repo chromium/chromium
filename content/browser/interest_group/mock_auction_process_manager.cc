@@ -551,13 +551,12 @@ void MockSellerWorklet::Flush() {
 MockAuctionProcessManager::MockAuctionProcessManager() = default;
 MockAuctionProcessManager::~MockAuctionProcessManager() = default;
 
-RenderProcessHost* MockAuctionProcessManager::LaunchProcess(
-    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-        auction_worklet_service_receiver,
-    const ProcessHandle* handle,
-    const std::string& display_name) {
+scoped_refptr<AuctionProcessManager::WorkletProcess>
+MockAuctionProcessManager::LaunchProcess(const ProcessHandle* process_handle,
+                                         const std::string& display_name) {
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
   mojo::ReceiverId receiver_id =
-      receiver_set_.Add(this, std::move(auction_worklet_service_receiver));
+      receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
 
   // Each receiver should get a unique display name. This check serves to help
   // ensure that processes are correctly reused.
@@ -572,7 +571,10 @@ RenderProcessHost* MockAuctionProcessManager::LaunchProcess(
   }
 
   receiver_display_name_map_[receiver_id] = display_name;
-  return nullptr;
+  return base::MakeRefCounted<WorkletProcess>(
+      this, /*render_process_host=*/nullptr, std::move(service),
+      process_handle->worklet_type(), process_handle->origin(),
+      /*uses_shared_process=*/false);
 }
 
 scoped_refptr<SiteInstance> MockAuctionProcessManager::MaybeComputeSiteInstance(

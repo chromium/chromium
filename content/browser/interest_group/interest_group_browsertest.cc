@@ -25847,6 +25847,45 @@ INSTANTIATE_TEST_SUITE_P(All,
                          InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                          testing::Bool());
 
+class DedicatedAuctionProcessManagerTest : public InterestGroupBrowserTest {
+ public:
+  DedicatedAuctionProcessManagerTest() = default;
+  ~DedicatedAuctionProcessManagerTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DedicatedAuctionProcessManagerTest,
+    PidGetsAssignedEvenIfOriginalProcessHandleDeletedShortlyAfterRequestWorkletService) {
+  // Make sure that a pid still gets assigned to a worklet process even if its
+  // original ProcessHandle no longer exists.
+  DedicatedAuctionProcessManager auction_manager;
+  AuctionProcessManager::ProcessHandle second_process_handle;
+  {
+    AuctionProcessManager::ProcessHandle original_process_handle;
+    ASSERT_TRUE(auction_manager.RequestWorkletService(
+        AuctionProcessManager::WorkletType::kSeller,
+        url::Origin::Create(GURL("https://a.test")), nullptr,
+        &original_process_handle, base::DoNothing()));
+    ASSERT_TRUE(auction_manager.RequestWorkletService(
+        AuctionProcessManager::WorkletType::kSeller,
+        url::Origin::Create(GURL("https://a.test")), nullptr,
+        &second_process_handle, base::DoNothing()));
+    ASSERT_EQ(original_process_handle.worklet_process_for_testing(),
+              second_process_handle.worklet_process_for_testing());
+  }
+  base::RunLoop run_loop;
+  std::optional<base::ProcessId> pid =
+      second_process_handle.worklet_process_for_testing()->GetPid(
+          base::BindLambdaForTesting(
+              [&run_loop](base::ProcessId) { run_loop.Quit(); }));
+  if (!pid.has_value()) {
+    run_loop.Run();
+  }
+  ASSERT_TRUE(second_process_handle.worklet_process_for_testing()
+                  ->GetPid(base::DoNothing())
+                  .has_value());
+}
+
 }  // namespace
 
 }  // namespace content

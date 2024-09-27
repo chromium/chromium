@@ -14,9 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,9 +70,67 @@ class CONTENT_EXPORT AuctionProcessManager {
     kMaxValue = kCreatedNewDedicatedProcess
   };
 
+  class ProcessHandle;
+
   // Refcounted class that creates / holds Mojo Remote for an
   // AuctionWorkletService. Only public so it can be used by ProcessHandle.
-  class WorkletProcess;
+  class CONTENT_EXPORT WorkletProcess : public base::RefCounted<WorkletProcess>,
+                                        public RenderProcessHostObserver {
+   public:
+    WorkletProcess(
+        AuctionProcessManager* auction_process_manager,
+        RenderProcessHost* render_process_host,
+        mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+            service,
+        WorkletType worklet_type,
+        const url::Origin& origin,
+        bool uses_shared_process);
+
+    auction_worklet::mojom::AuctionWorkletService* GetService();
+
+    WorkletType worklet_type() const { return worklet_type_; }
+
+    const url::Origin& origin() const { return origin_; }
+
+    RenderProcessHost* render_process_host() const {
+      return render_process_host_;
+    }
+
+    std::optional<base::ProcessId> GetPid(
+        base::OnceCallback<void(base::ProcessId)> callback);
+
+    void OnLaunchedWithProcess(const base::Process& process);
+
+   private:
+    friend class base::RefCounted<WorkletProcess>;
+    friend class DedicatedAuctionProcessManager;
+
+    // From RenderProcessHostObserver:
+    void RenderProcessReady(RenderProcessHost* host) override;
+
+    void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
+    void NotifyUnusableOnce();
+
+    ~WorkletProcess() override;
+
+    raw_ptr<RenderProcessHost> render_process_host_;
+
+    const WorkletType worklet_type_;
+    const url::Origin origin_;
+    const base::TimeTicks start_time_;
+    bool uses_shared_process_;
+
+    std::optional<base::ProcessId> pid_;
+    std::vector<base::OnceCallback<void(base::ProcessId)>> waiting_for_pid_;
+
+    // nulled out once OnWorkletProcessUnusable() called.
+    raw_ptr<AuctionProcessManager> auction_process_manager_;
+
+    mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service_;
+
+    base::WeakPtrFactory<WorkletProcess> weak_ptr_factory_{this};
+  };
 
   // Class that tracks a request for an auction worklet process, and manages
   // lifetime of the returned process once the request receives a process.
@@ -93,6 +153,10 @@ class CONTENT_EXPORT AuctionProcessManager {
     // Returns any RenderProcessHost being used to host this process, or
     // nullptr.
     RenderProcessHost* GetRenderProcessHostForTesting();
+
+    WorkletType worklet_type() const { return worklet_type_; }
+
+    const url::Origin& origin() const { return origin_; }
 
     // Returns the underlying process assignment at this level.
     // Meant for reference-equality testing.
@@ -117,11 +181,9 @@ class CONTENT_EXPORT AuctionProcessManager {
     friend class InRendererAuctionProcessManager;
     friend class DedicatedAuctionProcessManager;
 
-    // If the AuctionProcessManager is not using a RenderProcessHost to manage
-    // the process lifetime, it needs to call |OnBaseProcessLaunched| once the
-    // process has been launched successfully in order to properly figure out
-    // the PID.
-    void OnBaseProcessLaunched(const base::Process& process) const;
+    // Tests can call this function to configure this ProcessHandle's worklet
+    // process's PID to this process.
+    void OnBaseProcessLaunchedForTesting(const base::Process& process) const;
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr
@@ -203,12 +265,9 @@ class CONTENT_EXPORT AuctionProcessManager {
  protected:
   AuctionProcessManager();
 
-  // Launches the actual process. Return value of null is permitted if a
-  // RenderProcessHost isn't used; otherwise the process will be kept-alive and
-  // watched by the ProcessHandle's WorkletProcess.
-  virtual RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
+  // Launches the actual process. The process will be kept-alive and
+  // watched by the returned WorkletProcess.
+  virtual scoped_refptr<WorkletProcess> LaunchProcess(
       const ProcessHandle* process_handle,
       const std::string& display_name) = 0;
 
@@ -310,9 +369,7 @@ class CONTENT_EXPORT DedicatedAuctionProcessManager
   ~DedicatedAuctionProcessManager() override;
 
  private:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
+  scoped_refptr<WorkletProcess> LaunchProcess(
       const ProcessHandle* process_handle,
       const std::string& display_name) override;
 
@@ -332,9 +389,7 @@ class CONTENT_EXPORT InRendererAuctionProcessManager
   ~InRendererAuctionProcessManager() override;
 
  protected:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
+  scoped_refptr<WorkletProcess> LaunchProcess(
       const ProcessHandle* process_handle,
       const std::string& display_name) override;
 

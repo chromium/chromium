@@ -735,18 +735,20 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   ~SameProcessAuctionProcessManager() override = default;
 
  private:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
-      const ProcessHandle* handle,
+  scoped_refptr<WorkletProcess> LaunchProcess(
+      const ProcessHandle* process_handle,
       const std::string& display_name) override {
     // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
     // production code. Don't bother to delete the service on pipe close,
     // though; just keep it in a vector instead.
+    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     auction_worklet_services_.push_back(
         auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-            std::move(auction_worklet_service_receiver)));
-    return nullptr;
+            service.InitWithNewPipeAndPassReceiver()));
+    return base::MakeRefCounted<WorkletProcess>(
+        this, /*render_process_host=*/nullptr, std::move(service),
+        process_handle->worklet_type(), process_handle->origin(),
+        /*uses_shared_process=*/false);
   }
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(

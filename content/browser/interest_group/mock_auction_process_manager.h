@@ -40,7 +40,6 @@
 
 namespace content {
 
-class RenderProcessHost;
 class ProcessHandle;
 
 // This file contains an AuctionProcessManager that creates mock worklets
@@ -427,10 +426,8 @@ class MockAuctionProcessManager
   ~MockAuctionProcessManager() override;
 
   // AuctionProcessManager implementation:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
-      const ProcessHandle* handle,
+  scoped_refptr<WorkletProcess> LaunchProcess(
+      const ProcessHandle* process_handle,
       const std::string& display_name) override;
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,

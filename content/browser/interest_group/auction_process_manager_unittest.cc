@@ -12,15 +12,18 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/common/features.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_mode.h"
@@ -124,13 +127,17 @@ class TestAuctionProcessManager
   }
 
  private:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
-      const ProcessHandle* handle,
+  scoped_refptr<WorkletProcess> LaunchProcess(
+      const ProcessHandle* process_handle,
       const std::string& display_name) override {
-    receiver_set_.Add(this, std::move(auction_worklet_service_receiver));
-    return handle->site_instance_for_testing()->GetProcess();
+    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
+    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
+    RenderProcessHost* host =
+        process_handle->site_instance_for_testing()->GetProcess();
+    return base::MakeRefCounted<WorkletProcess>(
+        this, /*render_process_host=*/host, std::move(service),
+        process_handle->worklet_type(), process_handle->origin(),
+        /*uses_shared_process=*/false);
   }
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(

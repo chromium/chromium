@@ -63,7 +63,7 @@ class ProcessHandleTestPeer {
       : handle_(handle) {}
 
   void CallOnLaunchedWithPid() {
-    handle_->OnBaseProcessLaunched(base::Process::Current());
+    handle_->OnBaseProcessLaunchedForTesting(base::Process::Current());
   }
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> CloneHandle(
@@ -526,13 +526,18 @@ class MockAuctionProcessManager
   ~MockAuctionProcessManager() override = default;
 
   // AuctionProcessManager implementation:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
+  scoped_refptr<AuctionProcessManager::WorkletProcess> LaunchProcess(
       const ProcessHandle* process_handle,
       const std::string& display_name) override {
+    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+        pending_receiver;
+    auto worklet_process = base::MakeRefCounted<WorkletProcess>(
+        this, /*render_process_host=*/nullptr,
+        pending_receiver.InitWithNewPipeAndPassRemote(),
+        process_handle->worklet_type(), process_handle->origin(),
+        /*uses_shared_process=*/false);
     mojo::ReceiverId receiver_id =
-        receiver_set_.Add(this, std::move(auction_worklet_service_receiver));
+        receiver_set_.Add(this, std::move(pending_receiver));
 
     // Have to flush the receiver set, so that any closed receivers are removed,
     // before searching for duplicate process names.
@@ -551,7 +556,7 @@ class MockAuctionProcessManager
     }
 
     receiver_display_name_map_[receiver_id] = display_name;
-    return nullptr;
+    return worklet_process;
   }
 
   void OnNewProcessAssigned(const ProcessHandle* handle) override {
