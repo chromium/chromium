@@ -314,6 +314,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SimpleGeolocation.Provider.ClientId"
+    enum="SimpleGeolocationClientId" expires_after="2025-03-20">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records which client requested geolocation from the
+    `SimpleGeolocationProvider`. This helps track the usage of the geolocation
+    provider across different parts of the system.
+  </summary>
+</histogram>
+
+<histogram
+    name="SimpleGeolocation.Provider.GeolocationControllerRequestInterval"
+    units="hours" expires_after="2025-03-20">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Measures the frequency of geolocation requests from the
+    GeolocationController by recording the interval between each request in
+    hour-sized buckets, up to a maximum of 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Provider.TimezoneResolverRequestInterval"
+    units="hours" expires_after="2025-03-20">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Measures the frequency of geolocation requests from the TimezoneResolver by
+    recording the interval between each request in hour-sized buckets, up to a
+    maximum of 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Provider.WizardControllerRequestInterval"
+    units="hours" expires_after="2025-03-20">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Measures the frequency of geolocation requests from the WizardController by
+    recording the interval between each request in hour-sized buckets, up to a
+    maximum of 24 hours.
+  </summary>
+</histogram>
+
 <histogram name="SimpleGeolocation.Request.Event"
     enum="SimpleGeolocationRequestEvent" expires_after="never">
 <!-- expires-never: This reports external location provider health status and

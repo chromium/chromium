@@ -2913,7 +2913,8 @@ void WizardController::StartTimezoneResolve() {
       false /* send_wifi_geolocation_data */,
       false /* send_cellular_geolocation_data */,
       base::BindOnce(&WizardController::OnLocationResolved,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      SimpleGeolocationProvider::ClientId::kWizardController);
 }
 
 void WizardController::PerformPostNetworkScreenActions() {

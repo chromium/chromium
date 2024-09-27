@@ -269,7 +269,8 @@ void GeolocationController::RequestGeoposition() {
       kGeolocationRequestTimeout, /*send_wifi_access_points=*/false,
       /*send_cell_towers=*/false,
       base::BindOnce(&GeolocationController::OnGeoposition,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      SimpleGeolocationProvider::ClientId::kGeolocationController);
 }
 
 base::expected<base::Time, GeolocationController::SunRiseSetError>

@@ -2114,6 +2114,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Shutdown confirmation bubbble dismissed by clicking ouside"/>
 </enum>
 
+<enum name="SimpleGeolocationClientId">
+  <int value="0" label="kGeolocationController"/>
+  <int value="1" label="kWizardController"/>
+  <int value="2" label="kTimezoneResolver"/>
+  <int value="3" label="kForTesting"/>
+</enum>
+
 <enum name="SnapGroupExitPoint">
   <int value="0" label="Drag window out"/>
   <int value="1" label="[Deprecated] Window state change"/>
