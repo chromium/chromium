@@ -19,6 +19,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -146,6 +147,10 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
 
 void SupervisionMixin::SetPendingStateForPrimaryAccount() {
   CHECK_NE(sign_in_mode_, SignInMode::kSignedOut);
+  // Getting into pending state pre-Uno requires the user to sync.
+  CHECK(consent_level_ == signin::ConsentLevel::kSync ||
+        base::FeatureList::IsEnabled(
+            switches::kExplicitBrowserSigninUIOnDesktop));
 
   auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
 
