@@ -132,9 +132,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
     // cleanup the observer API.
     // TODO(b/328601354): Confirm touch moves are not required, and if they are
     // not required cleanup the observer API.
-    for (auto& observer : observers_) {
-      observer.OnTouchEvent(event);
-    }
+    observers_.Notify(&Observer::OnTouchEvent, event);
   }
 
   return view_->OnTouchEvent(event);
@@ -169,9 +167,7 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
       0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
       nullptr);
 
-  for (auto& observer : observers_) {
-    observer.OnMouseEvent(event);
-  }
+  observers_.Notify(&Observer::OnMouseEvent, event);
 
   view_->OnMouseEvent(event);
 }
@@ -232,9 +228,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
       base::TimeTicks::FromJavaNanoTime(time_ns), 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
       false, &pointer0, nullptr);
 
-  for (auto& observer : observers_) {
-    observer.OnGenericMotionEvent(event);
-  }
+  observers_.Notify(&Observer::OnGenericMotionEvent, event);
 
   return view_->OnGenericMotionEvent(event);
 }
