@@ -14,20 +14,20 @@
 class BrowserDownloadServiceFactoryTest : public PlatformTest {
  protected:
   BrowserDownloadServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
-  // ChromeBrowserState needs thread.
+      : profile_(TestProfileIOS::Builder().Build()) {}
+  // ProfileIOS needs thread.
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that BrowserDownloadServiceFactory creates BrowserDownloadService and
 // sets it as DownloadControllerDelegate.
 TEST_F(BrowserDownloadServiceFactoryTest, Delegate) {
   web::DownloadController* download_controller =
-      web::DownloadController::FromBrowserState(browser_state_.get());
+      web::DownloadController::FromBrowserState(profile_.get());
   ASSERT_TRUE(download_controller);
 
   BrowserDownloadService* service =
-      BrowserDownloadServiceFactory::GetForBrowserState(browser_state_.get());
+      BrowserDownloadServiceFactory::GetForProfile(profile_.get());
   EXPECT_EQ(service, download_controller->GetDelegate());
 }

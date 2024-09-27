@@ -114,7 +114,7 @@
                         name:UIApplicationDidEnterBackgroundNotification
                       object:nil];
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
   _viewController = base::FeatureList::IsEnabled(kIOSSaveToDrive)
                         ? [[DownloadManagerViewController alloc] init]
                         : [[LegacyDownloadManagerViewController alloc] init];
@@ -130,12 +130,12 @@
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     _mediator.SetIsIncognito(isIncognito);
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    ProfileIOS* profile = self.browser->GetProfile();
     _mediator.SetIdentityManager(
-        IdentityManagerFactory::GetForProfile(browserState));
+        IdentityManagerFactory::GetForProfile(profile));
     _mediator.SetDriveService(
-        drive::DriveServiceFactory::GetForBrowserState(browserState));
-    _mediator.SetPrefService(browserState->GetPrefs());
+        drive::DriveServiceFactory::GetForProfile(profile));
+    _mediator.SetPrefService(profile->GetPrefs());
   }
 
   _mediator.SetDownloadTask(_downloadTask);
@@ -443,7 +443,7 @@
        initWithURL:filePathURL
         virtualURL:virtualFilePathURL
           referrer:web::Referrer()
-       inIncognito:self.browser->GetBrowserState()->IsOffTheRecord()
+       inIncognito:self.browser->GetProfile()->IsOffTheRecord()
       inBackground:NO
           appendTo:OpenPosition::kCurrentTab];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(

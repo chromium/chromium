@@ -42,12 +42,6 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // static
 download::BackgroundDownloadService*
-BackgroundDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-download::BackgroundDownloadService*
 BackgroundDownloadServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<download::BackgroundDownloadService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -76,7 +70,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   if (optimization_guide::features::IsModelDownloadingEnabled()) {
     auto prediction_model_download_client =
         std::make_unique<optimization_guide::PredictionModelDownloadClient>(
-            ChromeBrowserState::FromBrowserState(context));
+            ProfileIOS::FromBrowserState(context));
     clients->insert(std::make_pair(
         download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
         std::move(prediction_model_download_client)));

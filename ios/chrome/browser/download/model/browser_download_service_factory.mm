@@ -19,12 +19,6 @@ BrowserDownloadService* BrowserDownloadServiceFactory::GetForProfile(
 }
 
 // static
-BrowserDownloadService* BrowserDownloadServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 BrowserDownloadServiceFactory* BrowserDownloadServiceFactory::GetInstance() {
   static base::NoDestructor<BrowserDownloadServiceFactory> instance;
   return instance.get();

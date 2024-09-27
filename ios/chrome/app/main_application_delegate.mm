@@ -301,7 +301,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // TODO(crbug.com/325613461): Associate downloads with a specific file path to
   // determine which browser state / download service to use here.
   download::BackgroundDownloadService* download_service =
-      BackgroundDownloadServiceFactory::GetForBrowserState(
+      BackgroundDownloadServiceFactory::GetForProfile(
           browser->GetBrowserState());
   if (download_service) {
     download_service->HandleEventsForBackgroundURLSession(

@@ -95,17 +95,16 @@ class StubTabHelper<DownloadManagerTabHelper>
 // Test fixture for testing BrowserDownloadService class.
 class BrowserDownloadServiceTest : public PlatformTest {
  protected:
-  BrowserDownloadServiceTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {
+  BrowserDownloadServiceTest() : profile_(TestProfileIOS::Builder().Build()) {
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<ARQuickLookTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<VcardTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<DownloadManagerTabHelper>::CreateForWebState(&web_state_);
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
   }
 
   web::DownloadController* download_controller() {
-    return web::DownloadController::FromBrowserState(browser_state_.get());
+    return web::DownloadController::FromBrowserState(profile_.get());
   }
 
   StubTabHelper<PassKitTabHelper>* pass_kit_tab_helper() {
@@ -129,7 +128,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
 };
@@ -323,7 +322,7 @@ TEST_F(BrowserDownloadServiceTest, ApkMimeType) {
 // been created for this webstate.
 TEST_F(BrowserDownloadServiceTest, NoDownloadManager) {
   web::FakeWebState fake_web_state;
-  fake_web_state.SetBrowserState(browser_state_.get());
+  fake_web_state.SetBrowserState(profile_.get());
 
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "test/test");

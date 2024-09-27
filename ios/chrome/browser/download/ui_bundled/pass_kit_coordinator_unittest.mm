@@ -39,8 +39,8 @@ using base::test::ios::kWaitForUIElementTimeout;
 class PassKitCoordinatorTest : public PlatformTest {
  protected:
   PassKitCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[PassKitCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -68,7 +68,7 @@ class PassKitCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   PassKitCoordinator* coordinator_;

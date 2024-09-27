@@ -19,8 +19,8 @@
 class VcardCoordinatorTest : public PlatformTest {
  protected:
   VcardCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     coordinator_ =
         [[VcardCoordinator alloc] initWithBaseViewController:nil
                                                      browser:browser_.get()];
@@ -31,9 +31,9 @@ class VcardCoordinatorTest : public PlatformTest {
 
   ~VcardCoordinatorTest() override { [coordinator_ stop]; }
 
-  // Needed for test browser state created by TestBrowser().
+  // Needed for test profile created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   VcardCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;

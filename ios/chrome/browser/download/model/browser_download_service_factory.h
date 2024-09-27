@@ -16,8 +16,6 @@ class BrowserDownloadService;
 class BrowserDownloadServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static BrowserDownloadService* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static BrowserDownloadService* GetForBrowserState(ProfileIOS* profile);
   static BrowserDownloadServiceFactory* GetInstance();
 
   BrowserDownloadServiceFactory(const BrowserDownloadServiceFactory&) = delete;

@@ -21,10 +21,6 @@ class BackgroundDownloadService;
 class BackgroundDownloadServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static download::BackgroundDownloadService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static download::BackgroundDownloadService* GetForProfile(
       ProfileIOS* profile);
   static BackgroundDownloadServiceFactory* GetInstance();
