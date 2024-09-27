@@ -29,11 +29,10 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
     web::BrowserState* context) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  DCHECK(chrome_browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  DCHECK(profile);
 
-  if (chrome_browser_state->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     return nullptr;
   }
   if (!page_content_annotations::features::
@@ -43,26 +42,26 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
 
   // The optimization guide and history services must be available for the page
   // content annotations service to work.
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideServiceFactory::GetForProfile(chrome_browser_state);
-  auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
-      chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  OptimizationGuideService* optimization_guide_keyed_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
   if (!optimization_guide_keyed_service || !history_service) {
     return nullptr;
   }
 
-  auto* proto_db_provider = chrome_browser_state->GetProtoDatabaseProvider();
-  base::FilePath profile_path =
-      chrome_browser_state->GetOriginalChromeBrowserState()->GetStatePath();
+  leveldb_proto::ProtoDatabaseProvider* proto_db_provider =
+      profile->GetProtoDatabaseProvider();
+  base::FilePath profile_path = profile->GetOriginalProfile()->GetStatePath();
 
   return std::make_unique<
       page_content_annotations::PageContentAnnotationsService>(
       GetApplicationContext()->GetApplicationLocale(),
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       optimization_guide_keyed_service, history_service,
-      ios::TemplateURLServiceFactory::GetForBrowserState(chrome_browser_state),
-      ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(
-          chrome_browser_state),
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
+      ios::ZeroSuggestCacheServiceFactory::GetForProfile(profile),
       proto_db_provider, profile_path,
       optimization_guide_keyed_service->GetOptimizationGuideLogger(),
       optimization_guide_keyed_service,
@@ -74,10 +73,9 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
 
 // static
 page_content_annotations::PageContentAnnotationsService*
-PageContentAnnotationsServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
+PageContentAnnotationsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<page_content_annotations::PageContentAnnotationsService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 // static
