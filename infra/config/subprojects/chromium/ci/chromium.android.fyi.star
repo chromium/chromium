@@ -539,7 +539,7 @@ ci.builder(
             "android_13_emulator_gtests",
         ],
         mixins = [
-            "13-google-atd-x64-emulator",
+            "13-swangle-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
@@ -551,6 +551,12 @@ ci.builder(
                     # https://crbug.com/1414886
                     "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown",
                 ],
+                ci_only = True,
+            ),
+            "android_sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
             ),
             "base_unittests": targets.mixin(
                 args = [
@@ -561,6 +567,9 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
                 ],
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
@@ -571,6 +580,7 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter",
                 ],
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 40,
                 ),
@@ -579,11 +589,14 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter",
                 ],
+                ci_only = True,
             ),
             "crashpad_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
                 ],
+                # TODO(crbug.com/337935399): Remove experiment after the bug is fixed.
+                experiment_percentage = 100,
             ),
             "device_unittests": targets.mixin(
                 args = [
@@ -606,9 +619,14 @@ ci.builder(
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
                 ],
             ),
+            "services_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 9,
+                    shards = 12,
                 ),
             ),
         },

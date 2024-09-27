@@ -201,6 +201,30 @@ targets.mixin(
     ),
 )
 
+# TODO(crbug.com/370084605): Remove this mixin after the migration is done.
+targets.mixin(
+    name = "13-swangle-x64-emulator",
+    generate_pyl_entry = False,
+    description = "Run with android_33_google_apis_x64_swangle",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64_swangle.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_33_google_apis_x64_swangle",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_33_google_apis_x64_swangle",
+                path = ".android_emulator/android_33_google_apis_x64_swangle",
+            ),
+        ],
+    ),
+)
+
 targets.mixin(
     name = "13-x64-emulator",
     generate_pyl_entry = False,
