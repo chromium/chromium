@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -12,6 +12,8 @@ import {PluginController} from '../controller.js';
 
 import {getCss} from './viewer_side_panel.css.js';
 import {getHtml} from './viewer_side_panel.html.js';
+
+const NUM_OPTION_COLUMNS: number = 5;
 
 interface ColorOption {
   name: string;
@@ -138,6 +140,54 @@ function areColorsEqual(lhs: Color, rhs: Color): boolean {
   return lhs.r === rhs.r && lhs.g === rhs.g && lhs.b === rhs.b;
 }
 
+/**
+ * Given an arrow key, the index of the current selected color, and the number
+ * of color options, returns the index of the color that should be selected
+ * after moving in the direction of the arrow key in a 2D grid of color options.
+ * @param key The key pressed. Must be an arrow key.
+ * @param currentIndex The index of the current selected color.
+ * @param numOptions The number of color options.
+ * @returns The index of the color that should be selected after moving in the
+ *     direction of `key`.
+ */
+function getNewColorIndex(
+    key: string, currentIndex: number, numOptions: number): number {
+  let delta: number;
+  switch (key) {
+    case 'ArrowLeft':
+      // If the current index is in the first column, wrap to the last column.
+      // Otherwise, move one column left.
+      delta = (currentIndex % NUM_OPTION_COLUMNS === 0) ?
+          NUM_OPTION_COLUMNS - 1 :
+          -1;
+      break;
+    case 'ArrowUp':
+      // If the current index is in the first row, wrap to the last row.
+      // Otherwise, move one row up.
+      delta = (currentIndex < NUM_OPTION_COLUMNS) ?
+          numOptions - NUM_OPTION_COLUMNS :
+          -NUM_OPTION_COLUMNS;
+      break;
+    case 'ArrowRight':
+      // If the current index is in the last column, wrap to the first column.
+      // Otherwise, move one column right.
+      delta = (currentIndex % NUM_OPTION_COLUMNS === NUM_OPTION_COLUMNS - 1) ?
+          -NUM_OPTION_COLUMNS + 1 :
+          1;
+      break;
+    case 'ArrowDown':
+      // If the current index is in the last row, wrap to the first row.
+      // Otherwise, move one row down.
+      delta = (currentIndex >= numOptions - NUM_OPTION_COLUMNS) ?
+          -numOptions + NUM_OPTION_COLUMNS :
+          NUM_OPTION_COLUMNS;
+      break;
+    default:
+      assertNotReached();
+  }
+  return currentIndex + delta;
+}
+
 export interface ViewerSidePanelElement {
   $: {
     eraser: HTMLElement,
@@ -236,21 +286,7 @@ export class ViewerSidePanelElement extends CrLitElement {
   protected onColorClick_(e: Event) {
     assert(this.shouldShowColorOptions_());
 
-    const currentBrush = this.getCurrentBrush_();
-    const currentColor = currentBrush.color;
-    assert(currentColor);
-
-    const targetElement = e.currentTarget as HTMLInputElement;
-    const hex = targetElement.value;
-    assert(hex);
-
-    const newColor: Color = hexToColor(hex);
-    if (areColorsEqual(currentColor, newColor)) {
-      return;
-    }
-
-    currentBrush.color = newColor;
-    this.brushDirty_ = true;
+    this.setBrushColor_(e.currentTarget as HTMLInputElement);
   }
 
 
@@ -264,12 +300,12 @@ export class ViewerSidePanelElement extends CrLitElement {
     e.preventDefault();
 
     const currSizeButton = e.target as HTMLElement;
-    const currIndex = Number(currSizeButton.dataset['index']);
+    const currentIndex = Number(currSizeButton.dataset['index']);
 
     const brushSizes = this.getCurrentBrushSizes_();
     const numOptions = brushSizes.length;
     const delta = isNext ? 1 : -1;
-    const newIndex = (numOptions + currIndex + delta) % numOptions;
+    const newIndex = (numOptions + currentIndex + delta) % numOptions;
 
     const newSize = brushSizes[newIndex]!.size;
     const newSizeButton =
@@ -277,6 +313,31 @@ export class ViewerSidePanelElement extends CrLitElement {
     assert(newSizeButton);
     this.setBrushSize_(newSizeButton);
     newSizeButton.focus();
+  }
+
+  protected onColorKeydown_(e: KeyboardEvent) {
+    // Only handle arrow keys.
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowUp' &&
+        e.key !== 'ArrowRight' && e.key !== 'ArrowDown') {
+      return;
+    }
+    e.preventDefault();
+
+    const colorButton = e.target as HTMLInputElement;
+    const currentIndex = Number(colorButton.dataset['index']);
+
+    const brushColors = this.getCurrentBrushColors_();
+    const numOptions = brushColors.length;
+    const newIndex = getNewColorIndex(e.key, currentIndex, numOptions);
+    assert(newIndex >= 0);
+    assert(newIndex < numOptions);
+
+    const newColor = brushColors[newIndex]!.color;
+    const newColorButton = this.shadowRoot!.querySelector<HTMLInputElement>(
+        `[value='${newColor}']`);
+    assert(newColorButton);
+    this.setBrushColor_(newColorButton);
+    newColorButton.focus();
   }
 
   protected getIcon_(type: AnnotationBrushType): string {
@@ -378,6 +439,23 @@ export class ViewerSidePanelElement extends CrLitElement {
     }
 
     currentBrush.size = size;
+    this.brushDirty_ = true;
+  }
+
+  private setBrushColor_(colorButton: HTMLInputElement): void {
+    const currentBrush = this.getCurrentBrush_();
+    const currentColor = currentBrush.color;
+    assert(currentColor);
+
+    const hex = colorButton.value;
+    assert(hex);
+
+    const newColor: Color = hexToColor(hex);
+    if (areColorsEqual(currentColor, newColor)) {
+      return;
+    }
+
+    currentBrush.color = newColor;
     this.brushDirty_ = true;
   }
 }

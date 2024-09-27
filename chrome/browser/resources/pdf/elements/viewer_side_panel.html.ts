@@ -49,15 +49,15 @@ export function getHtml(this: ViewerSidePanelElement) {
       </div>
       ${this.shouldShowColorOptions_() ? html`
         <h2>Color</h2>
-        <div id="colors">
-          ${this.getCurrentBrushColors_().map(item => html`
-          <label class="color-item">
-            <input type="radio" class="color-chip"
-                name="${this.getColorName_()}" .value="${item.color}"
-                .style="--item-color: ${this.getVisibleColor_(item.color)}"
-                @click="${this.onColorClick_}"
-                ?checked="${this.isCurrentColor_(item.color)}">
-          </label>`)}
+        <div id="colors" @keydown="${this.onColorKeydown_}">
+          ${this.getCurrentBrushColors_().map((item, index) => html`
+            <label class="color-item">
+              <input type="radio" class="color-chip" data-index="${index}"
+                  name="${this.getColorName_()}" .value="${item.color}"
+                  .style="--item-color: ${this.getVisibleColor_(item.color)}"
+                  @click="${this.onColorClick_}"
+                  ?checked="${this.isCurrentColor_(item.color)}">
+            </label>`)}
         </div>` : ''}
     </div>
   `;
