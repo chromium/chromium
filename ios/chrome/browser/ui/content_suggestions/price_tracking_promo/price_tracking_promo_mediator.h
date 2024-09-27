@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
 
 namespace commerce {
 class ShoppingService;
@@ -16,6 +16,7 @@ class ShoppingService;
 @protocol ApplicationCommands;
 class PrefService;
 @class PriceTrackingPromoItem;
+@protocol PriceTrackingPromoActionDelegate;
 class PushNotificationService;
 @protocol SnackbarCommands;
 @protocol SystemIdentity;
@@ -61,11 +62,21 @@ class AuthenticationService;
 // latest subscription to be displayed.
 - (PriceTrackingPromoItem*)priceTrackingPromoItemToShow;
 
+// Remove price tracking promo from magic stack
+- (void)removePriceTrackingPromo;
+
+// Enable price tracking notifications settings and show
+// snackbar giving user the option to manage these settings.
+- (void)enablePriceTrackingSettingsAndShowSnackbar;
+
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<PriceTrackingPromoMediatorDelegate> delegate;
 
 // Dispatcher.
 @property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
+
+// Delegate to delegate actions to the owner of the PriceTrackingPromoMediator
+@property(nonatomic, weak) id<PriceTrackingPromoActionDelegate> actionDelegate;
 
 @end
 

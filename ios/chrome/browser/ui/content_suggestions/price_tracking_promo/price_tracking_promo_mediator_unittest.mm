@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -146,4 +147,25 @@ TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingSettings) {
   [mediator() enablePriceTrackingNotificationsSettingsForTesting];
   EXPECT_TRUE(
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
+}
+
+TEST_F(PriceTrackingPromoMediatorTest, TestRemovePriceTrackingPromo) {
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
+  OCMExpect([mockDelegate removePriceTrackingPromo]);
+  mediator().delegate = mockDelegate;
+  [mediator() removePriceTrackingPromo];
+}
+
+TEST_F(PriceTrackingPromoMediatorTest,
+       TestEnablePriceTrackingSettingsAndShowSnackbar) {
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
+  [mediator() enablePriceTrackingSettingsAndShowSnackbar];
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
+  id mockDispatcher = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  mediator().dispatcher = mockDispatcher;
+  OCMExpect([mockDispatcher showSnackbarMessage:[OCMArg isNotNil]]);
+  [mediator() enablePriceTrackingSettingsAndShowSnackbar];
 }
