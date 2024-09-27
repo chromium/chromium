@@ -1490,15 +1490,15 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
                                             gfx::Rect* visual_clip_rect) {
   DCHECK(params.overlay_image);
   DCHECK_NE(params.overlay_image->type(),
-            gl::DCLayerOverlayType::kDCompVisualContent);
+            DCLayerOverlayType::kDCompVisualContent);
   CHECK(gfx::IsNearestRectWithinDistance(params.content_rect, 0.01f));
 
-  gl::DCLayerOverlayType overlay_type = params.overlay_image->type();
+  DCLayerOverlayType overlay_type = params.overlay_image->type();
 
   *visual_transform = params.transform;
   *visual_clip_rect = params.clip_rect.value_or(gfx::Rect());
 
-  if (overlay_type == gl::DCLayerOverlayType::kDCompSurfaceProxy) {
+  if (overlay_type == DCLayerOverlayType::kDCompSurfaceProxy) {
     return PresentDCOMPSurface(params, visual_transform, visual_clip_rect);
   }
 
@@ -1517,7 +1517,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   gfx::Size swap_chain_size = CalculateSwapChainSize(
       params, visual_transform, visual_clip_rect, &dest_size, &target_rect);
 
-  if (overlay_type == gl::DCLayerOverlayType::kNV12Texture &&
+  if (overlay_type == DCLayerOverlayType::kNV12Texture &&
       !params.overlay_image->nv12_texture()) {
     // We can't proceed if overlay image has no underlying d3d11 texture.  It's
     // unclear how we get into this state, but we do observe crashes due to it.
@@ -1626,7 +1626,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   std::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.video_params.hdr_metadata.IsValid()) {
-    stream_metadata = gl::HDRMetadataHelperWin::HDRMetadataToDXGI(
+    stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(
         params.video_params.hdr_metadata);
   }
 
@@ -2330,7 +2330,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
   }
 
-  gl::LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
+  LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
