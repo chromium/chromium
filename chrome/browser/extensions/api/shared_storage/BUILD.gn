@@ -9,15 +9,10 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 source_set("shared_storage") {
-  sources = [ "shared_storage_private_api.h" ]
-
-  if (is_chromeos_ash) {
-    sources += [ "shared_storage_private_api_ash.cc" ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "shared_storage_private_api_lacros.cc" ]
-  }
+  sources = [
+    "shared_storage_private_api.h",
+    "shared_storage_private_api_ash.cc",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -30,18 +25,9 @@ source_set("shared_storage") {
 
   deps = [
     "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
     "//chrome/common/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//components/prefs",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/common:constants",
-      "//components/prefs",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

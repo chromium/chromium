@@ -1358,38 +1358,6 @@ source_set("extensions") {
     }
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
-      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
-      "api/file_browser_handler/file_browser_handler_flow_lacros.cc",
-      "api/file_browser_handler/file_browser_handler_flow_lacros.h",
-      "api/file_system/chrome_file_system_delegate_lacros.cc",
-      "api/file_system/chrome_file_system_delegate_lacros.h",
-      "api/file_system/volume_list_provider_lacros.cc",
-      "api/file_system/volume_list_provider_lacros.h",
-      "api/image_writer_private/image_writer_controller_lacros.cc",
-      "api/image_writer_private/image_writer_controller_lacros.h",
-      "api/image_writer_private/operation_nonchromeos.cc",
-      "api/messaging/native_message_host_lacros.cc",
-      "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
-      "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
-      "api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.cc",
-      "api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.h",
-      "chrome_kiosk_delegate.cc",
-      "preinstalled_apps.cc",
-      "preinstalled_apps.h",
-    ]
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//chromeos/ui/base",
-      "//components/enterprise",
-      "//components/enterprise/common/proto:connectors_proto",
-      "//components/keep_alive_registry",
-    ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
     sources += [
@@ -1410,7 +1378,7 @@ source_set("extensions") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources +=
         [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
   }

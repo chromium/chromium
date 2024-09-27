@@ -24,16 +24,9 @@ source_set("enterprise_networking_attributes") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//net",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

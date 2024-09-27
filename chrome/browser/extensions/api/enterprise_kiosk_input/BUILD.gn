@@ -24,17 +24,8 @@ source_set("enterprise_kiosk_input") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/crosapi",
     "//chrome/common/extensions/api",
+    "//ui/base/ime/ash",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi",
-      "//ui/base/ime/ash",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

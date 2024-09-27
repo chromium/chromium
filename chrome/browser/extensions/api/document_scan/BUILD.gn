@@ -39,6 +39,7 @@ source_set("document_scan") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -46,12 +47,4 @@ source_set("document_scan") {
     "//components/prefs",
     "//ui/views",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

@@ -36,11 +36,4 @@ source_set("preference") {
       "//chromeos/startup:startup",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
 }
