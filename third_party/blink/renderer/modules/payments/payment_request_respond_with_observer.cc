@@ -48,8 +48,7 @@ void PaymentRequestRespondWithObserver::OnResponseRejected(
 
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext&) {
+    const ScriptValue& value) {
   DCHECK(GetExecutionContext());
   v8::TryCatch try_catch(script_state->GetIsolate());
   PaymentHandlerResponse* response =

@@ -26,9 +26,7 @@ class MODULES_EXPORT AbortPaymentRespondWithObserver final
   ~AbortPaymentRespondWithObserver() override = default;
 
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(ScriptState*,
-                           const ScriptValue&,
-                           const ExceptionContext&) override;
+  void OnResponseFulfilled(ScriptState*, const ScriptValue&) override;
   void OnNoResponse(ScriptState*) override;
 
   void Trace(Visitor*) const override;

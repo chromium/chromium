@@ -33,8 +33,7 @@ void AbortPaymentRespondWithObserver::OnResponseRejected(
 
 void AbortPaymentRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext&) {
+    const ScriptValue& value) {
   DCHECK(GetExecutionContext());
   bool response = ToBoolean(script_state->GetIsolate(), value.V8Value(),
                             ASSERT_NO_EXCEPTION);

@@ -261,10 +261,8 @@ void FetchRespondWithObserver::OnResponseRejected(
   event_->RejectHandledPromise(error_message);
 }
 
-void FetchRespondWithObserver::OnResponseFulfilled(
-    ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext& exception_context) {
+void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
+                                                   const ScriptValue& value) {
   DCHECK(GetExecutionContext());
   Response* response =
       V8Response::ToWrappable(script_state->GetIsolate(), value.V8Value());
@@ -362,8 +360,7 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     // drained or loading begins.
     fetch_api_response->side_data_blob = buffer->TakeSideDataBlob();
 
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(script_state->GetIsolate());
 
     scoped_refptr<BlobDataHandle> blob_data_handle =
         buffer->DrainAsBlobDataHandle(

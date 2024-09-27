@@ -44,9 +44,7 @@ class MODULES_EXPORT RespondWithObserver
   virtual void OnResponseRejected(mojom::ServiceWorkerResponseError) = 0;
 
   // Called when the respondWith() promise was fulfilled.
-  virtual void OnResponseFulfilled(ScriptState*,
-                                   const ScriptValue&,
-                                   const ExceptionContext&) = 0;
+  virtual void OnResponseFulfilled(ScriptState*, const ScriptValue&) = 0;
 
   // Called when the event handler finished without calling respondWith().
   virtual void OnNoResponse(ScriptState*) = 0;
@@ -66,9 +64,7 @@ class MODULES_EXPORT RespondWithObserver
 
   void ResponseWasRejected(mojom::ServiceWorkerResponseError,
                            const ScriptValue&);
-  void ResponseWasFulfilled(ScriptState* state,
-                            const ExceptionContext&,
-                            const ScriptValue&);
+  void ResponseWasFulfilled(ScriptState* state, const ScriptValue&);
 
   enum State { kInitial, kPending, kDone };
   State state_;

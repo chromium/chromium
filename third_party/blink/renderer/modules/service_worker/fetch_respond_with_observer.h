@@ -42,9 +42,7 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
   ~FetchRespondWithObserver() override = default;
 
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(ScriptState*,
-                           const ScriptValue&,
-                           const ExceptionContext& exception_context) override;
+  void OnResponseFulfilled(ScriptState*, const ScriptValue&) override;
   void OnNoResponse(ScriptState*) override;
 
   void SetEvent(FetchEvent* event);

@@ -27,9 +27,7 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
   ~CanMakePaymentRespondWithObserver() override = default;
 
   void OnResponseRejected(mojom::blink::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(ScriptState*,
-                           const ScriptValue&,
-                           const ExceptionContext&) override;
+  void OnResponseFulfilled(ScriptState*, const ScriptValue&) override;
   void OnNoResponse(ScriptState*) override;
 
   void Trace(Visitor*) const override;

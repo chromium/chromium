@@ -41,19 +41,11 @@ void CanMakePaymentRespondWithObserver::OnResponseRejected(
 
 void CanMakePaymentRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext& exception_context) {
+    const ScriptValue& value) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
-
-  bool can_make_payment =
-      ToBoolean(script_state->GetIsolate(), value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    Respond(ResponseType::BOOLEAN_CONVERSION_ERROR, false);
-    return;
-  }
-
-  Respond(ResponseType::SUCCESS, can_make_payment);
+  Respond(ResponseType::SUCCESS,
+          ToBoolean(script_state->GetIsolate(), value.V8Value(),
+                    ASSERT_NO_EXCEPTION));
 }
 
 void CanMakePaymentRespondWithObserver::OnNoResponse(ScriptState*) {
