@@ -7,14 +7,16 @@
 
 #import <libkern/OSAtomicQueue.h>
 
+#import "base/memory/raw_ptr.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // A struct representing a procedure call.
 typedef struct {
-  void* procedureCall;
-  void* next;  // Used for offset.
+  raw_ptr<void> procedureCall;
+  raw_ptr<void> next;  // Used for offset.
 } CRWProcedureCallNode;
 
 // Queue containing the ordered procedure calls.
