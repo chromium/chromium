@@ -88,8 +88,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'FunctionalInterfaceClash',
     # There are lots of times when we just want to post a task.
     'FutureReturnValueIgnored',
-    # Nice to be explicit about operators, but not necessary.
-    'OperatorPrecedence',
     # Just false positives in our code.
     'ThreadJoinLoop',
     # Low priority corner cases with String.split.
@@ -168,8 +166,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Nice to have.
     'MissingSummary',
     # Nice to have.
-    'ReturnFromVoid',
-    # Nice to have.
     'EmptyCatch',
     # Nice to have.
     'BadImport',
@@ -185,8 +181,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # We already have presubmit checks for this. Not necessary to warn on
     # every build.
     'RemoveUnusedImports',
-    # We do not care about unnecessary parenthesis enough to check for them.
-    'UnnecessaryParentheses',
     # The only time we trigger this is when it is better to be explicit in a
     # list of unicode characters, e.g. FindAddress.java
     'UnicodeEscape',
@@ -195,25 +189,13 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # A lot of existing violations. e.g. Should return List and not ArrayList
     'NonApiType',
     # Nice to have.
-    'LongDoubleConversion',
-    # Nice to have.
-    'ReturnAtTheEndOfVoidFunction',
-    # Nice to have.
-    'NarrowCalculation',
-    # Nice to have.
     'Finalize',
     # Nice to have.
     'NotJavadoc',
     # Nice to have.
-    'NullablePrimitive',
-    # Nice to have.
     'DirectInvocationOnMock',
     # Nice to have.
-    'EmptyTopLevelDeclaration',
-    # Nice to have.
     'StringCharset',
-    # Nice to have.
-    'UnnecessaryStringBuilder',
     # Nice to have.
     'JUnitIncompatibleType',
     # Nice to have.
@@ -229,17 +211,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Nice to have.
     'SelfAssertion',
     # Nice to have.
-    'IgnoredPureGetter',
-    # Nice to have.
-    'UnnecessaryLongToIntConversion',
-    # Nice to have.
     'StringCaseLocaleUsage',
-    # Nice to have.
-    'InlineTrivialConstant',
-    # Nice to have.
-    'VoidUsed',
-    # Nice to have.
-    'SuperCallToObjectMethod',
     # Nice to have.
     'JUnit4TestNotRun',
     # Nice to have.
@@ -248,8 +220,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'SuperCallToObjectMethod',
     # Nice to have.
     'ComparisonOutOfRange',
-    # Nice to have.
-    'ExtendsObject',
     # Nice to have
     'AddressSelection',
 ]
