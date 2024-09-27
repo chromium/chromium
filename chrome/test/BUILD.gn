@@ -2005,6 +2005,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
@@ -8249,6 +8250,9 @@ test("unit_tests") {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",
+
+      # TODO(crbug.com/)369794212: Remove when modularization of //c/b/ui/toolbar/cast happens.
+      "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
@@ -9999,6 +10003,7 @@ test("unit_tests") {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//components/app_constants",
       "//components/commerce/core:pref_names",
@@ -11349,6 +11354,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/commerce:test_support",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/lens",
+        "//chrome/browser/ui/toolbar/cast",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
         "//components/data_sharing/public",
