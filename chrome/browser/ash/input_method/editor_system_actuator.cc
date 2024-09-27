@@ -33,7 +33,8 @@ constexpr std::string_view
 
 bool IsUrlAllowed(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) ||
-         url.spec().starts_with("chrome://os-settings/osLanguages/input");
+         url.spec().starts_with("chrome://os-settings/osLanguages/input") ||
+         url.spec().starts_with("chrome://os-settings/systemPreferences");
 }
 
 EditorTextInsertion::InsertionStrategy GetInsertionStrategy(const GURL& url) {
