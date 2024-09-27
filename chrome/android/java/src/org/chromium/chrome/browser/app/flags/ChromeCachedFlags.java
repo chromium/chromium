@@ -112,6 +112,7 @@ public class ChromeCachedFlags {
                         BottomBarConfigCreator
                                 .GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE,
                         BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED,
+                        EdgeToEdgeUtils.DISABLE_CCT_MEDIA_VIEWER_E2E,
                         EdgeToEdgeUtils.DISABLE_HUB_E2E,
                         EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E,
                         EdgeToEdgeUtils.DISABLE_NTP_E2E,

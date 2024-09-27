@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -111,7 +112,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    @Mock private ObservableSupplierImpl<EdgeToEdgeController> mWdgeToEdgeControllerSupplier;
+    @Mock private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     @Mock private Supplier<Boolean> mIsInOverviewModeSupplier;
     @Mock private AppMenuDelegate mAppMenuDelegate;
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
@@ -173,7 +174,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mCompositorViewHolderSupplier,
                         mTabContentManagerSupplier,
                         mSnackbarManagerSupplier,
-                        mWdgeToEdgeControllerSupplier,
+                        mEdgeToEdgeControllerSupplier,
                         ActivityType.CUSTOM_TAB,
                         mIsInOverviewModeSupplier,
                         mAppMenuDelegate,
@@ -237,5 +238,48 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
 
         verify(mGoogleBottomBarCoordinator).initDefaultSearchEngine(mProfile);
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer() {
+        doReturn(true)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertTrue(mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @DisableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer_DisabledFeatures() {
+        doReturn(true)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertFalse(
+                "Not drawing E2E when feature disabled.",
+                mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer_NotMediaViewer() {
+        doReturn(false)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertFalse(
+                "Not drawing E2E when not in media viewer.",
+                mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
     }
 }

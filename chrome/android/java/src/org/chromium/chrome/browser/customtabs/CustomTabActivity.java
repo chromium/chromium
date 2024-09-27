@@ -167,7 +167,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         mSession = mIntentDataProvider.getSession();
 
-        CustomTabNavigationBarController.update(getWindow(), mIntentDataProvider, this);
+        boolean drawEdgeToEdge =
+                mEdgeToEdgeControllerSupplier.get() != null
+                        && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
+                        && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
+        CustomTabNavigationBarController.update(
+                getWindow(), mIntentDataProvider, this, drawEdgeToEdge);
     }
 
     @Override

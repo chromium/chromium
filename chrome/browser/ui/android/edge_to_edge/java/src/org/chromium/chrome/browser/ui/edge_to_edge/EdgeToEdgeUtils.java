@@ -63,6 +63,15 @@ public class EdgeToEdgeUtils {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE, PARAM_DISABLE_HUB_E2E, false);
 
+    private static final String PARAM_DISABLE_CCT_MEDIA_VIEWER_E2E = "disable_cct_media_viewer_e2e";
+
+    /** Cached param whether we disable e2e on the CCT media viewer. */
+    public static BooleanCachedFieldTrialParameter DISABLE_CCT_MEDIA_VIEWER_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+                    PARAM_DISABLE_CCT_MEDIA_VIEWER_E2E,
+                    false);
+
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
         IneligibilityReason.OS_VERSION,
@@ -181,7 +190,7 @@ public class EdgeToEdgeUtils {
      */
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
-        return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
+        return isPageOptedIntoEdgeToEdge
                 || (isEdgeToEdgeBottomChinEnabled() && isBottomChinAllowed(layoutType, bottomInset))
                 || (isDrawKeyNativePageToEdgeEnabled()
                         && layoutType == LayoutType.TAB_SWITCHER
@@ -214,6 +223,9 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
+        if (tab.shouldEnableEmbeddedMediaExperience()) {
+            return isDrawKeyNativePageToEdgeEnabled();
+        }
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
@@ -231,6 +243,9 @@ public class EdgeToEdgeUtils {
         }
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
+        }
+        if (tab.shouldEnableEmbeddedMediaExperience()) {
+            return isDrawKeyNativePageToEdgeEnabled();
         }
         if (!isEdgeToEdgeWebOptInEnabled()) {
             return false;

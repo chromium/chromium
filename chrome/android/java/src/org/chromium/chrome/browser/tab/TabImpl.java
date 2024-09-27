@@ -2380,6 +2380,12 @@ class TabImpl implements Tab {
         return mWebContentsDelegate.isTrustedWebActivity(getWebContents());
     }
 
+    @Override
+    public boolean shouldEnableEmbeddedMediaExperience() {
+        if (mWebContentsDelegate == null) return false;
+        return mWebContentsDelegate.shouldEnableEmbeddedMediaExperience();
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

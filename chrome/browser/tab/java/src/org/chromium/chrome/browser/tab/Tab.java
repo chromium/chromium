@@ -422,4 +422,9 @@ public interface Tab extends TabLifecycle {
      * @return True if we have a WebContents that's navigated to a trusted origin of a TWA.
      */
     boolean isTrustedWebActivity();
+
+    /**
+     * @return True if the current tab has embedded media experience enabled.
+     */
+    boolean shouldEnableEmbeddedMediaExperience();
 }

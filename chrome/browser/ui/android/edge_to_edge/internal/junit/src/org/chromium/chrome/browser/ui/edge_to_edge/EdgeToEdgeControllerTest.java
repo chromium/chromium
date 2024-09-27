@@ -56,6 +56,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -392,6 +393,25 @@ public class EdgeToEdgeControllerTest {
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
         // Pad the top and the bottom to keep it all normal.
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
+    public void onObservingDifferentTab_embeddedMediaExperience() {
+        when(mTab.shouldEnableEmbeddedMediaExperience()).thenReturn(true);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertToEdgeExpectations();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
+    public void onObservingDifferentTab_embeddedMediaExperience_DisableByParam() {
+        EdgeToEdgeUtils.DISABLE_CCT_MEDIA_VIEWER_E2E.setForTesting(true);
+        when(mTab.shouldEnableEmbeddedMediaExperience()).thenReturn(true);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertToNormalExpectations();
     }
 
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */
