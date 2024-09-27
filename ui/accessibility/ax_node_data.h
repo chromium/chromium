@@ -95,9 +95,9 @@ struct AX_BASE_EXPORT AXNodeData {
       ax::mojom::StringListAttribute attribute) const;
 
   bool HasHtmlAttribute(const char* attribute) const;
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const;
-  std::u16string GetHtmlAttribute(const char* attribute) const;
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
+  const std::string& GetHtmlAttribute(const char* attribute) const;
+  std::u16string GetHtmlAttributeUTF16(const char* attribute) const;
+  const std::string* FindHtmlAttribute(const char* attribute) const;
 
   //
   // Setting accessibility attributes.

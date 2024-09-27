@@ -837,16 +837,22 @@ const base::StringPairs& AXPlatformNodeDelegate::GetHtmlAttributes() const {
 
 bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
                                               std::string* value) const {
-  if (node_)
-    return node_->GetHtmlAttribute(attribute, value);
-  return GetData().GetHtmlAttribute(attribute, value);
+  bool found = HasHtmlAttribute(attribute);
+  if (found) {
+    *value = node_ ? node_->GetHtmlAttribute(attribute)
+                   : GetData().GetHtmlAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
                                               std::u16string* value) const {
-  if (node_)
-    return node_->GetHtmlAttribute(attribute, value);
-  return GetData().GetHtmlAttribute(attribute, value);
+  bool found = HasHtmlAttribute(attribute);
+  if (found) {
+    *value = node_ ? node_->GetHtmlAttributeUTF16(attribute)
+                   : GetData().GetHtmlAttributeUTF16(attribute);
+  }
+  return found;
 }
 
 AXTextAttributes AXPlatformNodeDelegate::GetTextAttributes() const {

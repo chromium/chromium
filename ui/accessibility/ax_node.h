@@ -410,14 +410,11 @@ class AX_EXPORT AXNode final {
   bool HasHtmlAttribute(const char* attribute) const {
     return data().HasHtmlAttribute(attribute);
   }
-  std::u16string GetHtmlAttribute(const char* attribute) const {
+  const std::string& GetHtmlAttribute(const char* attribute) const {
     return data().GetHtmlAttribute(attribute);
   }
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const {
-    return data().GetHtmlAttribute(attribute, value);
-  }
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
-    return data().GetHtmlAttribute(attribute, value);
+  std::u16string GetHtmlAttributeUTF16(const char* attribute) const {
+    return data().GetHtmlAttributeUTF16(attribute);
   }
 
   AXTextAttributes GetTextAttributes() const {

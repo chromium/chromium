@@ -127,8 +127,8 @@ void AddContentNodesToVector(const ui::AXNode* node,
     return;
   }
 
-  auto aria_expanded_state =
-      base::UTF16ToUTF8(node->GetHtmlAttribute("aria-expanded"));
+  const std::string& aria_expanded_state =
+      node->GetHtmlAttribute("aria-expanded");
   if (aria_expanded_state == "true") {
     content_node_ids->push_back(node->id());
     return;

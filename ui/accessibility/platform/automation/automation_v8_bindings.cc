@@ -1064,10 +1064,11 @@ void AutomationV8Bindings::AddV8Routes() {
       "GetHtmlAttribute",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result, AXTree* tree,
          AXNode* node, const std::string& attribute_name) {
-        std::string attribute_value;
-        if (!node->GetHtmlAttribute(attribute_name.c_str(), &attribute_value))
+        if (!node->HasHtmlAttribute(attribute_name.c_str())) {
           return;
-
+        }
+        const std::string& attribute_value =
+            node->GetHtmlAttribute(attribute_name.c_str());
         result.Set(v8::String::NewFromUtf8(isolate, attribute_value.c_str())
                        .ToLocalChecked());
       });

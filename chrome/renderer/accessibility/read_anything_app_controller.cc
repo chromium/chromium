@@ -1138,9 +1138,7 @@ std::string ReadAnythingAppController::GetDataFontCss(
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
 
-  std::string data_font_css;
-  ax_node->GetHtmlAttribute("data-font-css", &data_font_css);
-  return data_font_css;
+  return ax_node->GetHtmlAttribute("data-font-css");
 }
 
 std::string ReadAnythingAppController::GetHtmlTag(

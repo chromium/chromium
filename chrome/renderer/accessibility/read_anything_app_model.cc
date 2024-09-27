@@ -329,8 +329,8 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       // Capture the expanded state. ARIA expanded is not supported by all
       // element types, but gmail for example uses it anyways. Check the
       // attribute directly for that reason.
-      auto aria_expanded_state =
-          base::UTF16ToUTF8(content_node->GetHtmlAttribute("aria-expanded"));
+      const std::string& aria_expanded_state =
+          content_node->GetHtmlAttribute("aria-expanded");
       aria_expanded_node_states_[content_node_id] = aria_expanded_state;
       // Don't include collapsed aria-expanded items.
       if (aria_expanded_state != "true") {

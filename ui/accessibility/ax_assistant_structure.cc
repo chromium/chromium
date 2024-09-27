@@ -39,9 +39,7 @@ bool IsAtomicTextField(const AXNode* node) {
   const std::string& html_tag =
       node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   if (html_tag == "input") {
-    std::string input_type;
-    if (!node->GetHtmlAttribute("type", &input_type))
-      return true;
+    const std::string& input_type = node->GetHtmlAttribute("type");
     return input_type.empty() || input_type == "email" ||
            input_type == "password" || input_type == "search" ||
            input_type == "tel" || input_type == "text" || input_type == "url" ||

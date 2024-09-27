@@ -376,38 +376,31 @@ const std::vector<std::string>& AXNodeData::GetStringListAttribute(
 }
 
 bool AXNodeData::HasHtmlAttribute(const char* attribute) const {
-  std::string value;
-  if (!GetHtmlAttribute(attribute, &value))
-    return false;
-  return true;
+  const std::string* value = FindHtmlAttribute(attribute);
+  return value != nullptr;
 }
 
-bool AXNodeData::GetHtmlAttribute(const char* attribute,
-                                  std::string* value) const {
+const std::string& AXNodeData::GetHtmlAttribute(const char* attribute) const {
+  const std::string* value = FindHtmlAttribute(attribute);
+  if (value) {
+    return *value;
+  }
+  return base::EmptyString();
+}
+
+const std::string* AXNodeData::FindHtmlAttribute(const char* attribute) const {
   for (const std::pair<std::string, std::string>& html_attribute :
        html_attributes) {
     const std::string& attr = html_attribute.first;
     if (base::EqualsCaseInsensitiveASCII(attr, attribute)) {
-      *value = html_attribute.second;
-      return true;
+      return &html_attribute.second;
     }
   }
-  return false;
+  return nullptr;
 }
 
-std::u16string AXNodeData::GetHtmlAttribute(const char* attribute) const {
-  std::u16string value_utf16;
-  GetHtmlAttribute(attribute, &value_utf16);
-  return value_utf16;
-}
-
-bool AXNodeData::GetHtmlAttribute(const char* attribute,
-                                  std::u16string* value) const {
-  std::string value_utf8;
-  if (!GetHtmlAttribute(attribute, &value_utf8))
-    return false;
-  *value = base::UTF8ToUTF16(value_utf8);
-  return true;
+std::u16string AXNodeData::GetHtmlAttributeUTF16(const char* attribute) const {
+  return base::UTF8ToUTF16(GetHtmlAttribute(attribute));
 }
 
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
