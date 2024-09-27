@@ -339,7 +339,7 @@
     Delete site data?
   </message>
   <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
-    Delete saved zoom levels
+    Delete saved zoom levels?
   </message>
   <message name="IDS_STORAGE_DELETE_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will delete website storage.">
     Delete
