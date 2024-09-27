@@ -122,7 +122,7 @@ OSExchangeDataProviderNonBacked::GetURLAndTitle(
         (policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
          GetFileURL(&url))) {
       DCHECK(url.is_valid());
-      return UrlInfo{url, std::u16string()};
+      return UrlInfo{std::move(url), std::u16string()};
     }
     return std::nullopt;
   }
@@ -265,11 +265,12 @@ bool OSExchangeDataProviderNonBacked::GetFileURL(GURL* url) const {
 
   base::FilePath file_path = filenames_[0].path;
   GURL test_url = net::FilePathToFileURL(file_path);
-  if (!test_url.is_valid())
+  if (!test_url.is_valid()) {
     return false;
-
-  if (url)
-    *url = test_url;
+  }
+  if (url) {
+    *url = std::move(test_url);
+  }
   return true;
 }
 
@@ -278,11 +279,12 @@ bool OSExchangeDataProviderNonBacked::GetPlainTextURL(GURL* url) const {
     return false;
 
   GURL test_url(string_);
-  if (!test_url.is_valid())
+  if (!test_url.is_valid()) {
     return false;
-
-  if (url)
-    *url = test_url;
+  }
+  if (url) {
+    *url = std::move(test_url);
+  }
   return true;
 }
 
