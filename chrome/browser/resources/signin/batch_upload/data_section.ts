@@ -13,6 +13,7 @@ import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_butt
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {DataContainer} from './batch_upload.js';
 import {getCss} from './data_section.css.js';
@@ -25,6 +26,10 @@ function createEmptyContainer(): DataContainer {
     dataItems: [],
   };
 }
+
+// Update request count, to be used along the transition duration to compute the
+// interval time requests.
+const UPDATE_REQUEST_COUNT: number = 10;
 
 export interface DataSectionElement {
   $: {
@@ -72,10 +77,39 @@ export class DataSectionElement extends CrLitElement {
   dataSelected: Set<number> = new Set<number>();
   protected dataSelectedCount_: number = 0;
 
+  // Animation variables used to update the main view height based on the
+  // collapse animation duration. Initialized to 0 and gets their values in
+  // `firstUpdated()` which are not expected to be modified later.
+  private intervalDurationOfUpdateHeightRequests_: number = 0;
+  private collapseAnimationDuration_: number = 0;
+
   override connectedCallback() {
     super.connectedCallback();
 
     this.initializeSectionOutput_();
+  }
+
+  override firstUpdated() {
+    // Compute the animation duration/intervals once on startup.
+    this.collapseAnimationDuration_ = parseInt(
+        this.style.getPropertyValue('--iron-collapse-transition-duration'));
+    this.intervalDurationOfUpdateHeightRequests_ =
+        this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    // Cast necessary since `expanded_` is protected.
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('expanded_')) {
+      setTimeout(() => {
+        this.updateViewHeightInterval_(
+            this.intervalDurationOfUpdateHeightRequests_);
+      }, this.intervalDurationOfUpdateHeightRequests_);
+    }
   }
 
   // Initializes the output variable based on the input.
@@ -108,6 +142,7 @@ export class DataSectionElement extends CrLitElement {
     } else {
       this.initializeSectionOutput_();
     }
+
     this.expanded_ = false;
     this.disabled_ = disabled;
   }
@@ -126,25 +161,26 @@ export class DataSectionElement extends CrLitElement {
     return this.dataContainer.sectionTitle + this.getSectionTitleExtraInfo_();
   }
 
+  // Fire repetitive updates to the parent view height separated by the computed
+  // interval, until the animation duration elapsed.
+  private updateViewHeightInterval_(timeElapsed: number) {
+    this.fire('update-view-height');
+    // Animation time elapsed, animation should match the collapse animation. No
+    // more view updates needed.
+    if (timeElapsed >= this.collapseAnimationDuration_) {
+      return;
+    }
+
+    // Trigger next update interval with the updated elapsed time.
+    setTimeout(() => {
+      this.updateViewHeightInterval_(
+          timeElapsed + this.intervalDurationOfUpdateHeightRequests_);
+    }, this.intervalDurationOfUpdateHeightRequests_);
+  }
+
   // Needs to react to both property change (through a reset) and user action.
   protected onExpandChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
-
-    const collapseElement =
-        this.shadowRoot!.querySelector<CrCollapseElement>('#collapse')!;
-    // Listen to the collapse transition end to properly update the container
-    // height.
-    // TODO(b/363205568): this is currently not smooth; potentially listening to
-    // several updates, or computing the final height and triggering it
-    // immediately.
-    const updateViewHeight = (e: Event) => {
-      if (e.composedPath()[0] === collapseElement) {
-        collapseElement.removeEventListener('transitionend', updateViewHeight);
-        // Request parent container to update its height.
-        this.fire('update-view-height');
-      }
-    };
-    collapseElement.addEventListener('transitionend', updateViewHeight);
   }
 
   // Needs to react to both property change (through a reset caused from all

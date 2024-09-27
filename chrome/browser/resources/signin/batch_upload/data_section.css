@@ -78,3 +78,7 @@
 .item-subtitle {
   color: var(--cr-secondary-text-color);
 }
+
+cr-collapse {
+  --iron-collapse-transition-duration: 300ms;
+}

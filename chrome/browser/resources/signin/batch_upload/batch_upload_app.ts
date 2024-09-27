@@ -96,7 +96,6 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
   protected async updateViewHeight_() {
     await this.updateComplete;
 
-    // TODO(b/363207887): Fix initial height.
     const height = this.$.batchUploadDialog.clientHeight;
     this.batchUploadBrowserProxy_.handler.updateViewHeight(height);
   }
