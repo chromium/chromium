@@ -45,6 +45,7 @@ class ChromeAutofillPredictionImprovementsClient
   bool IsAutofillPredictionImprovementsEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
   void OpenPredictionImprovementsSettings() override;
+  bool IsUserEligible() override;
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(

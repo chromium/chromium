@@ -55,6 +55,7 @@ class AutofillPredictionImprovementsManager
       const autofill::FormFieldData& field,
       bool should_add_trigger_suggestion) override;
   bool IsFormEligible(const autofill::FormStructure& form) override;
+  bool IsUserEligible() override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
   void UserFeedbackReceived(
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)

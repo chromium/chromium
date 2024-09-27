@@ -8,11 +8,13 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,4 +82,19 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   EXPECT_FALSE(client()->IsAutofillPredictionImprovementsEnabledPref());
 }
 
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       EligibilityOfNotSignedInUser) {
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile()),
+      signin::AccountAvailabilityOptionsBuilder().Build("example@gmail.com"));
+  EXPECT_FALSE(client()->IsUserEligible());
+}
+
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       EligibilityOfSignedInUser) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile()), "example@gmail.com",
+      signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(client()->IsUserEligible());
+}
 }  // namespace

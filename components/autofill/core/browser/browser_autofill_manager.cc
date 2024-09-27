@@ -897,7 +897,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // will be called if the import was not successful.
   if (AutofillPredictionImprovementsDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate();
-      delegate && submitted_form) {
+      delegate && delegate->IsUserEligible() && submitted_form) {
     // Only upload server statistics and UMA metrics if at least some local data
     // is available to use as a baseline.
     std::vector<const AutofillProfile*> profiles =

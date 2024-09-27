@@ -75,6 +75,7 @@ class MockAutofillPredictionImprovementsClient
               (const std::string& feedback_id),
               (override));
   MOCK_METHOD(void, OpenPredictionImprovementsSettings, (), (override));
+  MOCK_METHOD(bool, IsUserEligible, (), (override));
 };
 
 class MockOptimizationGuideDecider

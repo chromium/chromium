@@ -295,6 +295,10 @@ bool AutofillPredictionImprovementsManager::IsFormEligible(
   return ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
+bool AutofillPredictionImprovementsManager::IsUserEligible() {
+  return client_->IsUserEligible();
+}
+
 bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
     std::vector<autofill::Suggestion>& address_suggestions,
     const autofill::FormFieldData& field,

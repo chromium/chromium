@@ -11,6 +11,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
@@ -164,6 +166,20 @@ void ChromeAutofillPredictionImprovementsClient::
           WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
+}
+
+bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+  signin_util::SignedInState state =
+      signin_util::GetSignedInState(identity_manager);
+  return state == signin_util::SignedInState::kSignedIn ||
+         state == signin_util::SignedInState::kSyncing;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

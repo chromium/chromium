@@ -59,6 +59,10 @@ class AutofillPredictionImprovementsClient {
 
   // Opens the settings page for prediction improvements.
   virtual void OpenPredictionImprovementsSettings() = 0;
+
+  // Returns whether the current user is eligible for the improved prediction
+  // experience.
+  virtual bool IsUserEligible() = 0;
 };
 
 }  // namespace autofill_prediction_improvements

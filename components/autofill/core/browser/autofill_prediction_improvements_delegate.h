@@ -58,6 +58,10 @@ class AutofillPredictionImprovementsDelegate {
   // Returns whether `form` is eligible for the improved prediction experience.
   virtual bool IsFormEligible(const FormStructure& form) = 0;
 
+  // Returns whether the current user is eligible for the improved prediction
+  // experience.
+  virtual bool IsUserEligible() = 0;
+
   // Returns `true` if the corresponding feature is enabled and optimization can
   // be applied.
   virtual bool ShouldProvidePredictionImprovements(const GURL& url) = 0;

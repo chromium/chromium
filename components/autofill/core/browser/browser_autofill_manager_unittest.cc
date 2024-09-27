@@ -7283,6 +7283,7 @@ TEST_F(BrowserAutofillManagerTest,
       import_form_callback;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
+  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
   EXPECT_CALL(delegate, MaybeImportForm)
       .WillOnce(MoveArg<1>(&import_form_callback));
 
@@ -7329,6 +7330,7 @@ TEST_F(BrowserAutofillManagerTest,
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
+  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
   // This simulates that UserAnnotations failed to import data from the
   // submitted form.
   ON_CALL(delegate, MaybeImportForm)
@@ -7355,6 +7357,31 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(adm.GetProfiles().empty());
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
+}
+
+// Tests that the filled-in form is not imported into user annotations if
+// the user is not eligible for the improved autofill prediction experience.
+TEST_F(BrowserAutofillManagerTest, CC) {
+  TestAddressDataManager& adm = personal_data().test_address_data_manager();
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+      .WillByDefault(Return(&delegate));
+  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(false));
+  EXPECT_CALL(delegate, MaybeImportForm).Times(0);
+
+  // Fill the form.
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+
+  // Remove the filled profile and simulate form submission. Since the
+  // `personal_data()`'s auto accept imports for testing is enabled, expect
+  // that the profile is imported again.
+  adm.ClearProfiles();
+  ASSERT_TRUE(adm.GetProfiles().empty());
+  FormSubmitted(response_data);
 }
 
 // Test param indicates if there is an active screen reader.
