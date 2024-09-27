@@ -6,6 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import {Mv2ExperimentStage} from 'chrome://extensions/extensions.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -28,8 +29,7 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
       isAffectedByMV2Deprecation: true,
       mustRemainInstalled: false,
     })];
-    // Stage 2 represents Mv2ExperimentStage.DISABLE_WITH_REENABLE.
-    panelElement.mv2ExperimentStage = 2;
+    panelElement.mv2ExperimentStage = Mv2ExperimentStage.DISABLE_WITH_REENABLE;
     panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
 

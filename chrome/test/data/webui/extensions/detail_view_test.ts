@@ -712,22 +712,23 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Mv2DeprecationMessage_None', function() {
-    // Message is hidden for experiment on stage 0 (none).
-    loadTimeData.overrideValues({MV2ExperimentStage: 0});
+    // Message is hidden for experiment on 'none' stage.
+    loadTimeData.overrideValues({MV2ExperimentStage: Mv2ExperimentStage.NONE});
     setupElement();
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
   });
 
   test('Mv2DeprecationMessage_Warning', async function() {
-    // Message is hidden for experiment on stage 1 (warning) when extension is
+    // Message is hidden for experiment on 'warning' stage when extension is
     // not affected by the MV2 deprecation.
-    loadTimeData.overrideValues({MV2ExperimentStage: 1});
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: Mv2ExperimentStage.WARNING});
     setupElement();
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
 
-    // Message is visible for experiment on stage 1 (warning) when extension is
+    // Message is visible for experiment on 'warning' stage when extension is
     // affected by the MV2 deprecation.
     item.set('data.isAffectedByMV2Deprecation', true);
     flush();
@@ -774,9 +775,10 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Mv2DeprecationMessage_DisableWithReEnable_Visbility', async function() {
-    // Message is hidden for experiment on stage 2 (disable with re-enable)
-    // when extension is not affected by the MV2 deprecation.
-    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    // Message is hidden for experiment on 'disable with re-enable' stage when
+    // extension is not affected by the MV2 deprecation.
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: Mv2ExperimentStage.DISABLE_WITH_REENABLE});
     setupElement();
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
@@ -807,9 +809,10 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Mv2DeprecationMessage_DisableWithReEnable_Content', async function() {
-    // Show the message for experiment on stage 2 (disable with re-enable) by
+    // Show the message for experiment on 'disable with re-enable' stage by
     // setting the corresponding properties.
-    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: Mv2ExperimentStage.DISABLE_WITH_REENABLE});
     setupElement();
     item.set('data.isAffectedByMV2Deprecation', true);
     item.set('data.disableReasons.unsupportedManifestVersion', true);
@@ -890,9 +893,10 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Mv2DeprecationMessage_Unsupported_Visbility', async function() {
-    // Message is hidden for experiment on stage 3 (unsupported) when extension
+    // Message is hidden for experiment on 'unsupported' stage when extension
     // is not affected by the MV2 deprecation.
-    loadTimeData.overrideValues({MV2ExperimentStage: 3});
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: Mv2ExperimentStage.UNSUPPORTED});
     setupElement();
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
@@ -914,9 +918,10 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Mv2DeprecationMessage_Unsupported_Content', async function() {
-    // Show the message for experiment on stage 3 (unsupported) by setting the
+    // Show the message for experiment on 'unsupported' stage by setting the
     // corresponding properties.
-    loadTimeData.overrideValues({MV2ExperimentStage: 3});
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: Mv2ExperimentStage.UNSUPPORTED});
     setupElement();
     item.set('data.isAffectedByMV2Deprecation', true);
     item.set('data.disableReasons.unsupportedManifestVersion', true);
