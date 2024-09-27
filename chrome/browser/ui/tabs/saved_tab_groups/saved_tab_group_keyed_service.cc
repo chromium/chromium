@@ -410,7 +410,9 @@ void SavedTabGroupKeyedService::ResumeTrackingLocalTabGroup(
 
 void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
     const TabGroupId& group_id) {
-  listener_->DisconnectLocalTabGroup(group_id);
+  // We are passing ClosingSource::kUnknown here since we won't be using this
+  // path after migration.
+  listener_->DisconnectLocalTabGroup(group_id, ClosingSource::kUnknown);
 
   // Stop listening to the current tab group and notify observers.
   model_->OnGroupClosedInTabStrip(group_id);

@@ -87,7 +87,7 @@ enum class ClosingSource {
   kClosedByUser = 1,
   // Android / iOS only. Group was explicitly deleted by user.
   kDeletedByUser = 2,
-  // Android / iOS only. Group was deleted from sync.
+  // Group was deleted from sync.
   kDeletedFromSync = 3,
   // Android / iOS only. Group was closed on startup since it had been already
   // deleted from sync.
@@ -95,7 +95,8 @@ enum class ClosingSource {
   // Android / iOS only. Group was closed when the last chrome instance was
   // closed.
   kCleanedUpOnLastInstanceClosure = 5,
-  // iOS only. Triggered when user selects close all tabs on the tab grid.
+  // Desktop, iOS only. Triggered when user selects close all tabs on the tab
+  // grid.
   kCloseAllTabs = 6,
   // iOS only. Triggered when user selects Close Other Tabs.
   kCloseOtherTabs = 7,

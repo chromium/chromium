@@ -65,7 +65,10 @@ class SavedTabGroupModelListener : public BrowserListObserver,
 
   // Stop updating the saved group corresponding to the local group with id
   // `tab_group_id` when the local group changes.
-  void DisconnectLocalTabGroup(tab_groups::TabGroupId tab_group_id);
+  // `closing_source` refers to the callsite that results in invoking this
+  // method.
+  void DisconnectLocalTabGroup(tab_groups::TabGroupId tab_group_id,
+                               ClosingSource closing_source);
 
   // The saved group corresponding to `local_group_id` was removed, so we must
   // remove the local group to match.

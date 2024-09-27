@@ -84,7 +84,7 @@ void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
     return;
   }
 
-  DisconnectLocalTabGroup(group_id);
+  DisconnectLocalTabGroup(group_id, ClosingSource::kDeletedByUser);
 }
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
@@ -138,7 +138,7 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
           LocalTabGroupListener::Liveness::kGroupDeleted) {
         // If this emptied the group, the saved group was removed, so we must
         // stop listening to `local_group_id`.
-        DisconnectLocalTabGroup(local_group_id);
+        DisconnectLocalTabGroup(local_group_id, ClosingSource::kUnknown);
         // Not only did we find our old group, we also concurrently modified the
         // data structure we're iterating over. Abort, abort.
         break;
@@ -205,7 +205,7 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
   for (const tab_groups::TabGroupId& group_id :
        tab_strip_model->group_model()->ListTabGroups()) {
     if (base::Contains(local_tab_group_listeners_, group_id)) {
-      DisconnectLocalTabGroup(group_id);
+      DisconnectLocalTabGroup(group_id, ClosingSource::kCloseAllTabs);
     }
   }
 }
@@ -265,8 +265,9 @@ void SavedTabGroupModelListener::ResumeLocalObservation() {
 }
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
-    tab_groups::TabGroupId tab_group_id) {
-  service_->RemoveLocalTabGroupMapping(tab_group_id, ClosingSource::kUnknown);
+    tab_groups::TabGroupId tab_group_id,
+    ClosingSource closing_source) {
+  service_->RemoveLocalTabGroupMapping(tab_group_id, closing_source);
   local_tab_group_listeners_.erase(tab_group_id);
 }
 
@@ -277,7 +278,7 @@ void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
   }
 
   local_tab_group_listeners_.at(local_group_id).GroupRemovedFromSync();
-  DisconnectLocalTabGroup(local_group_id);
+  DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
 }
 
 void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
@@ -288,7 +289,7 @@ void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
 
   if (local_tab_group_listeners_.at(local_group_id).UpdateFromSync() ==
       LocalTabGroupListener::Liveness::kGroupDeleted) {
-    DisconnectLocalTabGroup(local_group_id);
+    DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
   }
 }
 
