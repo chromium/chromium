@@ -142,6 +142,12 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     _manualFillAccessoryViewController.view.hidden =
         IsKeyboardAccessoryUpgradeEnabled();
     _keyboardWasClosed = YES;
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateUIOnTraitChange)];
+    }
   }
   return self;
 }
@@ -156,12 +162,16 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (IsBottomOmniboxAvailable()) {
-    [self updateOmniboxTypingShieldVisibility];
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateUIOnTraitChange];
 }
+#endif
 
 #pragma mark - UIViewController
 
@@ -539,6 +549,13 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 - (void)verticalOffset:(CGFloat)offset {
   self.formInputAccessoryView.transform =
       CGAffineTransformMakeTranslation(0, offset);
+}
+
+// Updates the UI when any UITrait changes on the device.
+- (void)updateUIOnTraitChange {
+  if (IsBottomOmniboxAvailable()) {
+    [self updateOmniboxTypingShieldVisibility];
+  }
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
