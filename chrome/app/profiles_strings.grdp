@@ -955,5 +955,8 @@
     <message translateable="false" name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="">
       Save in account
     </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT" desc="">
+      Saving to your account...
+    </message>
   </if>
 </grit-part>

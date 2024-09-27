@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -43,6 +45,9 @@ class BatchUploadService : public KeyedService {
   // the requested one, the entry point should not be shown.
   bool ShouldShowBatchUploadEntryPointForDataType(BatchUploadDataType type);
 
+  // Returns whether the dialog is currently showing on a browser.
+  bool IsDialogOpened() const;
+
  private:
   // Callback on dialog closed. The `move_requested` input determines whether
   // the dialog was closed with a Cancel/Upload request.
@@ -51,12 +56,23 @@ class BatchUploadService : public KeyedService {
   // Whether the profile is in the proper sign in state to see the dialog.
   bool IsUserEligibleToOpenDialog() const;
 
+  // Callback to clear the overridden avatar text on timeout.
+  void OnAvatarOverrideTextTimeout();
+
   base::raw_ref<Profile> profile_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 
   // Controller lifetime is bind to when the dialog is currently showing. There
   // can only be one controller/dialog existing at the same time per profile.
   std::unique_ptr<BatchUploadController> controller_;
+  // Browser that is showing the dialog. Nullptr if the dialog is not opened.
+  raw_ptr<Browser> browser_;
+  // When accepting the bubble, the avatar button text is modified and this
+  // callback handles it's lifetime. Executing it will clear the text.
+  base::ScopedClosureRunner avatar_override_clear_callback_;
+  // Timer to clear the avatar override text. Triggered after accepting the
+  // bubble.
+  base::OneShotTimer avatar_override_timer_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_

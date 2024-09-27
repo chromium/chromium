@@ -11,10 +11,18 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Duration of displaying the saving to account text in the avatar button.
+constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
+    base::Seconds(3);
 
 // Temporary Dummy implementation. All IDs provided are arbitrary.
 // TODO(b/359146556): remove when actual providers are implemented.
@@ -116,7 +124,7 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
   }
 
   // Do not allow to have more than one controller/dialog shown at a time.
-  if (controller_) {
+  if (IsDialogOpened()) {
     // TODO(b/361330952): give focus to the browser that is showing the dialog
     // currently.
     return false;
@@ -126,6 +134,7 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
   // providers.
   controller_ = std::make_unique<BatchUploadController>(
       GetBatchUploadDataProviderMap(profile_.get()));
+  browser_ = browser;
 
   return controller_->ShowDialog(
       *delegate_, browser, /*done_callback=*/
@@ -135,12 +144,27 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
 
 void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
   CHECK(controller_);
-  // TODO(b/361034858): Use `move_requested` to determine whether we show the
-  // expanded pill on the avatar button that displays "Saving to your account"
-  // or not.
+  if (move_requested) {
+    avatar_override_clear_callback_ =
+        BrowserView::GetBrowserViewForBrowser(browser_.get())
+            ->toolbar_button_provider()
+            ->GetAvatarToolbarButton()
+            ->ShowExplicitText(
+                l10n_util::GetStringUTF16(
+                    IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),
+                // TODO(b/367938326): Add the right accessibility string.
+                std::nullopt);
+    avatar_override_timer_.Start(
+        FROM_HERE, kBatchUploadAvatarButtonOverrideTextDuration,
+        base::BindOnce(&BatchUploadService::OnAvatarOverrideTextTimeout,
+                       // Unretained is fine here since the timer is a field
+                       // member and will not fire if destroyed.
+                       base::Unretained(this)));
+  }
 
   // Reset the state of the service.
   controller_.reset();
+  browser_ = nullptr;
 }
 
 bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(
@@ -172,4 +196,13 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
   }
 
   return true;
+}
+
+void BatchUploadService::OnAvatarOverrideTextTimeout() {
+  CHECK(avatar_override_clear_callback_);
+  avatar_override_clear_callback_.RunAndReset();
+}
+
+bool BatchUploadService::IsDialogOpened() const {
+  return controller_ != nullptr;
 }
