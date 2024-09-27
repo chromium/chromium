@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +28,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -37,6 +39,13 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
+
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
+#endif
 
 namespace {
 
@@ -89,6 +98,14 @@ class SupervisedUserPendingStateNavigationTest
     supervision_mixin_.SignIn(
         supervised_user::SupervisionMixin::SignInMode::kSupervised);
 
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+    // TODO(crbug.com/368578425): handle this in SupervisionMixin.
+    supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
+        ChildAccountServiceFactory::GetForProfile(browser()->profile()),
+        supervised_user::SupervisionMixin::GetExpectedAuthState(
+            supervised_user::SupervisionMixin::SignInMode::kSupervised));
+#endif
+
     ASSERT_FALSE(
         identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
             identity_manager()->GetPrimaryAccountId(
@@ -109,10 +126,21 @@ class SupervisedUserPendingStateNavigationTest
       mixin_host_,
       this,
       embedded_test_server(),
-      {.sign_in_mode =
+      {.consent_level = signin::ConsentLevel::kSync,
+       .sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSupervised,
        .embedded_test_server_options = {.resolver_rules_map_host_list =
                                             "*.example.com"}}};
+
+  void SetManualHost(GURL url, bool allowlist) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+    supervised_user::SupervisedUserURLFilter* url_filter =
+        supervised_user_service->GetURLFilter();
+    std::map<std::string, bool> hosts;
+    hosts[url.host()] = allowlist;
+    url_filter->SetManualHosts(std::move(hosts));
+  }
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
@@ -147,6 +175,36 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 
   // UKM should not be recorded for the blocked site interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+                       TestManualBlockedSiteMainFrameReauthInterstitial) {
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+
+  // Add exampleURL to the manual blocklist
+  GURL exampleURL = GURL("https://example.com/");
+  SetManualHost(exampleURL, /* allowlist */ false);
+
+  // Navigate to the requested URL and wait for the interstitial.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), exampleURL));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+
+  WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
+
+  EXPECT_EQ(ui_test_utils::FindInPage(
+                contents(),
+                l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER),
+                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+                /*selection_rect=*/nullptr),
+            1);
+
+  EXPECT_EQ(ui_test_utils::FindInPage(
+                contents(),
+                l10n_util::GetStringUTF16(
+                    IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN),
+                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+                /*selection_rect=*/nullptr),
+            1);
 }
 
 }  // namespace
