@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/prefs",
     "//chrome/common",
     "//components/site_engagement/content:content",
     "//content/public/browser",

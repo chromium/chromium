@@ -1807,6 +1807,7 @@ static_library("browser") {
     "//chrome/browser/profiles:profile_statistics_impl",
     "//chrome/browser/signin:impl",
     "//chrome/browser/ui/safety_hub:impl",
+    "//chrome/browser/ui/prefs:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1969,6 +1970,8 @@ static_library("browser") {
     "//chrome/browser/ui/hats:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
+    "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/tabs",
