@@ -648,13 +648,7 @@ def main():
                       'clang-extra-tools. Overrides --extra-tools.')
   parser.add_argument('--extra-tools', nargs='*', default=[],
                       help='select additional chrome tools to build')
-  parser.add_argument('--no-runtimes',
-                      action='store_true',
-                      help='don\'t build compiler-rt, sanitizer and profile '
-                      'runtimes. This is incompatible with --pgo. On Mac, '
-                      'compiler-rt is always built regardless.')
-  parser.add_argument('--use-system-cmake',
-                      action='store_true',
+  parser.add_argument('--use-system-cmake', action='store_true',
                       help='use the cmake from PATH instead of downloading '
                       'and using prebuilt cmake binaries')
   parser.add_argument('--tf-path',
@@ -706,9 +700,6 @@ def main():
     print('works on Android. See ')
     print('https://www.chromium.org/developers/how-tos/android-build-instructions')
     print('for how to install the NDK, or pass --without-android.')
-    return 1
-  if args.no_runtimes and args.pgo:
-    print('--pgo requires runtimes, can\'t use --no-runtimes')
     return 1
 
   if args.with_fuchsia and not os.path.exists(FUCHSIA_SDK_DIR):
@@ -788,12 +779,6 @@ def main():
   if args.bolt:
     projects += ';bolt'
 
-  runtimes = ''
-  # On macOS, we always need to build compiler-rt because dsymutil's link needs
-  # libclang_rt.osx.a.
-  if not args.no_runtimes or sys.platform == 'darwin':
-    runtimes = 'compiler-rt'
-
   pic_default = sys.platform == 'win32'
   pic_mode = 'ON' if args.pic or pic_default else 'OFF'
 
@@ -801,9 +786,9 @@ def main():
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
-      f'-DLLVM_ENABLE_PROJECTS={projects}',
-      f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
-      f'-DLLVM_TARGETS_TO_BUILD={targets}',
+      '-DLLVM_ENABLE_PROJECTS=' + projects,
+      '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
+      '-DLLVM_TARGETS_TO_BUILD=' + targets,
       f'-DLLVM_ENABLE_PIC={pic_mode}',
       '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',
@@ -1405,13 +1390,9 @@ def main():
       else:
         cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
         cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
-    if not args.no_runtimes:
-      profile = runtimes_triples_args[triple]["profile"],
-      sanitizers = runtimes_triples_args[triple]["sanitizers"]
-    else:
-      profile = False
-      sanitizers = False
-    for arg in compiler_rt_cmake_flags(profile=profile, sanitizers=sanitizers):
+    for arg in compiler_rt_cmake_flags(
+        profile=runtimes_triples_args[triple]["profile"],
+        sanitizers=runtimes_triples_args[triple]["sanitizers"]):
       # 'default' is specially handled to pass through relevant CMake flags.
       if triple == 'default':
         cmake_args.append('-D' + arg)

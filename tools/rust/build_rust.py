@@ -538,7 +538,6 @@ def BuildLLVMLibraries(skip_build):
             os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
             '--disable-asserts',
             '--no-tools',
-            '--no-runtimes',
             # PIC needed for Rust build (links LLVM into shared object)
             '--pic',
             '--with-ml-inliner-model=',
