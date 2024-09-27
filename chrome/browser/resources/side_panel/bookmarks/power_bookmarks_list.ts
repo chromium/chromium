@@ -356,6 +356,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
     this.set(`imageUrls_.${bookmark.id.toString()}`, url);
+    this.imageUrls_ = structuredClone(this.imageUrls_);
   }
 
   onBookmarksLoaded() {
