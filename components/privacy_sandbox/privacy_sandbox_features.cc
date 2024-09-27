@@ -196,12 +196,6 @@ BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kPsRedesignAdPrivacyPage,
-             "PsRedesignAdPrivacyPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles{
-    &kPsRedesignAdPrivacyPage, "enable-toggles", false};
-
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
              "PsDualWritePrefsToNoticeStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);

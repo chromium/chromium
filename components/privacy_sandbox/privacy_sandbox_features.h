@@ -228,17 +228,9 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables visibility for toggles on the top-level Ad Privacy page.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPsRedesignAdPrivacyPage);
-
 // Enables the notice storage for pref storage.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
-
-// Enables setting the toggles on the top-level Ad Privacy page.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
 
 // Enables Activity Type Storage
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
