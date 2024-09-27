@@ -15,15 +15,15 @@ namespace {
 std::string AnchovyDescriptionTypeToString(
     proto::AnchovyDescription::Type type) {
   switch (type) {
-    case proto::AnchovyDescription_Type_ONE:
-    case proto::AnchovyDescription_Type_TWO:
+    case proto::AnchovyDescription_Type_PRIMARY_CAPTION:
+    case proto::AnchovyDescription_Type_SECONDARY_CAPTION:
       return "CAPTION";
-    case proto::AnchovyDescription_Type_THREE:
+    case proto::AnchovyDescription_Type_LABEL:
       return "LABEL";
-    case proto::AnchovyDescription_Type_FOUR:
+    case proto::AnchovyDescription_Type_OCR:
       return "OCR";
     case proto::AnchovyDescription_Type_UNKNOWN:
-    case proto::AnchovyDescription_Type_FIVE:
+    case proto::AnchovyDescription_Type_UNUSED:
     case proto::
         AnchovyDescription_Type_AnchovyDescription_Type_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
