@@ -24,7 +24,6 @@ import android.provider.Browser;
 import android.provider.Telephony;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
-import android.util.Pair;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebView;
 
@@ -630,15 +629,10 @@ public class ExternalNavigationHandler {
 
             // If the fallback URL is a link to Play Store, send the user to Play Store app
             // instead: crbug.com/638672.
-            Pair<String, String> appInfo = maybeGetPlayStoreAppIdAndReferrer(browserFallbackUrl);
-            if (appInfo != null) {
-                String marketReferrer =
-                        TextUtils.isEmpty(appInfo.second)
-                                ? ContextUtils.getApplicationContext().getPackageName()
-                                : appInfo.second;
+            String appName = maybeGetPlayStoreAppId(browserFallbackUrl);
+            if (appName != null) {
                 OverrideUrlLoadingResult result =
-                        sendIntentToMarket(
-                                appInfo.first, marketReferrer, params, browserFallbackUrl);
+                        sendIntentToMarket(appName, null, params, browserFallbackUrl);
                 if (result.getResultType()
                         == OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT) {
                     result = OverrideUrlLoadingResult.forExternalFallbackUrl();
@@ -1117,9 +1111,6 @@ public class ExternalNavigationHandler {
     private OverrideUrlLoadingResult handleWithMarketIntent(
             ExternalNavigationParams params, Intent intent) {
         String marketReferrer = IntentUtils.safeGetStringExtra(intent, EXTRA_MARKET_REFERRER);
-        if (TextUtils.isEmpty(marketReferrer)) {
-            marketReferrer = ContextUtils.getApplicationContext().getPackageName();
-        }
         return sendIntentToMarket(intent.getPackage(), marketReferrer, params, GURL.emptyGURL());
     }
 
@@ -1835,20 +1826,34 @@ public class ExternalNavigationHandler {
 
     /**
      * @return OVERRIDE_WITH_EXTERNAL_INTENT when we successfully started market activity,
-     *         NO_OVERRIDE otherwise.
+     *     NO_OVERRIDE otherwise.
      */
     private OverrideUrlLoadingResult sendIntentToMarket(
             String packageName,
             String marketReferrer,
             ExternalNavigationParams params,
             GURL fallbackUrl) {
-        Uri marketUri =
-                new Uri.Builder()
-                        .scheme("market")
-                        .authority("details")
-                        .appendQueryParameter(PLAY_PACKAGE_PARAM, packageName)
-                        .appendQueryParameter(PLAY_REFERRER_PARAM, Uri.decode(marketReferrer))
-                        .build();
+        Uri.Builder builder = new Uri.Builder().scheme("market").authority("details");
+        boolean hasReferrer = false;
+        if (fallbackUrl.isEmpty()) {
+            builder = builder.appendQueryParameter(PLAY_PACKAGE_PARAM, packageName);
+        } else {
+            if (!TextUtils.isEmpty(
+                    UrlUtilities.getValueForKeyInQuery(fallbackUrl, PLAY_REFERRER_PARAM))) {
+                hasReferrer = true;
+            }
+            builder = builder.encodedQuery(fallbackUrl.getQuery());
+        }
+
+        if (!hasReferrer) {
+            builder =
+                    builder.appendQueryParameter(
+                            PLAY_REFERRER_PARAM,
+                            marketReferrer != null
+                                    ? marketReferrer
+                                    : ContextUtils.getApplicationContext().getPackageName());
+        }
+        Uri marketUri = builder.build();
         Intent intent = new Intent(Intent.ACTION_VIEW, marketUri);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setPackage(PLAY_APP_PACKAGE);
@@ -1878,20 +1883,21 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * If the given URL is to Google Play, extracts the package name and referrer tracking code
-     * from the {@param url} and returns as a Pair in that order. Otherwise returns null.
+     * If the given URL is to Google Play, extracts the package name and referrer tracking code from
+     * the {@param url} and returns as a Pair in that order. Otherwise returns null.
      */
-    private Pair<String, String> maybeGetPlayStoreAppIdAndReferrer(GURL url) {
-        if (PLAY_HOSTNAME.equals(url.getHost()) && url.getPath().startsWith(PLAY_APP_PATH)) {
-            String playPackage = UrlUtilities.getValueForKeyInQuery(url, PLAY_PACKAGE_PARAM);
-            if (TextUtils.isEmpty(playPackage)) return null;
-            return new Pair<String, String>(
-                    playPackage, UrlUtilities.getValueForKeyInQuery(url, PLAY_REFERRER_PARAM));
+    private String maybeGetPlayStoreAppId(GURL url) {
+        if (!PLAY_HOSTNAME.equals(url.getHost()) || !url.getPath().startsWith(PLAY_APP_PATH)) {
+            return null;
         }
-        return null;
+        String playPackage = UrlUtilities.getValueForKeyInQuery(url, PLAY_PACKAGE_PARAM);
+        if (TextUtils.isEmpty(playPackage)) return null;
+        return playPackage;
     }
 
-    /** @return Whether the |url| could be handled by an external application on the system. */
+    /**
+     * @return Whether the |url| could be handled by an external application on the system.
+     */
     @VisibleForTesting
     boolean canExternalAppHandleUrl(GURL url) {
         if (url.getSpec().startsWith(WTAI_MC_URL_PREFIX)) return true;

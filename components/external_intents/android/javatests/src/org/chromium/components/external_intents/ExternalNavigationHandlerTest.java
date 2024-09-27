@@ -1101,8 +1101,10 @@ public class ExternalNavigationHandlerTest {
                         + "S."
                         + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL
                         + "="
-                        + "https://play.google.com/store/apps/details?id=com.imdb.mobile"
-                        + "&referrer=mypage;end";
+                        + Uri.encode(
+                                "https://play.google.com/store/apps/details?id=com.imdb.mobile"
+                                        + "&referrer=mypage")
+                        + ";end";
         checkUrl(intent, redirectHandlerForLinkClick())
                 .expecting(
                         OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
@@ -1117,7 +1119,9 @@ public class ExternalNavigationHandlerTest {
                         + "S."
                         + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL
                         + "="
-                        + "https://play.google.com/store/apps/details?id=com.imdb.mobile;end";
+                        + Uri.encode(
+                                "https://play.google.com/store/apps/details?id=com.imdb.mobile")
+                        + ";end";
         checkUrl(intentNoRef, redirectHandlerForLinkClick())
                 .expecting(
                         OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
@@ -1132,9 +1136,28 @@ public class ExternalNavigationHandlerTest {
                         + "S."
                         + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL
                         + "="
-                        + "https://play.google.com/store/search?q=pub:imdb;end";
+                        + Uri.encode("https://play.google.com/store/search?q=pub:imdb")
+                        + ";end";
         checkUrl(intentBadUrl, redirectHandlerForLinkClick())
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
+
+        String intentWithQuery =
+                "intent:///name/nm0000158#Intent;scheme=imdb;package=com.imdb.mobile;"
+                        + "S."
+                        + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL
+                        + "="
+                        + Uri.encode(
+                                "https://play.google.com/store/apps/details?id=com.imdb.mobile"
+                                        + "&referrer=mypage&unknown-param=foo")
+                        + ";end";
+        checkUrl(intentWithQuery, redirectHandlerForLinkClick())
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        Assert.assertEquals(
+                "market://details?id=com.imdb.mobile&referrer=mypage&unknown-param=foo",
+                mUrlHandler.mStartActivityIntent.getDataString());
     }
 
     @Test
