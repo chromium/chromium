@@ -12,9 +12,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
@@ -36,6 +38,20 @@
 #include "url/gurl.h"
 
 namespace net {
+
+namespace {
+
+constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerPool{
+    &features::kHappyEyeballsV3,
+    HttpStreamPool::kMaxStreamSocketsPerPoolParamName.data(),
+    HttpStreamPool::kDefaultMaxStreamSocketsPerPool};
+
+constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerGroup{
+    &features::kHappyEyeballsV3,
+    HttpStreamPool::kMaxStreamSocketsPerGroupParamName.data(),
+    HttpStreamPool::kDefaultMaxStreamSocketsPerGroup};
+
+}  // namespace
 
 // An implementation of HttpStreamRequest::Helper that is used to create a
 // request when the pool can immediately provide an HttpStream from existing
@@ -124,7 +140,13 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
     : http_network_session_(http_network_session),
       stream_attempt_params_(
           StreamAttemptParams::FromHttpNetworkSession(http_network_session_)),
-      cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
+      cleanup_on_ip_address_change_(cleanup_on_ip_address_change),
+      max_stream_sockets_per_pool_(kHttpStreamPoolMaxStreamPerPool.Get()),
+      // Ensure that the per-group limit is less than or equals to the per-pool
+      // limit.
+      max_stream_sockets_per_group_(
+          std::min(kHttpStreamPoolMaxStreamPerPool.Get(),
+                   kHttpStreamPoolMaxStreamPerGroup.Get())) {
   CHECK(http_network_session_);
   if (cleanup_on_ip_address_change) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
@@ -197,7 +219,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
 int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
                                size_t num_streams,
                                CompletionOnceCallback callback) {
-  num_streams = std::min(kMaxStreamSocketsPerGroup, num_streams);
+  num_streams = std::min(kDefaultMaxStreamSocketsPerGroup, num_streams);
 
   const HttpStreamKey& stream_key = switching_info.stream_key;
   if (!IsPortAllowedForScheme(stream_key.destination().port(),
@@ -242,7 +264,7 @@ int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kMaxStreamSocketsPerPool);
+  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
   ++total_idle_stream_count_;
 }
 
@@ -252,7 +274,7 @@ void HttpStreamPool::DecrementTotalIdleStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalHandedOutStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kMaxStreamSocketsPerPool);
+  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
   ++total_handed_out_stream_count_;
 }
 
@@ -262,7 +284,7 @@ void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalConnectingStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kMaxStreamSocketsPerPool);
+  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
   ++total_connecting_stream_count_;
 }
 

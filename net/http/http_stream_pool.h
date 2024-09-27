@@ -80,13 +80,19 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr std::string_view kSocketGenerationOutOfDate =
       "Socket generation out of date";
 
-  // The maximum number of sockets per pool. The same as
+  // The default maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().
-  static constexpr size_t kMaxStreamSocketsPerPool = 256;
+  static constexpr size_t kDefaultMaxStreamSocketsPerPool = 256;
 
-  // The maximum number of socket per group. The same as
+  // The default maximum number of socket per group. The same as
   // ClientSocketPoolManager::max_sockets_per_group().
-  static constexpr size_t kMaxStreamSocketsPerGroup = 6;
+  static constexpr size_t kDefaultMaxStreamSocketsPerGroup = 6;
+
+  // FeatureParam names for setting per pool/group limits.
+  static constexpr std::string_view kMaxStreamSocketsPerPoolParamName =
+      "max_stream_per_pool";
+  static constexpr std::string_view kMaxStreamSocketsPerGroupParamName =
+      "max_stream_per_group";
 
   // The time to wait between connection attempts.
   static constexpr base::TimeDelta kConnectionAttemptDelay =
@@ -262,12 +268,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
 
-  StreamAttemptParams stream_attempt_params_;
+  const StreamAttemptParams stream_attempt_params_;
 
   const bool cleanup_on_ip_address_change_;
 
-  size_t max_stream_sockets_per_pool_ = kMaxStreamSocketsPerPool;
-  size_t max_stream_sockets_per_group_ = kMaxStreamSocketsPerGroup;
+  size_t max_stream_sockets_per_pool_;
+  size_t max_stream_sockets_per_group_;
 
   // The total number of active streams this pool handed out across all groups.
   size_t total_handed_out_stream_count_ = 0;

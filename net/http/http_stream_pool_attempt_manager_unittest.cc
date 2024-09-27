@@ -1299,6 +1299,17 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, FeatureParamStreamLimits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kHappyEyeballsV3,
+      {{std::string(HttpStreamPool::kMaxStreamSocketsPerPoolParamName), "2"},
+       {std::string(HttpStreamPool::kMaxStreamSocketsPerGroupParamName), "3"}});
+  InitializeSession();
+  ASSERT_EQ(pool().max_stream_sockets_per_pool(), 2u);
+  ASSERT_EQ(pool().max_stream_sockets_per_group(), 2u);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   constexpr size_t kMaxPerGroup = 4;
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
