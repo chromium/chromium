@@ -39,7 +39,7 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   virtual void SetIsShownOnStartSurface(bool shown_on_start_surface);
 
   // Returns the FeedMetricsRecorder to be used by the feed. There only exists a
-  // single instance of the metrics recorder per browser state.
+  // single instance of the metrics recorder per profile.
   virtual FeedMetricsRecorder* GetFeedMetricsRecorder() = 0;
 
   // Returns the Discover Feed ViewController with a custom
