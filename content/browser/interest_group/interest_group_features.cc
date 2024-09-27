@@ -22,6 +22,11 @@ BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable parsing forDebuggingOnly reports from B&A response, for down sampling.
+BASE_FEATURE(kEnableBandASampleDebugReports,
+             "EnableBandASampleDebugReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable parsing ad auction response headers for an iframe navigation request.
 BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
              "EnableIFrameAdAuctionHeaders",

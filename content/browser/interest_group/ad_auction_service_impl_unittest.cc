@@ -14075,7 +14075,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
-         {"fledge_enable_filtering_debug_report_starting_from", "0"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kTopLevelDecisionUrlPath[] =
@@ -14272,7 +14273,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
-         {"fledge_enable_filtering_debug_report_starting_from", "0"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kTopLevelDecisionUrlPath[] =
@@ -14472,7 +14474,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "10000"},
-         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kDecisionScript[] = R"(
@@ -14608,7 +14611,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "100000"},
-         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14713,7 +14717,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14869,7 +14874,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "0ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "0ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14984,7 +14990,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();

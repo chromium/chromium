@@ -13,7 +13,10 @@
 namespace features {
 // Please keep features in alphabetical order.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAPrivateAggregation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandASampleDebugReports);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableIFrameAdAuctionHeaders);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
