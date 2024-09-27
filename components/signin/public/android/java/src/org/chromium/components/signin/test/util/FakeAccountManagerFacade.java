@@ -364,7 +364,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * @param newAccountName The account name to return when the add account flow finishes.
      * @param isMinorModeEnabled The account is subjected to minor mode restrictions
      */
-    public void setUpNextAddAccountFlow(
+    public void setAddAccountFlowResult(
             @Nullable String newAccountName, boolean isMinorModeEnabled) {
         // TODO(crbug.com/343872217) Update method to use AccountInfo
         mNameOfAccountToAdd = newAccountName;

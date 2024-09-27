@@ -393,7 +393,7 @@ public class SigninAndHistorySyncIntegrationTest {
         // Select "Add Account" on the shown expanded sign-in bottom-sheet.
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
-        mSigninTestRule.setUpNextAddAccountFlow(
+        mSigninTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
@@ -539,7 +539,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
-        mSigninTestRule.setUpNextAddAccountFlow(
+        mSigninTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -611,7 +611,7 @@ public class SigninAndHistorySyncIntegrationTest {
                                 withParent(withId(R.id.account_picker_state_no_account)),
                                 isCompletelyDisplayed()))
                 .perform(click());
-        mSigninTestRule.setUpNextAddAccountFlow(
+        mSigninTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 

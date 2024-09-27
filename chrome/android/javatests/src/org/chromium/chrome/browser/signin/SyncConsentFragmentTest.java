@@ -841,7 +841,7 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER);
-                            mSigninTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_NAME);
+                            mSigninTestRule.setAddAccountFlowResult(NEW_ACCOUNT_NAME);
                             onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER)
                                     .perform(click());
                         });

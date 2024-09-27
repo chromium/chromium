@@ -277,8 +277,8 @@ public class AccountManagerTestRule implements TestRule {
      *
      * @param newAccountName The account name to return when the add account flow finishes.
      */
-    public void setUpNextAddAccountFlow(@Nullable String newAccountName) {
-        setUpNextAddAccountFlow(newAccountName, false);
+    public void setAddAccountFlowResult(@Nullable String newAccountName) {
+        setAddAccountFlowResult(newAccountName, false);
     }
 
     /**
@@ -288,11 +288,11 @@ public class AccountManagerTestRule implements TestRule {
      * @param newAccountName The account name to return when the add account flow finishes.
      * @param isMinorModeEnabled The account be subject to minor mode restrictions
      */
-    public void setUpNextAddAccountFlow(
+    public void setAddAccountFlowResult(
             @Nullable String newAccountName, boolean isMinorModeEnabled) {
         // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
         // AccountInfo}
-        mFakeAccountManagerFacade.setUpNextAddAccountFlow(newAccountName, isMinorModeEnabled);
+        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccountName, isMinorModeEnabled);
     }
 
     /** Makes the add account intent creation fail. */

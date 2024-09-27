@@ -960,7 +960,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -989,7 +989,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -1219,7 +1219,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -1246,7 +1246,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -1277,7 +1277,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
@@ -1487,7 +1487,7 @@ public class AccountPickerBottomSheetTest {
 
         // Start sign-in and remove the account before completing the device lock.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_2.getId());
@@ -1510,7 +1510,7 @@ public class AccountPickerBottomSheetTest {
 
         // Start sign-in and remove the account before validating the management notice.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setUpNextAddAccountFlow(
+        mAccountManagerTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         waitForView(

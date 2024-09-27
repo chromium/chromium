@@ -1130,7 +1130,7 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL2);
+        mSigninTestRule.setAddAccountFlowResult(TEST_EMAIL2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
@@ -1145,7 +1145,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL1);
+        mSigninTestRule.setAddAccountFlowResult(TEST_EMAIL1);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
@@ -1171,7 +1171,7 @@ public class SigninFirstRunFragmentTest {
                 mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ true)) {
             launchActivityWithFragment();
             onView(withText(R.string.signin_add_account_to_device)).perform(click());
-            mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL1);
+            mSigninTestRule.setAddAccountFlowResult(TEST_EMAIL1);
             onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
             checkFragmentWithSelectedAccount(
                     TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
