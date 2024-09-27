@@ -4,8 +4,9 @@
 
 #include "chrome/browser/dips/dips_navigation_flow_detector.h"
 
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -22,7 +23,6 @@ PageVisitInfo::PageVisitInfo() {
   did_page_have_successful_waa = false;
   was_navigation_to_page_user_initiated = std::nullopt;
   was_navigation_to_page_renderer_initiated = std::nullopt;
-  did_site_have_prior_activation_record = std::nullopt;
 }
 
 PageVisitInfo::PageVisitInfo(PageVisitInfo&& other) = default;
@@ -30,26 +30,12 @@ PageVisitInfo::PageVisitInfo(PageVisitInfo&& other) = default;
 }  // namespace dips
 
 DipsNavigationFlowDetector::DipsNavigationFlowDetector(
-    content::WebContents* web_contents,
-    DIPSService* dips_service)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
-      current_page_visit_info_(dips::PageVisitInfo()),
-      dips_service_(dips_service) {}
+      current_page_visit_info_(dips::PageVisitInfo()) {}
 
 DipsNavigationFlowDetector::~DipsNavigationFlowDetector() = default;
-
-/* static */
-void DipsNavigationFlowDetector::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
-  if (!dips_service) {
-    return;
-  }
-
-  DipsNavigationFlowDetector::CreateForWebContents(web_contents, dips_service);
-}
 
 void DipsNavigationFlowDetector::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -79,7 +65,6 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
     current_page_visit_info_.emplace(dips::PageVisitInfo());
   }
 
-  CheckIfSiteHadPriorActivation(current_page_url);
   current_page_visit_info_->site = GetSiteForDIPS(current_page_url);
   current_page_visit_info_->source_id = render_frame_host->GetPageUkmSourceId();
   current_page_visit_info_->was_navigation_to_page_renderer_initiated =
@@ -98,28 +83,6 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
   last_page_change_time_ = now;
 
   MaybeEmitUkmForPreviousPage();
-}
-
-void DipsNavigationFlowDetector::CheckIfSiteHadPriorActivation(GURL url) {
-  dips_service_->DidSiteHaveInteractionSince(
-      url, base::Time::Min(),
-      base::BindOnce(&DipsNavigationFlowDetector::GotDipsInteraction,
-                     weak_factory_.GetWeakPtr(),
-                     current_page_visit_info_->site));
-}
-
-void DipsNavigationFlowDetector::GotDipsInteraction(
-    std::string site_read_state_for,
-    bool had_interaction) {
-  // If the site we got state for is not the current site, then the DIPS DB read
-  // didn't return until after the site was navigated away from. In that case,
-  // we've already emitted UKM (or decided not to emit) for that page, so
-  // discard the value.
-  if (site_read_state_for != current_page_visit_info_->site) {
-    return;
-  }
-  current_page_visit_info_->did_site_have_prior_activation_record =
-      had_interaction;
 }
 
 void DipsNavigationFlowDetector::MaybeEmitUkmForPreviousPage() {
@@ -145,10 +108,6 @@ void DipsNavigationFlowDetector::MaybeEmitUkmForPreviousPage() {
       .SetWasExitUserInitiated(
           *current_page_visit_info_->was_navigation_to_page_user_initiated)
       .SetVisitDurationMilliseconds(bucketized_previous_page_visit_duration_);
-  if (previous_page_visit_info_->did_site_have_prior_activation_record) {
-    builder.SetDidSiteHavePreviousUserActivation(
-        *previous_page_visit_info_->did_site_have_prior_activation_record);
-  }
   builder.Record(ukm::UkmRecorder::Get());
 }
 

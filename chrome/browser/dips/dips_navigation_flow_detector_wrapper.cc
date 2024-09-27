@@ -10,7 +10,7 @@
 DipsNavigationFlowDetectorWrapper::DipsNavigationFlowDetectorWrapper(
     tabs::TabInterface& tab)
     : tab_(&tab) {
-  DipsNavigationFlowDetector::MaybeCreateForWebContents(tab_->GetContents());
+  DipsNavigationFlowDetector::CreateForWebContents(tab_->GetContents());
   tab_subscriptions_.push_back(
       tab_->RegisterWillDiscardContents(base::BindRepeating(
           &DipsNavigationFlowDetectorWrapper::WillDiscardContents,
@@ -31,5 +31,5 @@ void DipsNavigationFlowDetectorWrapper::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   old_contents->RemoveUserData(DipsNavigationFlowDetector::UserDataKey());
-  DipsNavigationFlowDetector::MaybeCreateForWebContents(new_contents);
+  DipsNavigationFlowDetector::CreateForWebContents(new_contents);
 }

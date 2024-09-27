@@ -42,7 +42,6 @@ struct PageVisitInfo {
   bool did_page_have_successful_waa;
   std::optional<bool> was_navigation_to_page_renderer_initiated;
   std::optional<bool> was_navigation_to_page_user_initiated;
-  std::optional<bool> did_site_have_prior_activation_record;
 };
 
 }  // namespace dips
@@ -57,16 +56,13 @@ class DipsNavigationFlowDetector
  public:
   ~DipsNavigationFlowDetector() override;
 
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
-
   void SetClockForTesting(base::Clock* clock) {
     CHECK(clock);
     clock_ = *clock;
   }
 
  protected:
-  explicit DipsNavigationFlowDetector(content::WebContents* web_contents,
-                                      DIPSService* dips_service);
+  explicit DipsNavigationFlowDetector(content::WebContents* web_contents);
 
   void MaybeEmitUkmForPreviousPage();
   bool CanEmitUkmForPreviousPage() {
@@ -116,10 +112,6 @@ class DipsNavigationFlowDetector
   void WebAuthnAssertionRequestSucceeded(
       content::RenderFrameHost* render_frame_host) override;
   // end WebContentsObserver overrides
-
-  void CheckIfSiteHadPriorActivation(GURL url);
-  void GotDipsInteraction(std::string site_read_state_for,
-                          bool had_interaction);
 
   std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
   std::optional<dips::PageVisitInfo> previous_page_visit_info_;

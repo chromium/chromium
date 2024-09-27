@@ -7358,12 +7358,6 @@ be describing additional metrics about the same event.
       True if this page received user activation (click, etc.) during the visit.
     </summary>
   </metric>
-  <metric name="DidSiteHavePreviousUserActivation" enum="Boolean">
-    <summary>
-      True if DIPS had a record of user activation on this page's site prior to
-      this visit to this page.
-    </summary>
-  </metric>
   <metric name="VisitDurationMilliseconds">
     <summary>
       The number of milliseconds this page was the primary page for,
