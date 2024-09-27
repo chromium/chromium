@@ -76,6 +76,7 @@ export interface ProductSpecificationsElement {
     offlineToast: CrToastElement,
     productSelector: ProductSelectorElement,
     specs: HTMLElement,
+    summaryContainer: HTMLElement,
     summaryTable: TableElement,
     syncPromo: HTMLElement,
     turnOnSyncButton: CrButtonElement,
@@ -226,6 +227,8 @@ export class ProductSpecificationsElement extends PolymerElement {
   private eventTracker_: EventTracker = new EventTracker();
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
+  private loadingAnimationSlidePx_: number = 16;
+  private loadingAnimationSlideDurationMs_: number = 200;
   private minLoadingAnimationMs_: number = 500;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -411,9 +414,10 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private async populateTable_(urls: string[]) {
+    await this.enterLoadingState_(urls.length);
+
     const start = Date.now();
     this.showEmptyState_ = false;
-    this.loadingState_ = {loading: true, urlCount: urls.length};
     this.$.errorToast.hide();
 
     const tableColumns: TableColumn[] = [];
@@ -460,7 +464,7 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     this.tableColumns_ = tableColumns;
     this.showEmptyState_ = this.tableColumns_.length === 0;
-    this.loadingState_ = {loading: false, urlCount: 0};
+    this.exitLoadingState_();
   }
 
   private get isOffline_(): boolean {
@@ -746,6 +750,64 @@ export class ProductSpecificationsElement extends PolymerElement {
   private getDisclaimerText_(): string {
     return loadTimeData.getStringF(
         'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
+  }
+
+  private fadeAndSlideOutSummaryContainer_(): Animation {
+    return this.$.summaryContainer.animate(
+        [
+          {opacity: 1, transform: 'translateY(0px)'},
+          {
+            opacity: 0,
+            transform: `translateY(-${this.loadingAnimationSlidePx_}px)`,
+          },
+        ],
+        {
+          duration: this.loadingAnimationSlideDurationMs_,
+          easing: 'ease-out',
+          fill: 'forwards',
+        });
+  }
+
+  private fadeAndSlideInSummaryContainer_(): Animation {
+    return this.$.summaryContainer.animate(
+        [
+          {
+            opacity: 0,
+            transform: `translateY(${this.loadingAnimationSlidePx_}px)`,
+          },
+          {opacity: 1, transform: 'translateY(0px)'},
+        ],
+        {
+          duration: this.loadingAnimationSlideDurationMs_,
+          easing: 'ease-out',
+          fill: 'forwards',
+        });
+  }
+
+  // Resolves upon updating the loading state.
+  private async enterLoadingState_(urlCount: number): Promise<void> {
+    if ([AppState.ERROR, AppState.SYNC_SCREEN, AppState.LOADING].includes(
+            this.appState_)) {
+      this.loadingState_ = {loading: true, urlCount};
+      return Promise.resolve();
+    }
+
+    const anim = this.fadeAndSlideOutSummaryContainer_();
+    return new Promise<void>(resolve => {
+      anim.addEventListener('finish', () => {
+        this.loadingState_ = {loading: true, urlCount};
+        resolve();
+        this.fadeAndSlideInSummaryContainer_();
+      });
+    });
+  }
+
+  private exitLoadingState_() {
+    const anim = this.fadeAndSlideOutSummaryContainer_();
+    anim.addEventListener('finish', () => {
+      this.loadingState_ = {loading: false, urlCount: 0};
+      this.fadeAndSlideInSummaryContainer_();
+    });
   }
 }
 
