@@ -155,7 +155,8 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         // https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
         Stage targetStage =
                 ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
-                                && mActivity != null)
+                                && mActivity != null
+                                && !mActivity.isFinishing())
                         ? Stage.PAUSED
                         : Stage.CREATED;
         mActivity =
