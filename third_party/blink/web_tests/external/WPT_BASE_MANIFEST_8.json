@@ -274241,7 +274241,7 @@
         ]
        ],
        "2d.layer.globalCompositeOperation.html": [
-        "3fe93c15880c1de782745bc7738564231fef0cad",
+        "29a163260ded0cfa0148d86f044cfbf1a11e90c5",
         [
          null,
          [
@@ -277173,7 +277173,7 @@
         ]
        ],
        "2d.layer.globalCompositeOperation.html": [
-        "e4219daaf1651a3187fc28c1cb6fa4406ee8f530",
+        "b9bf19b7e38f9bbd66bf2f66f2ede7993c843c44",
         [
          null,
          [
@@ -277186,7 +277186,7 @@
         ]
        ],
        "2d.layer.globalCompositeOperation.w.html": [
-        "520fc877d2ade7fbab2053f6bc68bb12664b16c6",
+        "6620ee7232a03d5ad293728db04f3083f0e59902",
         [
          null,
          [
@@ -344225,10 +344225,6 @@
       "060f0651b691a7db6c8cb2817c09201e0f8280b6",
       []
      ],
-     "fixed-layout-2-expected.txt": [
-      "daa1ca855c8eba6d449f0e0db7b4cb5d2a60ae43",
-      []
-     ],
      "floats": {
       "floats-wrap-bfc-006b-ref.xht": [
        "93cdd3e51cab23bd4f20fb1794ae7eeeb5ff21b1",
@@ -373956,7 +373952,7 @@
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
-        "ddcd709eab1746eff37d750a76eb76754b7fa6fb",
+        "e00136f6106ecc04161c92c5807bccffaf6b7129",
         []
        ],
        "2d.layer.nested-ctx-filter-expected.html": [
@@ -375128,7 +375124,7 @@
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
-        "ddcd709eab1746eff37d750a76eb76754b7fa6fb",
+        "e00136f6106ecc04161c92c5807bccffaf6b7129",
         []
        ],
        "2d.layer.nested-ctx-filter-expected.html": [
@@ -375437,7 +375433,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "183a6f6e3955389b4b783b7287846399fc825e9e",
+       "99ac3ae555671c6a6e66d44a0bda93179bfcc6dd",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -375558,7 +375554,7 @@
         []
        ],
        "layers.yaml": [
-        "678038032f19e734489e2001e000e39c1ed24f75",
+        "eb9edd96c7e0b07b56318bea9aca742a35d21101",
         []
        ],
        "line-styles.yaml": [
@@ -480833,7 +480829,7 @@
       ]
      ],
      "fixed-layout-2.html": [
-      "dcbabb1ff7460ce563c3f127b9215e7b1211434b",
+      "3b7f65feccf578e7ead60186bf48517d750428be",
       [
        null,
        {}
@@ -729859,6 +729855,15 @@
     ],
     "RTCPeerConnection-generateCertificate.html": [
      "da86f23017a297470a548f386178d06001b4c543",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "RTCPeerConnection-getStats-timestamp.https.html": [
+     "9345d5838d126beccbe025bf32a45ada5a1d2b89",
      [
       null,
       {

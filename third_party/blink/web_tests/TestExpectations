@@ -2597,6 +2597,8 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
+[ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height.html [ Failure ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--cover--height.html [ Failure ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--percent-width-percent-height.html [ Failure ]
@@ -2637,6 +2639,7 @@ crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-023.h
 crbug.com/368464068 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
+[ Mac14 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 crbug.com/368060001 [ Mac15-arm64 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
 crbug.com/368060001 [ Mac15 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
