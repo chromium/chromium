@@ -925,6 +925,10 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated: {
       content_source_button_->RefreshContentSourceInfo();
+
+      // Reset feedback buttons when new content is requested.
+      thumbs_up_button_->SetToggled(false);
+      thumbs_down_button_->SetToggled(false);
       return;
     }
     case MahiUiUpdateType::kErrorReceived:

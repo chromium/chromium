@@ -1997,4 +1997,30 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
                 ->GetText());
 }
 
+TEST_F(MahiPanelViewTest, FeedbackButtonResetWhenRefresh) {
+  IconButton* thumbs_up_button = views::AsViewClass<IconButton>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsUpButton));
+  IconButton* thumbs_down_button = views::AsViewClass<IconButton>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsDownButton));
+  EXPECT_FALSE(thumbs_up_button->toggled());
+  EXPECT_FALSE(thumbs_down_button->toggled());
+
+  LeftClickOn(thumbs_up_button);
+  EXPECT_TRUE(thumbs_up_button->toggled());
+  EXPECT_FALSE(thumbs_down_button->toggled());
+
+  // Test that the feedback button is reset when content is refreshed.
+  ui_controller()->RefreshContents();
+  EXPECT_FALSE(thumbs_up_button->toggled());
+  EXPECT_FALSE(thumbs_down_button->toggled());
+
+  LeftClickOn(thumbs_down_button);
+  EXPECT_FALSE(thumbs_up_button->toggled());
+  EXPECT_TRUE(thumbs_down_button->toggled());
+
+  ui_controller()->RefreshContents();
+  EXPECT_FALSE(thumbs_up_button->toggled());
+  EXPECT_FALSE(thumbs_down_button->toggled());
+}
+
 }  // namespace ash
