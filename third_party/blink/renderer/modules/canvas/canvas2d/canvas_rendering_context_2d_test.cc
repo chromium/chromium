@@ -2239,13 +2239,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       CanvasSnapshotInBackgroundDoesNotEndHibernation) {
+       CanvasSnapshotWhileHibernating) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
   ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
       RasterModeHint::kPreferGPU));
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
   auto& handler = bridge->GetHibernationHandlerForTesting();
@@ -2284,13 +2285,19 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   ASSERT_FALSE(CanvasElement().ResourceProvider());
   ASSERT_TRUE(bridge->IsHibernating());
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   // Wait for encoding to complete on a background thread.
   run_loop.Run();
   ASSERT_TRUE(handler.is_encoded());
 
-  // Taking a snapshot of the canvas should not cause hibernation to end.
-  EXPECT_TRUE(Context2D()->GetImage(FlushReason::kTesting));
+  // Taking a snapshot of the canvas while hibernating should produce an
+  // unaccelerated image.
+  EXPECT_FALSE(Context2D()->GetImage(FlushReason::kTesting)->IsTextureBacked());
+
+  // The action of taking the snapshot should not have impacted the state of
+  // hibernation.
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(handler.is_encoded());
 }
