@@ -3304,10 +3304,6 @@ if (!is_android) {
       sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
     }
 
-    if (is_chrome_branded && !is_chromeos) {
-      sources += [ "../browser/ui/views/side_panel/search_companion/companion_page_browsertest.cc" ]
-    }
-
     if (is_chrome_branded && !is_android) {
       sources += [
         "../browser/ui/views/promos/ios_promo_bubble_browsertest.cc",
