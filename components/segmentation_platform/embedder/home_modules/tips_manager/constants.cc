@@ -40,4 +40,10 @@ std::string NameForTipPresentationContext(TipPresentationContext context) {
 }
 // LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.h:TipPresentationContext)
 
+constexpr char kFirstObservedTime[] = "first_observed_time";
+constexpr char kLastObservedTime[] = "last_observed_time";
+constexpr char kTotalOccurrences[] = "total_occurrences";
+constexpr char kTipsSignalHistory[] =
+    "segmentation_platform.tips.signal_history";
+
 }  // namespace segmentation_platform

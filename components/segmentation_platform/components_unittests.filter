@@ -81,6 +81,7 @@
 *TabResumptionRankerTest.*
 *TabSessionSourceTest.*
 *TabletProductivityUserModelTest.*
+*TipsManagerTest.*
 *TrainingDataCacheTest.*
 *TrainingDataCollectorImplTest.*
 *URLVisitResumptionRankerTest.*

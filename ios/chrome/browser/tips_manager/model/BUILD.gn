@@ -25,7 +25,10 @@ source_set("factory") {
     ":tips_manager",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/pref_registry",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:public",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }

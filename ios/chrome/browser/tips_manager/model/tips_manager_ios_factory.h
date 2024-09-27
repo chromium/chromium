@@ -13,9 +13,12 @@
 
 class TipsManagerIOS;
 class KeyedService;
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 namespace web {
 class BrowserState;
-}
+}  // namespace web
 
 // Singleton that owns all `TipsManagerIOS` objects and associates them
 // with Profiles.
@@ -42,6 +45,8 @@ class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {
   // `context`.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TIPS_MANAGER_MODEL_TIPS_MANAGER_IOS_FACTORY_H_

@@ -62,6 +62,32 @@ enum class TipPresentationContext {
 // Returns the string representation of `context`.
 std::string NameForTipPresentationContext(TipPresentationContext context);
 
+// Key for the timestamp representing the first time a signal was observed
+// (`base::Value`).
+extern const char kFirstObservedTime[];
+
+// Key for the timestamp representing the latest time a signal was observed
+// (`base::Value`).
+extern const char kLastObservedTime[];
+
+// Key for the total number of times a signal has been observed (`int`).
+extern const char kTotalOccurrences[];
+
+// Dictionary pref to maintain the history of signals notified to the Tips
+// manager. The dictionary has the following structure:
+//
+//  Key: A unique `std::string` matching a signal declared in
+//       signal_constants (segmentation_platform::signals).
+//
+//  Value: A dictionary with the following fields:
+//    - first_observed_time: Timestamp (`base::Value`) representing the first
+//                           time the signal was observed.
+//    - last_observed_time: Timestamp (`base::Value`) representing the latest
+//                          time the signal was observed.
+//    - total_occurrences: The total number of times this signal has been
+//                         observed (`int`).
+extern const char kTipsSignalHistory[];
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TIPS_MANAGER_CONSTANTS_H_

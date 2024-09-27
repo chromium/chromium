@@ -65,6 +65,7 @@ source_set("browser_prefs") {
     "//components/saved_tab_groups:model",
     "//components/search_engines",
     "//components/segmentation_platform/embedder/default_model:default_model",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:public",
     "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/sharing_message",

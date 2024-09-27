@@ -13,6 +13,8 @@ source_set("public") {
   ]
   deps = [
     ":constants",
+    ":signal_constants",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 }
@@ -21,5 +23,25 @@ source_set("constants") {
   sources = [
     "constants.cc",
     "constants.h",
+  ]
+}
+
+source_set("signal_constants") {
+  sources = [ "signal_constants.h" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tips_manager_unittest.cc" ]
+  deps = [
+    ":constants",
+    ":public",
+    ":signal_constants",
+    "//base",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
   ]
 }

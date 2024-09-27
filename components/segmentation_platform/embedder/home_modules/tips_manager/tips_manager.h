@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TIPS_MANAGER_TIPS_MANAGER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TIPS_MANAGER_TIPS_MANAGER_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefRegistrySimple;
 class PrefService;
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace segmentation_platform {
 
@@ -37,7 +41,15 @@ class TipsManager : public KeyedService {
   TipsManager(const TipsManager&) = delete;
   TipsManager& operator=(const TipsManager&) = delete;
 
-  ~TipsManager() override = default;
+  ~TipsManager() override;
+
+  // Registers all preferences used by the `TipsManager` that will be attached
+  // to a profile.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Registers all preferences used by the `TipsManager` that will be
+  // stored in the local state, not attached to any profile.
+  static void RegisterLocalPrefs(PrefRegistrySimple* registry);
 
   // `KeyedService` implementation. Performs cleanup and resource release before
   // the service is destroyed.
@@ -60,17 +72,23 @@ class TipsManager : public KeyedService {
   virtual void HandleInteraction(TipIdentifier tip,
                                  TipPresentationContext context) = 0;
 
-  // Notifies the TipsManager about an observed signal event.
+  // Notifies the Tips Manager about an observed `signal` event. Returns `true`
+  // if the `signal` was properly handled by the Tips Manager.
+  //
   // This triggers:
   //
   // 1. Internal state updates for relevant Tip(s).
   // 2. Recording of the signal in UMA histograms.
   // 3. Persistence of the signal data in Prefs for future use.
-  void NotifySignal(const std::string& signal);
+  bool NotifySignal(std::string_view signal);
 
  private:
-  // Weak pointer to the pref service.
-  raw_ptr<PrefService> pref_service_;
+  // Records the given `signal` in `pref_service`, using the current time as the
+  // signal event time. Returns `true` if the `signal` was properly handled.
+  bool RecordSignalToPref(std::string_view signal, PrefService* pref_service);
+
+  // Weak pointer to the profile pref service.
+  raw_ptr<PrefService> profile_pref_service_;
 
   // Weak pointer to the local-state pref service.
   raw_ptr<PrefService> local_pref_service_;
