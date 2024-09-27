@@ -23,8 +23,4 @@ static_library("accessibility_service_private") {
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash/accessibility" ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chrome/browser:browser_public_dependencies" ]
-  }
 }

@@ -33,10 +33,6 @@ static_library("echo_private") {
     "//extensions/common:mojom",
     "//third_party/icu",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 if (is_chromeos_ash) {

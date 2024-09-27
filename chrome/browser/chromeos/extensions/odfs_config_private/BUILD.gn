@@ -18,68 +18,33 @@ static_library("odfs_config_private") {
 
   deps = [
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/common/extensions/api",
     "//chromeos/constants",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "odfs_config_private_api_browsertest.cc" ]
+  sources = [ "odfs_config_private_api_browsertest.cc" ]
 
-    deps = [
-      ":odfs_config_private",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/profiles:profile",
-      "//chrome/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//testing/gmock",
-      "//third_party/abseil-cpp:absl",
-      "//ui/message_center/public/cpp",
-    ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "odfs_config_private_api_browsertest.cc" ]
-
-    deps = [
-      ":odfs_config_private",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/profiles:profile",
-      "//chrome/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//testing/gmock",
-      "//third_party/abseil-cpp:absl",
-      "//ui/message_center/public/cpp",
-    ]
-  }
+  deps = [
+    ":odfs_config_private",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+    "//ui/message_center/public/cpp",
+  ]
 }
 
 source_set("unit_tests") {
@@ -94,12 +59,9 @@ source_set("unit_tests") {
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/constants",
+    "//chromeos/startup",
     "//components/prefs",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }

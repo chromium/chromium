@@ -19,6 +19,7 @@ source_set("routines") {
   deps = [
     "//base",
     "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//extensions/common",
@@ -26,14 +27,6 @@ source_set("routines") {
   ]
 
   public_deps = [ "//extensions/browser" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/telemetry_extension/routines" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("test_support") {
@@ -43,6 +36,8 @@ source_set("test_support") {
     "fake_diagnostic_routine_control.h",
     "fake_diagnostic_routines_service.cc",
     "fake_diagnostic_routines_service.h",
+    "fake_diagnostic_routines_service_factory.cc",
+    "fake_diagnostic_routines_service_factory.h",
   ]
 
   deps = [ "//base/test:test_support" ]
@@ -52,14 +47,7 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_diagnostic_routines_service_factory.cc",
-      "fake_diagnostic_routines_service_factory.h",
-    ]
-
-    public_deps += [ "//chromeos/ash/components/telemetry_extension/routines" ]
-  }
+  public_deps += [ "//chromeos/ash/components/telemetry_extension/routines" ]
 }
 
 source_set("routine_manager") {
@@ -97,8 +85,10 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/crosapi/mojom",
     "//extensions:test_support",
     "//extensions/common",
@@ -106,17 +96,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/common/chromeos/extensions",
-      "//chromeos/ash/components/telemetry_extension/routines",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("browser_tests") {

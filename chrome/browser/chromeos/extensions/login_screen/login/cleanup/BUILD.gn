@@ -13,37 +13,23 @@ static_library("cleanup") {
     "cleanup_handler.h",
     "cleanup_manager.cc",
     "cleanup_manager.h",
+    "cleanup_manager_ash.cc",
+    "cleanup_manager_ash.h",
+    "clipboard_cleanup_handler.cc",
+    "clipboard_cleanup_handler.h",
     "extension_cleanup_handler.cc",
     "extension_cleanup_handler.h",
+    "files_cleanup_handler.cc",
+    "files_cleanup_handler.h",
+    "lacros_cleanup_handler.cc",
+    "lacros_cleanup_handler.h",
+    "pinned_apps_cleanup_handler.cc",
+    "pinned_apps_cleanup_handler.h",
+    "print_jobs_cleanup_handler.cc",
+    "print_jobs_cleanup_handler.h",
     "web_app_cleanup_handler.cc",
     "web_app_cleanup_handler.h",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "cleanup_manager_ash.cc",
-      "cleanup_manager_ash.h",
-      "clipboard_cleanup_handler.cc",
-      "clipboard_cleanup_handler.h",
-      "files_cleanup_handler.cc",
-      "files_cleanup_handler.h",
-      "lacros_cleanup_handler.cc",
-      "lacros_cleanup_handler.h",
-      "pinned_apps_cleanup_handler.cc",
-      "pinned_apps_cleanup_handler.h",
-      "print_jobs_cleanup_handler.cc",
-      "print_jobs_cleanup_handler.h",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "cleanup_manager_lacros.cc",
-      "cleanup_manager_lacros.h",
-      "cleanup_manager_lacros_factory.cc",
-      "cleanup_manager_lacros_factory.h",
-    ]
-  }
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
@@ -54,6 +40,7 @@ static_library("cleanup") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -69,14 +56,6 @@ static_library("cleanup") {
     "//mojo/public/cpp/bindings",
     "//ui/base/clipboard",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/printing/print_management" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 static_library("test_support") {
@@ -93,97 +72,95 @@ static_library("test_support") {
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    sources = [
-      "cleanup_manager_unittest.cc",
-      "extension_cleanup_handler_unittest.cc",
-      "lacros_cleanup_handler_unittest.cc",
-      "print_jobs_cleanup_handler_unittest.cc",
-    ]
+  sources = [
+    "cleanup_manager_unittest.cc",
+    "extension_cleanup_handler_unittest.cc",
+    "lacros_cleanup_handler_unittest.cc",
+    "print_jobs_cleanup_handler_unittest.cc",
+  ]
 
-    deps = [
-      ":cleanup",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/browser/ash/printing:test_support",
-      "//chrome/browser/ash/printing/history",
-      "//chrome/browser/ash/printing/history:test_support",
-      "//chrome/browser/ash/printing/print_management",
-      "//chrome/browser/extensions",
-      "//chrome/browser/extensions:test_support",
-      "//chrome/common:constants",
-      "//chrome/common:non_code_constants",
-      "//chrome/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//components/history/core/test",
-      "//components/keyed_service/core",
-      "//components/prefs",
-      "//components/prefs:test_support",
-      "//components/sync_preferences:test_support",
-      "//components/user_manager",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//extensions/browser",
-      "//mojo/public/cpp/bindings",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":cleanup",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/history:test_support",
+    "//chrome/browser/ash/printing/print_management",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/history/core/test",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
 
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
-      "browser_cleanup_handler_browsertest.cc",
-      "extension_cleanup_handler_browsertest.cc",
-      "pinned_apps_cleanup_handler_browsertest.cc",
-      "web_app_cleanup_handler_browsertest.cc",
-    ]
+  sources = [
+    "browser_cleanup_handler_browsertest.cc",
+    "extension_cleanup_handler_browsertest.cc",
+    "pinned_apps_cleanup_handler_browsertest.cc",
+    "web_app_cleanup_handler_browsertest.cc",
+  ]
 
-    deps = [
-      ":cleanup",
-      "//ash/constants",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/ash/login",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/policy/core",
-      "//chrome/browser/ash/policy/core:test_support",
-      "//chrome/browser/ash/policy/test_support",
-      "//chrome/browser/ash/profiles",
-      "//chrome/browser/extensions",
-      "//chrome/browser/extensions:test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/ash/shelf",
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//components/app_constants",
-      "//components/policy/core/common:common_constants",
-      "//components/policy/core/common:test_support",
-      "//components/prefs",
-      "//components/webapps/browser",
-      "//components/webapps/common",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//extensions/browser",
-      "//extensions/common",
-      "//testing/gtest",
-      "//ui/base:types",
-      "//url",
-    ]
-  }
+  deps = [
+    ":cleanup",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/app_constants",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+    "//ui/base:types",
+    "//url",
+  ]
 }

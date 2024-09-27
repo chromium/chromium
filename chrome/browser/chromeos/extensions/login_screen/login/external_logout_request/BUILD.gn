@@ -25,10 +25,6 @@ static_library("external_logout_request") {
     "//extensions/browser",
     "//mojo/public/cpp/bindings",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("unit_tests") {

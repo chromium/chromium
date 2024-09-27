@@ -40,8 +40,4 @@ static_library("wallpaper") {
     "//services/network/public/mojom:url_loader_base",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

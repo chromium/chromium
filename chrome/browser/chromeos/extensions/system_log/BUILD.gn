@@ -20,22 +20,13 @@ static_library("system_log") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/settings",
     "//chromeos/components/mgs",
     "//chromeos/crosapi/mojom",
     "//components/device_event_log",
     "//extensions/common",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/browser_context_helper",
-      "//chromeos/ash/components/settings",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -46,13 +37,19 @@ source_set("browser_tests") {
   sources = [ "system_log_apitest.cc" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/device_event_log",
     "//components/feedback",
     "//components/policy/core/browser",
@@ -64,19 +61,4 @@ source_set("browser_tests") {
     "//extensions/browser/api/test",
     "//extensions/common",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/policy/core",
-      "//chrome/browser/ash/policy/core:test_support",
-      "//chrome/browser/ash/policy/test_support",
-      "//chromeos/ash/components/browser_context_helper",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }

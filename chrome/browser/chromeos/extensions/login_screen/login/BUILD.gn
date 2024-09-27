@@ -54,10 +54,6 @@ static_library("login") {
       "//third_party/boringssl",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 if (is_chromeos_ash) {

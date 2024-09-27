@@ -30,10 +30,6 @@ static_library("login_state") {
     "//chrome/common:non_code_constants",
     "//content/public/browser",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("browser_tests") {

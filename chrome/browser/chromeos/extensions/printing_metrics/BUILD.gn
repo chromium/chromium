@@ -21,6 +21,7 @@ static_library("printing_metrics") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//chromeos/crosapi/mojom",
@@ -29,34 +30,24 @@ static_library("printing_metrics") {
     "//extensions/browser",
     "//printing",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/printing/history:print_job_info_proto" ]
-  }
 }
 
-if (is_chromeos_ash) {
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    sources = [ "printing_metrics_api_unittest.cc" ]
+  sources = [ "printing_metrics_api_unittest.cc" ]
 
-    deps = [
-      ":printing_metrics",
-      "//chrome/browser/ash/printing/history",
-      "//chrome/browser/ash/printing/history:print_job_info_proto",
-      "//chrome/browser/ash/printing/history:test_support",
-      "//chrome/browser/extensions",
-      "//chrome/common/extensions/api",
-      "//chrome/test:test_support",
-      "//content/public/browser",
-      "//extensions:test_support",
-      "//extensions/common",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":printing_metrics",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
+    "//chrome/browser/ash/printing/history:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
 }
