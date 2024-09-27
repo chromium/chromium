@@ -20,6 +20,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
+#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
@@ -232,32 +234,50 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   auto* interstitial_contents = contents();
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  // Interact with the "Next" button, starting re-authentication in a new tab.
-  ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
-  histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationHistogramName,
-      static_cast<int>(SupervisedUserVerificationPage::Status::REAUTH_STARTED),
-      1);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  // Repeat to open another tab.
-  ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
-  histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationHistogramName,
-      static_cast<int>(SupervisedUserVerificationPage::Status::REAUTH_STARTED),
-      2);
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
-  // TODO(b/362420913): Once url-pattern matching is added on tab closure,
-  // ensure we are closing only sign-in related urls.
+  // Interact with the "Next" button, starting re-authentication in a new tab, 3
+  // times.
+  for (int i = 1; i <= 3; i++) {
+    ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
+    histogram_tester.ExpectBucketCount(
+        kUmaReauthenticationHistogramName,
+        static_cast<int>(
+            SupervisedUserVerificationPage::Status::REAUTH_STARTED),
+        i);
+    EXPECT_EQ(i + 1, browser()->tab_strip_model()->count());
+
+    // Wait for the navigation to finish in the sign-in tabs.
+    if (browser()
+            ->tab_strip_model()
+            ->GetWebContentsAt(i)
+            ->GetLastCommittedURL()
+            .is_empty()) {
+      content::TestNavigationObserver observer(
+          browser()->tab_strip_model()->GetWebContentsAt(i));
+      observer.WaitForNavigationFinished();
+    }
+    ASSERT_FALSE(browser()
+                     ->tab_strip_model()
+                     ->GetWebContentsAt(i)
+                     ->GetLastCommittedURL()
+                     .is_empty());
+  }
+
+  // Use one tab to navigate elsewhere.
+  browser()->tab_strip_model()->ActivateTabAt(3);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://other.google.com/")));
 
   // Sign in a supervised user, which completes re-authentication.
-  // This results in closing the sign-in tabs.
+  // This results in closing the sign-in tabs (2 tabs).
+  // Two tabs, the interstitial and the tab where the user performed a
+  // navigation, remain open.
   SignInSupervisedUserAndWaitForInterstitialReload(interstitial_contents);
   histogram_tester.ExpectBucketCount(
       kUmaReauthenticationHistogramName,
       static_cast<int>(
           SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
       1);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // Check the blocked url interstitial is displayed.
   EXPECT_EQ(

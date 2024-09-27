@@ -19,6 +19,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -77,6 +78,9 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
           std::move(controller_client)),
       email_to_reauth_(email_to_reauth),
       request_url_(request_url),
+      sign_in_continue_url_(GaiaUrls::GetInstance()->blank_page_url()),
+      reauth_url_(signin::GetChromeReauthURL(
+          {.email = email_to_reauth_, .continue_url = sign_in_continue_url_})),
       verification_purpose_(verification_purpose),
       child_account_service_(child_account_service),
       source_id_(source_id),
@@ -108,16 +112,36 @@ SupervisedUserVerificationPage::GetTypeForTesting() {
 void SupervisedUserVerificationPage::CloseSignInTabs() {
   while (!signin_tabs_handle_id_list_.empty()) {
     auto tab_handle_id = signin_tabs_handle_id_list_.front();
+    signin_tabs_handle_id_list_.pop_front();
     // Obtains the tab associated with the unique tab handle id. A tab pointer
     // is only returned if the tab is still valid.
     auto* tab_interface = tabs::TabInterface::MaybeGetFromHandle(tab_handle_id);
-    if (tab_interface) {
-      tab_interface->Close();
+    if (!tab_interface) {
+      continue;
     }
-    signin_tabs_handle_id_list_.pop_front();
-  }
+    // Check both visible url and last committed url, as the last committed url
+    // can be empty (if the navigation of the sign-in tab has not yet
+    // committed).
+    // Only urls that are known to be part of the sign-in flow will be closed,
+    // the rest will be left open as the user might have navigated elsewhere.
+    if (!IsSignInUrl(tab_interface->GetContents()->GetLastCommittedURL()) &&
+        !IsSignInUrl(tab_interface->GetContents()->GetVisibleURL())) {
+      continue;
+    }
+    tab_interface->Close();
+    // TODO(b/364546097): Add metrics for the cases where we skip the tab
+    // closure.
+    }
   // TODO(b/364546097): Ideally focus the last visited tab (before the sign-in
   // page), before closing the sign-in tabs.
+}
+
+bool SupervisedUserVerificationPage::IsSignInUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  return url.host_piece() == reauth_url_.host_piece() ||
+         url.host_piece() == sign_in_continue_url_.host_piece();
 }
 
 void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
@@ -318,10 +342,9 @@ void SupervisedUserVerificationPage::CommandReceived(
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN: {
       RecordReauthStatusMetrics(Status::REAUTH_STARTED);
-      content::OpenURLParams params(
-          signin::GetChromeReauthURL({.email = email_to_reauth_}),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false);
+      content::OpenURLParams params(reauth_url_, content::Referrer(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                    ui::PAGE_TRANSITION_LINK, false);
       auto* signin_web_contents =
           SecurityInterstitialPage::web_contents()->OpenURL(
               params, /*navigation_handle_callback=*/{});

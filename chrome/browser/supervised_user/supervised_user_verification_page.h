@@ -95,6 +95,9 @@ class SupervisedUserVerificationPage
 
  private:
   void CloseSignInTabs();
+  // Returns true if the provided url matches a list of urls that
+  // are known to be part of the sign-in flow.
+  bool IsSignInUrl(const GURL& url);
   void OnGoogleAuthStateUpdate();
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
   void RecordReauthStatusMetrics(Status status);
@@ -105,6 +108,8 @@ class SupervisedUserVerificationPage
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;
+  const GURL sign_in_continue_url_;
+  const GURL reauth_url_;
   const VerificationPurpose verification_purpose_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
   ukm::SourceId source_id_;
