@@ -233,11 +233,11 @@ struct NET_EXPORT QuicParams {
   bool report_ecn = false;
 
   // If true, parse received ORIGIN frame.
-  bool enable_origin_frame = false;
+  bool enable_origin_frame = true;
 
   // If true, skip DNS resolution for a hostname if the ORIGIN frame received
   // during an ongoing session encompasses that hostname.
-  bool skip_dns_with_origin_frame = false;
+  bool skip_dns_with_origin_frame = true;
 
   // If true, a request will be sent on the existing session iff the hostname
   // matches the certificate presented during the handshake.

@@ -475,14 +475,14 @@ bool DelayMainJobWithAvailableSpdySession(
 }
 
 bool IsOriginFrameEnabled(const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params, "enable_origin_frame"), "true");
+  return !base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "enable_origin_frame"), "false");
 }
 
 bool IsDnsSkippedWithOriginFrame(const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
+  return !base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "skip_dns_with_origin_frame"),
-      "true");
+      "false");
 }
 
 bool IgnoreIpMatchingWhenFindingExistingSessions(
