@@ -391,9 +391,12 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
       if (action.has_text_entry()) {
         sparky_delegate_->KeyboardEntry(action.text_entry().text());
       }
-      if (action.has_file_action() &&
-          action.file_action().has_launch_file_path()) {
-        sparky_delegate_->LaunchFile(action.file_action().launch_file_path());
+      if (action.has_launch_file()) {
+        sparky_delegate_->LaunchFile(action.launch_file().launch_file_path());
+      }
+      if (action.has_write_file()) {
+        sparky_delegate_->WriteFile(action.write_file().name(),
+                                    action.write_file().file_bytes());
       }
     }
 

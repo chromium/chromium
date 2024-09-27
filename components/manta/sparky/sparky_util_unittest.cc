@@ -105,11 +105,11 @@ class SparkyUtilTest : public testing::Test {
                  action_proto.text_entry().has_text() &&
                  action.type == ActionType::kTextEntry) {
         return action_proto.text_entry().text() == action.text_entry;
-      } else if (action_proto.has_file_action() &&
-                 action_proto.file_action().has_launch_file_path() &&
+      } else if (action_proto.has_launch_file() &&
+                 action_proto.launch_file().has_launch_file_path() &&
                  action.type == ActionType::kLaunchFile) {
-        return action_proto.file_action().launch_file_path() ==
-               action.file_action->launch_file_path;
+        return action_proto.launch_file().launch_file_path() ==
+               action.launch_file->launch_file_path;
       }
     }
     return false;
@@ -310,7 +310,7 @@ TEST_F(SparkyUtilTest, GetSelectedFilePaths) {
   file_request.add_paths("my/file/path");
   file_request.add_paths("my/second/file/path/");
   std::set<std::string> file_set = GetSelectedFilePaths(file_request);
-  ASSERT_EQ((int)file_set.size(), 2);
+  ASSERT_EQ(file_set.size(), 2u);
   ASSERT_TRUE(file_set.contains("my/file/path"));
   ASSERT_TRUE(file_set.contains("my/second/file/path/"));
 }
@@ -335,7 +335,7 @@ TEST_F(SparkyUtilTest, GetFileDataFromProto) {
   file2->set_size_in_bytes(94);
 
   std::vector<FileData> files_data = GetFileDataFromProto(files_proto);
-  ASSERT_TRUE(files_data.size() == 2);
+  ASSERT_EQ(files_data.size(), 2u);
   auto file1_data = files_data.at(0);
   ASSERT_EQ(file1_data.name, "name1");
   ASSERT_EQ(file1_data.path, "my/file/path");

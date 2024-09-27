@@ -18,10 +18,13 @@
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -133,6 +136,16 @@ std::vector<manta::FileData> SearchFiles(
     files_data.emplace_back(std::move(file_data));
   }
   return files_data;
+}
+
+// Write a file to disk. This returns the file path as a string so it can be
+// easily chained with LaunchFile.
+std::string WriteFileBlocking(const base::FilePath& file_path,
+                              std::string_view bytes) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::ImportantFileWriter::WriteFileAtomically(file_path, bytes, "Sparky");
+  return file_path.value();
 }
 
 }  // namespace
@@ -463,6 +476,20 @@ void SparkyDelegateImpl::LaunchFile(const std::string& file_path) {
   file_manager::util::OpenItem(profile_, base::FilePath(file_path),
                                platform_util::OpenItemType::OPEN_FILE,
                                base::DoNothing());
+}
+
+void SparkyDelegateImpl::WriteFile(const std::string& name,
+                                   const std::string& bytes) {
+  const auto downloads =
+      file_manager::util::GetDownloadsFolderForProfile(profile_);
+  const auto file_path = downloads.Append(name);
+
+  // Write a file and then immediately open it, so that it's clear that action
+  // was taken.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(WriteFileBlocking, file_path, bytes),
+      base::BindOnce(&SparkyDelegateImpl::LaunchFile, base::Unretained(this)));
 }
 
 void SparkyDelegateImpl::GetMyFiles(manta::FilesDataCallback callback,

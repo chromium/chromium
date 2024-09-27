@@ -54,6 +54,7 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override;
   void LaunchFile(const std::string& file_path) override;
+  void WriteFile(const std::string& name, const std::string& bytes) override;
   void UpdateFileSummaries(
       const std::vector<manta::FileData>& files_with_summary) override;
   std::vector<manta::FileData> GetFileSummaries() override;

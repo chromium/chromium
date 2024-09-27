@@ -23,7 +23,8 @@ enum class Role {
   kMaxValue = kAssistant,
 };
 
-// TODO(b/351099209): Add kKeyPress to actions.
+// TODO(b/351099209): This file can be removed as SparkyProvider now stores a
+// proto.
 
 enum class ActionType {
   kSetting = 0,
@@ -35,12 +36,12 @@ enum class ActionType {
   kMaxValue = kAllDone,
 };
 
-struct COMPONENT_EXPORT(MANTA) FileAction {
-  explicit FileAction(std::string launch_file_path);
+struct COMPONENT_EXPORT(MANTA) LaunchFile {
+  explicit LaunchFile(std::string launch_file_path);
 
-  ~FileAction();
-  FileAction(const FileAction&);
-  FileAction& operator=(const FileAction&);
+  ~LaunchFile();
+  LaunchFile(const LaunchFile&);
+  LaunchFile& operator=(const LaunchFile&);
 
   std::string launch_file_path;
 };
@@ -59,7 +60,7 @@ struct COMPONENT_EXPORT(MANTA) ClickAction {
 struct COMPONENT_EXPORT(MANTA) Action {
   explicit Action(SettingsData updated_setting);
   explicit Action(ClickAction click);
-  Action(FileAction file_action, ActionType type);
+  Action(LaunchFile launch_file, ActionType type);
   explicit Action(bool all_done);
   explicit Action(ActionType type);
 
@@ -71,7 +72,7 @@ struct COMPONENT_EXPORT(MANTA) Action {
   std::optional<SettingsData> updated_setting;
   std::optional<ClickAction> click;
   std::string text_entry;
-  std::optional<FileAction> file_action;
+  std::optional<LaunchFile> launch_file;
   ActionType type;
   bool all_done;
 };
