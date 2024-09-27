@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "desktop_media_picker.h"
-
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAndroidMediaPicker,
+             "AndroidMediaPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 DesktopMediaPicker::Params::Params(RequestSource request_source)
     : request_source(request_source) {}
