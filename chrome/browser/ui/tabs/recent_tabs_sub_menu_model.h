@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -54,13 +53,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
  public:
   using LogMenuMetricsCallback = base::RepeatingCallback<void(int)>;
 
-  // Command ID for recently closed items header or disabled item to which the
-  // accelerator string will be appended.
-  static constexpr int kDisabledRecentlyClosedHeaderCommandId =
-      AppMenuModel::kMinRecentTabsCommandId;
-  static constexpr int kFirstMenuEntryCommandId =
-      kDisabledRecentlyClosedHeaderCommandId +
-      AppMenuModel::kNumUnboundedMenuTypes;
+  static int GetDisabledRecentlyClosedHeaderCommandId();
 
   // Exposed for tests only: return the Command Id for the first entry in the
   // recently closed window items list.

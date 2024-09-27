@@ -63,6 +63,14 @@
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
+// Command ID for recently closed items header or disabled item to which the
+// accelerator string will be appended.
+static constexpr int kDisabledRecentlyClosedHeaderCommandId =
+    AppMenuModel::kMinRecentTabsCommandId;
+static constexpr int kFirstMenuEntryCommandId =
+    kDisabledRecentlyClosedHeaderCommandId +
+    AppMenuModel::kNumUnboundedMenuTypes;
+
 // The index of the first tab in the group menu item. Before the tab item is the
 // "Restore group" item and a separator.
 constexpr int kInitialGroupItem = 2;
@@ -313,6 +321,11 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (log_menu_metrics_callback_) {
     log_menu_metrics_callback_.Run(IDC_OPEN_RECENT_TAB);
   }
+}
+
+// static
+int RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId() {
+  return kDisabledRecentlyClosedHeaderCommandId;
 }
 
 int RecentTabsSubMenuModel::GetFirstRecentTabsCommandId() {

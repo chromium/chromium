@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"

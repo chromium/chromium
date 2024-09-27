@@ -8,15 +8,15 @@
 #include <string>
 
 #include "base/process/kill.h"
-#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class TabStripModel;
+class TabResourceUsage;
+class ThumbnailImage;
 
 // Wraps the state needed by the renderers.
 struct TabRendererData {

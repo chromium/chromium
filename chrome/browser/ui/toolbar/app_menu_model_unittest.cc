@@ -383,7 +383,7 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   // ready to be tested. Remove items once they're ready for testing.
   static const std::vector<int> skip_commands = {
       IDC_RECENT_TABS_NO_DEVICE_TABS, IDC_ABOUT,
-      RecentTabsSubMenuModel::kDisabledRecentlyClosedHeaderCommandId,
+      RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId(),
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
   AppMenuModel model(this, browser());
   model.Init();
