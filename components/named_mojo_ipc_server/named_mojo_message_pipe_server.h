@@ -43,11 +43,10 @@ class NamedMojoMessagePipeServer {
     raw_ptr<void> context;
   };
 
-  // Called when a client has just connected to the server. The implementation
-  // should check whether the connection is valid and return the
-  // ValidationResult.
-  using Validator = base::RepeatingCallback<ValidationResult(
-      std::unique_ptr<ConnectionInfo>)>;
+  // Called when a client has just connected to the server. The callback should
+  // check whether the connection is valid and return the ValidationResult.
+  using Validator =
+      base::RepeatingCallback<ValidationResult(const ConnectionInfo&)>;
 
   // Called once the message pipe is open. This happens after Validator is
   // called, with `is_valid` set to true in ValidationResult.
@@ -56,7 +55,7 @@ class NamedMojoMessagePipeServer {
   // implementation can ignore it.
   using OnMessagePipeReady =
       base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle,
-                                   base::ProcessId,
+                                   std::unique_ptr<ConnectionInfo>,
                                    /* context= */ void*,
                                    std::unique_ptr<mojo::IsolatedConnection>)>;
 

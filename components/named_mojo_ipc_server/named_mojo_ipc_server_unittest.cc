@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -63,14 +64,40 @@ static const char kClientProcessHangAfterConnectSwitch[] =
     "named-mojo-ipc-server-test-hang-after-connect";
 static const char kClientProcessWaitUntilDisconnectedSwitch[] =
     "named-mojo-ipc-server-test-wait-until-disconnected";
-static const char kClientProcessUseIsolatedConnectionSwitch[] =
-    "named-mojo-ipc-server-test-use-isolated-connection";
+static const char kClientProcessMessagePipeTypeSwitch[] =
+    "named-mojo-ipc-server-test-message-type";
 static constexpr int kInvalidEndpointExitCode = 42;
 static constexpr uint64_t kTestMessagePipeId = 0u;
+static constexpr char kTestMessagePipeName[] = "test-message-pipe-name";
 
-class NamedMojoIpcServerTest
-    : public testing::TestWithParam</* is_isolated= */ bool>,
-      public test::mojom::Echo {
+enum class MessagePipeType { ISOLATED, USE_ID, USE_NAME };
+
+std::string MessagePipeTypeToString(MessagePipeType type) {
+  switch (type) {
+    case MessagePipeType::ISOLATED:
+      return "Isolated";
+    case MessagePipeType::USE_ID:
+      return "MessagePipeId";
+    case MessagePipeType::USE_NAME:
+      return "MessagePipeName";
+  }
+}
+
+MessagePipeType MessagePipeTypeFromString(std::string_view type) {
+  if (type == "Isolated") {
+    return MessagePipeType::ISOLATED;
+  }
+  if (type == "MessagePipeId") {
+    return MessagePipeType::USE_ID;
+  }
+  if (type == "MessagePipeName") {
+    return MessagePipeType::USE_NAME;
+  }
+  NOTREACHED() << "Unexpected message pipe type: " << type;
+}
+
+class NamedMojoIpcServerTest : public testing::TestWithParam<MessagePipeType>,
+                               public test::mojom::Echo {
  public:
   NamedMojoIpcServerTest();
   ~NamedMojoIpcServerTest() override;
@@ -142,16 +169,22 @@ void NamedMojoIpcServerTest::TearDown() {
 }
 
 void NamedMojoIpcServerTest::CreateIpcServer() {
-  EndpointOptions options = {
-      .server_name = test_server_name_,
-      .message_pipe_id = GetParam() ? EndpointOptions::kUseIsolatedConnection
-                                    : kTestMessagePipeId,
-  };
+  EndpointOptions options;
+  options.server_name = test_server_name_;
+  switch (GetParam()) {
+    case MessagePipeType::ISOLATED:
+      break;
+    case MessagePipeType::USE_ID:
+      options.message_pipe_id = kTestMessagePipeId;
+      break;
+    case MessagePipeType::USE_NAME:
+      options.message_pipe_id = kTestMessagePipeName;
+      break;
+  }
   ipc_server_ = std::make_unique<NamedMojoIpcServer<test::mojom::Echo>>(
-      options,
-      base::BindRepeating([](test::mojom::Echo* impl,
-                             std::unique_ptr<ConnectionInfo>) { return impl; },
-                          this));
+      options, base::BindRepeating([](test::mojom::Echo* impl,
+                                      const ConnectionInfo&) { return impl; },
+                                   this));
   ipc_server_->set_on_server_endpoint_created_callback_for_testing(
       base::BindRepeating(&NamedMojoIpcServerTest::OnServerEndpointCreated,
                           base::Unretained(this)));
@@ -170,9 +203,9 @@ base::Process NamedMojoIpcServerTest::LaunchClientProcess(
   if (!extra_switch.empty()) {
     cmd_line.AppendSwitch(extra_switch);
   }
-  if (GetParam()) {
-    cmd_line.AppendSwitch(kClientProcessUseIsolatedConnectionSwitch);
-
+  cmd_line.AppendSwitchASCII(kClientProcessMessagePipeTypeSwitch,
+                             MessagePipeTypeToString(GetParam()));
+  if (GetParam() == MessagePipeType::ISOLATED) {
     // Make sure the new process is a broker, because isolated connections are
     // only supported between two brokers when ipcz is enabled.
     if (mojo::core::IsMojoIpczEnabled()) {
@@ -208,7 +241,7 @@ void NamedMojoIpcServerTest::EchoString(const std::string& input,
 
   std::move(callback).Run(input);
   last_echo_string_receiver_id_ = ipc_server_->current_receiver();
-  last_echo_string_peer_pid_ = ipc_server_->current_peer_pid();
+  last_echo_string_peer_pid_ = ipc_server_->current_connection_info().pid;
 
   if (on_echo_string_called_) {
     on_echo_string_called_.Run();
@@ -395,12 +428,19 @@ MULTIPROCESS_TEST_MAIN(EchoClient) {
   }
   std::unique_ptr<mojo::IsolatedConnection> connection;
   mojo::ScopedMessagePipeHandle message_pipe;
-  if (cmd_line->HasSwitch(kClientProcessUseIsolatedConnectionSwitch)) {
+  MessagePipeType message_pipe_type = MessagePipeTypeFromString(
+      cmd_line->GetSwitchValueASCII(kClientProcessMessagePipeTypeSwitch));
+  if (message_pipe_type == MessagePipeType::ISOLATED) {
     connection = std::make_unique<mojo::IsolatedConnection>();
     message_pipe = connection->Connect(std::move(endpoint));
   } else {
     auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
-    message_pipe = invitation.ExtractMessagePipe(kTestMessagePipeId);
+    if (message_pipe_type == MessagePipeType::USE_ID) {
+      message_pipe = invitation.ExtractMessagePipe(kTestMessagePipeId);
+    } else {
+      EXPECT_EQ(message_pipe_type, MessagePipeType::USE_NAME);
+      message_pipe = invitation.ExtractMessagePipe(kTestMessagePipeName);
+    }
   }
 
   auto echo_remote =
@@ -427,13 +467,13 @@ MULTIPROCESS_TEST_MAIN(EchoClient) {
   return 0;
 }
 
-INSTANTIATE_TEST_SUITE_P(/* test_prefix */,
-                         NamedMojoIpcServerTest,
-                         testing::Values(true, false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "IsolatedConnection"
-                                             : "NonIsolatedConnection";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    /* test_prefix */,
+    NamedMojoIpcServerTest,
+    testing::Values(true, false),
+    [](const testing::TestParamInfo<MessagePipeType>& info) {
+      return MessagePipeTypeToString(info.param);
+    });
 
 }  // namespace
 }  // namespace named_mojo_ipc_server

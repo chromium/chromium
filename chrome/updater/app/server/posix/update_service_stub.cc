@@ -400,18 +400,16 @@ UpdateServiceStub::UpdateServiceStub(
     base::RepeatingClosure task_end_listener,
     base::RepeatingClosure endpoint_created_listener_for_testing)
     : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
-      server_(
-          {.server_name = GetUpdateServiceServerName(scope),
-           .message_pipe_id =
+      server_({GetUpdateServiceServerName(scope),
                named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
-          base::BindRepeating(base::BindRepeating(
-              [](mojom::UpdateService* interface,
-                 mojom::UpdateService* filter,
-                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return IsConnectionTrusted(*info) ? interface : filter;
-              },
-              this,
-              filter_.get()))),
+              base::BindRepeating(base::BindRepeating(
+                  [](mojom::UpdateService* interface,
+                     mojom::UpdateService* filter,
+                     const named_mojo_ipc_server::ConnectionInfo& info) {
+                    return IsConnectionTrusted(info) ? interface : filter;
+                  },
+                  this,
+                  filter_.get()))),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {

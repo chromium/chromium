@@ -39,17 +39,18 @@ class ChromotingHostServicesServer {
   friend class ChromotingHostServicesServerTest;
 
   using Validator = base::RepeatingCallback<bool(
-      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>)>;
+      const named_mojo_ipc_server::ConnectionInfo&)>;
 
   ChromotingHostServicesServer(
       const mojo::NamedPlatformChannel::ServerName& server_name,
       Validator validator,
       BindChromotingHostServicesCallback bind_chromoting_host_services);
 
-  void OnMessagePipeReady(mojo::ScopedMessagePipeHandle message_pipe,
-                          base::ProcessId peer_pid,
-                          void* context,
-                          std::unique_ptr<mojo::IsolatedConnection> connection);
+  void OnMessagePipeReady(
+      mojo::ScopedMessagePipeHandle message_pipe,
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info,
+      void* context,
+      std::unique_ptr<mojo::IsolatedConnection> connection);
 
   named_mojo_ipc_server::NamedMojoMessagePipeServer message_pipe_server_;
   BindChromotingHostServicesCallback bind_chromoting_host_services_;

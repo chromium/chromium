@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/process/process_handle.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace named_mojo_ipc_server {
@@ -37,8 +38,8 @@ class IpcServer {
   // which receiver is being disconnected.
   virtual mojo::ReceiverId current_receiver() const = 0;
 
-  // Call this method to learn the peer process' PID.
-  virtual base::ProcessId current_peer_pid() const = 0;
+  // Call this method to learn the connection info.
+  virtual const ConnectionInfo& current_connection_info() const = 0;
 };
 
 }  // namespace named_mojo_ipc_server

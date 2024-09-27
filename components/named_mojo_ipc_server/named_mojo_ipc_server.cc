@@ -20,8 +20,7 @@ namespace named_mojo_ipc_server {
 
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const EndpointOptions& options,
-    base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
-        impl_provider)
+    base::RepeatingCallback<void*(const ConnectionInfo&)> impl_provider)
     : message_pipe_server_(
           options,
           impl_provider.Then(base::BindRepeating([](void* impl) {
@@ -69,11 +68,11 @@ void NamedMojoIpcServerBase::OnIpcDisconnected() {
 
 void NamedMojoIpcServerBase::OnMessagePipeReady(
     mojo::ScopedMessagePipeHandle message_pipe,
-    base::ProcessId peer_pid,
+    std::unique_ptr<ConnectionInfo> connection_info,
     void* context,
     std::unique_ptr<mojo::IsolatedConnection> connection) {
-  mojo::ReceiverId receiver_id =
-      TrackMessagePipe(std::move(message_pipe), context, peer_pid);
+  mojo::ReceiverId receiver_id = TrackMessagePipe(
+      std::move(message_pipe), context, std::move(connection_info));
   if (connection) {
     active_connections_[receiver_id] = std::move(connection);
   }

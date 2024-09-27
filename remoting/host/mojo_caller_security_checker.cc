@@ -40,12 +40,12 @@ constexpr auto kAllowedCallerProgramNames =
 }  // namespace
 
 bool IsTrustedMojoEndpoint(
-    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> caller) {
+    const named_mojo_ipc_server::ConnectionInfo& caller) {
   static base::NoDestructor<base::FilePath> current_process_image_path(
       GetProcessImagePath(base::GetCurrentProcId()));
-  base::FilePath caller_process_image_path = GetProcessImagePath(caller->pid);
+  base::FilePath caller_process_image_path = GetProcessImagePath(caller.pid);
   if (caller_process_image_path.empty()) {
-    LOG(ERROR) << "Cannot resolve process image path for PID " << caller->pid;
+    LOG(ERROR) << "Cannot resolve process image path for PID " << caller.pid;
     return false;
   }
   if (caller_process_image_path == *current_process_image_path) {
