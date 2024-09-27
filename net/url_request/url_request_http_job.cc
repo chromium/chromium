@@ -1213,9 +1213,11 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   //   message over secure transport, then the UA MUST process only the
   //   first such header field.
   HttpResponseHeaders* headers = GetResponseHeaders();
-  std::string value;
-  if (headers->EnumerateHeader(nullptr, "Strict-Transport-Security", &value))
-    security_state->AddHSTSHeader(request_info_.url.host(), value);
+  std::optional<std::string_view> value;
+  if ((value =
+           headers->EnumerateHeader(nullptr, "Strict-Transport-Security"))) {
+    security_state->AddHSTSHeader(request_info_.url.host(), *value);
+  }
 }
 
 void URLRequestHttpJob::OnStartCompleted(int result) {

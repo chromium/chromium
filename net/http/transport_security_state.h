@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -105,7 +106,7 @@ class NET_EXPORT TransportSecurityState {
     // |chain| are not guaranteed to be in the same order - that is, the first
     // hash in |hashes| is NOT guaranteed to be for the leaf cert in |chain|.
     virtual CTRequirementLevel IsCTRequiredForHost(
-        const std::string& hostname,
+        std::string_view hostname,
         const X509Certificate* chain,
         const HashValueVector& hashes) = 0;
 
@@ -417,17 +418,17 @@ class NET_EXPORT TransportSecurityState {
 
   // Processes an HSTS header value from the host, adding entries to
   // dynamic state if necessary.
-  bool AddHSTSHeader(const std::string& host, const std::string& value);
+  bool AddHSTSHeader(std::string_view host, std::string_view value);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header (used for net-internals and unit tests).
-  void AddHSTS(const std::string& host,
+  void AddHSTS(std::string_view host,
                const base::Time& expiry,
                bool include_subdomains);
 
   // Adds explicitly-specified data as if it was processed from an HPKP header.
   // Note: dynamic PKP data is not persisted.
-  void AddHPKP(const std::string& host,
+  void AddHPKP(std::string_view host,
                const base::Time& expiry,
                bool include_subdomains,
                const HashValueVector& hashes);
@@ -485,11 +486,11 @@ class NET_EXPORT TransportSecurityState {
   // any previous state for the |host|, including static entries.
   //
   // The new state for |host| is persisted using the Delegate (if any).
-  void AddHSTSInternal(const std::string& host,
+  void AddHSTSInternal(std::string_view host,
                        STSState::UpgradeMode upgrade_mode,
                        const base::Time& expiry,
                        bool include_subdomains);
-  void AddHPKPInternal(const std::string& host,
+  void AddHPKPInternal(std::string_view host,
                        const base::Time& last_observed,
                        const base::Time& expiry,
                        bool include_subdomains,

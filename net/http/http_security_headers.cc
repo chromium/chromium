@@ -69,7 +69,7 @@ bool MaxAgeToLimitedInt(std::string_view s, uint32_t limit, uint32_t* result) {
 //     the UA, the UA MUST ignore the unrecognized directives and if the
 //     STS header field otherwise satisfies the above requirements (1
 //     through 4), the UA MUST process the recognized directives.
-bool ParseHSTSHeader(const std::string& value,
+bool ParseHSTSHeader(std::string_view value,
                      base::TimeDelta* max_age,
                      bool* include_subdomains) {
   uint32_t max_age_value = 0;

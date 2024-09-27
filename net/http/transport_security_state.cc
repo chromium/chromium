@@ -87,7 +87,7 @@ bool AddHash(const char* sha256_hash, HashValueVector* out) {
 // Converts |hostname| from dotted form ("www.google.com") to the form
 // used in DNS: "\x03www\x06google\x03com", lowercases that, and returns
 // the result.
-std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
+std::vector<uint8_t> CanonicalizeHost(std::string_view host) {
   // We cannot perform the operations as detailed in the spec here as `host`
   // has already undergone IDN processing before it reached us. Thus, we
   // lowercase the input (probably redudnant since most input here has been
@@ -335,7 +335,6 @@ TransportSecurityState::CheckCTRequirements(
     const X509Certificate* validated_certificate_chain,
     ct::CTPolicyCompliance policy_compliance) {
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
-  std::string hostname = host_port_pair.host();
 
   // If CT is emergency disabled, we don't require CT for any host.
   if (ct_emergency_disable_) {
@@ -361,7 +360,7 @@ TransportSecurityState::CheckCTRequirements(
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
-        hostname, validated_certificate_chain, public_key_hashes);
+        host_port_pair.host(), validated_certificate_chain, public_key_hashes);
   }
   switch (ct_required) {
     case CTRequirementLevel::REQUIRED:
@@ -405,7 +404,7 @@ void TransportSecurityState::UpdatePinList(
 }
 
 void TransportSecurityState::AddHSTSInternal(
-    const std::string& host,
+    std::string_view host,
     TransportSecurityState::STSState::UpgradeMode upgrade_mode,
     const base::Time& expiry,
     bool include_subdomains) {
@@ -434,7 +433,7 @@ void TransportSecurityState::AddHSTSInternal(
   DirtyNotify();
 }
 
-void TransportSecurityState::AddHPKPInternal(const std::string& host,
+void TransportSecurityState::AddHPKPInternal(std::string_view host,
                                              const base::Time& last_observed,
                                              const base::Time& expiry,
                                              bool include_subdomains,
@@ -565,8 +564,8 @@ void TransportSecurityState::DirtyNotify() {
     delegate_->StateIsDirty(this);
 }
 
-bool TransportSecurityState::AddHSTSHeader(const std::string& host,
-                                           const std::string& value) {
+bool TransportSecurityState::AddHSTSHeader(std::string_view host,
+                                           std::string_view value) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   base::Time now = base::Time::Now();
@@ -588,14 +587,14 @@ bool TransportSecurityState::AddHSTSHeader(const std::string& host,
   return true;
 }
 
-void TransportSecurityState::AddHSTS(const std::string& host,
+void TransportSecurityState::AddHSTS(std::string_view host,
                                      const base::Time& expiry,
                                      bool include_subdomains) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddHSTSInternal(host, STSState::MODE_FORCE_HTTPS, expiry, include_subdomains);
 }
 
-void TransportSecurityState::AddHPKP(const std::string& host,
+void TransportSecurityState::AddHPKP(std::string_view host,
                                      const base::Time& expiry,
                                      bool include_subdomains,
                                      const HashValueVector& hashes) {

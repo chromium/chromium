@@ -176,7 +176,7 @@ ChromeRequireCTDelegate::~ChromeRequireCTDelegate() {}
 
 net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel
 ChromeRequireCTDelegate::IsCTRequiredForHost(
-    const std::string& hostname,
+    std::string_view hostname,
     const net::X509Certificate* chain,
     const net::HashValueVector& spki_hashes) {
   if (MatchHostname(hostname) || MatchSPKI(chain, spki_hashes)) {
@@ -203,7 +203,7 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   ParseSpkiHashes(excluded_spkis, &spkis_);
 }
 
-bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname) const {
+bool ChromeRequireCTDelegate::MatchHostname(std::string_view hostname) const {
   if (url_matcher_->IsEmpty())
     return false;
 

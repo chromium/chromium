@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
@@ -29,7 +29,7 @@ const uint32_t kMaxHPKPAgeSecs = 86400 * 60;  // 60 days
 //
 // "Strict-Transport-Security" ":"
 //     [ directive ]  *( ";" [ directive ] )
-bool NET_EXPORT_PRIVATE ParseHSTSHeader(const std::string& value,
+bool NET_EXPORT_PRIVATE ParseHSTSHeader(std::string_view value,
                                         base::TimeDelta* max_age,
                                         bool* include_subdomains);
 
