@@ -289,6 +289,7 @@ enum Medium {
   kWebRtc = 9,
   kBleL2Cap = 10,
   kUsb = 11,
+  kWebRtcNonCellular = 12,
 };
 
 // Log severity levels. This is passed as a member of

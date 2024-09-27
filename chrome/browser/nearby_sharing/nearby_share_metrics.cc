@@ -130,7 +130,8 @@ enum class UpgradedMedium {
   kNoUpgrade = 10,
   kBleL2Cap = 11,
   kUsb = 12,
-  kMaxValue = kUsb
+  kWebRtcNonCellular = 13,
+  kMaxValue = kWebRtcNonCellular
 };
 
 AttachmentType FileMetadataTypeToAttachmentType(
@@ -334,6 +335,7 @@ std::string GetUpgradedMediumSubcategoryName(
     case nearby::connections::mojom::Medium::kWifiDirect:
     case nearby::connections::mojom::Medium::kBleL2Cap:
     case nearby::connections::mojom::Medium::kUsb:
+    case nearby::connections::mojom::Medium::kWebRtcNonCellular:
       return ".UnknownMediumUpgrade";
   }
 }
@@ -369,6 +371,8 @@ UpgradedMedium GetUpgradedMediumForMetrics(
       return UpgradedMedium::kBleL2Cap;
     case nearby::connections::mojom::Medium::kUsb:
       return UpgradedMedium::kUsb;
+    case nearby::connections::mojom::Medium::kWebRtcNonCellular:
+      return UpgradedMedium::kWebRtcNonCellular;
   }
 }
 
@@ -449,6 +453,7 @@ bool IsTransferMedium(nearby::connections::mojom::Medium medium) {
     case nearby::connections::mojom::Medium::kNfc:
     case nearby::connections::mojom::Medium::kBleL2Cap:
     case nearby::connections::mojom::Medium::kUsb:
+    case nearby::connections::mojom::Medium::kWebRtcNonCellular:
       return false;
   }
 }
@@ -481,6 +486,8 @@ std::string GetMediumName(nearby::connections::mojom::Medium medium) {
       return "BleL2Cap";
     case nearby::connections::mojom::Medium::kUsb:
       return "Usb";
+    case nearby::connections::mojom::Medium::kWebRtcNonCellular:
+      return "WebRtcNonCellular";
   }
 }
 

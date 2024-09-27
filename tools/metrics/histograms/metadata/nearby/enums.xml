@@ -94,6 +94,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="WebRTC"/>
   <int value="10" label="BLE_L2CAP"/>
   <int value="11" label="USB"/>
+  <int value="12" label="WebRTC Non-cellular"/>
 </enum>
 
 <enum name="NearbyConnectionsStartAdvertisingFailureReason">
@@ -516,6 +517,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="WebRTC"/>
   <int value="10" label="No upgrade"/>
   <int value="11" label="BLE L2CAP"/>
+  <int value="12" label="USB"/>
+  <int value="13" label="WebRTC Non-cellular"/>
 </enum>
 
 <enum name="NearbyShareVisibility">
