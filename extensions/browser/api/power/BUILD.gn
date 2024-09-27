@@ -29,25 +29,11 @@ source_set("power") {
     sources += [
       "activity_reporter_delegate.cc",
       "activity_reporter_delegate.h",
+      "activity_reporter_delegate_ash.cc",
+      "activity_reporter_delegate_ash.h",
     ]
 
     deps += [ "//build:chromeos_buildflags" ]
-
-    if (is_chromeos_ash) {
-      sources += [
-        "activity_reporter_delegate_ash.cc",
-        "activity_reporter_delegate_ash.h",
-      ]
-    } else if (is_chromeos_lacros) {
-      sources += [
-        "activity_reporter_delegate_lacros.cc",
-        "activity_reporter_delegate_lacros.h",
-      ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    }
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

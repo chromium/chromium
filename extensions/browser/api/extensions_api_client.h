@@ -212,7 +212,7 @@ class ExtensionsAPIClient {
   // Returns a delegate for the chrome.feedbackPrivate API.
   virtual FeedbackPrivateDelegate* GetFeedbackPrivateDelegate();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If supported by the embedder, returns a delegate for querying non-native
   // file systems.
   virtual NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate();
@@ -220,9 +220,7 @@ class ExtensionsAPIClient {
   // Returns a delegate for embedder-specific chrome.mediaPerceptionPrivate API
   // behavior.
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       std::vector<uint8_t> image_data,

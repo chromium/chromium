@@ -1134,14 +1134,6 @@ if (enable_extensions) {
         "//extensions/common:mojom",
       ]
     }
-
-    if (is_chromeos_lacros) {
-      sources += [ "api/cec_private/cec_private_lacros_apitest.cc" ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    }
   }
 
   fuzzer_test("extension_file_highlighter_fuzzer") {

@@ -10,7 +10,7 @@
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/common/api/virtual_keyboard.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
@@ -26,7 +26,7 @@ VirtualKeyboardRestrictFeaturesFunction::Run() {
   std::optional<api::virtual_keyboard::RestrictFeatures::Params> params =
       api::virtual_keyboard::RestrictFeatures::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using ::ash::input_method::InputMethodManager;
   InputMethodManager* input_method_manager = InputMethodManager::Get();
   if (input_method_manager) {

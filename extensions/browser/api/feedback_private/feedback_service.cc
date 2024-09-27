@@ -33,14 +33,14 @@
 #include "extensions/browser/blob_reader.h"
 #include "net/base/network_change_notifier.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -50,7 +50,7 @@ using system_logs::SystemLogsResponse;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The paths are relative to "/var/log/" by default, which can be overwritten
 // for testing purpose.
 constexpr base::FilePath::CharType kBluetoothLogsFilePath[] =
@@ -135,12 +135,12 @@ void FeedbackService::RedactThenSendFeedback(
                      feedback_data, std::move(callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackService::SetLogFilesRootPathForTesting(
     const base::FilePath& log_file_root) {
   log_file_root_ = log_file_root;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // After the attached file and screenshot if available are fetched, the callback
 // will be invoked. Other further processing will be done in background. The
@@ -205,7 +205,7 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
     // will be loaded in the background without blocking the client.
     FetchSystemInformation(params, feedback_data);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (feedback_data->sys_info()->size() > 0) {
       // The user has chosen to send system logs which has been loaded from the
       // client side. On ash, extra logs need to be fetched.
@@ -216,7 +216,7 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
     }
 #else
     OnAllLogsFetched(params, feedback_data);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   base::UmaHistogramMediumTimes(
@@ -259,14 +259,14 @@ void FeedbackService::OnSystemInformationFetched(
         feedback_data->AddLog(std::move(itr.first), std::move(itr.second));
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   FetchExtraLogs(params, feedback_data);
 #else
   OnAllLogsFetched(params, feedback_data);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackService::FetchExtraLogs(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data) {
@@ -339,7 +339,7 @@ void FeedbackService::OnBinaryLogFilesFetched(
   }
   std::move(barrier_closure_callback).Run();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FeedbackService::OnAllLogsFetched(
     const FeedbackParams& params,
@@ -367,7 +367,7 @@ void FeedbackService::OnAllLogsFetched(
   DCHECK(feedback_data->attached_file_uuid().empty());
   DCHECK(feedback_data->screenshot_uuid().empty());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Send feedback to Assistant server if triggered from Google Assistant.
   if (feedback_data->from_assistant()) {
     ash::AssistantController::Get()->SendAssistantFeedback(

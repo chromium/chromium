@@ -163,7 +163,7 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
     out->inquiry_tx_power.reset();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<device::BluetoothDevice::BatteryInfo> battery_info =
       device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
 
@@ -188,7 +188,7 @@ void PopulateAdapterState(const device::BluetoothAdapter& adapter,
   out->address = adapter.GetAddress();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
   switch (type) {
     case FilterType::kNone:

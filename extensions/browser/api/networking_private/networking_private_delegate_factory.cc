@@ -10,10 +10,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extensions_browser_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/networking_private/networking_private_chromeos.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "extensions/browser/api/networking_private/networking_private_lacros.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "extensions/browser/api/networking_private/networking_private_linux.h"
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -63,10 +61,8 @@ NetworkingPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<NetworkingPrivateDelegate> delegate;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   delegate = std::make_unique<NetworkingPrivateChromeOS>(browser_context);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  delegate = std::make_unique<NetworkingPrivateLacros>(browser_context);
 #elif BUILDFLAG(IS_LINUX)
   delegate = std::make_unique<NetworkingPrivateLinux>();
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

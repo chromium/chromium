@@ -62,7 +62,7 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
                         gfx::Size(),  // Result contains device-level detail.
                         std::move(callback));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   SYSLOG(INFO) << "Screenshot taken";
 #endif
 

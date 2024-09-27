@@ -39,19 +39,7 @@ source_set("networking_private") {
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 
-  if (is_chromeos_lacros) {
-    sources = default_sources + [
-                "lacros_networking_private_observer.cc",
-                "lacros_networking_private_observer.h",
-                "networking_private_event_router_nonchromeos.cc",
-                "networking_private_lacros.cc",
-                "networking_private_lacros.h",
-              ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  } else if (is_linux && use_dbus) {
+  if (is_linux && use_dbus) {
     sources = default_sources + [
                 "network_config_dbus_constants_linux.cc",
                 "network_config_dbus_constants_linux.h",
@@ -68,7 +56,7 @@ source_set("networking_private") {
                 "networking_private_service_client.h",
               ]
     deps += [ "//components/wifi" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources = default_sources + [
                 "networking_private_chromeos.cc",
                 "networking_private_chromeos.h",

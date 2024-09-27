@@ -52,9 +52,9 @@ using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kCrOSTerminal[] = "chrome-untrusted://terminal";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -166,7 +166,7 @@ ExtensionFunction::ResponseValue SocketApiFunction::ErrorWithCode(
 }
 
 std::string SocketApiFunction::GetOriginId() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
   if (!extension()) {
     auto origin = url::Origin::Create(source_url()).Serialize();
@@ -179,7 +179,7 @@ std::string SocketApiFunction::GetOriginId() const {
 
 bool SocketApiFunction::CheckPermission(
     const APIPermission::CheckParam& param) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
   if (!extension()) {
     CHECK_EQ(url::Origin::Create(source_url()).Serialize(), kCrOSTerminal);
@@ -192,7 +192,7 @@ bool SocketApiFunction::CheckPermission(
 
 bool SocketApiFunction::CheckRequest(
     const content::SocketPermissionRequest& param) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
   if (!extension()) {
     CHECK_EQ(url::Origin::Create(source_url()).Serialize(), kCrOSTerminal);

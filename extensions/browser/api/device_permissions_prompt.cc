@@ -336,7 +336,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
     auto device_info = std::make_unique<HidDeviceInfo>(std::move(device));
     // TODO(huangs): Enable this for Lacros (crbug.com/1217124).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     chromeos::PermissionBrokerClient::Get()->CheckPathAccess(
         device_info.get()->device()->device_node,
         base::BindOnce(&HidDevicePermissionsPrompt::AddCheckedDevice, this,
@@ -344,7 +344,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 #else
     AddCheckedDevice(std::move(device_info), initial_enumeration,
                      /*allowed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void AddCheckedDevice(std::unique_ptr<HidDeviceInfo> device_info,

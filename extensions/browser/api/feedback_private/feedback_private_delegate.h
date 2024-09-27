@@ -49,7 +49,7 @@ class FeedbackPrivateDelegate {
       content::BrowserContext* context,
       system_logs::SysLogsFetcherCallback callback) const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Creates a SystemLogsSource for the given type of log file.
   virtual std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const = 0;

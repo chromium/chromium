@@ -40,9 +40,9 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/network_change_notifier.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::api::feedback_private::LogsMapEntry;
 using feedback::FeedbackData;
@@ -80,13 +80,13 @@ std::string StripFakepath(const std::string& path) {
 // report is successfully sent.
 feedback_private::LandingPageType GetLandingPageType(
     const feedback::FeedbackData& feedback_data) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ExtensionsAPIClient::Get()
       ->GetFeedbackPrivateDelegate()
       ->GetLandingPageType(feedback_data);
 #else
   return feedback_private::LandingPageType::kNormal;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool IsGoogleInternalAccountEmail(content::BrowserContext* context) {
@@ -167,13 +167,13 @@ void SendFeedback(content::BrowserContext* browser_context,
     feedback_data->set_screenshot_uuid(*feedback_info.screenshot_blob_uuid);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   feedback_data->set_from_assistant(feedback_info.from_assistant &&
                                     *feedback_info.from_assistant);
   feedback_data->set_assistant_debug_info_allowed(
       feedback_info.assistant_debug_info_allowed &&
       *feedback_info.assistant_debug_info_allowed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (feedback_info.system_information) {
     for (const LogsMapEntry& info : *feedback_info.system_information) {
@@ -207,12 +207,12 @@ FeedbackPrivateAPI::GetFactoryInstance() {
 
 FeedbackPrivateAPI::FeedbackPrivateAPI(content::BrowserContext* context)
     : browser_context_(context),
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       service_(base::MakeRefCounted<FeedbackService>(context)) {
 #else
       service_(base::MakeRefCounted<FeedbackService>(context)),
       log_source_access_manager_(new LogSourceAccessManager(context)){
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 FeedbackPrivateAPI::~FeedbackPrivateAPI() = default;
@@ -221,7 +221,7 @@ scoped_refptr<FeedbackService> FeedbackPrivateAPI::GetService() const {
   return service_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 LogSourceAccessManager* FeedbackPrivateAPI::GetLogSourceAccessManager() const {
   return log_source_access_manager_.get();
 }
@@ -255,11 +255,11 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   std::string ai_metadata_json;
   base::JSONWriter::Write(ai_metadata, &ai_metadata_json);
   info->ai_metadata = std::move(ai_metadata_json);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;
   info->show_questionnaire = show_questionnaire;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Any extra diagnostics information should be added to the sys info.
   if (!extra_diagnostics.empty()) {
@@ -289,7 +289,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     // Use Chrome browser product id for all platforms including ChromeOS by
     // default.
     info->product_id = FeedbackCommon::GetChromeBrowserProductId();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (ai_metadata.contains(feedback::kSeaPenMetadataKey)) {
       // Use ChromeOS product id for ChromeOS AI wallpaper and VC backgrounds.
       info->product_id = FeedbackCommon::GetChromeOSProductId();
@@ -297,7 +297,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
       // Use ChromeOS product id for ChromeOS Recorder App.
       info->product_id = FeedbackCommon::GetChromeOSProductId();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (ai_metadata.contains(feedback::kMahiMetadataKey)) {
       info->product_id = FeedbackCommon::GetMahiProductId();
     }
@@ -354,7 +354,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
 }
 
 ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using Params = feedback_private::ReadLogSource::Params;
   std::optional<Params> api_params = Params::Create(args());
 
@@ -377,16 +377,16 @@ ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
   NOTREACHED_IN_MIGRATION()
       << "API function is not supported on this platform.";
   return RespondNow(Error("API function is not supported on this platform."));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackPrivateReadLogSourceFunction::OnCompleted(
     std::unique_ptr<feedback_private::ReadLogSourceResult> result) {
   Respond(
       ArgumentList(feedback_private::ReadLogSource::Results::Create(*result)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   std::optional<feedback_private::SendFeedback::Params> params =

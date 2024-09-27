@@ -15,12 +15,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/power/power_policy_controller.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/system_idle_cache.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace keys = extensions::idle_api_constants;
 namespace idle = extensions::api::idle;
@@ -191,14 +188,12 @@ int IdleManager::GetThresholdForTest(const ExtensionId& extension_id) const {
 
 base::TimeDelta IdleManager::GetAutoLockDelay() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return chromeos::PowerPolicyController::Get()
       ->GetMaxPolicyAutoScreenLockDelay();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()->system_idle_cache()->auto_lock_delay();
 #else
   return base::TimeDelta();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static

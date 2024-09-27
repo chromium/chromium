@@ -8,7 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("diagnostics") {
   sources = [

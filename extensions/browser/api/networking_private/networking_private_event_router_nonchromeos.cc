@@ -17,11 +17,6 @@ namespace {
 constexpr const char* kEventNames[] = {
     api::networking_private::OnNetworksChanged::kEventName,
     api::networking_private::OnNetworkListChanged::kEventName,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    api::networking_private::OnDeviceStateListChanged::kEventName,
-    api::networking_private::OnPortalDetectionCompleted::kEventName,
-    api::networking_private::OnCertificateListsChanged::kEventName,
-#endif
 };
 
 }  // namespace

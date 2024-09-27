@@ -404,7 +404,7 @@ class AutomationWebContentsObserver
       // On ChromeOS Ash, the automation api is the native accessibility api.
       // For the purposes of tracking web contents accessibility like other
       // desktop platforms, record the same UMA metric as those platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       UMA_HISTOGRAM_ENUMERATION(
           "Accessibility.ModeFlag",
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS,
@@ -433,7 +433,7 @@ class AutomationWebContentsObserver
           "Accessibility.ModeFlag",
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF,
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 

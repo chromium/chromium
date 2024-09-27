@@ -18,9 +18,9 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/debug_daemon/binary_log_files_reader.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace feedback {
 class FeedbackData;
@@ -71,9 +71,9 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       SendFeedbackCallback callback);
 
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() { return delegate_; }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetLogFilesRootPathForTesting(const base::FilePath& log_file_root);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   virtual ~FeedbackService();
@@ -103,7 +103,7 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   void OnAllLogsFetched(const FeedbackParams& params,
                         scoped_refptr<feedback::FeedbackData> feedback_data);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets logs that aren't covered by FetchSystemInformation, but should be
   // included in the feedback report. These currently consist of the Intel Wi-Fi
   // debug logs (if they exist).
@@ -121,16 +121,16 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       const std::string& compressed_histograms);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged>
       browser_context_;
   raw_ptr<FeedbackPrivateDelegate, AcrossTasksDanglingUntriaged> delegate_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Root file path for log files. It can be overwritten for testing purpose.
   base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
   feedback::BinaryLogFilesReader binary_log_files_reader_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace extensions

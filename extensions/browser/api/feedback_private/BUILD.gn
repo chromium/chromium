@@ -33,7 +33,7 @@ source_set("feedback_private") {
     "//net",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "access_rate_limiter.cc",
       "access_rate_limiter.h",
