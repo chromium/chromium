@@ -82,6 +82,8 @@ source_set("base") {
     "ipc_support.h",
     "lock.cc",
     "lock.h",
+    "proxy_config_service.cc",
+    "proxy_config_service.h",
     "url_loader_factory_provider.cc",
     "url_loader_factory_provider.h",
   ]
@@ -95,6 +97,7 @@ source_set("base") {
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/proto",
     "//chrome/updater:public_sources",
+    "//chrome/updater/protos:omaha_proto",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
@@ -198,6 +201,7 @@ test("enterprise_companion_tests") {
     "enterprise_companion_service_unittest.cc",
     "enterprise_companion_status_unittest.cc",
     "event_logger_unittest.cc",
+    "proxy_config_service_unittest.cc",
     "test/run_all_unittests.cc",
     "url_loader_factory_provider_unittest.cc",
   ]
@@ -214,6 +218,7 @@ test("enterprise_companion_tests") {
     "//chrome/enterprise_companion/device_management_storage:unit_tests",
     "//chrome/enterprise_companion/proto",
     "//chrome/updater:constants_test",
+    "//chrome/updater/protos:omaha_proto",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
