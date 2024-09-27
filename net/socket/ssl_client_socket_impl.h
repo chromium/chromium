@@ -222,7 +222,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Used by Write function.
   scoped_refptr<IOBuffer> user_write_buf_;
   int user_write_buf_len_;
-  bool first_post_handshake_write_ = true;
 
   // True if we've already handled the result of our attempt to use early data.
   bool handled_early_data_result_ = false;

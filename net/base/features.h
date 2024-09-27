@@ -197,12 +197,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
-// to ensure that this corner of the spec is exercised. This is currently
-// disabled by default because we discovered incompatibilities with some
-// servers.
-NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
-
 // Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
 // controls whether ML-KEM or Kyber is used.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);

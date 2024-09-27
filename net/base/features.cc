@@ -152,10 +152,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTLS13KeyUpdate,
-             "TLS13KeyUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPostQuantumKyber,
              "PostQuantumKyber",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
