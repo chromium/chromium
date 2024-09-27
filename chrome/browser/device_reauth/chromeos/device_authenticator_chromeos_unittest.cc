@@ -199,25 +199,11 @@ struct TestCase {
   const char* description;
   BiometricsStatusChromeOS availability;
   bool expected_result;
-  bool enable_feature;
 };
 
 class DeviceAuthenticatorChromeOSTestAvailability
     : public DeviceAuthenticatorChromeOSTest,
       public testing::WithParamInterface<TestCase> {
- public:
-  void SetBiometricFeatureValue(bool value) {
-    if (value) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kBiometricsInPasswordManager);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kBiometricsInPasswordManager);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
@@ -225,7 +211,6 @@ TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
   SCOPED_TRACE(test_case.description);
   EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
       .WillOnce(Return(test_case.availability));
-  SetBiometricFeatureValue(test_case.enable_feature);
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticateWithBiometrics());
   EXPECT_EQ(test_case.expected_result,
@@ -241,25 +226,21 @@ INSTANTIATE_TEST_SUITE_P(
             .description = "kAvailable",
             .availability = BiometricsStatusChromeOS::kAvailable,
             .expected_result = true,
-            .enable_feature = true,
         },
         TestCase{
             .description = "kUnavailable",
             .availability = BiometricsStatusChromeOS::kUnavailable,
             .expected_result = false,
-            .enable_feature = true,
         },
         TestCase{
             .description = "kNotConfiguredForUser",
             .availability = BiometricsStatusChromeOS::kNotConfiguredForUser,
             .expected_result = false,
-            .enable_feature = true,
         },
         TestCase{
             .description = "Feature not enabled",
             .availability = BiometricsStatusChromeOS::kUnavailable,
             .expected_result = false,
-            .enable_feature = true,
         }));
 #endif
 }  // namespace

@@ -97,9 +97,6 @@ void AuthenticatorChromeOS::AuthenticateUser(
 
 BiometricsStatusChromeOS AuthenticatorChromeOS::CheckIfBiometricsAvailable() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::features::IsBiometricsInPasswordManagerEnabled()) {
-    return BiometricsStatusChromeOS::kUnavailable;
-  }
   const PrefService& prefs =
       *ProfileManager::GetActiveUserProfile()->GetPrefs();
 
