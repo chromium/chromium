@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chromium > Internals > Preload > Prerender"
+}
+buganizer_public: {
+  component_id: 1456133
+}
