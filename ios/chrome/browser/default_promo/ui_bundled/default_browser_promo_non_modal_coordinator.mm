@@ -141,9 +141,9 @@
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+      feature_engagement::TrackerFactory::GetForProfile(profile));
 }
 
 @end

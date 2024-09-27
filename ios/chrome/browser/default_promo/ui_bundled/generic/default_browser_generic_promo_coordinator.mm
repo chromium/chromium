@@ -52,17 +52,16 @@ using base::UserMetricsAction;
   [super start];
   [self recordVideoDefaultBrowserPromoShown];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(profile);
 
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(browserState);
+            GetForProfile(profile);
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
+            GetDispatcherForProfile(profile);
 
     _mediator = [[DefaultBrowserGenericPromoMediator alloc]
            initWithSegmentationService:segmentationService
@@ -153,7 +152,7 @@ using base::UserMetricsAction;
         feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
   }
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
+      PromosManagerFactory::GetForProfile(self.browser->GetProfile());
   promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowserRemindMeLater);
 

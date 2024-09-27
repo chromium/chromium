@@ -71,19 +71,18 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
 
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser_state_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
 
     coordinator_ = [[DefaultBrowserGenericPromoCoordinator alloc]
         initWithBaseViewController:view_controller_
@@ -97,7 +96,7 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
    DefaultBrowserGenericPromoCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
