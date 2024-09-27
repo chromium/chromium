@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
@@ -172,6 +173,14 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void
+            doesProcessSuggestion_acceptMatchingUrlWhatYouTypedWhenRetainOmniboxOnFocusDisabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
+    }
+
+    @Test
     public void doesProcessSuggestion_rejectMatchWhenTabIsMissing() {
         doReturn(null).when(mTabSupplier).get();
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
@@ -214,6 +223,13 @@ public final class EditUrlSuggestionProcessorUnitTest {
         // Suggestion should be rejected even though URLs match.
         when(mTab.getUrl()).thenReturn(SEARCH_URL_1);
         assertFalse(mProcessor.doesProcessSuggestion(match, 0));
+        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
+    }
+
+    @Test
+    public void doesProcessSuggestion_rejectMatchWhenRetainOmniboxOnFocusEnabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 

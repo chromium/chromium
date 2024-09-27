@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
@@ -61,6 +62,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         // The what-you-typed suggestion can potentially appear as the second suggestion in some
         // cases. If the first suggestion isn't the one we want, ignore all subsequent suggestions.
         if (position != 0) return false;
+
+        // Fall back to the base suggestion processor when retaining omnibox on focus so as not to
+        // show mobile-optimized actions in a desktop-like context.
+        if (OmniboxFeatures.shouldRetainOmniboxOnFocus()) return false;
 
         Tab activeTab = mTabSupplier.get();
         if (activeTab == null
