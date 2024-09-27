@@ -409,7 +409,7 @@ public class CustomTabsConnection {
 
     public boolean warmup(long flags) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.warmup")) {
-            boolean success = warmupInternal(true);
+            boolean success = warmupInternal(true, null);
             logCall("warmup()", success);
             return success;
         }
@@ -426,9 +426,11 @@ public class CustomTabsConnection {
      * Starts as much as possible in anticipation of a future navigation.
      *
      * @param mayCreateSpareWebContents true if warmup() can create a spare renderer.
+     * @param internalCallback callback to be called after all processes are finished.
      * @return true for success.
      */
-    private boolean warmupInternal(final boolean mayCreateSpareWebContents) {
+    private boolean warmupInternal(
+            final boolean mayCreateSpareWebContents, Runnable internalCallback) {
         // Here and in mayLaunchUrl(), don't do expensive work for background applications.
         if (!isCallerForegroundOrSelf()) return false;
         int uid = Binder.getCallingUid();
@@ -508,7 +510,7 @@ public class CustomTabsConnection {
                     });
         }
 
-        tasks.add(TaskTraits.UI_DEFAULT, () -> notifyWarmupIsDone(uid));
+        tasks.add(TaskTraits.UI_DEFAULT, () -> notifyWarmupIsDone(uid, internalCallback));
         tasks.start(false);
         mWarmupTasks = tasks;
         return true;
@@ -644,7 +646,7 @@ public class CustomTabsConnection {
         // Forbids warmup() from creating a spare renderer, as prerendering wouldn't reuse
         // it. Checking whether prerendering is enabled requires the native library to be loaded,
         // which is not necessarily the case yet.
-        if (!warmupInternal(false)) return false; // Also does the foreground check.
+        if (!warmupInternal(false, null)) return false; // Also does the foreground check.
 
         if (!mClientManager.updateStatsAndReturnWhetherAllowed(
                 session, uid, urlString, otherLikelyBundles != null)) {
@@ -689,29 +691,57 @@ public class CustomTabsConnection {
         if (uriString == null) return false;
 
         boolean usePrefetchProxy = options.requiresAnonymousIpWhenCrossOrigin;
-        String verifiedSourceOrigin =
-                verifySourceOriginOfPrefetch(session, options.sourceOrigin)
-                        ? options.sourceOrigin.toString()
+        Origin sourceOrigin =
+                options.sourceOrigin != null
+                        ? Origin.create(options.sourceOrigin.toString())
                         : null;
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+
+        // We should call
+        // (1) warmupInternal to initialize browser and prepare spare WebContents for (2), (3)
+        // (2) validateSourceOriginOfPrefetch to register source origin of prefetch to
+        //     OriginVerifier
+        // (3) startPrefetchFromCCT
+        // sequentially.
+
+        // (3)
+        Runnable startPrefetch =
                 () -> {
-                    WarmupManager.getInstance()
-                            .startPrefetchFromCCT(
-                                    uriString, usePrefetchProxy, verifiedSourceOrigin);
-                });
+                    String verifiedSourceOrigin =
+                            isValidForPrefetchSourceOrigin(session, sourceOrigin)
+                                    ? sourceOrigin.toString()
+                                    : null;
+
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                WarmupManager.getInstance()
+                                        .startPrefetchFromCCT(
+                                                uriString, usePrefetchProxy, verifiedSourceOrigin);
+                            });
+                };
+
+        // (2)
+        Runnable validateOrigin =
+                () -> {
+                    if (sourceOrigin != null) {
+                        mClientManager.validateSourceOriginOfPrefetch(
+                                session, sourceOrigin, startPrefetch);
+                    } else {
+                        startPrefetch.run();
+                    }
+                };
+
+        // (1)
+        warmupInternal(true, validateOrigin);
+
         return true;
     }
 
     @VisibleForTesting
     @androidx.browser.customtabs.ExperimentalPrefetch
-    boolean verifySourceOriginOfPrefetch(
-            CustomTabsSessionToken session, @Nullable Uri rawSourceOrigin) {
-        if (rawSourceOrigin == null) return false;
-        String sourceOriginString = rawSourceOrigin.toString();
-        Origin sourceOrigin = Origin.create(sourceOriginString);
-        return sourceOrigin != null
-                && mClientManager.isFirstPartyOriginForSession(session, sourceOrigin);
+    boolean isValidForPrefetchSourceOrigin(
+            CustomTabsSessionToken session, @Nullable Origin origin) {
+        return origin != null && mClientManager.isFirstPartyOriginForSession(session, origin);
     }
 
     private void enableExperimentIdsIfNecessary(Bundle extras) {
@@ -1617,7 +1647,7 @@ public class CustomTabsConnection {
         return extras;
     }
 
-    private void notifyWarmupIsDone(int uid) {
+    private void notifyWarmupIsDone(int uid, Runnable internalCallback) {
         ThreadUtils.assertOnUiThread();
         final Bundle args = new Bundle(); // Empty one - safe to reuse for all the callbacks.
 
@@ -1637,6 +1667,11 @@ public class CustomTabsConnection {
                 continue;
             }
         }
+
+        if (internalCallback != null) {
+            internalCallback.run();
+        }
+
         logCallback("onWarmupCompleted()", bundleToJson(args).toString());
     }
 

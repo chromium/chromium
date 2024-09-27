@@ -559,7 +559,7 @@ class ClientManager {
 
     public synchronized boolean validateRelationship(
             CustomTabsSessionToken session, int relation, Origin origin, Bundle extras) {
-        return validateRelationshipInternal(session, relation, origin, null, false);
+        return validateRelationshipInternal(session, relation, origin, null, false, null);
     }
 
     /** Validates the link between the client and the origin. */
@@ -568,7 +568,26 @@ class ClientManager {
             Origin origin,
             Origin targetOrigin,
             @Relation int relation) {
-        validateRelationshipInternal(session, relation, origin, targetOrigin, true);
+        validateRelationshipInternal(session, relation, origin, targetOrigin, true, null);
+    }
+
+    /**
+     * Call validateRelationship to verify and store whether given origin is valid as a source
+     * origin of prefetch.
+     *
+     * @param session client session.
+     * @param sourceOrigin origin to be verified.
+     * @param callback callback to be called after verification is finished.
+     */
+    public synchronized void validateSourceOriginOfPrefetch(
+            CustomTabsSessionToken session, Origin sourceOrigin, Runnable callback) {
+        validateRelationshipInternal(
+                session,
+                CustomTabsService.RELATION_USE_AS_ORIGIN,
+                sourceOrigin,
+                null,
+                false,
+                callback);
     }
 
     /** Can't be called on UI Thread. */
@@ -577,7 +596,8 @@ class ClientManager {
             int relation,
             Origin origin,
             @Nullable Origin targetOrigin,
-            boolean initializePostMessageChannel) {
+            boolean initializePostMessageChannel,
+            Runnable internalCallback) {
         SessionParams params = mSessionParams.get(session);
         if (params == null || TextUtils.isEmpty(params.getPackageName())) return false;
 
@@ -601,6 +621,10 @@ class ClientManager {
                         }
                         params.postMessageHandler.onOriginVerified(
                                 packageName, verifiedOrigin, verified, online);
+                    }
+
+                    if (internalCallback != null) {
+                        internalCallback.run();
                     }
                 };
 

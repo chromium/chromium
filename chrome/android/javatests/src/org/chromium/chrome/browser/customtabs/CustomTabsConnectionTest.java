@@ -861,7 +861,22 @@ public class CustomTabsConnectionTest {
     public void testPrefetch() throws Exception {
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        Assert.assertTrue(
+                mCustomTabsConnection.prefetch(
+                        token, Uri.parse(URL), new PrefetchOptions.Builder().build()));
+    }
+
+    /** Tests that prefetch() also succeeds if we run warmup beforehand */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testPrefetchWithWarmup() throws Exception {
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
         Assert.assertTrue(
                 mCustomTabsConnection.prefetch(
                         token, Uri.parse(URL), new PrefetchOptions.Builder().build()));
@@ -877,7 +892,6 @@ public class CustomTabsConnectionTest {
     public void testPrefetchWithInvalidUri() throws Exception {
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
         Assert.assertFalse(
                 mCustomTabsConnection.prefetch(
                         token,
@@ -887,7 +901,7 @@ public class CustomTabsConnectionTest {
 
     @Test
     @SmallTest
-    public void testverifySourceOriginOfPrefetch() throws Exception {
+    public void testisValidForPrefetchSourceOrigin() throws Exception {
         String sourceOrigin = URL;
         String invalidSourceOrigin = URL2;
         String packageName = "app";
@@ -902,7 +916,6 @@ public class CustomTabsConnectionTest {
                                 Origin.create(sourceOrigin),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
-        PrefetchOptions prefetchOptionsEmptySourceOrigin = new PrefetchOptions.Builder().build();
         PrefetchOptions prefetchOptionsValidSourceOrigin =
                 new PrefetchOptions.Builder().setSourceOrigin(Uri.parse(sourceOrigin)).build();
         PrefetchOptions prefetchOptionsInvalidSourceOrigin =
@@ -910,15 +923,15 @@ public class CustomTabsConnectionTest {
                         .setSourceOrigin(Uri.parse(invalidSourceOrigin))
                         .build();
 
-        Assert.assertFalse(
-                mCustomTabsConnection.verifySourceOriginOfPrefetch(
-                        token, prefetchOptionsEmptySourceOrigin.sourceOrigin));
+        Assert.assertFalse(mCustomTabsConnection.isValidForPrefetchSourceOrigin(token, null));
         Assert.assertTrue(
-                mCustomTabsConnection.verifySourceOriginOfPrefetch(
-                        token, prefetchOptionsValidSourceOrigin.sourceOrigin));
+                mCustomTabsConnection.isValidForPrefetchSourceOrigin(
+                        token,
+                        Origin.create(prefetchOptionsValidSourceOrigin.sourceOrigin.toString())));
         Assert.assertFalse(
-                mCustomTabsConnection.verifySourceOriginOfPrefetch(
-                        token, prefetchOptionsInvalidSourceOrigin.sourceOrigin));
+                mCustomTabsConnection.isValidForPrefetchSourceOrigin(
+                        token,
+                        Origin.create(prefetchOptionsInvalidSourceOrigin.sourceOrigin.toString())));
     }
 
     /** Tests that prefetch() with valid Uri and valid sourceOrigin succeeds. */
@@ -935,7 +948,6 @@ public class CustomTabsConnectionTest {
 
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
         mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -966,7 +978,6 @@ public class CustomTabsConnectionTest {
 
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
         mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
         Assert.assertTrue(
                 mCustomTabsConnection.prefetch(
