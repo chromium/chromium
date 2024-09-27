@@ -225,6 +225,13 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   [self updateTableViewHeaderView];
 
   [self loadModel];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -250,14 +257,19 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    [self updateNavigationBarBackgroundColorForDismissal:NO];
-    [self updateTableViewHeaderView];
+    [self updateUIOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - SettingsRootTableViewController
 
@@ -865,5 +877,12 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   cell);
+}
+
+// Updates the navigation bar's background color & the header views when the
+// UITraitVerticalSizeClass changes.
+- (void)updateUIOnTraitChange {
+  [self updateNavigationBarBackgroundColorForDismissal:NO];
+  [self updateTableViewHeaderView];
 }
 @end
