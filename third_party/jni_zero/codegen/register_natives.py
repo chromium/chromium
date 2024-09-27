@@ -35,7 +35,7 @@ def per_class_register_function(sb, jni_obj):
       for native in jni_obj.non_proxy_natives:
         sb(f"""\
 {{
-    native{native.cpp_name}",
+    "native{native.cpp_name}",
     "{native.proxy_signature.to_descriptor()}",
     reinterpret_cast<void*>({jni_obj.GetStubName(native)})
 }}, """)
