@@ -29,7 +29,7 @@ public class FakeUrlResponse {
     private final String mProxyServer;
     private final byte[] mResponseBody;
 
-    private static <T extends Object> T getNullableOrDefault(T nullableObject, T defaultObject) {
+    private static <T> T getNullableOrDefault(T nullableObject, T defaultObject) {
         if (nullableObject != null) {
             return nullableObject;
         }

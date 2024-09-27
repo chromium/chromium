@@ -415,7 +415,6 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
      * that part of the string from the response left to send.
      *
      * @param buffer the {@link ByteBuffer} to put the response into
-     * @return the buffer with the response that we want to send back in it
      */
     @GuardedBy("mLock")
     private void fillBufferWithResponse(ByteBuffer buffer) {

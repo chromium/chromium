@@ -45,7 +45,7 @@ public class CronetSampleApplication extends Application {
         QuicOptions.Builder quicOptionsBuilder = QuicOptions.builder();
         DnsOptions.Builder dnsOptionsBuilder = DnsOptions.builder();
         ActionData actionData =
-                (new ActionData.Builder())
+                new ActionData.Builder()
                         .setCronetEngineBuilder(myBuilder)
                         .setMigrationBuilder(connecMigrationBuilder)
                         .setQuicBuilder(quicOptionsBuilder)

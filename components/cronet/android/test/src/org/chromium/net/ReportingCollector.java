@@ -112,4 +112,3 @@ class ReportingCollector {
         return true;
     }
 }
-;

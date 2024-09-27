@@ -42,49 +42,49 @@ public class UrlRequestUtil {
     public static int convertLoadState(int loadState) {
         assert loadState >= LoadState.IDLE && loadState <= LoadState.READING_RESPONSE;
         switch (loadState) {
-            case (LoadState.IDLE):
+            case LoadState.IDLE:
                 return Status.IDLE;
 
-            case (LoadState.WAITING_FOR_STALLED_SOCKET_POOL):
+            case LoadState.WAITING_FOR_STALLED_SOCKET_POOL:
                 return Status.WAITING_FOR_STALLED_SOCKET_POOL;
 
-            case (LoadState.WAITING_FOR_AVAILABLE_SOCKET):
+            case LoadState.WAITING_FOR_AVAILABLE_SOCKET:
                 return Status.WAITING_FOR_AVAILABLE_SOCKET;
 
-            case (LoadState.WAITING_FOR_DELEGATE):
+            case LoadState.WAITING_FOR_DELEGATE:
                 return Status.WAITING_FOR_DELEGATE;
 
-            case (LoadState.WAITING_FOR_CACHE):
+            case LoadState.WAITING_FOR_CACHE:
                 return Status.WAITING_FOR_CACHE;
 
-            case (LoadState.DOWNLOADING_PAC_FILE):
+            case LoadState.DOWNLOADING_PAC_FILE:
                 return Status.DOWNLOADING_PAC_FILE;
 
-            case (LoadState.RESOLVING_PROXY_FOR_URL):
+            case LoadState.RESOLVING_PROXY_FOR_URL:
                 return Status.RESOLVING_PROXY_FOR_URL;
 
-            case (LoadState.RESOLVING_HOST_IN_PAC_FILE):
+            case LoadState.RESOLVING_HOST_IN_PAC_FILE:
                 return Status.RESOLVING_HOST_IN_PAC_FILE;
 
-            case (LoadState.ESTABLISHING_PROXY_TUNNEL):
+            case LoadState.ESTABLISHING_PROXY_TUNNEL:
                 return Status.ESTABLISHING_PROXY_TUNNEL;
 
-            case (LoadState.RESOLVING_HOST):
+            case LoadState.RESOLVING_HOST:
                 return Status.RESOLVING_HOST;
 
-            case (LoadState.CONNECTING):
+            case LoadState.CONNECTING:
                 return Status.CONNECTING;
 
-            case (LoadState.SSL_HANDSHAKE):
+            case LoadState.SSL_HANDSHAKE:
                 return Status.SSL_HANDSHAKE;
 
-            case (LoadState.SENDING_REQUEST):
+            case LoadState.SENDING_REQUEST:
                 return Status.SENDING_REQUEST;
 
-            case (LoadState.WAITING_FOR_RESPONSE):
+            case LoadState.WAITING_FOR_RESPONSE:
                 return Status.WAITING_FOR_RESPONSE;
 
-            case (LoadState.READING_RESPONSE):
+            case LoadState.READING_RESPONSE:
                 return Status.READING_RESPONSE;
 
             default:
