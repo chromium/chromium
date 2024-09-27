@@ -9,12 +9,21 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "url/gurl.h"
+
+struct EndpointResponse;
+class EndpointFetcher;
+class GURL;
+
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
