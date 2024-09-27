@@ -23,7 +23,9 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace media {
 
@@ -85,15 +87,12 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 const gpu::Mailbox& VideoFrameYUVMailboxesHolder::VideoFrameToMailbox(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider) {
-  yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
-  num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
-
   // If we have cached shared image but the provider or video has changed we
   // need to release shared image created on the old context and recreate them.
   if (shared_image_ &&
       (provider_.get() != raster_context_provider ||
-       video_frame->coded_size() != cached_video_size_ ||
-       video_frame->ColorSpace() != cached_video_color_space_)) {
+       video_frame->coded_size() != shared_image_->size() ||
+       video_frame->ColorSpace() != shared_image_->color_space())) {
     ReleaseCachedData();
   }
   provider_ = raster_context_provider;
@@ -148,30 +147,20 @@ const gpu::Mailbox& VideoFrameYUVMailboxesHolder::VideoFrameToMailbox(
     // Split up shared image creation from upload so we only have to wait on
     // one sync token.
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-
-    cached_video_size_ = video_frame->coded_size();
-    cached_video_color_space_ = video_frame->ColorSpace();
   }
 
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
     SkColorType color_type =
         viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
-    SkImageInfo info =
-        SkImageInfo::Make(plane_sizes_[plane], color_type, kPlaneAlphaType);
+    auto plane_size = format.GetPlaneSize(plane, video_frame->coded_size());
+    SkImageInfo info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
+                                         color_type, kPlaneAlphaType);
     pixmaps[plane] =
         SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
   }
-  SkYUVAPixmaps yuv_pixmap =
-      SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
-  ri->WritePixelsYUV(shared_image_->mailbox(), yuv_pixmap);
-  return shared_image_->mailbox();
-}
 
-// static
-SkYUVAInfo VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
-    const VideoFrame* video_frame) {
-  SkISize video_size{video_frame->coded_size().width(),
-                     video_frame->coded_size().height()};
+  // Prepare the SkYUVAInfo
+  SkISize video_size = gfx::SizeToSkISize(video_frame->coded_size());
   auto plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
   auto subsampling = SkYUVAInfo::Subsampling::kUnknown;
   std::tie(plane_config, subsampling) =
@@ -181,7 +170,14 @@ SkYUVAInfo VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
   SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
   video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
                                               &color_space);
-  return SkYUVAInfo(video_size, plane_config, subsampling, color_space);
+  auto yuva_info =
+      SkYUVAInfo(video_size, plane_config, subsampling, color_space);
+
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps);
+  ri->WritePixelsYUV(shared_image_->mailbox(), yuv_pixmap);
+
+  return shared_image_->mailbox();
 }
 
 }  // namespace media

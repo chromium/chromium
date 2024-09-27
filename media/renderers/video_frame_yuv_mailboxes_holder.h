@@ -7,7 +7,6 @@
 
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
-#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 namespace gpu {
 class ClientSharedImage;
@@ -35,20 +34,8 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider);
 
-  const SkYUVAInfo& yuva_info() const { return yuva_info_; }
-
-  // Utility to populate a SkYUVAInfo from a video frame.
-  static SkYUVAInfo VideoFrameGetSkYUVAInfo(const VideoFrame* video_frame);
-
  private:
   scoped_refptr<viz::RasterContextProvider> provider_;
-  gfx::Size cached_video_size_;
-  gfx::ColorSpace cached_video_color_space_;
-
-  // The properties of the most recently received video frame.
-  size_t num_planes_ = 0;
-  SkYUVAInfo yuva_info_;
-  SkISize plane_sizes_[SkYUVAInfo::kMaxPlanes];
 
   // Populated by VideoFrameToMailbox.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
