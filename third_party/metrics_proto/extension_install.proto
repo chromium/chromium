@@ -11,8 +11,9 @@ option java_outer_classname = "ExtensionInstallProtos";
 
 package metrics;
 
-// Stores information about an extension installed on a user's machine.
-// Next tag: 17.
+// Stores information about an extension installed on a fully-initialized
+// profile. If a single extension is installed in multiple profiles, it will be
+// recorded multiple times. Next tag: 18.
 message ExtensionInstallProto {
   // The type of extension item this is.
   enum Type {
@@ -156,6 +157,10 @@ message ExtensionInstallProto {
     PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 19;
     // The extension is using an unsupported manifest version.
     UNSUPPORTED_MANIFEST_VERSION = 20;
+    // The extension is disabled because it is a "developer extension" (for
+    // example, an unpacked extension) while the developer mode in
+    // chrome://extensions is OFF.
+    UNSUPPORTED_DEVELOPER_EXTENSION = 21;
   }
   // Any DisableReasons in effect for the extension. An empty list means the
   // extension is not disabled. Note that an extension that is not disabled may
@@ -188,4 +193,9 @@ message ExtensionInstallProto {
   // have the extension installed and others won't, these records can be
   // discarded for that analysis.
   optional bool installed_in_this_sample_period = 16;
+
+  // Whether the profile this extension is installed on has developer mode in
+  // chrome://extensions toggled ON. Note: this refers to the current developer
+  // mode status of the profile, not when the extension was installed.
+  optional bool in_extensions_developer_mode = 17;
 }
