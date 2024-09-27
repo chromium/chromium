@@ -24,12 +24,12 @@ namespace lens {
 
 namespace {
 
-const int kMaxDownloadBytes = 1024 * 1024;
-const int kCopyAsImageTaskCompletionID = 233325;
-const int kCopyTextTaskCompletionID = 198153;
-const int kSaveAsImageTaskCompletionID = 233326;
-const int kSelectTextTaskCompletionID = 198157;
-const int kTranslateTaskCompletionID = 198158;
+constexpr int kMaxDownloadBytes = 1024 * 1024;
+constexpr int kCopyAsImageTaskCompletionID = 233325;
+constexpr int kCopyTextTaskCompletionID = 198153;
+constexpr int kSaveAsImageTaskCompletionID = 233326;
+constexpr int kSelectTextTaskCompletionID = 198157;
+constexpr int kTranslateTaskCompletionID = 198158;
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kRequestTypeQueryParameter[] = "rt";
 constexpr char kFullPageObjectsFetchRequestType[] = "fpof";

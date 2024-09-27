@@ -14,6 +14,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
 #include "chrome/browser/signin/e2e_tests/accounts_removed_waiter.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"

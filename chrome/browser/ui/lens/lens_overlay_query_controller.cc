@@ -16,6 +16,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"

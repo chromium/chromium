@@ -985,7 +985,7 @@ void LensOverlayController::NotifyOverlayInitialized() {
     // If there is a pending region (i.e. for image right click)
     // use INJECTED_IMAGE as the selection type.
     DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
-                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+                  pending_region_bitmap_);
     pending_region_bitmap_.reset();
   }
 }
@@ -1670,7 +1670,7 @@ void LensOverlayController::InitializeOverlay(
     // If there is a pending region (i.e. for image right click)
     // use INJECTED_IMAGE as the selection type.
     DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
-                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+                  pending_region_bitmap_);
     pending_region_bitmap_.reset();
   }
 }

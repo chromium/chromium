@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -60,7 +61,7 @@ using LensOverlayThumbnailCreatedCallback =
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController {
  public:
-  explicit LensOverlayQueryController(
+  LensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlayInteractionResponseCallback interaction_data_callback,
