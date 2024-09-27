@@ -503,9 +503,8 @@ void GtkUi::SetWindowButtonOrdering(
   views::WindowButtonOrderProvider::GetInstance()->SetWindowButtonOrder(
       leading_buttons, trailing_buttons);
 
-  for (auto& observer : window_button_order_observer_list_) {
-    observer.OnWindowButtonOrderingChange();
-  }
+  window_button_order_observer_list_.Notify(
+      &ui::WindowButtonOrderObserver::OnWindowButtonOrderingChange);
 }
 
 void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,

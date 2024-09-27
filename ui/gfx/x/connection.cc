@@ -544,9 +544,7 @@ void Connection::DispatchEvent(const Event& event) {
   // will incorrectly think that the current event being dispatched is
   // an old event.  This means base::AutoReset should not be used.
   dispatching_event_ = &event;
-  for (auto& observer : event_observers_) {
-    observer.OnEvent(event);
-  }
+  event_observers_.Notify(&EventObserver::OnEvent, event);
   dispatching_event_ = nullptr;
 }
 
