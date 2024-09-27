@@ -2037,6 +2037,7 @@ component("base") {
       "mac/close_nocancel.cc",
       "mac/code_signature.cc",
       "mac/code_signature.h",
+      "mac/code_signature_spi.h",
       "mac/info_plist_data.h",
       "mac/info_plist_data.mm",
       "mac/launch_application.h",
@@ -2052,6 +2053,8 @@ component("base") {
       "mac/mach_port_rendezvous.h",
       "mac/os_crash_dumps.cc",
       "mac/os_crash_dumps.h",
+      "mac/process_requirement.cc",
+      "mac/process_requirement.h",
       "mac/scoped_aedesc.h",
       "mac/scoped_authorizationref.h",
       "mac/scoped_authorizationref.mm",
@@ -3556,6 +3559,7 @@ test("base_unittests") {
   }
 
   defines = []
+  frameworks = []
 
   deps = [
     ":base",
@@ -3884,6 +3888,7 @@ test("base_unittests") {
       "mac/launch_application_unittest.mm",
       "mac/mac_util_unittest.mm",
       "mac/mach_port_rendezvous_unittest.cc",
+      "mac/process_requirement_unittest.cc",
       "mac/scoped_sending_event_unittest.mm",
       "message_loop/message_pump_apple_unittest.mm",
       "power_monitor/thermal_state_observer_mac_unittest.mm",
@@ -3892,6 +3897,7 @@ test("base_unittests") {
       "system/sys_info_mac_unittest.mm",
     ]
     data_deps += [ "//base/mac:launch_application_test_helper" ]
+    frameworks += [ "Security.framework" ]
   }
 
   if (is_ios) {
@@ -3941,7 +3947,7 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
-    frameworks = [
+    frameworks += [
       "CoreFoundation.framework",
       "Foundation.framework",
     ]
