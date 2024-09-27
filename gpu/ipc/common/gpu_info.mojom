@@ -209,5 +209,8 @@ struct GpuInfo {
   uint32 visibility_callback_call_count;
 
   [EnableIf=supports_vulkan]
+  bool hardware_supports_vulkan;
+
+  [EnableIf=supports_vulkan]
   VulkanInfo? vulkan_info;
 };

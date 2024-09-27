@@ -22,6 +22,8 @@ class GPUMetricsProvider : public MetricsProvider {
   // MetricsProvider:
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
+  void ProvideCurrentSessionData(
+      ChromeUserMetricsExtension* uma_proto) override;
 };
 
 }  // namespace metrics

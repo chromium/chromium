@@ -1026,6 +1026,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.HardwareSupportsVulkan" enum="Boolean"
+    expires_after="2025-06-30">
+  <owner>kylechar@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records if a device can support running on Vulkan. This value is decided
+    after the first successful GPU service launch and remains constant. If the
+    device doesn't attempt to use Vulkan (eg. it's blocklisted or disabled) or
+    Vulkan compatibility checks fail this will be false.
+
+    This is recorded with every ongoing UMA log record, except if the UMA record
+    is finalized before the first successful GPU service launch. This should be
+    uncommon. This metric is NOT recorded in records that reflect information
+    from a previous session (i.e., &quot;stability records&quot; or
+    &quot;persistent UMA&quot; data related to the previous session but not
+    uploaded during the previous session).
+  </summary>
+</histogram>
+
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
     expires_after="2023-08-27">
   <owner>zmo@chromium.org</owner>

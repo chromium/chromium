@@ -985,6 +985,17 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
 #endif
   gpu_info_ = gpu_info;
   RecordDiscreteGpuHistograms(gpu_info_);
+#if BUILDFLAG(ENABLE_VULKAN)
+  // Remember the initial hardware_supports_vulkan value so it doesn't change
+  // if GPU process restarts as Vulkan might get disabled by GPU mode fallback.
+  if (fixed_gpu_info_.hardware_supports_vulkan.has_value()) {
+    gpu_info_.hardware_supports_vulkan =
+        *fixed_gpu_info_.hardware_supports_vulkan;
+  } else {
+    fixed_gpu_info_.hardware_supports_vulkan =
+        gpu_info.hardware_supports_vulkan;
+  }
+#endif
 #if BUILDFLAG(IS_WIN)
   if (d3d12_feature_level != 0) {
     gpu_info_.d3d12_feature_level = d3d12_feature_level;

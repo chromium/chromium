@@ -511,6 +511,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->vulkan_version = data.vulkan_version();
   out->shared_image_d3d = data.shared_image_d3d();
 #endif
+#if BUILDFLAG(ENABLE_VULKAN)
+  out->hardware_supports_vulkan = data.hardware_supports_vulkan();
+#endif
 
   return data.ReadInitializationTime(&out->initialization_time) &&
          data.ReadGpu(&out->gpu) &&
