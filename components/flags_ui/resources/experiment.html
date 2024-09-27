@@ -1,15 +1,27 @@
 <div class="experiment" id="${this.feature_.internal_name}">
   <div class="flex-container">
     <div class="flex">
-      <h2 class="experiment-name" id="${this.getHeaderId_()}"
-          .title="${this.getExperimentTitle_()}"
-          @click="${this.onExperimentNameClick_}">
-        ${this.feature_.name}
-      </h2>
-      <p class="body" part="body">
-        <span class="description">${this.feature_.description}</span> –
-        <span class="platforms">${this.getPlatforms_()}</span>
-      </p>
+      ${this.showingSearchHit_? html`
+        <h2 class="experiment-name clone" id="${this.getHeaderId_()}"
+            .title="${this.getExperimentTitle_()}"
+            @click="${this.onExperimentNameClick_}">
+          <!-- intentionally empty -->
+        </h2>
+        <p class="body clone" part="body">
+          <span class="description"><!-- intentionally empty --></span> –
+          <span class="platforms"><!-- intentionally empty --></span>
+        </p>
+      ` : html`
+        <h2 class="experiment-name" id="${this.getHeaderId_()}"
+            .title="${this.getExperimentTitle_()}"
+            @click="${this.onExperimentNameClick_}">
+          ${this.feature_.name}
+        </h2>
+        <p class="body" part="body">
+          <span class="description">${this.feature_.description}</span> –
+          <span class="platforms">${this.getPlatforms_()}</span>
+        </p>
+      `}
 
       ${this.feature_.origin_list_value !== undefined ? html`
         <div class="textarea-container">
@@ -41,9 +53,15 @@
         </div>
       ` : ''}
 
-      <a class="permalink" href="#${this.feature_.internal_name}">
-        #${this.feature_.internal_name}
-      </a>
+      ${this.showingSearchHit_? html`
+        <a class="permalink clone" href="#${this.feature_.internal_name}">
+          <!-- intentionally empty -->
+        </a>
+      `: html`
+        <a class="permalink" href="#${this.feature_.internal_name}">
+          #${this.feature_.internal_name}
+        </a>
+      `}
     </div>
     <div class="flex experiment-actions">
       ${this.unsupported ? html`

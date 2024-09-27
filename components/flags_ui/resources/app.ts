@@ -96,53 +96,53 @@ export class FlagSearch {
    * @param searchTerm The query to search for.
    * @return The number of matches found.
    */
-  private highlightAllMatches(
+  private async highlightAllMatches(
       experiments: NodeListOf<FlagsExperimentElement>,
-      searchTerm: string): number {
+      searchTerm: string): Promise<number> {
     let matches = 0;
-    for (const experiment of experiments) {
-      const hasMatch = experiment.match(searchTerm);
+    // Not using for..of with async/await to spawn all searching in parallel.
+    await Promise.all(Array.from(experiments).map(async (experiment) => {
+      const hasMatch = await experiment.match(searchTerm);
       matches += hasMatch ? 1 : 0;
       experiment.classList.toggle('hidden', !hasMatch);
-    }
+    }));
     return matches;
   }
 
   /**
-   * Performs a search against the experiment title, description, permalink.
+   * Performs a search against the experiment title, description, platforms and
+   * permalink text.
    */
   async doSearch() {
     const searchTerm = this.searchBox.value.trim().toLowerCase();
 
-    if (searchTerm || searchTerm === '') {
-      this.flagsAppElement.classList.toggle('searching', Boolean(searchTerm));
+    this.flagsAppElement.classList.toggle('searching', Boolean(searchTerm));
 
-      // Available experiments
-      const availableExperiments =
-          this.flagsAppElement.$all<FlagsExperimentElement>(
-              '#tab-content-available flags-experiment');
-      assert(this.noMatchMsg[0]);
-      this.noMatchMsg[0].classList.toggle(
-          'hidden',
-          this.highlightAllMatches(availableExperiments, searchTerm) > 0);
+    // Available experiments
+    const availableExperiments =
+        this.flagsAppElement.$all<FlagsExperimentElement>(
+            '#tab-content-available flags-experiment');
+    assert(this.noMatchMsg[0]);
+    this.noMatchMsg[0].classList.toggle(
+        'hidden',
+        await this.highlightAllMatches(availableExperiments, searchTerm) > 0);
 
-      // <if expr="not is_ios">
-      // Unavailable experiments, which are undefined on iOS.
-      const unavailableExperiments =
-          this.flagsAppElement.$all<FlagsExperimentElement>(
-              '#tab-content-unavailable flags-experiment');
-      assert(this.noMatchMsg[1]);
-      this.noMatchMsg[1].classList.toggle(
-          'hidden',
-          this.highlightAllMatches(unavailableExperiments, searchTerm) > 0);
-      // </if>
-      await this.announceSearchResults();
-      this.flagsAppElement.dispatchEvent(
-          new Event('search-finished-for-testing', {
-            bubbles: true,
-            composed: true,
-          }));
-    }
+    // <if expr="not is_ios">
+    // Unavailable experiments, which are undefined on iOS.
+    const unavailableExperiments =
+        this.flagsAppElement.$all<FlagsExperimentElement>(
+            '#tab-content-unavailable flags-experiment');
+    assert(this.noMatchMsg[1]);
+    this.noMatchMsg[1].classList.toggle(
+        'hidden',
+        await this.highlightAllMatches(unavailableExperiments, searchTerm) > 0);
+    // </if>
+    await this.announceSearchResults();
+    this.flagsAppElement.dispatchEvent(
+        new Event('search-finished-for-testing', {
+          bubbles: true,
+          composed: true,
+        }));
 
     this.searchIntervalId = null;
   }

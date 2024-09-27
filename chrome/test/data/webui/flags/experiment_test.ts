@@ -17,7 +17,7 @@ suite('ExperimentTest', function() {
   let browserProxy: TestFlagsBrowserProxy;
 
   const experimentWithOptions: Feature = {
-    'description': 'available feature',
+    'description': 'available feature description',
     'internal_name': 'available-feature',
     'is_default': true,
     'name': 'available feature',
@@ -43,10 +43,10 @@ suite('ExperimentTest', function() {
   };
 
   const experimentWithoutOptions: Feature = {
-    'description': 'available feature no default',
-    'internal_name': 'available-feature-no-default',
+    'description': 'available feature description',
+    'internal_name': 'available-feature',
     'is_default': true,
-    'name': 'available feature on default',
+    'name': 'available feature',
     'enabled': true,
     'supported_platforms': ['Windows'],
   };
@@ -340,5 +340,82 @@ suite('ExperimentTest', function() {
     experimentName.click();
     await microtasksFinished();
     assertFalse(experiment.hasAttribute('expanded_'));
+  });
+
+  test('Match', async function() {
+    experiment.data = experimentWithoutOptions;
+    document.body.appendChild(experiment);
+    await microtasksFinished();
+
+    // Identifiers for the original nodes. These nodes should never be manually
+    // modified since it interferes with Lit's rendering.
+    const originalQueries = [
+      '.experiment-name:not(.clone)',
+      '.body:not(.clone) .description',
+      '.body:not(.clone) .platforms',
+      '.permalink:not(.clone)',
+    ];
+
+    // Identifiers for the nodes that can hold text highlighting (clones of
+    // original nodes).
+    const cloneQueries = [
+      '.clone.experiment-name',
+      '.clone.body .description',
+      '.clone.body .platforms',
+      '.clone.permalink',
+    ];
+
+    function assertNoHighlightsShown() {
+      cloneQueries.forEach((query, i) => {
+        assertFalse(!!experiment.shadowRoot!.querySelector(query));
+        assertTrue(!!experiment.shadowRoot!.querySelector(originalQueries[i]!));
+      });
+    }
+
+    async function assertHighlightShown(
+        searchTerm: string, expectedHitIndex: number) {
+      const hasMatch = await experiment.match(searchTerm);
+      assertTrue(hasMatch);
+      cloneQueries.forEach((query, i) => {
+        // Check that original nodes have been removed.
+        const originalNode =
+            experiment.shadowRoot!.querySelector(originalQueries[i]!);
+        assertFalse(!!originalNode);
+
+        // Check that clone nodes have been added.
+        const cloneNode = experiment.shadowRoot!.querySelector(query);
+        assertTrue(!!cloneNode);
+
+        if (i === expectedHitIndex) {
+          const mark = cloneNode.querySelector('mark');
+          assertTrue(!!mark);
+          assertEquals(searchTerm, mark.textContent!.toLowerCase());
+        } else {
+          assertFalse(!!cloneNode.querySelector('mark'));
+        }
+      });
+    }
+
+    // Test initial state.
+    assertNoHighlightsShown();
+
+    // Test matches for each of the possibly highlighted sections.
+    await assertHighlightShown(experimentWithoutOptions.name.toLowerCase(), 0);
+    await assertHighlightShown(
+        experimentWithoutOptions.description.toLowerCase(), 1);
+    await assertHighlightShown(
+        experimentWithoutOptions.supported_platforms[0]!.toLowerCase(), 2);
+    await assertHighlightShown(
+        experimentWithoutOptions.internal_name.toLowerCase(), 3);
+
+    // Test case with non-empty query and no matches.
+    let hasMatch = await experiment.match('does not exist');
+    assertFalse(hasMatch);
+    assertNoHighlightsShown();
+
+    // Test case with empty query.
+    hasMatch = await experiment.match('');
+    assertTrue(hasMatch);
+    assertNoHighlightsShown();
   });
 });

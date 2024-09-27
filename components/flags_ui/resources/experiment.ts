@@ -15,53 +15,36 @@ import type {Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 /**
- * Parses the element's text content to find the matching search term.
- * If a match is found, handles highlighting the substring.
- * @param searchTerm The query to search for.
- * @param element The element to search on and highlight.
- * @return Whether or not a match was found.
+ * Parses the element's text content and highlights it with hit markers.
+ * @param searchTerm The query to highlight for.
+ * @param element The element to highlight.
  */
-function highlightMatch(searchTerm: string, element: HTMLElement): boolean {
+function highlightMatch(searchTerm: string, element: HTMLElement) {
   const text = element.textContent!;
   const match = text.toLowerCase().indexOf(searchTerm);
 
-  if (match === -1) {
-    return false;
+  // Assert against cases that are already handled before this function.
+  assert(match !== -1);
+  assert(searchTerm !== '');
+
+  // Clear content.
+  element.textContent = '';
+
+  if (match > 0) {
+    const textNodePrefix = document.createTextNode(text.substring(0, match));
+    element.appendChild(textNodePrefix);
   }
 
-  if (searchTerm !== '') {
-    // Clear all nodes.
-    element.textContent = '';
+  const matchEl = document.createElement('mark');
+  matchEl.textContent = text.substr(match, searchTerm.length);
+  element.appendChild(matchEl);
 
-    if (match > 0) {
-      const textNodePrefix = document.createTextNode(text.substring(0, match));
-      element.appendChild(textNodePrefix);
-    }
-
-    const matchEl = document.createElement('mark');
-    matchEl.textContent = text.substr(match, searchTerm.length);
-    element.appendChild(matchEl);
-
-    const matchSuffix = text.substring(match + searchTerm.length);
-    if (matchSuffix) {
-      const textNodeSuffix = document.createTextNode(matchSuffix);
-      element.appendChild(textNodeSuffix);
-    }
-  }
-  return true;
-}
-
-/**
- * Reset existing highlights on an element.
- * @param element The element to remove all highlighted mark up on.
- */
-function resetHighlights(element: HTMLElement) {
-  if (element.children) {
-    // Clear child <mark> from element, preserving inner text.
-    element.textContent = element.textContent;
+  const matchSuffix = text.substring(match + searchTerm.length);
+  if (matchSuffix) {
+    const textNodeSuffix = document.createTextNode(matchSuffix);
+    element.appendChild(textNodeSuffix);
   }
 }
-
 
 export class ExperimentElement extends CrLitElement {
   static override get styles() {
@@ -86,6 +69,8 @@ export class ExperimentElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+
+      showingSearchHit_: {type: Boolean},
     };
   }
 
@@ -107,6 +92,13 @@ export class ExperimentElement extends CrLitElement {
   // Whether the description text is expanded. Only has an effect on narrow
   // widths (max-width: 480px).
   protected expanded_: boolean = false;
+
+  // Whether search hits are currently displayed. When true, some DOM nodes are
+  // replaced with cloned nodes whose textContent is not rendered by Lit, so
+  // that the highlight algorithm can freely modify them. Lit does not play
+  // nicely with manual DOM modifications and throws internal errors in
+  // subsequent renders.
+  protected showingSearchHit_: boolean = false;
 
   getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
       HTMLElementTagNameMap[K];
@@ -198,24 +190,57 @@ export class ExperimentElement extends CrLitElement {
   }
 
   /**
-   * Looks for and highlights the first match on any of the
-   * component's title, body, and permalink text. Resets
-   * preexisting highlights.
+   * Looks for and highlights the first match on any of the component's title,
+   * description, platforms and permalink text. Resets any pre-existing
+   * highlights.
    * @param searchTerm The query to search for.
    * @return Whether or not a match was found.
    */
-  match(searchTerm: string): boolean {
-    const title = this.getRequiredElement('.experiment-name');
-    const body = this.getRequiredElement('.body');
-    const permalink = this.getRequiredElement('.permalink');
+  async match(searchTerm: string): Promise<boolean> {
+    this.showingSearchHit_ = false;
 
-    resetHighlights(title);
-    resetHighlights(body);
-    resetHighlights(permalink);
+    if (searchTerm === '') {
+      return true;
+    }
 
-    return highlightMatch(searchTerm, title) ||
-        highlightMatch(searchTerm, body) ||
-        highlightMatch(searchTerm.replace(/\s/, '-'), permalink);
+    // Items to search in the desired order.
+    const itemsToSearch = [
+      this.feature_.name,
+      this.feature_.description,
+      this.getPlatforms_(),
+      this.feature_.internal_name,
+    ];
+
+    const index = itemsToSearch.findIndex(item => {
+      return item.toLowerCase().includes(searchTerm);
+    });
+
+    if (index === -1) {
+      // No matches found. Nothing to do.
+      return false;
+    }
+
+    // Render the clone elements (the ones to be highlighted with markers).
+    this.showingSearchHit_ = true;
+    await this.updateComplete;
+
+    const queries = [
+      '.clone.experiment-name',
+      '.clone.body .description',
+      '.clone.body .platforms',
+      '.clone.permalink',
+    ];
+
+    // Populate clone elements with the proper text content.
+    queries.forEach((query, i) => {
+      const clone = this.getRequiredElement(query);
+      clone.textContent = itemsToSearch[i]!;
+    });
+
+    // Add highlights to the first clone element with matches.
+    const cloneWithMatch = this.getRequiredElement(queries[index]!);
+    highlightMatch(searchTerm, cloneWithMatch);
+    return true;
   }
 
   protected computeIsDefault_(): boolean {
