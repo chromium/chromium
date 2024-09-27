@@ -1,22 +1,15 @@
-<style include="cr-shared-style">
-  .body {
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-</style>
-
-<cr-dialog id="dialog" close-text="$i18n{close}">
-  <div class="title" slot="title">[[title_]]</div>
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div class="title" slot="title">${this.title_}</div>
   <!-- No whitespace or new-lines allowed within the div.body tag. -->
-  <div class="body" slot="body">[[model.message]]</div>
+  <div class="body" slot="body">${this.model.message}</div>
   <div class="button-container" slot="button-container">
-    <cr-button class$="[[getCancelButtonClass_(confirmLabel_)]]"
-        on-click="onCancelClick_" hidden="[[!cancelLabel_]]">
-      [[cancelLabel_]]
+    <cr-button class="${this.getCancelButtonClass_()}"
+        @click="${this.onCancelClick_}" ?hidden="${!this.cancelLabel_}">
+      ${this.cancelLabel_}
     </cr-button>
-    <cr-button class="action-button" on-click="onConfirmClick_"
-        hidden="[[!confirmLabel_]]">
-      [[confirmLabel_]]
+    <cr-button class="action-button" @click="${this.onConfirmClick_}"
+        ?hidden="${!this.confirmLabel_}">
+      ${this.confirmLabel_}
     </cr-button>
   </div>
 </cr-dialog>

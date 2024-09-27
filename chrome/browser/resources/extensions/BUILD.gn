@@ -79,6 +79,8 @@ build_webui("build") {
     "item.css",
     "load_error.css",
     "options_dialog.css",
+    "pack_dialog.css",
+    "pack_dialog_alert.css",
     "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
