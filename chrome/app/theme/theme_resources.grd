@@ -139,9 +139,11 @@
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK_DARK" file="common/password_check_dark.png" />
         <if expr="_google_chrome">
           <then>
+            <structure type="chrome_scaled_image" name="IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO" file="google_chrome/autofill_prediction_improvements_logo.png" />
             <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="${branding_path_component}/favicon_chrome_password_manager.png" />
           </then>
           <else> <!-- not _google_chrome -->
+            <structure type="chrome_scaled_image" name="IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO" file="common/save_address.png" />
             <if expr="_is_chrome_for_testing_branded">
               <then>
                 <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="chromium/favicon_password_manager.png" />

@@ -291,11 +291,11 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
                       IDR_AUTOFILL_CC_GENERIC);
-    case Suggestion::Icon::kNoIcon:
+    case Suggestion::Icon::kAutofillPredictionImprovements:
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kCode:
+    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kEdit:
@@ -308,19 +308,21 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
-    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kHttpsInvalid:
+    case Suggestion::Icon::kHttpWarning:
+    case Suggestion::Icon::kIban:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
     case Suggestion::Icon::kMagic:
+    case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
+    case Suggestion::Icon::kPlusAddress:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kPlusAddress:
-    case Suggestion::Icon::kIban:
+
       NOTREACHED();
   }
   NOTREACHED();

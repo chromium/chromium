@@ -30,12 +30,14 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_TROY" file="autofill/metadata/troy.png" />
   <if expr="_google_chrome">
     <then>
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_LOGO" file="google_chrome/autofill_prediction_improvements/autofill_prediction_improvements_logo.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="google_chrome/autofill/googlepay_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="google_chrome/autofill/googlepay_28.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL" file="google_chrome/autofill/googlepay_28_dark.png" />
     </then>
     <else>
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_LOGO" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="autofill/cc-generic.png" />

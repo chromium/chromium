@@ -38,6 +38,9 @@ constexpr int kIconSize = 16;
 // The button radius used to paint the background.
 constexpr int kButtonRadius = 12;
 
+// The padding between the header (image and title) and the elements around it.
+constexpr int kHeaderPadding = 20;
+
 constexpr int kHeaderImageWidthAndHeight = 36;
 constexpr int kBubbleWidth = 320;
 constexpr gfx::Size kHeaderImageSize(kHeaderImageWidthAndHeight,
@@ -212,7 +215,7 @@ SaveAutofillPredictionImprovementsBubbleView::
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText));
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
 
   const int kVerficalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
@@ -267,16 +270,20 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
           .SetBetweenChildSpacing(kHorizontalSpacing)
           .SetMainAxisAlignment(views::LayoutAlignment::kStart)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-          .SetInsideBorderInsets(
-              ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-                  views::DialogContentType::kText,
-                  views::DialogContentType::kText))
+          // The bottom padding has to be subtracted by the distance between the
+          // information that will be saved, so to avoid double padding.
+          .SetInsideBorderInsets(gfx::Insets::TLBR(
+              kHeaderPadding, kHeaderPadding,
+              std::min(0, kHeaderPadding -
+                              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                  DISTANCE_CONTROL_LIST_VERTICAL)),
+              kHeaderPadding))
           .Build();
-  // TODO(crbug.com/362227379): This image is currently hardcoded, align with UX
-  // on the right one.
   auto image = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS),
-      ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS_DARK),
+      ui::ImageModel::FromResourceId(
+          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO),
+      ui::ImageModel::FromResourceId(
+          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                           base::Unretained(this)));
   image->SetImageSize(kHeaderImageSize);

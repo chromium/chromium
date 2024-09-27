@@ -211,7 +211,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
   suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAccount;
+  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   {
@@ -272,7 +272,8 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrievePredictionImprovements);
-  retrieve_suggestion.icon = autofill::Suggestion::Icon::kSettings;
+  retrieve_suggestion.icon =
+      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   suggestions.emplace_back(retrieve_suggestion);
   suggestions.emplace_back(CreateDetailsSuggestion());
   return suggestions;
