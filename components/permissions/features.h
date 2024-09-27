@@ -38,9 +38,6 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionElementPromptPositioning);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionPredictionServiceUseUrlOverride);
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionOnDeviceNotificationPredictions);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -118,10 +115,6 @@ enum class PermissionElementPromptPosition {
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<PermissionElementPromptPosition>
     kPermissionElementPromptPositioningParam;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<std::string>
-    kPermissionPredictionServiceUrlOverride;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<double>

@@ -58,12 +58,6 @@ BASE_FEATURE(kPermissionElementPromptPositioning,
              "PermissionElementPromptPositioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, use the value of the `service_url` FeatureParam as the url
-// for the Web Permission Predictions Service.
-BASE_FEATURE(kPermissionPredictionServiceUseUrlOverride,
-             "kPermissionPredictionServiceUseUrlOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
              "PermissionOnDeviceNotificationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -189,10 +183,6 @@ const base::FeatureParam<PermissionElementPromptPosition>
         "PermissionElementPromptPositioningParam",
         PermissionElementPromptPosition::kWindowMiddle,
         &kPromptPositioningOptions};
-
-const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
-    &permissions::features::kPermissionPredictionServiceUseUrlOverride,
-    "service_url", ""};
 
 const base::FeatureParam<double>
     kPermissionOnDeviceGeolocationPredictionsHoldbackChance(

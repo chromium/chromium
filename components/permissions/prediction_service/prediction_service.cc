@@ -96,8 +96,6 @@ const GURL PredictionService::GetPredictionServiceUrl(
   static base::NoDestructor<GURL> command_line_url_override{
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kDefaultPredictionServiceUrlSwitchKey)};
-  static base::NoDestructor<GURL> feature_param_url_override{
-      feature_params::kPermissionPredictionServiceUrlOverride.Get()};
 
   // To facilitate tests that want to exercise various url building logic,
   // reinitialize the static variables if this flag is set.
@@ -105,15 +103,10 @@ const GURL PredictionService::GetPredictionServiceUrl(
     *command_line_url_override =
         GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             kDefaultPredictionServiceUrlSwitchKey));
-    *feature_param_url_override =
-        GURL(feature_params::kPermissionPredictionServiceUrlOverride.Get());
   }
 
   if (command_line_url_override->is_valid())
     return *command_line_url_override;
-
-  if (feature_param_url_override->is_valid())
-    return *feature_param_url_override;
 
   return *default_prediction_service_url;
 }
