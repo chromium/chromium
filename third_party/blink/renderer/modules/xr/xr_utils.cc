@@ -215,6 +215,8 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::LAYERS;
   } else if (feature_string == "front-facing") {
     return device::mojom::XRSessionFeature::FRONT_FACING;
+  } else if (feature_string == "webgpu") {
+    return device::mojom::XRSessionFeature::WEBGPU;
   }
 
   return std::nullopt;
@@ -256,6 +258,8 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
       return "layers";
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return "front-facing";
+    case device::mojom::XRSessionFeature::WEBGPU:
+      return "webgpu";
   }
 
   return "";
@@ -271,6 +275,7 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::HAND_INPUT:
       return RuntimeEnabledFeatures::WebXRHandInputEnabled(context);
     case device::mojom::XRSessionFeature::LAYERS:
+    case device::mojom::XRSessionFeature::WEBGPU:
       return RuntimeEnabledFeatures::WebXRLayersEnabled(context);
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context);

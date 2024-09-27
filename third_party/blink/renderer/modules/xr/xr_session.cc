@@ -323,6 +323,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::SECONDARY_VIEWS:
     case XRSessionFeature::LAYERS:
     case XRSessionFeature::FRONT_FACING:
+    case XRSessionFeature::WEBGPU:
       // Not recording metrics for these features currently.
       break;
   }
@@ -366,6 +367,12 @@ XRSession::XRSession(
   }
   enabled_features_ =
       MakeGarbageCollected<FrozenArray<IDLString>>(std::move(enabled_features));
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::WEBGPU)) {
+    graphics_api_ = XRGraphicsBinding::Api::kWebGPU;
+  } else {
+    graphics_api_ = XRGraphicsBinding::Api::kWebGL;
+  }
 
   client_receiver_.Bind(
       std::move(client_receiver),
@@ -608,7 +615,8 @@ void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {
       if (create_views) {
         views_[i] = MakeGarbageCollected<XRViewData>(
             i, std::move(views[i]), render_state_->depthNear(),
-            render_state_->depthFar(), *device_config_, enabled_feature_set_);
+            render_state_->depthFar(), *device_config_, enabled_feature_set_,
+            graphics_api_);
       } else {
         views_[i]->UpdateView(std::move(views[i]), render_state_->depthNear(),
                               render_state_->depthFar());
@@ -2116,7 +2124,7 @@ void XRSession::UpdateInlineView() {
   if (views_.empty()) {
     views_.emplace_back(MakeGarbageCollected<XRViewData>(
         /*index=*/0, device::mojom::blink::XREye::kNone,
-        gfx::Rect(0, 0, output_width_, output_height_)));
+        gfx::Rect(0, 0, output_width_, output_height_), graphics_api_));
   }
 
   float aspect = 1.0f;

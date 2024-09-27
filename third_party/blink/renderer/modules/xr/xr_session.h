@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -390,6 +391,8 @@ class XRSession final : public EventTarget,
     return camera_image_size_;
   }
 
+  enum XRGraphicsBinding::Api GraphicsApi() const { return graphics_api_; }
+
   uint64_t GetTraceId() const { return trace_id_; }
   base::TimeDelta TakeAnimationFrameTimerAverage();
 
@@ -627,6 +630,8 @@ class XRSession final : public EventTarget,
   int16_t last_frame_id_ = -1;
 
   bool emulated_position_ = false;
+
+  XRGraphicsBinding::Api graphics_api_;
 
   uint64_t trace_id_;
 

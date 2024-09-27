@@ -69,6 +69,13 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
     return nullptr;
   }
 
+  if (session->GraphicsApi() != XRGraphicsBinding::Api::kWebGL) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot create an XRWebGLLayer with a "
+                                      "WebGPU-based XRSession.");
+    return nullptr;
+  }
+
   // TODO(crbug.com/941753): In the future this should be communicated by the
   // drawing buffer and indicate whether the depth buffers are being supplied to
   // the XR compositor.

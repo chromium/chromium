@@ -536,6 +536,7 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
 
       case mojom::XRSessionFeature::PLANE_DETECTION:
       case mojom::XRSessionFeature::LAYERS:
+      case mojom::XRSessionFeature::WEBGPU:
       case mojom::XRSessionFeature::FRONT_FACING:
       case mojom::XRSessionFeature::IMAGE_TRACKING:
       case mojom::XRSessionFeature::CAMERA_ACCESS:

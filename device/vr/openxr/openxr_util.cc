@@ -85,6 +85,7 @@ bool IsArOnlyFeature(device::mojom::XRSessionFeature feature) {
     case device::mojom::XRSessionFeature::LAYERS:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+    case device::mojom::XRSessionFeature::WEBGPU:
       return false;
     case device::mojom::XRSessionFeature::DOM_OVERLAY:
     case device::mojom::XRSessionFeature::HIT_TEST:

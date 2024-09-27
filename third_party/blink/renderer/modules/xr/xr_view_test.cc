@@ -57,7 +57,7 @@ TEST(XRViewTest, ViewMatrices) {
       device::mojom::XRSessionFeature::REF_SPACE_VIEWER};
   XRViewData* view_data = MakeGarbageCollected<XRViewData>(
       /*index=*/0, std::move(xr_view), kDepthNear, kDepthFar, *device_config,
-      features);
+      features, XRGraphicsBinding::Api::kWebGL);
   XRView* view =
       MakeGarbageCollected<XRView>(nullptr, view_data, ref_space_from_mojo);
 

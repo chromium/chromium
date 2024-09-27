@@ -17,6 +17,8 @@ class XRSession;
 // checking when layers are passed in to get sub images.
 class XRGraphicsBinding : public GarbageCollectedMixin {
  public:
+  enum class Api { kWebGL, kWebGPU };
+
   explicit XRGraphicsBinding(XRSession*);
   virtual ~XRGraphicsBinding() = default;
 
