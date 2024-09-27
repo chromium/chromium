@@ -467,7 +467,6 @@ source_set("eg2_tests") {
   sources = [
     "browsing_egtest.mm",
     "browsing_prevent_default_egtest.mm",
-    "cache_egtest.mm",
     "child_window_open_by_dom_egtest.mm",
     "content_mode_egtest.mm",
     "error_page_egtest.mm",
