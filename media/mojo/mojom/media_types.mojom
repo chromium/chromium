@@ -463,6 +463,7 @@ union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
+  [EnableIf=is_linux_or_chromeos]
   MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
 };
@@ -489,6 +490,7 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   uint32 texture_target;
 };
 
+[EnableIf=is_linux_or_chromeos]
 // This defines video frame data stored in texture mailbox.
 struct MailboxVideoFrameData {
   gpu.mojom.MailboxHolder mailbox_holder;

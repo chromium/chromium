@@ -217,10 +217,11 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
                                                          &new_frame));
 }
 
-TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+TEST_F(VideoFrameStructTraitsTest, OOPVDMailboxVideoFrame) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTexture(
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapOOPVDMailbox(
       PIXEL_FORMAT_ARGB, mailbox_holder, VideoFrame::ReleaseMailboxCB(),
       gfx::Size(100, 100), gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100),
       base::Seconds(100));
@@ -236,6 +237,7 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   ASSERT_TRUE(frame->HasTextures());
   ASSERT_EQ(frame->mailbox_holder(0).mailbox, mailbox);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   scoped_refptr<gpu::ClientSharedImage> shared_image =

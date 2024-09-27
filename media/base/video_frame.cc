@@ -453,7 +453,8 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
 }
 
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapNativeTexture(
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
     VideoPixelFormat format,
     const gpu::MailboxHolder& mailbox_holder,
     ReleaseMailboxCB mailbox_holder_release_cb,
@@ -476,6 +477,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTexture(
 
   return frame;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(

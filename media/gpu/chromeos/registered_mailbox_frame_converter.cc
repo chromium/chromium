@@ -44,7 +44,7 @@ void RegisteredMailboxFrameConverter::ConvertFrameImpl(
   gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), kTextureTarget);
 
   // Creates a mailbox-backed VideoFrame with |mailbox| and |frame|'s metadata.
-  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapNativeTexture(
+  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapOOPVDMailbox(
       frame->format(), mailbox_holder, VideoFrame::ReleaseMailboxCB(),
       frame->coded_size(), frame->visible_rect(), frame->natural_size(),
       frame->timestamp());

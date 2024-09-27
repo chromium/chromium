@@ -240,10 +240,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp,
       bool zero_initialize_memory);
 
-  // Wraps a native texture with a VideoFrame.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // Wraps RegisteredMailboxFrameConverter mailbox with a VideoFrame. This is
+  // used only by ChromeOS/Linux's out-of-process video decoder.
   // |mailbox_holder_release_cb| will be called with a sync token as the
   // argument when the VideoFrame is to be destroyed.
-  static scoped_refptr<VideoFrame> WrapNativeTexture(
+  static scoped_refptr<VideoFrame> WrapOOPVDMailbox(
       VideoPixelFormat format,
       const gpu::MailboxHolder& mailbox_holder,
       ReleaseMailboxCB mailbox_holder_release_cb,
@@ -251,6 +253,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
   // Wraps a native texture shared image with a VideoFrame.
   // |mailbox_holder_release_cb| will be called with a sync token as the
