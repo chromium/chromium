@@ -257,7 +257,7 @@ targets.bundle(
     per_test_modifications = {
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
-                shards = 4,
+                shards = 24,
             ),
         ),
     },
