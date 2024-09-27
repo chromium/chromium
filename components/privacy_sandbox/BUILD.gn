@@ -50,6 +50,7 @@ source_set("privacy_sandbox_survey_service") {
     ":privacy_sandbox_prefs",
     "//components/keyed_service/core:core",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
   ]
 
   public_deps = [ "//base" ]
@@ -254,6 +255,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_settings/core/common",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/version_info",
     "//testing/gtest",

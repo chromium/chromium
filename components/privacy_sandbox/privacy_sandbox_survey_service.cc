@@ -27,8 +27,11 @@ bool IsSentimentSurveyOnCooldown(PrefService* pref_service) {
 }  // namespace
 
 PrivacySandboxSurveyService::PrivacySandboxSurveyService(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager)
+    : pref_service_(pref_service), identity_manager_(identity_manager) {
+  CHECK(identity_manager_);
+}
 
 PrivacySandboxSurveyService::~PrivacySandboxSurveyService() = default;
 
@@ -45,6 +48,19 @@ bool PrivacySandboxSurveyService::ShouldShowSentimentSurvey() {
 void PrivacySandboxSurveyService::OnSuccessfulSentimentSurvey() {
   pref_service_->SetTime(prefs::kPrivacySandboxSentimentSurveyLastSeen,
                          base::Time::Now());
+}
+
+std::map<std::string, bool>
+PrivacySandboxSurveyService::GetSentimentSurveyPsb() {
+  return {
+      {"Topics enabled",
+       pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)},
+      {"Fledge enabled",
+       pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)},
+      {"Measurement enabled",
+       pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled)},
+      {"Signed In",
+       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)}};
 }
 
 }  // namespace privacy_sandbox
