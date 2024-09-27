@@ -578,8 +578,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     int32_t width_dip,
     int32_t height_dip,
     const WindowStates& window_states) {
-  VLOG(1) << "Wayland XDG/Aura toplevel configure: states="
-          << window_states.ToString();
+  // TODO(crbug.com/369952980): Remove once arrays get logged by libwayland.
+  VLOG(3) << __func__ << " states=[ " << window_states.ToString() << "]";
 
   PlatformWindowState window_state = PlatformWindowState::kUnknown;
   if ((!SupportsConfigureMinimizedState() &&
