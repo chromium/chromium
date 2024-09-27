@@ -89,7 +89,10 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
 
-  CanvasHibernationHandler& GetHibernationHandlerForTesting() {
+  // Allow access to the hibernation handler while Canvas2DLayerBridge is being
+  // incrementally folded into CanvasRenderingContext2D.
+  // TODO(crbug.com/40280152): Eliminate Canvas2DLayerBridge entirely.
+  CanvasHibernationHandler& GetHibernationHandler() {
     return hibernation_handler_;
   }
 

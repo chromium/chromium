@@ -190,7 +190,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
       MakeBridge(gfx::Size(300, 200), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
@@ -245,7 +245,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
   SetPageVisible(Host(), bridge.get(), platform, false);
 
@@ -271,7 +271,7 @@ TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   // Background -> Foreground -> Background
@@ -296,7 +296,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
@@ -324,7 +324,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
@@ -362,7 +362,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
@@ -393,7 +393,7 @@ TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
@@ -419,7 +419,7 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   // Set the page to hidden to kick off hibernation.
@@ -456,7 +456,7 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
       MakeBridge(gfx::Size(300, 200), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
-  auto& handler = bridge->GetHibernationHandlerForTesting();
+  auto& handler = bridge->GetHibernationHandler();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   SetPageVisible(Host(), bridge.get(), platform, false);
