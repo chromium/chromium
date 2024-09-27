@@ -60,6 +60,7 @@
 #include "chrome/browser/ash/eol/eol_notification.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/logging/logging.h"
@@ -2326,7 +2327,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
         floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       // If floating workspace is enabled, it will override full restore.
       FloatingWorkspaceService* floating_workspace_service =
-          FloatingWorkspaceService::GetForProfile(profile);
+          FloatingWorkspaceServiceFactory::GetForProfile(profile);
       if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() &&
           floating_workspace_service) {
         floating_workspace_service->SubscribeToForeignSessionUpdates();

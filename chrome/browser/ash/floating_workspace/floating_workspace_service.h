@@ -80,8 +80,6 @@ class FloatingWorkspaceService : public KeyedService,
                                  public chromeos::PowerManagerClient::Observer,
                                  public syncer::DeviceInfoTracker::Observer {
  public:
-  static FloatingWorkspaceService* GetForProfile(Profile* profile);
-
   explicit FloatingWorkspaceService(
       Profile* profile,
       floating_workspace_util::FloatingWorkspaceVersion version);

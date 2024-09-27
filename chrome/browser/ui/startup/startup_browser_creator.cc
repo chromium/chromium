@@ -42,6 +42,7 @@
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -778,7 +779,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
         if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-          ash::FloatingWorkspaceService::GetForProfile(profile_to_open);
+          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile_to_open);
         }
         // If floating workspace is enabled and safe mode is off, floating
         // workspace will handle the app restore from user's workspace copy.

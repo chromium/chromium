@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -210,7 +211,7 @@ void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
     Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
     if (profile) {
       auto* floating_workspace_service =
-          ash::FloatingWorkspaceService::GetForProfile(profile);
+          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile);
       if (floating_workspace_service) {
         floating_workspace_service->CaptureAndUploadActiveDesk();
       }

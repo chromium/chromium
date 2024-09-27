@@ -27,7 +27,6 @@
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
-#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -100,13 +99,6 @@ FloatingWorkspaceServiceNotificationType GetNotificationTypeById(
     return FloatingWorkspaceServiceNotificationType::kSafeMode;
   }
   return FloatingWorkspaceServiceNotificationType::kUnknown;
-}
-
-// Static
-FloatingWorkspaceService* FloatingWorkspaceService::GetForProfile(
-    Profile* profile) {
-  return static_cast<FloatingWorkspaceService*>(
-      FloatingWorkspaceServiceFactory::GetInstance()->GetForProfile(profile));
 }
 
 FloatingWorkspaceService::FloatingWorkspaceService(
