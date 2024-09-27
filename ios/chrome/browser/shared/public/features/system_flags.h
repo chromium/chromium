@@ -158,6 +158,13 @@ std::optional<int> DisplaySwitchProfile();
 // Returns `std::nullopt` if no override is specified.
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
 
+// Returns the forced state of the Tips (Magic Stack) module.
+std::optional<int> GetForcedTipsMagicStackState();
+
+// Whether the Lens Shop state for Tips (Magic Stack) should display a product
+// image.
+bool ShouldDisplayLensShopTipWithImage();
+
 // Returns the override for Tab Resumption decoration.
 // Returns nil is not set.
 NSString* GetTabResumptionDecorationOverride();

@@ -436,6 +436,48 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Tips (Magic Stack) State</string>
+			<key>Key</key>
+			<string>TipsMagicStackStateOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Lens Search</string>
+				<string>Lens Shop</string>
+				<string>Lens Translate</string>
+				<string>Address Bar Position</string>
+				<string>Save Passwords</string>
+				<string>Autofill Passwords</string>
+				<string>Enhanced Safe Browsing</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force product image in Lens Shop Tip</string>
+			<key>Key</key>
+			<string>TipsMagicStackLensShopWithImage</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Debug Settings</string>
