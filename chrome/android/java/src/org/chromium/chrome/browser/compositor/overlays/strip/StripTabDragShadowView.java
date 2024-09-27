@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
@@ -128,12 +127,16 @@ public class StripTabDragShadowView extends FrameLayout {
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mShadowUpdateHost = shadowUpdateHost;
 
-        int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(getContext());
-        mFaviconView.setPadding(padding, padding, padding, padding);
         mCardView.getBackground().mutate();
         mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+
+        // To look symmetric when the title is the full width of the card, the title needs an end
+        // margin that matches the start padding of the favicon. This is not applicable in the xml
+        // layout, because the tab_grid_card_item expects to have an action button that exists after
+        // the title to handle this symmetry.
         RelativeLayout.LayoutParams layoutParams =
                 (RelativeLayout.LayoutParams) mTitleView.getLayoutParams();
+        int padding = getResources().getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding);
         layoutParams.setMarginEnd(padding);
         mTitleView.setLayoutParams(layoutParams);
 

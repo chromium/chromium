@@ -425,16 +425,12 @@ class TabGridViewBinder {
         ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
         if (favicon == null) {
             faviconView.setImageDrawable(null);
-            faviconView.setPadding(0, 0, 0, 0);
             return;
         }
 
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         faviconView.setImageDrawable(
                 isSelected ? favicon.getSelectedDrawable() : favicon.getDefaultDrawable());
-        int padding =
-                (int) TabUiThemeProvider.getTabCardTopFaviconPadding(faviconView.getContext());
-        faviconView.setPadding(padding, padding, padding, padding);
     }
 
     private static void updateColor(

@@ -864,10 +864,6 @@ public class TabGridDialogView extends FrameLayout {
 
         Drawable faviconDrawable = ((ImageView) view.findViewById(R.id.tab_favicon)).getDrawable();
         cardFavicon.setImageDrawable(faviconDrawable);
-        if (faviconDrawable != null) {
-            int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(mContext);
-            cardFavicon.setPadding(padding, padding, padding, padding);
-        }
 
         cardTitle.setText(viewTitle.getText());
         cardTitle.setTextAppearance(R.style.TextAppearance_TextMediumThick_Primary);
