@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module history.mojom;
+module ntp.most_relevant_tab_resumption.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
@@ -31,7 +31,7 @@ struct Decoration {
 };
 
 // Represents a tab generated from synced sessions.
-struct Tab {
+struct URLVisit {
   // Type of device for displaying device icon
   // See components/sync_device_info/device_info.h
   FormFactor form_factor;

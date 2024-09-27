@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -48,11 +47,18 @@ class MostRelevantTabResumptionPageHandler
   ~MostRelevantTabResumptionPageHandler() override;
 
   // most_relevant_tab_resumption::mojom::PageHandler:
-  void GetTabs(GetTabsCallback callback) override;
-  void DismissModule(const std::vector<history::mojom::TabPtr> tabs) override;
-  void DismissTab(const history::mojom::TabPtr tab) override;
-  void RestoreModule(const std::vector<history::mojom::TabPtr> tabs) override;
-  void RestoreTab(history::mojom::TabPtr tab) override;
+  void GetURLVisits(GetURLVisitsCallback callback) override;
+  void DismissModule(
+      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+          url_visits) override;
+  void DismissURLVisit(
+      const ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit)
+      override;
+  void RestoreModule(
+      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+          url_visits) override;
+  void RestoreURLVisit(
+      ntp::most_relevant_tab_resumption::mojom::URLVisitPtr tab) override;
   void RecordAction(
       ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction action,
       const std::string& url_key,
@@ -60,19 +66,19 @@ class MostRelevantTabResumptionPageHandler
 
   // Invoked when the URL visit aggregates have been fetched.
   void OnURLVisitAggregatesFetched(
-      GetTabsCallback callback,
+      GetURLVisitsCallback callback,
       visited_url_ranking::ResultStatus status,
       std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 
   // Invoked when the URL visit aggregates have been decorated.
   void OnGotDecoratedURLVisitAggregates(
-      GetTabsCallback callback,
+      GetURLVisitsCallback callback,
       visited_url_ranking::ResultStatus status,
       std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 
   // Invoked when the URL visit aggregates have been ranked.
   void OnGotRankedURLVisitAggregates(
-      GetTabsCallback callback,
+      GetURLVisitsCallback callback,
       visited_url_ranking::ResultStatus status,
       std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 
@@ -80,7 +86,8 @@ class MostRelevantTabResumptionPageHandler
 
  private:
   // Method to determine if a url is in the list of previously dismissed urls.
-  bool IsNewURL(history::mojom::TabPtr& tab);
+  bool IsNewURL(
+      ntp::most_relevant_tab_resumption::mojom::URLVisitPtr& url_visit);
 
   // Method to clear dismissed tabs that are older than a certain amount of
   // time.
