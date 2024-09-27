@@ -4,10 +4,7 @@
 
 #include "base/win/resource_exhaustion.h"
 
-#include <utility>
-
-#include "base/functional/callback.h"
-#include "base/no_destructor.h"
+#include "base/logging.h"
 
 namespace base::win {
 
@@ -23,8 +20,13 @@ void SetOnResourceExhaustedFunction(
 }
 
 void OnResourceExhausted() {
-  // Stop execution here if there is no callback installed.
-  CHECK(g_resource_exhausted_function) << "system resource exhausted.";
+  // By default stop execution unless a function has been provided. Code is not
+  // assumed to anticipate or handle resource-exhaustion failures. Note that
+  // this function is currently intentionally not [[noreturn]]. As of writing
+  // chrome/installer/setup/setup_main.cc intentionally continues execution to
+  // attempt to propagate the error outwards.
+  LOG_IF(FATAL, !g_resource_exhausted_function) << "System resource exhausted.";
+
   g_resource_exhausted_function();
 }
 
