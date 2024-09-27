@@ -40,4 +40,3 @@ public class SupportLibSafeBrowsingResponse implements SafeBrowsingResponseBound
         mCallback.onResult(new AwSafeBrowsingResponse(SafeBrowsingAction.BACK_TO_SAFETY, report));
     }
 }
-;

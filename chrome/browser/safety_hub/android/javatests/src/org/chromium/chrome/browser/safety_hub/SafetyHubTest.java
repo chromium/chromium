@@ -1110,7 +1110,7 @@ public final class SafetyHubTest {
 
     static View getRootViewSanitized(int text) {
         View[] view = {null};
-        onViewWaiting(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
+        onViewWaiting(withText(text)).check((v, e) -> view[0] = v.getRootView());
         ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }

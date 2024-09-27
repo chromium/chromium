@@ -61,8 +61,7 @@ public class TabGroupSyncIphController {
                                 mStringId,
                                 mStringId)
                         .setAnchorView(view)
-                        .setInsetRect(
-                                new Rect((int) (left), (int) top, (int) (right), (int) bottom))
+                        .setInsetRect(new Rect((int) left, (int) top, (int) right, (int) bottom))
                         .setViewRectProvider(new ViewRectProvider(view))
                         .setDismissOnTouch(true)
                         .build();

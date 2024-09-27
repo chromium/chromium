@@ -712,7 +712,6 @@ public class Fido2CredentialRequest
                                         requireThirdPartyPayment,
                                         callback),
                         this::onBinderCallException);
-        return;
     }
 
     private void onGetMatchingCredentialIdsListReceived(

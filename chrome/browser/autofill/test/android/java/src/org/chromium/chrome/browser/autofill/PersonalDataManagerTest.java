@@ -348,23 +348,16 @@ public class PersonalDataManagerTest {
                                 capitalOneIconUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(
-                                new StringBuilder(capitalOneIconUrl.getSpec())
-                                        .append("=w")
-                                        .append(widthPixels)
-                                        .append("-h")
-                                        .append(heightPixels)
-                                        .toString()));
+                                capitalOneIconUrl.getSpec()
+                                        + "=w"
+                                        + widthPixels
+                                        + "-h"
+                                        + heightPixels));
         assertThat(
                         AutofillUiUtils.getCreditCardIconUrlWithParams(
                                 cardArtUrl, widthPixels, heightPixels))
                 .isEqualTo(
-                        new GURL(
-                                new StringBuilder(cardArtUrl.getSpec())
-                                        .append("=w")
-                                        .append(widthPixels)
-                                        .append("-h")
-                                        .append(heightPixels)
-                                        .toString()));
+                        new GURL(cardArtUrl.getSpec() + "=w" + widthPixels + "-h" + heightPixels));
     }
 
     @Test
@@ -384,25 +377,23 @@ public class PersonalDataManagerTest {
                                 capitalOneIconUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(
-                                new StringBuilder(capitalOneIconUrl.getSpec())
-                                        .append("=w")
-                                        .append(widthPixels)
-                                        .append("-h")
-                                        .append(heightPixels)
-                                        .append("-s")
-                                        .toString()));
+                                capitalOneIconUrl.getSpec()
+                                        + "=w"
+                                        + widthPixels
+                                        + "-h"
+                                        + heightPixels
+                                        + "-s"));
         assertThat(
                         AutofillUiUtils.getCreditCardIconUrlWithParams(
                                 cardArtUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(
-                                new StringBuilder(cardArtUrl.getSpec())
-                                        .append("=w")
-                                        .append(widthPixels)
-                                        .append("-h")
-                                        .append(heightPixels)
-                                        .append("-s")
-                                        .toString()));
+                                cardArtUrl.getSpec()
+                                        + "=w"
+                                        + widthPixels
+                                        + "-h"
+                                        + heightPixels
+                                        + "-s"));
     }
 
     @Test

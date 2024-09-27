@@ -339,7 +339,7 @@ public class PasswordManagerHelper {
                 accountName,
                 result -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
-                    successCallback.onResult(result);
+                    successCallback.onResult(null);
                 },
                 error -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
@@ -502,7 +502,7 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
-                        (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
         // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
         // take the accountEmail as String.
         checkupClient.getPasswordCheckupIntent(

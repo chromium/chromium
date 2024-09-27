@@ -56,7 +56,6 @@ public class AwFileChooserTest extends AwParameterizedTest {
     private File mTestFile2;
     private File mTestDirectory;
     private static final String TEST_DIRECTORY_PATH = PathUtils.getDataDirectory() + "/test";
-    private static final String EMPTY_STRING = "";
 
     private static final String TAG = "AwFileChooserTest";
 
@@ -82,12 +81,10 @@ public class AwFileChooserTest extends AwParameterizedTest {
         Assert.assertTrue(mTestFile2.createNewFile());
 
         Assert.assertTrue(
-                "Test file 1 is an empty string!",
-                !EMPTY_STRING.equalsIgnoreCase(mTestFile1.getPath()));
+                "Test file 1 is an empty string!", !"".equalsIgnoreCase(mTestFile1.getPath()));
         Assert.assertNotNull("Test File 1 is null!", mTestFile1.getPath());
         Assert.assertTrue(
-                "Test file 2 is an empty string!",
-                !EMPTY_STRING.equalsIgnoreCase(mTestFile2.getPath()));
+                "Test file 2 is an empty string!", !"".equalsIgnoreCase(mTestFile2.getPath()));
         Assert.assertNotNull("Test File 2 is null!", mTestFile2.getPath());
 
         mWebServer = TestWebServer.start();

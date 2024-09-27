@@ -36,4 +36,3 @@ class GpuProcessCallback extends IGpuProcessCallback.Stub {
         SurfaceWrapper getViewSurface(int surfaceId);
     }
 }
-;

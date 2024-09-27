@@ -145,7 +145,7 @@ public class PageZoomUtils {
             int seekBarValue, double defaultZoomFactor) {
         double currentZoomLevel = convertSeekBarValueToZoomLevel(seekBarValue);
         double defaultZoomLevel = convertZoomFactorToZoomLevel(defaultZoomFactor);
-        return (MathUtils.roundTwoDecimalPlaces(Math.abs(currentZoomLevel - defaultZoomLevel)))
+        return MathUtils.roundTwoDecimalPlaces(Math.abs(currentZoomLevel - defaultZoomLevel))
                 <= PageZoomUtils.DEFAULT_ZOOM_LEVEL_SNAP_RANGE;
     }
 

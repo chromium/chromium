@@ -52,10 +52,10 @@ public class MockitoHelper {
     /** When no argument is needed. */
     public static <T> Stubber doRunnable(Runnable runnable) {
         return Mockito.doAnswer(
-                (ignored -> {
+                ignored -> {
                     runnable.run();
                     return null;
-                }));
+                });
     }
 
     /** Similar to {@link #doCallback(Callback)} but able to return a value as well. */

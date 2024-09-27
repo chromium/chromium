@@ -476,7 +476,7 @@ public class TouchCommon {
         int longPressTimeout = ViewConfiguration.getLongPressTimeout();
 
         // Long press is flaky with just longPressTimeout. Doubling the time to be safe.
-        SystemClock.sleep(longPressTimeout * 2);
+        SystemClock.sleep(longPressTimeout * 2L);
     }
 
     private static void longPressInternal(View view, float windowX, float windowY) {

@@ -313,7 +313,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
     private void updateCookieSwitch() {
         // TODO(b/337310050): Put the logic for the tracking protection switch here.
-        return;
+
     }
 
     private void updateTrackingProtectionTitleTemporary(int days) {

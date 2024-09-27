@@ -317,4 +317,3 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 latch.await(SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
     }
 }
-;

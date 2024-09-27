@@ -221,8 +221,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                                 META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME);
         GURL defaultUrlMethod = new GURL(defaultMethod);
         assert urlMethod.isValid();
-        return (getSupportedPaymentMethods(app.activityInfo).contains(urlMethod.getSpec()))
-                || (urlMethod.equals(defaultUrlMethod));
+        return getSupportedPaymentMethods(app.activityInfo).contains(urlMethod.getSpec())
+                || urlMethod.equals(defaultUrlMethod);
     }
 
     private ResolveInfo findAppWithPackageName(List<ResolveInfo> apps, String packageName) {

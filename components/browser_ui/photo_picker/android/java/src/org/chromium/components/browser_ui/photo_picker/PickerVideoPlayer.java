@@ -449,7 +449,7 @@ public class PickerVideoPlayer extends FrameLayout
 
         // A click to the left (of the center of) the Play button counts as rewinding, and a click
         // to the right of it counts as fast forwarding.
-        float midX = mLargePlayButton.getX() + (mLargePlayButton.getWidth() / 2);
+        float midX = mLargePlayButton.getX() + (mLargePlayButton.getWidth() / 2f);
         videoPos += (x > midX) ? SKIP_LENGTH_IN_MS : -SKIP_LENGTH_IN_MS;
         MathUtils.clamp(videoPos, 0, duration);
 

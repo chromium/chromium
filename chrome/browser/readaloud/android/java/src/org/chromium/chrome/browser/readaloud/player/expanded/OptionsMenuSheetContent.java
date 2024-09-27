@@ -143,7 +143,7 @@ class OptionsMenuSheetContent extends MenuSheetContent {
                         0f);
         mOptionsMenuOut =
                 ObjectAnimator.ofFloat(
-                        mOptionsMenu, View.TRANSLATION_X, 0f, (float) (-mOptionsMenu.getWidth()));
+                        mOptionsMenu, View.TRANSLATION_X, 0f, (float) -mOptionsMenu.getWidth());
         mVoiceMenuShowAnimation = new AnimatorSet();
         mVoiceMenuShowAnimation.play(mVoiceMenuIn).with(mOptionsMenuOut);
         mVoiceMenuShowAnimation.setDuration(VOICE_MENU_TRANSITION_MS);

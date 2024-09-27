@@ -142,9 +142,9 @@ class GlobalNightModeStateController
         boolean powerSaveModeOn = mPowerSaveModeMonitor.powerSavingIsOn();
         final int theme = NightModeUtils.getThemeSetting();
         final boolean newNightModeOn =
-                theme == ThemeType.SYSTEM_DEFAULT
+                (theme == ThemeType.SYSTEM_DEFAULT
                                 && (powerSaveModeOn
-                                        || mSystemNightModeMonitor.isSystemNightModeOn())
+                                        || mSystemNightModeMonitor.isSystemNightModeOn()))
                         || theme == ThemeType.DARK;
         if (mNightModeOn != null && newNightModeOn == mNightModeOn) return;
 

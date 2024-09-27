@@ -104,7 +104,7 @@ public class ChannelsUpdaterTest {
         ChannelsUpdater updater = new ChannelsUpdater(mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
-        assertThat(getChannelsIgnoringDefault(), hasSize((greaterThan(0))));
+        assertThat(getChannelsIgnoringDefault(), hasSize(greaterThan(0)));
         assertThat(
                 getChannelIds(getChannelsIgnoringDefault()),
                 containsInAnyOrder(

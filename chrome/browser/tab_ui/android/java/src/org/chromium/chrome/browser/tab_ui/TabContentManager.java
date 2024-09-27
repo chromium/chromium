@@ -323,7 +323,7 @@ public class TabContentManager {
      * @param callback The callback to send the {@link Bitmap} with.
      */
     public void getTabThumbnailWithCallback(
-            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         if (!mSnapshotsEnabled) {
             callback.onResult(null);
             return;
@@ -393,7 +393,7 @@ public class TabContentManager {
     }
 
     private void getTabThumbnailFromDisk(
-            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         // Get the JPEG once it is ready if a capture is ongoing.
         if (mNativeTabContentManager != 0) {
             TraceEvent.startAsync("GetTabThumbnailFromDiskJpegAwait", tabId);

@@ -81,7 +81,7 @@ public class NavigationObserverUnitTest {
             boolean isGrouped) {
         when(mTab.isIncognito()).thenReturn(isIncognito);
         when(mTab.getId()).thenReturn(tabId);
-        when((mTab.getTabGroupId())).thenReturn(tabGroupId);
+        when(mTab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTab.getTitle()).thenReturn(title);
         when(mTab.getUrl()).thenReturn(url);
     }

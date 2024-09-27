@@ -224,7 +224,7 @@ public class FullscreenTestUtils {
             // SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN should only be used during the transition between
             // fullscreen states, so it should always be cleared when fullscreen transitions are
             // completed.
-            return (!isFlagSet(visibility, View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN))
+            return !isFlagSet(visibility, View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
                     && (isFlagSet(visibility, View.SYSTEM_UI_FLAG_FULLSCREEN) == state);
         } else {
             WindowManager.LayoutParams attributes = activity.getWindow().getAttributes();

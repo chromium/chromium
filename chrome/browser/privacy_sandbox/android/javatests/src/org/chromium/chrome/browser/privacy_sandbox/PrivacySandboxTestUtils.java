@@ -58,15 +58,14 @@ public final class PrivacySandboxTestUtils {
     }
 
     /**
-     * Get the root View, sanitized for render tests, whose children contain
-     * the given text.
+     * Get the root View, sanitized for render tests, whose children contain the given text.
      *
      * @param text The text contained in a child View of the root View.
      * @return The sanitized root View.
      */
     public static View getRootViewSanitized(@StringRes int text) {
         View[] view = {null};
-        onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
+        onView(withText(text)).check((v, e) -> view[0] = v.getRootView());
         ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }

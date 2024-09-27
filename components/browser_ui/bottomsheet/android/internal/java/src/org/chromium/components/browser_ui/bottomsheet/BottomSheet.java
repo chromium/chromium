@@ -1220,8 +1220,8 @@ class BottomSheet extends FrameLayout
             @SheetState int prev, @SheetState int next, boolean sheetMovesDown) {
         if (next == SheetState.HALF) return THRESHOLD_TO_NEXT_STATE_3;
         boolean crossesHalf =
-                sheetMovesDown && prev > SheetState.HALF && next < SheetState.HALF
-                        || !sheetMovesDown && prev < SheetState.HALF && next > SheetState.HALF;
+                (sheetMovesDown && prev > SheetState.HALF && next < SheetState.HALF)
+                        || (!sheetMovesDown && prev < SheetState.HALF && next > SheetState.HALF);
         if (!crossesHalf) return THRESHOLD_TO_NEXT_STATE_3;
         if (!shouldSkipHalfStateOnScrollingDown()) return THRESHOLD_TO_NEXT_STATE_3;
         return THRESHOLD_TO_NEXT_STATE_2;
@@ -1243,7 +1243,7 @@ class BottomSheet extends FrameLayout
             if (i == SheetState.HALF && skipHalfState) continue;
 
             if (sheetHeight > getSheetHeightForState(i)
-                    || sheetHeight == getSheetHeightForState(i) && !sheetMovesDown) {
+                    || (sheetHeight == getSheetHeightForState(i) && !sheetMovesDown)) {
                 largestCollapsingState = i;
             }
         }

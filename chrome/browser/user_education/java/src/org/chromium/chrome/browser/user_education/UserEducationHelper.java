@@ -165,8 +165,8 @@ public class UserEducationHelper {
         if (iphCommand.showTextBubble) {
             String contentString = iphCommand.contentString;
             String accessibilityString = iphCommand.accessibilityText;
-            assert (!contentString.isEmpty());
-            assert (!accessibilityString.isEmpty());
+            assert !contentString.isEmpty();
+            assert !accessibilityString.isEmpty();
 
             mTextBubble =
                     new TextBubble(

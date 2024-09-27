@@ -318,7 +318,7 @@ public class SafetyCheckMediatorTest {
         // Execute any delayed tasks immediately.
         doAnswer(
                         invocation -> {
-                            Runnable runnable = (Runnable) (invocation.getArguments()[0]);
+                            Runnable runnable = (Runnable) invocation.getArguments()[0];
                             runnable.run();
                             return null;
                         })

@@ -145,8 +145,8 @@ public class GestureListenerManagerTest {
                     Assert.assertEquals(
                             ALL_UPDATES, manager.getRootScrollOffsetUpdateFrequencyForTesting());
                     View webContentsView = webContents.getViewAndroidDelegate().getContainerView();
-                    mCurrentX = webContentsView.getWidth() / 2;
-                    mCurrentY = webContentsView.getHeight() / 2;
+                    mCurrentX = webContentsView.getWidth() / 2f;
+                    mCurrentY = webContentsView.getHeight() / 2f;
                     Assert.assertTrue(mCurrentY > 0);
                 });
 

@@ -215,9 +215,9 @@ public class PromiseTest {
         Promise<Integer> promise = new Promise<>();
         promise.then(
                         (Function)
-                                (unusedArg -> {
+                                unusedArg -> {
                                     throw new IllegalArgumentException();
-                                }))
+                                })
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
 
         promise.fulfill(0);
@@ -234,9 +234,9 @@ public class PromiseTest {
 
         promise.then(
                         (Promise.AsyncFunction)
-                                (unusedArg -> {
+                                unusedArg -> {
                                     throw new IllegalArgumentException();
-                                }))
+                                })
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
 
         promise.fulfill(0);

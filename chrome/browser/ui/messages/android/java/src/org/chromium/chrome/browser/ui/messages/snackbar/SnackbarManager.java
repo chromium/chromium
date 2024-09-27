@@ -251,7 +251,7 @@ public class SnackbarManager
      * @param token The token passed from #pushParentViewToOverrideStack. This is used to ensure
      *     that the push/pop methods are matching.
      */
-    public void popParentViewFromOverrideStack(@NonNull int token) {
+    public void popParentViewFromOverrideStack(int token) {
         assert token != TokenHolder.INVALID_TOKEN;
         Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.pop();
         assert parentViewPair.first.equals(token);

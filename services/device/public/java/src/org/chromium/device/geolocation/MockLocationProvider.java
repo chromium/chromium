@@ -85,4 +85,3 @@ public class MockLocationProvider implements LocationProvider {
         LocationProviderAdapter.onNewLocationAvailable(location);
     }
 }
-;

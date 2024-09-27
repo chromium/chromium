@@ -110,7 +110,7 @@ public final class ToolbarSecurityIconTest {
         doReturn(exampleUrl.getSpec())
                 .when(mLocationBarModelJni)
                 .getURLForDisplay(Mockito.anyLong(), Mockito.any());
-        doReturn((new Random()).nextLong()).when(mLocationBarModelJni).init(Mockito.any());
+        doReturn(new Random().nextLong()).when(mLocationBarModelJni).init(Mockito.any());
 
         Context context =
                 new ContextThemeWrapper(

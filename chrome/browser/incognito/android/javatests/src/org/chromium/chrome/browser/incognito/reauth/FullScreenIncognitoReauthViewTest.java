@@ -150,7 +150,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
                                     mUnlockIncognitoRunnableMock,
                                     mSeeOtherTabsRunnableMock,
                                     isFullScreen,
-                                    (isFullScreen)
+                                    isFullScreen
                                             ? () -> mIncognitoReauthMenuDelegate.getBasicListMenu()
                                             : null);
                     mModelChangeProcessor =

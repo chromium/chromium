@@ -82,9 +82,9 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
                     mMakeChoiceCallback.onResult(false);
                 });
         setOnCancelListener(
-                (dialog ->
+                dialog ->
                         mDialogDismissedCallback.onResult(
-                                ((ColorDrawable) mChosenColor.getBackground()).getColor())));
+                                ((ColorDrawable) mChosenColor.getBackground()).getColor()));
     }
 
     void setDialogDismissedCallback(Callback<Integer> dialogDismissedCallback) {

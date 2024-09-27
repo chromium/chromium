@@ -698,7 +698,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         logMemory(cb.packageName, "OnServiceConnected");
 
         final CustomTabsSession session = client.newSession(cb);
-        final CustomTabsIntent intent = (new CustomTabsIntent.Builder(session)).build();
+        final CustomTabsIntent intent = new CustomTabsIntent.Builder(session).build();
         IBinder sessionBinder =
                 BundleCompat.getBinder(intent.intent.getExtras(), CustomTabsIntent.EXTRA_SESSION);
         assert sessionBinder != null;

@@ -140,7 +140,7 @@ public class MiniPlayerLayout extends LinearLayout {
         View nonErrorLayoutContainer = mErrorLayout.getVisibility() == View.GONE ? mContents : null;
         Runnable onFinished =
                 endValue == 1f
-                        ? (() -> mMediator.onFullOpacityReached(nonErrorLayoutContainer))
+                        ? () -> mMediator.onFullOpacityReached(nonErrorLayoutContainer)
                         : mMediator::onZeroOpacityReached;
 
         if (mEnableAnimations) {

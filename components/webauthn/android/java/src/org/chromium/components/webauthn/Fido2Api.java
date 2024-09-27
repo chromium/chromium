@@ -1476,7 +1476,7 @@ public final class Fido2Api {
                 MIN_TIMEOUT_SECONDS,
                 Math.min(
                         MAX_TIMEOUT_SECONDS,
-                        TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
+                        (double) TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
     }
 
     /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */

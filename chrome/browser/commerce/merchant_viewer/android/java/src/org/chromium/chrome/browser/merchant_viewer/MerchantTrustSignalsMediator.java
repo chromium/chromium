@@ -40,12 +40,12 @@ class MerchantTrustSignalsMediator {
                             @Override
                             public void onDidFinishNavigationInPrimaryMainFrame(
                                     Tab tab, NavigationHandle navigation) {
-                                if ((tab.isIncognito())
-                                        || (!navigation.hasCommitted())
-                                        || (navigation.isPrimaryMainFrameFragmentNavigation())
-                                        || (navigation.isErrorPage())
+                                if (tab.isIncognito()
+                                        || !navigation.hasCommitted()
+                                        || navigation.isPrimaryMainFrameFragmentNavigation()
+                                        || navigation.isErrorPage()
                                         || (navigation.getUrl() == null)
-                                        || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
+                                        || TextUtils.isEmpty(navigation.getUrl().getHost())) {
                                     return;
                                 }
 

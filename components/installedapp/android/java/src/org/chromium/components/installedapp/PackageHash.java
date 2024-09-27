@@ -90,7 +90,7 @@ class PackageHash {
         }
         byte[] digest = hasher.doFinal(packageNameBytes);
         // Take just the first two bytes of the digest.
-        int hash = (((digest[0]) & 0xff) << 8) | ((digest[1]) & 0xff);
+        int hash = ((digest[0] & 0xff) << 8) | (digest[1] & 0xff);
         return (short) hash;
     }
 

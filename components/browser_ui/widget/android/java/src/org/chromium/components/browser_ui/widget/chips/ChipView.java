@@ -236,7 +236,7 @@ public class ChipView extends LinearLayout {
         }
         if (textAlignStart) {
             // Default of 'center' is defined in the ChipTextView style.
-            mPrimaryText.setTextAlignment((View.TEXT_ALIGNMENT_VIEW_START));
+            mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
         if (reduceTextStartPadding) {
             mPrimaryText.setPaddingRelative(

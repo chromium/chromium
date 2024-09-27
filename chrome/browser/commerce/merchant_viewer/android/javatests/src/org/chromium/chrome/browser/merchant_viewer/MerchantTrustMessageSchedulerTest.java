@@ -64,7 +64,7 @@ public class MerchantTrustMessageSchedulerTest {
 
         doAnswer(
                         invocation -> {
-                            Runnable runnable = (Runnable) (invocation.getArguments()[0]);
+                            Runnable runnable = (Runnable) invocation.getArguments()[0];
                             runnable.run();
                             return null;
                         })

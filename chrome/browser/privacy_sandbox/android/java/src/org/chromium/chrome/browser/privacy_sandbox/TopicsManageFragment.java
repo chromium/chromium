@@ -89,7 +89,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     }
 
     private boolean onToggleChange(Preference preference, Object newValue) {
-        var topicPreference = (TopicSwitchPreference) (preference);
+        var topicPreference = (TopicSwitchPreference) preference;
         if (!((boolean) newValue)) {
             return handleBlockTopic(topicPreference);
         }

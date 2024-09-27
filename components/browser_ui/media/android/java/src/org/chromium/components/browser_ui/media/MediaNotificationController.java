@@ -519,9 +519,9 @@ public class MediaNotificationController {
         }
 
         return newInfo.equals(oldInfo)
-                || ((newInfo.isPaused
+                || (newInfo.isPaused
                         && oldInfo != null
-                        && newInfo.instanceId != oldInfo.instanceId));
+                        && newInfo.instanceId != oldInfo.instanceId);
     }
 
     public void clearNotification() {

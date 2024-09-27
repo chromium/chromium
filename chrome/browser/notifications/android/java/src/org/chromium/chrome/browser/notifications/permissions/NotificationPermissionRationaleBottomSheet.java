@@ -107,7 +107,7 @@ public class NotificationPermissionRationaleBottomSheet
                             NotificationRationaleResult.POSITIVE_BUTTON_CLICKED);
                 });
         negativeButton.setOnClickListener(
-                (view -> {
+                view -> {
                     mBottomSheetController.hideContent(
                             this,
                             /* animate= */ true,
@@ -115,7 +115,7 @@ public class NotificationPermissionRationaleBottomSheet
                     executeResponseCallback(
                             RationaleUiResult.REJECTED,
                             NotificationRationaleResult.NEGATIVE_BUTTON_CLICKED);
-                }));
+                });
     }
 
     private void executeResponseCallback(

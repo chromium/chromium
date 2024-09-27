@@ -33,7 +33,7 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
                 () -> {
                     boolean isTablet =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
-                    return phoneOnly && !isTablet || tabletOnly && isTablet;
+                    return (phoneOnly && !isTablet) || (tabletOnly && isTablet);
                 });
     }
 }

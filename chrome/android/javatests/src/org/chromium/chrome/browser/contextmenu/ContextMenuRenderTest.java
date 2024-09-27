@@ -152,21 +152,21 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
                                     getHeaderModel("", "www.google.com", false)));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in new tab"))));
+                                    getItemModel("Open in new tab")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in incognito tab"))));
+                                    getItemModel("Open in incognito tab")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Copy link address"))));
+                                    getItemModel("Copy link address")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                                    getShareItemModel("Share link"))));
+                                    getShareItemModel("Share link")));
                 });
         mRenderTestRule.render(mFrame, id);
     }
@@ -180,34 +180,34 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
                                     getHeaderModel("Capybara", "www.google.com", true)));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in new tab"))));
+                                    getItemModel("Open in new tab")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in incognito tab"))));
+                                    getItemModel("Open in incognito tab")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Copy link address"))));
+                                    getItemModel("Copy link address")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                                    getShareItemModel("Share link"))));
+                                    getShareItemModel("Share link")));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open image in new tab"))));
+                                    getItemModel("Open image in new tab")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Download image"))));
+                                    getItemModel("Download image")));
                     mListItems.add(
-                            (new ListItem(
+                            new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                                    getShareItemModel("Share image"))));
+                                    getShareItemModel("Share image")));
                 });
         mRenderTestRule.render(mFrame, id);
     }

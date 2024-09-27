@@ -197,8 +197,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         assert rootPath != null;
         assert !rootPath.isEmpty();
 
-        File zipPath =
-                new File(rootPath, (new StringBuilder()).append(tabId).append(".zip").toString());
+        File zipPath = new File(rootPath, tabId + ".zip");
         return zipPath.exists();
     }
 

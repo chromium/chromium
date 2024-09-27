@@ -30,7 +30,7 @@ class MerchantTrustSignalsDataProvider {
     boolean isValidMerchantTrustSignals(MerchantInfo info) {
         return (info != null)
                 && (info.detailsPageUrl != null)
-                && (!info.containsSensitiveContent)
+                && !info.containsSensitiveContent
                 && (info.starRating > 0 || info.hasReturnPolicy);
     }
 }

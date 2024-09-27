@@ -53,11 +53,11 @@ public class CrossDeviceListCoordinatorUnitTest {
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
-                        (activity -> {
+                        activity -> {
                             mActivity = activity;
                             mCoordinator =
                                     new CrossDeviceListCoordinator(mActivity, mEdgeToEdgeSupplier);
-                        }));
+                        });
     }
 
     @After

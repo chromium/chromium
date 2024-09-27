@@ -96,7 +96,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         View layout = getDialogLayout(params);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((ViewGroup) (layout.getParent())).removeView(layout);
+                    ((ViewGroup) layout.getParent()).removeView(layout);
                     getActivity().setContentView(layout);
                 });
         mRenderTestRule.render(layout, "promo_dialog_basic");
@@ -118,7 +118,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         View layout = getDialogLayout(params);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((ViewGroup) (layout.getParent())).removeView(layout);
+                    ((ViewGroup) layout.getParent()).removeView(layout);
                     getActivity().setContentView(layout);
                 });
         mRenderTestRule.render(layout, "promo_dialog_basic_stack_button");
@@ -138,7 +138,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         View layout = getDialogLayout(params);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((ViewGroup) (layout.getParent())).removeView(layout);
+                    ((ViewGroup) layout.getParent()).removeView(layout);
                     getActivity().setContentView(layout, new LayoutParams(1600, 1000));
                 });
 
@@ -159,7 +159,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         View layout = getDialogLayout(params);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((ViewGroup) (layout.getParent())).removeView(layout);
+                    ((ViewGroup) layout.getParent()).removeView(layout);
                     getActivity().setContentView(layout, new LayoutParams(1600, 1000));
                 });
 

@@ -59,7 +59,6 @@ public class ProfileStore {
         return AwBrowserContextStore.listAllContexts();
     }
 
-    @NonNull
     public boolean deleteProfile(@NonNull String name) {
         ThreadUtils.checkUiThread();
         boolean deletionResult = AwBrowserContextStore.deleteNamedContext(name);

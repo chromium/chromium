@@ -163,13 +163,13 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private void recordUserActionHistogramForNewStateClicked(
             @SafeBrowsingState int safeBrowsingState) {
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_CLICKED);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 recordUserActionHistogram(UserAction.STANDARD_PROTECTION_CLICKED);
                 break;
-            case (SafeBrowsingState.NO_SAFE_BROWSING):
+            case SafeBrowsingState.NO_SAFE_BROWSING:
                 recordUserActionHistogram(UserAction.DISABLE_SAFE_BROWSING_CLICKED);
                 break;
             default:
@@ -180,10 +180,10 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private void recordUserActionHistogramForStateDetailsClicked(
             @SafeBrowsingState int safeBrowsingState) {
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 recordUserActionHistogram(UserAction.STANDARD_PROTECTION_EXPAND_ARROW_CLICKED);
                 break;
             default:

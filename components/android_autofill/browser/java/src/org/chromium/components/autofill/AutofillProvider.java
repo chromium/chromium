@@ -178,14 +178,13 @@ public class AutofillProvider {
     }
 
     /**
-     * Invoked when autofill value is available, AutofillProvider shall fill the
-     * form with the provided values.
+     * Invoked when autofill value is available, AutofillProvider shall fill the form with the
+     * provided values.
      *
-     * @param values the array of autofill values, the key is virtual id of form
-     *            field.
+     * @param values the array of autofill values, the key is virtual id of form field.
      */
     public void autofill(final SparseArray<AutofillValue> values) {
-        if (mNativeAutofillProvider != 0 && mRequest != null && mRequest.autofill((values))) {
+        if (mNativeAutofillProvider != 0 && mRequest != null && mRequest.autofill(values)) {
             autofill(mNativeAutofillProvider);
             if (AutofillManagerWrapper.isLoggable()) {
                 AutofillManagerWrapper.log("autofill values:" + values.size());

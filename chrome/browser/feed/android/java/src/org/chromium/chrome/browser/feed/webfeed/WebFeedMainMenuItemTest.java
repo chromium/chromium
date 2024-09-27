@@ -135,8 +135,8 @@ public final class WebFeedMainMenuItemTest {
 
         mWebFeedMainMenuItem =
                 (WebFeedMainMenuItem)
-                        (LayoutInflater.from(mActivity)
-                                .inflate(R.layout.web_feed_main_menu_item, null));
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.web_feed_main_menu_item, null);
 
         LoadingView.setDisableAnimationForTest(true);
     }

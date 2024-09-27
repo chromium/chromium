@@ -862,8 +862,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
             case GlobalToggleLayout.BINARY_TOGGLE:
                 setting =
-                        (WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, mCategory.getContentSettingsType()))
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                        browserContextHandle, mCategory.getContentSettingsType())
                                 ? ContentSettingValues.BLOCK
                                 : ContentSettingValues.ALLOW;
                 break;
@@ -1214,7 +1214,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
                 mLocationTriStatePref.initialize(
-                        (UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle())));
+                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()));
                 updateLocationSecondaryControls();
             } else {
                 screen.removePreference(mLocationTriStatePref);

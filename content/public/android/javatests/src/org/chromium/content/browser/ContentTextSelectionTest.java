@@ -300,8 +300,8 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(mSelectionPopupController.hasSelection());
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2;
-        float mCurrentY = webContentsView.getHeight() / 2;
+        float mCurrentX = webContentsView.getWidth() / 2f;
+        float mCurrentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(
@@ -329,8 +329,8 @@ public class ContentTextSelectionTest {
         waitForSelectActionBarVisible(false);
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2;
-        float mCurrentY = webContentsView.getHeight() / 2;
+        float mCurrentX = webContentsView.getWidth() / 2f;
+        float mCurrentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(

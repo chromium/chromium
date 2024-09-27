@@ -25,7 +25,7 @@ public class Unzip {
 
     public static void main(String[] args) {
         try {
-            (new Unzip()).run(args);
+            new Unzip().run(args);
         } catch (RuntimeException e) {
             e.printStackTrace();
             System.exit(1);

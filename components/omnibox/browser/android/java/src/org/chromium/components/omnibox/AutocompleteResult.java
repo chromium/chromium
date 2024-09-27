@@ -193,7 +193,7 @@ public class AutocompleteResult {
 
         AutocompleteResult other = (AutocompleteResult) otherObj;
         if (!mSuggestions.equals(other.mSuggestions)) return false;
-        return (mGroupsInfo.equals(other.mGroupsInfo));
+        return mGroupsInfo.equals(other.mGroupsInfo);
     }
 
     @Override

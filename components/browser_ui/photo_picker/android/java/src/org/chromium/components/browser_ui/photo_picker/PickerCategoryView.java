@@ -347,7 +347,7 @@ public class PickerCategoryView extends RelativeLayout
 
         // Calculate the rate of files enumerated per tenth of a second.
         long elapsedTimeMs = SystemClock.elapsedRealtime() - mEnumStartTime;
-        int rate = (int) (100 * files.size() / elapsedTimeMs);
+        int rate = (int) (100L * files.size() / elapsedTimeMs);
         RecordHistogram.recordTimesHistogram("Android.PhotoPicker.EnumerationTime", elapsedTimeMs);
         RecordHistogram.recordCustomCountHistogram(
                 "Android.PhotoPicker.EnumeratedFiles", files.size(), 1, 10000, 50);
@@ -562,7 +562,7 @@ public class PickerCategoryView extends RelativeLayout
                         : context.getResources()
                                 .getDimensionPixelSize(R.dimen.photo_picker_tile_gap);
         mColumns = mMagnifyingMode ? 1 : Math.max(1, (width - mPadding) / (minSize + mPadding));
-        mImageWidth = (width - mPadding * (mColumns + 1)) / (mColumns);
+        mImageWidth = (width - mPadding * (mColumns + 1)) / mColumns;
         mImageHeight =
                 mMagnifyingMode
                         ? displayMetrics.heightPixels - findViewById(R.id.action_bar_bg).getHeight()

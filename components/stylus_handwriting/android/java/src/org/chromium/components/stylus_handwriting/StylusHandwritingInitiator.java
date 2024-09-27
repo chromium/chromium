@@ -135,7 +135,7 @@ class StylusHandwritingInitiator {
 
     // Method to check if the corresponding feature flag is enabled
     boolean isStylusHandwritingFeatureEnabled() {
-        return (StylusHandwritingFeatureMap.isEnabled(
-                StylusHandwritingFeatureMap.USE_HANDWRITING_INITIATOR));
+        return StylusHandwritingFeatureMap.isEnabled(
+                StylusHandwritingFeatureMap.USE_HANDWRITING_INITIATOR);
     }
 }

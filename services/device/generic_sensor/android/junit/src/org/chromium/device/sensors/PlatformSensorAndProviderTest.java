@@ -108,8 +108,7 @@ public class PlatformSensorAndProviderTest {
                         new Answer<List<Sensor>>() {
                             @Override
                             public List<Sensor> answer(final InvocationOnMock invocation) {
-                                return getMockSensors(
-                                        (int) (Integer) (invocation.getArguments())[0]);
+                                return getMockSensors((int) (Integer) invocation.getArguments()[0]);
                             }
                         })
                 .when(mSensorManager)

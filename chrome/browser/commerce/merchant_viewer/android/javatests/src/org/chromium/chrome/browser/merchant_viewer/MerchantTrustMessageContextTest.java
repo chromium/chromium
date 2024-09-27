@@ -83,27 +83,26 @@ public class MerchantTrustMessageContextTest {
 
     @Test
     public void testGetHostName() {
-        assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
+        assertEquals(null, new MerchantTrustMessageContext(null, mMockWebContents).getHostName());
         assertEquals(
                 "fake_host",
-                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents)
                         .getHostName());
     }
 
     @Test
     public void testGetUrl() {
-        assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getUrl());
+        assertEquals(null, new MerchantTrustMessageContext(null, mMockWebContents).getUrl());
         assertEquals(
                 "fake_spec",
-                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
-                        .getUrl());
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents).getUrl());
     }
 
     @Test
     public void testGetWebContents() {
         assertEquals(
                 mMockWebContents,
-                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents)
                         .getWebContents());
     }
 }

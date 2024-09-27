@@ -46,4 +46,3 @@ public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
                 float refreshRate);
     }
 }
-;

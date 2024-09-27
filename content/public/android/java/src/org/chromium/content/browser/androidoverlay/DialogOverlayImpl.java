@@ -398,10 +398,10 @@ public class DialogOverlayImpl
         Surface lookupSurfaceForTesting(int surfaceId);
 
         /**
-         * Send a synchronous OnDestroyed message to the client.
+         * Send a synchronous OnDestroyed message to the client. Closes the message pipe.
+         *
          * @param messagePipe Mojo message pipe ID.
          * @param version Mojo interface version.
-         * @return none, but the message pipe is closed.
          */
         void notifyDestroyedSynchronously(long messagePipeHandle);
     }

@@ -97,7 +97,7 @@ public class AppHeaderState {
         if (!mIsInDesktopWindow) {
             return mWidestUnoccludedRect.isEmpty();
         }
-        return mAppWindowRect.isEmpty() && mWidestUnoccludedRect.isEmpty()
+        return (mAppWindowRect.isEmpty() && mWidestUnoccludedRect.isEmpty())
                 || mAppWindowRect.contains(mWidestUnoccludedRect);
     }
 

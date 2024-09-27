@@ -224,10 +224,10 @@ class AppMenuHandlerImpl
                 populateCustomViewBinderOffsetMap(customViewBinders, AppMenuItemType.NUM_ENTRIES);
         mModelList =
                 mDelegate.getMenuItems(
-                        ((id) -> {
+                        (id) -> {
                             return getCustomItemViewType(
                                     id, customViewBinders, customViewTypeOffsetMap);
-                        }),
+                        },
                         this);
         mModelList.addObserver(mListObserver);
         ContextThemeWrapper wrapper =

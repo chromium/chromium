@@ -107,7 +107,6 @@ public abstract class PersistedTabData implements UserData {
      *     cannot be found in storage or needs an update.
      * @param clazz class of the {@link PersistedTabData}
      * @param callback callback to pass the {@link PersistedTabData} in
-     * @return {@link PersistedTabData} from storage
      */
     protected static <T extends PersistedTabData> void from(
             Tab tab,

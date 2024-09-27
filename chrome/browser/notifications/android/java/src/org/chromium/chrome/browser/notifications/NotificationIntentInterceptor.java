@@ -241,7 +241,7 @@ public class NotificationIntentInterceptor {
         }
 
         PendingIntent pendingIntent =
-                (PendingIntent) (intent.getParcelableExtra(EXTRA_PENDING_INTENT));
+                (PendingIntent) intent.getParcelableExtra(EXTRA_PENDING_INTENT);
         if (pendingIntent == null) {
             Log.d(TAG, "The notification's PendingIntent is null.");
             return;
