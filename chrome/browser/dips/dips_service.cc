@@ -33,8 +33,6 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/dips/persistent_repeating_timer.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

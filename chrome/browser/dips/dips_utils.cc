@@ -9,8 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"

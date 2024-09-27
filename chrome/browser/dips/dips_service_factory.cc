@@ -5,7 +5,6 @@
 #include "chrome/browser/dips/dips_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -31,9 +30,7 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
 DIPSServiceFactory::DIPSServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "DIPSServiceImpl",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CookieSettingsFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 DIPSServiceFactory::~DIPSServiceFactory() = default;
 
