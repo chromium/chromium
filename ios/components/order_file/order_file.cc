@@ -15,6 +15,8 @@ bool gCRWGuardsInitialized = false;
 // Whether the addition of more procedure calls is allowed.
 bool gCRWFinishedCollecting = false;
 
+extern "C" {
+
 void __sanitizer_cov_trace_pc_guard_init(uint32_t* start,
                                          uint32_t* stop);  // NOLINT
 void __sanitizer_cov_trace_pc_guard(uint32_t* guard);      // NOLINT
@@ -56,3 +58,5 @@ void __sanitizer_cov_trace_pc_guard(uint32_t* guard) {  // NOLINT
   OSAtomicEnqueue(&gCRWSanitizerQueue, node,
                   offsetof(CRWProcedureCallNode, next));
 }
+
+}  // extern "C"
