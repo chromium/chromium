@@ -75,10 +75,9 @@ static std::string EncodeComplexUserDefined(
   const auto* characters = char_data.data();
   const wtf_size_t length = base::checked_cast<wtf_size_t>(char_data.size());
   wtf_size_t target_length = length;
-  Vector<char> result(target_length);
-  char* bytes = result.data();
+  std::string result;
+  result.reserve(target_length);
 
-  wtf_size_t result_length = 0;
   for (wtf_size_t i = 0; i < length;) {
     UChar32 c;
     // TODO(jsbell): Will the input for x-user-defined ever be LChars?
@@ -89,26 +88,23 @@ static std::string EncodeComplexUserDefined(
       --target_length;
     signed char signed_byte = static_cast<signed char>(c);
     if ((signed_byte & 0xF7FF) == c) {
-      bytes[result_length++] = signed_byte;
+      result.push_back(signed_byte);
     } else {
       // No way to encode this character with x-user-defined.
-      UnencodableReplacementArray replacement;
-      int replacement_length =
-          TextCodec::GetUnencodableReplacement(c, handling, replacement);
-      DCHECK_GT(replacement_length, 0);
+      std::string replacement =
+          TextCodec::GetUnencodableReplacement(c, handling);
+      DCHECK_GT(replacement.length(), 0UL);
       // Only one char was initially reserved per input character, so grow if
       // necessary.
-      target_length += replacement_length - 1;
+      target_length += replacement.length() - 1;
       if (target_length > result.size()) {
-        result.Grow(target_length);
-        bytes = result.data();
+        result.reserve(target_length);
       }
-      memcpy(bytes + result_length, replacement, replacement_length);
-      result_length += replacement_length;
+      result.append(replacement);
     }
   }
 
-  return std::string(bytes, result_length);
+  return result;
 }
 
 template <typename CharType>

@@ -73,9 +73,9 @@ constexpr std::array<const char*, 6> kSupportedCanonicalNames{
 void AppendUnencodableReplacement(UChar32 code_point,
                                   UnencodableHandling handling,
                                   Vector<uint8_t>& result) {
-  String replacement =
+  std::string replacement =
       TextCodec::GetUnencodableReplacement(code_point, handling);
-  result.reserve(result.size() + replacement.length());
+  result.reserve(result.size() + replacement.size());
   for (uint8_t r : replacement) {
     result.UncheckedAppend(r);
   }

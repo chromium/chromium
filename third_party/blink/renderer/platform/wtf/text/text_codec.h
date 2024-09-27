@@ -59,8 +59,6 @@ enum UnencodableHandling {
   kNoUnencodables,
 };
 
-typedef char UnencodableReplacementArray[32];
-
 enum class FlushBehavior {
   // More bytes are coming, don't flush the codec.
   kDoNotFlush = 0,
@@ -113,14 +111,8 @@ class WTF_EXPORT TextCodec {
     return EncodeIntoResult{0, 0};
   }
 
-  // Fills a null-terminated string representation of the given
-  // unencodable character into the given replacement buffer.
-  // The length of the string (not including the null) will be returned.
-  static uint32_t GetUnencodableReplacement(unsigned code_point,
-                                            UnencodableHandling,
-                                            UnencodableReplacementArray);
-  static String GetUnencodableReplacement(UChar32 code_point,
-                                          UnencodableHandling);
+  static std::string GetUnencodableReplacement(UChar32 code_point,
+                                               UnencodableHandling);
 };
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);

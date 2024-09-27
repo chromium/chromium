@@ -488,10 +488,7 @@ static void FormatEscapedEntityCallback(const void* context,
   if (reason == UCNV_UNASSIGNED) {
     *err = U_ZERO_ERROR;
 
-    UnencodableReplacementArray entity;
-    uint32_t entity_len =
-        TextCodec::GetUnencodableReplacement(code_point, handling, entity);
-    String entity_u(entity, entity_len);
+    String entity_u(TextCodec::GetUnencodableReplacement(code_point, handling));
     entity_u.Ensure16Bit();
     const UChar* entity_u_pointers[2] = {
         entity_u.Characters16(), entity_u.Characters16() + entity_u.length(),

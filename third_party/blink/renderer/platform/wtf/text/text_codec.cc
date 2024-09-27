@@ -31,39 +31,27 @@ namespace WTF {
 
 TextCodec::~TextCodec() = default;
 
-uint32_t TextCodec::GetUnencodableReplacement(
-    unsigned code_point,
-    UnencodableHandling handling,
-    UnencodableReplacementArray replacement) {
+std::string TextCodec::GetUnencodableReplacement(UChar32 code_point,
+                                                 UnencodableHandling handling) {
+  char replacement[32];
   switch (handling) {
     case kEntitiesForUnencodables:
-      snprintf(replacement, sizeof(UnencodableReplacementArray), "&#%u;",
-               code_point);
-      return static_cast<uint32_t>(strlen(replacement));
+      snprintf(replacement, sizeof(replacement), "&#%u;", code_point);
+      return std::string(replacement);
     case kURLEncodedEntitiesForUnencodables:
-      snprintf(replacement, sizeof(UnencodableReplacementArray),
-               "%%26%%23%u%%3B", code_point);
-      return static_cast<uint32_t>(strlen(replacement));
+      snprintf(replacement, sizeof(replacement), "%%26%%23%u%%3B", code_point);
+      return std::string(replacement);
 
     case kCSSEncodedEntitiesForUnencodables:
-      snprintf(replacement, sizeof(UnencodableReplacementArray), "\\%x ",
-               code_point);
-      return static_cast<uint32_t>(strlen(replacement));
+      snprintf(replacement, sizeof(replacement), "\\%x ", code_point);
+      return std::string(replacement);
 
     case kNoUnencodables:
       break;
   }
   NOTREACHED_IN_MIGRATION();
-  replacement[0] = 0;
-  return 0;
-}
 
-String TextCodec::GetUnencodableReplacement(UChar32 code_point,
-                                            UnencodableHandling handling) {
-  UnencodableReplacementArray replacement;
-  uint32_t length =
-      GetUnencodableReplacement(code_point, handling, replacement);
-  return String(replacement, length);
+  return std::string();
 }
 
 }  // namespace WTF
