@@ -38,8 +38,6 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kFirmwareDlcBusyError);
     ENTRY(kFirmwareDlcUnknownError);
     ENTRY(kConciergeUnavailableError);
-    ENTRY(kNotEnoughMemoryError);
-    ENTRY(kNoAdidError);
   }
 #undef ENTRY
 #undef USTR

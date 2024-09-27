@@ -5408,9 +5408,6 @@
   <message name="IDS_BRUSCHETTA_INSTALLER_GENERIC_DLC_ERROR_MESSAGE" desc="Generic message for the installer when Bruschetta fails to install.">
     Sorry, something went wrong installing DLC dependencies. Please try rebooting and if the issue persists file feedback with #bruschetta in the description. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>.
   </message>
-  <message name="IDS_BRUSCHETTA_INSTALLER_UNINSTALLABLE_ERROR_MESSAGE" desc="Generic message for the installer when Bruschetta fails to install.">
-    Unfortunately this machine does not meet requirements for installing Bruschetta. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>.
-  </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ERROR_CLEANUP_MESSAGE" desc="More detailed message for the installer when Bruschetta fails to install and the cleaning up the incomplete install also failed.">
     Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>. Cleaning up failed, you may need to do so manually.
   </message>

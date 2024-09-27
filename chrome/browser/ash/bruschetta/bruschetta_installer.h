@@ -44,9 +44,7 @@ enum class BruschettaInstallResult {
   kFirmwareDlcBusyError = 25,
   kFirmwareDlcUnknownError = 26,
   kConciergeUnavailableError = 27,
-  kNotEnoughMemoryError = 28,
-  kNoAdidError = 29,
-  kMaxValue = kNoAdidError,
+  kMaxValue = kConciergeUnavailableError
 };
 
 // Returns the string name of the BruschettaResult.
