@@ -402,6 +402,11 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
         CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME);
   }
 
+  if (!IsDomainMatch(source_url.host())) {
+    access_result.status.AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);
+  }
+
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
   if (access_scheme == CookieAccessScheme::kNonCryptographic &&

@@ -4771,6 +4771,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           CookieInclusionStatus::MakeFromReasonsForTesting({
               CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME,
               CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
+              CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH,
           }),
           _, _, false));
 
@@ -4820,6 +4821,18 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
       MatchesCookieAccessResult(
           CookieInclusionStatus::MakeFromReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_HTTP_ONLY}),
+          _, _, true));
+
+  EXPECT_THAT(
+      cookie_scriptable->IsSetPermittedInContext(
+          GURL("https://www.badexample.com/test"), context_script,
+          CookieAccessParams(CookieAccessSemantics::UNKNOWN,
+                             false /* delegate_treats_url_as_trustworthy */
+                             ),
+          kCookieableSchemes),
+      MatchesCookieAccessResult(
+          CookieInclusionStatus::MakeFromReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH}),
           _, _, true));
 
   CookieOptions context_cross_site;
