@@ -57,11 +57,11 @@ bool FindResults::IsEmpty() const {
   return begin() == end();
 }
 
-FindResults::BufferMatchResult FindResults::front() const {
+MatchResultICU FindResults::front() const {
   return *begin();
 }
 
-FindResults::BufferMatchResult FindResults::back() const {
+MatchResultICU FindResults::back() const {
   Iterator last_result;
   for (Iterator it = begin(); it != end(); ++it) {
     last_result = it;
@@ -112,15 +112,15 @@ std::optional<MatchResultICU> FindResults::Iterator::EarliestMatch() const {
   return result;
 }
 
-const FindResults::BufferMatchResult FindResults::Iterator::operator*() const {
+const MatchResultICU FindResults::Iterator::operator*() const {
   DCHECK(!IsAtEnd());
   std::optional<MatchResultICU> result = EarliestMatch();
-  return FindResults::BufferMatchResult({result->start, result->length});
+  return *result;
 }
 
 void FindResults::Iterator::operator++() {
   DCHECK(!IsAtEnd());
-  const FindResults::BufferMatchResult last_result = **this;
+  const MatchResultICU last_result = **this;
   for (size_t i = 0; i < text_searcher_list_.size(); ++i) {
     auto& optional_match = match_list_[i];
     if (optional_match.has_value() &&

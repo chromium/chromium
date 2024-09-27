@@ -21,6 +21,14 @@ namespace blink {
 struct CORE_EXPORT MatchResultICU {
   wtf_size_t start;
   wtf_size_t length;
+
+  bool operator==(const MatchResultICU& other) const {
+    return start == other.start && length == other.length;
+  }
+
+  bool operator!=(const MatchResultICU& other) const {
+    return !operator==(other);
+  }
 };
 
 class CORE_EXPORT TextSearcherICU {
