@@ -473,9 +473,6 @@ class _Variant():
 
     def generate_expected_image(self, output_dirs: _OutputPaths) -> None:
         """Creates a reference image using Cairo and save filename in params."""
-        if 'expected' not in self.params:
-            return
-
         expected = self.params['expected']
         name = self.params['name']
 
@@ -717,8 +714,15 @@ class _VariantGrid:
 
     def _generate_cairo_images(self, output_dirs: _OutputPaths) -> None:
         """Generates the pycairo images found in the YAML test definition."""
-        for variant in self.variants:
-            variant.generate_expected_image(output_dirs)
+        if any(v.params.get('expected') for v in self._variants):
+            if len(self.variants) != 1:
+                raise InvalidTestDefinitionError(
+                    'Parameter "expected" is not supported for variant grids.')
+            if self.template_type != _TemplateType.TESTHARNESS:
+                raise InvalidTestDefinitionError(
+                    'Parameter "expected" is not supported in reference '
+                    'tests.')
+            self.variants[0].generate_expected_image(output_dirs)
 
     def generate_test(self, jinja_env: jinja2.Environment,
                       output_dirs: _OutputPaths) -> None:
