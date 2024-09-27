@@ -4,6 +4,7 @@
 
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -28,7 +30,11 @@ ScannerSystemState FakeScannerProfileScopedDelegate::GetSystemState() const {
 void FakeScannerProfileScopedDelegate::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     base::OnceCallback<void(ScannerActionsResponse)> callback) {
-  std::move(callback).Run(base::ok(std::vector<ScannerAction>()));
+  std::move(callback).Run(base::ok(std::vector<ScannerAction>{
+      ScannerAction(
+          /*display_name=*/"Open Url",
+          /*command=*/OpenUrlCommand{.url = GURL("https://www.google.com")}),
+  }));
 }
 
 }  // namespace ash

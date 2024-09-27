@@ -5,12 +5,17 @@
 #include "ash/scanner/scanner_controller.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_session.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -33,6 +38,16 @@ ScannerSession* ScannerController::StartNewSession() {
           ? std::make_unique<ScannerSession>(profile_scoped_delegate)
           : nullptr;
   return scanner_session_.get();
+}
+
+void ScannerController::FetchActionsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+    ScannerSession::FetchActionsCallback callback) {
+  if (!scanner_session_) {
+    std::move(callback).Run(std::vector<ScannerAction>());
+    return;
+  }
+  scanner_session_->FetchActionsForImage(jpeg_bytes, std::move(callback));
 }
 
 void ScannerController::OnSessionUIClosed() {
