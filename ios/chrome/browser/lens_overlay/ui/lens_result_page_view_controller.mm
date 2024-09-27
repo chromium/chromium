@@ -49,6 +49,9 @@ const CGFloat kProgressBarHeight = 2.0f;
 /// Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
 
+/// The duration for the cancel button appear & disappear animations.
+const CGFloat kCancelButtonAnimationDuration = 0.2f;
+
 }  // namespace
 
 @interface LensResultPageViewController ()
@@ -178,7 +181,7 @@ const CGFloat kProgressBarFull = 1.0f;
               attributes:attributes];
   buttonConfiguration.attributedTitle = attributedString;
   _cancelButton.configuration = buttonConfiguration;
-  _cancelButton.hidden = YES;
+  [self setCancelButtonHidden:YES animated:NO];
   [_cancelButton addTarget:self
                     action:@selector(didTapCancelButton:)
           forControlEvents:UIControlEventTouchUpInside];
@@ -270,6 +273,32 @@ const CGFloat kProgressBarFull = 1.0f;
   [self updateMutatorDarkMode];
 }
 
+- (void)setCancelButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  if (_cancelButton.hidden == hidden) {
+    return;
+  }
+
+  if (!animated) {
+    _cancelButton.hidden = hidden;
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kCancelButtonAnimationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
+                     __typeof(self) strongSelf = weakSelf;
+                     if (!strongSelf) {
+                       return;
+                     }
+
+                     strongSelf->_cancelButton.hidden = hidden;
+                     [strongSelf->_horizontalStackView layoutIfNeeded];
+                   }
+                   completion:nil];
+}
+
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
@@ -355,7 +384,8 @@ const CGFloat kProgressBarFull = 1.0f;
   [self updateBackButtonVisibility];
 
   // Visible when omnibox is focused.
-  _cancelButton.hidden = !isFocused;
+  [self setCancelButtonHidden:!isFocused animated:YES];
+
   _omniboxPopupContainer.hidden = !isFocused;
 
   // Hidden when omnibox is focused.
