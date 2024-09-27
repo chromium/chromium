@@ -48,22 +48,21 @@ DomainDiversityReporterFactory::~DomainDiversityReporterFactory() = default;
 std::unique_ptr<KeyedService>
 DomainDiversityReporterFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  if (chrome_browser_state->IsOffTheRecord())
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  if (profile->IsOffTheRecord()) {
     return nullptr;
+  }
 
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   // Only build DomainDiversityReporter service with a valid `history_service`.
   if (!history_service)
     return nullptr;
 
   return std::make_unique<DomainDiversityReporter>(
-      history_service, chrome_browser_state->GetPrefs(),
-      base::DefaultClock::GetInstance());
+      history_service, profile->GetPrefs(), base::DefaultClock::GetInstance());
 }
 
 void DomainDiversityReporterFactory::RegisterBrowserStatePrefs(

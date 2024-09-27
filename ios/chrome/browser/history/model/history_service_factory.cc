@@ -25,19 +25,17 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<HistoryClientImpl> BuildHistoryClient(ProfileIOS* profile) {
   return std::make_unique<HistoryClientImpl>(
-      BookmarkModelFactory::GetForBrowserState(browser_state));
+      BookmarkModelFactory::GetForProfile(profile));
 }
 
 std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(BuildHistoryClient(browser_state), nullptr));
+      new history::HistoryService(BuildHistoryClient(profile), nullptr));
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          browser_state->GetStatePath(), GetChannel()))) {
+          profile->GetStatePath(), GetChannel()))) {
     return nullptr;
   }
   return history_service;

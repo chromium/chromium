@@ -30,11 +30,10 @@
 namespace {
 
 history::WebHistoryService* WebHistoryServiceGetter(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state) {
-  DCHECK(weak_browser_state.get())
-      << "Getter should not be called after ChromeBrowserState destruction.";
-  return ios::WebHistoryServiceFactory::GetForBrowserState(
-      weak_browser_state.get());
+    base::WeakPtr<ProfileIOS> weak_profile) {
+  DCHECK(weak_profile.get())
+      << "Getter should not be called after ProfileIOS destruction.";
+  return ios::WebHistoryServiceFactory::GetForProfile(weak_profile.get());
 }
 
 }  // anonymous namespace
@@ -71,8 +70,8 @@ history::WebHistoryService* WebHistoryServiceGetter(
       std::make_unique<BrowserObserverBridge>(self.browser, self);
 
   // Initialize and set HistoryMediator.
-  _mediator = [[HistoryMediator alloc]
-      initWithBrowserState:self.browser->GetBrowserState()];
+  _mediator =
+      [[HistoryMediator alloc] initWithProfile:self.browser->GetProfile()];
   self.viewController.imageDataSource = _mediator;
 
   // Initialize and configure HistoryServices.
@@ -81,13 +80,13 @@ history::WebHistoryService* WebHistoryServiceGetter(
           self.viewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
       base::BindRepeating(&WebHistoryServiceGetter,
-                          self.browser->GetBrowserState()->AsWeakPtr()),
+                          self.browser->GetProfile()->AsWeakPtr()),
       _browsingHistoryDriverDelegate.get());
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
-      ios::HistoryServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS),
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()));
+      ios::HistoryServiceFactory::GetForProfile(
+          self.browser->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS),
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile()));
   self.viewController.historyService = _browsingHistoryService.get();
 
   self.viewController.presentationDelegate = self.presentationDelegate;
@@ -181,7 +180,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
                                   completion:^{
                                     [weakSelf onOpenedURLInNewIncognitoTab];
                                   }];
-    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    if (IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs())) {
       // Disable the "Open in Incognito" option if the incognito mode is
       // disabled.
       incognitoAction.attributes = UIMenuElementAttributesDisabled;

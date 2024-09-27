@@ -28,17 +28,17 @@ namespace {
 class HistoryTabHelperTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
 
-    web_state_.SetBrowserState(chrome_browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     HistoryTabHelper::CreateForWebState(&web_state_);
   }
 
@@ -46,8 +46,8 @@ class HistoryTabHelperTest : public PlatformTest {
   // returns the response.  Spins the runloop until a response is received.
   void QueryURL(const GURL& url) {
     history::HistoryService* service =
-        ios::HistoryServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
 
     base::RunLoop loop;
     service->QueryURL(
@@ -64,8 +64,8 @@ class HistoryTabHelperTest : public PlatformTest {
   // Adds an entry for the given `url` to the history database.
   void AddVisitForURL(const GURL& url) {
     history::HistoryService* service =
-        ios::HistoryServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
     service->AddPage(
         url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
@@ -73,7 +73,7 @@ class HistoryTabHelperTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_;
   base::CancelableTaskTracker tracker_;

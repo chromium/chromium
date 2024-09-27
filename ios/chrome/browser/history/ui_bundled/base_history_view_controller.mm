@@ -338,7 +338,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     [weakSelf dismissContextMenuCoordinator];
   };
   BOOL incognitoEnabled =
-      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+      !IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs());
   [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
                                          action:openInNewIncognitoTabAction
                                           style:UIAlertActionStyleDefault
@@ -427,7 +427,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   if (syncService->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) &&
       queryResultsInfo.sync_timed_out) {
@@ -938,7 +938,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   bool is_ntp =
       currentWebState && currentWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
-      self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
+      self.browser->GetProfile()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_HISTORY_ENTRY);
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
