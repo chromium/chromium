@@ -48,15 +48,9 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-#include "ui/display/screen_base.h"
-#include "ui/display/test/test_screen.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "ui/display/manager/display_manager.h"
-#include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -1132,95 +1126,6 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameGranted) {
 
 INSTANTIATE_TEST_SUITE_P(, AutomaticFullscreenTest, ::testing::Bool());
 
-// Configures a two-display screen environment for testing of multi-screen
-// fullscreen behavior.
-class TestScreenEnvironment {
- public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestScreenEnvironment() = default;
-  ~TestScreenEnvironment() = default;
-#else
-  TestScreenEnvironment() {
-#if BUILDFLAG(IS_MAC)
-    ns_window_faked_for_testing_ = ui::NSWindowFakedForTesting::IsEnabled();
-    // Disable `NSWindowFakedForTesting` to wait for actual async fullscreen on
-    // Mac via `FullscreenWaiter`.
-    ui::NSWindowFakedForTesting::SetEnabled(false);
-#elif !BUILDFLAG(IS_WIN)
-    screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
-                                      display::DisplayList::Type::PRIMARY);
-    display::Screen::SetScreenInstance(&screen_);
-#endif  // BUILDFLAG(IS_MAC)
-  }
-  ~TestScreenEnvironment() {
-#if BUILDFLAG(IS_MAC)
-    ui::NSWindowFakedForTesting::SetEnabled(ns_window_faked_for_testing_);
-#elif !BUILDFLAG(IS_WIN)
-    display::Screen::SetScreenInstance(nullptr);
-#endif  // BUILDFLAG(IS_MAC)
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  TestScreenEnvironment(const TestScreenEnvironment&) = delete;
-  TestScreenEnvironment& operator=(const TestScreenEnvironment&) = delete;
-
-  // Set up a test Screen environment with at least two displays after
-  // `display::Screen` has been initialized.
-  void SetUp() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+0-802x803");
-    secondary_display_id_ =
-        ash::Shell::Get()->display_manager()->GetConnectedDisplayIdList()[1];
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
-             display::Screen::GetScreen()))) {
-      secondary_display_id_ = virtual_display_util_->AddDisplay(
-          display::test::VirtualDisplayUtil::k1024x768);
-    } else {
-      GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
-    }
-#else
-    screen_.display_list().AddDisplay({2, gfx::Rect(901, 0, 802, 803)},
-                                      display::DisplayList::Type::NOT_PRIMARY);
-    secondary_display_id_ = 2;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_GE(display::Screen::GetScreen()->GetNumDisplays(), 2);
-  }
-
-  // Tear down the test Screen environment before `display::Screen` has shut
-  // down.
-  void TearDown() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    virtual_display_util_.reset();
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  }
-
-  void RemoveSecondDisplay() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802");
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    virtual_display_util_->RemoveDisplay(secondary_display_id_);
-#else
-    screen_.display_list().RemoveDisplay(2);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  int64_t secondary_display_id() const { return secondary_display_id_; }
-
- private:
-  int64_t secondary_display_id_ = display::kInvalidDisplayId;
-#if BUILDFLAG(IS_MAC)
-  bool ns_window_faked_for_testing_ = false;
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util_;
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
-  display::ScreenBase screen_;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-};
-
 // Tests fullscreen with multi-screen features from the Window Management API.
 // Sites with the Window Management permission can request fullscreen on a
 // specific screen, move fullscreen windows to different displays, and more.
@@ -1233,28 +1138,50 @@ class TestScreenEnvironment {
 #else
 #define MAYBE_MultiScreenFullscreenControllerInteractiveTest \
   DISABLED_MultiScreenFullscreenControllerInteractiveTest
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
  public:
-  void SetUp() override {
-    // Set a test Screen instance before the browser `SetUp`.
-    test_screen_environment_ = std::make_unique<TestScreenEnvironment>();
-    FullscreenControllerInteractiveTest::SetUp();
+  void SetUpOnMainThread() override {
+    if (!SetUpVirtualDisplays()) {
+      GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
+    }
+    display::Screen* screen = display::Screen::GetScreen();
+    for (const auto& d : screen->GetAllDisplays()) {
+      if (d.id() != screen->GetPrimaryDisplay().id()) {
+        secondary_display_id_ = d.id();
+        break;
+      }
+    }
+#if BUILDFLAG(IS_MAC)
+    ns_window_faked_for_testing_ = ui::NSWindowFakedForTesting::IsEnabled();
+    // Disable `NSWindowFakedForTesting` to wait for actual async fullscreen on
+    // Mac via `FullscreenWaiter`.
+    ui::NSWindowFakedForTesting::SetEnabled(false);
+#endif
   }
 
-  void TearDown() override {
-    FullscreenControllerInteractiveTest::TearDown();
-    // Unset the test Screen instance after the browser `TearDown`.
-    test_screen_environment_.reset();
+  void TearDownOnMainThread() override {
+    virtual_display_util_.reset();
+#if BUILDFLAG(IS_MAC)
+    ui::NSWindowFakedForTesting::SetEnabled(ns_window_faked_for_testing_);
+#endif
   }
 
-  void SetUpOnMainThread() override { test_screen_environment_->SetUp(); }
-
-  void TearDownOnMainThread() override { test_screen_environment_->TearDown(); }
-
-  void UpdateScreenEnvironment() {
-    test_screen_environment_->RemoveSecondDisplay();
+  // Create virtual displays as needed, ensuring 2 displays are available for
+  // testing multi-screen functionality. Not all platforms and OS versions are
+  // supported. Returns false if virtual displays could not be created.
+  bool SetUpVirtualDisplays() {
+    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+      return true;
+    }
+    if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
+             display::Screen::GetScreen()))) {
+      virtual_display_util_->AddDisplay(
+          display::test::VirtualDisplayUtil::k1024x768);
+      return true;
+    }
+    return false;
   }
 
   // Get a new tab that observes the test screen environment and auto-accepts
@@ -1325,10 +1252,9 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
         return !!document.fullscreenElement;
       })();
     )JS";
-    EXPECT_EQ(true,
-              RequestContentFullscreenFromScript(
-                  script, true, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, true,
-                  test_screen_environment_->secondary_display_id()));
+    EXPECT_EQ(true, RequestContentFullscreenFromScript(
+                        script, true, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                        true, secondary_display_id_));
   }
 
   // Execute JS to exit content fullscreen.
@@ -1361,7 +1287,11 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
   }
 
  private:
-  std::unique_ptr<TestScreenEnvironment> test_screen_environment_;
+  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util_;
+  uint64_t secondary_display_id_ = display::kInvalidDisplayId;
+#if BUILDFLAG(IS_MAC)
+  bool ns_window_faked_for_testing_ = false;
+#endif
 };
 
 // TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler

@@ -27,11 +27,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 // Tests popups with multi-screen features from the Window Management API.
@@ -83,11 +78,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
       return true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+100-802x803");
-    return true;
-#else
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       virtual_display_util_->AddDisplay(
@@ -95,7 +85,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
       return true;
     }
     return false;
-#endif
   }
 
  private:
