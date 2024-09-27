@@ -2647,6 +2647,7 @@ Full version information for the fingerprint enum values:
   <int value="1311411160" label="WEC 345"/>
   <int value="1318849875" label="CROS Cr50 0.6.100"/>
   <int value="1332366315" label="CROS Cr50 0.5.151"/>
+  <int value="1335300248" label="CROS Ti50 0.24.120"/>
   <int value="1338970508" label="CROS Ti50 0.24.80"/>
   <int value="1349306733" label="CROS Cr50 0.6.222"/>
   <int value="1353576267" label="IFX 9635 fw 3.18 build 0009"/>
