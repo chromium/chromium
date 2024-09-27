@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Script to sign and notarize the Chrome Enterprise Companion App
+"""Script to sign and optionally notarize the Chrome Enterprise Companion App
 """
 
 import sys
@@ -41,9 +41,10 @@ def main(options):
     if validate(options.input) != 0:
         logging.error('Code signing validation failed')
         return 1
-    if notarize(options.notarization_tool, options.input) != 0:
-        logging.error('Notarization tool failed')
-        return 1
+    if options.notarization_tool is not None:
+        if notarize(options.notarization_tool, options.input) != 0:
+            logging.error('Notarization tool failed')
+            return 1
     copy(options.input, options.output)
 
 
@@ -51,6 +52,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Signing driver for CECA')
     parser.add_argument('--input', type=str, required=True)
     parser.add_argument('--identity', type=str, required=True)
-    parser.add_argument('--notarization-tool', type=str, required=True)
+    parser.add_argument('--notarization-tool', type=str, required=False)
     parser.add_argument('--output', type=str, required=True)
     sys.exit(main(parser.parse_args()))
