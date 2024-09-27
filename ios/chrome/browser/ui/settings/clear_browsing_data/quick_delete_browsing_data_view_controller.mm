@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (UIBarButtonItem*)confirmButton {
   UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CONFIRM)
-              style:UIBarButtonItemStylePlain
+              style:UIBarButtonItemStyleDone
              target:self
              action:@selector(onConfirm:)];
   confirmButton.accessibilityIdentifier =
