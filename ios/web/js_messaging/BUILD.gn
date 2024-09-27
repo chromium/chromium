@@ -120,7 +120,6 @@ source_set("java_script_feature_util") {
     "//ios/web/js_features/scroll_helper",
     "//ios/web/js_features/window_error",
     "//ios/web/navigation:navigation_feature",
-    "//ios/web/navigation:session_restore_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/text_fragments",

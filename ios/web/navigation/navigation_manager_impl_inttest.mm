@@ -5,8 +5,6 @@
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
-#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -114,11 +112,6 @@ TEST_F(NavigationManagerImplTest, MultipleItemRestore) {
 
 // Tests that restoring session replaces existing history in navigation manager.
 TEST_F(NavigationManagerImplTest, RestoreSessionResetsHistory) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kRemoveOldWebStateRestoration},
-      /*disabled_features=*/{});
-
   EXPECT_EQ(-1, navigation_manager()->GetPendingItemIndex());
   EXPECT_EQ(-1, navigation_manager()->GetLastCommittedItemIndex());
 

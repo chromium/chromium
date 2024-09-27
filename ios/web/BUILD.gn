@@ -669,7 +669,6 @@ bundle_data("navigation_resources") {
     "navigation/resources/error_page_injected.html",
     "navigation/resources/error_page_loaded.html",
     "navigation/resources/error_page_reloaded.html",
-    "navigation/resources/restore_session.html",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

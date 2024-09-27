@@ -770,9 +770,7 @@ void NavigationManagerImpl::LoadIfNecessary() {
     Restore(web_view_cache_.GetCurrentItemIndex(),
             web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
-  } else if (!base::FeatureList::IsEnabled(
-                 features::kRemoveOldWebStateRestoration) ||
-             !native_restore_in_progress_) {
+  } else if (!native_restore_in_progress_) {
     delegate_->LoadIfNecessary();
   }
 }
@@ -949,8 +947,7 @@ void NavigationManagerImpl::Restore(
     delegate_->RemoveWebView();
   }
 
-  if (base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration) &&
-      !web_view_cache_.IsAttachedToWebView()) {
+  if (!web_view_cache_.IsAttachedToWebView()) {
     web_view_cache_.ResetToAttached();
   }
 
@@ -964,14 +961,6 @@ void NavigationManagerImpl::Restore(
     AppendSessionDataBlobFetcher(
         base::BindOnce([](NSData* data) { return data; }, synthesized_data),
         SessionDataBlobSource::kSynthesized);
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration)) {
-    DCHECK_EQ(0, GetItemCount());
-    DCHECK_EQ(-1, pending_item_index_);
-    last_committed_item_index_ = -1;
-    UnsafeRestore(last_committed_item_index, std::move(items));
-    return;
   }
 
   native_restore_in_progress_ = true;
@@ -1000,12 +989,6 @@ void NavigationManagerImpl::Restore(
   RestoreItemsState(RestoreItemListType::kBackList, std::move(back_items));
   RestoreItemsState(RestoreItemListType::kForwardList,
                     std::move(forward_items));
-}
-
-void NavigationManagerImpl::AddRestoreCompletionCallback(
-    base::OnceClosure callback) {
-  // TODO:(crbug.com/40276021): Remove with remaining old session restoration.
-  std::move(callback).Run();
 }
 
 NavigationItemImpl*
@@ -1142,72 +1125,6 @@ void NavigationManagerImpl::RestoreItemsState(
   }
 }
 
-// This function restores session history by loading a magic local file
-// (restore_session.html) into the web view. The session history is encoded
-// in the query parameter. When loaded, restore_session.html parses the
-// session history and replays them into the web view using History API.
-void NavigationManagerImpl::UnsafeRestore(
-    int last_committed_item_index,
-    std::vector<std::unique_ptr<NavigationItem>> items) {
-  // TODO(crbug.com/40542962): Retain these original NavigationItems restored
-  // from storage and associate them with new WKBackForwardListItems created
-  // after history restore so information such as scroll position is restored.
-  GURL url;
-  int first_index = -1;
-  wk_navigation_util::CreateRestoreSessionUrl(last_committed_item_index, items,
-                                              &url, &first_index);
-  DCHECK_GE(first_index, 0);
-  DCHECK_LT(base::checked_cast<NSUInteger>(first_index), items.size());
-  DCHECK(url.is_valid());
-
-  WebLoadParams params(url);
-  // It's not clear how this transition type will be used and what's the impact.
-  // For now, use RELOAD because restoring history is kind of like a reload of
-  // the current page.
-  params.transition_type = ui::PAGE_TRANSITION_RELOAD;
-
-  // This pending item will become the first item in the restored history.
-  params.virtual_url = items[first_index]->GetVirtualURL();
-
-  // Grab the title of the first item before `restored_visible_item_` (which may
-  // or may not be the first index) is moved out of `items` below.
-  const std::u16string& firstTitle = items[first_index]->GetTitle();
-
-  // Ordering is important. Cache the visible item of the restored session
-  // before starting the new navigation, which may trigger client lookup of
-  // visible item. The visible item of the restored session is the last
-  // committed item, because a restored session has no pending item.
-  if (last_committed_item_index > -1)
-    restored_visible_item_ = std::move(items[last_committed_item_index]);
-
-  std::vector<std::unique_ptr<NavigationItem>> back_items;
-  for (int index = 0; index < last_committed_item_index; index++) {
-    back_items.push_back(std::move(items[index]));
-  }
-
-  std::vector<std::unique_ptr<NavigationItem>> forward_items;
-  for (size_t index = last_committed_item_index + 1; index < items.size();
-       index++) {
-    forward_items.push_back(std::move(items[index]));
-  }
-
-  AddRestoreCompletionCallback(base::BindOnce(
-      &NavigationManagerImpl::RestoreItemsState, base::Unretained(this),
-      RestoreItemListType::kBackList, std::move(back_items)));
-  AddRestoreCompletionCallback(base::BindOnce(
-      &NavigationManagerImpl::RestoreItemsState, base::Unretained(this),
-      RestoreItemListType::kForwardList, std::move(forward_items)));
-
-  LoadURLWithParams(params);
-
-  // On restore prime the first navigation item with the title.  The remaining
-  // navItem titles will be set from the WKBackForwardListItem title value.
-  NavigationItemImpl* pendingItem = GetPendingItemInCurrentOrRestoredSession();
-  if (pendingItem) {
-    pendingItem->SetTitle(firstTitle);
-  }
-}
-
 void NavigationManagerImpl::WillRestore(size_t item_count) {
   // It should be uncommon for the user to have more than 100 items in their
   // session, so bucketing 100+ logs together is fine.
@@ -1341,11 +1258,6 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
 
 void NavigationManagerImpl::FinalizeSessionRestore() {
   session_data_blob_fetchers_.clear();
-
-  for (base::OnceClosure& callback : restore_session_completion_callbacks_) {
-    std::move(callback).Run();
-  }
-  restore_session_completion_callbacks_.clear();
   LoadIfNecessary();
 }
 

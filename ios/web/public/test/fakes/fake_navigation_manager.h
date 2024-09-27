@@ -46,7 +46,6 @@ class FakeNavigationManager : public NavigationManager {
   std::vector<NavigationItem*> GetForwardItems() const override;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) override;
-  void AddRestoreCompletionCallback(base::OnceClosure callback) override;
 
   // Setters for test data.
   // Sets a value for last committed item that will be returned by

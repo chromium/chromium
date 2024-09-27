@@ -73,82 +73,17 @@ bool URLNeedsUserAgentType(const GURL& url) {
   return true;
 }
 
-GURL GetRestoreSessionBaseUrl() {
-  std::string restore_session_resource_path = base::SysNSStringToUTF8(
-      [base::apple::FrameworkBundle() pathForResource:@"restore_session"
-                                               ofType:@"html"]);
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(url::kFileScheme);
-  replacements.SetPathStr(restore_session_resource_path);
-  return GURL(url::kAboutBlankURL).ReplaceComponents(replacements);
-}
-
-void CreateRestoreSessionUrl(
-    int last_committed_item_index,
-    const std::vector<std::unique_ptr<NavigationItem>>& items,
-    GURL* url,
-    int* first_index) {
-  DCHECK(last_committed_item_index >= 0 &&
-         last_committed_item_index < static_cast<int>(items.size()));
-
-  int first_restored_item_offset = 0;
-  int new_size = 0;
-  int new_last_committed_item_index =
-      GetSafeItemRange(last_committed_item_index, items.size(),
-                       &first_restored_item_offset, &new_size);
-
-  // The URLs and titles of the restored entries are stored in two separate
-  // lists instead of a single list of objects to reduce the size of the JSON
-  // string to be included in the query parameter.
-  base::Value::List restored_urls;
-  base::Value::List restored_titles;
-  for (int i = first_restored_item_offset;
-       i < new_size + first_restored_item_offset; i++) {
-    NavigationItem* item = items[i].get();
-    restored_urls.Append(item->GetURL().spec());
-    restored_titles.Append(item->GetTitle());
-  }
-  base::Value::Dict session;
-  int committed_item_offset = new_last_committed_item_index + 1 - new_size;
-  session.Set("offset", committed_item_offset);
-  session.Set("urls", std::move(restored_urls));
-  session.Set("titles", std::move(restored_titles));
-
-  std::string session_json;
-  base::JSONWriter::Write(session, &session_json);
-  std::string ref =
-      kRestoreSessionSessionHashPrefix +
-      base::EscapeQueryParamValue(session_json, false /* use_plus */);
-  GURL::Replacements replacements;
-  replacements.SetRefStr(ref);
-  *first_index = first_restored_item_offset;
-  *url = GetRestoreSessionBaseUrl().ReplaceComponents(replacements);
-}
-
 bool IsRestoreSessionUrl(const GURL& url) {
-  return url.SchemeIsFile() && url.path() == GetRestoreSessionBaseUrl().path();
+  return false;
 }
 
 bool IsRestoreSessionUrl(NSURL* url) {
-  return [url.scheme isEqualToString:@"file"] &&
-         [url.path isEqualToString:base::SysUTF8ToNSString(
-                                       GetRestoreSessionBaseUrl().path())];
+  return false;
 }
 
 bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
-  DCHECK(IsRestoreSessionUrl(restore_session_url))
-      << restore_session_url.possibly_invalid_spec()
-      << " is not a restore session URL";
-  std::string target_url_spec;
-  bool success = base::StartsWith(restore_session_url.ref(),
-                                  kRestoreSessionTargetUrlHashPrefix);
-  if (success) {
-    std::string encoded_target_url = restore_session_url.ref().substr(
-        strlen(kRestoreSessionTargetUrlHashPrefix));
-    *target_url = GURL(base::UnescapeBinaryURLComponent(encoded_target_url));
-  }
-
-  return success;
+  // TODO:(crbug.com/40276021): Cleanup this unused function.
+  return false;
 }
 
 }  // namespace wk_navigation_util

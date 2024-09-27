@@ -246,7 +246,6 @@ class NavigationManagerImpl final : public NavigationManager {
   std::vector<NavigationItem*> GetForwardItems() const final;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) final;
-  void AddRestoreCompletionCallback(base::OnceClosure callback) final;
 
   // Implementation for corresponding NavigationManager getters.
   NavigationItemImpl* GetPendingItemInCurrentOrRestoredSession() const;
@@ -352,15 +351,6 @@ class NavigationManagerImpl final : public NavigationManager {
   void RestoreItemsState(
       RestoreItemListType list_type,
       std::vector<std::unique_ptr<NavigationItem>> items_restored);
-
-  // Restores the specified navigation session in the current web view. This
-  // differs from Restore() in that it doesn't reset the current navigation
-  // history to empty before restoring. It simply appends the restored session
-  // after the current item, effectively replacing only the forward history.
-  // `last_committed_item_index` is the 0-based index into `items` that the web
-  // view should be navigated to at the end of the restoration.
-  void UnsafeRestore(int last_committed_item_index,
-                     std::vector<std::unique_ptr<NavigationItem>> items);
 
   // Must be called by subclasses before restoring `item_count` navigation
   // items.
@@ -471,11 +461,6 @@ class NavigationManagerImpl final : public NavigationManager {
   // clients of this navigation manager gets sane values for visible title and
   // URL.
   std::unique_ptr<NavigationItem> restored_visible_item_;
-
-  // Non-empty only during the session restoration. The callbacks are
-  // registered in AddRestoreCompletionCallback() and are executed in
-  // FinalizeSessionRestore().
-  std::vector<base::OnceClosure> restore_session_completion_callbacks_;
 
   // Stores the different WKWebView session data blob loaders. Loaders are
   // tried in the order they are registered, and the native session loading

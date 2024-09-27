@@ -157,11 +157,6 @@ void FakeNavigationManager::Restore(
   NOTREACHED_IN_MIGRATION();
 }
 
-void FakeNavigationManager::AddRestoreCompletionCallback(
-    base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 // Adds a new navigation item of `transition` type at the end of this
 // navigation manager.
 void FakeNavigationManager::AddItem(const GURL& url,

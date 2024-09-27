@@ -20,7 +20,6 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
-#import "ios/web/navigation/session_restore_java_script_feature.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
@@ -217,8 +216,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
        web_frames_manager_features) {
     feature->ConfigureHandlers(user_content_controller);
   }
-  SessionRestoreJavaScriptFeature::FromBrowserState(browser_state_)
-      ->ConfigureHandlers(user_content_controller);
 }
 
 void WKWebViewConfigurationProvider::Purge() {

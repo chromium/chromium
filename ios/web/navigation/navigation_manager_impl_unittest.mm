@@ -44,8 +44,8 @@
 #import "url/scheme_host_port.h"
 #import "url/url_util.h"
 
+using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 namespace {
@@ -2880,13 +2880,13 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
   NavigationManagerImpl& navigation_manager =
       web_state->GetNavigationManagerImpl();
 
-  base::RunLoop run_loop;
   navigation_manager.RestoreFromProto(storage);
-  navigation_manager.AddRestoreCompletionCallback(run_loop.QuitClosure());
-  run_loop.Run();
 
   const int urls_count = static_cast<int>(std::size(kTestURLs));
-  ASSERT_EQ(navigation_manager.GetItemCount(), urls_count);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == urls_count;
+  }));
+
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
 
   for (int index = 0; index < urls_count; ++index) {
@@ -2911,12 +2911,11 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_Empty) {
   NavigationManagerImpl& navigation_manager =
       web_state->GetNavigationManagerImpl();
 
-  base::RunLoop run_loop;
   navigation_manager.RestoreFromProto(storage);
-  navigation_manager.AddRestoreCompletionCallback(run_loop.QuitClosure());
-  run_loop.Run();
 
-  ASSERT_EQ(navigation_manager.GetItemCount(), 0);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == 0;
+  }));
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), -1);
 }
 
@@ -2941,13 +2940,12 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   NavigationManagerImpl& navigation_manager =
       web_state->GetNavigationManagerImpl();
 
-  base::RunLoop run_loop;
   navigation_manager.RestoreFromProto(storage);
-  navigation_manager.AddRestoreCompletionCallback(run_loop.QuitClosure());
-  run_loop.Run();
 
   const int urls_count = static_cast<int>(std::size(kTestURLs));
-  ASSERT_EQ(navigation_manager.GetItemCount(), urls_count);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == urls_count;
+  }));
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), 0);
 
   for (int index = 0; index < urls_count; ++index) {
@@ -3006,13 +3004,12 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
   NavigationManagerImpl& navigation_manager =
       web_state->GetNavigationManagerImpl();
 
-  base::RunLoop run_loop;
   navigation_manager.RestoreFromProto(storage.navigation());
-  navigation_manager.AddRestoreCompletionCallback(run_loop.QuitClosure());
-  run_loop.Run();
 
   const int urls_count = static_cast<int>(std::size(kTestURLs));
-  ASSERT_EQ(navigation_manager.GetItemCount(), urls_count);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == urls_count;
+  }));
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
 
   for (int index = 0; index < urls_count; ++index) {
