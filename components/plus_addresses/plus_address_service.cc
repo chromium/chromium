@@ -307,26 +307,48 @@ void PlusAddressService::GetAffiliatedPlusAddresses(
           std::move(callback)));
 }
 
-std::vector<Suggestion> PlusAddressService::GetSuggestionsFromPlusAddresses(
-    const std::vector<std::string>& plus_addresses,
-    const url::Origin& origin,
+void PlusAddressService::GetSuggestions(
+    const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
-    AutofillSuggestionTriggerSource trigger_source) {
-  if (!IsPlusAddressFillingEnabled(origin)) {
-    return {};
+    AutofillSuggestionTriggerSource trigger_source,
+    GetSuggestionsCallback callback) {
+  if (!IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
+    std::move(callback).Run({});
+    return;
   }
 
+  plus_address_match_helper_.GetAffiliatedPlusProfiles(
+      OriginToFacet(last_committed_primary_main_frame_origin),
+      base::BindOnce(&PlusAddressService::OnGetAffiliatedPlusProfiles,
+                     weak_factory_.GetWeakPtr(),
+                     last_committed_primary_main_frame_origin,
+                     focused_form_classification, focused_field, trigger_source,
+                     is_off_the_record, std::move(callback)));
+}
+
+Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
+  return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
+}
+
+void PlusAddressService::OnGetAffiliatedPlusProfiles(
+    url::Origin origin,
+    const PasswordFormClassification& focused_form_classification,
+    const FormFieldData& focused_field,
+    AutofillSuggestionTriggerSource trigger_source,
+    bool is_off_the_record,
+    GetSuggestionsCallback callback,
+    std::vector<PlusProfile> affiliated_profiles) {
   const bool is_creation_enabled =
       IsPlusAddressCreationEnabled(origin, is_off_the_record);
   std::vector<Suggestion> suggestions =
       PlusAddressSuggestionGenerator(
           &setting_service_.get(), plus_address_allocator_.get(),
           std::move(origin), GetPrimaryEmail().value_or(""))
-          .GetSuggestions(plus_addresses, is_creation_enabled,
-                          focused_form_classification, focused_field,
-                          trigger_source);
+          .GetSuggestions(is_creation_enabled, focused_form_classification,
+                          focused_field, trigger_source,
+                          std::move(affiliated_profiles));
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 
@@ -339,11 +361,7 @@ std::vector<Suggestion> PlusAddressService::GetSuggestionsFromPlusAddresses(
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
   }
-  return suggestions;
-}
-
-Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
-  return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
+  std::move(callback).Run({std::move(suggestions)});
 }
 
 void PlusAddressService::ReservePlusAddress(

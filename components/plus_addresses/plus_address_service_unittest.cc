@@ -181,12 +181,13 @@ class PlusAddressServiceTest : public ::testing::Test {
     InitService();
   }
 
-  std::vector<Suggestion> FetchPlusAddressSuggestions(
+  testing::AssertionResult ExpectServiceToReturnSuggestions(
       const url::Origin& origin,
       bool is_off_the_record,
       const PasswordFormClassification& focused_form_classification,
       const FormFieldData& focused_field,
-      autofill::AutofillSuggestionTriggerSource trigger_source) {
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      const auto& matcher) {
     // Empty psl extension by default.
     ON_CALL(affiliation_service(), GetPSLExtensions)
         .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
@@ -198,21 +199,19 @@ class PlusAddressServiceTest : public ::testing::Test {
         .WillByDefault(RunOnceCallback<1>(
             std::vector<affiliations::GroupedFacets>{group}));
 
-    base::MockCallback<base::OnceCallback<void(std::vector<std::string>)>>
-        callback;
-    std::vector<std::string> affiliated_plus_addresses;
-    base::RunLoop run_loop;
+    base::MockCallback<PlusAddressService::GetSuggestionsCallback> callback;
+    int calls = 0;
     ON_CALL(callback, Run)
-        .WillByDefault([&](std::vector<std::string> plus_addresses) {
-          affiliated_plus_addresses = std::move(plus_addresses);
-          run_loop.Quit();
+        .WillByDefault([&](std::vector<autofill::Suggestion> suggestions) {
+          EXPECT_THAT(suggestions, matcher);
+          ++calls;
         });
-    service().GetAffiliatedPlusAddresses(origin, callback.Get());
-    run_loop.Quit();
-
-    return service().GetSuggestionsFromPlusAddresses(
-        affiliated_plus_addresses, origin, is_off_the_record,
-        focused_form_classification, focused_field, trigger_source);
+    service().GetSuggestions(origin, is_off_the_record,
+                             focused_form_classification, focused_field,
+                             trigger_source, callback.Get());
+    return calls == 1
+               ? testing::AssertionSuccess()
+               : (testing::AssertionFailure() << "Error fetching suggestions.");
   }
 
  protected:
@@ -1532,11 +1531,11 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
 
   // We offer filling if the field is empty.
   FormFieldData focused_field;
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 1);
@@ -1544,11 +1543,11 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // If the user types a letter and it matches the plus address (after
   // normalization), the plus address continues to be offered.
   focused_field.set_value(u"P");
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
@@ -1556,11 +1555,10 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // If the value does not match the prefix of the plus address, nothing is
   // shown.
   focused_field.set_value(u"pp");
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
@@ -1577,12 +1575,11 @@ TEST_F(PlusAddressSuggestionsTest,
 
   // We offer filling if the field is empty.
   FormFieldData focused_field;
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 1);
@@ -1590,12 +1587,11 @@ TEST_F(PlusAddressSuggestionsTest,
   // We also offer filling if the field is not empty and the prefix does not
   // match the address.
   focused_field.set_value(u"pp");
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
@@ -1609,22 +1605,21 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
 
   // We offer creation if the field is empty.
   FormFieldData focused_field;
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleCreatePlusAddressSuggestion()));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
 
   // If the field value is not empty, nothing is shown.
   focused_field.set_value(u"some text");
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
@@ -1639,23 +1634,21 @@ TEST_F(PlusAddressSuggestionsTest,
   const auto origin = url::Origin::Create(GURL("https://foo.com"));
 
   FormFieldData focused_field;
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
+      IsSingleCreatePlusAddressSuggestion()));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
 
   focused_field.set_value(u"some text");
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
+      IsSingleCreatePlusAddressSuggestion()));
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 2);
@@ -1666,12 +1659,11 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kPlusAddressesEnabled);
 
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  url::Origin::Create(GURL("https://foo.com")),
-                  /*is_off_the_record=*/false, PasswordFormClassification(),
-                  FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      url::Origin::Create(GURL("https://foo.com")),
+      /*is_off_the_record=*/false, PasswordFormClassification(),
+      FormFieldData(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
 }
 
 // Tests that the only password form on which create suggestions are offered on
@@ -1685,37 +1677,41 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =
-      [&](PasswordFormClassification::Type type) {
+      [&](PasswordFormClassification::Type type, const auto& matcher) {
         FormFieldData focused_field;
         focused_field.set_host_frame(autofill::test::MakeLocalFrameToken());
         focused_field.set_renderer_id(autofill::test::MakeFieldRendererId());
         auto form_classification = PasswordFormClassification{
             .type = type, .username_field = focused_field.global_id()};
-        return FetchPlusAddressSuggestions(
+        return ExpectServiceToReturnSuggestions(
             origin,
             /*is_off_the_record=*/false, form_classification, focused_field,
-            AutofillSuggestionTriggerSource::kFormControlElementClicked);
+            AutofillSuggestionTriggerSource::kFormControlElementClicked,
+            matcher);
       };
 
   using enum PasswordFormClassification::Type;
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(get_suggestions_for_form_type(kLoginForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kChangePasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kResetPasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kSingleUsernameForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleCreatePlusAddressSuggestion()));
 
   service().SavePlusProfile(profile);
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
 }
 
 // Tests that creation is offered on all password forms if the focused field is
@@ -1729,7 +1725,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsNonUsernameField) {
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =
-      [&](PasswordFormClassification::Type type) {
+      [&](PasswordFormClassification::Type type, const auto& matcher) {
         FormFieldData focused_field;
         focused_field.set_host_frame(autofill::test::MakeLocalFrameToken());
         focused_field.set_renderer_id(autofill::test::MakeFieldRendererId());
@@ -1737,23 +1733,24 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsNonUsernameField) {
             .type = type, .username_field = focused_field.global_id()};
         focused_field.set_renderer_id(
             autofill::FieldRendererId(focused_field.renderer_id().value() + 1));
-        return FetchPlusAddressSuggestions(
+        return ExpectServiceToReturnSuggestions(
             origin,
             /*is_off_the_record=*/false, form_classification, focused_field,
-            AutofillSuggestionTriggerSource::kFormControlElementClicked);
+            AutofillSuggestionTriggerSource::kFormControlElementClicked,
+            matcher);
       };
 
   using enum PasswordFormClassification::Type;
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleCreatePlusAddressSuggestion()));
 }
 
 // Tests that plus address creation is offered on signup forms and single
@@ -1767,37 +1764,41 @@ TEST_F(PlusAddressSuggestionsTest,
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =
-      [&](PasswordFormClassification::Type type) {
+      [&](PasswordFormClassification::Type type, const auto& matcher) {
         FormFieldData focused_field;
         focused_field.set_host_frame(autofill::test::MakeLocalFrameToken());
         focused_field.set_renderer_id(autofill::test::MakeFieldRendererId());
         auto form_classification = PasswordFormClassification{
             .type = type, .username_field = focused_field.global_id()};
-        return FetchPlusAddressSuggestions(
+        return ExpectServiceToReturnSuggestions(
             origin,
             /*is_off_the_record=*/false, form_classification, focused_field,
-            AutofillSuggestionTriggerSource::kFormControlElementClicked);
+            AutofillSuggestionTriggerSource::kFormControlElementClicked,
+            matcher);
       };
   using enum PasswordFormClassification::Type;
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(get_suggestions_for_form_type(kLoginForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kChangePasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kResetPasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleCreatePlusAddressSuggestion()));
 
   service().SavePlusProfile(profile);
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
 }
 
 // Tests that create suggestions are offered regardless of form type if the
@@ -1807,41 +1808,45 @@ TEST_F(PlusAddressSuggestionsTest,
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =
-      [&](PasswordFormClassification::Type type) {
+      [&](PasswordFormClassification::Type type, const auto& matcher) {
         FormFieldData focused_field;
         focused_field.set_host_frame(autofill::test::MakeLocalFrameToken());
         focused_field.set_renderer_id(autofill::test::MakeFieldRendererId());
         auto form_classification = PasswordFormClassification{
             .type = type, .username_field = focused_field.global_id()};
-        return FetchPlusAddressSuggestions(
+        return ExpectServiceToReturnSuggestions(
             origin,
             /*is_off_the_record=*/false, form_classification, focused_field,
-            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
+            matcher);
       };
 
   using enum PasswordFormClassification::Type;
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleCreatePlusAddressSuggestion());
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm, IsSingleCreatePlusAddressSuggestion()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleCreatePlusAddressSuggestion()));
 
   service().SavePlusProfile(profile);
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm,
+      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
 }
 
 // Tests the content of the "Manage plus addresses..." suggestion.
@@ -2101,13 +2106,13 @@ TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin,
-                  /*is_off_the_record=*/false, PasswordFormClassification(),
-                  FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              // There are no PLS, group or exact matches.
-              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin,
+      /*is_off_the_record=*/false, PasswordFormClassification(),
+      FormFieldData(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      // There are no PLS, group or exact matches.
+      IsSingleCreatePlusAddressSuggestion()));
 }
 
 // Verifies that affiliated plus profiles are returned.

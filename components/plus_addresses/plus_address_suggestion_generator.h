@@ -42,11 +42,11 @@ class PlusAddressSuggestionGenerator final {
   // are assumed to be the plus profiles affiliated with the primary main frame
   // origin.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
-      const std::vector<std::string>& affiliated_plus_addresses,
       bool is_creation_enabled,
       const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
-      autofill::AutofillSuggestionTriggerSource trigger_source);
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      std::vector<PlusProfile> affiliated_profiles);
 
   // Updates `suggestion` with a refreshed plus address by setting a new
   // payload.

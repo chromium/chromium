@@ -621,14 +621,13 @@ class BrowserAutofillManager : public AutofillManager {
   // suggestion surfaces accordingly (e.g. Fast Checkout,
   // SingleFieldFormFiller(s), address and credit card popups). Suggestion flows
   // that handle their own UI flow (e.g. FastCheckout, TTF,
-  // SingleFieldFormFiller) are triggered from within this function. The
-  // function requires the list of `plus_addresses` as these can influence how
-  // address profile suggestions are shown. Other flows that rely on the
-  // `external_delegate_` to show their suggestions, pass the suggestions list
-  // to the delegate on `OnGenerateSuggestionsComplete` and request them to be
-  // shown (via `show_suggestions`). Note that the `callback` is always called
-  // regardless of the suggestion surface. The only case when it's not called is
-  // when suggestions are suppressed (See `ShouldSuppressSuggestions`).
+  // SingleFieldFormFiller) are triggered from within this function. Other flows
+  // that rely on the `external_delegate_` to show their suggestions, pass the
+  // suggestions list to the delegate on `OnGenerateSuggestionsComplete` and
+  // request them to be shown (via `show_suggestions`). Note that the `callback`
+  // is always called regardless of the suggestion surface. The only case when
+  // it's not called is when suggestions are suppressed (See
+  // `ShouldSuppressSuggestions`).
   void GenerateSuggestionsAndMaybeShowUI(
       const FormData& form,
       const FormStructure* form_structure,
@@ -636,8 +635,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext& context,
-      OnGenerateSuggestionsCallback callback,
-      std::vector<std::string> plus_addresses);
+      OnGenerateSuggestionsCallback callback);
 
   // This method
   // 1) is an event handler called when the
@@ -694,17 +692,14 @@ class BrowserAutofillManager : public AutofillManager {
       std::optional<autofill_metrics::SuggestionRankingContext>
           ranking_context);
 
-  // Combines plus address and address profile suggestions into a single list,
-  // prioritizing plus address suggestions first. Runs `callback` with the
-  // resulting list of suggestions.
-  void MixPlusAddressAndAddressSuggestions(
-      std::vector<Suggestion> plus_address_suggestions,
-      std::vector<Suggestion> address_suggestions,
+  void OnGetPlusAddressSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
       PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
-      OnGenerateSuggestionsCallback callback);
+      std::vector<Suggestion> address_suggestions,
+      OnGenerateSuggestionsCallback callback,
+      std::vector<Suggestion> suggestions);
 
   // For each submitted field in the |form_structure|, it determines whether
   // |ADDRESS_HOME_STATE| is a possible matching type.

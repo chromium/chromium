@@ -104,13 +104,13 @@ class PlusAddressService : public KeyedService,
   void GetAffiliatedPlusAddresses(
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) override;
-  std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
-      const std::vector<std::string>& plus_addresses,
-      const url::Origin& origin,
+  void GetSuggestions(
+      const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
       const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      GetSuggestionsCallback callback) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
   void OnPlusAddressSuggestionShown(
@@ -243,6 +243,19 @@ class PlusAddressService : public KeyedService,
   // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
+
+  // Called when PlusAddressService::OnGetAffiliatedPlusProfiles is resolved.
+  // Builds a list of suggestions from the list of `affiliated_profiles` and
+  // returns it via the `callback`.
+  // TODO(crbug.com/340494671): Move to the unnamed namespace.
+  void OnGetAffiliatedPlusProfiles(
+      url::Origin origin,
+      const autofill::PasswordFormClassification& focused_form_classification,
+      const autofill::FormFieldData& focused_field,
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      bool is_off_the_record,
+      GetSuggestionsCallback callback,
+      std::vector<PlusProfile> affiliated_profiles);
 
   // Reacts to the server response for confirming a plus address from an inline
   // suggestion.

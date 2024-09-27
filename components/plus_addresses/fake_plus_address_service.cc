@@ -41,14 +41,13 @@ FakePlusAddressService::FakePlusAddressService(
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 
-std::vector<autofill::Suggestion>
-FakePlusAddressService::GetSuggestionsFromPlusAddresses(
-    const std::vector<std::string>& plus_addresses,
+void FakePlusAddressService::GetSuggestions(
     const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
     const autofill::PasswordFormClassification& focused_form_classification,
     const autofill::FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
+    autofill::AutofillSuggestionTriggerSource trigger_source,
+    GetSuggestionsCallback callback) {
   if (IsPlusAddressCreationEnabled(last_committed_primary_main_frame_origin,
                                    is_off_the_record)) {
     Suggestion suggestion(
@@ -59,7 +58,8 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
     suggestion.icon = Suggestion::Icon::kPlusAddress;
     suggestion.feature_for_iph =
         &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
-    return {suggestion};
+    std::move(callback).Run({suggestion});
+    return;
   }
 
   if (IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
@@ -71,9 +71,8 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
           IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
     }
     suggestion.icon = Suggestion::Icon::kPlusAddress;
-    return {suggestion};
+    std::move(callback).Run({suggestion});
   }
-  return {};
 }
 
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
