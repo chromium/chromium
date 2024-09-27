@@ -133,7 +133,8 @@ BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
 
 BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
              "CloseSignTabsFromReauthenticationInterstitial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             // Enabled by default, flag meant to work as a kill switch.
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
