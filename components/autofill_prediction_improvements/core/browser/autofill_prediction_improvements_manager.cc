@@ -74,14 +74,15 @@ autofill::Suggestion CreateChildSuggestionForFilling(
   return child_suggestion;
 }
 
-// Creates the suggestion shown while improved predictions are loaded which
-// shows an animated gradient.
-std::vector<autofill::Suggestion> CreateLoadingSuggestion() {
+// Creates a spinner-like suggestion shown while improved predictions are
+// loaded.
+autofill::Suggestion CreateLoadingSuggestion() {
+  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
   loading_suggestion.icon = autofill::Suggestion::Icon::kAccount;
   loading_suggestion.is_acceptable = false;
-  return {loading_suggestion};
+  return loading_suggestion;
 }
 
 autofill::Suggestion CreateFeedbackSuggestion() {
@@ -94,9 +95,21 @@ autofill::Suggestion CreateFeedbackSuggestion() {
   return feedback_suggestion;
 }
 
+// Creates a suggestion containing more details about prediction improvements
+// and the suggestions it generates.
+autofill::Suggestion CreateDetailsSuggestion() {
+  autofill::Suggestion details_suggestion(
+      autofill::SuggestionType::kPredictionImprovementsDetails);
+  details_suggestion.is_acceptable = false;
+  details_suggestion.highlight_on_select = false;
+  details_suggestion.voice_over = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
+  return details_suggestion;
+}
+
 // Creates a suggestion shown when retrieving prediction improvements wasn't
 // successful.
-std::vector<autofill::Suggestion> CreateErrorSuggestion() {
+std::vector<autofill::Suggestion> CreateErrorSuggestions() {
   autofill::Suggestion error_suggestion(
       autofill::SuggestionType::kPredictionImprovementsError);
   error_suggestion.main_text = autofill::Suggestion::Text(
@@ -106,7 +119,9 @@ std::vector<autofill::Suggestion> CreateErrorSuggestion() {
       autofill::Suggestion::Text::ShouldTruncate(true));
   error_suggestion.highlight_on_select = false;
   error_suggestion.is_acceptable = false;
-  return {error_suggestion, CreateFeedbackSuggestion()};
+  return {error_suggestion,
+          autofill::Suggestion(autofill::SuggestionType::kSeparator),
+          CreateDetailsSuggestion(), CreateFeedbackSuggestion()};
 }
 
 }  // namespace
@@ -224,6 +239,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
                              address_suggestions.begin(),
                              address_suggestions.end());
   filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
+  filling_suggestions.emplace_back(CreateDetailsSuggestion());
   filling_suggestions.emplace_back(CreateFeedbackSuggestion());
   return filling_suggestions;
 }
@@ -238,15 +254,7 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
       autofill::SuggestionType::kRetrievePredictionImprovements);
   retrieve_suggestion.icon = autofill::Suggestion::Icon::kSettings;
   suggestions.emplace_back(retrieve_suggestion);
-
-  autofill::Suggestion details_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsDetails);
-  details_suggestion.is_acceptable = false;
-  details_suggestion.highlight_on_select = false;
-  details_suggestion.voice_over = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
-  suggestions.emplace_back(details_suggestion);
-
+  suggestions.emplace_back(CreateDetailsSuggestion());
   return suggestions;
 }
 
@@ -295,7 +303,7 @@ void AutofillPredictionImprovementsManager::
         const autofill::FormData& form,
         const autofill::FormFieldData& trigger_field) {
   if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
-    UpdateSuggestions(CreateErrorSuggestion());
+    UpdateSuggestions(CreateErrorSuggestions());
     return;
   }
   client_->GetAXTree(
@@ -336,7 +344,7 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
                 CreateFillingSuggestions(trigger_field, address_suggestions_))
           : base::BindRepeating(
                 &AutofillPredictionImprovementsManager::UpdateSuggestions,
-                weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestion()));
+                weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
@@ -393,7 +401,7 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
     UpdateSuggestionsCallback update_suggestions_callback) {
   Reset();
   update_suggestions_callback_ = std::move(update_suggestions_callback);
-  UpdateSuggestions(CreateLoadingSuggestion());
+  UpdateSuggestions({CreateLoadingSuggestion()});
   ExtractPredictionImprovementsForFormFields(form, trigger_field);
 }
 

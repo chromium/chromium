@@ -249,6 +249,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
       filling_suggestion,
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
   const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
@@ -333,6 +334,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kManageAddress),
                   HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -354,6 +356,7 @@ TEST_F(
       address_suggestions,
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -588,6 +591,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -620,6 +625,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -676,6 +683,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(
       error_suggestion,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -711,6 +720,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
