@@ -223,8 +223,8 @@ TEST(HttpUtilTest, HeadersIterator_Reset) {
 TEST(HttpUtilTest, ValuesIterator) {
   std::string values = " must-revalidate,   no-cache=\"foo, bar\"\t, private ";
 
-  HttpUtil::ValuesIterator it(values.begin(), values.end(), ',',
-                              true /* ignore_empty_values */);
+  HttpUtil::ValuesIterator it(values, ',',
+                              /*ignore_empty_values=*/true);
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ(std::string("must-revalidate"), it.value());
@@ -241,14 +241,13 @@ TEST(HttpUtilTest, ValuesIterator) {
 TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
   std::string values = ", foopy , \t ,,,";
 
-  HttpUtil::ValuesIterator it(values.begin(), values.end(), ',',
-                              true /* ignore_empty_values */);
+  HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ(std::string("foopy"), it.value());
   EXPECT_FALSE(it.GetNext());
 
-  HttpUtil::ValuesIterator it_with_empty_values(
-      values.begin(), values.end(), ',', false /* ignore_empty_values */);
+  HttpUtil::ValuesIterator it_with_empty_values(values, ',',
+                                                /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ(std::string(""), it_with_empty_values.value());
 
@@ -273,12 +272,11 @@ TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
 TEST(HttpUtilTest, ValuesIterator_Blanks) {
   std::string values = " \t ";
 
-  HttpUtil::ValuesIterator it(values.begin(), values.end(), ',',
-                              true /* ignore_empty_values */);
+  HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
   EXPECT_FALSE(it.GetNext());
 
-  HttpUtil::ValuesIterator it_with_empty_values(
-      values.begin(), values.end(), ',', false /* ignore_empty_values */);
+  HttpUtil::ValuesIterator it_with_empty_values(values, ',',
+                                                /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ(std::string(""), it_with_empty_values.value());
   EXPECT_FALSE(it_with_empty_values.GetNext());
@@ -1213,22 +1211,19 @@ void CheckCurrentNameValuePair(HttpUtil::NameValuePairsIterator* parser,
     return;
   }
 
-  // Let's make sure that these never change (i.e., when a quoted value is
+  // Let's make sure that this never changes (i.e., when a quoted value is
   // unquoted, it should be cached on the first calls and not regenerated
   // later).
-  std::string::const_iterator first_value_begin = parser->value_begin();
-  std::string::const_iterator first_value_end = parser->value_end();
+  const std::string_view first_value = parser->value_piece();
 
-  ASSERT_EQ(expected_name, std::string(parser->name_begin(),
-                                       parser->name_end()));
   ASSERT_EQ(expected_name, parser->name());
-  ASSERT_EQ(expected_value, std::string(parser->value_begin(),
-                                        parser->value_end()));
+  ASSERT_EQ(expected_name, parser->name_piece());
   ASSERT_EQ(expected_value, parser->value());
+  ASSERT_EQ(expected_value, parser->value_piece());
 
   // Make sure they didn't/don't change.
-  ASSERT_TRUE(first_value_begin == parser->value_begin());
-  ASSERT_TRUE(first_value_end == parser->value_end());
+  ASSERT_TRUE(first_value.data() == parser->value_piece().data());
+  ASSERT_TRUE(first_value.length() == parser->value_piece().length());
 }
 
 void CheckNextNameValuePair(HttpUtil::NameValuePairsIterator* parser,

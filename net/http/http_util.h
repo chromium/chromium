@@ -359,10 +359,10 @@ class NET_EXPORT HttpUtil {
   // quoted string.
   class NET_EXPORT ValuesIterator {
    public:
-    ValuesIterator(std::string::const_iterator values_begin,
-                   std::string::const_iterator values_end,
+    ValuesIterator(std::string_view values,
                    char delimiter,
                    bool ignore_empty_values = true);
+
     ValuesIterator(const ValuesIterator& other);
     ~ValuesIterator();
 
@@ -370,23 +370,16 @@ class NET_EXPORT HttpUtil {
     // is a next value.  Use value* methods to access the resultant value.
     bool GetNext();
 
-    std::string::const_iterator value_begin() const {
-      return value_begin_;
+    std::string_view::const_iterator value_begin() const {
+      return value_.begin();
     }
-    std::string::const_iterator value_end() const {
-      return value_end_;
-    }
-    std::string value() const {
-      return std::string(value_begin_, value_end_);
-    }
-    std::string_view value_piece() const {
-      return base::MakeStringPiece(value_begin_, value_end_);
-    }
+    std::string_view::const_iterator value_end() const { return value_.end(); }
+    std::string value() const { return std::string(value_); }
+    std::string_view value_piece() const { return value_; }
 
    private:
-    base::StringTokenizer values_;
-    std::string::const_iterator value_begin_;
-    std::string::const_iterator value_end_;
+    base::StringViewTokenizer values_;
+    std::string_view value_;
     bool ignore_empty_values_;
   };
 
@@ -436,20 +429,12 @@ class NET_EXPORT HttpUtil {
     bool valid() const { return valid_; }
 
     // The name of the current name-value pair.
-    std::string::const_iterator name_begin() const { return name_begin_; }
-    std::string::const_iterator name_end() const { return name_end_; }
     std::string name() const { return std::string(name_begin_, name_end_); }
     std::string_view name_piece() const {
       return base::MakeStringPiece(name_begin_, name_end_);
     }
 
     // The value of the current name-value pair.
-    std::string::const_iterator value_begin() const {
-      return value_is_quoted_ ? unquoted_value_.begin() : value_begin_;
-    }
-    std::string::const_iterator value_end() const {
-      return value_is_quoted_ ? unquoted_value_.end() : value_end_;
-    }
     std::string value() const {
       return value_is_quoted_ ? unquoted_value_ : std::string(value_begin_,
                                                               value_end_);
@@ -469,11 +454,11 @@ class NET_EXPORT HttpUtil {
     HttpUtil::ValuesIterator props_;
     bool valid_ = true;
 
-    std::string::const_iterator name_begin_;
-    std::string::const_iterator name_end_;
+    std::string_view::iterator name_begin_;
+    std::string_view::iterator name_end_;
 
-    std::string::const_iterator value_begin_;
-    std::string::const_iterator value_end_;
+    std::string_view::iterator value_begin_;
+    std::string_view::iterator value_end_;
 
     // Do not store iterators into this string. The NameValuePairsIterator
     // is copyable/assignable, and if copied the copy's iterators would point

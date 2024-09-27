@@ -60,8 +60,8 @@ class ContentNegotiationAlgorithm {
 
     // Value can start with '*', so it cannot be parsed by
     // net::structured_headers::ParseParameterisedList.
-    net::HttpUtil::ValuesIterator values(request_header_value->begin(),
-                                         request_header_value->end(), ',');
+    net::HttpUtil::ValuesIterator values(*request_header_value,
+                                         /*delimiter=*/',');
     while (values.GetNext()) {
       net::HttpUtil::NameValuePairsIterator name_value_pairs(
           values.value_begin(), values.value_end(), ';',

@@ -58,7 +58,7 @@ bool RecordSizeToInt(std::string_view value, uint64_t* rs) {
 EncryptionHeaderIterator::EncryptionHeaderIterator(
     std::string::const_iterator header_begin,
     std::string::const_iterator header_end)
-    : iterator_(header_begin, header_end, ','),
+    : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/','),
       rs_(kDefaultRecordSizeBytes) {}
 
 EncryptionHeaderIterator::~EncryptionHeaderIterator() {}
@@ -108,7 +108,8 @@ bool EncryptionHeaderIterator::GetNext() {
 CryptoKeyHeaderIterator::CryptoKeyHeaderIterator(
     std::string::const_iterator header_begin,
     std::string::const_iterator header_end)
-    : iterator_(header_begin, header_end, ',') {}
+    : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/',') {
+}
 
 CryptoKeyHeaderIterator::~CryptoKeyHeaderIterator() {}
 

@@ -177,8 +177,9 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
       ranges_specifier.begin() + equal_char_offset + 1;
   std::string::const_iterator byte_range_set_end = ranges_specifier.end();
 
-  ValuesIterator byte_range_set_iterator(byte_range_set_begin,
-                                         byte_range_set_end, ',');
+  ValuesIterator byte_range_set_iterator(
+      std::string_view(byte_range_set_begin, byte_range_set_end),
+      /*delimiter=*/',');
   while (byte_range_set_iterator.GetNext()) {
     std::string_view value = byte_range_set_iterator.value_piece();
     size_t minus_char_offset = value.find('-');
@@ -396,9 +397,7 @@ bool HttpUtil::IsSafeHeader(std::string_view name, std::string_view value) {
     }
   }
   if (is_forbidden_header_fields_with_forbidden_method) {
-    std::string value_string(value);
-    ValuesIterator method_iterator(value_string.begin(), value_string.end(),
-                                   ',');
+    ValuesIterator method_iterator(value, ',');
     while (method_iterator.GetNext()) {
       std::string_view method = method_iterator.value_piece();
       for (const char* forbidden_method : kForbiddenMethods) {
@@ -944,12 +943,10 @@ bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
   return false;
 }
 
-HttpUtil::ValuesIterator::ValuesIterator(
-    std::string::const_iterator values_begin,
-    std::string::const_iterator values_end,
-    char delimiter,
-    bool ignore_empty_values)
-    : values_(values_begin, values_end, std::string(1, delimiter)),
+HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
+                                         char delimiter,
+                                         bool ignore_empty_values)
+    : values_(values, std::string(1, delimiter)),
       ignore_empty_values_(ignore_empty_values) {
   values_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
@@ -965,12 +962,11 @@ HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
   while (values_.GetNext()) {
-    value_begin_ = values_.token_begin();
-    value_end_ = values_.token_end();
-    TrimLWS(&value_begin_, &value_end_);
+    value_ = TrimLWS(values_.token());
 
-    if (!ignore_empty_values_ || value_begin_ != value_end_)
+    if (!ignore_empty_values_ || !value_.empty()) {
       return true;
+    }
   }
   return false;
 }
@@ -981,11 +977,11 @@ HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
     char delimiter,
     Values optional_values,
     Quotes strict_quotes)
-    : props_(begin, end, delimiter),
-      name_begin_(end),
-      name_end_(end),
-      value_begin_(end),
-      value_end_(end),
+    : props_(std::string_view(begin, end), delimiter),
+      name_begin_(props_.value_end()),
+      name_end_(props_.value_end()),
+      value_begin_(props_.value_end()),
+      value_end_(props_.value_end()),
       values_optional_(optional_values == Values::NOT_REQUIRED),
       strict_quotes_(strict_quotes == Quotes::STRICT_QUOTES) {}
 
@@ -1024,7 +1020,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
   name_begin_ = name_end_ = value_end_;
 
   // Scan for the equals sign.
-  std::string::const_iterator equals = std::find(value_begin_, value_end_, '=');
+  std::string_view::iterator equals = std::find(value_begin_, value_end_, '=');
   if (equals == value_begin_)
     return valid_ = false;  // Malformed, no name
   if (equals == value_end_ && !values_optional_)
@@ -1032,7 +1028,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
 
   // If an equals sign was found, verify that it wasn't inside of quote marks.
   if (equals != value_end_) {
-    for (std::string::const_iterator it = value_begin_; it != equals; ++it) {
+    for (std::string_view::iterator it = value_begin_; it != equals; ++it) {
       if (IsQuote(*it))
         return valid_ = false;  // Malformed, quote appears before equals sign
     }
@@ -1042,8 +1038,15 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
   name_end_ = equals;
   value_begin_ = (equals == value_end_) ? value_end_ : equals + 1;
 
-  TrimLWS(&name_begin_, &name_end_);
-  TrimLWS(&value_begin_, &value_end_);
+  // TODO(crbug.com/41375521): Switch from using begin/end pairs to using
+  // std::string_views.
+  std::string_view name = TrimLWS(std::string_view(name_begin_, name_end_));
+  name_begin_ = name.begin();
+  name_end_ = name.end();
+  std::string_view value = TrimLWS(std::string_view(value_begin_, value_end_));
+  value_begin_ = value.begin();
+  value_end_ = value.end();
+
   value_is_quoted_ = false;
   unquoted_value_.clear();
 

@@ -89,7 +89,7 @@ bool ParseAccessControlAllowList(const std::optional<std::string>& string,
   if (!string)
     return true;
 
-  net::HttpUtil::ValuesIterator it(string->begin(), string->end(), ',', true);
+  net::HttpUtil::ValuesIterator it(*string, /*delimiter=*/',', true);
   while (it.GetNext()) {
     std::string_view value = it.value_piece();
     if (!net::HttpUtil::IsToken(value)) {

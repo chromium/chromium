@@ -24,7 +24,7 @@ mojom::TimingAllowOriginPtr ParseTimingAllowOrigin(const std::string& value) {
   // This does not simply use something like `base::SplitStringPiece()`, as
   // https://fetch.spec.whatwg.org/#concept-tao-check specifies that quoted
   // strings should be supported.
-  net::HttpUtil::ValuesIterator v(value.begin(), value.end(), ',');
+  net::HttpUtil::ValuesIterator v(value, /*delimiter=*/',');
   std::vector<std::string> values;
   while (v.GetNext()) {
     if (v.value_piece() == "*") {

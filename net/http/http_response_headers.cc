@@ -976,10 +976,21 @@ void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
       contains_commas == ContainsCommas::kNo) {
     AddToParsed(name_begin, name_end, values_begin, values_end);
   } else {
-    HttpUtil::ValuesIterator it(values_begin, values_end, ',',
-                                false /* ignore_empty_values */);
+    std::string_view values = base::MakeStringPiece(values_begin, values_end);
+    HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/false);
     while (it.GetNext()) {
-      AddToParsed(name_begin, name_end, it.value_begin(), it.value_end());
+      // Convert from a string_view back to a string iterator. To do this,
+      // find the offset of the start of `it.value()` relative to to the start
+      // of `values`, and add it to to the start of values.
+      //
+      // TODO(crbug.com/369533090): Converting from a string_view back to a
+      // string iterator is awkward. Switch this class to using string_views.
+      std::string::const_iterator sub_value_begin =
+          values_begin + (it.value_piece().data() - values.data());
+      std::string::const_iterator sub_value_end =
+          sub_value_begin + it.value_piece().length();
+
+      AddToParsed(name_begin, name_end, sub_value_begin, sub_value_end);
       // clobber these so that subsequent values are treated as continuations
       name_begin = name_end = values_end;
     }
