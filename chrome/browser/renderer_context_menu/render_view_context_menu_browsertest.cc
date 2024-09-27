@@ -61,6 +61,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -152,6 +154,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -999,7 +1002,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
     EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
         << " failed to meet disabled state expectation in locked fullscreen";
-  };
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
@@ -1033,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
         << " failed to meet enabled state expectation in locked fullscreen";
-  };
+  }
 
   // Verify other commands are disabled in locked fullscreen.
   static constexpr int kCommandsDisabledInLockedFullscreen[] = {
@@ -1043,7 +1046,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
     EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
         << " failed to meet disabled state expectation in locked fullscreen";
-  };
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(ContextMenuForLockedFullscreenBrowserTests,
@@ -1301,6 +1304,25 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
   auto menu = CreateContextMenuFromParams(params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+// TODO(crbug.com/369900725): Show the toast when triggering via the context
+// menu opened on a side panel.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       PreventTriggeringToastOnSidePanelContextMenus) {
+  auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  auto* const web_contents =
+      side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
+  ASSERT_TRUE(web_contents);
+
+  auto menu = CreateContextMenuInWebContents(
+      web_contents, GURL("http://www.google.com/"),
+      GURL("http://www.google.com/"), u"Google",
+      blink::mojom::ContextMenuDataMediaType::kCanvas, ui::MENU_SOURCE_MOUSE);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
+  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
