@@ -28,6 +28,10 @@
           "enterprise_label.custom_value": {
             "location": "local_state",
             "value": "Label"
+          },
+          "enterprise_label.custom_value.for_profile": {
+            "location": "user_profile",
+            "default_value": ""
           }
         }
       },
@@ -43,6 +47,10 @@
         },
         "prefs": {
           "enterprise_label.custom_value": {
+            "location": "user_profile",
+            "value": "Label"
+          },
+          "enterprise_label.custom_value.for_profile": {
             "location": "user_profile",
             "value": "Label"
           }

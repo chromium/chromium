@@ -223,29 +223,24 @@ ManagementEnvironment GetManagementEnvironment(
 }
 
 bool CanShowEnterpriseBadging(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
-    return false;
-  }
   if (!UserAcceptedAccountManagement(profile)) {
     return false;
   }
-
-  bool is_device_managed =
-      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
-
-  switch (profile->GetPrefs()->GetInteger(
-      prefs::kEnterpriseBadgingTemporarySetting)) {
-    case EnterpriseProfileBadgingTemporarySetting::kHide:
-      return false;
-    case EnterpriseProfileBadgingTemporarySetting::kShowOnUnmanagedDevices:
-      return !is_device_managed;
-    case EnterpriseProfileBadgingTemporarySetting::kShowOnAllDevices:
-      return true;
-    case EnterpriseProfileBadgingTemporarySetting::kShowOnManagedDevices:
-      return is_device_managed;
-    default:
-      return false;
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+    return true;
   }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kEnterpriseProfileBadgingPolicies)) {
+    return false;
+  }
+
+  return !profile->GetPrefs()
+              ->GetString(prefs::kEnterpriseCustomLabelForProfile)
+              .empty() ||
+         !profile->GetPrefs()
+              ->GetString(prefs::kEnterpriseLogoUrlForProfile)
+              .empty();
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {

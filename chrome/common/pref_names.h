@@ -4316,9 +4316,20 @@ inline constexpr char kToolbarAvatarLabelSettings[] =
 // Url to an image representing the enterprise logo.
 inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
 
+// Url to an image representing the enterprise logo for ta profile.
+// This is used for cloud user policies only.
+inline constexpr char kEnterpriseLogoUrlForProfile[] =
+    "enterprise_logo.url.for_profile";
+
 // String value of the custom label for the entity managing the profile.
 inline constexpr char kEnterpriseCustomLabel[] =
     "enterprise_label.custom_value";
+
+// String value of the enterprise label for the entity managing the profile
+// only.
+// This is used for cloud user policies only.
+inline constexpr char kEnterpriseCustomLabelForProfile[] =
+    "enterprise_label.custom_value.for_profile";
 
 // IntegerValue of the custom label preset of a managed profile.
 inline constexpr char kProfileLabelPreset[] = "profile.label.preset";

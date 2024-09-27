@@ -48,6 +48,10 @@
           "enterprise_logo.url": {
             "location": "local_state",
             "value": "http://www.example.com"
+          },
+          "enterprise_logo.url.for_profile": {
+            "location": "user_profile",
+            "default_value": ""
           }
         }
       },
@@ -63,6 +67,10 @@
         },
         "prefs": {
           "enterprise_logo.url": {
+            "location": "user_profile",
+            "value": "http://www.example.com"
+          },
+          "enterprise_logo.url.for_profile": {
             "location": "user_profile",
             "value": "http://www.example.com"
           }

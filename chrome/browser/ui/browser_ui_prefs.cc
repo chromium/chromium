@@ -187,5 +187,10 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterStringPref(prefs::kEnterpriseLogoUrl, std::string());
   registry->RegisterStringPref(prefs::kEnterpriseCustomLabel, std::string());
+  registry->RegisterStringPref(prefs::kEnterpriseLogoUrlForProfile,
+                               std::string());
+  registry->RegisterStringPref(prefs::kEnterpriseCustomLabelForProfile,
+                               std::string());
+  registry->RegisterIntegerPref(prefs::kProfileLabelPreset, 0);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }

@@ -396,10 +396,19 @@ const base::FeatureParam<int> kUpdateTextOptionNumber{
     &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
 #endif
 
-// Enables enterprise profile badging on the toolbar avatar and in the profile
-// menu. This will act as a kill switch.
+// Enables enterprise profile badging for managed profiles on the toolbar avatar
+// and in the profile menu. On managed profiles, a "Work" or "School" label will
+// be used in the toolbar, and a building icon will be used  as a badge in the
+// profile menu.
 BASE_FEATURE(kEnterpriseProfileBadging,
              "EnterpriseProfileBadging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables enterprise profile badging for managed profiles on the toolbar avatar
+// and in the profile menu when the policies are set. This acts as a kill
+// switch. This has no effect if `kEnterpriseProfileBadging` is enabled.
+BASE_FEATURE(kEnterpriseProfileBadgingPolicies,
+             "EnterpriseProfileBadgingPolicies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,

@@ -1121,11 +1121,6 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    // // Ensure enterprise badging can be shown.
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kEnterpriseBadgingTemporarySetting,
-        enterprise_util::EnterpriseProfileBadgingTemporarySetting::
-            kShowOnAllDevices);
     AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
   }
 
@@ -1162,27 +1157,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
     clear_closure.RunAndReset();
     EXPECT_NE(avatar_button->GetText(), work_label);
   }
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkProfileTextBadgingUpdating) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Ensure enterprise badging can be shown.
-  std::u16string work_label = u"Work";
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kEnterpriseBadgingTemporarySetting,
-      enterprise_util::EnterpriseProfileBadgingTemporarySetting::kHide);
-  EXPECT_NE(avatar_button->GetText(), work_label);
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kEnterpriseBadgingTemporarySetting,
-      enterprise_util::EnterpriseProfileBadgingTemporarySetting::
-          kShowOnAllDevices);
-
-  EXPECT_EQ(avatar_button->GetText(), work_label);
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1245,6 +1219,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkBrowserShowsBadgeWithLabelPresets) {
+  auto* prefs = browser()->profile()->GetPrefs();
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
 
@@ -1252,11 +1227,32 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kWork);
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK));
+  prefs->SetString(prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
+  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
 
   // School label
+  prefs->ClearPref(prefs::kEnterpriseCustomLabelForProfile);
   SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kSchool);
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL));
+  prefs->SetString(prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
+  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkNewBrowserShowsBadgeWithCustomLabel) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* second_browser_avatar_button =
+      GetAvatarToolbarButton(second_browser);
+  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Custom Label");
+
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile, "Updated Label");
+  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Updated Label");
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,

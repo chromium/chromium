@@ -746,7 +746,7 @@ class ManagementStateProvider : public StateProvider,
 
     profile_pref_change_registrar_.Init(profile_->GetPrefs());
     profile_pref_change_registrar_.Add(
-        prefs::kEnterpriseBadgingTemporarySetting,
+        prefs::kEnterpriseCustomLabelForProfile,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
     profile_pref_change_registrar_.Add(
@@ -1005,7 +1005,9 @@ class StateManager : public StateObserver,
               /*sync_error_type=*/std::nullopt);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+      if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) ||
+          base::FeatureList::IsEnabled(
+              features::kEnterpriseProfileBadgingPolicies)) {
         // Contains both Work and School.
         states_[ButtonState::kManagement] =
             std::make_unique<ManagementStateProvider>(
@@ -1394,9 +1396,14 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kManagement: {
-      if (profile_->GetPrefs()
-              ->FindPreference(prefs::kProfileLabelPreset)
-              ->IsManaged()) {
+      const std::string enterprise_custom_label =
+          profile_->GetPrefs()->GetString(
+              prefs::kEnterpriseCustomLabelForProfile);
+      if (!enterprise_custom_label.empty()) {
+        text = base::UTF8ToUTF16(enterprise_custom_label);
+      } else if (profile_->GetPrefs()
+                     ->FindPreference(prefs::kProfileLabelPreset)
+                     ->IsManaged()) {
         const int profile_label_preset =
             profile_->GetPrefs()->GetInteger(prefs::kProfileLabelPreset);
         if (profile_label_preset ==
