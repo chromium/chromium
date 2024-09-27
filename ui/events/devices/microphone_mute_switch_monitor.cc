@@ -31,8 +31,8 @@ void MicrophoneMuteSwitchMonitor::SetMicrophoneMuteSwitchValue(bool switch_on) {
   if (microphone_mute_switch_on_ == switch_on)
     return;
   microphone_mute_switch_on_ = switch_on;
-  for (auto& observer : observers_)
-    observer.OnMicrophoneMuteSwitchValueChanged(microphone_mute_switch_on_);
+  observers_.Notify(&Observer::OnMicrophoneMuteSwitchValueChanged,
+                    microphone_mute_switch_on_);
 }
 
 }  // namespace ui
