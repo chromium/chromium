@@ -153,12 +153,11 @@ NSString* kMyDriveFolderIdentifier = @"root";
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
   [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
-  if (_collectionType == DriveFilePickerCollectionType::kRoot) {
-    [_consumer setCancelButtonVisible:YES];
-  }
+  [_consumer setCancelButtonVisible:_collectionType ==
+                                    DriveFilePickerCollectionType::kRoot];
 }
 
-- (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   if (_identity == selectedIdentity) {
     return;
   }
@@ -263,12 +262,8 @@ NSString* kMyDriveFolderIdentifier = @"root";
   }
 }
 
-- (void)fetchFirstPage {
-  if (_collectionType == DriveFilePickerCollectionType::kRoot) {
-    [self populateRootItems];
-  } else {
-    [self fetchItemsAppending:NO delayed:NO animated:YES];
-  }
+- (void)loadFirstPage {
+  [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
 - (void)fetchNextPage {
@@ -387,8 +382,12 @@ NSString* kMyDriveFolderIdentifier = @"root";
   [self fetchItemsAppending:NO delayed:YES animated:YES];
 }
 
-- (void)browseBack {
-  [self.delegate browseToParentWithMediator:self];
+- (void)hideSearchItemsOrBrowseBack {
+  if (_shouldShowSearchItems) {
+    [self setShouldShowSearchItems:NO];
+  } else {
+    [self.delegate browseToParentWithMediator:self];
+  }
 }
 
 - (void)hideSearchItemsOrCancelFileSelection {
@@ -416,7 +415,7 @@ NSString* kMyDriveFolderIdentifier = @"root";
 }
 
 // Populates the consumer with root items e.g. "My Drive", "Shared Drives", etc.
-- (void)populateRootItems {
+- (void)populateRootItemsAnimated:(BOOL)animated {
   // There is no next page at the root.
   _pageToken = nil;
   NSArray<DriveFilePickerItem*>* primaryItems = @[
@@ -431,7 +430,7 @@ NSString* kMyDriveFolderIdentifier = @"root";
                                append:NO
                      showSearchHeader:NO
                     nextPageAvailable:NO
-                             animated:YES];
+                             animated:animated];
   [self.consumer setBackground:DriveFilePickerBackground::kNoBackground];
 }
 
@@ -471,12 +470,7 @@ NSString* kMyDriveFolderIdentifier = @"root";
   [self clearItems];
   [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   [self updateTitle];
-  if (_collectionType == DriveFilePickerCollectionType::kRoot &&
-      !shouldShowSearchItems) {
-    [self populateRootItems];
-  } else {
-    [self fetchItemsAppending:NO delayed:NO animated:YES];
-  }
+  [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
 // Clears the selected identifier and updates the consumer accordingly.
@@ -519,6 +513,32 @@ NSString* kMyDriveFolderIdentifier = @"root";
   _selectedFileDestinationURL = fileURL;
 }
 
+// If root items should be loaded, then there are no items to fetch so this
+// asynchronously populates the consumer. Otherwise, this fetches items.
+- (void)loadItemsAppending:(BOOL)append
+                   delayed:(BOOL)delayed
+                  animated:(BOOL)animated {
+  // If there is a timer programmed to fetch items, cancel it.
+  _fetchTimer.Stop();
+
+  if (_collectionType != DriveFilePickerCollectionType::kRoot ||
+      _shouldShowSearchItems) {
+    [self fetchItemsAppending:append delayed:delayed animated:animated];
+    return;
+  }
+
+  // Populating root items asynchronously as `loadItems...:` is expected to work
+  // asynchronously in general.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          ^(__strong __typeof(weakSelf) strongSelf, BOOL populateAnimated) {
+            [strongSelf populateRootItemsAnimated:populateAnimated];
+          },
+          weakSelf, animated));
+}
+
 // Fetches items according to the original query and the current state of the
 // mediator i.e. selected filters, sorting parameters, search text, focus state
 // of the search bar. If there is already a fetch query pending, a new one
@@ -530,8 +550,6 @@ NSString* kMyDriveFolderIdentifier = @"root";
 - (void)fetchItemsAppending:(BOOL)append
                     delayed:(BOOL)delayed
                    animated:(BOOL)animated {
-  // If there is already a timer programmed to fetch items, cancel it.
-  _fetchTimer.Stop();
   // If the fetching needs to be delayed, post it for later and return early.
   if (delayed) {
     __weak __typeof(self) weakSelf = self;
@@ -633,14 +651,6 @@ NSString* kMyDriveFolderIdentifier = @"root";
   }
 }
 
-- (void)identityUpdatedWithSelectedIdentity:
-    (id<SystemIdentity>)selectedIdentity {
-  if ([_identity isEqual:selectedIdentity]) {
-    return;
-  }
-  [self.driveFilePickerHandler
-      setDriveFilePickerSelectedIdentity:selectedIdentity];
-}
 
 - (void)configureConsumerIdentitiesMenu {
   ActionFactory* actionFactory = [[ActionFactory alloc]
@@ -648,7 +658,8 @@ NSString* kMyDriveFolderIdentifier = @"root";
 
   __weak __typeof(self) weakSelf = self;
   auto actionResult = ^(id<SystemIdentity> identity) {
-    [weakSelf identityUpdatedWithSelectedIdentity:identity];
+    [weakSelf.driveFilePickerHandler
+        setDriveFilePickerSelectedIdentity:identity];
   };
   // TODO(crbug.com/344812396): Add the identites block.
   UIMenuElement* identitiesMenu = [actionFactory

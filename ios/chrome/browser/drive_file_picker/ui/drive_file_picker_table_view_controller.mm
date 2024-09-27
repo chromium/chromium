@@ -119,16 +119,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   UIImage* _sortAscendingSymbol;
   UIImage* _sortDescendingSymbol;
 
-  // The filter and sort button.
+  // The cancel, filter, account and sort button.
   UIBarButtonItem* _cancelButton;
   UIBarButtonItem* _filterButton;
-  UIBarButtonItem* _sortButton;
-
-  // The selected email from the accounts signed in the device.
-  NSString* _selectedEmail;
-
-  // Account chooser button.
   UIBarButtonItem* _accountButton;
+  UIBarButtonItem* _sortButton;
 
   // The currently represented folder.
   NSString* _driveFolderTitle;
@@ -161,8 +156,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _status = DriveFileDownloadStatus::kNotStarted;
+    _cancelButton = [self createCancelButton];
     [self initFilterActions];
     [self initSortActions];
+    [self initToolbarItems];
     [self initSortDirectionSymbols];
     [self initBackgroundViews];
     _nextPageAvailable = YES;
@@ -177,14 +174,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-
-  [self configureToolbar];
-
-  _cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self.mutator
-                           action:@selector
-                           (hideSearchItemsOrCancelFileSelection)];
+  // Set toolbar items.
+  UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+  [self setToolbarItems:@[
+    _filterButton, spaceButton, _accountButton, spaceButton, _sortButton
+  ]
+               animated:NO];
 
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
 
@@ -237,7 +235,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   AddSameConstraintsWithInsets(searchTitle, _searchHeader,
                                NSDirectionalEdgeInsetsMake(6, 0, 6, 0));
 
-  [self.mutator fetchFirstPage];
+  [self.mutator loadFirstPage];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -295,10 +293,20 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 #pragma mark - Private
 
-// Configures the toolbar with 3 buttons, filterButton <---->
-// AccountButton(where the title is the user's email) <----> sortButton(which
-// should not be enabled for the root of the navigation controller)
-- (void)configureToolbar {
+// Creates `_cancelButton`.
+- (UIBarButtonItem*)createCancelButton {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* primaryAction = [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.mutator hideSearchItemsOrCancelFileSelection];
+  }];
+  return [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                    primaryAction:primaryAction];
+}
+
+// Initializes the toolbar filter, account and sort buttons.
+- (void)initToolbarItems {
+  // Init filter button.
   UIImage* filterIcon = DefaultSymbolTemplateWithPointSize(
       kFilterSymbol, kSymbolAccessoryPointSize);
   UIMenu* filterButtonMenu = [self createFilterButtonMenu];
@@ -308,23 +316,16 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _filterButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
 
+  // Init account button.
+  _accountButton = [[UIBarButtonItem alloc] init];
+
+  // Init sort button.
   UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
       kSortSymbol, kSymbolAccessoryPointSize);
-
-  // TODO(crbug.com/344812548): Add the action of the sort button.
   UIMenu* sortButtonMenu = [self createSortButtonMenu];
   _sortButton = [[UIBarButtonItem alloc] initWithImage:sortIcon
                                                   menu:sortButtonMenu];
   _sortButton.enabled = YES;
-
-  UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-  [self setToolbarItems:@[
-    _filterButton, spaceButton, _accountButton, spaceButton, _sortButton
-  ]
-               animated:NO];
 }
 
 // Returns the right bar button based on the status.
@@ -553,7 +554,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 #pragma mark - DriveFilePickerConsumer
 
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
-  _selectedEmail = selectedUserIdentityEmail;
+  _accountButton.title = selectedUserIdentityEmail;
 }
 
 - (void)setTitle:(NSString*)title {
@@ -659,8 +660,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
-  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
-                                                     menu:emailsMenu];
+  _accountButton.menu = emailsMenu;
 }
 
 - (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
@@ -821,7 +821,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // If `backAction` is not nil then the "Back" button will be visible.
   self.navigationItem.backAction =
       visible ? nil : [UIAction actionWithHandler:^(UIAction* action) {
-        [weakSelf.mutator browseBack];
+        [weakSelf.mutator hideSearchItemsOrBrowseBack];
       }];
 }
 

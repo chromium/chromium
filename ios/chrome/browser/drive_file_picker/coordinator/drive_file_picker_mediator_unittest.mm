@@ -373,7 +373,7 @@ TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
   // Fetch items.
   drive_list_->SetListItemsCompletionQuitClosure(
       task_environment_.QuitClosure());
-  [mediator_ fetchFirstPage];
+  [mediator_ loadFirstPage];
   task_environment_.RunUntilQuit();
   EXPECT_NE(nil, fake_consumer_.primaryItems);
   EXPECT_EQ(1U, fake_consumer_.primaryItems.count);

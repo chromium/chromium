@@ -135,7 +135,7 @@
   [_navigationController popToRootViewControllerAnimated:YES];
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
-  [_mediator updateSelectedIdentity:selectedIdentity];
+  [_mediator setSelectedIdentity:selectedIdentity];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

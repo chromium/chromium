@@ -60,8 +60,8 @@ class ChromeAccountManagerService;
 // Disconnects from the model layer.
 - (void)disconnect;
 
-// Updates the root drive identity with the new `selectedIdentity`.
-- (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
+// Sets the identity to `selectedIdentity`.
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end
 
