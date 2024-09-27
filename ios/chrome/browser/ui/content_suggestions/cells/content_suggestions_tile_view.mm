@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -93,6 +94,13 @@ const CGFloat kCornerRadius = 8.0;
 
     _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
     [self addInteraction:self.pointerInteraction];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateTitleLabelOnTraitChange)];
+    }
   }
   return self;
 }
@@ -112,14 +120,18 @@ const CGFloat kCornerRadius = 8.0;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.titleLabel.font = [self titleLabelFont];
-    [self updateTitleLabelNumberOfLines];
+    [self updateTitleLabelOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - UIPointerInteractionDelegate
 
@@ -164,6 +176,15 @@ const CGFloat kCornerRadius = 8.0;
   } else {
     self.titleLabel.numberOfLines = 1;
   }
+}
+
+#pragma mark - Private
+
+// Updates the `titleLabel`'s font and numberOfLines property when a change in
+// the device's UITraits is detected.
+- (void)updateTitleLabelOnTraitChange {
+  self.titleLabel.font = [self titleLabelFont];
+  [self updateTitleLabelNumberOfLines];
 }
 
 @end
