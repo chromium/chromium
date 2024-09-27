@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_shared_devices.h"
+#include "chrome/browser/ash/crostini/crostini_shared_devices_factory.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -959,7 +960,7 @@ void CrostiniHandler::HandleRequestSharedVmDevices(
   constexpr char kMicrophone[] = "microphone";
 
   auto* crostini_shared_devices =
-      crostini::CrostiniSharedDevices::GetForProfile(profile_);
+      crostini::CrostiniSharedDevicesFactory::GetForProfile(profile_);
 
   base::Value::List shared_vmdevices;
   for (const auto& container_id :
@@ -988,7 +989,7 @@ void CrostiniHandler::HandleIsVmDeviceShared(const base::Value::List& args) {
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
-      crostini::CrostiniSharedDevices::GetForProfile(profile_)
+      crostini::CrostiniSharedDevicesFactory::GetForProfile(profile_)
           ->IsVmDeviceShared(container_id, vm_device));
 }
 
@@ -999,17 +1000,18 @@ void CrostiniHandler::HandleSetVmDeviceShared(const base::Value::List& args) {
   const std::string& vm_device = args[2].GetString();
   bool shared = args[3].GetBool();
 
-  crostini::CrostiniSharedDevices::GetForProfile(profile_)->SetVmDeviceShared(
-      container_id, vm_device, shared,
-      base::BindOnce(
-          [](base::WeakPtr<CrostiniHandler> weak_this,
-             const std::string callback_id, bool was_applied) {
-            if (weak_this) {
-              weak_this->ResolveJavascriptCallback(base::Value(callback_id),
-                                                   was_applied);
-            }
-          },
-          callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
+  crostini::CrostiniSharedDevicesFactory::GetForProfile(profile_)
+      ->SetVmDeviceShared(
+          container_id, vm_device, shared,
+          base::BindOnce(
+              [](base::WeakPtr<CrostiniHandler> weak_this,
+                 const std::string callback_id, bool was_applied) {
+                if (weak_this) {
+                  weak_this->ResolveJavascriptCallback(base::Value(callback_id),
+                                                       was_applied);
+                }
+              },
+              callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void CrostiniHandler::HandleRequestBruschettaInstallerView(

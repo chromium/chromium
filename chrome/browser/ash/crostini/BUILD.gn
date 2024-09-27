@@ -61,6 +61,8 @@ static_library("crostini") {
     "crostini_security_delegate.h",
     "crostini_shared_devices.cc",
     "crostini_shared_devices.h",
+    "crostini_shared_devices_factory.cc",
+    "crostini_shared_devices_factory.h",
     "crostini_simple_types.cc",
     "crostini_simple_types.h",
     "crostini_sshfs.cc",
