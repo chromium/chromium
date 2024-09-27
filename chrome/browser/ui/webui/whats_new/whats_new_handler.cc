@@ -30,6 +30,7 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "url/gurl.h"
 
 WhatsNewHandler::WhatsNewHandler(
@@ -152,11 +153,19 @@ std::string WhatsNewHandler::GetLatestCountry() {
   if (override_latest_country_for_testing_.has_value()) {
     return override_latest_country_for_testing_.value();
   }
-  if (const auto* variations_service =
-          g_browser_process->variations_service()) {
-    return variations_service->GetLatestCountry();
+
+  const auto* variations_service = g_browser_process->variations_service();
+  if (!variations_service) {
+    return "";
   }
-  return "";
+
+  std::string country = variations_service->GetLatestCountry();
+  if (country == "") {
+    country = base::ToLowerASCII(
+        variations::GetCurrentCountryCode(variations_service));
+  }
+
+  return country;
 }
 
 bool WhatsNewHandler::IsHaTSActivated() {
@@ -212,7 +221,6 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   const auto* trigger_id = user_education::features::IsWhatsNewV2()
                                ? kHatsSurveyTriggerWhatsNewAlternate
                                : kHatsSurveyTriggerWhatsNew;
-
   hats_service->LaunchDelayedSurveyForWebContents(
       trigger_id, web_contents_,
       features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
