@@ -490,7 +490,7 @@ bool MatchesPasswordProtectionChangePasswordURL(const GURL& url,
                                                 const PrefService& prefs);
 
 // Helper function to match a |target_url| against |url_list|.
-bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list);
+bool MatchesURLList(const GURL& target_url, const std::vector<GURL>& url_list);
 
 }  // namespace safe_browsing
 

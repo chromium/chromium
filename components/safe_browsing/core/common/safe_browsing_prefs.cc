@@ -465,7 +465,7 @@ bool MatchesPasswordProtectionLoginURL(const GURL& url,
   return MatchesURLList(url, login_urls);
 }
 
-bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list) {
+bool MatchesURLList(const GURL& target_url, const std::vector<GURL>& url_list) {
   if (url_list.empty() || !target_url.is_valid()) {
     return false;
   }
