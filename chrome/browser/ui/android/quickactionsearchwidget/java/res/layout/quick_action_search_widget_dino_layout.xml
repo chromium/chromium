@@ -52,7 +52,7 @@ found in the LICENSE file.
           android:layout_height="0dp"
           android:layout_weight="1"
           android:maxLines="1"
-          android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline"
+          android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline"
           android:textAlignment="viewStart"
           android:gravity="bottom"
           android:text="@string/dino_widget_text" />
