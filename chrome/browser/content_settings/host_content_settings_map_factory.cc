@@ -30,7 +30,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"  // nogncheck
-#include "extensions/browser/api/content_settings/content_settings_service.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
