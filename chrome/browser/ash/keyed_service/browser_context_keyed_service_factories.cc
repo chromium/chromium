@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_shared_devices.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
-#include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_throttle_factory.h"
 #include "chrome/browser/ash/data_migration/data_migration_factory.h"
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
@@ -176,7 +176,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   crostini::CrostiniPackageService::EnsureFactoryBuilt();
   crostini::CrostiniPortForwarder::EnsureFactoryBuilt();
   crostini::CrostiniSharedDevices::EnsureFactoryBuilt();
-  crostini::CrostiniThrottle::EnsureFactoryBuilt();
+  crostini::CrostiniThrottleFactory::GetInstance();
   crostini::CrostiniUpgrader::EnsureFactoryBuilt();
   CupsPrintersManagerFactory::GetInstance();
   CupsPrintJobManagerFactory::GetInstance();

@@ -12,6 +12,8 @@ static_library("throttle") {
     "crostini_active_window_throttle_observer.h",
     "crostini_throttle.cc",
     "crostini_throttle.h",
+    "crostini_throttle_factory.cc",
+    "crostini_throttle_factory.h",
   ]
 
   public_deps = [

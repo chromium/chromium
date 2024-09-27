@@ -50,7 +50,7 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_throttle_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -1262,7 +1262,7 @@ CrostiniManager::CrostiniManager(Profile* profile)
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
-  CrostiniThrottle::GetForBrowserContext(profile_);
+  CrostiniThrottleFactory::GetForBrowserContext(profile_);
   guest_os_stability_monitor_ =
       std::make_unique<guest_os::GuestOsStabilityMonitor>(
           kCrostiniStabilityHistogram);
