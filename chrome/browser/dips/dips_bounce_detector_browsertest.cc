@@ -1597,8 +1597,9 @@ class RedirectHeuristicBrowserTest : public PlatformBrowserTest {
 
 // Tests the conditions for recording RedirectHeuristic_CookieAccess2 and
 // RedirectHeuristic_CookieAccessThirdParty2 UKM events.
+// TODO(crbug.com/369920781): Flaky
 IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
-                       RecordsRedirectHeuristicCookieAccessEvent) {
+                       DISABLED_RecordsRedirectHeuristicCookieAccessEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
 
