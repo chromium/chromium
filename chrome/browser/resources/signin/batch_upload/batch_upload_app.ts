@@ -27,6 +27,8 @@ function createEmptyAccountInfo() {
 export interface BatchUploadAppElement {
   $: {
     batchUploadDialog: HTMLElement,
+    dataContainer: HTMLElement,
+    dataSections: HTMLElement,
     saveButton: CrButtonElement,
     cancelButton: CrButtonElement,
   };
@@ -74,8 +76,14 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
   // Whether save to account button is enabled or not.
   protected isSaveEnabled_: boolean = true;
 
+  // Observes the size of `dataSections` to know whether to show a border or not
+  // if scrolling is possible.
+  private resizeObserver_: ResizeObserver|null = null;
+
   override connectedCallback() {
     super.connectedCallback();
+
+    this.addResizeObserver_();
 
     this.batchUploadBrowserProxy_.callbackRouter.sendBatchUploadData
         .addListener((batchUploadData: BatchUploadData) => {
@@ -89,6 +97,26 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
 
           this.updateViewHeight_();
         });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver_!.disconnect();
+  }
+
+  private addResizeObserver_() {
+    const dataContainer = this.$.dataContainer;
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const scrollbarVisible =
+          dataContainer.scrollHeight > dataContainer.clientHeight;
+      // Show the container border line if the scroll bar is visible.
+      dataContainer.classList.toggle('border-line', scrollbarVisible);
+      // Adapt the section padding if the scrollbar is visible by overriding the
+      // value (removing the scrollbar width).
+      this.$.dataSections.classList.toggle(
+          'data-sections-with-scrollbar', scrollbarVisible);
+    });
+    this.resizeObserver_.observe(dataContainer);
   }
 
   // Request the browser to update the native view to match the current height

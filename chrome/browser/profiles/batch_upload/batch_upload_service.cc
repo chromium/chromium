@@ -81,7 +81,7 @@ std::unique_ptr<BatchUploadDataProvider> GetBatchUploadDataProvider(
           type, IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS, 2);
     case BatchUploadDataType::kAddresses:
       return MakeDummyBatchUploadDataProvider(
-          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 3);
+          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 20);
   }
 }
 

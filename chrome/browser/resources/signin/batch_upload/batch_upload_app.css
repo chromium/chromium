@@ -10,10 +10,24 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
+ :host {
+   --scrollbar-width: 4px;
+   --batch-upload-dialog-padding: 16px;
+ }
+
 #batchUploadDialog {
+  --batch-upload-full-max-height: 628px;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  max-height: calc(var(--batch-upload-full-max-height)
+    - 2 * var(--batch-upload-dialog-padding));
+  padding-bottom: var(--batch-upload-dialog-padding);
+  padding-top: var(--batch-upload-dialog-padding);
+}
+
+#header {
+  padding-inline-end: var(--batch-upload-dialog-padding);
+  padding-inline-start: var(--batch-upload-dialog-padding);
 }
 
 #title {
@@ -48,10 +62,29 @@
   margin-inline-start: 8px;
 }
 
-#data-sections {
+#dataContainer {
+  max-height: 100%;
+  overflow: auto;
+}
+
+#dataSections {
   display: flex;
   flex-direction: column;
+  padding-inline-start: var(--batch-upload-dialog-padding);
+  padding-inline-end: var(--batch-upload-dialog-padding);
   row-gap: 8px;
+}
+
+/* Added dynamically when scrollbar is visible */
+.data-sections-with-scrollbar {
+  padding-inline-end: calc(var(--batch-upload-dialog-padding)
+    - var(--scrollbar-width)) !important;
+}
+
+/* Added dynamically when scrollbar is visible */
+.border-line {
+  border-bottom: 2px solid var(--color-batch-upload-data-background);
+  border-top: 2px solid var(--color-batch-upload-data-background);
 }
 
 #action-row {
@@ -59,4 +92,21 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
+  padding-inline-start: var(--batch-upload-dialog-padding);
+  padding-inline-end: var(--batch-upload-dialog-padding);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  border-radius: var(--scrollbar-width);
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-button-foreground);
+  border-radius: var(--scrollbar-width);
 }

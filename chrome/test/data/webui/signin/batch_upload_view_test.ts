@@ -145,7 +145,7 @@ suite('BatchUploadViewTest', function() {
 
   test('DataSections', function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#data-sections'));
+    assertTrue(isChildVisible(batchUploadApp, '#dataSections'));
 
     const dataSections =
         batchUploadApp.shadowRoot!.querySelectorAll('data-section');

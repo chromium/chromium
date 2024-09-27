@@ -21,14 +21,16 @@ export function getHtml(this: BatchUploadAppElement) {
     </div>
   </div>
 
-  <div id="data-sections">
-    ${this.dataSections_.map((section, sectionIndex) =>
-    html`
-    <data-section .dataContainer="${section}" data-index="${sectionIndex}"
-        @update-view-height="${this.updateViewHeight_}"
-        @toggle-changed="${this.onSectionToggleChanged_}">
-    </data-section>
-    `)}
+  <div id="dataContainer" class="custom-scrollbar">
+    <div id="dataSections">
+      ${this.dataSections_.map((section, sectionIndex) =>
+      html`
+      <data-section .dataContainer="${section}" data-index="${sectionIndex}"
+          @update-view-height="${this.updateViewHeight_}"
+          @toggle-changed="${this.onSectionToggleChanged_}">
+      </data-section>
+      `)}
+    </div>
   </div>
 
   <div id="action-row" class="action-container">

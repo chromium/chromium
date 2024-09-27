@@ -69,12 +69,15 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   int item_count_;
   int section_name_id_;
   const std::string data_name;
-  bool has_local_data_ = false;
 };
 
 struct TestParam {
   std::string test_suffix = "";
   bool use_dark_theme = false;
+  std::vector<std::pair<int, BatchUploadDataType>> section_item_count_name = {
+      {2, BatchUploadDataType::kPasswords},
+      {1, BatchUploadDataType::kAddresses},
+  };
 };
 
 // Allows the test to be named like
@@ -86,7 +89,18 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 // Test configurations
 const TestParam kTestParams[] = {
     {.test_suffix = "Regular"},
+
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
+
+    {.test_suffix = "MultipleSectionsScrollbar",
+     // Multiple sections with the same type just for testing purposes.
+     .section_item_count_name = {{2, BatchUploadDataType::kPasswords},
+                                 {1, BatchUploadDataType::kPasswords},
+                                 {10, BatchUploadDataType::kAddresses},
+                                 {15, BatchUploadDataType::kAddresses},
+                                 {16, BatchUploadDataType::kAddresses},
+                                 {10, BatchUploadDataType::kPasswords},
+                                 {5, BatchUploadDataType::kPasswords}}},
 };
 
 }  // namespace
@@ -95,9 +109,11 @@ class BatchUploadDialogViewPixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  BatchUploadDialogViewPixelTest()
-      : fake_provider_(BatchUploadDataType::kPasswords, 2),
-        fake_provider2_(BatchUploadDataType::kAddresses, 1) {
+  BatchUploadDialogViewPixelTest() {
+    for (const auto& input_section : GetParam().section_item_count_name) {
+      fake_providers_.emplace_back(input_section.second, input_section.first);
+    }
+
     // The Batch Upload view seems not to be resized properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to
     // be investigated further. As a work around, to have a proper screenshot
@@ -107,6 +123,16 @@ class BatchUploadDialogViewPixelTest
     // `TestBrowserDialog::should_verify_dialog_bounds_` definition and default
     // value.
     set_should_verify_dialog_bounds(false);
+  }
+
+  // Gets the list of providers as a list of pointers that
+  // `CreateBatchUploadDialogView` expects.
+  std::vector<raw_ptr<const BatchUploadDataProvider>> GetProvidersPtrVector() {
+    std::vector<raw_ptr<const BatchUploadDataProvider>> ret;
+    std::ranges::transform(
+        fake_providers_, std::back_inserter(ret),
+        [](const BatchUploadDataProviderFake& provider) { return &provider; });
+    return ret;
   }
 
   // DialogBrowserTest:
@@ -145,7 +171,7 @@ class BatchUploadDialogViewPixelTest
         views::test::AnyWidgetTestPasskey{}, "BatchUploadDialogView");
 
     BatchUploadDialogView::CreateBatchUploadDialogView(
-        *browser(), /*data_providers_list=*/{&fake_provider_, &fake_provider2_},
+        *browser(), /*data_providers_list=*/GetProvidersPtrVector(),
         /*complete_callback*/ base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
@@ -153,8 +179,7 @@ class BatchUploadDialogViewPixelTest
   }
 
  private:
-  BatchUploadDataProviderFake fake_provider_;
-  BatchUploadDataProviderFake fake_provider2_;
+  std::vector<BatchUploadDataProviderFake> fake_providers_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kBatchUploadDesktop};
