@@ -158,7 +158,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       GpuMemoryBufferHandleInfo(std::move(buffer_handle),
                                 si_info_copy.meta.format,
                                 si_info_copy.meta.size, buffer_usage),
-      holder_);
+      holder_, shared_memory_pool_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -181,7 +181,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
                                 si_info.meta.format, si_info.meta.size,
                                 buffer_usage),
-      holder_);
+      holder_, shared_memory_pool_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(

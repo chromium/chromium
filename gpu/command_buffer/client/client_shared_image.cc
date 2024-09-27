@@ -236,7 +236,8 @@ ClientSharedImage::ClientSharedImage(
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     GpuMemoryBufferHandleInfo handle_info,
-    scoped_refptr<SharedImageInterfaceHolder> sii_holder)
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+    scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
@@ -254,7 +255,9 @@ ClientSharedImage::ClientSharedImage(
               viz::SharedImageFormatToBufferFormatRestrictedUtils::
                   ToBufferFormat(handle_info.format),
               handle_info.buffer_usage,
-              base::DoNothing())),
+              base::DoNothing(),
+              gpu_memory_buffer_manager_.get(),
+              std::move(shared_memory_pool))),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);

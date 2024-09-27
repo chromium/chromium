@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -103,12 +104,15 @@ class GPU_EXPORT ClientSharedImage
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     gfx::GpuMemoryBufferType gmb_type);
 
-  // `sii_holder` must not be null.
-  ClientSharedImage(const Mailbox& mailbox,
-                    const SharedImageMetadata& metadata,
-                    const SyncToken& sync_token,
-                    GpuMemoryBufferHandleInfo handle_info,
-                    scoped_refptr<SharedImageInterfaceHolder> sii_holder);
+  // `sii_holder` must not be null. |shared_memory_pool| can be null and is only
+  // used on windows platform.
+  ClientSharedImage(
+      const Mailbox& mailbox,
+      const SharedImageMetadata& metadata,
+      const SyncToken& sync_token,
+      GpuMemoryBufferHandleInfo handle_info,
+      scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+      scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool = nullptr);
 
   const Mailbox& mailbox() { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
