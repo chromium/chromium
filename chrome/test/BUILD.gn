@@ -10233,11 +10233,7 @@ test("unit_tests") {
       ]
     }
     if (is_linux || is_win || is_mac) {
-      sources += [
-        "../browser/ui/views/enterprise/managed_menu_view_unittest.cc",
-        "../browser/ui/views/enterprise/management_toolbar_button_unittest.cc",
-        "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc",
-      ]
+      sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc" ]
     }
     if (use_aura) {
       sources += [

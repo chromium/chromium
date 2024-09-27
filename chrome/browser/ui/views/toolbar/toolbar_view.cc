@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
-#include "chrome/browser/ui/views/enterprise/management_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -471,12 +470,6 @@ void ToolbarView::Init() {
   if (send_tab_to_self_button)
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  management_toolbar_button_ =
-      container_view_->AddChildView(std::make_unique<ManagementToolbarButton>(
-          browser_view_, browser_->profile()));
-#endif
 
   avatar_ = container_view_->AddChildView(
       std::make_unique<AvatarToolbarButton>(browser_view_));
@@ -1201,10 +1194,6 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
   return avatar_;
-}
-
-ManagementToolbarButton* ToolbarView::GetManagementToolbarButton() {
-  return management_toolbar_button_;
 }
 
 ToolbarButton* ToolbarView::GetBackButton() {

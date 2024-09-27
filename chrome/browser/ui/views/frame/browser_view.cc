@@ -294,8 +294,6 @@
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
-#else
-#include "chrome/browser/ui/views/enterprise/managed_menu_coordinator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -5230,12 +5228,6 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   // Default behavior -- show the profile menu.
   ProfileMenuCoordinator::GetOrCreateForBrowser(browser())->Show(
       is_source_accelerator);
-}
-
-void BrowserView::ShowBubbleFromManagementToolbarButton() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  ManagedMenuCoordinator::GetOrCreateForBrowser(browser())->Show();
-#endif
 }
 
 void BrowserView::MaybeShowProfileSwitchIPH() {
