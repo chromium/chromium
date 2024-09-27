@@ -114,19 +114,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
-  // Deprecated, do not use. Prefer calling SetName, SetDescription, etc.
-  // TODO(crbug.com/325137417): Remove this function, no real benefit is added
-  // anymore now that all event firing is blocked during
-  // construction/initialization.
-  void SetProperties(
-      std::optional<ax::mojom::Role> role = std::nullopt,
-      std::optional<std::u16string> name = std::nullopt,
-      std::optional<std::u16string> description = std::nullopt,
-      std::optional<std::u16string> role_description = std::nullopt,
-      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
-      std::optional<ax::mojom::DescriptionFrom> description_from =
-          std::nullopt);
-
   // Sets/gets whether or not this view's descendants should be included in
   // the accessibility tree. It is the functional equivalent of calling
   // `SetAccessibleIsIgnored` on each and every view descendant of this
