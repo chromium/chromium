@@ -9820,32 +9820,16 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "BrowserProcessOnly",
-                    "params": {
-                        "object_size_threshold_in_bytes": "1024",
-                        "quarantine_capacity_for_large_objects_in_bytes": "102400",
-                        "quarantine_capacity_for_small_objects_in_bytes": "946176",
-                        "sampling_frequency": "100",
-                        "target_processes": "browser_only"
-                    },
-                    "enable_features": [
-                        "ExtremeLightweightUAFDetector"
-                    ]
-                },
-                {
-                    "name": "NonRendererProcesses",
+                    "name": "Quarantine_900_100_1024_v5",
                     "params": {
                         "object_size_threshold_in_bytes": "1024",
                         "quarantine_capacity_for_large_objects_in_bytes": "102400",
