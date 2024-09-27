@@ -1015,7 +1015,7 @@ See your search engine’s instructions for deleting your search history, if app
         New Tab in Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for openning lens overlay.">
-        Lens Overlay
+        Search screen with Google Lens
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
@@ -2563,6 +2563,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB" desc="Call to action to go to a tab that has just been opened in the background.">
         Go to tab
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT" desc="The Lens overlay tooltip displayed text.">
+        Search your screen
       </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.

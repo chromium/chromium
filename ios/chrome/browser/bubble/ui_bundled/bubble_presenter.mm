@@ -676,8 +676,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                              prefs::kBottomOmnibox);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
-  // TODO(crbug.com/365701607): Localize.
-  NSString* text = @"Open lens overlay [todo:localize]";
+  NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT);
 
   CGPoint lensOverlayEntrypointAnchor =
       [self anchorPointToGuide:kLensOverlayEntrypointGuide
