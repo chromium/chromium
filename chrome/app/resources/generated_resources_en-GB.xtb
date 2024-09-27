@@ -1,71 +1,71 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1001033507375626788">This network is shared with you</translation>
-<translation id="1001360573085135660">Click to toggle permission.</translation>
-<translation id="1002085272681738789">Tab active again</translation>
-<translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
-<translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003917207516838287">Recent download history</translation>
-<translation id="1004218526896219317">Site access</translation>
-<translation id="1005274289863221750">Use your microphone and camera</translation>
-<translation id="1005333234656240382">Enable ADB debugging?</translation>
-<translation id="1005671386794704751">Rose</translation>
-<translation id="1005919400326853998">View certificate details for <ph name="CERT_NAME" /> in a new dialogue</translation>
-<translation id="1006033052970139968">Microphone access is allowed for apps, websites with the microphone permission and system services</translation>
-<translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
-<translation id="1007057452468855774">Turn on Google Play Store</translation>
-<translation id="1008186147501209563">Export bookmarks</translation>
-<translation id="1008261151167010035"><ph name="BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
-<translation id="1008544602823861396">is blocked from using your info on</translation>
-<translation id="1008557486741366299">Not Now</translation>
-<translation id="100881991356161927">Site name</translation>
-<translation id="1009663062402466586">Game controls now available</translation>
-<translation id="1010136228650201057">User data encryption</translation>
+<translation id="1001033507375626788">this network is shared with pookie</translation>
+<translation id="1001360573085135660">clik to toggle permission :3.</translation>
+<translation id="1002085272681738789">tab is activated again</translation>
+<translation id="1003088604756913841">open the link in new <ph name="APP" /> window</translation>
+<translation id="100323615638474026">usb devwice (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003917207516838287">wecent download histowy</translation>
+<translation id="1004218526896219317">site access</translation>
+<translation id="1005274289863221750">use daddys camera and mic</translation>
+<translation id="1005333234656240382">does pookie wookie wanna enable usb debugging??</translation>
+<translation id="1005671386794704751">rose</translation>
+<translation id="1005919400326853998">vew cewtificate details for <ph name="CERT_NAME" /> in a new diawouge</translation>
+<translation id="1006033052970139968">mic access is allowed for apps, websites with the mic permiwssion and system sewvices >.< </translation>
+<translation id="1006873397406093306">grrr >:( this extension can read and change your data on swites. u can control which sites the extension can access.</translation>
+<translation id="1007057452468855774">tuwn on gwoogle pway stwore</translation>
+<translation id="1008186147501209563">expwort bwookmarks</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> wemembers how u swigned in and autwomatically swigns you in when pwossible. when off, u be asked for confwirmation every time.</translation>
+<translation id="1008544602823861396">is bwocked from using your info on</translation>
+<translation id="1008557486741366299">not now >:( </translation>
+<translation id="100881991356161927">swite name</translation>
+<translation id="1009663062402466586">gwame cwontrols now available</translation>
+<translation id="1010136228650201057">user data encwyption</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page Unresponsive}other{Pages Unresponsive}}</translation>
-<translation id="1011003645819296594">Saved devices</translation>
-<translation id="1011355516189274711">Text-to-speech volume</translation>
-<translation id="1011431628606634753">Change your recovery PIN for Google Password Manager</translation>
-<translation id="1012794136286421601">Your Docs, Sheets, Slides and Drawings files are being synced. Open the Google Drive app to access them online or offline.</translation>
-<translation id="1012876632442809908">USB-C device (front port)</translation>
-<translation id="1015041505466489552">TrackPoint</translation>
-<translation id="1015318665228971643">Edit Folder Name</translation>
+<translation id="1011003645819296594">swaved devices</translation>
+<translation id="1011355516189274711">twext-to-spweech volume</translation>
+<translation id="1011431628606634753">chwange ur wecovery pin for gwoogle pwassword mwanager</translation>
+<translation id="1012794136286421601">ur dwocs, shweets, slwides and dwawings files are bweing synced. wopen the gwoogle dwive app to waccess them onwine or offwine.</translation>
+<translation id="1012876632442809908">usb-c dwevice (fwont powt)</translation>
+<translation id="1015041505466489552">twackpoint</translation>
+<translation id="1015318665228971643">edit fowder name</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Last day to update <ph name="DEVICE_TYPE" />}other{Update <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}}</translation>
-<translation id="1016566241875885511">Additional info (optional)</translation>
-<translation id="1016876401615857435">To use your passkeys on this device, verify that it's you</translation>
-<translation id="1017280919048282932">&amp;Add to dictionary</translation>
-<translation id="1018656279737460067">Cancelled</translation>
-<translation id="1022522674678746124">PowerPoint</translation>
-<translation id="1022669824195822609">Your device is managed by <ph name="DOMAIN" />. Administrators can access the data in any profile on this device.</translation>
-<translation id="1022719295563085177">Network default</translation>
-<translation id="1026655690966755180">Add port</translation>
-<translation id="1026822031284433028">Load Image</translation>
-<translation id="1026959648338730078">Windows Hello or external security key</translation>
-<translation id="1028700151766901954">Reason: LBS stays in <ph name="DEFAULT_OPEN_BROWSER" /> by default.</translation>
-<translation id="1028823395684328817">To keep using the passwords and more in your Google Account, verify that it's you</translation>
-<translation id="102916930470544692">Passkey</translation>
-<translation id="1029317248976101138">Zoom</translation>
-<translation id="1029526375103058355">Tap to click</translation>
-<translation id="1029724557649700742">New features will be included as they become available, and features may vary by device.</translation>
-<translation id="1031343556156414679">Manage passkeys in Windows Hello</translation>
-<translation id="1031362278801463162">Loading preview</translation>
-<translation id="1032605640136438169">Please review the new terms</translation>
-<translation id="103279545524624934">Free up disk space to launch Android apps.</translation>
-<translation id="1033780634303702874">Access your serial devices</translation>
-<translation id="1034484273907870301">Thumbnail tab strip for tablet mode</translation>
-<translation id="1035875743511577452">Click ‘Change theme’ to explore themes inspired by artists, nature and more</translation>
-<translation id="1036348656032585052">Turn off</translation>
-<translation id="1036511912703768636">Access any of these USB devices</translation>
-<translation id="1038168778161626396">Encipher Only</translation>
-<translation id="1038462104119736705">At least <ph name="INSTALL_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
-<translation id="1038643060055067718">Lines:</translation>
-<translation id="1039337018183941703">Invalid or corrupt file</translation>
-<translation id="1040761927998636252">Unnamed bookmark for <ph name="URL" /></translation>
-<translation id="1041175011127912238">This page isn't responding</translation>
-<translation id="1041263367839475438">Available devices</translation>
-<translation id="1041607257468256895">Manage website location permissions in Chrome</translation>
-<translation id="1042174272890264476">Your computer also comes with <ph name="SHORT_PRODUCT_NAME" />'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
-<translation id="1042248468362992359">Connect to mobile data to use hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1016566241875885511">additional infwo? (optional)</translation>
+<translation id="1016876401615857435">to use your pawsskeys on this device, verify that it's you</translation>
+<translation id="1017280919048282932">&amp;add to dictionawy</translation>
+<translation id="1018656279737460067">cancweld</translation>
+<translation id="1022522674678746124">pwowerpwoint</translation>
+<translation id="1022669824195822609">UR CHROMIUWUM IS MANAGED BY <ph name="DOMAIN" />!!!!!!! domain admins are able to see basically everything pookie :3</translation>
+<translation id="1022719295563085177">network defwault</translation>
+<translation id="1026655690966755180">add powt</translation>
+<translation id="1026822031284433028">woad image</translation>
+<translation id="1026959648338730078">windows hewwo or outside security kwey</translation>
+<translation id="1028700151766901954">weason: lbs stays in <ph name="DEFAULT_OPEN_BROWSER" /> by dwefault.</translation>
+<translation id="1028823395684328817">are you daddy? to keep using the passwords and more in your guwugle account, verify that your pookie</translation>
+<translation id="102916930470544692">pawskey</translation>
+<translation id="1029317248976101138">zwoom</translation>
+<translation id="1029526375103058355">tap to cwick</translation>
+<translation id="1029724557649700742">new fweatures will be incwuded as they bwecome awvailable, and fweatures may vawy by devwice.</translation>
+<translation id="1031343556156414679">mwanage pawskeys in windows hewwo</translation>
+<translation id="1031362278801463162">woading pweview</translation>
+<translation id="1032605640136438169">pwease review the new tewms</translation>
+<translation id="103279545524624934">fwee up dwisk space to launch andwoid apps.</translation>
+<translation id="1033780634303702874">accwess ur sewial devices</translation>
+<translation id="1034484273907870301">thwumbnail tab strip for tabwet mode</translation>
+<translation id="1035875743511577452">cwick ‘chwange theme’ to expwore themes inspired by awtists, natuwe and mowe</translation>
+<translation id="1036348656032585052">tuwn off</translation>
+<translation id="1036511912703768636">accwess any of these usb devices</translation>
+<translation id="1038168778161626396">encwipher ownly</translation>
+<translation id="1038462104119736705">at weast <ph name="INSTALL_SIZE" /> of space is wecommended for winux. to incwease fwee space, dewete files from your device.</translation>
+<translation id="1038643060055067718">wines:</translation>
+<translation id="1039337018183941703">invawid or cowwupt file</translation>
+<translation id="1040761927998636252">unwamed bwookmark for <ph name="URL" /></translation>
+<translation id="1041175011127912238">this pwage isn't wesponding</translation>
+<translation id="1041263367839475438">avawiable devwices</translation>
+<translation id="1041607257468256895">manwage website wocation pewmissions in chwome</translation>
+<translation id="1042174272890264476">ur computwer awso comes with <ph name="SHORT_PRODUCT_NAME" />'s rlz libwary bwuilt in. rlz assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1042248468362992359">cwonnect to mobile data to use hotspwot. <ph name="BEGIN_LINK_LEARN_MORE" />wearn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Something went wrong. Linux may only be partially upgraded. Review logs for more information. Logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Add action</translation>
 <translation id="104419033123549300">Keymap style</translation>
@@ -1173,7 +1173,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1818913467757368489">Log upload underway.</translation>
 <translation id="1819443852740954262">Open all in Incognito window</translation>
 <translation id="1819721979226826163">Tap App notifications &gt; Google Play services.</translation>
-<translation id="1822140782238030981">Already a Chrome user? Sign in</translation>
+<translation id="1822140782238030981">awlready a chwome user? swign in</translation>
 <translation id="1822517323280215012">Grey</translation>
 <translation id="1822635184853104396">Show full download history in a new tab</translation>
 <translation id="1823768272150895732">Font</translation>
@@ -5807,12 +5807,12 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5181172023548002891">To Google Password Manager for <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">Reset all HID permissions?</translation>
-<translation id="5184063094292164363">&amp;JavaScript Console</translation>
+<translation id="5184063094292164363">&amp;javascript consowle</translation>
 <translation id="5184209580557088469">A ticket with this username already exists</translation>
-<translation id="5184662919967270437">Updating your device</translation>
-<translation id="5185359571430619712">Review extensions</translation>
-<translation id="5185386675596372454">The newest version of "<ph name="EXTENSION_NAME" />" has been disabled because it requires more permissions.</translation>
-<translation id="5185500136143151980">No Internet</translation>
+<translation id="5184662919967270437">uwu! updating ur device :3</translation>
+<translation id="5185359571430619712">review ur extensions uwu</translation>
+<translation id="5185386675596372454">grrrr >:( the newest version "<ph name="EXTENSION_NAME" />" has been disabled because it requires more permission from daddy.</translation>
+<translation id="5185500136143151980">please connect me to the internet daddy :3</translation>
 <translation id="5186381005592669696">Customise display language for supported apps</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
@@ -6384,7 +6384,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5613074282491265467">When you’re signed in to Chrome, passwords that you save will go in your Google Account, <ph name="USER_EMAIL" />. To turn this off, go to settings.</translation>
+<translation id="5613074282491265467">when ur signed into chromiuwum, passwords that daddy (you) save will go in your guwugle account :333, <ph name="USER_EMAIL" />. To turn this off, go to settings.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

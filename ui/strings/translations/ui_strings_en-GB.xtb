@@ -9,7 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 Day Ago}other{# Days Ago}}</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1243314992276662751">Upload</translation>
-<translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
+<translation id="1266864766717917324">im sorry :(. i couldnt share <ph name="CONTENT_TYPE" /> pookie</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Try sharing the text in smaller chunks.</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -181,7 +181,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minute left}other{# minutes left}}</translation>
 <translation id="7437971918971306061">Column <ph name="COLUMN_NAME" /> unsorted.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
-<translation id="7507604095951736240">Emoji</translation>
+<translation id="7507604095951736240">Uwuji</translation>
 <translation id="7620655452534002301">Removed.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7781829728241885113">Yesterday</translation>
@@ -195,8 +195,8 @@
 <translation id="8090736967111090568">Number from <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 hour ago}other{# hours ago}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sec left}other{# secs left}}</translation>
-<translation id="8134065097954893699">Reloading this page</translation>
-<translation id="815598010540052116">Scroll Down</translation>
+<translation id="8134065097954893699">nya! page is reloading!</translation>
+<translation id="815598010540052116">scroll down :3</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
