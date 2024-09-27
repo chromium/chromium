@@ -143,13 +143,13 @@ void MimeHandlerViewGuest::CreateWebContents(
   const std::string* stream_id =
       create_params.FindString(mime_handler_view::kStreamId);
   if (!stream_id || stream_id->empty()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   stream_ = MimeHandlerStreamManager::Get(browser_context())
                 ->ReleaseStream(*stream_id);
   if (!stream_) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   mime_type_ = stream_->mime_type();
@@ -162,7 +162,7 @@ void MimeHandlerViewGuest::CreateWebContents(
   if (!mime_handler_extension) {
     LOG(ERROR) << "Extension for mime_type not found, mime_type = "
                << stream_->mime_type();
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 

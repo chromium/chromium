@@ -731,6 +731,12 @@ void GuestViewBase::SendQueuedEvents() {
   }
 }
 
+void GuestViewBase::RejectGuestCreation(
+    std::unique_ptr<GuestViewBase> owned_this,
+    WebContentsCreatedCallback callback) {
+  std::move(callback).Run(std::move(owned_this), nullptr);
+}
+
 void GuestViewBase::CompleteInit(
     base::Value::Dict create_params,
     GuestCreatedCallback callback,

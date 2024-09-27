@@ -278,6 +278,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
   GetCreateParams() const;
 
+  // Convenience method for `CreateWebContents` implementations when not
+  // creating a guest.
+  void RejectGuestCreation(std::unique_ptr<GuestViewBase> owned_this,
+                           WebContentsCreatedCallback callback);
+
   void TakeGuestContentsOwnership(
       std::unique_ptr<content::WebContents> guest_web_contents);
   void ClearOwnedGuestContents();

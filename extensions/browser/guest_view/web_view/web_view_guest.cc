@@ -351,7 +351,7 @@ void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
   if (!base::IsStringUTF8(storage_partition_id)) {
     bad_message::ReceivedBadMessage(owner_render_process_host,
                                     bad_message::WVG_PARTITION_ID_NOT_UTF8);
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -369,7 +369,7 @@ void WebViewGuest::CreateWebContentsWithStoragePartition(
     WebContentsCreatedCallback callback,
     std::optional<content::StoragePartitionConfig> partition_config) {
   if (!partition_config.has_value()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
