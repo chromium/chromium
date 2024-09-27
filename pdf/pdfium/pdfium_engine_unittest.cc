@@ -214,27 +214,32 @@ class PDFiumEngineTest : public PDFiumTestBase {
                         {end_page_index, end_char_index});
   }
 
-  void DrawAndCompare(PDFiumEngine& engine,
-                      int page_index,
-                      std::string_view expected_png_filename) {
-    return DrawAndCompareImpl(engine, page_index, expected_png_filename,
-                              /*use_platform_suffix=*/false);
+  void DrawSelectionAndCompare(PDFiumEngine& engine,
+                               int page_index,
+                               std::string_view expected_png_filename) {
+    return DrawSelectionAndCompareImpl(engine, page_index,
+                                       expected_png_filename,
+                                       /*use_platform_suffix=*/false);
   }
 
-  void DrawAndCompareWithPlatformExpectations(
+  void DrawSelectionAndCompareWithPlatformExpectations(
       PDFiumEngine& engine,
       int page_index,
       std::string_view expected_png_filename) {
-    return DrawAndCompareImpl(engine, page_index, expected_png_filename,
-                              /*use_platform_suffix=*/true);
+    return DrawSelectionAndCompareImpl(engine, page_index,
+                                       expected_png_filename,
+                                       /*use_platform_suffix=*/true);
   }
 
  private:
-  void DrawAndCompareImpl(PDFiumEngine& engine,
-                          int page_index,
-                          std::string_view expected_png_filename,
-                          bool use_platform_suffix) {
-    const gfx::Rect rect = engine.GetPageContentsRect(page_index);
+  void DrawSelectionAndCompareImpl(PDFiumEngine& engine,
+                                   int page_index,
+                                   std::string_view expected_png_filename,
+                                   bool use_platform_suffix) {
+    // Since the GetPageContentsRect() return value may have a non-zero origin,
+    // create a rect based solely on its size to draw the selections relative to
+    // the origin of the contents rect.
+    const auto rect = gfx::Rect(engine.GetPageContentsRect(page_index).size());
     ASSERT_TRUE(!rect.IsEmpty());
 
     SkBitmap bitmap;
@@ -246,6 +251,8 @@ class PDFiumEngineTest : public PDFiumTestBase {
     const size_t progressive_index = engine.StartPaint(page_index, rect);
     CHECK_EQ(0u, progressive_index);
     engine.DrawSelections(progressive_index, bitmap);
+    // Effectively the same as how PDFiumEngine::FinishPaint() cleans up
+    // `progressive_paints_`.
     engine.progressive_paints_.clear();
 
     base::FilePath expectation_path =
@@ -1037,24 +1044,24 @@ TEST_P(PDFiumEngineTest, DrawTextSelectionsHelloWorld) {
   engine->PluginSizeUpdated({500, 500});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  DrawAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
   EXPECT_EQ("e", engine->GetSelectedText());
-  DrawAndCompare(*engine, kPageIndex, "hello_world_selection_1.png");
+  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_selection_1.png");
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/0,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/3);
   EXPECT_EQ("Hel", engine->GetSelectedText());
-  DrawAndCompareWithPlatformExpectations(*engine, kPageIndex,
-                                         "hello_world_selection_2.png");
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_selection_2.png");
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/0,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/6);
   EXPECT_EQ("Hello,", engine->GetSelectedText());
-  DrawAndCompareWithPlatformExpectations(*engine, kPageIndex,
-                                         "hello_world_selection_3.png");
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_selection_3.png");
 }
 
 TEST_P(PDFiumEngineTest, LinkNavigates) {
