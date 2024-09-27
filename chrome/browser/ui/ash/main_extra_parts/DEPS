@@ -36,6 +36,7 @@ include_rules = [
   "+chrome/browser/enterprise/connectors/device_trust/attestation/ash",
   "+chrome/browser/exo_parts.h",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/accessibility",
   "+chrome/browser/ui/ash/app_access",
   "+chrome/browser/ui/ash/arc",
@@ -54,6 +55,7 @@ include_rules = [
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/shell_init",
   "+chrome/browser/ui/ash/system",
+  "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/ash/wm",
   "+chrome/browser/ui/ash/wallpaper",
   "+chrome/browser/ui/ash/web_view",
@@ -61,5 +63,6 @@ include_rules = [
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   "+chrome/browser/ui/views/tabs",
+  "+chrome/browser/ui/webui/ash/settings/pref_names.h",
   "+chrome/common",
 ]

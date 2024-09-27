@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -20,6 +21,8 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/webui/annotator/annotator_client_impl.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -55,6 +58,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/exo_parts.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
@@ -81,6 +85,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shell_init/ash_shell_init.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
@@ -88,6 +93,7 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
@@ -100,6 +106,8 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -441,10 +449,25 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
       mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
     }
   }
+  CheckIfSanitizeCompleted();
 
   did_post_browser_start_ = true;
   if (post_browser_start_callback_) {
     std::move(post_browser_start_callback_).Run();
+  }
+}
+
+void ChromeBrowserMainExtraPartsAsh::CheckIfSanitizeCompleted() {
+  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
+      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
+    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
+    prefs->CommitPendingWrite();
+    ash::SystemAppLaunchParams params;
+    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
+                                 ash::SystemWebAppType::OS_SANITIZE, params);
   }
 }
 

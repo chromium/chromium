@@ -198,6 +198,11 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Callback invoked at the end of PostBrowserStart().
   base::OnceClosure post_browser_start_callback_;
+
+  // Once Sanitize is completed, ash is restarted. After ash has restarted, we
+  // should check if the restart has happened right after a sanitize. If that is
+  // the case, sanitize done dialog should be shown to the user.
+  void CheckIfSanitizeCompleted();
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MAIN_EXTRA_PARTS_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
