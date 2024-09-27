@@ -51,6 +51,7 @@ class MockAutofillPredictionImprovementsDelegate
                ImportFormCallback callback),
               (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
+  MOCK_METHOD(void, GoToSettings, (), (override));
 };
 
 }  // namespace autofill

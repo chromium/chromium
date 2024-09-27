@@ -508,6 +508,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kPredictionImprovementsLoadingState:
       return false;
   }

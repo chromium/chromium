@@ -67,6 +67,7 @@ class AutofillPredictionImprovementsManager
   void MaybeImportForm(std::unique_ptr<autofill::FormStructure> form,
                        ImportFormCallback callback) override;
   void HasDataStored(HasDataCallback callback) override;
+  void GoToSettings() override;
 
   // Methods for strike counting of rejected forms.
   bool IsFormBlockedForImport(const autofill::FormStructure& form) const;

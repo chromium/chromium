@@ -37,6 +37,11 @@
     Manage prediction improvements
   </message>
 
+  <!-- Edit information suggestion -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_EDIT_INFORMATION_SUGGESTION_MAIN_TEXT" desc="Text displayed on the suggestion that opens the prediction improvements settings page." translateable="false">
+    Edit information
+  </message>
+
   <!-- Prediction improvements details -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_MAIN_TEXT" desc="Text displayed on the prediction improvements details suggestions" translateable="false">
     Use prediction improvements. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>

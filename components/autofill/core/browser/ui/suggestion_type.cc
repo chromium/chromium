@@ -130,6 +130,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kPredictionImprovementsDetails";
     case SuggestionType::kPredictionImprovementsError:
       return "kPredictionImprovementsError";
+    case SuggestionType::kEditPredictionImprovementsInformation:
+      return "kEditPredictionImprovementsInformation";
   }
   NOTREACHED();
 }

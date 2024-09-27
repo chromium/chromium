@@ -248,6 +248,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kEditPredictionImprovementsInformation:
       return false;
   }
 }
@@ -688,6 +689,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
@@ -853,6 +855,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       return;
     case SuggestionType::kFillPredictionImprovements:
       FillPredictionImprovements(suggestion);
+      break;
+    case SuggestionType::kEditPredictionImprovementsInformation:
+      if (AutofillPredictionImprovementsDelegate* delegate =
+              manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+        delegate->GoToSettings();
+      }
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -1027,6 +1035,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kEditPredictionImprovementsInformation:
       return false;
   }
 }

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -77,7 +78,6 @@ autofill::Suggestion CreateChildSuggestionForFilling(
 // Creates a spinner-like suggestion shown while improved predictions are
 // loaded.
 autofill::Suggestion CreateLoadingSuggestion() {
-  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
   loading_suggestion.icon = autofill::Suggestion::Icon::kAccount;
@@ -105,6 +105,18 @@ autofill::Suggestion CreateDetailsSuggestion() {
   details_suggestion.voice_over = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
   return details_suggestion;
+}
+
+autofill::Suggestion CreateEditPredictionImprovementsInformation() {
+  autofill::Suggestion edit_suggestion;
+  edit_suggestion.type =
+      autofill::SuggestionType::kEditPredictionImprovementsInformation;
+  edit_suggestion.icon = autofill::Suggestion::Icon::kEdit;
+  edit_suggestion.main_text = autofill::Suggestion::Text(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_EDIT_INFORMATION_SUGGESTION_MAIN_TEXT),
+      autofill::Suggestion::Text::IsPrimary(true));
+  return edit_suggestion;
 }
 
 // Creates a suggestion shown when retrieving prediction improvements wasn't
@@ -232,6 +244,9 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
     // file.
     suggestion.labels.back().emplace_back(u"& more");
+    suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
+    suggestion.children.emplace_back(
+        CreateEditPredictionImprovementsInformation());
   }
 
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
@@ -493,6 +508,10 @@ void AutofillPredictionImprovementsManager::HasDataStored(
     return;
   }
   std::move(callback).Run(HasData(false));
+}
+
+void AutofillPredictionImprovementsManager::GoToSettings() {
+  client_->OpenPredictionImprovementsSettings();
 }
 
 }  // namespace autofill_prediction_improvements

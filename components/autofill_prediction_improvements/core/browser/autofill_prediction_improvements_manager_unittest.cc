@@ -260,9 +260,12 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
       ElementsAre(Pair(filled_field.global_id(), filled_field.value())));
   EXPECT_THAT(
       filling_suggestion[0].children,
-      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kFillPredictionImprovements)));
+      ElementsAre(
+          HasType(SuggestionType::kFillPredictionImprovements),
+          HasType(SuggestionType::kSeparator),
+          HasType(SuggestionType::kFillPredictionImprovements),
+          HasType(SuggestionType::kSeparator),
+          HasType(SuggestionType::kEditPredictionImprovementsInformation)));
 }
 
 // Tests that no suggestions are added to `address_suggestions` if

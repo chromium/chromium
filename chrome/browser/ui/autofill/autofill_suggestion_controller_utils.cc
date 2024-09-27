@@ -56,6 +56,9 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kEditPredictionImprovementsInformation:
       return true;
     case SuggestionType::kFillEverythingFromAddressProfile:
       return features::
@@ -93,14 +96,12 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:

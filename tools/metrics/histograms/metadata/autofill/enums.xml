@@ -5005,6 +5005,7 @@ Called by update_autofill_enums.py.-->
   <int value="57" label="Plus address error"/>
   <int value="58" label="Prediction improvements details"/>
   <int value="59" label="Prediction improvements error"/>
+  <int value="60" label="Edit prediction improvements information"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

@@ -66,6 +66,7 @@ class AutofillPredictionImprovementsDelegate {
   virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
 
   // Called when users click the "learn more" link.
+  // TODO(crbug.com/365512352): Remove if not needed.
   virtual void UserClickedLearnMore() = 0;
 
   // Called when the `SuggestionType::kRetrievePredictionImprovements`
@@ -84,6 +85,10 @@ class AutofillPredictionImprovementsDelegate {
   // Checks if there is any data stored in the profile's user annotations that can be used for
   // filling and runs the `callback` accordingly.
   virtual void HasDataStored(HasDataCallback callback) = 0;
+
+  // Opens the subpage of chrome settings that deals with managing information
+  // stored by the prediction improvements system.
+  virtual void GoToSettings() = 0;
 };
 
 }  // namespace autofill
