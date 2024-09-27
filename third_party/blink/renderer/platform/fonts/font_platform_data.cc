@@ -214,7 +214,8 @@ String FontPlatformData::FontFamilyName() const {
 }
 
 bool FontPlatformData::IsAhem() const {
-  return EqualIgnoringASCIICase(FontFamilyName(), "ahem");
+  return EqualIgnoringASCIICase(FontFamilyName(), "ahem") ||
+         EqualIgnoringASCIICase(FontFamilyName(), "ahem (fontations)");
 }
 
 SkTypeface* FontPlatformData::Typeface() const {
