@@ -4448,7 +4448,6 @@ if (!is_android) {
     }
     if (toolkit_views) {
       sources += [
-        "../browser/ui/media_router/presentation_receiver_window_controller_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_progress_dialog_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_browsertest.cc",
@@ -4650,6 +4649,8 @@ if (!is_android) {
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/lens:browser_tests",
+        "//chrome/browser/ui/media_router",
+        "//chrome/browser/ui/media_router:browser_tests",
         "//chrome/browser/ui/page_action:icon_type",
         "//chrome/browser/ui/toasts:browser_tests",
         "//chrome/browser/ui/zoom:browser_tests",
@@ -7800,10 +7801,6 @@ test("unit_tests") {
       "../browser/ui/global_media_controls/supplemental_device_picker_producer_unittest.cc",
       "../browser/ui/hid/hid_chooser_controller_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
-      "../browser/ui/media_router/cast_modes_with_media_sources_unittest.cc",
-      "../browser/ui/media_router/media_router_ui_helper_unittest.cc",
-      "../browser/ui/media_router/media_router_ui_service_factory_unittest.cc",
-      "../browser/ui/media_router/query_result_manager_unittest.cc",
       "../browser/ui/omnibox/chrome_omnibox_navigation_observer_unittest.cc",
       "../browser/ui/omnibox/clipboard_utils_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedal_implementations_unittest.cc",
@@ -8231,12 +8228,16 @@ test("unit_tests") {
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/hats:unit_tests",
       "//chrome/browser/ui/lens:unit_tests",
+      "//chrome/browser/ui/media_router:unit_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",
 
-      # TODO(crbug.com/)369794212: Remove when modularization of //c/b/ui/toolbar/cast happens.
+      # TODO(crbug.com/369756821): Remove when the modularization of //c/b/ui/global_media_controls happens.
+      "//chrome/browser/ui/media_router",
+
+      # TODO(crbug.com/369794212): Remove when modularization of //c/b/ui/toolbar/cast happens.
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
@@ -8812,7 +8813,6 @@ test("unit_tests") {
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
       "../browser/policy/restricted_mgs_policy_provider_lacros_unittest.cc",
       "../browser/signin/signin_ui_delegate_impl_lacros_unittest.cc",
-      "../browser/ui/media_router/cast_notification_controller_lacros_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
     ]
@@ -10021,8 +10021,6 @@ test("unit_tests") {
       "../browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc",
       "../browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
       "../browser/enterprise/watermark/watermark_view_unittest.cc",
-      "../browser/ui/media_router/media_route_starter_unittest.cc",
-      "../browser/ui/media_router/media_router_ui_unittest.cc",
       "../browser/ui/views/accelerator_table_unittest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_unittest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_permissions_panel_unittest.cc",
@@ -11339,6 +11337,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/commerce:test_support",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/lens",
+        "//chrome/browser/ui/media_router",
         "//chrome/browser/ui/toolbar/cast",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",

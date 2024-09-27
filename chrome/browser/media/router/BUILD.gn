@@ -247,10 +247,7 @@ if (!is_android) {
     deps = [
       ":router",
       "//chrome/browser/media/router:media_router_feature",
-
-      # TODO(crbug.com/369756822): Replace by //c/b/ui/media_router when this
-      # directory gets modularized.
-      "//chrome/browser/ui",
+      "//chrome/browser/ui/media_router",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }

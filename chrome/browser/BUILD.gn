@@ -4243,6 +4243,8 @@ static_library("browser") {
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
@@ -4399,6 +4401,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/media_router:impl",
     ]
 
     #!is_android
