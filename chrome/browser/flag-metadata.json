@@ -4779,7 +4779,7 @@
   {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 141
   },
   {
     "name": "firmware-update-ui-v2",
@@ -7410,7 +7410,7 @@
   {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 136
   },
   {
     "name": "query-tiles",

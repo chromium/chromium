@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordGeneration.SubmissionAvailableEvent"
-    enum="PasswordSubmissionEvent" expires_after="M131">
+    enum="PasswordSubmissionEvent" expires_after="M137">
   <owner>kazinova@google.com</owner>
   <owner>shaikhitdin@google.com</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
