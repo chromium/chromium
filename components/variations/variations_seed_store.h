@@ -54,14 +54,16 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<VariationsSafeSeedStore> safe_seed_store);
 
-  // |initial_seed| may be null. If not null, then it will be stored in this
-  // seed store. This is used by Android Chrome to supply the first run seed,
-  // and by Android WebView to supply the seed on every run.
+  // |local_state| provides access to Local State prefs. Must not be null.
+  // |initial_seed|, if not null, is stored in this seed store. It is used (A)
+  // by Android Chrome and iOS to supply a first-run seed and (B) by Android
+  // WebView to supply a seed on every run.
   // |signature_verification_enabled| can be used in unit tests to disable
-  // signature checks on the seed. If |use_first_run_prefs| is true (default),
-  // then this VariationsSeedStore may modify the Java SharedPreferences ("first
-  // run prefs") which are set during first run; otherwise this will not access
-  // SharedPreferences at all.
+  // signature checks on the seed.
+  // |safe_seed_store| controls loading and storing safe seed data.
+  // |use_first_run_prefs|, if true (default), facilitates modifying Java
+  // SharedPreferences ("first run prefs") on Android. If false,
+  // SharedPreferences are not accessed.
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<SeedResponse> initial_seed,
                       bool signature_verification_enabled,
