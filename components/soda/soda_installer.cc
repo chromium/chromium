@@ -309,8 +309,7 @@ bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
          prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
-         prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled) ||
-         base::FeatureList::IsEnabled(ash::features::kConch);
+         prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled);
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 #endif
