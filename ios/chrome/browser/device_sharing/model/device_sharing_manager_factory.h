@@ -15,9 +15,6 @@ class DeviceSharingManager;
 // This factory returns the same instance for regular and OTR profiles.
 class DeviceSharingManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static DeviceSharingManager* GetForBrowserState(ProfileIOS* profile);
-
   static DeviceSharingManager* GetForProfile(ProfileIOS* profile);
   static DeviceSharingManagerFactory* GetInstance();
 

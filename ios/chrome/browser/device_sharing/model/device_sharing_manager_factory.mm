@@ -14,17 +14,10 @@
 namespace {
 std::unique_ptr<KeyedService> BuildDeviceSharingManager(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<DeviceSharingManagerImpl>(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<DeviceSharingManagerImpl>(profile);
 }
-}
-
-// static
-DeviceSharingManager* DeviceSharingManagerFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
+}  // namespace
 
 // static
 DeviceSharingManager* DeviceSharingManagerFactory::GetForProfile(

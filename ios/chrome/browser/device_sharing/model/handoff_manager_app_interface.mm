@@ -12,14 +12,14 @@
 NSURL* GetCurrentUserActivityURL(ProfileIOS* profile) {
   DeviceSharingManagerImpl* sharing_manager =
       static_cast<DeviceSharingManagerImpl*>(
-          DeviceSharingManagerFactory::GetForBrowserState(profile));
+          DeviceSharingManagerFactory::GetForProfile(profile));
   return [sharing_manager->handoff_manager_ userActivityWebpageURL];
 }
 
 @implementation HandoffManagerAppInterface
 
 + (NSURL*)currentUserActivityWebPageURL {
-  return GetCurrentUserActivityURL(chrome_test_util::GetOriginalBrowserState());
+  return GetCurrentUserActivityURL(chrome_test_util::GetOriginalProfile());
 }
 
 @end
