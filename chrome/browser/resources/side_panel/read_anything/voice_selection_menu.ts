@@ -75,7 +75,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       currentNotifications_: {type: Object},
       isSpeechActive: {type: Boolean},
       localeToDisplayName: {type: Object},
-      lastDownloadedLang: {type: String},
       showLanguageMenuDialog_: {type: Boolean},
       downloadingMessages_: {type: Boolean},
       voiceGroups_: {type: Object},
@@ -88,7 +87,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   enabledLangs: string[] = [];
   availableVoices: SpeechSynthesisVoice[] = [];
   isSpeechActive: boolean = false;
-  lastDownloadedLang?: string;
 
   // The current notifications that should be used in the voice menu.
   private currentNotifications_: {[language: string]: NotificationType} = {};
@@ -242,14 +240,15 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
   protected openLanguageMenu_() {
     this.showLanguageMenuDialog_ = true;
+    this.fire(ToolbarEvent.LANGUAGE_MENU_OPEN);
   }
 
   protected onLanguageMenuClose_(event: CustomEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.notificationManager_.removeListener(this.$.languageMenu);
 
     this.showLanguageMenuDialog_ = false;
+    this.fire(ToolbarEvent.LANGUAGE_MENU_CLOSE);
   }
 
   protected onClose_() {

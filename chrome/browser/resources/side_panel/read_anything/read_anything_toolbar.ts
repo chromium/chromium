@@ -114,7 +114,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       localeToDisplayName: Object,
       previewVoicePlaying: Object,
       areFontsLoaded_: Boolean,
-      lastDownloadedLang: String,
       settingsPrefs: Object,
     };
   }

@@ -33,6 +33,7 @@ build_webui_tests("build") {
     "test_color_updater_browser_proxy.ts",
     "test_metrics_browser_proxy.ts",
     "language_menu_test.ts",
+    "language_toast_test.ts",
     "loading_screen_test.ts",
     "links_toggled_integration_test.ts",
     "common.ts",

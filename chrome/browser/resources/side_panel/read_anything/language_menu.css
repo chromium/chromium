@@ -77,25 +77,3 @@ cr-icon {
 .notification-error-true {
   color: var(--color-sys-error);
 }
-
-#toast-in-dialog {
-  bottom: 0;
-  left: 0;
-  min-width: 245px;
-  width: 80%;
-}
-
-#toastDiv {
-  line-height: 1.2;
-  white-space: normal;
-}
-
-#toastTitle {
-  display: block;
-  font-size: 1em;
-}
-
-#toastMessage {
-  display: inline-block;
-  font-size: 1em;
-}

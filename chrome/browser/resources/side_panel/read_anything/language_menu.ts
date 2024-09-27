@@ -8,18 +8,20 @@ import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import './language_toast.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
+import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {toastDurationMs, ToolbarEvent} from './common.js';
+import {ToolbarEvent} from './common.js';
 import {getCss} from './language_menu.css.js';
 import {getHtml} from './language_menu.html.js';
+import type {LanguageToastElement} from './language_toast.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, getVoicePackConvertedLangIfExists, NotificationType} from './voice_language_util.js';
 import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
@@ -72,17 +74,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
       availableVoices: {type: Array},
       localeToDisplayName: {type: Object},
       selectedLang: {type: String},
-      lastDownloadedLang: {type: String},
       languageSearchValue_: {type: String},
       currentNotifications_: {type: Object},
-      toastTitle_: {type: String},
       availableLanguages_: {type: Array},
     };
   }
 
-  constructor() {
-    super();
+  override connectedCallback() {
+    super.connectedCallback();
     this.notificationManager_.addListener(this);
+    this.notificationManager_.addListener(this.getToast_());
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -97,10 +98,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
         changedPrivateProperties.has('languageSearchValue_')) {
       this.availableLanguages_ = this.computeAvailableLanguages_();
     }
-
-    if (changedProperties.has('lastDownloadedLang')) {
-      this.toastTitle_ = this.getLanguageDownloadedTitle_();
-    }
   }
 
   notify(language: string, type: NotificationType) {
@@ -113,12 +110,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
   selectedLang: string;
   localeToDisplayName: {[lang: string]: string} = {};
   enabledLangs: string[] = [];
-  lastDownloadedLang: string;
 
   availableVoices: SpeechSynthesisVoice[];
   protected languageSearchValue_: string = '';
-  protected toastTitle_: string = '';
-  protected toastDuration_: number = toastDurationMs;
   protected availableLanguages_: LanguageDropdownItem[] = [];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
@@ -132,6 +126,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
 
   protected closeLanguageMenu_() {
     this.notificationManager_.removeListener(this);
+    this.notificationManager_.removeListener(this.getToast_());
     this.$.languageMenu.close();
   }
 
@@ -147,18 +142,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     this.fire(ToolbarEvent.LANGUAGE_TOGGLE, {language});
   }
 
+  private getToast_(): LanguageToastElement {
+    const toast = this.$.languageMenu.querySelector<LanguageToastElement>(
+        'language-toast');
+    assert(toast, 'no language menu toast!');
+    return toast;
+  }
+
   private getDisplayName(lang: string) {
     const langLower = lang.toLowerCase();
     return this.localeToDisplayName[langLower] || langLower;
-  }
-
-  private getLanguageDownloadedTitle_() {
-    if (!this.lastDownloadedLang) {
-      return '';
-    }
-    const langDisplayName = this.getDisplayName(this.lastDownloadedLang);
-    return loadTimeData.getStringF(
-        'readingModeVoiceDownloadedTitle', langDisplayName);
   }
 
   private getSupportedNaturalVoiceDownloadLocales(): Set<string> {
@@ -226,6 +219,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
         return {isError: true, text: 'allocationErrorHighQuality'};
       case NotificationType.NO_SPACE:
         return {isError: true, text: 'allocationError'};
+      case NotificationType.DOWNLOADED:
       case NotificationType.NONE:
         return {isError: false};
       default:

@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LanguageMenuElement, LanguageToastElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -26,6 +26,14 @@ suite('LanguageMenu', () => {
   function getNotificationItems() {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
         '#notificationText');
+  }
+
+  function getToast(): LanguageToastElement {
+    const toast =
+        languageMenu.$.languageMenu.querySelector<LanguageToastElement>(
+            'language-toast');
+    assertTrue(!!toast);
+    return toast;
   }
 
   function getLanguageSearchField() {
@@ -279,7 +287,50 @@ suite('LanguageMenu', () => {
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
         assertLanguageNotification('', getNotificationItems()[2]!);
+        assertFalse(getToast().$.toast.open);
       });
+
+      // <if expr="chromeos_ash">
+      test('it shows downloaded toast', async () => {
+        enabledLangs = ['Italian', 'English (United States)'];
+        languageMenu.enabledLangs = enabledLangs;
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        document.body.appendChild(languageMenu);
+        await microtasksFinished();
+        notify('it', VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
+
+        assertTrue(getToast().$.toast.open);
+      });
+
+      test('it does not show error toast', async () => {
+        enabledLangs = ['Italian', 'English (United States)'];
+        languageMenu.enabledLangs = enabledLangs;
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        document.body.appendChild(languageMenu);
+        await microtasksFinished();
+        notify('it', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
+        await microtasksFinished();
+
+        assertFalse(getToast().$.toast.open);
+      });
+
+      test('it does not show downloaded toast when closed', async () => {
+        enabledLangs = ['Italian', 'English (United States)'];
+        languageMenu.enabledLangs = enabledLangs;
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        document.body.appendChild(languageMenu);
+        await microtasksFinished();
+        const closeButton =
+            languageMenu.$.languageMenu.querySelector<HTMLElement>('#close');
+        closeButton!.click();
+        await microtasksFinished();
+        notify('it', VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+        await microtasksFinished();
+
+        assertFalse(getToast().$.toast.open);
+      });
+      // </if>
 
       test('it shows and hides downloading notification', async () => {
         languageMenu.localesOfLangPackVoices = new Set(['it-it']);

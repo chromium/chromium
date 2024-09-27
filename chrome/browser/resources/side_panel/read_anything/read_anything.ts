@@ -14,6 +14,7 @@ export {currentReadHighlightClass, PauseActionSource, previousReadHighlightClass
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getCurrentSpeechRate, playFromSelectionTimeout, ToolbarEvent} from './common.js';
 export type {LanguageMenuElement} from './language_menu.js';
+export type {LanguageToastElement} from './language_toast.js';
 export type {ColorMenu} from './menus/color_menu.js';
 export type {HighlightMenu} from './menus/highlight_menu.js';
 export type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';

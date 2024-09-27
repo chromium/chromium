@@ -68,7 +68,7 @@ suite('VoiceNotificationManager', () => {
         'bn', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION, []);
 
     assertEquals(NotificationType.DOWNLOADING, notifications['fr']);
-    assertEquals(NotificationType.NONE, notifications['yue']);
+    assertEquals(NotificationType.DOWNLOADED, notifications['yue']);
     assertEquals(NotificationType.GENERIC_ERROR, notifications['hi']);
     assertEquals(NotificationType.NO_SPACE, notifications['bn']);
   });

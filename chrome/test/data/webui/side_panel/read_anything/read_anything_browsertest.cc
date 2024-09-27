@@ -134,6 +134,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageToast) {
+  RunSidePanelTest("side_panel/read_anything/language_toast_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggle) {
   RunSidePanelTest("side_panel/read_anything/links_toggle_button_test.js",
                    "mocha.run()");

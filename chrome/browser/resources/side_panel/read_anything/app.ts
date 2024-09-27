@@ -7,9 +7,9 @@ import './strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import './language_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -21,10 +21,11 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
@@ -129,6 +130,7 @@ export interface AppElement {
     appFlexParent: HTMLElement,
     container: HTMLElement,
     containerParent: HTMLElement,
+    languageToast: LanguageToastElement,
   };
 }
 
@@ -164,7 +166,6 @@ export class AppElement extends AppElementBase {
       voiceStatusLocalState_: {type: Object},
       previewVoicePlaying_: {type: Object},
       localeToDisplayName_: {type: Object},
-      lastDownloadedLang_: {type: String},
       hasContent_: {type: Boolean},
       speechEngineLoaded_: {type: Boolean},
       willDrawAgainSoon_: {type: Boolean},
@@ -195,8 +196,6 @@ export class AppElement extends AppElementBase {
   protected emptyStateImagePath_?: string;
   protected emptyStateDarkImagePath_?: string;
   protected emptyStateHeading_?: string;
-  protected lastDownloadedLang_?: string;
-  protected toastDuration_: number = toastDurationMs;
   protected emptyStateSubheading_ = '';
 
   private previousHighlights_: HTMLElement[] = [];
@@ -345,6 +344,7 @@ export class AppElement extends AppElementBase {
     });
 
     this.showLoading();
+    VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
 
     if (this.isReadAloudEnabled_) {
       // Clear state. We don't do this in disconnectedCallback because that's
@@ -889,14 +889,13 @@ export class AppElement extends AppElementBase {
     }
 
     const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
       // Keep the server responses.
       this.setVoicePackServerStatus_(lang, newVoicePackStatus);
 
       // Update application state.
-      this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
+      this.updateApplicationState(lang, newVoicePackStatus);
 
       // Disable the associated language if there are no other Google voices for
       // it.
@@ -923,20 +922,18 @@ export class AppElement extends AppElementBase {
     }
 
     const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
     // Keep the server responses
     this.setVoicePackServerStatus_(lang, newVoicePackStatus);
 
     // Update application state
-    this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
+    this.updateApplicationState(lang, newVoicePackStatus);
   }
 
 
   // Store client side voice pack state and trigger side effects
   private updateApplicationState(
-      lang: string, newVoicePackStatus: VoicePackStatus,
-      oldVoicePackStatus?: VoicePackStatus) {
+      lang: string, newVoicePackStatus: VoicePackStatus) {
     if (isVoicePackStatusSuccess(newVoicePackStatus)) {
       const newStatusCode = newVoicePackStatus.code;
 
@@ -961,37 +958,9 @@ export class AppElement extends AppElementBase {
           // errored, and we don't want to overwrite that state here.
           break;
         case VoicePackServerStatusSuccessCode.INSTALLED:
-          // See if voice is newly downloaded and should have a toast notifying
-          // the user.
-          // If the old voice pack status is undefined, it means we haven't
-          // received a server status yet. If we are now receiving an installed
-          // status, and we were locally waiting for an install, then we know
-          // the language is newly downloaded.
-          if ((!oldVoicePackStatus &&
-               isWaitingForInstallLocally(
-                   this.getVoicePackLocalStatus_(lang))) ||
-              (oldVoicePackStatus &&
-               oldVoicePackStatus.code !==
-                   VoicePackServerStatusSuccessCode.INSTALLED)) {
-            const genericVoicePackLanguage =
-                getVoicePackConvertedLangIfExists(lang);
-            const exactVoicePackLanguage =
-                convertLangOrLocaleToExactVoicePackLocale(
-                    genericVoicePackLanguage);
-
-            this.lastDownloadedLang_ = exactVoicePackLanguage ?
-                exactVoicePackLanguage :
-                genericVoicePackLanguage;
-
-            // Force a refresh of the voices list since we might not get an
-            // update the voices have changed.
-            this.getVoices_(true);
-
-            // <if expr="chromeos_ash">
-            this.showToast_();
-            // </if>
-          }
-
+          // Force a refresh of the voices list since we might not get an update
+          // the voices have changed.
+          this.getVoices_(true);
           this.autoSwitchVoice_(lang);
 
           // Some languages may require a download from the voice pack
@@ -1046,34 +1015,12 @@ export class AppElement extends AppElementBase {
     }
   }
 
-
-  protected getLanguageDownloadedTitle_() {
-    const langDisplayName = this.getLangDisplayName(this.lastDownloadedLang_);
-
-    return loadTimeData.getStringF(
-        'readingModeVoiceDownloadedTitle', langDisplayName);
+  protected onLanguageMenuOpen_() {
+    VoiceNotificationManager.getInstance().removeListener(this.$.languageToast);
   }
 
-  // TODO(b/325962407): replace toast with system notification
-  private showToast_(): void {
-    assert(this.shadowRoot);
-    // Tests don't have menus and dialogs set up, no need to check
-    const voiceSelectionMenu =
-        this.$.toolbar.shadowRoot?.querySelector('voice-selection-menu');
-    const languageMenu =
-        voiceSelectionMenu?.shadowRoot?.querySelector('language-menu');
-    const languageMenuToast =
-        languageMenu?.shadowRoot?.querySelector('cr-dialog')
-            ?.querySelector<CrToastElement>('#toast-in-dialog');
-
-    const toast = languageMenuToast ||
-        this.shadowRoot!.querySelector<CrToastElement>('#toast')!;
-    assert(toast);
-
-    if (toast.open) {
-      toast.hide();
-    }
-    toast.show();
+  protected onLanguageMenuClose_() {
+    VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
   }
 
   onVoicesChanged() {

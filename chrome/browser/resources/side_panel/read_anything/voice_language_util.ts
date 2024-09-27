@@ -77,6 +77,7 @@ export enum VoiceClientSideStatusCode {
 export enum NotificationType {
   NONE,         // No notification needed.
   DOWNLOADING,  // Language is downloading.
+  DOWNLOADED,   // Language is downloaded.
   NO_INTERNET,  // No available voices for this language due to no internet.
   NO_SPACE,     // No available voices for this language due to no space.
   NO_SPACE_HQ,  // No high-quality voices for this language due to no space.
@@ -201,6 +202,7 @@ export function getNotification(
       }
       return NotificationType.NO_SPACE;
     case VoiceClientSideStatusCode.AVAILABLE:
+      return NotificationType.DOWNLOADED;
     case VoiceClientSideStatusCode.NOT_INSTALLED:
       return NotificationType.NONE;
     default:
