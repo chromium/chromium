@@ -191,7 +191,7 @@ constexpr bool kDefaultAccessibilitySelectToSpeakVoiceSwitching = false;
 constexpr bool kDefaultAccessibilitySelectToSpeakWordHighlight = true;
 
 // How much to scale cursor speed in various directions.
-constexpr int kDefaultFaceGazeCursorSpeed = 12;
+constexpr int kDefaultFaceGazeCursorSpeed = 10;
 
 // How much FaceGaze should smooth recent cursor movements.
 constexpr int kDefaultFaceGazeCursorSmoothing = 7;

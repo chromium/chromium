@@ -45,7 +45,8 @@
       <settings-slider
           id="combinedSpeedSlider"
           pref="{{syntheticCombinedCursorSpeedPref_}}"
-          min="1" max="100"
+          min="[[minCursorSpeed]]" max="[[maxCursorSpeed]]"
+          ticks="[[cursorSpeedTicks]]"
           label-aria="$i18n{faceGazeCursorSpeedLabel}"
           label-min="$i18n{faceGazeCursorSpeedSlow}"
           label-max="$i18n{faceGazeCursorSpeedFast}">
@@ -61,7 +62,8 @@
       <settings-slider
           id="speedUpSlider"
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_up}}"
-          min="1" max="100"
+          min="[[minCursorSpeed]]" max="[[maxCursorSpeed]]"
+          ticks="[[cursorSpeedTicks]]"
           label-aria="$i18n{faceGazeCursorUpSpeedLabel}"
           label-min="$i18n{faceGazeCursorSpeedSlow}"
           label-max="$i18n{faceGazeCursorSpeedFast}">
@@ -74,7 +76,8 @@
       <settings-slider
           id="speedDownSlider"
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_down}}"
-          min="1" max="100"
+          min="[[minCursorSpeed]]" max="[[maxCursorSpeed]]"
+          ticks="[[cursorSpeedTicks]]"
           label-aria="$i18n{faceGazeCursorDownSpeedLabel}"
           label-min="$i18n{faceGazeCursorSpeedSlow}"
           label-max="$i18n{faceGazeCursorSpeedFast}">
@@ -87,7 +90,8 @@
       <settings-slider
           id="speedLeftSlider"
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_left}}"
-          min="1" max="100"
+          min="[[minCursorSpeed]]" max="[[maxCursorSpeed]]"
+          ticks="[[cursorSpeedTicks]]"
           label-aria="$i18n{faceGazeCursorLeftSpeedLabel}"
           label-min="$i18n{faceGazeCursorSpeedSlow}"
           label-max="$i18n{faceGazeCursorSpeedFast}">
@@ -100,7 +104,8 @@
       <settings-slider
           id="speedRightSlider"
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_right}}"
-          min="1" max="100"
+          min="[[minCursorSpeed]]" max="[[maxCursorSpeed]]"
+          ticks="[[cursorSpeedTicks]]"
           label-aria="$i18n{faceGazeCursorRightSpeedLabel}"
           label-min="$i18n{faceGazeCursorSpeedSlow}"
           label-max="$i18n{faceGazeCursorSpeedFast}">
@@ -125,7 +130,8 @@
     <settings-slider
         id="velocityThresholdSlider"
         pref="{{prefs.settings.a11y.face_gaze.velocity_threshold}}"
-        min="1" max="20"
+        min="[[minCursorTuning]]" max="[[maxCursorTuning]]"
+        ticks="[[tuningTicks]]"
         label-aria="movement threshold"
         label-min="Reactive"
         label-max="Stable">
@@ -143,7 +149,8 @@
     <settings-slider
         id="cursorSmoothingSlider"
         pref="{{prefs.settings.a11y.face_gaze.cursor_smoothing}}"
-        min="1" max="20"
+        min="[[minCursorTuning]]" max="[[maxCursorTuning]]"
+        ticks="[[tuningTicks]]"
         label-aria="$i18n{faceGazeCursorSmoothingLabel}"
         label-min="$i18n{faceGazeCursorSliderLabelResponsive}"
         label-max="$i18n{faceGazeCursorSliderLabelSmooth}">

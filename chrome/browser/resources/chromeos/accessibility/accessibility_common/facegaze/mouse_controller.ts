@@ -765,7 +765,7 @@ export namespace MouseController {
       'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
-  export const DEFAULT_MOUSE_SPEED = 12;
+  export const DEFAULT_MOUSE_SPEED = 10;
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 7;
   export const DEFAULT_VELOCITY_FACTOR = 0.45;
