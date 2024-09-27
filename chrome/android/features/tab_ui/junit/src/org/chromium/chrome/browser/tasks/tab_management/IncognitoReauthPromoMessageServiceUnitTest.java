@@ -44,6 +44,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -343,8 +344,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
                 /* isAvailable= */ true);
-        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(true);
+        when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         doAnswer(
                         invocation -> {
                             Callback<Boolean> callback = invocation.getArgument(0);
@@ -366,8 +367,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         mIncognitoReauthPromoMessageService.review();
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
 
-        verify(mReauthenticatorBridgeMock, times(1))
-                .canUseAuthenticationWithBiometricOrScreenLock();
+        verify(mReauthenticatorBridgeMock, times(1)).getBiometricAvailabilityStatus();
         verify(mReauthenticatorBridgeMock, times(1)).reauthenticate(notNull());
         verify(mPrefServiceMock, times(1))
                 .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);

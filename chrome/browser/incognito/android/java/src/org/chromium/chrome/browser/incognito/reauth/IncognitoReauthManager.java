@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,12 +53,12 @@ public class IncognitoReauthManager {
      * Starts the authentication flow. This is an asynchronous method call which would invoke the
      * passed {@link IncognitoReauthCallback} parameter once executed.
      *
-     * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that
-     *         would be run once the authentication is executed.
+     * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that would be run
+     *     once the authentication is executed.
      */
     public void startReauthenticationFlow(
             @NonNull IncognitoReauthCallback incognitoReauthCallback) {
-        if (!mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
+        if (mReauthenticatorBridge.getBiometricAvailabilityStatus() == BiometricStatus.UNAVAILABLE
                 || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
             return;

@@ -168,6 +168,7 @@ robolectric_library("incognito_junit_tests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",

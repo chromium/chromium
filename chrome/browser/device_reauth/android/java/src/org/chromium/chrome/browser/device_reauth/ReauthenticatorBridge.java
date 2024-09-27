@@ -51,6 +51,20 @@ public class ReauthenticatorBridge {
     }
 
     /**
+     * Checks biometric auth availability status. It returns one of the following:
+     * <li>REQUIRED - biometric is mandatory,
+     * <li>BIOMETRICS_AVAILABLE - biometric auth is available but not mandatory,
+     * <li>ONLY_LSKF_AVAILABLE - auth with pin or patter is available,
+     * <li>UNAVAILABLE - no authentication method is available.
+     */
+    public @BiometricStatus int getBiometricAvailabilityStatus() {
+        if (mNativeReauthenticatorBridge == 0) return BiometricStatus.UNAVAILABLE;
+
+        return ReauthenticatorBridgeJni.get()
+                .getBiometricAvailabilityStatus(mNativeReauthenticatorBridge);
+    }
+
+    /**
      * Starts reauthentication. This method implies that the user will need to authenticate again if
      * they want to perform an authenticated action (i.e. the user will be considered not
      * authenticated immediately after the current action finishes).
@@ -106,6 +120,9 @@ public class ReauthenticatorBridge {
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
 
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
+
+        @BiometricStatus
+        int getBiometricAvailabilityStatus(long nativeReauthenticatorBridge);
 
         void reauthenticate(long nativeReauthenticatorBridge);
 

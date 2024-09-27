@@ -205,7 +205,7 @@ TEST_F(DeviceAuthenticatorAndroidTest,
        GetBiometricAvailabilityStatusAvailable) {
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
       .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_EQ(device_reauth::BiometricStatus::kAvailable,
+  EXPECT_EQ(device_reauth::BiometricStatus::kBiometricsAvailable,
             authenticator()->GetBiometricAvailabilityStatus());
 }
 
@@ -215,7 +215,7 @@ TEST_F(DeviceAuthenticatorAndroidTest,
       .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_EQ(device_reauth::BiometricStatus::kAvailableLSKF,
+  EXPECT_EQ(device_reauth::BiometricStatus::kOnlyLskfAvailable,
             authenticator()->GetBiometricAvailabilityStatus());
 }
 

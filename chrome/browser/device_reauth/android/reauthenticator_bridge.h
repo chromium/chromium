@@ -33,6 +33,9 @@ class ReauthenticatorBridge {
   // used.
   bool CanUseAuthenticationWithBiometricOrScreenLock(JNIEnv* env);
 
+  // Called by Java to check biometric availability status.
+  jint GetBiometricAvailabilityStatus(JNIEnv* env);
+
   // Called by Java to start authentication.
   void Reauthenticate(JNIEnv* env);
 

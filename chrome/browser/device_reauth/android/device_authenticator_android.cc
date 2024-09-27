@@ -143,7 +143,7 @@ DeviceAuthenticatorAndroid::GetBiometricAvailabilityStatus() {
     case device_reauth::BiometricsAvailability::kRequiredButHasError:
       return device_reauth::BiometricStatus::kRequired;
     case device_reauth::BiometricsAvailability::kAvailable:
-      return device_reauth::BiometricStatus::kAvailable;
+      return device_reauth::BiometricStatus::kBiometricsAvailable;
     // TODO (crbug.com/369057610): Probably return status `kAvailable` for
     // BiometricsAvailability::kAvailableNoFallback case.
     case device_reauth::BiometricsAvailability::kAvailableNoFallback:
@@ -157,7 +157,7 @@ DeviceAuthenticatorAndroid::GetBiometricAvailabilityStatus() {
   }
   // TODO (crbug.com/368586157): Call just hasScreenLockSetUp here.
   if (CanAuthenticateWithBiometricOrScreenLock()) {
-    return device_reauth::BiometricStatus::kAvailableLSKF;
+    return device_reauth::BiometricStatus::kOnlyLskfAvailable;
   }
   return device_reauth::BiometricStatus::kUnavailable;
 }
