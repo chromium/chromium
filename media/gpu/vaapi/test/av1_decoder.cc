@@ -676,12 +676,17 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     for (auto& display_surface : display_surfaces_)
       display_surface.reset();
 
-    const gfx::Size new_frame_size(
+    // Update the context size if needed.
+    const gfx::Size new_max_frame_size(
         base::strict_cast<int>(current_sequence_header_->max_frame_width),
         base::strict_cast<int>(current_sequence_header_->max_frame_height));
-    if (!va_context_ || va_context_->size() != new_frame_size) {
+    if (!va_context_ || va_context_->size() != new_max_frame_size) {
+      VLOG(1) << "New context size needed";
+      VLOG_IF(1, va_context_)
+          << "Previous context size: " << va_context_->size().ToString();
+      VLOG(1) << "New context size: " << new_max_frame_size.ToString();
       va_context_ = std::make_unique<ScopedVAContext>(*va_device_, *va_config_,
-                                                      new_frame_size);
+                                                      new_max_frame_size);
     }
   }
 
@@ -708,6 +713,17 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   LOG_ASSERT(current_sequence_header_)
       << "Sequence header missing for decoding.";
 
+  // The frame_width and frame_height denote the visible part of the frame.
+  // This handles resolution changes between sequence header changes: the
+  // "resolution change" is really just an update to which part of the frame to
+  // show to the user, which comes from the width and height hints provided in
+  // |current_frame_header|.
+  // Also see
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/av1_decoder.cc;l=454;drc=9c1d4b495c1ebadeda004c9b741e11a6f035b9e7
+  const gfx::Size visible_size(
+      base::strict_cast<int>(current_frame->frame_width()),
+      base::strict_cast<int>(current_frame->frame_height()));
+
   // Create surfaces for decode.
   VASurfaceAttrib attribute;
   memset(&attribute, 0, sizeof(VASurfaceAttrib));
@@ -716,7 +732,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   attribute.value.type = VAGenericValueTypeInteger;
   attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
-      *va_device_, va_config_->va_rt_format(), va_context_->size(), attribute);
+      *va_device_, va_config_->va_rt_format(), visible_size, attribute);
 
   // Set up buffer for pic parameters
   VADecPictureParameterBufferAV1 pic_parameters;
@@ -780,9 +796,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   scoped_refptr<SharedVASurface> film_grain_surface;
   if (current_frame_header.film_grain_params.apply_grain) {
     pic_parameters.current_frame = surface->id();
-    film_grain_surface =
-        SharedVASurface::Create(*va_device_, va_config_->va_rt_format(),
-                                va_context_->size(), attribute);
+    film_grain_surface = SharedVASurface::Create(
+        *va_device_, va_config_->va_rt_format(), visible_size, attribute);
     pic_parameters.current_display_picture = film_grain_surface->id();
   } else {
     pic_parameters.current_frame = surface->id();
