@@ -12,7 +12,8 @@
 
 namespace features {
 // Please keep features in alphabetical order.
-
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAPrivateAggregation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableIFrameAdAuctionHeaders);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
@@ -22,8 +23,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrefetchBandAKeys);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStoreBandAKeysInDB);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUsePreconnectCache);
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
 
 }  // namespace features
 

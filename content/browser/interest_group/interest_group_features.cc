@@ -11,6 +11,17 @@ namespace features {
 
 // Please keep features in alphabetical order.
 
+// Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
+// the auction when detected.
+BASE_FEATURE(kDetectInconsistentPageImpl,
+             "DetectInconsistentPageImpl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable parsing private aggregation contributions from B&A response.
+BASE_FEATURE(kEnableBandAPrivateAggregation,
+             "EnableBandAPrivateAggregation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable parsing ad auction response headers for an iframe navigation request.
 BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
              "EnableIFrameAdAuctionHeaders",
@@ -41,11 +52,5 @@ BASE_FEATURE(kFledgeStoreBandAKeysInDB,
 BASE_FEATURE(kFledgeUsePreconnectCache,
              "FledgeUsePreconnectCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
-// the auction when detected.
-BASE_FEATURE(kDetectInconsistentPageImpl,
-             "DetectInconsistentPageImpl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -835,6 +836,32 @@ TEST(BiddingAndAuctionResponseTest, PrivateAggregationDisabled) {
   EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
 }
 
+TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kPrivateAggregationApi,
+        {{"enabled_in_fledge", "true"}}},
+       {blink::features::kPrivateAggregationApiFilteringIds, {}},
+       {kPrivacySandboxAggregationServiceFilteringIds, {}}},
+      /*disabled_features=*/{features::kEnableBandAPrivateAggregation});
+
+  base::Value::Dict response = CreateResponseDictWithPAggResponse(
+      CreateBasicContributions(), "reserved.win",
+      /*component_win=*/true);
+
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          GroupAggregationCoordinators());
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+  EXPECT_TRUE(result->component_win_pagg_requests.empty());
+  EXPECT_TRUE(result->server_filtered_pagg_requests_reserved.empty());
+  EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
+}
+
 class BiddingAndAuctionPAggResponseTest : public testing::Test {
  public:
   BiddingAndAuctionPAggResponseTest() {
@@ -843,7 +870,8 @@ class BiddingAndAuctionPAggResponseTest : public testing::Test {
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_fledge", "true"}}},
          {blink::features::kPrivateAggregationApiFilteringIds, {}},
-         {kPrivacySandboxAggregationServiceFilteringIds, {}}},
+         {kPrivacySandboxAggregationServiceFilteringIds, {}},
+         {features::kEnableBandAPrivateAggregation, {}}},
         /*disabled_features=*/{});
   }
 
