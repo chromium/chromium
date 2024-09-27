@@ -53,6 +53,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",
     "//chrome/browser/extensions/api/web_authentication_proxy",
+    "//chrome/browser/extensions/api/web_view",
     "//chrome/browser/extensions/api/webrtc_audio_private",
     "//chrome/browser/extensions/api/webrtc_desktop_capture_private",
     "//chrome/browser/extensions/api/webrtc_logging_private",

@@ -326,8 +326,6 @@ source_set("extensions") {
     "api/web_navigation/web_navigation_api_constants.h",
     "api/web_navigation/web_navigation_api_helpers.cc",
     "api/web_navigation/web_navigation_api_helpers.h",
-    "api/web_view/chrome_web_view_internal_api.cc",
-    "api/web_view/chrome_web_view_internal_api.h",
     "api/webstore_private/extension_install_status.cc",
     "api/webstore_private/extension_install_status.h",
     "api/webstore_private/webstore_private_api.cc",
