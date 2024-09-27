@@ -4,11 +4,11 @@
 
 #include "content/public/test/content_browser_test.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -69,8 +69,11 @@ ContentBrowserTest::ContentBrowserTest() {
                       base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
       !file.IsValid()) {
     // Diagnostics for https://crbug.com/345765743.
-    NOTREACHED() << "Failed to create \"" << content_shell_path
-                 << "\": " << base::File::ErrorToString(file.error_details());
+    const auto last_errno = errno;
+    CHECK(base::PathExists(content_shell_path))
+        << "Failed to create \"" << content_shell_path
+        << "\": " << base::File::ErrorToString(file.error_details())
+        << "; errno = " << last_errno;
   }
   file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
                              /*is_absolute=*/false, /*create=*/false);
