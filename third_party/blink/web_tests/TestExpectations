@@ -2602,6 +2602,11 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
+[ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--cover--omitted-width-omitted-height.html [ Failure ]
+[ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/zero-ratio-no-dimensions-auto-auto.html [ Failure ]
+[ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/zero-ratio-no-dimensions-contain.html [ Failure ]
+[ Mac15 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/document-timeline-animation.html [ Failure ]
 crbug.com/369685643 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369685643 [ Mac12 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369685643 [ Mac14 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
