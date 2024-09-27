@@ -297,8 +297,38 @@
       <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
         <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
       </message>
-       <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
+      <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
           Tap to expand the player for more options.
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_RUBY" desc="Display name of a text-to-speech voice named Ruby.">
+          Ruby
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_RIVER" desc="Display name of a text-to-speech voice named River.">
+          River
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_FIELD" desc="Display name of a text-to-speech voice named Field.">
+          Field
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_MOSS" desc="Display name of a text-to-speech voice named Moss.">
+          Moss
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_CLOUD" desc="Display name of a text-to-speech voice named Cloud.">
+          Cloud
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_DALE" desc="Display name of a text-to-speech voice named Dale.">
+          Dale
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_LAKE" desc="Display name of a text-to-speech voice named Lake.">
+          Lake
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_AIR" desc="Display name of a text-to-speech voice named Air.">
+          Air
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_COAST" desc="Display name of a text-to-speech voice named Coast.">
+          Coast
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_CORAL" desc="Display name of a text-to-speech voice named Coral.">
+          Coral
       </message>
     </messages>
   </release>
