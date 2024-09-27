@@ -45652,7 +45652,7 @@ should be able to be added at any place in this file.
   <suffix name="GeminiSiteSearchShortcut" label="Gemini Site Search Shortcut"/>
   <suffix name="GenerativeTheming" label="Generative Theming"/>
   <suffix name="GoogleLens" label="Google Lens"/>
-  <suffix name="GooglePayReauth" label="Google Pay Re-auth"/>
+  <suffix name="Googlepayreauth" label="Google Pay Re-auth"/>
   <suffix name="HelpMeWrite" label="Help Me Write"/>
   <suffix name="HistoryEmbeddings" label="History Embeddings Search"/>
   <suffix name="SafetyCheck" label="Safety Check"/>

@@ -22,7 +22,7 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
   // 129
   registry->RegisterModule(
-      WhatsNewModule("GooglePayReauth", "vinnypersky@google.com",
+      WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
   // 131
   registry->RegisterModule(WhatsNewModule(
