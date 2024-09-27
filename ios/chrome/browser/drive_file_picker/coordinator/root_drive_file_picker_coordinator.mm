@@ -60,19 +60,17 @@
 }
 
 - (void)start {
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  _authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _currentIdentity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   drive::DriveService* driveService =
-      drive::DriveServiceFactory::GetForBrowserState(browserState);
+      drive::DriveServiceFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          browserState->GetSharedURLLoaderFactory());
+          profile->GetSharedURLLoaderFactory());
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];

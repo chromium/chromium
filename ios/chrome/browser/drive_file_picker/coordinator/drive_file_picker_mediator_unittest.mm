@@ -172,14 +172,12 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    drive_service_ =
-        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     _accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
-        browser_state_.get()->GetSharedURLLoaderFactory());
+        profile_.get()->GetSharedURLLoaderFactory());
     web_state_ = std::make_unique<web::FakeWebState>();
     StartChoosingFiles();
     // Start file selection in `web_state_`.
@@ -234,7 +232,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   // Returns the testing Drive service.
   drive::TestDriveService* GetTestDriveService() {
     return static_cast<drive::TestDriveService*>(
-        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get()));
+        drive::DriveServiceFactory::GetForProfile(profile_.get()));
   }
 
   void TearDown() final {
@@ -250,7 +248,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
   raw_ptr<drive::DriveService> drive_service_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;

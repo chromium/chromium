@@ -31,15 +31,14 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     base_view_controller_ = [[UIViewController alloc] init];
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     handler_ = [[FakeDriveFilePickerHandler alloc] init];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:handler_
@@ -70,7 +69,7 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service->SignIn(fake_identity,
                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
@@ -84,7 +83,7 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakeDriveFilePickerHandler* handler_;

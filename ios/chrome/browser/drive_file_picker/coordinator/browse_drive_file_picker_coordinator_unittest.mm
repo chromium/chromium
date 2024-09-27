@@ -28,8 +28,8 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     root_view_controller_ = [[UIViewController alloc] init];
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:root_view_controller_];
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     handler_ = [[FakeDriveFilePickerHandler alloc] init];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:handler_
@@ -73,7 +73,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   UIViewController* root_view_controller_;
   UINavigationController* navigation_controller_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakeDriveFilePickerHandler* handler_;
