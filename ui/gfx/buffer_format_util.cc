@@ -233,14 +233,14 @@ bool RowSizeForBufferFormatChecked(size_t width,
 bool PlaneHeightForBufferFormatChecked(size_t height,
                                        BufferFormat format,
                                        size_t plane,
-                                       size_t* height_in_bytes) {
+                                       size_t* height_in_pixels) {
   base::CheckedNumeric<size_t> checked_height =
       PlaneHeightForBufferFormatCheckedInternal(height, format, plane);
   if (!checked_height.IsValid()) {
     return false;
   }
 
-  *height_in_bytes = checked_height.ValueOrDie();
+  *height_in_pixels = checked_height.ValueOrDie();
   return true;
 }
 
