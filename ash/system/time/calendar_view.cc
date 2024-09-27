@@ -67,11 +67,16 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+// TODO(http://b/361693496): Remove this after the original issue fixed.
+#include "components/crash/core/common/crash_key.h"
+
 namespace ash {
 
 using BoundsType = CalendarView::CalendarSlidingSurfaceBoundsType;
 
 namespace {
+
+using AnimatingCrashKey = crash_reporter::CrashKeyString<8>;
 
 // The paddings in each view.
 constexpr int kContentVerticalPadding = 20;
@@ -194,7 +199,6 @@ constexpr char kFadeInUpNextViewAnimationHistogram[] =
 constexpr char kFadeOutUpNextViewAnimationHistogram[] =
     "Ash.CalendarView.FadeOutUpNextView.AnimationSmoothness";
 
-
 // Configures the TriView used for the title.
 void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   std::unique_ptr<views::BoxLayout> layout;
@@ -258,6 +262,14 @@ std::unique_ptr<views::Label> CreateHeaderYearView(const std::u16string& year) {
 
 int GetExpandedCalendarPadding() {
   return kExpandedCalendarPadding;
+}
+
+void StopViewLayerAnimation(views::View* view) {
+  view->layer()->GetAnimator()->StopAnimating();
+}
+
+void UpdateCachedAnimatingState(AnimatingCrashKey& key, bool running) {
+  key.Set(running ? "True" : "False");
 }
 
 // The overridden `Label` view used in `CalendarView`.
@@ -859,6 +871,7 @@ void CalendarView::ResetToTodayWithAnimation() {
 
   // Fades out on-screen month. When animation ends sets date to today by
   // calling `ResetToToday` and fades in updated views after.
+  is_reset_to_today_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1005,6 +1018,7 @@ void CalendarView::FadeInCurrentMonth() {
   auto header_reporter = calendar_metrics::CreateAnimationReporter(
       header_, kHeaderViewFadeInCurrentMonthAnimationHistogram);
 
+  is_reset_to_today_fade_in_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1072,8 +1086,8 @@ void CalendarView::ScrollToToday() {
     return;
   }
 
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   GetPositionOfToday());
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 GetPositionOfToday());
 }
 
 bool CalendarView::IsDateCellViewFocused() {
@@ -1222,6 +1236,7 @@ void CalendarView::OnMonthChanged() {
   gfx::Transform header_moving = GetHeaderMovingAndPrepareAnimation(
       is_scrolling_up_, kOnMonthChangedAnimationHistogram, month, year);
 
+  is_header_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1230,6 +1245,7 @@ void CalendarView::OnMonthChanged() {
             if (!calendar_view) {
               return;
             }
+            calendar_view->is_header_animation_running_ = false;
             calendar_view->UpdateHeaders();
             calendar_view->temp_header_->SetVisible(false);
             calendar_view->header_->layer()->SetOpacity(1.0f);
@@ -1243,6 +1259,7 @@ void CalendarView::OnMonthChanged() {
             if (!calendar_view) {
               return;
             }
+            calendar_view->is_header_animation_running_ = false;
             calendar_view->temp_header_->SetVisible(false);
             calendar_view->UpdateHeaders();
             calendar_view->RestoreHeadersStatus();
@@ -1347,6 +1364,7 @@ void CalendarView::OpenEventList() {
           calendar_sliding_surface_,
           kCalendarSlidingSurfaceOpenEventListAnimationHistogram);
 
+  is_event_list_open_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1430,6 +1448,7 @@ void CalendarView::CloseEventList() {
           calendar_sliding_surface_,
           kCloseEventListCalendarSlidingSurfaceAnimationHistogram);
 
+  is_event_list_close_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1639,6 +1658,23 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
       current_month_, kMonthViewScrollOneMonthAnimationHistogram);
   auto label_reporter = calendar_metrics::CreateAnimationReporter(
       current_label_, kLabelViewScrollOneMonthAnimationHistogram);
+
+  UpdateAnimationCrashKeys();
+
+  // Stop animating the views that will be involved in the month scroll
+  // animation. It handles the edge case that the calendar view's children get
+  // recreated by the abortion callback of the existing animation interrupted by
+  // the month scroll animation launched below.
+  StopViewLayerAnimation(current_label_);
+  StopViewLayerAnimation(current_month_);
+  StopViewLayerAnimation(header_);
+  StopViewLayerAnimation(next_label_);
+  StopViewLayerAnimation(next_month_);
+  StopViewLayerAnimation(next_next_label_);
+  StopViewLayerAnimation(next_next_month_);
+  StopViewLayerAnimation(previous_label_);
+  StopViewLayerAnimation(previous_month_);
+  StopViewLayerAnimation(temp_header_);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -1951,6 +1987,8 @@ void CalendarView::OnScrollMonthAnimationComplete(bool scroll_up) {
 }
 
 void CalendarView::OnOpenEventListAnimationComplete() {
+  is_event_list_open_animation_running_ = false;
+
   if (is_destroying_) {
     return;
   }
@@ -2013,6 +2051,8 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 }
 
 void CalendarView::OnCloseEventListAnimationComplete() {
+  is_event_list_close_animation_running_ = false;
+
   if (is_destroying_) {
     return;
   }
@@ -2054,6 +2094,7 @@ void CalendarView::RequestFocusForEventListCloseButton() {
 }
 
 void CalendarView::OnResetToTodayAnimationComplete() {
+  is_reset_to_today_animation_running_ = false;
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
   ResetToToday();
   FadeInCurrentMonth();
@@ -2065,6 +2106,7 @@ void CalendarView::OnResetToTodayAnimationComplete() {
 }
 
 void CalendarView::OnResetToTodayFadeInAnimationComplete() {
+  is_reset_to_today_fade_in_animation_running_ = false;
   set_should_header_animate(true);
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
   scroll_view_->SetVerticalScrollBarMode(
@@ -2304,6 +2346,7 @@ void CalendarView::FadeInUpNextView() {
   auto up_next_view_reporter = calendar_metrics::CreateAnimationReporter(
       up_next_view_, kFadeInUpNextViewAnimationHistogram);
 
+  is_fade_in_up_next_view_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -2351,6 +2394,7 @@ void CalendarView::FadeOutUpNextView() {
   auto up_next_reporter = calendar_metrics::CreateAnimationReporter(
       up_next_view_, kFadeOutUpNextViewAnimationHistogram);
 
+  is_fade_out_up_next_view_animation_running_ = true;
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -2377,6 +2421,8 @@ void CalendarView::FadeOutUpNextView() {
 }
 
 void CalendarView::OnFadeInUpNextViewAnimationEnded() {
+  is_fade_in_up_next_view_animation_running_ = false;
+
   // `user_has_scrolled_` should always be false since this method is only
   // called in `FadeInUpNextView()` which is only called when
   // `user_has_scrolled_` is false.
@@ -2391,6 +2437,7 @@ void CalendarView::OnFadeInUpNextViewAnimationEnded() {
 }
 
 void CalendarView::OnFadeOutUpNextViewAnimationEnded() {
+  is_fade_out_up_next_view_animation_running_ = false;
   up_next_view_->SetVisible(false);
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
 }
@@ -2403,6 +2450,39 @@ void CalendarView::StopUpNextTimer() {
 
 bool CalendarView::IsUpNextViewVisible() const {
   return up_next_view_ && up_next_view_->GetVisible();
+}
+
+void CalendarView::UpdateAnimationCrashKeys() {
+  static AnimatingCrashKey event_list_close_animation_key("event_list_close");
+  UpdateCachedAnimatingState(event_list_close_animation_key,
+                             is_event_list_close_animation_running_);
+
+  static AnimatingCrashKey event_list_open_animation_key("event_list_open");
+  UpdateCachedAnimatingState(event_list_open_animation_key,
+                             is_event_list_open_animation_running_);
+
+  static AnimatingCrashKey fade_in_up_next_view_animation_key(
+      "fade_in_up_next_view");
+  UpdateCachedAnimatingState(fade_in_up_next_view_animation_key,
+                             is_fade_in_up_next_view_animation_running_);
+
+  static AnimatingCrashKey fade_out_up_next_view_animation_key(
+      "fade_out_up_next_view");
+  UpdateCachedAnimatingState(fade_out_up_next_view_animation_key,
+                             is_fade_out_up_next_view_animation_running_);
+
+  static AnimatingCrashKey header_animation_key("header");
+  UpdateCachedAnimatingState(header_animation_key,
+                             is_header_animation_running_);
+
+  static AnimatingCrashKey reset_to_today_animation_key("reset_to_today");
+  UpdateCachedAnimatingState(reset_to_today_animation_key,
+                             is_reset_to_today_animation_running_);
+
+  static AnimatingCrashKey reset_to_today_fade_in_animation_key(
+      "reset_to_today_fade_in");
+  UpdateCachedAnimatingState(reset_to_today_fade_in_animation_key,
+                             is_reset_to_today_fade_in_animation_running_);
 }
 
 BEGIN_METADATA(CalendarView)
