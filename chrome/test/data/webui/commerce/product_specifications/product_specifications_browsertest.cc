@@ -107,6 +107,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, LoadingState) {
+  RunTest("commerce/product_specifications/loading_state_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
   RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }
