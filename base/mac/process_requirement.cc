@@ -6,25 +6,32 @@
 
 #include <Kernel/kern/cs_blobs.h>
 #include <Security/Security.h>
+#include <mach/kern_return.h>
 #include <stdint.h>
 #include <sys/errno.h>
 
 #include <optional>
 
+#include "base/apple/mach_logging.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/mac/code_signature.h"
 #include "base/mac/code_signature_spi.h"
+#include "base/mac/info_plist_data.h"
 #include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "build/branding_buildflags.h"
 
 using base::apple::ScopedCFTypeRef;
 
@@ -200,6 +207,15 @@ std::string RequirementStringForValidationCategory(
       NOTREACHED() << "Unsupported process validation category: "
                    << static_cast<unsigned int>(category);
   }
+}
+
+audit_token_t AuditTokenForCurrentProcess() {
+  audit_token_t token;
+  mach_msg_type_number_t count = TASK_AUDIT_TOKEN_COUNT;
+  kern_return_t kr = task_info(mach_task_self(), TASK_AUDIT_TOKEN,
+                               reinterpret_cast<task_info_t>(&token), &count);
+  MACH_CHECK(kr == KERN_SUCCESS, kr) << "task_info(TASK_AUDIT_TOKEN)";
+  return token;
 }
 
 }  // namespace
@@ -485,6 +501,72 @@ bool ProcessRequirement::ValidateProcess(
   }
 
   return true;
+}
+
+// static
+void ProcessRequirement::MaybeGatherMetrics() {
+  static BASE_FEATURE(kGatherProcessRequirementMetrics,
+                      "GatherProcessRequirementMetrics",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  if (base::FeatureList::IsEnabled(kGatherProcessRequirementMetrics)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&ProcessRequirement::GatherMetrics));
+  }
+}
+
+namespace {
+template <typename T>
+void RecordOperationHistogram(std::string histogram_prefix,
+                              base::expected<T, int> value,
+                              T expected_value_if_chrome) {
+  base::UmaHistogramSparse(histogram_prefix + ".Result", value.error_or(0));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (value.has_value()) {
+    base::UmaHistogramBoolean(histogram_prefix + ".HasExpectedValue",
+                              *value == expected_value_if_chrome);
+  }
+#endif
+}
+}  // namespace
+
+// static
+void ProcessRequirement::GatherMetrics() {
+  RecordOperationHistogram("Mac.ProcessRequirement.TeamIdentifier",
+                           TeamIdentifierOfCurrentProcess(),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                           std::string("EQHXZ8M8AV")
+#else
+                           std::string()
+#endif
+  );
+
+  RecordOperationHistogram("Mac.ProcessRequirement.ValidationCategory",
+                           ValidationCategoryOfCurrentProcess(),
+                           ValidationCategory::DeveloperId);
+
+  RecordOperationHistogram("Mac.ProcessRequirement.FallbackValidationCategory",
+                           FallbackValidationCategoryOfCurrentProcess(),
+                           ValidationCategory::DeveloperId);
+
+  std::optional<ProcessRequirement> requirement;
+  {
+    ScopedUmaHistogramTimer timer(
+        "Mac.ProcessRequirement.Timing.BuildSameIdentityRequirement");
+    requirement =
+        Builder().SignedWithSameIdentity().CheckDynamicValidityOnly().Build();
+  }
+
+  if (requirement) {
+    ScopedUmaHistogramTimer timer(
+        "Mac.ProcessRequirement.Timing.ValidateSameIdentity");
+    bool result = requirement->ValidateProcess(
+        AuditTokenForCurrentProcess(), OuterBundleCachedInfoPlistData());
+    base::UmaHistogramBoolean("Mac.ProcessRequirement.CurrentProcessValid",
+                              result);
+  }
 }
 
 }  // namespace base::mac

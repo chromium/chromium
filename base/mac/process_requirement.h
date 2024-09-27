@@ -138,6 +138,10 @@ class BASE_EXPORT ProcessRequirement {
   // application on disk.
   bool ShouldCheckDynamicValidityOnly() const { return dynamic_validity_only_; }
 
+  // Gather metrics to validate the reliability of ProcessRequirement.
+  // Work is performed asynchronously on a background thread.
+  static void MaybeGatherMetrics();
+
   static ProcessRequirement AlwaysMatchesForTesting();
   static ProcessRequirement NeverMatchesForTesting();
 
@@ -165,6 +169,9 @@ class BASE_EXPORT ProcessRequirement {
   // requirement.
   // This will be false for unsigned code and true for all signed code.
   bool RequiresSignatureValidation() const;
+
+  // Do the work of gathering metrics. Called on a background thread.
+  static void GatherMetrics();
 
   enum ForTesting {
     AlwaysMatches,
