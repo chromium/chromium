@@ -218,13 +218,13 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
-  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-  suggestion.children.emplace_back(CreateFeedbackSuggestion());
 
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
   filling_suggestions.insert(filling_suggestions.end(),
                              address_suggestions.begin(),
                              address_suggestions.end());
+  filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
+  filling_suggestions.emplace_back(CreateFeedbackSuggestion());
   return filling_suggestions;
 }
 

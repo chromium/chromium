@@ -247,7 +247,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
                   SuggestionType::kPredictionImprovementsLoadingState)));
   ASSERT_THAT(
       filling_suggestion,
-      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements)));
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
   const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
           .GetPayload<Suggestion::PredictionImprovementsPayload>();
@@ -259,9 +261,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
       filling_suggestion[0].children,
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kFillPredictionImprovements),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
+                  HasType(SuggestionType::kFillPredictionImprovements)));
 }
 
 // Tests that no suggestions are added to `address_suggestions` if
@@ -326,11 +326,14 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       suggestions_to_show, form.fields().front(),
       /*should_add_trigger_suggestion=*/true));
-  EXPECT_THAT(suggestions_to_show,
-              ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
-                          HasType(SuggestionType::kAddressEntry),
-                          HasType(SuggestionType::kSeparator),
-                          HasType(SuggestionType::kManageAddress)));
+  EXPECT_THAT(
+      suggestions_to_show,
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kAddressEntry),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kManageAddress),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 // Tests that filling predictions will be added to the empty
@@ -349,7 +352,9 @@ TEST_F(
       /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements)));
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 class AutofillPredictionImprovementsManagerUserFeedbackTest
