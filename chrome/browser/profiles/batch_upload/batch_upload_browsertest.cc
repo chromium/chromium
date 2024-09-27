@@ -37,6 +37,15 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFeatureOffBrowserTest, BatchUploadNull) {
 // are removed and the actual data providers are implemented.
 class BatchUploadBrowserTest : public InProcessBrowserTest {
  public:
+  BatchUploadBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        // `switches::kExplicitBrowserSigninUIOnDesktop` is needed for the
+        // SigninPending state.
+        /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                              switches::kBatchUploadDesktop},
+        /*disabled_features=*/{});
+  }
+
   // Opens the batch upload dialog using `batch_upload_service` in `browser.
   // Waits for the batch upload url to load if opening the view was successful.
   bool OpenBatchUpload(BatchUploadService* batch_upload_service,
@@ -70,8 +79,7 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kBatchUploadDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenBatchUpload) {
