@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -936,7 +937,10 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   }
 
   void TearDown() override {
+    // Remove the tab declutter observation first.
     webui_controller()->InstallTabDeclutterController(nullptr);
+    handler()->RemoveDeclutterObserverForTesting();
+
     tab_declutter_controller_.reset();
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
@@ -983,6 +987,35 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
 
   // Installing a declutter controller will trigger `GetStaleTabs()`.
   handler()->GetStaleTabs(std::move(callback));
+}
+
+TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
+  handler()->TabDeclutterControllerInstalled();
+
+  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+
+  for (int i = 0; i < 4; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    stale_tabs_raw_ptr.push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
+  EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
+      .WillRepeatedly(testing::Return(stale_tabs_raw_ptr));
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+  tab_declutter_controller()->SetTimerForTesting(
+      task_runner->GetMockTickClock(), task_runner);
+
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
+
+  task_runner->FastForwardBy(
+      tab_declutter_controller()->declutter_timer_interval_minutes());
 }
 
 }  // namespace

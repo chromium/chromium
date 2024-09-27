@@ -885,7 +885,24 @@ std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
 }
 
 void TabSearchPageHandler::TabDeclutterControllerInstalled() {
+  CHECK(GetTabDeclutterController());
+  tab_declutter_observation_.Observe(GetTabDeclutterController());
   page_->StaleTabsChanged(FindStaleTabs());
+}
+
+void TabSearchPageHandler::OnStaleTabsProcessed(
+    std::vector<tabs::TabModel*> tabs) {
+  std::vector<tab_search::mojom::TabPtr> stale_tabs;
+  TabStripModel* tab_strip_model =
+      GetTabDeclutterController()->tab_strip_model();
+  for (tabs::TabModel* tab_model : tabs) {
+    const int tab_index =
+        tab_strip_model->GetIndexOfWebContents(tab_model->contents());
+    stale_tabs.push_back(
+        GetTab(tab_strip_model, tab_model->contents(), tab_index));
+  }
+
+  page_->StaleTabsChanged(std::move(stale_tabs));
 }
 
 tabs::TabDeclutterController*

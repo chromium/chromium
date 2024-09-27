@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -60,6 +62,7 @@ class TabSearchPageHandler
       public BrowserTabStripTrackerDelegate,
       public TabOrganizationSession::Observer,
       public TabOrganizationObserver,
+      public TabDeclutterObserver,
       public optimization_guide::SettingsEnabledObserver {
  public:
   TabSearchPageHandler(
@@ -127,10 +130,16 @@ class TabSearchPageHandler
                     int index,
                     TabChangeType change_type) override;
 
+  // TabDeclutterObserver:
+  void OnStaleTabsProcessed(std::vector<tabs::TabModel*> tabs) override;
+
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
   void TabDeclutterControllerInstalled();
+  void RemoveDeclutterObserverForTesting() {
+    tab_declutter_observation_.Reset();
+  }
 
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
@@ -273,6 +282,9 @@ class TabSearchPageHandler
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};
+
+  base::ScopedObservation<tabs::TabDeclutterController, TabDeclutterObserver>
+      tab_declutter_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
