@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
-#include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -61,7 +60,6 @@
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/lens/buildflags.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
@@ -88,14 +86,6 @@
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "chrome/browser/ui/webui/nacl_ui.h"
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/feed/feed_feature_list.h"
@@ -190,10 +180,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
-#include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -431,29 +417,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncConfirmationUI>;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_NACL)
-  if (url.host_piece() == chrome::kChromeUINaClHost)
-    return &NewWebUI<NaClUI>;
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
-  if (url.host_piece() == chrome::kChromeUICertificateViewerHost)
-    return &NewWebUI<CertificateViewerUI>;
-#endif  // ENABLE_WEBUI_CERTIFICATE_VIEWER
-
-  if (url.host_piece() == chrome::kChromeUIPolicyHost)
-    return &NewWebUI<PolicyUI>;
-#if !BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUIManagementHost)
-    return &NewWebUI<ManagementUI>;
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (url.host_piece() == chrome::kChromeUITabStripHost) {
-    return &NewWebUI<TabStripUI>;
-  }
-#endif
 
   if (url.host_piece() == chrome::kChromeUIWebRtcLogsHost)
     return &NewWebUI<WebRtcLogsUI>;
