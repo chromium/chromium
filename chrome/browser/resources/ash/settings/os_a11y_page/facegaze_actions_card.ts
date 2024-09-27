@@ -180,22 +180,38 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     const keyCombo = commandPair.assignedKeyCombo.keyCombo;
-    let modifierDisplayText = '';
+    const keys: string[] = [];
 
-    // TODO(b:322510917) Localize these strings.
     if (keyCombo.modifiers?.ctrl) {
-      modifierDisplayText += 'Ctrl + ';
+      keys.push(this.i18n('faceGazeKeyboardKeyCtrl'));
     }
     if (keyCombo.modifiers?.alt) {
-      modifierDisplayText += 'Alt + ';
+      keys.push(this.i18n('faceGazeKeyboardKeyAlt'));
     }
     if (keyCombo.modifiers?.shift) {
-      modifierDisplayText += 'Shift + ';
+      keys.push(this.i18n('faceGazeKeyboardKeyShift'));
     }
     if (keyCombo.modifiers?.search) {
-      modifierDisplayText += 'Search + ';
+      keys.push(this.i18n('faceGazeKeyboardKeySearch'));
     }
-    return `${modifierDisplayText} ${keyCombo.keyDisplay}`;
+
+    keys.push(keyCombo.keyDisplay);
+
+    switch (keys.length) {
+      case 2:
+        return this.i18n('faceGazeKeyboardLabelOneModifier', ...keys);
+      case 3:
+        return this.i18n('faceGazeKeyboardLabelTwoModifiers', ...keys);
+      case 4:
+        return this.i18n('faceGazeKeyboardLabelThreeModifiers', ...keys);
+      case 5:
+        return this.i18n('faceGazeKeyboardLabelFourModifiers', ...keys);
+      default:
+        // keyDisplay comes directly from the original KeyEvent and should be
+        // preserved as-is since keys may appear differently on keyboards
+        // depending on locale and layout.
+        return keyCombo.keyDisplay;
+    }
   }
 
   // When an action is removed from the list, update the pref and then update
