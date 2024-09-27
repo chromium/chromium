@@ -124,7 +124,13 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           'Loading state should disappear once the minimum of 100ms is over');
 
       if (enableAnswers) {
-        // Answer data should still be loading.
+        element.searchResultChangedForTesting({
+          query: 'my new query',
+          answerStatus: AnswerStatus.kLoading,
+          answer: '',
+          items: [...mockResults],
+        });
+        await flushTasks();
         const loadingAnswersEl =
             element.shadowRoot!.querySelector('.loading-answer');
         assertTrue(!!loadingAnswersEl);
@@ -390,15 +396,27 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(0, handler.getCallCount('sendQualityLog'));
     });
 
-    test('ShowsAnswer', async () => {
+    test('ShowsAnswerSection', async () => {
       if (!enableAnswers) {
         return;
       }
+      const answerSectionElement =
+          element.shadowRoot!.querySelector<HTMLElement>('.answer-section');
+      assertTrue(!!answerSectionElement);
+      assertFalse(
+          isVisible(answerSectionElement),
+          'Answer section should be hidden because the state is unspecified.');
 
-      const answerElement =
-          element.shadowRoot!.querySelector<HTMLElement>('.answer');
-      assertTrue(!!answerElement);
-      assertTrue(answerElement.hidden);
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kLoading,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertTrue(
+          isVisible(answerSectionElement),
+          'Answer should be visible to show loading state.');
 
       element.searchResultChangedForTesting({
         query: 'some query',
@@ -407,7 +425,31 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         items: [...mockResults],
       });
       await flushTasks();
-      assertFalse(answerElement.hidden);
+      assertTrue(
+          isVisible(answerSectionElement),
+          'Answer should be visible to show answer.');
+    });
+
+    test('ShowsAnswer', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      const answerElement =
+          element.shadowRoot!.querySelector<HTMLElement>('.answer');
+      assertTrue(!!answerElement);
+      assertFalse(
+          isVisible(answerElement),
+          'Answer should not be visible since there is no answer yet.');
+
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertTrue(isVisible(answerElement));
       assertEquals('some answer', answerElement!.innerText);
     });
 

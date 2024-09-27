@@ -309,11 +309,20 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
 
   // No answer on initial search result.
   SearchResult first_result = future.Take();
+  EXPECT_EQ(ComputeAnswerStatus::UNSPECIFIED,
+            first_result.answerer_result.status);
   EXPECT_TRUE(first_result.AnswerText().empty());
 
-  // Then the answerer responds and another result is published with answer.
+  // Second result is published to indicate an answer is being attempted. The
+  // answer should still be empty.
   SearchResult second_result = future.Take();
-  EXPECT_FALSE(second_result.AnswerText().empty());
+  EXPECT_EQ(second_result.answerer_result.status, ComputeAnswerStatus::LOADING);
+  EXPECT_TRUE(second_result.AnswerText().empty());
+
+  // Then the answerer responds and another result is published with answer.
+  SearchResult final_result = future.Take();
+  EXPECT_EQ(final_result.answerer_result.status, ComputeAnswerStatus::SUCCESS);
+  EXPECT_FALSE(final_result.AnswerText().empty());
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {

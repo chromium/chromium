@@ -184,6 +184,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // TODO(b/348689167): Move strings into a grdp file.
     switch (this.searchResult_.answerStatus) {
       case AnswerStatus.kUnspecified:
+      case AnswerStatus.kLoading:
         // Still loading or in an undefined state.
         return undefined;
       case AnswerStatus.kSuccess:
@@ -291,7 +292,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.numCharsForLastResultQuery_ = this.numCharsForQuery;
 
     this.loadingResults_ = true;
-    this.loadingAnswer_ = true;
+    this.loadingAnswer_ = false;
     const query: SearchQuery = {
       query: this.searchQuery,
       timeRangeStart:
@@ -323,13 +324,16 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.searchResult_ = result;
     this.loadingResults_ = false;
-    this.loadingAnswer_ = result.answerStatus === AnswerStatus.kUnspecified;
+    this.loadingAnswer_ = result.answerStatus === AnswerStatus.kLoading;
 
     this.resultPendingMetricsTimestamp_ = performance.now();
   }
 
   private showAnswerSection_(): boolean {
-    return this.searchResult_?.answerStatus !== AnswerStatus.kModelUnavailable;
+    // Intent has not been computed yet. Anything related to the answer should
+    // only be shown when intent computation has at least determined the query
+    // is answerable.
+    return this.searchResult_?.answerStatus !== AnswerStatus.kUnspecified;
   }
 
   /**

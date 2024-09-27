@@ -9,6 +9,7 @@ import "url/mojom/url.mojom";
 
 enum AnswerStatus {
   kUnspecified,
+  kLoading,
   kSuccess,
   kUnanswerable,
   kModelUnavailable,

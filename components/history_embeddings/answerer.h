@@ -20,6 +20,9 @@ enum class ComputeAnswerStatus {
   // isn't ready yet.
   UNSPECIFIED,
 
+  // Answer generation is being attempted.
+  LOADING,
+
   // Answer generated successfully.
   SUCCESS,
 

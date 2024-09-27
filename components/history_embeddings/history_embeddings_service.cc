@@ -1005,6 +1005,14 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
     return;
   }
 
+  // Send a result indicating that an answer generation is being attempted so
+  // that the UI can show a loading state.
+  SearchResult loadingResult = result.Clone();
+  loadingResult.answerer_result =
+      AnswererResult(ComputeAnswerStatus::LOADING, result.query,
+                     optimization_guide::proto::Answer());
+  callback.Run(std::move(loadingResult));
+
   Answerer::Context context(result.session_id);
   for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
     std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
