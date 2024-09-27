@@ -72,6 +72,12 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
 
   virtual size_t GetBucketIndex(HistogramBase::Sample value) const;
 
+  // Gets the destination bucket corresponding to `iter` and its `count` value.
+  // Validates that the destination bucket matches the min/max from the iterator
+  // and returns SIZE_MAX on a mismatch.
+  size_t GetDestinationBucketIndexAndCount(SampleCountIterator& iter,
+                                           HistogramBase::Count* count);
+
   // Moves the single-sample value to a mounted "counts" array.
   void MoveSingleSampleToCounts();
 

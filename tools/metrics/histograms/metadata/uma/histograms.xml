@@ -92,25 +92,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.AddSubtractImpl.{Type}Offset" units="offset"
-    expires_after="2025-01-20">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Emitted in SampleVectorBase::AddSubtractImpl() when the bucket indexes
-    between the source destination don't match. This is temporary to get data on
-    crbug.com/367379194 about how common this case is. {Type}
-  </summary>
-  <token key="Type">
-    <variant name="Negative"
-        summary="A negative offset means the source index was greater than
-                 the destination index."/>
-    <variant name="Positive"
-        summary="A positive offset means the destination index was greater
-                 than the source index."/>
-  </token>
-</histogram>
-
 <histogram name="UMA.AndroidPreNative.ChromeActivityCounter2"
     enum="ChromeActivityCounter" expires_after="2025-02-10">
   <owner>gabrielgs@google.com</owner>

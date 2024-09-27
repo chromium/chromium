@@ -305,41 +305,9 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
     return true;
   }
 
-  // Get the first value and its index.
-  HistogramBase::Sample min;
-  int64_t max;
   HistogramBase::Count count;
-  iter->Get(&min, &max, &count);
-  size_t dest_index = GetBucketIndex(min);
-
-  // The destination must be a superset of the source meaning that though the
-  // incoming ranges will find an exact match, the incoming bucket-index, if
-  // it exists, may be offset from the destination bucket-index. Calculate
-  // that offset of the passed iterator; there are are no overflow checks
-  // because 2's compliment math will work it out in the end.
-  //
-  // Because GetBucketIndex() always returns the same true or false result for
-  // a given iterator object, |index_offset| is either set here and used below,
-  // or never set and never used. The compiler doesn't know this, though, which
-  // is why it's necessary to initialize it to something.
-  size_t index_offset = 0;
-  size_t iter_index;
-  if (iter->GetBucketIndex(&iter_index)) {
-    index_offset = dest_index - iter_index;
-    // TODO(crbug.com/367379194): Temporary instrumentation to see how often
-    // `index_offset` is non-0.
-    if (index_offset != 0) {
-      int offset_value = static_cast<int>(index_offset);
-      if (offset_value > 0) {
-        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.PositiveOffset",
-                                 offset_value);
-      } else {
-        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.NegativeOffset",
-                                 -offset_value);
-      }
-    }
-  }
-  if (dest_index >= counts_size()) {
+  size_t dest_index = GetDestinationBucketIndexAndCount(*iter, &count);
+  if (dest_index == SIZE_MAX) {
     return false;
   }
 
@@ -370,48 +338,49 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
 
   // Go through the iterator and add the counts into correct bucket.
   while (true) {
-    // Ensure that the sample's min/max match the ranges min/max.
-    if (min != bucket_ranges_->range(dest_index) ||
-        max != bucket_ranges_->range(dest_index + 1)) {
-#if !BUILDFLAG(IS_NACL)
-      // TODO(crbug.com/40064026): Remove these. They are used to investigate
-      // unexpected failures.
-      SCOPED_CRASH_KEY_NUMBER("SampleVector", "min", min);
-      SCOPED_CRASH_KEY_NUMBER("SampleVector", "max", max);
-      SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_min",
-                              bucket_ranges_->range(dest_index));
-      SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_max",
-                              bucket_ranges_->range(dest_index + 1));
-#endif  // !BUILDFLAG(IS_NACL)
-      DUMP_WILL_BE_NOTREACHED()
-          << "sample=" << min << "," << max
-          << "; range=" << bucket_ranges_->range(dest_index) << ","
-          << bucket_ranges_->range(dest_index + 1);
-      return false;
-    }
-
     // Sample's bucket matches exactly. Adjust count.
     subtle::NoBarrier_AtomicIncrement(
         &counts_at(dest_index), op == HistogramSamples::ADD ? count : -count);
-
-    // Advance to the next iterable sample. See comments above for how
-    // everything works.
     if (iter->Done()) {
       return true;
     }
-    iter->Get(&min, &max, &count);
-    if (iter->GetBucketIndex(&iter_index)) {
-      // Destination bucket is a known offset from the source bucket.
-      dest_index = iter_index + index_offset;
-    } else {
-      // Destination bucket has to be determined anew each time.
-      dest_index = GetBucketIndex(min);
-    }
-    if (dest_index >= counts_size()) {
+
+    dest_index = GetDestinationBucketIndexAndCount(*iter, &count);
+    if (dest_index == SIZE_MAX) {
       return false;
     }
     iter->Next();
   }
+}
+
+size_t SampleVectorBase::GetDestinationBucketIndexAndCount(
+    SampleCountIterator& iter,
+    HistogramBase::Count* count) {
+  HistogramBase::Sample min;
+  int64_t max;
+
+  iter.Get(&min, &max, count);
+  // If the iter has the bucket index, get there in O(1), otherwise look it up
+  // from the destination via O(logn) binary search.
+  size_t bucket_index;
+  if (!iter.GetBucketIndex(&bucket_index)) {
+    bucket_index = GetBucketIndex(min);
+  }
+
+  // We expect buckets to match between source and destination. If they don't,
+  // we may be trying to merge a different version of a histogram (e.g. two
+  // .pma files from different versions of the code), which is not supported.
+  // We drop the data from the iter in that case.
+  // Technically, this codepath could result in data being partially merged -
+  // i.e. if the buckets at the beginning of iter match, but later ones don't.
+  // As we expect this to be very rare, we intentionally don't handle it to
+  // avoid having to do two iterations through the buckets in AddSubtractImpl().
+  if (bucket_index >= counts_size() ||
+      min != bucket_ranges_->range(bucket_index) ||
+      max != bucket_ranges_->range(bucket_index + 1)) {
+    return SIZE_MAX;
+  }
+  return bucket_index;
 }
 
 // Uses simple binary search or calculates the index directly if it's an "exact"
