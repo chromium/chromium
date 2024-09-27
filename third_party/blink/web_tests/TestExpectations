@@ -8084,6 +8084,9 @@ crbug.com/365487889 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeE
 # Gardener 2024-09-10
 crbug.com/364306254 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
 
+# The timestamp implementation is wrong, but not wrong enough to fail on Mac/Linux. On Windows however there is a precision problem resulting in flaky failures.
+crbug.com/369369568 [ Win ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Pass Failure ]
+
 # Skip one slow timeout test
 crbug.com/366311855 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Skip Timeout ]
 
