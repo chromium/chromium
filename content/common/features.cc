@@ -556,12 +556,6 @@ BASE_FEATURE(kTrustedTypesFromLiteral,
              "TrustedTypesFromLiteral",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable using browser-calculated origins on anvigations, instead of
-// renderer-calculated ones.
-BASE_FEATURE(kUseBrowserCalculatedOrigin,
-             "UseBrowserCalculatedOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Pre-warm up the network process on browser startup.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWarmUpNetworkProcess,

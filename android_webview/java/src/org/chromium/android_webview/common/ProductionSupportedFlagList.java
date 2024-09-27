@@ -1070,6 +1070,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
+        Flag.baseFeature(
+                ContentFeatures.USE_BROWSER_CALCULATED_ORIGIN,
+                "Use origin calculated in the browser process rather than renderer process for"
+                        + " navigations."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
