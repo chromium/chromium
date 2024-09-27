@@ -3462,24 +3462,15 @@ bool WizardController::SetOnTimeZoneResolvedForTesting(
 void WizardController::StartEnrollmentScreen() {
   VLOG(1) << "Showing enrollment screen.";
 
-  // Determine the effective enrollment configuration. If there is a valid
-  // prescribed configuration, use that. If not, figure out which variant of
-  // manual enrollment is taking place.
-  // If OOBE Configuration exits, it might also affect enrollment
-  // configuration.
-  policy::EnrollmentConfig effective_config = prescribed_enrollment_config_;
-  if (!effective_config.should_enroll()) {
-    effective_config.mode =
-        prescribed_enrollment_config_.management_domain.empty()
-            ? policy::EnrollmentConfig::MODE_MANUAL
-            : policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
-  }
-
+  // Determine the effective enrollment configuration. If OOBE Configuration
+  // exits, it might also affect enrollment configuration.
+  policy::EnrollmentConfig effective_config =
+      prescribed_enrollment_config_.GetEffectiveConfig();
   effective_config.enrollment_nudge_email =
       GetScreen<GaiaScreen>()->EnrollmentNudgeEmail();
 
   EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
-  screen->SetEnrollmentConfig(effective_config);
+  screen->SetEnrollmentConfig(std::move(effective_config));
   UpdateStatusAreaVisibilityForScreen(EnrollmentScreenView::kScreenId);
   SetCurrentScreen(screen);
 }

@@ -339,4 +339,51 @@ TEST_F(EnrollmentConfigTest, GetDemoModeEnrollmentConfig) {
             config.auth_mechanism);
 }
 
+TEST_F(EnrollmentConfigTest, GetEffectivePrescribedEnrollmentConfig) {
+  EnrollmentConfig config;
+  config.mode = EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
+  config.auth_mechanism =
+      EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
+  config.management_domain = kTestDomain;
+
+  ASSERT_TRUE(config.should_enroll());
+  EXPECT_EQ(config, config.GetEffectiveConfig());
+}
+
+// Test that partially filled prescribed config that does not prescribe
+// enrollment produces correct manual enrollment config.
+TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
+  {
+    const auto config = GetPrescribedConfig();
+    ASSERT_FALSE(config.should_enroll());
+
+    const auto manual_config = config.GetEffectiveConfig();
+
+    EXPECT_EQ(EnrollmentConfig::MODE_MANUAL, manual_config.mode);
+    EXPECT_TRUE(config.management_domain.empty());
+    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
+              manual_config.auth_mechanism);
+    EXPECT_EQ(LicenseType::kNone, manual_config.license_type);
+  }
+
+  local_state_.SetDict(
+      prefs::kServerBackedDeviceState,
+      base::Value::Dict()
+          .Set(kDeviceStateManagementDomain, kTestDomain)
+          .Set(kDeviceStateLicenseType, kDeviceStateLicenseTypeEducation));
+
+  {
+    const auto config = GetPrescribedConfig();
+    ASSERT_FALSE(config.should_enroll());
+
+    const auto manual_config = config.GetEffectiveConfig();
+
+    EXPECT_EQ(EnrollmentConfig::MODE_MANUAL, manual_config.mode);
+    EXPECT_TRUE(config.management_domain.empty());
+    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
+              manual_config.auth_mechanism);
+    EXPECT_EQ(LicenseType::kEducation, manual_config.license_type);
+  }
+}
+
 }  // namespace policy

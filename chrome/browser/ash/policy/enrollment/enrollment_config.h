@@ -237,6 +237,14 @@ struct EnrollmentConfig {
     return mode != MODE_NONE && !is_automatic_enrollment();
   }
 
+  constexpr bool operator==(const EnrollmentConfig& other) const = default;
+
+  // Returns an effective config that should be used for upcoming enrollment:
+  // * Returns prescribed config if the current one prescribes an enrollment.
+  // * Returns manual enrollment config, if the current one does not prescribe
+  // enrollment.
+  EnrollmentConfig GetEffectiveConfig() const;
+
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
 

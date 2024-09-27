@@ -452,6 +452,21 @@ EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
   return EnrollmentConfig::MODE_NONE;
 }
 
+EnrollmentConfig EnrollmentConfig::GetEffectiveConfig() const {
+  if (should_enroll()) {
+    return *this;
+  }
+
+  EnrollmentConfig manual_config = *this;
+  // TODO(b/332529631): It is not possible to have `managed_domain` and
+  // `MODE_NONE` at the same time. Figure out if `MODE_MANUAL_REENROLLMENT`
+  // needs to be deprecated.
+  manual_config.mode =
+      management_domain.empty() ? MODE_MANUAL : MODE_MANUAL_REENROLLMENT;
+  manual_config.auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
+  return manual_config;
+}
+
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode) {
   return os << ToStringView(mode);
 }
