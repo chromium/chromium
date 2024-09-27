@@ -61,7 +61,10 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mTitle =
                 mRowView.getContext()
                         .getResources()
-                        .getString(R.string.page_info_tracking_protection_title);
+                        .getString(
+                                delegate.shouldShowTrackingProtectionBrandedUI()
+                                        ? R.string.page_info_tracking_protection_title
+                                        : R.string.page_info_cookies_title);
         mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
