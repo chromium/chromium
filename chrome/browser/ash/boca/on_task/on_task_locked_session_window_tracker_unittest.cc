@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/test/test_window_builder.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -79,6 +81,9 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     task_environment()->RunUntilIdle();
+
+    // Reset native window for test.
+    static_cast<TestBrowserWindow*>(window())->SetNativeWindow(nullptr);
     auto* const window_tracker =
         LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
     if (window_tracker) {
@@ -582,16 +587,45 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
 }
 
-TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserWindowsDontOpen) {
+TEST_F(OnTaskLockedSessionWindowTrackerTest,
+       NewBrowserWindowsDontOpenDuringLockedFullscreen) {
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/true);
   window_tracker->InitializeBrowserInfoForTracking(browser());
-  std::unique_ptr<Browser> normal_browser(CreateTestBrowser(/*popup=*/false));
+  const std::unique_ptr<Browser> normal_browser(
+      CreateTestBrowser(/*popup=*/false));
   ASSERT_TRUE(base::test::RunUntil(
       [&normal_browser]() { return normal_browser != nullptr; }));
 
   EXPECT_TRUE(
+      static_cast<TestBrowserWindow*>(normal_browser->window())->IsClosed());
+}
+
+TEST_F(OnTaskLockedSessionWindowTrackerTest,
+       NewBrowserWindowsCanOpenDuringUnlockedSession) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/false);
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  const std::unique_ptr<Browser> normal_browser(
+      CreateTestBrowser(/*popup=*/false));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&normal_browser]() { return normal_browser != nullptr; }));
+
+  EXPECT_FALSE(
       static_cast<TestBrowserWindow*>(normal_browser->window())->IsClosed());
 }
 
@@ -600,7 +634,8 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserPopupIsRegistered) {
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
   window_tracker->InitializeBrowserInfoForTracking(browser());
-  std::unique_ptr<Browser> popup_browser(CreateTestBrowser(/*popup=*/true));
+  const std::unique_ptr<Browser> popup_browser(
+      CreateTestBrowser(/*popup=*/true));
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_FALSE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
@@ -618,7 +653,12 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserClose) {
   AddTab(browser(), url_a);
   AddTab(browser(), url_a_child);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/true);
   window_tracker->InitializeBrowserInfoForTracking(browser());
   ASSERT_EQ(window_tracker->browser(), browser());
   browser()->OnWindowClosing();
@@ -631,7 +671,8 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserTrackingOverride) {
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
-  std::unique_ptr<Browser> normal_browser(CreateTestBrowser(/*popup=*/false));
+  const std::unique_ptr<Browser> normal_browser(
+      CreateTestBrowser(/*popup=*/false));
   window_tracker->InitializeBrowserInfoForTracking(browser());
   ASSERT_EQ(window_tracker->browser(), browser());
   window_tracker->InitializeBrowserInfoForTracking(normal_browser.get());
@@ -1079,6 +1120,12 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   const GURL url_a_front_subdomain(kTabUrl1FrontSubDomain1);
 
   AddTab(browser(), url_a);
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/true);
   const auto* const main_browser_tab_strip_model = browser()->tab_strip_model();
   window_tracker->InitializeBrowserInfoForTracking(browser());
   ASSERT_EQ(window_tracker->browser(), browser());
@@ -1088,7 +1135,8 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   window_tracker->RefreshUrlBlocklist();
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
-  std::unique_ptr<Browser> popup_browser(CreateTestBrowser(/*popup=*/true));
+  const std::unique_ptr<Browser> popup_browser(
+      CreateTestBrowser(/*popup=*/true));
   task_environment()->RunUntilIdle();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_FALSE(
@@ -1123,6 +1171,12 @@ TEST_F(OnTaskNavigationThrottleTest, OauthPopupAllowed) {
       GURL("https://foo.com/redirect?code=secret")};
   AddTab(browser(), url_a);
   const auto* const main_browser_tab_strip_model = browser()->tab_strip_model();
+  ash::TestWindowBuilder builder;
+  const std::unique_ptr<aura::Window> native_window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  static_cast<TestBrowserWindow*>(window())->SetNativeWindow(
+      native_window.get());
+  PinWindow(window()->GetNativeWindow(), /*trusted=*/true);
   window_tracker->InitializeBrowserInfoForTracking(browser());
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
@@ -1130,7 +1184,8 @@ TEST_F(OnTaskNavigationThrottleTest, OauthPopupAllowed) {
       main_browser_tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   window_tracker->RefreshUrlBlocklist();
-  std::unique_ptr<Browser> popup_browser(CreateTestBrowser(/*popup=*/true));
+  const std::unique_ptr<Browser> popup_browser(
+      CreateTestBrowser(/*popup=*/true));
   task_environment()->RunUntilIdle();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_FALSE(

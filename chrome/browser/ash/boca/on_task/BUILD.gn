@@ -34,6 +34,7 @@ static_library("on_task") {
 
     # Explicitly depend on boca to get around with circular dependency on
     # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/boca",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
