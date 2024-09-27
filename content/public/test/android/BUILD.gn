@@ -61,6 +61,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/HistoryUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/JavaScriptUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/KeyUtils.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/PrefetchTestUtil.java",
     "javatests/src/org/chromium/content_public/browser/test/util/RenderProcessHostUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestCallbackHelperContainer.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestInputMethodManagerWrapper.java",
@@ -101,6 +102,7 @@ generate_jni("content_test_jni") {
     "javatests/src/org/chromium/content_public/browser/test/RenderFrameHostTestExt.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/FencedFrameUtils.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/PrefetchTestUtil.java",
     "javatests/src/org/chromium/content_public/browser/test/util/RenderProcessHostUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/UiThreadSchedulerTestUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/WebContentsUtils.java",
@@ -119,6 +121,7 @@ static_library("content_native_test_support") {
   sources = [
     "dom_utils.cc",
     "fenced_frame_utils.cc",
+    "prefetch_test_util.cc",
     "render_frame_host_test_ext.cc",
     "render_frame_host_test_ext.h",
     "render_process_host_utils.cc",

@@ -73,6 +73,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.PrefetchOptions;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -184,6 +185,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.PrefetchTestUtil;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -1254,6 +1256,37 @@ public class CustomTabActivityTest {
     @SmallTest
     public void testMayLaunchUrlWithoutWarmupHiddenTab() {
         mayLaunchUrlWithoutWarmup(true);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testNavigationalPrefetch() throws Exception {
+        Context context = getInstrumentation().getTargetContext().getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+
+        CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        connection.newSession(token);
+
+        // Start prefetch and wait until the prefetch request is completed.
+        connection.prefetch(token, Uri.parse(mTestPage), new PrefetchOptions.Builder().build());
+        PrefetchTestUtil.waitUntilPrefetchResponseCompleted(new GURL(mTestPage));
+
+        // Open custom tabs, and check prefetch result is served as expected.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Preloading.Prefetch.Attempt.ChromeCustomTabs.TriggeringOutcome",
+                                /*kSuccess*/ 5)
+                        .build();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        assertEquals(mTestPage, ChromeTabUtils.getUrlStringOnUiThread(tab));
+        histogramWatcher.assertExpected();
     }
 
     /**
