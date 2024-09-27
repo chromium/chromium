@@ -30,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -110,6 +111,11 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
   }
 }
 
+bool IsNodeManaged(bookmarks::ManagedBookmarkService* managed_service,
+                   const BookmarkNode* node) {
+  return managed_service && managed_service->IsNodeManaged(node);
+}
+
 }  // namespace
 
 BookmarkContextMenuController::BookmarkContextMenuController(
@@ -128,7 +134,9 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
-      model_(BookmarkModelFactory::GetForBrowserContext(profile)) {
+      model_(BookmarkModelFactory::GetForBrowserContext(profile)),
+      managed_bookmark_service_(
+          ManagedBookmarkServiceFactory::GetForProfile(profile)) {
   DCHECK(profile_);
   DCHECK(model_->loaded());
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -487,8 +495,9 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
   bool is_root_node = selection_.size() == 1 &&
                       selection_[0]->parent() == model_->root_node();
-  bool can_edit = prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
-                  bookmarks::CanAllBeEditedByUser(model_->client(), selection_);
+  bool can_edit =
+      prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
+      chrome::CanAllBeEditedByUser(managed_bookmark_service_, selection_);
   policy::IncognitoModeAvailability incognito_avail =
       IncognitoModePrefs::GetAvailability(prefs);
 
@@ -520,7 +529,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && !model_->client()->IsNodeManaged(parent_);
+      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_);
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
@@ -528,7 +537,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && !model_->client()->IsNodeManaged(parent_);
+      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_);
 
     case IDC_BOOKMARK_BAR_UNDO:
       return can_edit &&
@@ -545,7 +554,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_BOOKMARK_BAR_NEW_FOLDER:
     case IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK:
-      return can_edit && !model_->client()->IsNodeManaged(parent_) &&
+      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_) &&
              bookmarks::GetParentForNewNodes(parent_, selection_, nullptr);
 
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
@@ -574,9 +583,7 @@ bool BookmarkContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     // The option to hide the Managed Bookmarks folder is only available if
     // there are any managed bookmarks configured at all.
-    bookmarks::ManagedBookmarkService* managed =
-        ManagedBookmarkServiceFactory::GetForProfile(profile_);
-    return !managed->managed_node()->children().empty();
+    return !managed_bookmark_service_->managed_node()->children().empty();
   }
 
   return true;

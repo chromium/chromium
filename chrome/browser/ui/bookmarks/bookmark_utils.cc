@@ -23,6 +23,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
@@ -280,6 +281,22 @@ bool IsValidBookmarkDropLocation(Profile* profile,
     return true;
   }
   // From another profile, always accept.
+  return true;
+}
+
+bool CanAllBeEditedByUser(
+    bookmarks::ManagedBookmarkService* managed_bookmark_service,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+  if (!managed_bookmark_service) {
+    return true;
+  }
+
+  for (const bookmarks::BookmarkNode* node : nodes) {
+    if (managed_bookmark_service->IsNodeManaged(node)) {
+      return false;
+    }
+  }
   return true;
 }
 

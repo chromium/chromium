@@ -597,17 +597,6 @@ std::u16string CleanUpTitleForMatching(const std::u16string& title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 
-bool CanAllBeEditedByUser(
-    BookmarkClient* client,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    if (client->IsNodeManaged(nodes[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
   for (const BookmarkNode* node : model->GetNodesByURL(url)) {
     if (!model->client()->IsNodeManaged(node)) {

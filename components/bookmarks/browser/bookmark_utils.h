@@ -29,7 +29,6 @@ class PrefRegistrySyncable;
 // systems that involve indexing and searching bookmarks.
 namespace bookmarks {
 
-class BookmarkClient;
 class BookmarkModel;
 class BookmarkNode;
 
@@ -189,12 +188,6 @@ std::u16string CleanUpUrlForMatching(
 // Returns the lower-cased title, possibly truncated if the original title
 // is overly-long.
 std::u16string CleanUpTitleForMatching(const std::u16string& title);
-
-// Returns true if all the |nodes| can be edited by the user, which means they
-// aren't enterprise-managed, as BookmarkClient::IsNodeManaged().
-bool CanAllBeEditedByUser(
-    BookmarkClient* client,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes);
 
 // Returns true if |url| has a bookmark in the |model| that can be edited
 // by the user.

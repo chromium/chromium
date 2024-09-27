@@ -19,6 +19,7 @@ class Profile;
 
 namespace bookmarks {
 class BookmarkNode;
+class ManagedBookmarkService;
 struct BookmarkNodeData;
 }
 
@@ -104,6 +105,13 @@ bool IsValidBookmarkDropLocation(Profile* profile,
                                  const bookmarks::BookmarkNodeData& data,
                                  const bookmarks::BookmarkNode* drop_parent,
                                  size_t index);
+
+// Returns true if all the |nodes| can be edited by the user, which means they
+// aren't enterprise-managed, as per `ManagedBookmarkService::IsNodeManaged()`.
+bool CanAllBeEditedByUser(
+    bookmarks::ManagedBookmarkService* managed_bookmark_service,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes);
 
 #if defined(TOOLKIT_VIEWS)
 enum class BookmarkFolderIconType {

@@ -10,14 +10,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
@@ -56,9 +59,11 @@ DragOperation DropBookmarks(Profile* profile,
   if (data.IsFromProfilePath(profile->GetPath())) {
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
         dragged_nodes = data.GetNodes(model, profile->GetPath());
-    DCHECK(!model->client()->IsNodeManaged(parent_node));
+    bookmarks::ManagedBookmarkService* managed_service =
+        ManagedBookmarkServiceFactory::GetForProfile(profile);
+    DCHECK(!managed_service || !managed_service->IsNodeManaged(parent_node));
     DCHECK(copy ||
-           bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));
+           chrome::CanAllBeEditedByUser(managed_service, dragged_nodes));
     if (!dragged_nodes.empty()) {
       // Drag from same profile. Copy or move nodes.
       bool is_reorder = !copy && dragged_nodes[0]->parent() == parent_node;
