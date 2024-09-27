@@ -30,14 +30,17 @@ namespace policy {
 namespace {
 
 const char kDmTokenBaseDir[] = FILE_PATH_LITERAL("Policy/Enrollment/");
+const char kMachineIdFilename[] = FILE_PATH_LITERAL("/etc/machine-id");
+
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kEnrollmentTokenFilename[] =
     FILE_PATH_LITERAL("enrollment/CloudManagementEnrollmentToken");
-const char kMachineIdFilename[] = FILE_PATH_LITERAL("/etc/machine-id");
 
 // Enrollment Mandatory Option.
 const char kEnrollmentOptionsFilePath[] =
     FILE_PATH_LITERAL("enrollment/CloudManagementEnrollmentOptions");
 const char kEnrollmentMandatoryOption[] = "Mandatory";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
@@ -118,6 +121,9 @@ std::string BrowserDMTokenStorageLinux::InitClientId() {
 }
 
 std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return std::string();
+#else
   std::string enrollment_token;
   base::FilePath dir_policy_files_path;
 
@@ -134,6 +140,7 @@ std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
 
   return std::string(
       base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::string BrowserDMTokenStorageLinux::InitDMToken() {
@@ -149,6 +156,9 @@ std::string BrowserDMTokenStorageLinux::InitDMToken() {
 }
 
 bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   std::string options;
   base::FilePath dir_policy_files_path;
 
@@ -165,6 +175,7 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
 
   return base::TrimWhitespaceASCII(options, base::TRIM_ALL) ==
          kEnrollmentMandatoryOption;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool BrowserDMTokenStorageLinux::CanInitEnrollmentToken() const {
