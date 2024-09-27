@@ -95,8 +95,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // If this test fails after adding a new data type, carefully consider whether
   // the type should be enabled in Local Sync mode, i.e. for roaming profiles on
   // Windows.
-  // TODO(crbug.com/40708107): Consider whether all of these types should really
-  // be enabled in Local Sync mode.
   syncer::DataTypeSet expected_active_data_types = {
       syncer::BOOKMARKS,
       syncer::READING_LIST,
@@ -104,8 +102,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::PASSWORDS,
       syncer::AUTOFILL_PROFILE,
       syncer::AUTOFILL,
-      syncer::AUTOFILL_WALLET_DATA,
-      syncer::AUTOFILL_WALLET_METADATA,
       syncer::THEMES,
       syncer::EXTENSIONS,
       syncer::SAVED_TAB_GROUP,
@@ -114,7 +110,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::APPS,
       syncer::APP_SETTINGS,
       syncer::EXTENSION_SETTINGS,
-      syncer::HISTORY_DELETE_DIRECTIVES,
       syncer::DEVICE_INFO,
       syncer::PRIORITY_PREFERENCES,
       syncer::WEB_APPS,
