@@ -2,15 +2,20 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- List Speedometer 3 tests.
-CREATE PERFETTO VIEW _chrome_speedometer_3_test_name(
+-- List Speedometer 3 measures. Used to find relevant slices.
+CREATE PERFETTO VIEW _chrome_speedometer_3_measure_name(
+  -- Expected slice name
+  name STRING,
   -- Suite name
   suite_name STRING,
   -- Test name
-  test_name STRING)
+  test_name STRING,
+  -- Measure type
+  measure_type STRING)
 AS
 WITH
-  data(suite_name, test_name) AS (
+  data(suite_name, test_name)
+  AS (
     VALUES('TodoMVC-JavaScript-ES5', 'Adding100Items'),
     ('TodoMVC-JavaScript-ES5', 'CompletingAllItems'),
     ('TodoMVC-JavaScript-ES5', 'DeletingAllItems'),
@@ -69,24 +74,24 @@ WITH
     ('Perf-Dashboard', 'Render'),
     ('Perf-Dashboard', 'SelectingPoints'),
     ('Perf-Dashboard', 'SelectingRange')
-  )
-SELECT suite_name, test_name FROM data;
-
-CREATE PERFETTO VIEW _chrome_speedometer_iteration_slice
-AS
-WITH data AS (
-  SELECT
-    *,
-    substr(name, 1 + length('iteration-')) AS iteration_str
-  FROM
-    slice
-  WHERE
-    category = 'blink.user_timing'
-    AND name GLOB 'iteration-*'
-)
+  ),
+  measure_type(measure_type) AS (VALUES('sync'), ('async'))
 SELECT
-  *,
-  CAST(iteration_str AS INT) as iteration
+  suite_name || '.' || test_name || '-' || measure_type AS name,
+  suite_name,
+  test_name,
+  measure_type
+FROM data, measure_type;
+
+CREATE PERFETTO VIEW _chrome_speedometer_3_iteration_slice
+AS
+WITH
+  data AS (
+    SELECT *, substr(name, 1 + length('iteration-')) AS iteration_str
+    FROM slice
+    WHERE category = 'blink.user_timing' AND name GLOB 'iteration-*'
+  )
+SELECT *, CAST(iteration_str AS INT) AS iteration
 FROM data
 WHERE iteration_str = iteration;
 
@@ -110,46 +115,15 @@ CREATE PERFETTO TABLE chrome_speedometer_3_measure(
   measure_type STRING)
 AS
 WITH
-  measure_type(measure_type) AS (
-    VALUES('sync'),
-    ('async')
-  ),
-  measure_name AS (
-    SELECT
-      suite_name || '.' || test_name || '-' || measure_type AS name,
-      suite_name,
-      test_name,
-      measure_type
-    FROM
-      _chrome_speedometer_3_test_name,
-      measure_type
-  ),
   measure_slice AS (
-    SELECT
-      s.ts,
-      s.dur,
-      s.name,
-      m.suite_name,
-      m.test_name,
-      m.measure_type
-    FROM
-      slice s,
-      measure_name AS m
+    SELECT s.ts, s.dur, s.name, m.suite_name, m.test_name, m.measure_type
+    FROM slice s, _chrome_speedometer_3_measure_name AS m
     USING (name)
-    WHERE
-      s.category = 'blink.user_timing'
+    WHERE s.category = 'blink.user_timing'
   )
 SELECT
-  s.ts,
-  s.dur,
-  s.name,
-  i.iteration,
-  s.suite_name,
-  s.test_name,
-  s.measure_type
-FROM
-  measure_slice AS s,
-  _chrome_speedometer_iteration_slice i
+  s.ts, s.dur, s.name, i.iteration, s.suite_name, s.test_name, s.measure_type
+FROM measure_slice AS s, _chrome_speedometer_3_iteration_slice i
 ON (s.ts >= i.ts AND s.ts < i.ts + i.dur)
 ORDER BY s.ts ASC;
 
@@ -174,8 +148,7 @@ CREATE PERFETTO TABLE chrome_speedometer_3_iteration(
 AS
 WITH
   suite AS (
-    SELECT
-      iteration, suite_name, SUM(dur / (1000.0 * 1000.0)) AS suite_total
+    SELECT iteration, suite_name, SUM(dur / (1000.0 * 1000.0)) AS suite_total
     FROM chrome_speedometer_3_measure
     GROUP BY iteration, suite_name
   ),
@@ -188,14 +161,8 @@ WITH
     FROM suite
     GROUP BY iteration
   )
-SELECT
-  s.ts,
-  s.dur,
-  s.name,
-  i.iteration,
-  i.geomean,
-  1000.0 / i.geomean AS score
-FROM iteration AS i, _chrome_speedometer_iteration_slice AS s
+SELECT s.ts, s.dur, s.name, i.iteration, i.geomean, 1000.0 / i.geomean AS score
+FROM iteration AS i, _chrome_speedometer_3_iteration_slice AS s
 USING (iteration);
 
 -- Returns the Speedometer 3 score for all iterations in the trace
@@ -204,3 +171,22 @@ CREATE PERFETTO FUNCTION chrome_speedometer_3_score()
 RETURNS DOUBLE
 AS
 SELECT AVG(score) FROM chrome_speedometer_3_iteration;
+
+-- Returns the utid for the main thread that ran Speedometer 3
+CREATE PERFETTO FUNCTION chrome_speedometer_3_renderer_main_utid()
+-- Renderer main utid
+RETURNS INT
+AS
+WITH
+  start_event AS (
+    SELECT name || '-start' AS name FROM _chrome_speedometer_3_measure_name
+  )
+SELECT utid
+FROM thread_track
+WHERE
+  id IN (
+    SELECT track_id
+    FROM slice, start_event
+    USING (name)
+    WHERE category = 'blink.user_timing'
+  )

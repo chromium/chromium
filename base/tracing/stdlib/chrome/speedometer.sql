@@ -91,3 +91,14 @@ SELECT
     _chrome_speedometer_version() = '3',
     chrome_speedometer_3_score(),
     chrome_speedometer_2_1_score());
+
+-- Returns the utid for the main thread that ran Speedometer 3
+CREATE PERFETTO FUNCTION chrome_speedometer_renderer_main_utid()
+-- Renderer main utid
+RETURNS INT
+AS
+SELECT
+  IIF(
+    _chrome_speedometer_version() = '3',
+    chrome_speedometer_3_renderer_main_utid(),
+    chrome_speedometer_2_1_renderer_main_utid());

@@ -149,6 +149,19 @@ class ChromeStdlib(TestSuite):
         694052857814984,6063770000,"iteration-10",10,"208.0","96.2"
         """))
 
+  def test_speedometer_2_1_renderer_main_utid(self):
+    return DiffTestBlueprint(
+        trace=DataPath('speedometer_21.perfetto_trace.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.speedometer;
+
+        SELECT chrome_speedometer_renderer_main_utid();
+        """,
+        out=Csv("""
+        "chrome_speedometer_renderer_main_utid()"
+        4
+        """))
+
   def test_speedometer_3_score(self):
     return DiffTestBlueprint(
         trace=DataPath('speedometer_3.perfetto_trace.gz'),
@@ -187,6 +200,19 @@ class ChromeStdlib(TestSuite):
         363456560756,4447621000,"iteration-7",7,"95.5","10.5"
         367904208756,4566333000,"iteration-8",8,"100.8","9.9"
         372470568756,4301553000,"iteration-9",9,"96.9","10.3"
+        """))
+
+  def test_speedometer_3_renderer_main_utid(self):
+    return DiffTestBlueprint(
+        trace=DataPath('speedometer_3.perfetto_trace.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.speedometer;
+
+        SELECT chrome_speedometer_renderer_main_utid();
+        """,
+        out=Csv("""
+        "chrome_speedometer_renderer_main_utid()"
+        2
         """))
 
   # CPU power ups
