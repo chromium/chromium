@@ -2597,6 +2597,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--auto-32px--omitted-width-percent-height.html [ Failure ]
 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--cover--omitted-width-omitted-height.html [ Failure ]
 [ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/zero-ratio-no-dimensions-auto-auto.html [ Failure ]

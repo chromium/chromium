@@ -335173,7 +335173,7 @@
        []
       ],
       "text-box-trim-initial-letter-start-001-ref.html": [
-       "7a3adc8b7e2082ab9c3fc3ef7abf2e4cb3996cc7",
+       "e4768798af3e8ecbb88fa61444b91b0abb68908f",
        []
       ],
       "text-box-trim-line-clamp-001-ref.html": [
@@ -497754,6 +497754,13 @@
      ],
      "scoped-registry-define-upgrade-order.tentative.html": [
       "4fb0f49f9f0bd761ac8e6b9fc68970f20f675e71",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scoped-registry-registry-define-get-etc.tentative.html": [
+      "c37f27ba023cc471e73aacead65376251b1be89d",
       [
        null,
        {}
