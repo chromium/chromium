@@ -249,10 +249,15 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
         CreateEditPredictionImprovementsInformation());
   }
 
+  // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
-  filling_suggestions.insert(filling_suggestions.end(),
-                             address_suggestions.begin(),
-                             address_suggestions.end());
+  for (const autofill::Suggestion& address_suggestion : address_suggestions) {
+    if (address_suggestion.type == autofill::SuggestionType::kAddressEntry ||
+        address_suggestion.type ==
+            autofill::SuggestionType::kAddressFieldByFieldFilling) {
+      filling_suggestions.push_back(address_suggestion);
+    }
+  }
   filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
   filling_suggestions.emplace_back(CreateDetailsSuggestion());
   filling_suggestions.emplace_back(CreateFeedbackSuggestion());

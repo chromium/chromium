@@ -335,8 +335,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kManageAddress),
-                  HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
