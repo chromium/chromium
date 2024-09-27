@@ -186,6 +186,7 @@ source_set("browser_tests") {
     "//components/permissions:test_support",
     "//components/prefs",
     "//components/renderer_context_menu",
+    "//components/signin/public/identity_manager:test_support",
     "//components/ukm:test_support",
     "//content/public/browser",
     "//content/public/common",

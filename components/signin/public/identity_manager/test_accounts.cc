@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 
-#include <ostream>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +18,6 @@
 using base::Value;
 
 namespace signin {
-namespace test {
 
 #if BUILDFLAG(IS_WIN)
 const char kPlatform[] = "win";
@@ -28,14 +29,18 @@ const char kPlatform[] = "chromeos";
 const char kPlatform[] = "linux";
 #elif BUILDFLAG(IS_ANDROID)
 const char kPlatform[] = "android";
+#elif BUILDFLAG(IS_FUCHSIA)
+const char kPlatform[] = "fuchsia";
+#elif BUILDFLAG(IS_IOS)
+const char kPlatform[] = "ios";
 #else
 const char kPlatform[] = "all_platform";
 #endif
 
-TestAccountsUtil::TestAccountsUtil() = default;
-TestAccountsUtil::~TestAccountsUtil() = default;
+TestAccountsConfig::TestAccountsConfig() = default;
+TestAccountsConfig::~TestAccountsConfig() = default;
 
-bool TestAccountsUtil::Init(const base::FilePath& config_path) {
+bool TestAccountsConfig::Init(const base::FilePath& config_path) {
   int error_code = 0;
   std::string error_str;
   JSONFileValueDeserializer deserializer(config_path);
@@ -56,22 +61,21 @@ bool TestAccountsUtil::Init(const base::FilePath& config_path) {
         continue;
       }
     }
-    TestAccount ta(*(platform_account->FindString("user")),
-                   *(platform_account->FindString("password")));
-    all_accounts_.insert(std::pair<std::string, TestAccount>(account_name, ta));
+    TestAccountSigninCredentials credentials{
+        .user = *(platform_account->FindString("user")),
+        .password = *(platform_account->FindString("password"))};
+    all_accounts_.insert({account_name, credentials});
   }
   return true;
 }
 
-bool TestAccountsUtil::GetAccount(const std::string& name,
-                                  TestAccount& out_account) const {
+std::optional<TestAccountSigninCredentials> TestAccountsConfig::GetAccount(
+    std::string_view name) const {
   auto it = all_accounts_.find(name);
   if (it == all_accounts_.end()) {
-    return false;
+    return std::nullopt;
   }
-  out_account = it->second;
-  return true;
+  return it->second;
 }
 
-}  // namespace test
 }  // namespace signin

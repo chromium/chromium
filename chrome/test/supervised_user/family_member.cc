@@ -10,12 +10,12 @@
 #include "base/test/bind.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/test_support/browser_state_management.h"
@@ -27,14 +27,14 @@
 namespace supervised_user {
 
 FamilyMember::FamilyMember(
-    signin::test::TestAccount account,
+    signin::TestAccountSigninCredentials credentials,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager,
     Browser& browser,
     Profile& profile,
     const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
         add_tab_function)
-    : account_(account),
+    : account_(credentials),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       browser_(browser),

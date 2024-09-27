@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_SIGNIN_UTIL_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -41,17 +41,17 @@ class SignInFunctions {
 
   ~SignInFunctions();
 
-  void SignInFromWeb(const TestAccount& test_account,
+  void SignInFromWeb(const TestAccountSigninCredentials& test_account,
                      int previously_signed_in_accounts);
 
-  void SignInFromSettings(const TestAccount& test_account,
+  void SignInFromSettings(const TestAccountSigninCredentials& test_account,
                           int previously_signed_in_accounts);
 
   void SignInFromCurrentPage(content::WebContents* web_contents,
-                             const TestAccount& test_account,
+                             const TestAccountSigninCredentials& test_account,
                              int previously_signed_in_accounts);
 
-  void TurnOnSync(const TestAccount& test_account,
+  void TurnOnSync(const TestAccountSigninCredentials& test_account,
                   int previously_signed_in_accounts);
 
   void SignOutFromWeb();

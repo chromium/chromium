@@ -27,6 +27,7 @@ static_library("test_support") {
     "//chrome/browser/signin/e2e_tests:test_support",
     "//chrome/test:sync_integration_test_support",
     "//chrome/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/test_support",
     "//ui/base:test_support",
   ]

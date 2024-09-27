@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/family_member.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/browser_state_management.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -102,14 +102,14 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-signin::test::TestAccount CreateTestAccountFromCredentialsSwitch(
+signin::TestAccountSigninCredentials CreateTestAccountFromCredentialsSwitch(
     std::string_view credentials_switch) {
   std::string credentials =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           credentials_switch);
   std::string username, password;
   if (RE2::FullMatch(credentials, "(.*):(.*)", &username, &password)) {
-    return signin::test::TestAccount(username, password);
+    return {username, password};
   }
 
   NOTREACHED_NORETURN() << "Expected username:password format, but got: "
@@ -221,11 +221,12 @@ void FamilyLiveTest::TearDownOnMainThread() {
 }
 
 void FamilyLiveTest::SetHeadOfHousehold(
-    const ::signin::test::TestAccount& account) {
+    const signin::TestAccountSigninCredentials& account) {
   head_of_household_ = MakeSignedInBrowser(account);
 }
 
-void FamilyLiveTest::SetChild(const ::signin::test::TestAccount& account) {
+void FamilyLiveTest::SetChild(
+    const signin::TestAccountSigninCredentials& account) {
   child_ = MakeSignedInBrowser(account);
 }
 
@@ -237,16 +238,17 @@ void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
   }
 }
 
-signin::test::TestAccount FamilyLiveTest::GetAccountFromFile(
+signin::TestAccountSigninCredentials FamilyLiveTest::GetAccountFromFile(
     std::string_view account_name_suffix) const {
-  signin::test::TestAccount account;
-  CHECK(GetTestAccountsUtil()->GetAccount(
-      GetFamilyMemberIdentifier(account_name_suffix), account));
-  return account;
+  std::optional<signin::TestAccountSigninCredentials> account =
+      GetTestAccounts()->GetAccount(
+          GetFamilyMemberIdentifier(account_name_suffix));
+  CHECK(account.has_value());
+  return *account;
 }
 
 std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
-    const signin::test::TestAccount& account) {
+    const signin::TestAccountSigninCredentials& account) {
   // Managed externally to the test fixture.
   Profile& profile = CreateNewProfile();
   Browser* browser = CreateBrowser(&profile);

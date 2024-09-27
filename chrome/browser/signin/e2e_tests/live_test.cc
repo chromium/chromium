@@ -43,7 +43,7 @@ void LiveTest::SetUp() {
   CHECK(!config_path.empty()) << kTestAccountFilePath
                               << " does not exist. This file is only available "
                                  "in Google-internal checkouts.";
-  test_accounts_.Init(config_path);
+  CHECK(test_accounts_.Init(config_path));
   InProcessBrowserTest::SetUp();
 }
 

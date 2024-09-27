@@ -22,7 +22,6 @@ if (!is_android && !is_fuchsia) {
     deps = [ "//chrome/browser/ui/webui/signin:test_support_ui" ]
 
     public_deps = [
-      ":test_accounts",
       "//base",
       "//chrome/browser",
       "//chrome/browser:browser_process",
@@ -31,6 +30,7 @@ if (!is_android && !is_fuchsia) {
       "//chrome/browser/ui/webui/signin",
       "//chrome/test:test_support_ui",
       "//components/signin/core/browser",
+      "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
       "//mojo/public/mojom/base",
       "//skia/public/mojom",
@@ -39,13 +39,4 @@ if (!is_android && !is_fuchsia) {
       "//ui/views:test_support",
     ]
   }
-}
-
-static_library("test_accounts") {
-  testonly = true
-  sources = [
-    "test_accounts_util.cc",
-    "test_accounts_util.h",
-  ]
-  public_deps = [ "//base" ]
 }

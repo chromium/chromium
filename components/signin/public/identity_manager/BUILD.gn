@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "primary_account_access_token_fetcher_unittest.cc",
     "primary_account_change_event_unittest.cc",
     "primary_account_mutator_unittest.cc",
+    "test_accounts_unittest.cc",
   ]
 
   deps = [
@@ -169,6 +170,8 @@ source_set("test_support") {
     "identity_test_environment.h",
     "identity_test_utils.cc",
     "identity_test_utils.h",
+    "test_accounts.cc",
+    "test_accounts.h",
     "test_identity_manager_observer.cc",
     "test_identity_manager_observer.h",
   ]

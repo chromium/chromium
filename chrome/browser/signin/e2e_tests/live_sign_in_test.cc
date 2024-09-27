@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -32,6 +33,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -48,6 +50,7 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace signin::test {
+namespace {
 
 // Live tests for SignIn.
 // These tests can be run with:
@@ -90,9 +93,10 @@ class LiveSignInTest : public signin::test::LiveTest {
 // added to Chrome. Sync should be disabled because the test doesn't pass
 // through the Sync confirmation dialog.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
-  TestAccount ta;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-  sign_in_functions.SignInFromSettings(ta, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromSettings(*test_account, 0);
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
@@ -101,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
   EXPECT_TRUE(accounts_in_cookie_jar.signed_out_accounts.empty());
   const gaia::ListedAccount& account =
       accounts_in_cookie_jar.signed_in_accounts[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(ta.user, account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
@@ -113,14 +117,15 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
 // Then, signs out on the web and checks that the account is removed from
 // cookies and Sync paused error is displayed.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
-  TestAccount test_account;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account));
-  sign_in_functions.TurnOnSync(test_account, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
 
   const CoreAccountInfo& primary_account =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account.user, primary_account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   sign_in_functions.SignOutFromWeb();
@@ -131,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
   ASSERT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
   ASSERT_EQ(1u, accounts_in_cookie_jar.signed_out_accounts.size());
   EXPECT_TRUE(gaia::AreEmailsSame(
-      test_account.user, accounts_in_cookie_jar.signed_out_accounts[0].email));
+      test_account->user, accounts_in_cookie_jar.signed_out_accounts[0].email));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
@@ -147,9 +152,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
 // are added to Chrome. Sync should be disabled.
 // Then, signs out on the web and checks that accounts are removed from Chrome.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.SignInFromWeb(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_1 =
       identity_manager()->GetAccountsInCookieJar();
@@ -158,14 +164,15 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   EXPECT_TRUE(accounts_in_cookie_jar_1.signed_out_accounts.empty());
   const gaia::ListedAccount& account_1 =
       accounts_in_cookie_jar_1.signed_in_accounts[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, account_1.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account_1.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_1.id));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  TestAccount test_account_2;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
-  sign_in_functions.SignInFromWeb(test_account_2, 1);
+  std::optional<TestAccountSigninCredentials> test_account_2 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
+  CHECK(test_account_2.has_value());
+  sign_in_functions.SignInFromWeb(*test_account_2, 1);
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
       identity_manager()->GetAccountsInCookieJar();
@@ -175,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   EXPECT_EQ(accounts_in_cookie_jar_2.signed_in_accounts[0].id, account_1.id);
   const gaia::ListedAccount& account_2 =
       accounts_in_cookie_jar_2.signed_in_accounts[1];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, account_2.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account_2.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_2.id));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -197,18 +204,20 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 // Then, turns Sync off from the settings page and checks that both accounts are
 // removed from Chrome and from cookies.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.TurnOnSync(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account_1 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account_1.has_value());
+  sign_in_functions.TurnOnSync(*test_account_1, 0);
 
-  TestAccount test_account_2;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
-  sign_in_functions.SignInFromWeb(test_account_2, 1);
+  std::optional<TestAccountSigninCredentials> test_account_2 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
+  CHECK(test_account_2.has_value());
+  sign_in_functions.SignInFromWeb(*test_account_2, 1);
 
   const CoreAccountInfo& primary_account =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, primary_account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_1->user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   sign_in_functions.TurnOffSync();
@@ -226,9 +235,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
 // from settings. Checks that the account is removed from Chrome.
 // Regression test for https://crbug.com/1114646
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.TurnOnSync(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
 
   // Get in sync paused state.
   sign_in_functions.SignOutFromWeb();
@@ -236,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
   const CoreAccountInfo& primary_account =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, primary_account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -258,9 +268,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
 // but cancels the sync confirmation dialog. Checks that the account is still
 // signed in on the web but Sync is disabled.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
-  TestAccount test_account;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account));
-  sign_in_functions.SignInFromWeb(test_account, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
 
   SignInTestObserver observer(identity_manager(), account_reconcilor());
   GURL settings_url("chrome://settings");
@@ -270,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
   std::string start_syncing_script = base::StringPrintf(
       "settings.SyncBrowserProxyImpl.getInstance()."
       "startSyncingWithEmail(\"%s\", true);",
-      test_account.user.c_str());
+      test_account->user);
   EXPECT_TRUE(content::ExecJs(
       settings_tab, base::StringPrintf(kSettingsScriptWrapperFormat,
                                        start_syncing_script.c_str())));
@@ -284,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
   ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
   const gaia::ListedAccount& account =
       accounts_in_cookie_jar.signed_in_accounts[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account.user, account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -296,9 +307,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 // login page but cancels the Sync confirmation dialog. Checks that Sync is
 // disabled and no account was added to Chrome.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
-  TestAccount test_account;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account));
-  sign_in_functions.SignInFromSettings(test_account, 0);
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromSettings(*test_account, 0);
 
   SignInTestObserver observer(identity_manager(), account_reconcilor());
   EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
@@ -323,15 +335,17 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_SyncSecondAccount_CreateNewProfile) {
   // Enable and disable sync for the first account.
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.TurnOnSync(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account_1 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account_1.has_value());
+  sign_in_functions.TurnOnSync(*test_account_1, 0);
   sign_in_functions.TurnOffSync();
 
   // Start enable sync for the second account.
-  TestAccount test_account_2;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
-  sign_in_functions.SignInFromSettings(test_account_2, 0);
+  std::optional<TestAccountSigninCredentials> test_account_2 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
+  CHECK(test_account_2.has_value());
+  sign_in_functions.SignInFromSettings(*test_account_2, 0);
 
   // Set up an observer for removing the second account from the original
   // profile.
@@ -369,14 +383,14 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
   const gaia::ListedAccount& account =
       accounts_in_cookie_jar.signed_in_accounts[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account.email));
 
   // Check the primary account in the new profile is set and syncing.
   const CoreAccountInfo& primary_account =
       signin::test::identity_manager(new_browser)
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, primary_account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, primary_account.email));
   EXPECT_TRUE(signin::test::identity_manager(new_browser)
                   ->HasAccountWithRefreshToken(primary_account.account_id));
   EXPECT_TRUE(signin::test::sync_service(new_browser)->IsSyncFeatureEnabled());
@@ -401,15 +415,17 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_SyncSecondAccount_InExistingProfile) {
   // Enable and disable sync for the first account.
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.TurnOnSync(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account_1 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account_1.has_value());
+  sign_in_functions.TurnOnSync(*test_account_1, 0);
   sign_in_functions.TurnOffSync();
 
   // Start enable sync for the second account.
-  TestAccount test_account_2;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
-  sign_in_functions.SignInFromSettings(test_account_2, 0);
+  std::optional<TestAccountSigninCredentials> test_account_2 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
+  CHECK(test_account_2.has_value());
+  sign_in_functions.SignInFromSettings(*test_account_2, 0);
 
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -436,13 +452,13 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
   const gaia::ListedAccount& account =
       accounts_in_cookie_jar.signed_in_accounts[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account.email));
 
   // Check the primary account is set and syncing.
   const CoreAccountInfo& primary_account =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, primary_account.email));
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, primary_account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       primary_account.account_id));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -456,15 +472,17 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_SyncSecondAccount_CancelOnEmailConfirmation) {
   // Enable and disable sync for the first account.
-  TestAccount test_account_1;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account_1));
-  sign_in_functions.TurnOnSync(test_account_1, 0);
+  std::optional<TestAccountSigninCredentials> test_account_1 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account_1.has_value());
+  sign_in_functions.TurnOnSync(*test_account_1, 0);
   sign_in_functions.TurnOffSync();
 
   // Start enable sync for the second account.
-  TestAccount test_account_2;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
-  sign_in_functions.SignInFromSettings(test_account_2, 0);
+  std::optional<TestAccountSigninCredentials> test_account_2 =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
+  CHECK(test_account_2.has_value());
+  sign_in_functions.SignInFromSettings(*test_account_2, 0);
 
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -499,13 +517,15 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   {
     AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-    TestAccount ta;
-    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-    sign_in_functions.SignInFromSettings(ta, 0);
+    std::optional<TestAccountSigninCredentials> test_account =
+        GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+    CHECK(test_account.has_value());
+    sign_in_functions.SignInFromSettings(*test_account, 0);
 
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
-    ASSERT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+    ASSERT_TRUE(
+        gaia::AreEmailsSame(core_account_info.email, test_account->user));
 
     capabilities_observer.WaitForAllCapabilitiesToBeKnown(
         core_account_info.account_id);
@@ -522,12 +542,14 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   {
     AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-    TestAccount ta;
-    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_MINOR", ta));
-    sign_in_functions.SignInFromWeb(ta, /*previously_signed_in_accounts=*/1);
+    std::optional<TestAccountSigninCredentials> test_account =
+        GetTestAccounts()->GetAccount("TEST_ACCOUNT_MINOR");
+    sign_in_functions.SignInFromWeb(*test_account,
+                                    /*previously_signed_in_accounts=*/1);
 
     CoreAccountInfo core_account_info =
-        identity_manager()->FindExtendedAccountInfoByEmailAddress(ta.user);
+        identity_manager()->FindExtendedAccountInfoByEmailAddress(
+            test_account->user);
     ASSERT_FALSE(core_account_info.IsEmpty());
 
     capabilities_observer.WaitForAllCapabilitiesToBeKnown(
@@ -544,8 +566,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
-  TestAccount test_account;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account));
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
 
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -570,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       Profile::FromBrowserContext(picker_contents->GetBrowserContext());
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
   EXPECT_NE(browser()->profile(), new_profile);
-  sign_in_functions.SignInFromCurrentPage(picker_contents, test_account,
+  sign_in_functions.SignInFromCurrentPage(picker_contents, *test_account,
                                           /*previously_signed_in_accounts=*/0);
 
   // User is signed in, but Sync is off.
@@ -598,4 +621,5 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+}  // namespace
 }  // namespace signin::test

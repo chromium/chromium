@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -34,6 +35,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -43,7 +45,7 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
-namespace signin::test {
+namespace lens {
 
 namespace {
 using State = LensOverlayController::State;
@@ -126,14 +128,16 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     return signin::test::sync_service(browser());
   }
 
-  SignInFunctions sign_in_functions = SignInFunctions(
-      base::BindLambdaForTesting(
-          [this]() -> Browser* { return this->browser(); }),
-      base::BindLambdaForTesting([this](int index,
-                                        const GURL& url,
-                                        ui::PageTransition transition) -> bool {
-        return this->AddTabAtIndex(index, url, transition);
-      }));
+  signin::test::SignInFunctions sign_in_functions =
+      signin::test::SignInFunctions(
+          base::BindLambdaForTesting(
+              [this]() -> Browser* { return this->browser(); }),
+          base::BindLambdaForTesting(
+              [this](int index,
+                     const GURL& url,
+                     ui::PageTransition transition) -> bool {
+                return this->AddTabAtIndex(index, url, transition);
+              }));
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -200,10 +204,11 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
-  TestAccount ta;
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
-  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.TurnOnSync(ta, 0);
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
@@ -238,10 +243,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
-  TestAccount ta;
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
-  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.SignInFromWeb(ta, 0);
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
@@ -309,10 +315,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
                        OverlayHasObject_SignedInAndSynced) {
-  TestAccount ta;
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
-  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.TurnOnSync(ta, 0);
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
@@ -348,10 +355,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
                        OverlayHasObject_SignedInNotSynced) {
-  TestAccount ta;
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
-  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.SignInFromWeb(ta, 0);
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
@@ -417,4 +425,4 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
   }));
 }
 
-}  // namespace signin::test
+}  // namespace lens
