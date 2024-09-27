@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -77,13 +76,11 @@ void LockedSessionWindowTracker::RefreshUrlBlocklist() {
 void LockedSessionWindowTracker::MaybeCloseBrowser(
     base::WeakPtr<Browser> weak_browser_ptr) {
   Browser* const browser = weak_browser_ptr.get();
-  // If tracking browser is in locked fullscreen mode, we may need to explicitly
-  // close a browser when either a new window is opened from the OnTask SWA that
-  // is blocked, but is not closed or when an OAuth is completed, but since
-  // OnTask prevents windows from closing, we need to manually close that window
-  // when the OAuth is completed.
+  // We may need to explicitly close a browser when either a new window is
+  // opened from the OnTask SWA that is blocked, but is not closed or when an
+  // OAuth is completed, but since OnTask prevents windows from closing, we need
+  // to manually close that window when the OAuth is completed.
   if (!browser || browser == browser_ ||
-      (browser_ && !platform_util::IsBrowserLockedFullscreen(browser_)) ||
       (browser->is_type_app_popup() && oauth_in_progress_)) {
     return;
   }
