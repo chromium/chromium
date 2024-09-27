@@ -297,7 +297,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/locale:delegate_public_impl_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_impl_java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
-      "//chrome/browser/ui/android/cars:delegate_public_impl_java",
       "//chrome/browser/ui/android/hats/internal:provider_public_impl_java",
       "//chrome/browser/webauthn/android:recommender_public_java",
       "//components/search_engines/android:delegate_public_impl_java",
