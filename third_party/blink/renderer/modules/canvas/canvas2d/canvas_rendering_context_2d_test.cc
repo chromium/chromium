@@ -2140,8 +2140,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   // Take a snapshot to trigger lazy resource provider creation
-  CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot(
-      FlushReason::kTesting);
+  Context2D()->GetImage(FlushReason::kTesting);
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   auto* box = CanvasElement().GetLayoutBoxModelObject();
