@@ -53,7 +53,8 @@ class TestRequestHandler {
                     "name":{
                        "fullName":"Student1 full"
                     },
-                    "emailAddress":"student1@foo.com"
+                    "emailAddress":"student1@foo.com",
+                    "photoUrl":"//s"
                  }
               }
            ]
@@ -117,12 +118,12 @@ class ClassroomApiListStudentsRequestsTest : public testing::Test {
 
 TEST_F(ClassroomApiListStudentsRequestsTest, ListStudentsRequest) {
   EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/courses/course-1/students"
-                                 "?fields=students(profile(id%2Cname(fullName)%"
-                                 "2CemailAddress))%2CnextPageToken")))))
+              HandleRequest(AllOf(
+                  Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+                  Field(&HttpRequest::relative_url,
+                        Eq("/v1/courses/course-1/students"
+                           "?fields=students(profile(id%2Cname(fullName)%"
+                           "2CemailAddress%2CphotoUrl))%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<
@@ -147,7 +148,7 @@ TEST_F(ClassroomApiListStudentsRequestsTest,
                         Field(&HttpRequest::relative_url,
                               Eq("/v1/courses/course-1/students"
                                  "?fields=students(profile(id%2Cname(fullName)%"
-                                 "2CemailAddress))%2CnextPageToken"
+                                 "2CemailAddress%2CphotoUrl))%2CnextPageToken"
                                  "&pageToken=qwerty")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
@@ -167,12 +168,12 @@ TEST_F(ClassroomApiListStudentsRequestsTest,
 
 TEST_F(ClassroomApiListStudentsRequestsTest, ListStudentsRequestHandlesError) {
   EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/courses/course-1/students"
-                                 "?fields=students(profile(id%2Cname(fullName)%"
-                                 "2CemailAddress))%2CnextPageToken")))))
+              HandleRequest(AllOf(
+                  Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+                  Field(&HttpRequest::relative_url,
+                        Eq("/v1/courses/course-1/students"
+                           "?fields=students(profile(id%2Cname(fullName)%"
+                           "2CemailAddress%2CphotoUrl))%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::test::TestFuture<

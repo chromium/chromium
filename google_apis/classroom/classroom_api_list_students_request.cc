@@ -30,7 +30,7 @@ constexpr char kListStudentsUrlTemplate[] = "/v1/courses/$1/students";
 
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kRequestedFields[] =
-    "students(profile(id,name(fullName),emailAddress)),nextPageToken";
+    "students(profile(id,name(fullName),emailAddress,photoUrl)),nextPageToken";
 
 constexpr char kPageTokenParameterName[] = "pageToken";
 
