@@ -62,6 +62,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1161,6 +1162,35 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::WebContents* web_contents,
       const GURL& url,
       const blink::StorageKey& storage_key);
+
+  // Temporarily allow `accessing_site` to access cookies when embedded on
+  // `top_frame_site` when third-party cookies are otherwise blocked. After
+  // `ttl` has passed, the access will be revoked. If `ignore_schemes` is true,
+  // then cookie access will be allowed for the sites for all schemes.
+  //
+  // Note that this is not a query to check whether cookie access is permitted.
+  // It is a request that such access *be* permitted; i.e., until `ttl` expires,
+  // `IsFullCookieAccessAllowed()` should return true when called with an URL
+  // belonging to `accessing_site` and a storage key belonging to
+  // `top_frame_site`.
+  //
+  // This method will only be called by cookie access heuristics, described at
+  // https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md
+  // "DueToHeuristic" is in the name so that embedders can optionally treat
+  // these grants differently from grants due to other causes, if other types
+  // are added in the future.
+  //
+  // This should only be called on the UI thread.
+  //
+  // TODO: crbug.com/40883201 - this is temporarily only called by code in
+  // //chrome. Once the cookie access heuristics move to //content, it will be
+  // called by code in //content.
+  virtual void GrantCookieAccessDueToHeuristic(
+      content::BrowserContext* browser_context,
+      const net::SchemefulSite& top_frame_site,
+      const net::SchemefulSite& accessing_site,
+      base::TimeDelta ttl,
+      bool ignore_schemes);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.

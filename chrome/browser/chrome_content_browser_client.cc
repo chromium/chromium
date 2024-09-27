@@ -3704,6 +3704,38 @@ bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
 }
 }  // namespace dips_move
 
+void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
+    content::BrowserContext* browser_context,
+    const net::SchemefulSite& top_frame_site,
+    const net::SchemefulSite& accessing_site,
+    base::TimeDelta ttl,
+    bool ignore_schemes) {
+  dips_move::GrantCookieAccessDueToHeuristic(
+      browser_context, top_frame_site, accessing_site, ttl, ignore_schemes);
+}
+
+// TODO: crbug.com/369813097 - Move this implementation into
+// ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic() after DIPS
+// migrates to //content.
+namespace dips_move {
+void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
+                                     const net::SchemefulSite& top_frame_site,
+                                     const net::SchemefulSite& accessing_site,
+                                     base::TimeDelta ttl,
+                                     bool ignore_schemes) {
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!cookie_settings) {
+    return;
+  }
+
+  cookie_settings->SetTemporaryCookieGrantForHeuristic(
+      accessing_site.GetURL(), top_frame_site.GetURL(), ttl,
+      /*use_schemeless_patterns=*/ignore_schemes);
+}
+}  // namespace dips_move
+
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
     content::BrowserContext* browser_context) {

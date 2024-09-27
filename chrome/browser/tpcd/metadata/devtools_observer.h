@@ -5,13 +5,21 @@
 #ifndef CHROME_BROWSER_TPCD_METADATA_DEVTOOLS_OBSERVER_H_
 #define CHROME_BROWSER_TPCD_METADATA_DEVTOOLS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace content_settings {
+class CookieSettings;
+}
+
 namespace tpcd::metadata {
+
+class Manager;
 
 class TpcdMetadataDevtoolsObserver
     : public content::WebContentsObserver,

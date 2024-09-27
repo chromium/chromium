@@ -402,6 +402,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                  content::WebContents* web_contents,
                                  const GURL& url,
                                  const blink::StorageKey& storage_key) override;
+  void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
+                                       const net::SchemefulSite& top_frame_site,
+                                       const net::SchemefulSite& accessing_site,
+                                       base::TimeDelta ttl,
+                                       bool ignore_schemes) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
@@ -1313,6 +1318,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 //
 // TODO: crbug.com/369813097 - Remove this after DIPS migrates to //content.
 namespace dips_move {
+void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
+                                     const net::SchemefulSite& top_frame_site,
+                                     const net::SchemefulSite& accessing_site,
+                                     base::TimeDelta ttl,
+                                     bool ignore_schemes);
 bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
                                content::WebContents* web_contents,
                                const GURL& url,

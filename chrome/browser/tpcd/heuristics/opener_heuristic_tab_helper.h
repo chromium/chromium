@@ -10,9 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/origin.h"
 
 namespace base {
 class Clock;
@@ -81,8 +81,8 @@ class OpenerHeuristicTabHelper
     const size_t opener_page_id_;
     // A UKM source id for the page that opened the pop-up.
     const ukm::SourceId opener_source_id_;
-    // The URL of the page that opened the pop-up.
-    const GURL opener_url_;
+    // The origin of the page that opened the pop-up.
+    const url::Origin opener_origin_;
     // Whether the user last interacted with the site before the pop-up opened,
     // and how long ago.
     struct FieldNotSet {};
@@ -100,8 +100,6 @@ class OpenerHeuristicTabHelper
     // Used for UKM metrics and for gating storage access grant creation (under
     // a flag).
     bool is_last_navigation_ad_tagged_ = false;
-
-    scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   };
 
   ~OpenerHeuristicTabHelper() override;

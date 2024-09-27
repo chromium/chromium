@@ -26,6 +26,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace url {
+class Origin;
+}
+
 // A single cookie-accessing operation (either read or write). Not to be
 // confused with SiteDataAccessType, which can also represent no access or both
 // read+write.
@@ -169,6 +173,7 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta);
 // belongs to. Currently returns eTLD+1, but this is an implementation detail
 // and may change.
 std::string GetSiteForDIPS(const GURL& url);
+std::string GetSiteForDIPS(const url::Origin& origin);
 
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.

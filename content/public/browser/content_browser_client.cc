@@ -652,6 +652,13 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
   return true;
 }
 
+void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
+    content::BrowserContext* browser_context,
+    const net::SchemefulSite& top_frame_site,
+    const net::SchemefulSite& accessing_site,
+    base::TimeDelta ttl,
+    bool ignore_schemes) {}
+
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
   return false;
