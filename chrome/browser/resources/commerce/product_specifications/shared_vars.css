@@ -1,0 +1,23 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #css_wrapper_metadata_end */
+
+html {
+  --app-container-padding: 24px;
+  --body-min-width: calc(var(--app-container-padding) * 2 + var(
+      --summary-container-padding) * 2 + var(--table-min-width));
+  --body-table-data-unavailable-height: calc(var(
+      --app-container-padding) * 2 + var(--summary-container-padding) * 2 + var(
+      --header-height) + var(--header-margin-bottom) + var(
+      --table-data-unavailable-min-height));
+  --column-hover-padding: 4px;
+  --header-height: 38px;
+  --header-margin-bottom: 24px;
+  --summary-container-padding: 16px;
+  --table-data-unavailable-min-height: 589px;
+  --table-min-width: 726px;
+}

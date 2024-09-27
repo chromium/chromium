@@ -1,29 +1,32 @@
-<style include="cr-hidden-style">
-  :host {
-    --table-min-width: 726px;
-    --summary-container-padding: 16px;
-    --column-padding: 4px;
-
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
+<style include="cr-hidden-style shared-vars">
+  :host([show-table-data-unavailable-container_]),
+  :host([show-table-data-unavailable-container_]) #appContainer {
+    height: 100%;
+    width: 100%;
   }
 
   #appContainer {
-    padding: 24px;
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    padding: var(--app-container-padding);
+    width: fit-content;
   }
 
   product-specifications-header {
-    height: 38px;
-    margin-bottom: 24px;
+    height: var(--header-height);
+    margin-bottom: var(--header-margin-bottom);
     width: 100%;
   }
 
   #summaryContainer {
+    box-sizing: border-box;
     background-color: var(--color-product-specifications-summary-background);
     border-radius: 12px;
     display: flex;
+    max-width: 100%;
     min-height: 50px;
     min-width: var(--table-min-width);
     padding: var(--summary-container-padding);
@@ -32,7 +35,7 @@
 
   #summaryContainer:has(horizontal-carousel:not([hidden])) {
     padding: calc(var(--summary-container-padding) - var(
-        --column-padding)) var(--summary-container-padding);
+        --column-hover-padding)) var(--summary-container-padding);
   }
 
   #summaryContainer:has(horizontal-carousel[can-scroll_]:not([hidden])) {
@@ -40,7 +43,10 @@
   }
 
   :host([show-table-data-unavailable-container_]) #summaryContainer {
+    align-items: center;
+    height: 100%;
     justify-content: center;
+    width: 100%;
   }
 
   #tableDataUnavailable {
@@ -49,7 +55,7 @@
     flex-direction: column;
     text-align: center;
     width: 100%;
-    min-height: 589px;
+    min-height: var(--table-data-unavailable-min-height);
   }
 
   #emptyImg {

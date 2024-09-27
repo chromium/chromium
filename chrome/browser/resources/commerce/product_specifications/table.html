@@ -1,4 +1,4 @@
-<style include="cr-icons cr-hidden-style">
+<style include="cr-icons cr-hidden-style shared-vars">
   :host {
     --column-width: 220px;
     --detail-container-margin-bottom: 24px;
@@ -23,7 +23,7 @@
   .col {
     display: grid;
     grid-template-rows: subgrid;
-    margin: var(--column-padding) 0; /* Include space for hover border. */
+    margin: var(--column-hover-padding) 0; /* Include space for hover border. */
     position: relative;
     width: var(--column-width);
   }
@@ -36,12 +36,12 @@
     background-color: var(
         --color-product-specifications-summary-background-dragging);
     border-radius: 10px;
-    bottom: calc(-1 * var(--column-padding));
+    bottom: calc(-1 * var(--column-hover-padding));
     content: '';
-    left: calc(-1 * var(--column-padding));
+    left: calc(-1 * var(--column-hover-padding));
     position: absolute;
-    right: calc(-1 * var(--column-padding));
-    top: calc(-1 * var(--column-padding));
+    right: calc(-1 * var(--column-hover-padding));
+    top: calc(-1 * var(--column-hover-padding));
   }
 
   product-selector {
@@ -122,7 +122,7 @@
   }
 
   .col[is-first-column] .detail-title span {
-    left: var(--column-padding);
+    left: var(--column-hover-padding);
     position: sticky;
   }
 
@@ -132,7 +132,7 @@
 
   #newColumnSelectorContainer {
     order: var(--num-columns); /* Keep at the end during drag-and-drop. */
-    padding-top: var(--column-padding);
+    padding-top: var(--column-hover-padding);
     position: sticky;
     right: 0;
     z-index: 2;

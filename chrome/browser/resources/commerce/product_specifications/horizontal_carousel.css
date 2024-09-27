@@ -15,6 +15,7 @@
 
   display: flex;
   isolation: isolate;
+  max-width: 100%;
   position: relative;
 }
 
@@ -67,7 +68,6 @@
   display: flex;
   flex-wrap: nowrap;
   min-width: 0;
-  max-width: 1140px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
