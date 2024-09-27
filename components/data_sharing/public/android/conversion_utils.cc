@@ -43,7 +43,8 @@ ScopedJavaLocalRef<jobject> CreateJavaGroupMember(JNIEnv* env,
       env, ConvertUTF8ToJavaString(env, member.gaia_id),
       ConvertUTF8ToJavaString(env, member.display_name),
       ConvertUTF8ToJavaString(env, member.email), static_cast<int>(member.role),
-      url::GURLAndroid::FromNativeGURL(env, member.avatar_url));
+      url::GURLAndroid::FromNativeGURL(env, member.avatar_url),
+      ConvertUTF8ToJavaString(env, member.given_name));
 }
 
 ScopedJavaLocalRef<jobject> CreateJavaGroupToken(JNIEnv* env,

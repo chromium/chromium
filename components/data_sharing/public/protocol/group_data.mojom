@@ -33,6 +33,9 @@ struct GroupMember {
 
   // URL of the avatar of this member.
   url.mojom.Url avatar_url;
+
+  // Given name of the member.
+  string given_name;
 };
 
 // Data representing a group of users.
@@ -40,7 +43,7 @@ struct GroupData {
   // ID of the group.
   string group_id;
 
-  // Name of the group
+  // Name of the group.
   string display_name;
 
    // A list of members in this group.

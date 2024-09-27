@@ -46,6 +46,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
                                           email: 'test@gmail.com',
                                           role: 'member',
                                           avatarUrl: 'http://example.com',
+                                          givenName: 'MEMBER_NAME',
                                         },
                                       ],
                                     })),

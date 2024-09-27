@@ -36,6 +36,7 @@ function toMojomGroupMember(member: DataSharingSdkGroupMember): GroupMember {
     email: member.email,
     role: toMojomRole(member.role),
     avatarUrl: {url: member.avatarUrl},
+    givenName: member.givenName,
   };
 }
 

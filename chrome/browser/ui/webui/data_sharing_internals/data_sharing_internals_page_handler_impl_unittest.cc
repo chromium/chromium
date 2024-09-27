@@ -24,7 +24,8 @@ namespace {
 
 const char kGroup1Id[] = "g1";
 const char kGroup1Name[] = "group1";
-const char kMemberName[] = "John Doe";
+const char kDisplayName[] = "John Doe";
+const char kGivenName[] = "John";
 const char kAccessToken[] = "Access Token";
 const data_sharing::MemberRole kMemberRole = data_sharing::MemberRole::kOwner;
 
@@ -33,7 +34,8 @@ data_sharing::GroupData GetTestGroupData() {
   data.group_token.group_id = data_sharing::GroupId(kGroup1Id);
   data.display_name = kGroup1Name;
   data_sharing::GroupMember member;
-  member.display_name = kMemberName;
+  member.display_name = kDisplayName;
+  member.given_name = kGivenName;
   member.role = kMemberRole;
   data.members.emplace_back(member);
   data.group_token.access_token = kAccessToken;
@@ -139,7 +141,7 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroups) {
         ASSERT_EQ(result[0]->group_id, kGroup1Id);
         ASSERT_EQ(result[0]->display_name, kGroup1Name);
         ASSERT_EQ(result[0]->members.size(), 1u);
-        ASSERT_EQ(result[0]->members[0]->display_name, kMemberName);
+        ASSERT_EQ(result[0]->members[0]->display_name, kDisplayName);
         ASSERT_EQ(result[0]->members[0]->role,
                   data_sharing::mojom::MemberRole::kOwner);
         ASSERT_EQ(result[0]->access_token, kAccessToken);

@@ -210,7 +210,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* displayName= */ null,
                         EMAIL,
                         MemberRole.OWNER,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
         GroupData groupData =
                 new GroupData(
@@ -235,14 +236,16 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* displayName= */ null,
                         EMAIL,
                         MemberRole.MEMBER,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember groupMember2 =
                 new GroupMember(
                         GAIA_ID2,
                         /* displayName= */ null,
                         EMAIL,
                         MemberRole.OWNER,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember[] groupMemberArray = new GroupMember[] {groupMember1, groupMember2};
         GroupData groupData =
                 new GroupData(
@@ -286,7 +289,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* displayName= */ null,
                         EMAIL,
                         MemberRole.OWNER,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
         GroupData groupData =
                 new GroupData(

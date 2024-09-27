@@ -51,7 +51,12 @@ public class SharedGroupObserverTestHelper {
     private static GroupMember newGroupMember(
             String gaiaId, String email, @MemberRole int memberRole) {
         return new GroupMember(
-                gaiaId, /* displayName= */ null, email, memberRole, /* avatarUrl= */ null);
+                gaiaId,
+                /* displayName= */ null,
+                email,
+                memberRole,
+                /* avatarUrl= */ null,
+                /* givenName= */ null);
     }
 
     /** Creates new group data. */

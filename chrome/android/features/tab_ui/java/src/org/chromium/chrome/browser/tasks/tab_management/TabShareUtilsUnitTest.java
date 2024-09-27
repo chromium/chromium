@@ -62,7 +62,12 @@ public class TabShareUtilsUnitTest {
     public void setUp() {
         GroupMember member =
                 new GroupMember(
-                        GAIA_ID, DISPLAY_NAME, EMAIL, MemberRole.MEMBER, /* avatarUrl= */ null);
+                        GAIA_ID,
+                        DISPLAY_NAME,
+                        EMAIL,
+                        MemberRole.MEMBER,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupData groupData =
                 new GroupData(GROUP_ID, DISPLAY_NAME, new GroupMember[] {member}, ACCESS_TOKEN);
         mGroupDataOutcome =

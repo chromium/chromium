@@ -80,6 +80,7 @@ export declare interface DataSharingSdkGroupMember {
   email: string;
   role: DataSharingMemberRole;
   avatarUrl: string;
+  givenName: string;
 }
 
 export declare interface CreateGroupParams {

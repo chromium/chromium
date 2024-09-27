@@ -48,6 +48,7 @@ data_sharing_pb::GroupMember GroupMemberToProto(
   result.set_email(group_member.email);
   result.set_role(MemberRoleToProto(group_member.role));
   result.set_avatar_url(group_member.avatar_url.spec());
+  result.set_given_name(group_member.given_name);
   return result;
 }
 
@@ -59,6 +60,7 @@ GroupMember GroupMemberFromProto(
   result.email = group_member_proto.email();
   result.role = MemberRoleFromProto(group_member_proto.role());
   result.avatar_url = GURL(group_member_proto.avatar_url());
+  result.given_name = group_member_proto.given_name();
   return result;
 }
 

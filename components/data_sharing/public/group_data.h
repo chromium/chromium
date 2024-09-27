@@ -36,6 +36,7 @@ struct GroupMember {
   std::string email;
   MemberRole role;
   GURL avatar_url;
+  std::string given_name;
 };
 
 struct GroupToken {

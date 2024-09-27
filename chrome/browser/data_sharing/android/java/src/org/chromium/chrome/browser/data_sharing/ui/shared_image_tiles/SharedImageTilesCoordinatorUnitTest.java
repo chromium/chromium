@@ -108,21 +108,24 @@ public class SharedImageTilesCoordinatorUnitTest {
                         /* displayName= */ null,
                         EMAIL,
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember memberInvalid1 =
                 new GroupMember(
                         /* gaiaId= */ null,
                         /* displayName= */ null,
                         /* email= */ null,
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember memberInvalid2 =
                 new GroupMember(
                         /* gaiaId= */ null,
                         /* displayName= */ null,
                         /* email= */ "",
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(
                         new GroupData(
