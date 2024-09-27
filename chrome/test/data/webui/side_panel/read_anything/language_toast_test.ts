@@ -9,6 +9,8 @@ import {NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
+
 suite('LanguageToast', () => {
   let toast: LanguageToastElement;
 
@@ -21,6 +23,7 @@ suite('LanguageToast', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);
+    toast.availableVoices = [];
     return microtasksFinished();
   });
 
@@ -75,4 +78,72 @@ suite('LanguageToast', () => {
 
     assertFalse(toast.$.toast.open);
   });
+
+  test('shows error for no internet and no voices', async () => {
+    const lang = 'pt-br';
+    toast.showErrors = true;
+    toast.notify(lang, NotificationType.NO_INTERNET);
+    await microtasksFinished();
+
+    assertTrue(toast.$.toast.open);
+    assertEquals('Can\'t use Read Aloud right now.', getTitle());
+  });
+
+  test('no error for no internet with some voices', async () => {
+    const lang = 'pt-br';
+    toast.availableVoices =
+        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.showErrors = true;
+    toast.notify(lang, NotificationType.NO_INTERNET);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
+
+  test(
+      'no error for no internet with some voices in a different lang',
+      async () => {
+        const lang = 'pt-br';
+        toast.availableVoices =
+            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.showErrors = true;
+        toast.notify(lang, NotificationType.NO_INTERNET);
+        await microtasksFinished();
+
+        assertFalse(toast.$.toast.open);
+      });
+
+  test('shows error for no space and no voices', async () => {
+    const lang = 'pt-br';
+    toast.showErrors = true;
+    toast.notify(lang, NotificationType.NO_SPACE);
+    await microtasksFinished();
+
+    assertTrue(toast.$.toast.open);
+    assertEquals('To use Read Aloud, clear space on your device', getTitle());
+  });
+
+  test('no error for no space with some voices', async () => {
+    const lang = 'pt-br';
+    toast.availableVoices =
+        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.showErrors = true;
+    toast.notify(lang, NotificationType.NO_SPACE);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
+
+  test(
+      'no error for no space with some voices in a different lang',
+      async () => {
+        const lang = 'pt-br';
+        toast.availableVoices =
+            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.showErrors = true;
+        toast.notify(lang, NotificationType.NO_SPACE);
+        await microtasksFinished();
+
+        assertFalse(toast.$.toast.open);
+      });
 });

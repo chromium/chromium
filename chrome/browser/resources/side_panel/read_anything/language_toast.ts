@@ -44,6 +44,7 @@ export class LanguageToastElement extends LanguageToastElementBase implements
       toastTitle_: {type: String},
       toastMessage_: {type: String},
       showErrors: {type: Boolean},
+      availableVoices: {type: Array},
     };
   }
 
@@ -55,22 +56,31 @@ export class LanguageToastElement extends LanguageToastElementBase implements
   // We don't want to show error toasts when the language menu is open, so this
   // is set from the parent via one-way binding.
   showErrors: boolean;
+  availableVoices: SpeechSynthesisVoice[];
 
   notify(language: string, type: NotificationType) {
     const previousNotification = this.notifications_.get(language);
     this.notifications_.set(language, type);
     switch (type) {
       case NotificationType.NO_INTERNET:
+        // Only show a toast if there are no voices at all.
+        if (!this.showErrors || this.availableVoices.length) {
+          return;
+        }
+        this.setErrorTitle_('cantUseReadAloud');
+        break;
       case NotificationType.NO_SPACE:
-        // TODO(crbug.com/368670247, crbug.com/352069373): Show these errors.
-        return;
+        // Only show a toast if there are no voices at all.
+        if (!this.showErrors || this.availableVoices.length) {
+          return;
+        }
+        this.setErrorTitle_('allocationErrorNoVoices');
+        break;
       case NotificationType.NO_SPACE_HQ:
         if (!this.showErrors) {
           return;
         }
-
-        this.toastTitle_ = loadTimeData.getString('allocationErrorHighQuality');
-        this.toastMessage_ = '';
+        this.setErrorTitle_('allocationErrorHighQuality');
         break;
       case NotificationType.DOWNLOADED:
         // TODO(crbug.com/325962407): replace toast with system notification.
@@ -93,6 +103,11 @@ export class LanguageToastElement extends LanguageToastElementBase implements
     }
 
     this.show_();
+  }
+
+  private setErrorTitle_(message: string) {
+    this.toastTitle_ = loadTimeData.getString(message);
+    this.toastMessage_ = '';
   }
 
   private show_() {
