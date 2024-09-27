@@ -1293,6 +1293,27 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5|8086:4680",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "Intel UHD 630 or 770"
+      },
+      {
+        "args": [
+          "--ui-test-action-timeout=30000",
+          "-use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -1388,6 +1409,35 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "ondevice_quality_tests Intel UHD 630 or 770",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5|8086:4680",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_quality_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_quality_tests/",
+        "variant_id": "Intel UHD 630 or 770"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome",
+          "--no-xvfb"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "name": "ondevice_quality_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -1416,6 +1466,34 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "ondevice_stability_tests Intel UHD 630 or 770",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5|8086:4680",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "Intel UHD 630 or 770"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome",
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -1432,6 +1510,30 @@
         "test": "ondevice_stability_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
         "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "args": [
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests_light Intel UHD 630 or 770",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5|8086:4680",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests_light",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
