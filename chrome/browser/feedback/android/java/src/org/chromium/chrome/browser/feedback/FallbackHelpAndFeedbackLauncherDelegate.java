@@ -13,9 +13,9 @@ import org.chromium.base.Log;
 /**
  * Basic implementation for displaying help support for Chrome.
  *
- * NOTE: This class is designed to be replaced by downstream targets.
+ * <p>NOTE: This class is designed to be replaced by downstream targets.
  */
-public class HelpAndFeedbackLauncherDelegateImpl implements HelpAndFeedbackLauncherDelegate {
+public class FallbackHelpAndFeedbackLauncherDelegate implements HelpAndFeedbackLauncherDelegate {
     private static final String TAG = "HelpAndFeedback";
 
     @Override
