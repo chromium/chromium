@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/win/conflicts/module_database.h"
+#include "components/update_client/crx_update_item.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -52,14 +53,15 @@ void ModuleListComponentUpdater::InitializeOnUIThread() {
                                           base::DoNothing());
 }
 
-void ModuleListComponentUpdater::OnEvent(Events event,
-                                         const std::string& component_id) {
+void ModuleListComponentUpdater::OnEvent(
+    const update_client::CrxUpdateItem& item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!module_list_component_id_.empty());
 
   // Only consider events for the module list component.
-  if (component_id != module_list_component_id_)
+  if (item.id != module_list_component_id_) {
     return;
+  }
 
   // There are 2 cases that are important. Either the component is being
   // updated, or the component is not updated either because there is no update
@@ -72,14 +74,13 @@ void ModuleListComponentUpdater::OnEvent(Events event,
   // right now, either because it is too busy, or there is an issue with the
   // server-side component configuration.
 
-  // Note: Because this class only registers as an observer to the component
-  // update service when the current component version is 0.0.0.0 (aka not
-  // installed), it is not possible that the service indicates that the
-  // component is up-to-date. But COMPONENT_ALREADY_UP_TO_DATE can also be
-  // broadcasted for different reasons, which is why it is being checked here.
+  // Note: This class only registers as an observer when the component is not
+  // installed, so kUpToDate should be rare. However, it may occur if there is
+  // no compatible version to install, or if the update server is overloaded.
+  // It is safe to treat this as an error.
 
-  if (event == Events::COMPONENT_ALREADY_UP_TO_DATE ||
-      event == Events::COMPONENT_UPDATE_ERROR) {
+  if (item.state == update_client::ComponentState::kUpToDate ||
+      item.state == update_client::ComponentState::kUpdateError) {
     ModuleDatabase::GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(on_module_list_component_not_updated_callback_));

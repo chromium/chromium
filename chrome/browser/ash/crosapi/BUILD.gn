@@ -526,6 +526,7 @@ static_library("crosapi") {
     "//components/services/app_service/public/cpp:instance_update",
     "//components/session_manager/core",
     "//components/ukm:ukm",
+    "//components/update_client",
     "//components/user_prefs",
     "//components/variations",
     "//components/variations/service",

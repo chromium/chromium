@@ -67,7 +67,6 @@ UpdateContext::UpdateContext(
     bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-    const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
     UpdateEngine::Callback callback,
     PersistedData* persisted_data,
     bool is_update_check_only,
@@ -78,7 +77,6 @@ UpdateContext::UpdateContext(
       is_install(is_install),
       ids(ids),
       crx_state_change_callback(crx_state_change_callback),
-      notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
       session_id(base::StrCat(
           {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
@@ -97,7 +95,7 @@ UpdateEngine::UpdateEngine(
     scoped_refptr<Configurator> config,
     UpdateChecker::Factory update_checker_factory,
     scoped_refptr<PingManager> ping_manager,
-    const NotifyObserversCallback& notify_observers_callback)
+    const UpdateClient::CrxStateChangeCallback& notify_observers_callback)
     : config_(config),
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
@@ -165,7 +163,16 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
   scoped_refptr<UpdateContext> update_context =
       base::MakeRefCounted<UpdateContext>(
           config_, crx_cache_, is_foreground, is_install, ids,
-          crx_state_change_callback, notify_observers_callback_,
+          crx_state_change_callback
+              ? base::BindRepeating(
+                    [](UpdateClient::CrxStateChangeCallback a,
+                       UpdateClient::CrxStateChangeCallback b,
+                       const CrxUpdateItem& item) {
+                      a.Run(item);
+                      b.Run(item);
+                    },
+                    crx_state_change_callback, notify_observers_callback_)
+              : notify_observers_callback_,
           std::move(callback), config_->GetPersistedData(),
           is_update_check_only);
   CHECK(!update_context->session_id.empty());
@@ -404,7 +411,6 @@ void UpdateEngine::HandleComponent(
         base::BindOnce(&UpdateEngine::HandleComponent, this, update_context),
         next_update_delay);
     next_update_delay = base::TimeDelta();
-    component->NotifyWait();
     return;
   }
 

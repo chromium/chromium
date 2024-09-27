@@ -480,7 +480,6 @@ UpdateService::UpdateState::State ToUpdateState(
 
     case update_client::ComponentState::kDownloading:
     case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kDownloaded:
       return UpdateService::UpdateState::State::kDownloading;
 
     case update_client::ComponentState::kCanUpdate:
@@ -499,7 +498,6 @@ UpdateService::UpdateState::State ToUpdateState(
     case update_client::ComponentState::kUpdateError:
       return UpdateService::UpdateState::State::kUpdateError;
 
-    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
       NOTREACHED_IN_MIGRATION();
@@ -538,7 +536,7 @@ MakeUpdateClientCrxStateChangeCallback(
          scoped_refptr<PersistedData> persisted_data, const bool new_install,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              callback,
-         update_client::CrxUpdateItem crx_update_item) {
+         const update_client::CrxUpdateItem& crx_update_item) {
         UpdateService::UpdateState update_state;
         update_state.app_id = crx_update_item.id;
         update_state.state = ToUpdateState(crx_update_item.state);

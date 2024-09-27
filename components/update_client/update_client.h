@@ -153,13 +153,11 @@ enum class ComponentState {
   kCanUpdate,
   kDownloadingDiff,
   kDownloading,
-  kDownloaded,
   kUpdatingDiff,
   kUpdating,
   kUpdated,
   kUpToDate,
   kUpdateError,
-  kPingOnly,
   kRun,
   kLastStatus
 };
@@ -392,57 +390,19 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
 
   // Called when state changes occur during an Install or Update call.
   using CrxStateChangeCallback =
-      base::RepeatingCallback<void(CrxUpdateItem item)>;
+      base::RepeatingCallback<void(const CrxUpdateItem& item)>;
 
   // Defines an interface to observe the UpdateClient. It provides
   // notifications when state changes occur for the service itself or for the
   // registered CRXs.
   class Observer {
    public:
-    enum class Events {
-      // Sent before the update client does an update check.
-      COMPONENT_CHECKING_FOR_UPDATES = 1,
-
-      // Sent when there is a new version of a registered CRX. The CRX will be
-      // downloaded after the notification unless the update client inserts
-      // a wait because of a throttling policy.
-      COMPONENT_UPDATE_FOUND,
-
-      // Sent when a CRX is in the update queue but it can't be acted on
-      // right away, because the update client spaces out CRX updates due to a
-      // throttling policy.
-      COMPONENT_WAIT,
-
-      // Sent after the new CRX has been downloaded but before the install
-      // or the upgrade is attempted.
-      COMPONENT_UPDATE_READY,
-
-      // Sent when a CRX has been successfully updated.
-      COMPONENT_UPDATED,
-
-      // Sent when a CRX has not been updated because there was no update
-      // available for this component.
-      COMPONENT_ALREADY_UP_TO_DATE,
-
-      // Sent when an error ocurred during an update for any reason, including
-      // the update check itself failed, or the download of the update payload
-      // failed, or applying the update failed.
-      COMPONENT_UPDATE_ERROR,
-
-      // Sent when CRX bytes are being downloaded.
-      COMPONENT_UPDATE_DOWNLOADING,
-
-      // Sent when install progress is received from the CRX installer.
-      COMPONENT_UPDATE_UPDATING,
-    };
-
     virtual ~Observer() = default;
 
-    // Called by the update client when a state change happens.
-    // If an |id| is specified, then the event is fired on behalf of the
-    // specific CRX. The implementors of this interface are
-    // expected to filter the relevant events based on the id of the CRX.
-    virtual void OnEvent(Events event, const std::string& id) = 0;
+    // Called by the update client when a component makes progress. This could
+    // be a state change or progress within a state, such as additional
+    // downloaded bytes or installer progress.
+    virtual void OnEvent(const CrxUpdateItem& item) = 0;
   };
 
   // Packs the parameters for sending a ping.

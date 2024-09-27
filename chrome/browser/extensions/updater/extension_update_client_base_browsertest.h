@@ -59,12 +59,11 @@ class ExtensionUpdateClientBaseTest : public ExtensionBrowserTest {
   // extension browser client (through ConfigFactoryCallback).
   virtual ConfigFactoryCallback ChromeUpdateClientConfigFactory() const;
 
-  // Wait for an update on extension |id| to finish.
+  // Wait for an update on extension `id` to finish.
   // The return value gives the result of the completed update operation
-  // (error, update, no update) as defined in
-  // |update_client::UpdateClient::Observer::Events|
-  update_client::UpdateClient::Observer::Events
-  WaitOnComponentUpdaterCompleteEvent(const std::string& id);
+  // (error, update, no update) as defined in `update_client::ComponentState`.
+  update_client::ComponentState WaitOnComponentUpdaterCompleteEvent(
+      const std::string& id);
 
   // Creates network interceptors.
   // Override this function to provide your own network interceptors.

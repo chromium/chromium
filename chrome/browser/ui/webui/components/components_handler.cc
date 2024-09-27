@@ -99,43 +99,14 @@ void ComponentsHandler::HandleCheckUpdate(const base::Value::List& args) {
   OnDemandUpdate(component_id);
 }
 
-void ComponentsHandler::OnEvent(Events event, const std::string& id) {
+void ComponentsHandler::OnEvent(const update_client::CrxUpdateItem& item) {
   base::Value::Dict parameters;
-  parameters.Set("event", ComponentEventToString(event));
-  if (!id.empty()) {
-    if (event == Events::COMPONENT_UPDATED) {
-      update_client::CrxUpdateItem item;
-      if (component_updater_->GetComponentDetails(id, &item) && item.component)
-        parameters.Set("version", item.component->version.GetString());
-    }
-    parameters.Set("id", id);
+  parameters.Set("event", ServiceStatusToString(item.state));
+  parameters.Set("id", item.id);
+  if (item.component) {
+    parameters.Set("version", item.component->version.GetString());
   }
   FireWebUIListener("component-event", parameters);
-}
-
-std::u16string ComponentsHandler::ComponentEventToString(Events event) {
-  switch (event) {
-    case Events::COMPONENT_CHECKING_FOR_UPDATES:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_STARTED);
-    case Events::COMPONENT_WAIT:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_SLEEPING);
-    case Events::COMPONENT_UPDATE_FOUND:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_FOUND);
-    case Events::COMPONENT_UPDATE_READY:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_READY);
-    case Events::COMPONENT_UPDATED:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_UPDATED);
-    case Events::COMPONENT_ALREADY_UP_TO_DATE:
-      return l10n_util::GetStringUTF16(
-          IDS_COMPONENTS_EVT_STATUS_ALREADY_UP_TO_DATE);
-    case Events::COMPONENT_UPDATE_ERROR:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_UPDATE_ERROR);
-    case Events::COMPONENT_UPDATE_DOWNLOADING:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_DOWNLOADING);
-    case Events::COMPONENT_UPDATE_UPDATING:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_UPDATING);
-  }
-  return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
 }
 
 std::u16string ComponentsHandler::ServiceStatusToString(
@@ -155,16 +126,13 @@ std::u16string ComponentsHandler::ServiceStatusToString(
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDT_DIFF);
     case update_client::ComponentState::kUpdating:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATING);
-    case update_client::ComponentState::kDownloaded:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DOWNLOADED);
     case update_client::ComponentState::kUpdated:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATED);
     case update_client::ComponentState::kUpToDate:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPTODATE);
     case update_client::ComponentState::kUpdateError:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATE_ERROR);
-    case update_client::ComponentState::kPingOnly:  // Fall through.
-    case update_client::ComponentState::kRun:
+    case update_client::ComponentState::kRun:  // Fall through.
     case update_client::ComponentState::kLastStatus:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
   }

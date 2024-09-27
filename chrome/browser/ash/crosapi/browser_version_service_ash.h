@@ -54,7 +54,7 @@ class BrowserVersionServiceAsh
 
  private:
   // component_updater::ComponentUpdateService::Observer:
-  void OnEvent(Events event, const std::string& id) override;
+  void OnEvent(const update_client::CrxUpdateItem& id) override;
 
   // Returns the stringified version of the latest available lacros-chrome that
   // can be launched.

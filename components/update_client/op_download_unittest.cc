@@ -106,8 +106,7 @@ class OpDownloadTest : public testing::Test {
         config,
         base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir_.GetPath())),
         false, false, std::vector<std::string>(),
-        UpdateClient::CrxStateChangeCallback(),
-        UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
+        UpdateClient::CrxStateChangeCallback(), UpdateEngine::Callback(),
         nullptr,
         /*is_update_check_only=*/false);
   }

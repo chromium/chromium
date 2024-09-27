@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
+#include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
 
 namespace crosapi {
 
@@ -53,10 +55,11 @@ BrowserVersionServiceAsh::GetDelegate() const {
              : crosapi::BrowserManager::Get()->version_service_delegate();
 }
 
-void BrowserVersionServiceAsh::OnEvent(Events event, const std::string& id) {
+void BrowserVersionServiceAsh::OnEvent(
+    const update_client::CrxUpdateItem& item) {
   // Check for notifications of the Lacros component being updated.
-  if (event != Events::COMPONENT_UPDATED ||
-      id != ash::standalone_browser::GetLacrosComponentInfo().crx_id ||
+  if (item.state != update_client::ComponentState::kUpdated ||
+      item.id != ash::standalone_browser::GetLacrosComponentInfo().crx_id ||
       !GetDelegate()->IsNewerBrowserAvailable()) {
     return;
   }

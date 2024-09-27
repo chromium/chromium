@@ -47,20 +47,16 @@ void ScreenAIDownloaderNonChromeOS::SetLastUsageTime() {
 }
 
 void ScreenAIDownloaderNonChromeOS::OnEvent(
-    update_client::UpdateClient::Observer::Events event,
-    const std::string& omaha_id) {
-  if (omaha_id !=
+    const update_client::CrxUpdateItem& item) {
+  if (item.id !=
       component_updater::ScreenAIComponentInstallerPolicy::GetOmahaId()) {
     return;
   }
 
-  if (event == Events::COMPONENT_UPDATE_DOWNLOADING) {
-    update_client::CrxUpdateItem item;
-    if (g_browser_process->component_updater()->GetComponentDetails(omaha_id,
-                                                                    &item)) {
-      SetDownloadProgress(static_cast<double>(item.downloaded_bytes) /
-                          item.total_bytes);
-    }
+  if (item.state == update_client::ComponentState::kDownloading ||
+      item.state == update_client::ComponentState::kDownloadingDiff) {
+    SetDownloadProgress(static_cast<double>(item.downloaded_bytes) /
+                        item.total_bytes);
   }
 }
 

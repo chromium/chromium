@@ -39,8 +39,6 @@ struct UpdateContext;
 // this class is associated with one instance of UpdateContext.
 class Component {
  public:
-  using Events = UpdateClient::Observer::Events;
-
   using CallbackHandleComplete = base::OnceCallback<void()>;
 
   Component(const UpdateContext& update_context, const std::string& id);
@@ -343,7 +341,7 @@ class Component {
   // If an UpdateClient::CrxStateChangeCallback is provided as an argument to
   // UpdateClient::Install or UpdateClient::Update function calls, then the
   // callback is invoked as well.
-  void NotifyObservers(Events event) const;
+  void NotifyObservers() const;
 
   void SetParseResult(const ProtocolParser::Result& result);
 

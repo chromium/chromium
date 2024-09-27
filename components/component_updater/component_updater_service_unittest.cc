@@ -110,7 +110,7 @@ class MockServiceObserver : public ServiceObserver {
   MockServiceObserver() = default;
   ~MockServiceObserver() override = default;
 
-  MOCK_METHOD2(OnEvent, void(Events event, const std::string&));
+  MOCK_METHOD1(OnEvent, void(const update_client::CrxUpdateItem&));
 };
 
 class MockUpdateScheduler : public UpdateScheduler {

@@ -254,11 +254,6 @@ void Component::SetUpdateCheckResult(
   }
 }
 
-void Component::NotifyWait() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyObservers(Events::COMPONENT_WAIT);
-}
-
 bool Component::HasDiffUpdate() const {
   return !crx_diffurls().empty();
 }
@@ -273,18 +268,9 @@ void Component::AppendEvent(base::Value::Dict event) {
   events_.push_back(std::move(event));
 }
 
-void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
+void Component::NotifyObservers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // There is no corresponding component state for the COMPONENT_WAIT event.
-  if (update_context_->crx_state_change_callback &&
-      event != UpdateClient::Observer::Events::COMPONENT_WAIT) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindRepeating(update_context_->crx_state_change_callback,
-                            GetCrxUpdateItem()));
-  }
-  update_context_->notify_observers_callback.Run(event, id_);
+  update_context_->crx_state_change_callback.Run(GetCrxUpdateItem());
 }
 
 base::TimeDelta Component::GetUpdateDuration() const {
@@ -420,12 +406,8 @@ void Component::StateNew::DoHandle() {
     // new state is entered. Hence, posting the task below is a workaround for
     // this design oversight.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](Component& component) {
-              component.NotifyObservers(Events::COMPONENT_CHECKING_FOR_UPDATES);
-            },
-            std::ref(component)));
+        FROM_HERE, base::BindOnce(&Component::NotifyObservers,
+                                  base::Unretained(&component)));
   } else {
     component.error_code_ = static_cast<int>(Error::CRX_NOT_FOUND);
     component.error_category_ = ErrorCategory::kService;
@@ -504,7 +486,7 @@ void Component::StateUpdateError::DoHandle() {
   }
 
   EndState();
-  component.NotifyObservers(Events::COMPONENT_UPDATE_ERROR);
+  component.NotifyObservers();
 }
 
 Component::StateCanUpdate::StateCanUpdate(Component* component)
@@ -521,7 +503,7 @@ void Component::StateCanUpdate::DoHandle() {
   CHECK(component.crx_component());
 
   component.is_update_available_ = true;
-  component.NotifyObservers(Events::COMPONENT_UPDATE_FOUND);
+  component.NotifyObservers();
 
   if (!component.crx_component()->updates_enabled ||
       (!component.crx_component()->allow_updates_on_metered_connection &&
@@ -632,7 +614,7 @@ void Component::StateUpToDate::DoHandle() {
   auto& component = State::component();
   CHECK(component.crx_component());
 
-  component.NotifyObservers(Events::COMPONENT_ALREADY_UP_TO_DATE);
+  component.NotifyObservers();
   EndState();
 }
 
@@ -666,14 +648,12 @@ void Component::StateDownloading::DoHandle() {
              int64_t total_bytes) {
             component->downloaded_bytes_ = downloaded_bytes;
             component->total_bytes_ = total_bytes;
-            component->NotifyObservers(
-                UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING);
+            component->NotifyObservers();
           },
           base::raw_ref(component)),
       base::BindOnce(&Component::StateDownloading::DownloadComplete,
                      base::Unretained(this)));
-  component.NotifyObservers(
-      UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING);
+  component.NotifyObservers();
 }
 
 void Component::StateDownloading::DownloadComplete(
@@ -721,7 +701,7 @@ void Component::StateUpdatingDiff::DoHandle() {
   CHECK(component.crx_component());
 
   component.install_progress_ = -1;
-  component.NotifyObservers(Events::COMPONENT_UPDATE_READY);
+  component.NotifyObservers();
 
   PuffOperation(
       component.update_context_->crx_cache_,
@@ -768,7 +748,7 @@ void Component::StateUpdatingDiff::InstallProgress(int install_progress) {
   if (install_progress >= 0 && install_progress <= 100) {
     component.install_progress_ = install_progress;
   }
-  component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
+  component.NotifyObservers();
 }
 
 void Component::StateUpdatingDiff::InstallComplete(
@@ -813,7 +793,7 @@ void Component::StateUpdating::DoHandle() {
   CHECK(component.crx_component());
 
   component.install_progress_ = -1;
-  component.NotifyObservers(Events::COMPONENT_UPDATE_READY);
+  component.NotifyObservers();
 
   InstallOperation(
       component.crx_component()->allow_cached_copies &&
@@ -841,7 +821,7 @@ void Component::StateUpdating::InstallProgress(int install_progress) {
   if (install_progress >= 0 && install_progress <= 100) {
     component.install_progress_ = install_progress;
   }
-  component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
+  component.NotifyObservers();
 }
 
 void Component::StateUpdating::InstallComplete(
@@ -906,7 +886,7 @@ void Component::StateUpdated::DoHandle() {
 
   component.AppendEvent(component.MakeEventUpdateComplete());
 
-  component.NotifyObservers(Events::COMPONENT_UPDATED);
+  component.NotifyObservers();
   metrics::RecordComponentUpdated();
   EndState();
 }

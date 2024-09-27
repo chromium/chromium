@@ -52,8 +52,6 @@ namespace {
 
 const char kExtensionId[] = "aohghmighlieiainnegkcijnfilokake";
 
-using UpdateClientEvents = update_client::UpdateClient::Observer::Events;
-
 }  // namespace
 
 class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
@@ -128,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
   extension_service()->updater()->CheckNow(std::move(params));
 
   // UpdateService should emit a not-updated event.
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE,
+  EXPECT_EQ(update_client::ComponentState::kUpToDate,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())
@@ -169,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UpdateCheckError) {
   extension_service()->updater()->CheckNow(std::move(params));
 
   // UpdateService should emit an error update event.
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATE_ERROR,
+  EXPECT_EQ(update_client::ComponentState::kUpdateError,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())
@@ -276,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
 
   ExpectProfileKeepAlive(true);
 
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
+  EXPECT_EQ(update_client::ComponentState::kUpdated,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   run_loop.Run();
@@ -352,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
 
   // Make sure the extension then got re-installed, and that after reinstall it
   // is no longer disabled due to corruption.
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
+  EXPECT_EQ(update_client::ComponentState::kUpdated,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   reasons = prefs->GetDisableReasons(kExtensionId);
@@ -408,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UninstallExtensionWhileUpdating) {
       kExtensionId, extensions::UNINSTALL_REASON_COMPONENT_REMOVED, nullptr);
 
   // Update client should issue an update error event for this extension.
-  ASSERT_EQ(UpdateClientEvents::COMPONENT_UPDATE_ERROR,
+  ASSERT_EQ(update_client::ComponentState::kUpdateError,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   run_loop.Run();
@@ -591,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
   delay_tracker.StopWatching();
   delay_tracker.Proceed();
 
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
+  EXPECT_EQ(update_client::ComponentState::kUpdated,
             WaitOnComponentUpdaterCompleteEvent(id_));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())
@@ -643,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
     // Resolve the request to |delay_tracker|, so the reinstallation can
     // proceed.
     delay_tracker.Proceed();
-    EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
+    EXPECT_EQ(update_client::ComponentState::kUpdated,
               WaitOnComponentUpdaterCompleteEvent(id_));
   }
 
@@ -712,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   int disable_reasons = prefs->GetDisableReasons(id_);
   if (disable_reasons & disable_reason::DISABLE_CORRUPTED) {
-    EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
+    EXPECT_EQ(update_client::ComponentState::kUpdated,
               WaitOnComponentUpdaterCompleteEvent(id_));
     disable_reasons = prefs->GetDisableReasons(id_);
   }

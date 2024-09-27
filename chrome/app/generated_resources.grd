@@ -7001,9 +7001,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_SVC_STATUS_DNL" desc="Service Status">
         Downloading
       </message>
-      <message name="IDS_COMPONENTS_SVC_STATUS_DOWNLOADED" desc="Service Status">
-        Downloaded
-      </message>
       <message name="IDS_COMPONENTS_SVC_STATUS_UPDT_DIFF" desc="Service Status">
         Updating diff
       </message>
@@ -7021,33 +7018,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_COMPONENTS_UNKNOWN" desc="Service Status">
         Unknown
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_STARTED" desc="Service Status">
-        Updater started
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_SLEEPING" desc="Service Status">
-        Updater sleeping
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_FOUND" desc="Service Status">
-        Update found
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_READY" desc="Service Status">
-        Update ready
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_UPDATED" desc="Service Status">
-        Component updated
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_ALREADY_UP_TO_DATE" desc="Service Status">
-        Component already up to date
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_UPDATE_ERROR" desc="Service Status">
-        Update error
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_DOWNLOADING" desc="Service Status">
-        Component downloading
-      </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_UPDATING" desc="Service Status">
-        Component updating
       </message>
 
       <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE" desc="The title of the account chooser dialog.">

@@ -37,7 +37,7 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   void HandleCheckUpdate(const base::Value::List& args);
 
   // ServiceObserver implementation.
-  void OnEvent(Events event, const std::string& id) override;
+  void OnEvent(const update_client::CrxUpdateItem& item) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callback for the "crosUrlComponentsRedirect" message.
@@ -45,7 +45,6 @@ class ComponentsHandler : public content::WebUIMessageHandler,
 #endif
 
  private:
-  static std::u16string ComponentEventToString(Events event);
   static std::u16string ServiceStatusToString(
       update_client::ComponentState state);
 

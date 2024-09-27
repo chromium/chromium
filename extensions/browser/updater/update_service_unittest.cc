@@ -50,8 +50,6 @@
 
 namespace {
 
-using UpdateClientEvents = update_client::UpdateClient::Observer::Events;
-
 class FakeUpdateClient : public update_client::UpdateClient {
  public:
   FakeUpdateClient();

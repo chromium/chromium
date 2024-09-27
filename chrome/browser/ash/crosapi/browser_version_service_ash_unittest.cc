@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,11 +95,12 @@ TEST_F(BrowserVersionServiceAshTest,
   browser_version_service.AddBrowserVersionObserver(
       browser_version_observer_.BindAndGetRemote());
 
+  update_client::CrxUpdateItem item;
+  item.id = sample_browser_component_id;
+  item.state = update_client::ComponentState::kUpdated;
   static_cast<component_updater::ComponentUpdateService::Observer*>(
       &browser_version_service)
-      ->OnEvent(
-          update_client::UpdateClient::Observer::Events::COMPONENT_UPDATED,
-          sample_browser_component_id);
+      ->OnEvent(item);
   run_loop.RunUntilIdle();
 }
 

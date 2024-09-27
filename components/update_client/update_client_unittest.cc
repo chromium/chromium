@@ -111,11 +111,9 @@ bool MakeTestFile(const base::FilePath& from_path, base::FilePath* to_path) {
   return true;
 }
 
-using Events = UpdateClient::Observer::Events;
-
 class MockObserver : public UpdateClient::Observer {
  public:
-  MOCK_METHOD2(OnEvent, void(Events event, const std::string&));
+  MOCK_METHOD1(OnEvent, void(const CrxUpdateItem& item));
 };
 
 class MockActionHandler : public ActionHandler {
@@ -134,7 +132,7 @@ class MockActionHandler : public ActionHandler {
 class MockCrxStateChangeReceiver
     : public base::RefCountedThreadSafe<MockCrxStateChangeReceiver> {
  public:
-  MOCK_METHOD(void, Receive, (CrxUpdateItem));
+  MOCK_METHOD(void, Receive, (const CrxUpdateItem&));
 
  private:
   friend class base::RefCountedThreadSafe<MockCrxStateChangeReceiver>;
@@ -169,6 +167,7 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
+using ::testing::Truly;
 using ::testing::Unused;
 
 class MockPingManagerImpl : public PingManager {
@@ -408,11 +407,13 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
   }
 
@@ -626,29 +627,43 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kChecking &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kCanUpdate &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kDownloading &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpdating &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpdated &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kChecking &&
+                         item.id == "abagagagagagagagagagagagagagagag";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpToDate &&
+                         item.id == "abagagagagagagagagagagagagagagag";
+                })))
         .Times(1);
   }
 
@@ -865,33 +880,45 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kChecking &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kCanUpdate &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kDownloading &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpdating &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpdated &&
+                         item.id == "jebgalgnebhfojomionfpkfelancnnkf";
+                })))
         .Times(1);
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kChecking &&
+                         item.id == "abagagagagagagagagagagagagagagag";
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.state == ComponentState::kUpdateError &&
+                         item.id == "abagagagagagagagagagagagagagagag";
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10004, item.error_code);
@@ -1098,26 +1125,38 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -1223,11 +1262,15 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -1476,21 +1519,27 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
           EXPECT_EQ(-118, item.error_code);
@@ -1499,23 +1548,30 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_WAIT,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(AnyNumber());
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 
@@ -1827,41 +1883,65 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_UPDATING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(3);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloadingDiff;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdatingDiff;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_UPDATING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdatingDiff;
+                })))
         .Times(3);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 
@@ -2163,20 +2243,30 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -2472,36 +2562,61 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
 
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloadingDiff;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 
@@ -2838,36 +2953,56 @@ TEST_F(UpdateClientTest,
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
 
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 
@@ -3043,17 +3178,25 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
   }
 
@@ -3265,27 +3408,35 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1)
-        .WillOnce(Invoke([update_client](Events event, const std::string& id) {
-          CrxUpdateItem update_item;
-          ASSERT_TRUE(update_client->GetCrxUpdateState(id, &update_item));
-          ASSERT_TRUE(update_item.component);
-          const auto* test_installer = static_cast<TestInstaller*>(
-              update_item.component->installer.get());
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+          ASSERT_TRUE(item.component);
+          const auto* test_installer =
+              static_cast<TestInstaller*>(item.component->installer.get());
           EXPECT_STREQ("UpdaterSetup.exe",
                        test_installer->install_params()->run.c_str());
           EXPECT_STREQ("--arg1 --arg2",
@@ -3402,15 +3553,15 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           // Tests that the state of the component when the CrxComponent data
           // is not provided. In this case, the optional |item.component|
           // instance is not present.
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", item.id.c_str());
           EXPECT_FALSE(item.component);
@@ -3544,11 +3695,15 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
           mock_update_checker_factory.GetFactory());
 
   MockObserver observer;
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kChecking;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kUpToDate;
+              })))
       .Times(1);
 
   std::vector<CrxUpdateItem> items1;
@@ -3790,17 +3945,25 @@ TEST_F(UpdateClientTest, DiskFull) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -4080,35 +4243,55 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_UPDATING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(3);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
-        .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloadingDiff;
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
+        .Times(AtLeast(1));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -4424,23 +4607,35 @@ TEST_F(UpdateClientTest, RetryAfter) {
   MockObserver observer;
 
   InSequence seq;
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kChecking;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kUpToDate;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kChecking;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kUpToDate;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kChecking;
+              })))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                "jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                       item.state == ComponentState::kUpToDate;
+              })))
       .Times(1);
 
   update_client->AddObserver(&observer);
@@ -4704,32 +4899,48 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 
@@ -4941,21 +5152,27 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(2));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
           EXPECT_EQ(200, item.error_code);
@@ -5070,15 +5287,17 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-1, item.error_code);
@@ -5239,15 +5458,17 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10006, item.error_code);  // UNKNOWN_APPPLICATION.
@@ -5256,15 +5477,17 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "abagagagagagagagagagagagagagagag" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "abagagagagagagagagagagagagagagag"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "abagagagagagagagagagagagagagagag" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10007, item.error_code);  // RESTRICTED_APPLICATION.
@@ -5273,15 +5496,17 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10008, item.error_code);  // INVALID_APPID.
@@ -5290,15 +5515,17 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   }
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "gjpmebpgbhcamgdgjcmnjfhggjpgcimm" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "gjpmebpgbhcamgdgjcmnjfhggjpgcimm" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1)
-        .WillOnce(Invoke([&update_client](Events event, const std::string& id) {
-          CrxUpdateItem item;
-          EXPECT_TRUE(update_client->GetCrxUpdateState(id, &item));
+        .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10004, item.error_code);  // UPDATE_RESPONSE_NOT_FOUND.
@@ -5765,15 +5992,13 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
     explicit Observer(scoped_refptr<UpdateClient> update_client)
         : update_client_(update_client) {}
 
-    void OnEvent(Events event, const std::string& id) override {
-      if (event != Events::COMPONENT_ALREADY_UP_TO_DATE) {
+    void OnEvent(const CrxUpdateItem& item) override {
+      if (item.state != ComponentState::kUpToDate) {
         return;
       }
       ++calls;
-      CrxUpdateItem item;
-      EXPECT_TRUE(update_client_->GetCrxUpdateState(
-          "jebgalgnebhfojomionfpkfelancnnkf", &item));
-      EXPECT_EQ("example_value", item.custom_updatecheck_data["_example"]);
+      ASSERT_TRUE(item.custom_updatecheck_data.count("_example"));
+      EXPECT_EQ("example_value", item.custom_updatecheck_data.at("_example"));
     }
 
     int calls = 0;
@@ -6138,18 +6363,26 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(AtLeast(1))
         .WillRepeatedly(Invoke([&cancel] { cancel.Run(); }));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -6320,15 +6553,21 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1)
         .WillOnce(Invoke([&cancel] { cancel.Run(); }));
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
 
@@ -6438,11 +6677,15 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
   }
   std::vector<CrxUpdateItem> items;
@@ -6589,11 +6832,15 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
   }
   std::vector<CrxUpdateItem> items;
@@ -6701,17 +6948,25 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
   }
   std::vector<CrxUpdateItem> items;
@@ -6834,11 +7089,15 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
         .Times(1);
   }
 
@@ -6922,8 +7181,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
   std::vector<CrxUpdateItem> items;
@@ -7105,14 +7366,20 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
   }
   std::vector<CrxUpdateItem> items;
@@ -7318,39 +7585,61 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
   MockObserver observer;
   {
     InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
         .Times(2);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_UPDATING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(2);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })))
         .Times(1);
 
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_READY,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_UPDATING,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdating;
+                })))
         .Times(3);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATED,
-                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdated;
+                })))
         .Times(1);
   }
 

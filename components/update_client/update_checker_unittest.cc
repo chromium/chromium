@@ -178,8 +178,7 @@ scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
   return base::MakeRefCounted<UpdateContext>(
       config_, base::MakeRefCounted<CrxCache>(options), false, false,
       std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-      nullptr,
+      UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);
 }
 
