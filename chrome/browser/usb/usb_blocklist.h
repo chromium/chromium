@@ -22,8 +22,6 @@ class UsbBlocklist final {
   // An entry in the blocklist. Represents a device that should not be
   // accessible using WebUSB.
   struct Entry {
-    Entry(uint16_t vendor_id, uint16_t product_id, uint16_t version);
-
     // Matched against the idVendor field of the USB Device Descriptor.
     uint16_t vendor_id;
 

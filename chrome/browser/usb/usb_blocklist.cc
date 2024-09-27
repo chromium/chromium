@@ -58,7 +58,7 @@ bool EntryMatches(Iterator begin,
 }
 
 // This list must be sorted according to CompareEntry.
-const UsbBlocklist::Entry kStaticEntries[] = {
+constexpr UsbBlocklist::Entry kStaticEntries[] = {
     {0x096e, 0x0850, kMaxVersion},  // KEY-ID
     {0x096e, 0x0852, kMaxVersion},  // Feitian
     {0x096e, 0x0853, kMaxVersion},  // Feitian
@@ -110,12 +110,7 @@ const UsbBlocklist::Entry kStaticEntries[] = {
 
 }  // namespace
 
-UsbBlocklist::Entry::Entry(uint16_t vendor_id,
-                           uint16_t product_id,
-                           uint16_t max_version)
-    : vendor_id(vendor_id), product_id(product_id), max_version(max_version) {}
-
-UsbBlocklist::~UsbBlocklist() {}
+UsbBlocklist::~UsbBlocklist() = default;
 
 // static
 UsbBlocklist& UsbBlocklist::Get() {
@@ -134,7 +129,7 @@ bool UsbBlocklist::IsExcluded(
                             device_info.device_version_minor << 4 |
                             device_info.device_version_subminor;
   return IsExcluded(
-      Entry(device_info.vendor_id, device_info.product_id, device_version));
+      Entry{device_info.vendor_id, device_info.product_id, device_version});
 }
 
 void UsbBlocklist::ResetToDefaultValuesForTest() {
