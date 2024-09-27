@@ -17,6 +17,8 @@ class Stroke;
 namespace chrome_pdf {
 
 // Writes `stroke` into `page`. Returns whether the operation succeeded or not.
+// If the provided `stroke` is empty then it will return false and the `page`
+// is left unchanged.
 bool WriteStrokeToPage(FPDF_PAGE page, const ink::Stroke& stroke);
 
 }  // namespace chrome_pdf

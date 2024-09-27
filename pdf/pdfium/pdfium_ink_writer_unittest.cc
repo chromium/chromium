@@ -25,6 +25,7 @@
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -150,13 +151,31 @@ TEST_P(PDFiumInkWriterTest, Basic) {
   ink::Stroke stroke(brush->GetInkBrush(), inputs.value());
   ASSERT_TRUE(WriteStrokeToPage(page, stroke));
 
+  ASSERT_TRUE(FPDFPage_GenerateContent(page));
+
   std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_TRUE(!saved_pdf_data.empty());
 
-  // TODO(crbug.com/335517469): The drawing should look different.
   CheckPdfRendering(saved_pdf_data,
                     /*page_number=*/0, gfx::Size(200, 200),
                     GetReferenceFilePath("basic.png"));
+}
+
+TEST_P(PDFiumInkWriterTest, EmptyStroke) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage* pdfium_page = engine->GetPage(0);
+  ASSERT_TRUE(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  ASSERT_TRUE(page);
+
+  auto brush =
+      std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
+  ink::Stroke unused_stroke(brush->GetInkBrush());
+  ASSERT_FALSE(WriteStrokeToPage(page, unused_stroke));
 }
 
 TEST_P(PDFiumInkWriterTest, NoPage) {
@@ -166,6 +185,8 @@ TEST_P(PDFiumInkWriterTest, NoPage) {
   ASSERT_FALSE(WriteStrokeToPage(/*page=*/nullptr, unused_stroke));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumInkWriterTest, testing::Bool());
+// Don't be concerned about any slight rendering differences in AGG vs. Skia,
+// covering one of these is sufficient for checking how data is written out.
+INSTANTIATE_TEST_SUITE_P(All, PDFiumInkWriterTest, testing::Values(false));
 
 }  // namespace chrome_pdf
