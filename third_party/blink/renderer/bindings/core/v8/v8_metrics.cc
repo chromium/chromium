@@ -197,185 +197,242 @@ void V8MetricsRecorder::AddMainThreadEvent(
       prefix ".Weak" suffix,                                             \
       base::Microseconds(statistics.weak_wall_clock_duration_in_us));
 
-  DCHECK_LE(0, event.reason);
-  UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle.Reason.Full", event.reason,
-                            v8::internal::kGarbageCollectionReasonMaxValue);
-
   static constexpr size_t kMinSize = 1;
   static constexpr size_t kMaxSize = 4 * 1024 * 1024;
   static constexpr size_t kNumBuckets = 50;
 
   CheckUnifiedEvents(event);
 
-  // Report throughput metrics:
-  UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.Full", "", event.total);
-  UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full", "",
-                                    event.main_thread);
-
-  // Report atomic pause metrics:
-  UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full.Atomic", "",
-                                    event.main_thread_atomic);
-
-  // Report incremental marking/sweeping metrics:
-  if (event.main_thread_incremental.mark_wall_clock_duration_in_us >= 0) {
-    UMA_HISTOGRAM_TIMES(
-        "V8.GC.Cycle.MainThread.Full.Incremental.Mark",
-        base::Microseconds(
-            event.main_thread_incremental.mark_wall_clock_duration_in_us));
+  DCHECK_LE(0, event.reason);
+#define REPORT_V8_HISTOGRAMS(priority)                                         \
+  {                                                                            \
+    UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle" priority ".Reason.Full",           \
+                              event.reason,                                    \
+                              v8::internal::kGarbageCollectionReasonMaxValue); \
+                                                                               \
+    /* Report throughput metrics: */                                           \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle" priority ".Full", "",      \
+                                      event.total);                            \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES(                                         \
+        "V8.GC.Cycle" priority ".MainThread.Full", "", event.main_thread);     \
+                                                                               \
+    /* Report atomic pause metrics: */                                         \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle" priority                   \
+                                      ".MainThread.Full.Atomic",               \
+                                      "", event.main_thread_atomic);           \
+                                                                               \
+    /* Report incremental marking/sweeping metrics: */                         \
+    if (event.main_thread_incremental.mark_wall_clock_duration_in_us >= 0) {   \
+      UMA_HISTOGRAM_TIMES(                                                     \
+          "V8.GC.Cycle" priority ".MainThread.Full.Incremental.Mark",          \
+          base::Microseconds(                                                  \
+              event.main_thread_incremental.mark_wall_clock_duration_in_us));  \
+    }                                                                          \
+    if (event.main_thread_incremental.sweep_wall_clock_duration_in_us >= 0) {  \
+      UMA_HISTOGRAM_TIMES(                                                     \
+          "V8.GC.Cycle" priority ".MainThread.Full.Incremental.Sweep",         \
+          base::Microseconds(                                                  \
+              event.main_thread_incremental.sweep_wall_clock_duration_in_us)); \
+    }                                                                          \
+    if (event.incremental_marking_start_stop_wall_clock_duration_in_us >= 0) { \
+      UMA_HISTOGRAM_TIMES(                                                     \
+          "V8.GC.Cycle" priority                                               \
+          ".MainThread.Full.Incremental.Mark.StartStop",                       \
+          base::Microseconds(                                                  \
+              event                                                            \
+                  .incremental_marking_start_stop_wall_clock_duration_in_us)); \
+    }                                                                          \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_before_histogram,                    \
+        ("V8.GC.Cycle" priority ".Objects.Before.Full", kMinSize, kMaxSize,    \
+         kNumBuckets));                                                        \
+    object_size_before_histogram.Count(                                        \
+        CappedSizeInKB(event.objects.bytes_before));                           \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_after_histogram,                     \
+        ("V8.GC.Cycle" priority ".Objects.After.Full", kMinSize, kMaxSize,     \
+         kNumBuckets));                                                        \
+    object_size_after_histogram.Count(                                         \
+        CappedSizeInKB(event.objects.bytes_after));                            \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_freed_histogram,                     \
+        ("V8.GC.Cycle" priority ".Objects.Freed.Full", kMinSize, kMaxSize,     \
+         kNumBuckets));                                                        \
+    object_size_freed_histogram.Count(                                         \
+        CappedSizeInKB(event.objects.bytes_freed));                            \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, memory_size_freed_histogram,                     \
+        ("V8.GC.Cycle" priority ".Memory.Freed.Full", kMinSize, kMaxSize,      \
+         kNumBuckets));                                                        \
+    memory_size_freed_histogram.Count(                                         \
+        CappedSizeInKB(event.memory.bytes_freed));                             \
+                                                                               \
+    /* Report efficacy metrics: */                                             \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_histogram,                              \
+        ("V8.GC.Cycle" priority ".Efficiency.Full", kMinSize, kMaxSize,        \
+         kNumBuckets));                                                        \
+    efficacy_histogram.Count(                                                  \
+        CappedEfficacyInKBPerMs(event.efficiency_in_bytes_per_us));            \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_main_thread_histogram,                  \
+        ("V8.GC.Cycle" priority ".Efficiency.MainThread.Full", kMinSize,       \
+         kMaxSize, kNumBuckets));                                              \
+    efficacy_main_thread_histogram.Count(CappedEfficacyInKBPerMs(              \
+        event.main_thread_efficiency_in_bytes_per_us));                        \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, collection_rate_histogram,                       \
+        ("V8.GC.Cycle" priority ".CollectionRate.Full", 1, 100, 20));          \
+    collection_rate_histogram.Count(                                           \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            100 * event.collection_rate_in_percent));                          \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, collection_weight_histogram,                     \
+        ("V8.GC.Cycle" priority ".CollectionWeight.Full", 1, 1000, 20));       \
+    collection_weight_histogram.Count(                                         \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            1000 * event.collection_weight_in_percent));                       \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, main_thread_collection_weight_histogram,         \
+        ("V8.GC.Cycle" priority ".CollectionWeight.MainThread.Full", 1, 1000,  \
+         20));                                                                 \
+    main_thread_collection_weight_histogram.Count(                             \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            1000 * event.main_thread_collection_weight_in_percent));           \
   }
-  if (event.main_thread_incremental.sweep_wall_clock_duration_in_us >= 0) {
-    UMA_HISTOGRAM_TIMES(
-        "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
-        base::Microseconds(
-            event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+
+  REPORT_V8_HISTOGRAMS("")
+  if (event.priority.has_value()) {
+    switch (event.priority.value()) {
+      case v8::Isolate::Priority::kBestEffort:
+        REPORT_V8_HISTOGRAMS(".BestEffort")
+        break;
+      case v8::Isolate::Priority::kUserVisible:
+        REPORT_V8_HISTOGRAMS(".UserVisible")
+        break;
+      case v8::Isolate::Priority::kUserBlocking:
+        REPORT_V8_HISTOGRAMS(".UserBlocking")
+    }
   }
-  if (event.incremental_marking_start_stop_wall_clock_duration_in_us >= 0) {
-    UMA_HISTOGRAM_TIMES(
-        "V8.GC.Cycle.MainThread.Full.Incremental.Mark.StartStop",
-        base::Microseconds(
-            event.incremental_marking_start_stop_wall_clock_duration_in_us));
-  }
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, object_size_before_histogram,
-      ("V8.GC.Cycle.Objects.Before.Full", kMinSize, kMaxSize, kNumBuckets));
-  object_size_before_histogram.Count(
-      CappedSizeInKB(event.objects.bytes_before));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, object_size_after_histogram,
-      ("V8.GC.Cycle.Objects.After.Full", kMinSize, kMaxSize, kNumBuckets));
-  object_size_after_histogram.Count(CappedSizeInKB(event.objects.bytes_after));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, object_size_freed_histogram,
-      ("V8.GC.Cycle.Objects.Freed.Full", kMinSize, kMaxSize, kNumBuckets));
-  object_size_freed_histogram.Count(CappedSizeInKB(event.objects.bytes_freed));
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, memory_size_freed_histogram,
-      ("V8.GC.Cycle.Memory.Freed.Full", kMinSize, kMaxSize, kNumBuckets));
-  memory_size_freed_histogram.Count(CappedSizeInKB(event.memory.bytes_freed));
-
-  // Report efficacy metrics:
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, efficacy_histogram,
-      ("V8.GC.Cycle.Efficiency.Full", kMinSize, kMaxSize, kNumBuckets));
-  efficacy_histogram.Count(
-      CappedEfficacyInKBPerMs(event.efficiency_in_bytes_per_us));
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                  efficacy_main_thread_histogram,
-                                  ("V8.GC.Cycle.Efficiency.MainThread.Full",
-                                   kMinSize, kMaxSize, kNumBuckets));
-  efficacy_main_thread_histogram.Count(
-      CappedEfficacyInKBPerMs(event.main_thread_efficiency_in_bytes_per_us));
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Full", 1, 100, 20));
-  collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
-      100 * event.collection_rate_in_percent));
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, collection_weight_histogram,
-      ("V8.GC.Cycle.CollectionWeight.Full", 1, 1000, 20));
-  collection_weight_histogram.Count(
-      base::saturated_cast<base::Histogram::Sample>(
-          1000 * event.collection_weight_in_percent));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, main_thread_collection_weight_histogram,
-      ("V8.GC.Cycle.CollectionWeight.MainThread.Full", 1, 1000, 20));
-  main_thread_collection_weight_histogram.Count(
-      base::saturated_cast<base::Histogram::Sample>(
-          1000 * event.main_thread_collection_weight_in_percent));
+#undef REPORT_V8_HISTOGRAMS
 
   if (CheckCppEvents(event)) {
-    // Report throughput metrics:
-    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.Full", ".Cpp",
-                                      event.total_cpp);
-    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full", ".Cpp",
-                                      event.main_thread_cpp);
+#define REPORT_CPP_HISTOGRAMS(priority)                                        \
+  {                                                                            \
+    /* Report throughput metrics: */                                           \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle" priority ".Full", ".Cpp",  \
+                                      event.total_cpp);                        \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle" priority                   \
+                                      ".MainThread.Full",                      \
+                                      ".Cpp", event.main_thread_cpp);          \
+                                                                               \
+    /* Report atomic pause metrics: */                                         \
+    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle" priority                   \
+                                      ".MainThread.Full.Atomic",               \
+                                      ".Cpp", event.main_thread_atomic_cpp);   \
+                                                                               \
+    /* Report incremental marking/sweeping metrics: */                         \
+    if (event.main_thread_incremental_cpp.mark_wall_clock_duration_in_us >=    \
+        0) {                                                                   \
+      UMA_HISTOGRAM_TIMES(                                                     \
+          "V8.GC.Cycle" priority ".MainThread.Full.Incremental.Mark.Cpp",      \
+          base::Microseconds(event.main_thread_incremental_cpp                 \
+                                 .mark_wall_clock_duration_in_us));            \
+    }                                                                          \
+    if (event.main_thread_incremental_cpp.sweep_wall_clock_duration_in_us >=   \
+        0) {                                                                   \
+      UMA_HISTOGRAM_TIMES(                                                     \
+          "V8.GC.Cycle" priority ".MainThread.Full.Incremental.Sweep.Cpp",     \
+          base::Microseconds(event.main_thread_incremental_cpp                 \
+                                 .sweep_wall_clock_duration_in_us));           \
+    }                                                                          \
+                                                                               \
+    /* Report size metrics: */                                                 \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_before_cpp_histogram,                \
+        ("V8.GC.Cycle" priority ".Objects.Before.Full.Cpp", kMinSize,          \
+         kMaxSize, kNumBuckets));                                              \
+    object_size_before_cpp_histogram.Count(                                    \
+        CappedSizeInKB(event.objects_cpp.bytes_before));                       \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_after_cpp_histogram,                 \
+        ("V8.GC.Cycle" priority ".Objects.After.Full.Cpp", kMinSize, kMaxSize, \
+         kNumBuckets));                                                        \
+    object_size_after_cpp_histogram.Count(                                     \
+        CappedSizeInKB(event.objects_cpp.bytes_after));                        \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, object_size_freed_cpp_histogram,                 \
+        ("V8.GC.Cycle" priority ".Objects.Freed.Full.Cpp", kMinSize, kMaxSize, \
+         kNumBuckets));                                                        \
+    object_size_freed_cpp_histogram.Count(                                     \
+        CappedSizeInKB(event.objects_cpp.bytes_freed));                        \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, memory_size_freed_cpp_histogram,                 \
+        ("V8.GC.Cycle" priority ".Memory.Freed.Full.Cpp", kMinSize, kMaxSize,  \
+         kNumBuckets));                                                        \
+    memory_size_freed_cpp_histogram.Count(                                     \
+        CappedSizeInKB(event.memory_cpp.bytes_freed));                         \
+                                                                               \
+    /* Report efficacy metrics: */                                             \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_cpp_histogram,                          \
+        ("V8.GC.Cycle" priority ".Efficiency.Full.Cpp", kMinSize, kMaxSize,    \
+         kNumBuckets));                                                        \
+    efficacy_cpp_histogram.Count(                                              \
+        CappedEfficacyInKBPerMs(event.efficiency_cpp_in_bytes_per_us));        \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_main_thread_cpp_histogram,              \
+        ("V8.GC.Cycle" priority ".Efficiency.MainThread.Full.Cpp", kMinSize,   \
+         kMaxSize, kNumBuckets));                                              \
+    efficacy_main_thread_cpp_histogram.Count(CappedEfficacyInKBPerMs(          \
+        event.main_thread_efficiency_cpp_in_bytes_per_us));                    \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, collection_rate_cpp_histogram,                   \
+        ("V8.GC.Cycle" priority ".CollectionRate.Full.Cpp", 1, 100, 20));      \
+    collection_rate_cpp_histogram.Count(                                       \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            100 * event.collection_rate_cpp_in_percent));                      \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, collection_weight_cpp_histogram,                 \
+        ("V8.GC.Cycle" priority ".CollectionWeight.Full.Cpp", 1, 1000, 20));   \
+    collection_weight_cpp_histogram.Count(                                     \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            1000 * event.collection_weight_cpp_in_percent));                   \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, main_thread_collection_weight_cpp_histogram,     \
+        ("V8.GC.Cycle" priority ".CollectionWeight.MainThread.Full.Cpp", 1,    \
+         1000, 20));                                                           \
+    main_thread_collection_weight_cpp_histogram.Count(                         \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            1000 * event.main_thread_collection_weight_cpp_in_percent));       \
+  }
 
-    // Report atomic pause metrics:
-    UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full.Atomic",
-                                      ".Cpp", event.main_thread_atomic_cpp);
-
-    // Report incremental marking/sweeping metrics:
-    if (event.main_thread_incremental_cpp.mark_wall_clock_duration_in_us >= 0) {
-      UMA_HISTOGRAM_TIMES(
-          "V8.GC.Cycle.MainThread.Full.Incremental.Mark.Cpp",
-          base::Microseconds(event.main_thread_incremental_cpp
-                                 .mark_wall_clock_duration_in_us));
+    REPORT_CPP_HISTOGRAMS("")
+    if (event.priority.has_value()) {
+      switch (event.priority.value()) {
+        case v8::Isolate::Priority::kBestEffort:
+          REPORT_CPP_HISTOGRAMS(".BestEffort")
+          break;
+        case v8::Isolate::Priority::kUserVisible:
+          REPORT_CPP_HISTOGRAMS(".UserVisible")
+          break;
+        case v8::Isolate::Priority::kUserBlocking:
+          REPORT_CPP_HISTOGRAMS(".UserBlocking")
+      }
     }
-    if (event.main_thread_incremental_cpp.sweep_wall_clock_duration_in_us >=
-        0) {
-      UMA_HISTOGRAM_TIMES(
-          "V8.GC.Cycle.MainThread.Full.Incremental.Sweep.Cpp",
-          base::Microseconds(event.main_thread_incremental_cpp
-                                 .sweep_wall_clock_duration_in_us));
-    }
-
-    // Report size metrics:
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_before_cpp_histogram,
-                                    ("V8.GC.Cycle.Objects.Before.Full.Cpp",
-                                     kMinSize, kMaxSize, kNumBuckets));
-    object_size_before_cpp_histogram.Count(
-        CappedSizeInKB(event.objects_cpp.bytes_before));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_after_cpp_histogram,
-                                    ("V8.GC.Cycle.Objects.After.Full.Cpp",
-                                     kMinSize, kMaxSize, kNumBuckets));
-    object_size_after_cpp_histogram.Count(
-        CappedSizeInKB(event.objects_cpp.bytes_after));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_freed_cpp_histogram,
-                                    ("V8.GC.Cycle.Objects.Freed.Full.Cpp",
-                                     kMinSize, kMaxSize, kNumBuckets));
-    object_size_freed_cpp_histogram.Count(
-        CappedSizeInKB(event.objects_cpp.bytes_freed));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, memory_size_freed_cpp_histogram,
-        ("V8.GC.Cycle.Memory.Freed.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
-    memory_size_freed_cpp_histogram.Count(
-        CappedSizeInKB(event.memory_cpp.bytes_freed));
-
-    // Report efficacy metrics:
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, efficacy_cpp_histogram,
-        ("V8.GC.Cycle.Efficiency.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
-    efficacy_cpp_histogram.Count(
-        CappedEfficacyInKBPerMs(event.efficiency_cpp_in_bytes_per_us));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, efficacy_main_thread_cpp_histogram,
-        ("V8.GC.Cycle.Efficiency.MainThread.Full.Cpp", kMinSize, kMaxSize,
-         kNumBuckets));
-    efficacy_main_thread_cpp_histogram.Count(CappedEfficacyInKBPerMs(
-        event.main_thread_efficiency_cpp_in_bytes_per_us));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, collection_rate_cpp_histogram,
-        ("V8.GC.Cycle.CollectionRate.Full.Cpp", 1, 100, 20));
-    collection_rate_cpp_histogram.Count(
-        base::saturated_cast<base::Histogram::Sample>(
-            100 * event.collection_rate_cpp_in_percent));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, collection_weight_cpp_histogram,
-        ("V8.GC.Cycle.CollectionWeight.Full.Cpp", 1, 1000, 20));
-    collection_weight_cpp_histogram.Count(
-        base::saturated_cast<base::Histogram::Sample>(
-            1000 * event.collection_weight_cpp_in_percent));
-
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, main_thread_collection_weight_cpp_histogram,
-        ("V8.GC.Cycle.CollectionWeight.MainThread.Full.Cpp", 1, 1000, 20));
-    main_thread_collection_weight_cpp_histogram.Count(
-        base::saturated_cast<base::Histogram::Sample>(
-            1000 * event.main_thread_collection_weight_cpp_in_percent));
+#undef REPORT_CPP_HISTOGRAMS
   }
 
 #undef UMA_HISTOGRAM_TIMES_ALL_GC_PHASES
@@ -436,38 +493,59 @@ void V8MetricsRecorder::AddMainThreadEvent(
   DCHECK_LE(0, event.efficiency_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_in_bytes_per_us);
 
-  UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle.Reason.Young", event.reason,
-                            v8::internal::kGarbageCollectionReasonMaxValue);
-
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.Young",
-      base::Microseconds(event.total_wall_clock_duration_in_us));
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.MainThread.Young",
-      base::Microseconds(event.main_thread_wall_clock_duration_in_us));
-
   static constexpr size_t kMinSize = 1;
   static constexpr size_t kMaxSize = 4 * 1024 * 1024;
   static constexpr size_t kNumBuckets = 50;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, efficacy_histogram,
-      ("V8.GC.Cycle.Efficiency.Young", kMinSize, kMaxSize, kNumBuckets));
-  efficacy_histogram.Count(
-      CappedEfficacyInKBPerMs(event.efficiency_in_bytes_per_us));
+#define REPORT_V8_HISTOGRAMS(priority)                                         \
+  {                                                                            \
+    UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle" priority ".Reason.Young",          \
+                              event.reason,                                    \
+                              v8::internal::kGarbageCollectionReasonMaxValue); \
+                                                                               \
+    UMA_HISTOGRAM_TIMES(                                                       \
+        "V8.GC.Cycle" priority ".Young",                                       \
+        base::Microseconds(event.total_wall_clock_duration_in_us));            \
+    UMA_HISTOGRAM_TIMES(                                                       \
+        "V8.GC.Cycle" priority ".MainThread.Young",                            \
+        base::Microseconds(event.main_thread_wall_clock_duration_in_us));      \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_histogram,                              \
+        ("V8.GC.Cycle" priority ".Efficiency.Young", kMinSize, kMaxSize,       \
+         kNumBuckets));                                                        \
+    efficacy_histogram.Count(                                                  \
+        CappedEfficacyInKBPerMs(event.efficiency_in_bytes_per_us));            \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, efficacy_main_thread_histogram,                  \
+        ("V8.GC.Cycle" priority ".Efficiency.MainThread.Young", kMinSize,      \
+         kMaxSize, kNumBuckets));                                              \
+    efficacy_main_thread_histogram.Count(CappedEfficacyInKBPerMs(              \
+        event.main_thread_efficiency_in_bytes_per_us));                        \
+                                                                               \
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+        CustomCountHistogram, collection_rate_histogram,                       \
+        ("V8.GC.Cycle" priority ".CollectionRate.Young", 1, 100, 20));         \
+    collection_rate_histogram.Count(                                           \
+        base::saturated_cast<base::Histogram::Sample>(                         \
+            100 * event.collection_rate_in_percent));                          \
+  }
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                  efficacy_main_thread_histogram,
-                                  ("V8.GC.Cycle.Efficiency.MainThread.Young",
-                                   kMinSize, kMaxSize, kNumBuckets));
-  efficacy_main_thread_histogram.Count(
-      CappedEfficacyInKBPerMs(event.main_thread_efficiency_in_bytes_per_us));
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Young", 1, 100, 20));
-  collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
-      100 * event.collection_rate_in_percent));
+  REPORT_V8_HISTOGRAMS("")
+  if (event.priority.has_value()) {
+    switch (event.priority.value()) {
+      case v8::Isolate::Priority::kBestEffort:
+        REPORT_V8_HISTOGRAMS(".BestEffort")
+        break;
+      case v8::Isolate::Priority::kUserVisible:
+        REPORT_V8_HISTOGRAMS(".UserVisible")
+        break;
+      case v8::Isolate::Priority::kUserBlocking:
+        REPORT_V8_HISTOGRAMS(".UserBlocking")
+    }
+  }
+#undef REPORT_V8_HISTOGRAMS
 }
 
 void V8MetricsRecorder::NotifyIsolateDisposal() {
