@@ -127,11 +127,13 @@ class StructureUnittest(unittest.TestCase):
     self.assertTrue(checkIsGzipped('test_js.js', ''))
     self.assertTrue(checkIsGzipped('test_css.css', ''))
     self.assertTrue(checkIsGzipped('test_svg.svg', ''))
+    self.assertTrue(checkIsGzipped('test_json.json', ''))
 
     self.assertTrue(checkIsGzipped('test_html.html', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_js.js', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_json.json', 'compress="default"'))
 
   def testCompressBrotli(self):
     test_data_root = util.PathFromRoot('grit/testdata')
@@ -180,7 +182,7 @@ class StructureUnittest(unittest.TestCase):
     test_data_root = util.PathFromRoot('grit/testdata')
     root = util.ParseGrdForUnittest('''
         <structures>
-          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" />
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" compress="false" />
         </structures>''',
                                     base_dir=test_data_root)
     node, = root.GetChildrenOfType(structure.StructureNode)

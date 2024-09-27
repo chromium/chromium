@@ -28,7 +28,7 @@ void AiIntroScreenHandler::DeclareLocalizedValues(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(features::kFeatureManagementOobeAiIntro)) {
     auto product_name =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);
     product_name = base::TrimWhitespaceASCII(product_name, base::TRIM_TRAILING);
     builder->AddF("aiIntroScreenSubtitle", IDS_AI_INTRO_SUBTITLE,

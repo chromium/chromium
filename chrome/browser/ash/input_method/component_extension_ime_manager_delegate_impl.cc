@@ -417,11 +417,9 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
   DCHECK(out_imes);
   for (auto& extension : allowlisted_component_extensions) {
     ComponentExtensionIME component_ime;
-    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    std::string_view manifest_string =
-        rb.GetRawDataResource(extension.manifest_resource_id);
-    component_ime.manifest = std::string(manifest_string);
-
+    component_ime.manifest =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            extension.manifest_resource_id);
     if (component_ime.manifest.empty()) {
       LOG(ERROR) << "Couldn't get manifest from resource_id("
                  << extension.manifest_resource_id << ")";
@@ -429,7 +427,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     }
 
     std::optional<base::Value::Dict> maybe_manifest =
-        ParseManifest(manifest_string);
+        ParseManifest(component_ime.manifest);
     if (!maybe_manifest.has_value()) {
       LOG(ERROR) << "Failed to load invalid manifest: "
                  << component_ime.manifest;

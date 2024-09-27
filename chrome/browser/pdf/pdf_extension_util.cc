@@ -191,7 +191,7 @@ std::string GetManifest() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   std::string manifest_contents(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PDF_MANIFEST));
   DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kNameTag,

@@ -377,8 +377,8 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     return touch_injector;
   }
 
-  const auto json_file =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+  std::string json_file =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id.value());
   if (json_file.empty()) {
     LOG(WARNING) << "No content for: " << package_name;

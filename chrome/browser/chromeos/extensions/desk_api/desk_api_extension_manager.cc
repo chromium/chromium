@@ -135,9 +135,9 @@ std::string DeskApiExtensionManager::GetManifest() const {
 
   const std::string domain_list = base::JoinString(domains, ",");
 
-  std::string manifest_contents(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_DESK_API_MANIFEST));
+  std::string manifest_contents =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DESK_API_MANIFEST);
   DCHECK(manifest_contents.find(kDomainsTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kDomainsTag,
                                          domain_list);

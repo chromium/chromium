@@ -237,8 +237,8 @@ ExtensionId ComponentLoader::Add(int manifest_resource_id,
     return std::string();
   }
 
-  std::string_view manifest_contents =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+  std::string manifest_contents =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           manifest_resource_id);
   return Add(manifest_contents, root_directory, true);
 }
@@ -388,8 +388,8 @@ void ComponentLoader::AddWithNameAndDescription(
     return;
   }
 
-  std::string_view manifest_contents =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+  std::string manifest_contents =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           manifest_resource_id);
 
   // The Value is kept for the lifetime of the ComponentLoader. This is
