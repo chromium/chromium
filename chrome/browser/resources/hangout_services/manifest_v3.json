@@ -9,7 +9,7 @@
   "name": "Google Hangouts",
   // Note: Always update the version number when this file is updated. Chrome
   // triggers extension preferences update on the version increase.
-  "version": "1.4.0",
+  "version": "1.4.1",
   "manifest_version": 3,
   "externally_connectable": {
     "matches": [
@@ -21,11 +21,9 @@
   },
   "incognito": "split",
   "permissions": [
-    "desktopCapture",
     "enterprise.hardwarePlatform",
     "processes",
     "system.cpu",
-    "webrtcDesktopCapturePrivate",
     "webrtcLoggingPrivate"
   ]
 }

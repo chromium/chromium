@@ -25,19 +25,6 @@ var callbackPort;
 //
 // Helpers to invoke functions on the extension.
 //
-
-// Will call |callback({'cancelId': ..., 'streamId': ...})| on completion.
-function chooseDesktopMedia(callback) {
-  sendMessage({'method': 'chooseDesktopMedia'}, callback);
-}
-
-// Will call |callback()| when API method has been called (it will
-// complete later).
-function cancelChooseDesktopMedia(cancelId, callback) {
-  sendMessage({'method': 'cancelChooseDesktopMedia', 'cancelId': cancelId},
-              callback);
-}
-
 // Will call |callback(cpuInfo)| on completion.
 function cpuGetInfo(callback) {
   sendMessage({'method': 'cpu.getInfo'}, callback);
