@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_info_collector.h"
 
 #include <stddef.h>
@@ -151,12 +146,11 @@ std::string GetVersionFromString(const std::string& version_string) {
 
 // Return the array index of the found name, or return -1.
 int StringContainsName(const std::string& str,
-                       const std::string* names,
-                       size_t num_names) {
+                       base::span<const std::string> names) {
   std::vector<std::string> tokens = base::SplitString(
       str, " .,()-_", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t ii = 0; ii < tokens.size(); ++ii) {
-    for (size_t name_index = 0; name_index < num_names; ++name_index) {
+    for (size_t name_index = 0; name_index < names.size(); ++name_index) {
       if (tokens[ii] == names[name_index]) {
         return base::checked_cast<int>(name_index);
       }
@@ -697,15 +691,15 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   const std::string kIntelName = "intel";
   const std::string kAMDName = "amd";
   const std::string kATIName = "ati";
-  const std::string kVendorNames[] = {kNVidiaName, kNouveauName, kIntelName,
-                                      kAMDName, kATIName};
+  const std::array<std::string, 5> kVendorNames = {
+      {kNVidiaName, kNouveauName, kIntelName, kAMDName, kATIName}};
 
   const uint32_t kNVidiaID = 0x10de;
   const uint32_t kIntelID = 0x8086;
   const uint32_t kAMDID = 0x1002;
   const uint32_t kATIID = 0x1002;
-  const uint32_t kVendorIDs[] = {kNVidiaID, kNVidiaID, kIntelID, kAMDID,
-                                 kATIID};
+  const std::array<uint32_t, 5> kVendorIDs = {
+      {kNVidiaID, kNVidiaID, kIntelID, kAMDID, kATIID}};
 
   DCHECK(gpu_info);
   if (gpu_info->secondary_gpus.size() == 0) {
@@ -719,16 +713,14 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   uint32_t active_vendor_id = 0;
   if (!gpu_info->gl_vendor.empty()) {
     std::string gl_vendor_lower = base::ToLowerASCII(gpu_info->gl_vendor);
-    int index = StringContainsName(gl_vendor_lower, kVendorNames,
-                                   std::size(kVendorNames));
+    int index = StringContainsName(gl_vendor_lower, kVendorNames);
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
   }
   if (active_vendor_id == 0 && !gpu_info->gl_renderer.empty()) {
     std::string gl_renderer_lower = base::ToLowerASCII(gpu_info->gl_renderer);
-    int index = StringContainsName(gl_renderer_lower, kVendorNames,
-                                   std::size(kVendorNames));
+    int index = StringContainsName(gl_renderer_lower, kVendorNames);
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
