@@ -40,6 +40,23 @@ void MagicBoostState::RemoveObserver(MagicBoostState::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool MagicBoostState::ShouldShowHmrCard() {
+  // Should not show if consent_status is `kDeclined` (users explicitly decline
+  // in the opt-in flow), or `kUnset` (both Quick Answers and Mahi is not
+  // consented to show yet).
+  if (hmr_consent_status_ == HMRConsentStatus::kDeclined ||
+      hmr_consent_status_ == HMRConsentStatus::kUnset) {
+    return false;
+  }
+
+  if (hmr_consent_status_.has_value()) {
+    CHECK(hmr_consent_status_ == HMRConsentStatus::kApproved ||
+          hmr_consent_status_ == HMRConsentStatus::kPendingDisclaimer);
+  }
+
+  return true;
+}
+
 void MagicBoostState::UpdateMagicBoostEnabled(bool enabled) {
   magic_boost_enabled_ = enabled;
 

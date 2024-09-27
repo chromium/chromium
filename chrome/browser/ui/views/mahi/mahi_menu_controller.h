@@ -41,7 +41,7 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
   void OnDismiss(bool is_other_command_executed) override;
 
-  // chromeos::MahiMediaAppEvnetsProxy::Observer
+  // chromeos::MahiMediaAppEventsProxy::Observer
   void OnPdfContextMenuShown(const gfx::Rect& anchor) override;
   void OnPdfContextMenuHide() override;
 

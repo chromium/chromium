@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "magic_boost_card_controller_unittest.cc": [
+      "+ash/system/mahi",
+  ],
+}

@@ -24,6 +24,7 @@ source_set("mahi") {
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",
+    "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants:constants",

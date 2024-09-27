@@ -149,27 +149,18 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   // Otherwise, use Quick Answers and Mahi if available.
 
-  base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
-      base::unexpected(MagicBoostState::Error::kUninitialized);
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  bool should_show_hmr_card = true;
   if (magic_boost_card_controller_ &&
-      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
-    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
+      magic_boost_state->IsMagicBoostAvailable()) {
+    should_show_hmr_card = magic_boost_state->ShouldShowHmrCard();
 
     // Ensure the disclaimer view is closed before moving to the next step
     magic_boost_card_controller_->CloseDisclaimerUi();
   }
 
-  // Return no controller if consent_status is `kDeclined` (users explicitly
-  // decline in the opt-in flow), or `kUnset` (both Quick Answers and Mahi is
-  // not available to opt-in).
-  if (hmr_consent_status == HMRConsentStatus::kDeclined ||
-      hmr_consent_status == HMRConsentStatus::kUnset) {
+  if (!should_show_hmr_card) {
     return {};
-  }
-
-  if (hmr_consent_status.has_value()) {
-    CHECK(hmr_consent_status == HMRConsentStatus::kApproved ||
-          hmr_consent_status == HMRConsentStatus::kPendingDisclaimer);
   }
 
   return GetQuickAnswersAndMahiControllers(params);

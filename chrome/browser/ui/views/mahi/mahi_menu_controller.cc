@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -101,13 +102,17 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
     return;
   }
 
+  if (!MagicBoostState::Get()->ShouldShowHmrCard()) {
+    return;
+  }
+
   menu_widget_ =
       MahiMenuView::CreateWidget(anchor, MahiMenuView::Surface::kMediaApp);
   menu_widget_->ShowInactive();
 }
 
 void MahiMenuController::OnPdfContextMenuHide() {
-  OnDismiss(false);
+  OnDismiss(/*is_other_command_executed=*/false);
 }
 
 bool MahiMenuController::IsFocusedPageDistillable() {
