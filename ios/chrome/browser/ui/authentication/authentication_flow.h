@@ -34,6 +34,10 @@ class Browser;
 // needs to be signed in.
 @interface AuthenticationFlow : NSObject<AuthenticationFlowPerformerDelegate>
 
+// Callback to execute when there we know the user won’t have any more
+// opportunity to cancel.
+@property(nonatomic, strong) void (^userDecisionCompletion)();
+
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being
 //   presented.

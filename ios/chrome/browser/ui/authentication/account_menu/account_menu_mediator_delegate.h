@@ -18,10 +18,18 @@
 // Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 
+// Requests to dismiss the account menu view. Keeps the coordinator open and
+// show a spinner instead.
+- (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator;
+
 // Start managed account switch.
+// `viewWillBeDismissedAfterSignout`: Whether we expect the NTP to be reloaded
+// after sign out, causing the account menu to be closed.
+// `userDecisionCompletion`: Callback when the user can’t cancel anymore.
 - (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
                                newIdentity:(id<SystemIdentity>)newIdentity
            viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                    userDecisionCompletion:(void (^)())userDecisionCompletion
                           signInCompletion:(ShowSigninCommandCompletionCallback)
                                                signInCompletion;
 

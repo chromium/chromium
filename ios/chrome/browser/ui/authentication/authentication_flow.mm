@@ -413,6 +413,9 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {
+  if (self.userDecisionCompletion) {
+    self.userDecisionCompletion();
+  }
   ProfileIOS* profile = [self originalProfile];
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(profile);

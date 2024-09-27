@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -81,6 +82,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     mock_browser_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCommands));
+    mock_browser_coordinator_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_commands_handler_
                              forProtocol:@protocol(ApplicationCommands)];
@@ -90,6 +93,9 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_browser_commands_handler_
                              forProtocol:@protocol(BrowserCommands)];
+    [dispatcher
+        startDispatchingToTarget:mock_browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -146,6 +152,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)view_controller_);
     EXPECT_OCMOCK_VERIFY((id)mock_application_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_commands_handler_);
+    EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_snackbar_commands_handler_);
   }
@@ -157,6 +164,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
   id<BrowserCommands> mock_browser_commands_handler_;
+  id<BrowserCoordinatorCommands> mock_browser_coordinator_commands_handler_;
   AccountMenuViewController* view_controller_;
   AccountMenuMediator* mediator_;
   raw_ptr<AuthenticationService> authentication_service_;
@@ -263,29 +271,38 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testMediatorWantsToBeDismissed) {
 TEST_F(AccountMenuCoordinatorNonManagedTest, TestAccountSwitch) {
   CGRect rect = CGRect();
   __block ShowSigninCommandCompletionCallback callback = nil;
+  __block void (^userDecisionCompletion)();
+  userDecisionCompletion = nil;
   OCMExpect([mock_application_commands_handler_
       switchAccountWithBaseViewController:navigation_controller_
                               newIdentity:kSecondaryIdentity
                                      rect:rect
                            rectAnchorView:view_
           viewWillBeDismissedAfterSignout:NO
+                   userDecisionCompletion:[OCMArg
+                                              checkWithBlock:^BOOL(id value) {
+                                                userDecisionCompletion = value;
+                                                return true;
+                                              }]
                          signInCompletion:[OCMArg
                                               checkWithBlock:^BOOL(id value) {
                                                 callback = value;
                                                 return true;
                                               }]]);
 
-  [coordinator_
-      triggerAccountSwitchWithTargetRect:rect
-                             newIdentity:kSecondaryIdentity
-         viewWillBeDismissedAfterSignout:NO
-                        signInCompletion:^(SigninCoordinatorResult result,
-                                           SigninCompletionInfo* info) {
-                          EXPECT_EQ(result, SigninCoordinatorResultSuccess);
-                        }];
+  [coordinator_ triggerAccountSwitchWithTargetRect:rect
+      newIdentity:kSecondaryIdentity
+      viewWillBeDismissedAfterSignout:NO
+      userDecisionCompletion:^() {
+      }
+      signInCompletion:^(SigninCoordinatorResult result,
+                         SigninCompletionInfo* info) {
+        EXPECT_EQ(result, SigninCoordinatorResultSuccess);
+      }];
 
   SigninCompletionInfo* signinCompletionInfo = [SigninCompletionInfo
       signinCompletionInfoWithIdentity:kSecondaryIdentity];
+  userDecisionCompletion();
   callback(SigninCoordinatorResultSuccess, signinCompletionInfo);
 }
 

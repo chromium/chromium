@@ -264,19 +264,23 @@
   BOOL viewWillBeDismissedAfterSignout =
       _authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);
-
   __weak __typeof(self) weakSelf = self;
+  void (^userDecisionCompletion)() = ^() {
+    [weakSelf.delegate mediatorWantsToDismissTheView:weakSelf];
+  };
+  void (^signinCompletion)(SigninCoordinatorResult result,
+                           SigninCompletionInfo* info) =
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+        BOOL success =
+            result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
+        [weakSelf signinEndedWithSuccess:success];
+      };
   [self.delegate
       triggerAccountSwitchWithTargetRect:targetRect
                              newIdentity:newIdentity
          viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
-                        signInCompletion:^(SigninCoordinatorResult result,
-                                           SigninCompletionInfo* info) {
-                          BOOL success = result ==
-                                         SigninCoordinatorResult::
-                                             SigninCoordinatorResultSuccess;
-                          [weakSelf signinEndedWithSuccess:success];
-                        }];
+                  userDecisionCompletion:userDecisionCompletion
+                        signInCompletion:signinCompletion];
 }
 
 - (void)didTapErrorButton {

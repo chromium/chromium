@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -83,13 +84,18 @@
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  // BrowserCoordinatorCommands to show the activity indicator when the view
+  // controller is dismissed.
+  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
+  // Callback to hide the activity overlay.
+  base::ScopedClosureRunner _activityOverlayCallback;
 
   // Block the UI when the identity removal or switch is in progress.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
 }
 
 - (void)dealloc {
-  CHECK(!_viewController);
+  CHECK(!_mediator);
 }
 
 - (void)start {
@@ -105,6 +111,9 @@
   _prefService = browserState->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
+
+  _browserCoordinatorCommands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
 
   _viewController = [[AccountMenuViewController alloc]
       initWithStyle:UITableViewStyleInsetGrouped];
@@ -139,33 +148,28 @@
 }
 
 - (void)stop {
-  // TODO(crbug.com/336719423): Change condition to CHECK(_viewController). But
+  // TODO(crbug.com/336719423): Change condition to CHECK(_mediator). But
   // first inform the parent coordinator at didTapClose that this view was
   // dismissed.
-  if (!_viewController) {
+  if (!_mediator) {
     return;
   }
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
+  _activityOverlayCallback.RunAndReset();
+  [self unblockOtherScene];
   [self stopAccountsCoordinator];
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
   _authenticationService = nil;
+  _browserCoordinatorCommands = nil;
   _identityManager = nil;
   _prefService = nil;
-  _navigationController.delegate = nil;
-  _navigationController = nil;
-  _viewController.dataSource = nil;
-  _viewController.mutator = nil;
+  [self dismissTheViewController];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
   _syncEncryptionTableViewController = nil;
-  _viewController = nil;
   [_mediator disconnect];
-  _mediator.consumer = nil;
   _mediator.delegate = nil;
   _mediator = nil;
   _applicationHandler = nil;
@@ -258,9 +262,19 @@
   [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
+// Requests to dismiss the account menu view. Keeps the coordinator open and
+// show a spinner instead.
+- (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator {
+  CHECK_EQ(mediator, _mediator);
+  CHECK(_viewController);
+  [self dismissTheViewController];
+  _activityOverlayCallback = [_browserCoordinatorCommands showActivityOverlay];
+}
+
 - (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
                                newIdentity:(id<SystemIdentity>)newIdentity
            viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                    userDecisionCompletion:(void (^)())userDecisionCompletion
                           signInCompletion:(ShowSigninCommandCompletionCallback)
                                                signInCompletion {
   CHECK(
@@ -275,6 +289,7 @@
                                      rect:targetRect
                            rectAnchorView:_viewController.view
           viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
+                   userDecisionCompletion:userDecisionCompletion
                          signInCompletion:signInCompletion];
 }
 
@@ -400,6 +415,19 @@
 - (void)stopSignoutActionSheetCoordinator {
   [_signoutActionSheetCoordinator stop];
   _signoutActionSheetCoordinator = nil;
+}
+
+// Dismisses the view controller.
+- (void)dismissTheViewController {
+  _mediator.consumer = nil;
+  _viewController.dataSource = nil;
+  _viewController.mutator = nil;
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _navigationController.delegate = nil;
+  _navigationController = nil;
+  _viewController = nil;
 }
 
 @end

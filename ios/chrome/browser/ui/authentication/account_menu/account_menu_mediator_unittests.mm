@@ -288,11 +288,17 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 // when sign-in fail.
 TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
   __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
+  __block void (^userDecisionCompletion)() = nil;
   auto target = CGRect();
   OCMExpect([delegate_
       triggerAccountSwitchWithTargetRect:target
                              newIdentity:kSecondaryIdentity
          viewWillBeDismissedAfterSignout:NO
+                  userDecisionCompletion:[OCMArg
+                                             checkWithBlock:^BOOL(id value) {
+                                               userDecisionCompletion = value;
+                                               return true;
+                                             }]
                         signInCompletion:[OCMArg
                                              checkWithBlock:^BOOL(id value) {
                                                onSigninSuccess = value;
@@ -307,6 +313,8 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
   OCMExpect([consumer_ updatePrimaryAccount]);
   SigninCompletionInfo* signinCompletionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+  OCMExpect([delegate_ mediatorWantsToDismissTheView:mediator_]);
+  userDecisionCompletion();
   onSigninSuccess(SigninCoordinatorResultCanceledByUser, signinCompletionInfo);
 
   // Checks the user is signed-back in.
@@ -318,11 +326,17 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
 // when switch is succesful.
 TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
+  __block void (^userDecisionCompletion)() = nil;
   auto target = CGRect();
   OCMExpect([delegate_
       triggerAccountSwitchWithTargetRect:target
                              newIdentity:kSecondaryIdentity
          viewWillBeDismissedAfterSignout:NO
+                  userDecisionCompletion:[OCMArg
+                                             checkWithBlock:^BOOL(id value) {
+                                               userDecisionCompletion = value;
+                                               return true;
+                                             }]
                         signInCompletion:[OCMArg
                                              checkWithBlock:^BOOL(id value) {
                                                // Actually sign-out, in order to
@@ -338,6 +352,8 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   // Testing the sign-in callback.
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
 
+  OCMExpect([delegate_ mediatorWantsToDismissTheView:mediator_]);
+  userDecisionCompletion();
   SigninCompletionInfo* signinCompletionInfo = [SigninCompletionInfo
       signinCompletionInfoWithIdentity:kSecondaryIdentity];
   onSigninSuccess(SigninCoordinatorResultSuccess, signinCompletionInfo);

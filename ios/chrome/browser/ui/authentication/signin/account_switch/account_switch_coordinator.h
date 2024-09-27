@@ -25,6 +25,7 @@ class Browser;
                                newIdentity:(id<SystemIdentity>)newIdentity
                         mainViewController:(UIViewController*)mainViewController
                                       rect:(CGRect)rect
+                    userDecisionCompletion:(void (^)())userDecisionCompletion
                             rectAnchorView:(UIView*)rectAnchorView
     NS_DESIGNATED_INITIALIZER;
 

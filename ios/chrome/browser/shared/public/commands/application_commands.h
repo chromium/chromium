@@ -165,12 +165,17 @@ enum class TabGridOpeningMode {
     baseViewController:(UIViewController*)baseViewController;
 
 // Switch from managed account.
+// `viewWillBeDismissedAfterSignout`: whether we expect the NTP to reload
+// during the switch. This would cause the account menu coordinator to be
+// stopped. `userDecisionCompletion` callback when it’s known the user won’t be
+// able to cancel anymore. Non-user generated failure can still occur.
 - (void)
     switchAccountWithBaseViewController:(UIViewController*)baseViewController
                             newIdentity:(id<SystemIdentity>)newIdentity
                                    rect:(CGRect)rect
                          rectAnchorView:(UIView*)rectAnchorView
         viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                 userDecisionCompletion:(void (^)())userDecisionCompletion
                        signInCompletion:(ShowSigninCommandCompletionCallback)
                                             signInCompletion;
 

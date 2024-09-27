@@ -74,6 +74,10 @@ using signin_metrics::AccessPoint;
 
   // Indicates that the account switch flow was interrupted.
   BOOL _interrupted;
+
+  // Callback to execute when there we know the user won’t have any more
+  // opportunity to cancel.
+  void (^_userDecisionCompletion)();
 }
 
 @end
@@ -85,6 +89,7 @@ using signin_metrics::AccessPoint;
                                newIdentity:(id<SystemIdentity>)newIdentity
                         mainViewController:(UIViewController*)mainViewController
                                       rect:(CGRect)rect
+                    userDecisionCompletion:(void (^)())userDecisionCompletion
                             rectAnchorView:(UIView*)rectAnchorView {
   self = [super initWithBaseViewController:baseViewController
                                    browser:browser
@@ -97,6 +102,7 @@ using signin_metrics::AccessPoint;
     _rect = rect;
     _rectAnchorView = rectAnchorView;
     _newIdentity = newIdentity;
+    _userDecisionCompletion = userDecisionCompletion;
 
     ProfileIOS* profile = _browser->GetProfile();
     _authenticationService =
@@ -181,6 +187,7 @@ using signin_metrics::AccessPoint;
       presentingViewController:_mainViewController];
 
   __weak __typeof(self) weakSelf = self;
+  _authenticationFlow.userDecisionCompletion = _userDecisionCompletion;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
     [weakSelf signinDoneWithSucess:success];
   }];

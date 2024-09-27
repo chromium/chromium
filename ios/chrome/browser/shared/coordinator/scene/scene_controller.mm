@@ -1903,6 +1903,7 @@ using UserFeedbackDataCallback =
                                    rect:(CGRect)rect
                          rectAnchorView:(UIView*)rectAnchorView
         viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                 userDecisionCompletion:(void (^)())userDecisionCompletion
                        signInCompletion:(ShowSigninCommandCompletionCallback)
                                             signInCompletion {
   UIViewController* mainViewController = viewWillBeDismissedAfterSignout
@@ -1914,6 +1915,7 @@ using UserFeedbackDataCallback =
                      newIdentity:newIdentity
               mainViewController:mainViewController
                             rect:rect
+          userDecisionCompletion:(void (^)())userDecisionCompletion
                   rectAnchorView:rectAnchorView];
   [self startSigninCoordinatorWithCompletion:signInCompletion];
 }
