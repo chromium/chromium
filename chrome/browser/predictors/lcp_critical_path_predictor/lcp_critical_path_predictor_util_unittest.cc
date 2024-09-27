@@ -188,6 +188,12 @@ TEST(UpdateLcppStringFrequencyStatDataTest, Base) {
   // See lcp_critical_path_predictor_util.cc for detail.
   EXPECT_EQ(updater.Data(), MakeData({{"foo", 2.4}, {"foobar", 1}}, 1.6))
       << updater.Data();
+
+  // Increase existing frequency when the bucket is full.
+  updater.Update("foo", dropped_entry);
+  EXPECT_FALSE(dropped_entry);
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 2.92}, {"foobar", 0.8}}, 1.28))
+      << updater.Data();
 }
 
 TEST(UpdateLcppStringFrequencyStatDataTest, AddNewEntryToFullBuckets) {
