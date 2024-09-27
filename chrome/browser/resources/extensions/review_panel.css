@@ -1,0 +1,54 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./shared_style_lit.css.js
+ * #include=cr-shared-style-lit shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.panel-header {
+  /* label in panel-header's cr-expand-button adds its own vertical padding.
+     Thus, we need to subtract it from the panel-header padding */
+  padding: calc(var(--cr-section-padding) -
+      var(--cr-section-vertical-padding)) 0px;
+}
+
+.header-group-wrapper {
+  flex: 1;
+  margin-inline-start: 15px;
+}
+
+cr-icon[icon='cr:check'] {
+  padding-inline-start: 10px;
+  fill: var(--google-green-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  cr-icon[icon='cr:check'] {
+    fill: var(--grey-900-white-4-percent);
+  }
+}
+
+.completion-container {
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 20px;
+  min-height: 42px;
+}
+
+.panel-extension-info {
+  flex: 1;
+  margin-top: 15px;
+  margin-bottom: 0px;
+}
+
+.bulk-action-button {
+  margin-inline-start: auto;
+}
+
+.cr-row {
+  padding: 0;
+}

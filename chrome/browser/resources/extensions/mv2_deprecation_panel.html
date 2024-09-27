@@ -1,26 +1,4 @@
-<style include="cr-shared-style shared-style">
-  .cr-row {
-    padding: 0;
-  }
-
-  .header-button,
-  .extension-buttons {
-    margin-inline-start: auto;
-  }
-
-  /* Reformat panel when the panel is the width of one extension card */
-  /* clean-css ignore:start */
-  @container (max-width:450px) {
-    /* Set a max width for the extension info so extension buttons can fit on
-       the same row */
-    .panel-extension-info {
-      max-width: 116px;
-    }
-  }
-  /* clean-css ignore:end */
-</style>
-
-<h2 class="panel-title" hidden$="[[!showTitle]]">
+<h2 class="panel-title" ?hidden="${!this.showTitle}">
   $i18n{mv2DeprecationPanelTitle}
 </h2>
 
@@ -30,65 +8,62 @@
         class="panel-header-icon">
     </cr-icon>
     <div class="panel-header-text">
-      <h3 id="headingText">[[headerString_]]</h3>
+      <h3 id="headingText">${this.headerString_}</h3>
       <div class="cr-secondary-text"
-          inner-h-t-m-l="[[getSubtitleString_(subtitleString_)]]">
+          .innerHTML="${this.getSubtitleString_()}">
       </div>
     </div>
-    <cr-button class="header-button" on-click="onDismissButtonClick_">
+    <cr-button class="header-button" @click="${this.onDismissButtonClick_}">
       $i18n{mv2DeprecationPanelDismissButton}
     </cr-button>
   </div>
 
   <div class="panel-extensions">
-    <template is="dom-repeat" items="[[extensions]]">
+    ${this.extensions.map((item, index) => html`
       <div class="panel-extension-row cr-row">
-        <img class="panel-extension-icon" src="[[item.iconUrl]]"
+        <img class="panel-extension-icon" src="${item.iconUrl}"
             role="presentation">
-        <div class="panel-extension-info text-elide">[[item.name]]</div>
+        <div class="panel-extension-info text-elide">${item.name}</div>
         <div class="extension-buttons">
           <cr-button class="find-alternative-button"
-              on-click="onFindAlternativeButtonClick_"
-              hidden$="[[!showExtensionFindAlternativeButton_(item)]]"
-              aria-label="[[getFindAlternativeButtonLabelFor_(item.name)]]">
+              data-recommendations-url="${item.recommendationsUrl}"
+              @click="${this.onFindAlternativeButtonClick_}"
+              ?hidden="${!this.showExtensionFindAlternativeButton_(item)}"
+              aria-label="${this.getFindAlternativeButtonLabelFor_(item.name)}">
             $i18n{mv2DeprecationPanelFindAlternativeButton}
             <cr-icon icon="cr:open-in-new" slot="suffix-icon"></cr-icon>
           </cr-button>
           <cr-icon-button id="removeButton"
-              class="icon-delete-gray"
-              on-click="onRemoveButtonClick_"
+              class="icon-delete-gray" data-id="${item.id}"
+              @click="${this.onRemoveButtonClick_}"
               title="$i18n{remove}"
-              aria-label$="[[getRemoveButtonLabelFor_(item.name)]]"
-              hidden$="[[!showExtensionRemoveButton_(item,
-                  mv2ExperimentStage)]]">
+              aria-label="${this.getRemoveButtonLabelFor_(item.name)}"
+              ?hidden="${!this.showExtensionRemoveButton_(item)}">
           </cr-icon-button>
-          <cr-icon-button id="actionMenuButton"
+          <cr-icon-button id="actionMenuButton" data-index="${index}"
               class="icon-more-vert header-aligned-button"
-              on-click="onExtensionActionMenuClick_"
+              @click="${this.onExtensionActionMenuClick_}"
               title="$i18n{moreOptions}"
-              aria-label="[[getActionMenuButtonLabelFor_(item.name)]]"
-              hidden$="[[!showActionMenu_(item, mv2ExperimentStage)]]">
+              aria-label="${this.getActionMenuButtonLabelFor_(item.name)}"
+              ?hidden="${!this.showActionMenu_(item)}">
           </cr-icon-button>
         </div>
-      </div>
-    </template>
+      </div>`)}
 
     <cr-action-menu id="actionMenu">
       <button class="dropdown-item" id="findAlternativeAction"
-          on-click="onFindAlternativeExtensionActionClick_"
-          hidden$="[[!showExtensionFindAlternativeAction_(
-              extensionWithActionMenuOpened_, mv2ExperimentStage)]]">
+          @click="${this.onFindAlternativeExtensionActionClick_}"
+          ?hidden="${!this.showExtensionFindAlternativeAction_()}">
         Find alternatives
       </button>
       <button class="dropdown-item" id="keepAction"
-          on-click="onKeepExtensionActionClick_"
-          hidden$="[[!showExtensionKeepAction_(mv2ExperimentStage)]]">
+          @click="${this.onKeepExtensionActionClick_}"
+          ?hidden="${!this.showExtensionKeepAction_()}">
         $i18n{mv2DeprecationPanelKeepForNowButton}
       </button>
       <button class="dropdown-item" id="removeAction"
-          on-click="onRemoveExtensionActionClicked_"
-          hidden$="[[!showExtensionRemoveAction_(
-              extensionWithActionMenuOpened_, mv2ExperimentStage)]]">
+          @click="${this.onRemoveExtensionActionClicked_}"
+          ?hidden="${!this.showExtensionRemoveAction_()}">
         $i18n{mv2DeprecationPanelRemoveExtensionButton}
       </button>
     </cr-action-menu>

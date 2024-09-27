@@ -1,15 +1,14 @@
-<style include="cr-shared-style shared-style"></style>
 <cr-dialog id="dialog" show-on-attach>
-  <div slot="title">[[getDialogTitle_(firstRestrictedSite)]]</div>
+  <div slot="title">${this.getDialogTitle_()}</div>
   <div class="matching-restricted-sites-warning" slot="body">
     <cr-icon icon="cr:info-outline"></cr-icon>
-    <span>[[getDialogWarning_(firstRestrictedSite)]]</span>
+    <span>${this.getDialogWarning_()}</span>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelClick_">
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onSubmitClick_">
+    <cr-button class="action-button" @click="${this.onSubmitClick_}">
       $i18n{matchingRestrictedSitesAllow}
     </cr-button>
   </div>
