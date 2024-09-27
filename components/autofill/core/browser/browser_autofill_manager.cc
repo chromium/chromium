@@ -1506,9 +1506,32 @@ void BrowserAutofillManager::
     }
   }
 
-  GenerateSuggestionsAndMaybeShowUI(form, form_structure, field, autofill_field,
-                                    trigger_source, context,
-                                    std::move(callback));
+  context.field_is_relevant_for_plus_addresses =
+      IsPlusAddressesManuallyTriggered(trigger_source) ||
+      (!context.should_show_mixed_content_warning &&
+       context.is_autofill_available &&
+       !context.do_not_generate_autofill_suggestions &&
+       context.filling_product == FillingProduct::kAddress && autofill_field &&
+       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
+       client().GetPlusAddressDelegate() &&
+       client().GetPlusAddressDelegate()->IsPlusAddressFillingEnabled(
+           client().GetLastCommittedPrimaryMainFrameOrigin()));
+
+  auto generate_suggestions_callback =
+      base::BindOnce(&BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI,
+                     weak_ptr_factory_.GetWeakPtr(), form, form_structure,
+                     field, autofill_field, trigger_source,
+                     base::OwnedRef(context), std::move(callback));
+
+  if (context.field_is_relevant_for_plus_addresses) {
+    client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
+        client().GetLastCommittedPrimaryMainFrameOrigin(),
+        std::move(generate_suggestions_callback));
+
+    return;
+  }
+
+  std::move(generate_suggestions_callback).Run({});
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
@@ -1518,7 +1541,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context,
-    OnGenerateSuggestionsCallback callback) {
+    OnGenerateSuggestionsCallback callback,
+    std::vector<std::string> plus_addresses) {
   autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
@@ -1569,19 +1593,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  const bool field_is_relevant_for_plus_addresses =
-      (!context.should_show_mixed_content_warning &&
-       context.is_autofill_available &&
-       !context.do_not_generate_autofill_suggestions &&
-       context.filling_product == FillingProduct::kAddress && autofill_field &&
-       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
-       client().GetPlusAddressDelegate());
-
   // Only offer plus address suggestions together with address suggestions if
-  // these exist. Otherwise, plus address suggestions will be queried and shown
-  // alongside single field form fill suggestions.
+  // these exist. Otherwise, plus address suggestions will be generated and
+  // shown alongside single field form fill suggestions.
   const bool should_offer_plus_addresses_with_profiles =
-      field_is_relevant_for_plus_addresses && !suggestions.empty();
+      context.field_is_relevant_for_plus_addresses && !suggestions.empty();
 
   // Try to show plus address suggestions. If the user specifically requested
   // plus addresses, disregard any other requirements (like having profile
@@ -1597,14 +1613,16 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
             ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
             : AutofillPlusAddressDelegate::SuggestionContext::
                   kAutofillProfileOnEmailField;
-    client().GetPlusAddressDelegate()->GetSuggestions(
-        client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), password_form_classification, field,
-        trigger_source,
-        base::BindOnce(&BrowserAutofillManager::OnGetPlusAddressSuggestions,
-                       weak_ptr_factory_.GetWeakPtr(), suggestions_context,
-                       password_form_classification.type, form, field,
-                       std::move(suggestions), std::move(callback)));
+    std::vector<Suggestion> plus_address_suggestions =
+        client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
+            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            client().IsOffTheRecord(), password_form_classification, field,
+            trigger_source);
+
+    MixPlusAddressAndAddressSuggestions(
+        std::move(plus_address_suggestions), std::move(suggestions),
+        suggestions_context, password_form_classification.type, form, field,
+        std::move(callback));
 
     return;
   }
@@ -1655,7 +1673,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 
   const size_t barrier_calls =
       static_cast<size_t>(should_offer_single_field_form_fill) +
-      static_cast<size_t>(field_is_relevant_for_plus_addresses);
+      static_cast<size_t>(context.field_is_relevant_for_plus_addresses);
   if (barrier_calls == 0) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                             std::nullopt);
@@ -1667,6 +1685,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                                       field.global_id());
   // The barrier callback bundles requests to generate suggestions for plus
   // addresses and single field form fill suggestions.
+  // TODO(crbug.com/324557053): Remove the BarrierCallback as one of the
+  // branches is not async anymore.
   auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
       barrier_calls,
       base::BindOnce(
@@ -1676,11 +1696,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
           password_form_classification.type, form, field, std::move(callback)));
 
-  if (field_is_relevant_for_plus_addresses) {
-    client().GetPlusAddressDelegate()->GetSuggestions(
-        client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), password_form_classification, field,
-        trigger_source, barrier_callback);
+  if (context.field_is_relevant_for_plus_addresses) {
+    std::vector<Suggestion> plus_address_suggestions =
+        client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
+            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            client().IsOffTheRecord(), password_form_classification, field,
+            trigger_source);
+    barrier_callback.Run(std::move(plus_address_suggestions));
   }
 
   if (should_offer_single_field_form_fill) {
@@ -1822,15 +1844,15 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   }
 }
 
-void BrowserAutofillManager::OnGetPlusAddressSuggestions(
+void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
+    std::vector<Suggestion> plus_address_suggestions,
+    std::vector<Suggestion> address_suggestions,
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
     PasswordFormClassification::Type password_form_type,
     const FormData& form,
     const FormFieldData& field,
-    std::vector<Suggestion> address_suggestions,
-    OnGenerateSuggestionsCallback callback,
-    std::vector<Suggestion> suggestions) {
-  if (suggestions.empty()) {
+    OnGenerateSuggestionsCallback callback) {
+  if (plus_address_suggestions.empty()) {
     std::move(callback).Run(/*show_suggestions=*/true,
                             std::move(address_suggestions), std::nullopt);
     return;
@@ -1838,18 +1860,20 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
 
   client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
       *this, form.global_id(), field.global_id(), suggestions_context,
-      password_form_type, suggestions[0].type);
+      password_form_type, plus_address_suggestions[0].type);
   if (address_suggestions.empty()) {
-      suggestions.emplace_back(SuggestionType::kSeparator);
-      suggestions.push_back(
-          client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
+    plus_address_suggestions.emplace_back(SuggestionType::kSeparator);
+    plus_address_suggestions.push_back(
+        client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
   }
-  suggestions.insert(suggestions.cend(),
-                     std::make_move_iterator(address_suggestions.begin()),
-                     std::make_move_iterator(address_suggestions.end()));
+  // Mix both types of suggestions.
+  plus_address_suggestions.insert(
+      plus_address_suggestions.cend(),
+      std::make_move_iterator(address_suggestions.begin()),
+      std::make_move_iterator(address_suggestions.end()));
 
-  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
-                          std::nullopt);
+  std::move(callback).Run(/*show_suggestions=*/true,
+                          std::move(plus_address_suggestions), std::nullopt);
 }
 
 void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(

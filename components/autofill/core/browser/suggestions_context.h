@@ -47,6 +47,10 @@ struct SuggestionsContext {
   // avoided. This can happen in multiple scenarios (e.g. During manual
   // fallbacks for plus addresses or if the form is a mixed content form).
   bool do_not_generate_autofill_suggestions = false;
+  // Indicates whether the trigger field is related to plus addresses. Used to
+  // signal that fetching the list of plus addresses is required to generate
+  // the overall list of suggestions.
+  bool field_is_relevant_for_plus_addresses = false;
 };
 
 }  // namespace autofill
