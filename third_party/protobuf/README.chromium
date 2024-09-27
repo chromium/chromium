@@ -91,16 +91,6 @@ Notes (hints) for the next roll(er):
   violations as your built-in type is defined in multiple files. If that happens
   you may want to move the copy that should never have been checked in into its
   own namespace, complete the roll and then cleanup the local copy.
-* third_party/mediapipe checks in a weird modified copy of
-  `third_party/protobuf/src/google/protobuf/any.pb.cc` called `any_lite.pb.cc`.
-  This precompiled protobuf will get invalidated on any protobuf version bumps
-  and you'll need to either painstakingly generated a new one (do a diff of the
-  checked-in `any_lite.pb.{cc,h}` and current `any.pb.{cc,h}` to aid you in the
-  process.
-  WARNING: This item is a lot larger than it looks. We should really
-  either fix mediapipe upstream to build with `MEDIAPIPE_PROTO_LITE` and
-  `MEDIAPIPE_PROTO_THIRD_PARTY` both set, but it looks like that configuration
-  has bit rotted.
 
 Note about vpython:
 
