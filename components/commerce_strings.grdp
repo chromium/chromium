@@ -644,6 +644,9 @@
   <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
     Suggestions
   </message>
+  <message name="IDS_COMPARE_TABLE_FULL_MESSAGE" desc="The message shown to the user when they've added the maximum number of columns to a comparison table.">
+    Your comparison table is full. Remove columns to add new ones.
+  </message>
   <message name="IDS_COMPARE_TABLE_MENU_A11Y_LABEL" desc="The accessibility label for the 3-dot menu containing actions for the table in the compare UI.">
     More actions for Compare table
   </message>

@@ -197,6 +197,7 @@
           <new-column-selector slot="newColumnSelector"
               id="newColumnSelector"
               excluded-urls="[[getTableUrls_(tableColumns_)]]"
+              is-table-full="[[isTableFull_(tableColumns_.length)]]"
               on-selected-url-change="onUrlAdd_">
           </new-column-selector>
         </product-specifications-table>

@@ -173,6 +173,7 @@ std::vector<commerce::UrlInfo> GetUrlInfos(std::vector<GURL> urls) {
 namespace commerce {
 
 const size_t kMaxNameLength = 64;
+const size_t kMaxTableSize = 10;
 
 ProductSpecificationsService::ProductSpecificationsService(
     syncer::OnceDataTypeStoreFactory create_store_callback,
@@ -365,14 +366,21 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     comparison_specifics.mutable_product_comparison()->set_name(final_name);
     specifics.push_back(comparison_specifics);
     base::Time now = base::Time::Now();
+
+    // Truncate to 10 URLs if we're over the max.
+    std::vector<UrlInfo> final_url_infos;
+    for (size_t i = 0; i < url_infos.size() && i < kMaxTableSize; ++i) {
+      final_url_infos.push_back(url_infos[i]);
+    }
+
     std::vector<sync_pb::ProductComparisonSpecifics> item_specifics =
-        CreateItemLevelSpecifics(top_level_uuid, url_infos, now);
+        CreateItemLevelSpecifics(top_level_uuid, final_url_infos, now);
     specifics.insert(specifics.end(),
                      std::make_move_iterator(item_specifics.begin()),
                      std::make_move_iterator(item_specifics.end()));
     bridge_->AddSpecifics(specifics);
     ProductSpecificationsSet set = ProductSpecificationsSet(
-        top_level_uuid, time_now, time_now, url_infos, final_name);
+        top_level_uuid, time_now, time_now, final_url_infos, final_name);
     OnProductSpecificationsSetAdded(set);
     return set;
   } else {
@@ -382,10 +390,17 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
     comparison_specifics.set_update_time_unix_epoch_millis(time_now);
     comparison_specifics.set_name(final_name);
+    size_t current_url_count = 0;
     for (const GURL& url : GetUrls(url_infos)) {
       sync_pb::ComparisonData* comparison_data =
           comparison_specifics.add_data();
       comparison_data->set_url(url.spec());
+      current_url_count++;
+
+      // Truncate the URL count at the max.
+      if (current_url_count >= kMaxTableSize) {
+        break;
+      }
     }
     bridge_->AddSpecifics({comparison_specifics});
     OnProductSpecificationsSetAdded(
@@ -400,6 +415,7 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
   if (!is_initialized_) {
     return std::nullopt;
   }
+
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     const sync_pb::ProductComparisonSpecifics* top_level_specific =
@@ -416,14 +432,22 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
 
     base::Time now = base::Time::Now();
     bridge_->DeleteSpecifics(specifics_to_remove);
+
+    // Truncate to 10 URLs if we're over the max.
+    std::vector<UrlInfo> final_url_infos;
+    for (size_t i = 0; i < url_infos.size() && i < kMaxTableSize; ++i) {
+      final_url_infos.push_back(url_infos[i]);
+    }
+
     // SetUrls has not been updated to include title yet, so use
     // GetUrlInfos(...) to convert GURLs -> UrlInfos with a blank title.
-    bridge_->AddSpecifics(
-        CreateItemLevelSpecifics(uuid.AsLowercaseString(), url_infos, now));
+    bridge_->AddSpecifics(CreateItemLevelSpecifics(uuid.AsLowercaseString(),
+                                                   final_url_infos, now));
     ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific->creation_time_unix_epoch_millis(),
-        now.InMillisecondsSinceUnixEpoch(), url_infos, previous_set->name());
+        now.InMillisecondsSinceUnixEpoch(), final_url_infos,
+        previous_set->name());
     NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
     return updated_set;
   } else {
@@ -435,9 +459,17 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     sync_pb::ProductComparisonSpecifics original = entry->second;
     sync_pb::ProductComparisonSpecifics& specifics = entry->second;
     specifics.clear_data();
+
+    size_t current_url_count = 0;
     for (const UrlInfo& url_info : url_infos) {
       sync_pb::ComparisonData* data = specifics.add_data();
       data->set_url(url_info.url.spec());
+      current_url_count++;
+
+      // Truncate the URL count at the max.
+      if (current_url_count >= kMaxTableSize) {
+        break;
+      }
     }
     specifics.set_update_time_unix_epoch_millis(
         base::Time::Now().InMillisecondsSinceUnixEpoch());

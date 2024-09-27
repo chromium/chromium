@@ -54,7 +54,17 @@ ProductSpecificationsPageActionController::ShouldShowForNavigation() {
   if (got_product_response_for_page_ && !product_info_for_page_.has_value()) {
     return false;
   }
-  return product_group_for_page_.has_value();
+
+  if (!product_group_for_page_.has_value()) {
+    return false;
+  }
+
+  std::optional<ProductSpecificationsSet> existing_set =
+      product_specifications_service_->GetSetByUuid(
+          product_group_for_page_->uuid);
+
+  return existing_set.has_value() &&
+         existing_set->url_infos().size() < kMaxTableSize;
 }
 
 bool ProductSpecificationsPageActionController::WantsExpandedUi() {
@@ -105,7 +115,8 @@ void ProductSpecificationsPageActionController::
     return;
   }
   bool is_in_set = base::Contains(after_set.urls(), current_url_);
-  if (is_in_set != is_in_recommended_set_) {
+  if (is_in_set != is_in_recommended_set_ ||
+      after_set.url_infos().size() >= kMaxTableSize) {
     is_in_recommended_set_ = is_in_set;
     NotifyHost();
   }

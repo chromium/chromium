@@ -712,7 +712,7 @@ TEST_F(ProductSpecificationsServiceTest,
   // Test robustness of ordering - restored product specifications should be
   // in the same order they are passed to AddProductSpecificationsSet.
   std::vector<UrlInfo> expected_product_urls;
-  for (int i = 1; i <= 20; i++) {
+  for (size_t i = 1; i <= kMaxTableSize; i++) {
     expected_product_urls.push_back(
         UrlInfo(GURL(base::StringPrintf("https://example.com/%d", i)), u""));
   }
@@ -720,7 +720,7 @@ TEST_F(ProductSpecificationsServiceTest,
   // Items are ordered according to the input order, but some randomization
   // has been added here to make the test example more realistic (i.e. it's
   // unlikely the input order would be alphabetical in a real input case.
-  Swap(expected_product_urls, {{2, 10}, {4, 3}, {15, 1}});
+  Swap(expected_product_urls, {{2, 9}, {4, 3}, {7, 1}});
 
   service()->AddProductSpecificationsSet(kProductSpecsName,
                                          expected_product_urls);
@@ -788,6 +788,33 @@ TEST_F(ProductSpecificationsServiceTest,
   }
 }
 
+TEST_F(ProductSpecificationsServiceTest,
+       TestAddProductSpecificationsMultipleSpecifics_MaxSize) {
+  // Create a list with one too many URLs.
+  std::vector<UrlInfo> initial_url_list;
+  for (size_t i = 0; i < kMaxTableSize + 1; i++) {
+    initial_url_list.push_back(
+        UrlInfo(GURL(base::StringPrintf("http://example.com/%d", i)), u""));
+  }
+
+  // The expected URL set should be the max count without the extra.
+  std::vector<GURL> expected_urls;
+  for (size_t i = 0; i < kMaxTableSize; i++) {
+    expected_urls.push_back(initial_url_list[i].url);
+  }
+
+  std::optional<ProductSpecificationsSet> created_set =
+      service()->AddProductSpecificationsSet("name", initial_url_list);
+
+  EXPECT_TRUE(created_set.has_value());
+
+  auto set_infos = created_set->url_infos();
+  EXPECT_EQ(kMaxTableSize, set_infos.size());
+  for (auto& info : set_infos) {
+    ASSERT_TRUE(base::Contains(expected_urls, info.url));
+  }
+}
+
 TEST_F(ProductSpecificationsServiceTest, TestDeleteProductSpecsMultiSpecifics) {
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i < 3; i++) {
@@ -850,6 +877,40 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
   }
   EXPECT_NE(nullptr, modified_set) << "Couldn't find modified set";
   EXPECT_EQ(new_urls, modified_set->url_infos());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics_MaxSize) {
+  // Create a list the max number of URLs.
+  std::vector<UrlInfo> url_list;
+  for (size_t i = 0; i < kMaxTableSize; i++) {
+    url_list.push_back(
+        UrlInfo(GURL(base::StringPrintf("http://example.com/%d", i)), u""));
+  }
+
+  // The expected URL set should be the max count without the extra.
+  std::vector<GURL> expected_urls;
+  for (size_t i = 0; i < url_list.size(); i++) {
+    expected_urls.push_back(url_list[i].url);
+  }
+
+  std::optional<ProductSpecificationsSet> created_set =
+      service()->AddProductSpecificationsSet("name", url_list);
+
+  EXPECT_TRUE(created_set.has_value());
+
+  // Add one more URL to go over the max.
+  url_list.push_back(UrlInfo(GURL("http://example.com/over_max"), u""));
+
+  std::optional<ProductSpecificationsSet> updated_set =
+      service()->SetUrls(created_set->uuid(), url_list);
+
+  EXPECT_TRUE(updated_set.has_value());
+
+  auto set_infos = updated_set->url_infos();
+  EXPECT_EQ(kMaxTableSize, set_infos.size());
+  for (auto& info : set_infos) {
+    ASSERT_TRUE(base::Contains(expected_urls, info.url));
+  }
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {

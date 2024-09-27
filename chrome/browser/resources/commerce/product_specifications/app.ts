@@ -672,6 +672,10 @@ export class ProductSpecificationsElement extends PolymerElement {
         (column: TableColumn) => column.selectedItem.url);
   }
 
+  private isTableFull_(columnCount: number): boolean {
+    return columnCount >= loadTimeData.getInteger('maxTableSize');
+  }
+
   private onSetUpdated_(set: ProductSpecificationsSet) {
     if (set.uuid.value !== this.id_?.value) {
       return;
