@@ -7,7 +7,7 @@
 
 #import <libkern/OSAtomicQueue.h>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,8 +15,8 @@ extern "C" {
 
 // A struct representing a procedure call.
 typedef struct {
-  raw_ptr<void> procedureCall;
-  raw_ptr<void> next;  // Used for offset.
+  RAW_PTR_EXCLUSION void* procedureCall;
+  RAW_PTR_EXCLUSION void* next;  // Used for offset.
 } CRWProcedureCallNode;
 
 // Queue containing the ordered procedure calls.

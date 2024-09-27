@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <stdlib.h>
-
 #import "ios/components/order_file/order_file_common.h"
+
+#import <stdlib.h>
 
 // Queue containing the ordered procedure calls.
 OSQueueHead gCRWSanitizerQueue = OS_ATOMIC_QUEUE_INIT;
@@ -14,8 +14,6 @@ bool gCRWGuardsInitialized = false;
 
 // Whether the addition of more procedure calls is allowed.
 bool gCRWFinishedCollecting = false;
-
-extern "C" {
 
 void __sanitizer_cov_trace_pc_guard_init(uint32_t* start,
                                          uint32_t* stop);  // NOLINT
@@ -54,9 +52,7 @@ void __sanitizer_cov_trace_pc_guard(uint32_t* guard) {  // NOLINT
   void* procedureCall = __builtin_return_address(0);
   CRWProcedureCallNode* node =
       (CRWProcedureCallNode*)malloc(sizeof(CRWProcedureCallNode));
-  *node = (CRWProcedureCallNode){procedureCall, nullptr};
+  *node = (CRWProcedureCallNode){procedureCall, NULL};
   OSAtomicEnqueue(&gCRWSanitizerQueue, node,
                   offsetof(CRWProcedureCallNode, next));
 }
-
-}  // extern "C"

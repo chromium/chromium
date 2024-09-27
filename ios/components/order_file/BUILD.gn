@@ -4,7 +4,7 @@
 
 source_set("order_file") {
   sources = [
-    "order_file.cc",
+    "order_file.c",
     "order_file_common.h",
     "save_order_file.h",
     "save_order_file.mm",
