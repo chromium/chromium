@@ -577,6 +577,9 @@ specific_include_rules = {
       "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java",
       "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     ],
+  "platform_util_ash\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "platform_util_linux.cc": [
     # The following is used to call the org.freedesktop.FileManager1
     # DBus interface to highlight a file within its parent folder
@@ -632,6 +635,7 @@ specific_include_rules = {
     "+ash/wm/window_restore/window_restore_util.h",
   ],
   "render_view_context_menu_browsertest.cc" : [
+    "+ash/wm/window_pin_util.h",
     "+third_party/libwebp/src/src/webp/decode.h",
   ],
   "webauth_interactive_uitest.cc": [

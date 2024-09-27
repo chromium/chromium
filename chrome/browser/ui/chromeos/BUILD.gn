@@ -6,12 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
-static_library("chromeos") {
-  sources = [ "window_pin_util.h" ]
-
-  deps = [ "//chromeos/ui/base" ]
-}
-
 static_library("test_support") {
   testonly = true
 
@@ -21,7 +15,6 @@ static_library("test_support") {
   ]
 
   deps = [
-    ":chromeos",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ui",

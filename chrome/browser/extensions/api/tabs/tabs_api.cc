@@ -129,8 +129,8 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

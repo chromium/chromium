@@ -40,6 +40,9 @@ specific_include_rules = {
   "application_launch_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "browser_command_controller_browsertest\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "browser_finder_chromeos_browsertest\.cc": [
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
@@ -48,11 +51,18 @@ specific_include_rules = {
   "browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "browser_navigator_browsertest_chromeos\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
+  "browser_tabstrip_browsertest_chromeos\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
+    "+ash/wm/window_pin_util.h",
   ],
   "popup_browsertest\.cc": [
     "+ash/shell.h",

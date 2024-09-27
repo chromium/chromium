@@ -44,7 +44,6 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wm",
-    "//chrome/browser/ui/chromeos",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/audio",

@@ -38,7 +38,6 @@ static_library("on_task") {
     "//chrome/browser/ash/boca",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/chromeos",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/browser_context_helper",

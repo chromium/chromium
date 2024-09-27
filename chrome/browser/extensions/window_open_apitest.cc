@@ -50,7 +50,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/lacros/window_properties.h"
 #else
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "ash/wm/window_pin_util.h"
 #endif
 
 using content::OpenURLParams;

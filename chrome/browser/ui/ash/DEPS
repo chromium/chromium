@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/chromeos/arc",
-  "+chrome/browser/ui/chromeos/window_pin_util.h",
   "+chrome/test/base/ash",
 
   # Dependencies on //chrome. Try to avoid adding new dependencies. Exceptions

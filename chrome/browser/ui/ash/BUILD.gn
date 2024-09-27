@@ -12,7 +12,6 @@ static_library("ash") {
   sources = [
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
-    "window_pin_util_ash.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -148,7 +147,6 @@ static_library("ash") {
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/web_view",
     "//chrome/browser/ui/ash/wm",
-    "//chrome/browser/ui/chromeos",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
     "//chrome/browser/ui/webui/ash/assistant_optin",
@@ -279,10 +277,9 @@ static_library("test_support") {
   ]
 }
 
+# TODO(b/365891157): Make this to group.
 source_set("unit_tests") {
   testonly = true
-
-  sources = [ "window_pin_util_ash_unittest.cc" ]
 
   deps = [
     ":ash",
@@ -301,7 +298,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/policy:onc",
     "//chrome/browser/ui/ash/assistant",
-    "//chrome/browser/ui/chromeos",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",

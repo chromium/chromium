@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/chromeos/test_util.h"
 
+#include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"

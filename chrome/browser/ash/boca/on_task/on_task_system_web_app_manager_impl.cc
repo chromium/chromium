@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
 #include "ash/webui/boca_ui/url_constants.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"

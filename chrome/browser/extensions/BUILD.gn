@@ -1025,7 +1025,6 @@ source_set("extensions") {
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/upload_office_to_cloud",
-      "//chrome/browser/ui/chromeos",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
       "//chromeos/components/quick_answers/public/cpp:prefs",

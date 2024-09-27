@@ -888,7 +888,6 @@ static_library("test_support") {
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/ui/chromeos",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/power",
@@ -3526,7 +3525,6 @@ if (!is_android) {
       deps += [
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/chromeos/video_conference",
-        "//chrome/browser/ui/chromeos",
         "//chrome/browser/ui/chromeos:test_support",
         "//chrome/browser/web_applications/app_service",
         "//chrome/browser/web_applications/app_service:test_support",
@@ -5570,7 +5568,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/autofill:lacros_chrome_browsertests",
-      "//chrome/browser/ui/chromeos",
       "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
@@ -9334,10 +9331,7 @@ test("unit_tests") {
     }
 
     if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ui/chromeos",
-        "//chromeos/dbus/missive",
-      ]
+      deps += [ "//chromeos/dbus/missive" ]
     }
 
     if (is_chromeos_ash) {
@@ -11386,7 +11380,6 @@ if (!is_android && !is_chromeos_device) {
           "../browser/signin/mirror_interactive_uitest.cc",
           "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
         ]
-        deps += [ "//chrome/browser/ui/chromeos" ]
         if (is_chromeos_lacros) {
           deps += [ "//chrome/browser/lacros/account_manager:test_support_ui" ]
         }

@@ -49,7 +49,7 @@
 #include "ui/base/models/menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "ash/wm/window_pin_util.h"
 #endif
 
 using content::WebContents;

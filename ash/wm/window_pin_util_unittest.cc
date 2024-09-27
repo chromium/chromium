@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "ash/wm/window_pin_util.h"
 
 #include <memory>
 

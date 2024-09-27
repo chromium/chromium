@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/browser/ui/chromeos/window_pin_util.h",
   "+chrome/test/base/in_process_browser_test.h",
   "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",

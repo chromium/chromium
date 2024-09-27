@@ -49,7 +49,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "ash/wm/window_pin_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
