@@ -15,7 +15,7 @@
 
 namespace {
 
-enum : int {
+enum : size_t {
   // Recommended value for opus_encode_float(), according to documentation in
   // third_party/opus/src/include/opus.h, so that the Opus encoder does not
   // degrade the audio due to memory constraints, and is independent of the
@@ -44,17 +44,17 @@ const int kOpusPreferredFramesPerBuffer = kOpusPreferredSamplingRate *
 bool DoEncode(OpusEncoder* opus_encoder,
               float* data_in,
               int num_samples,
-              std::string* data_out) {
+              base::span<uint8_t> data_out,
+              size_t* actual_size) {
   DCHECK_EQ(kOpusPreferredFramesPerBuffer, num_samples);
+  CHECK_EQ(data_out.size(), kOpusMaxDataBytes);
 
-  data_out->resize(kOpusMaxDataBytes);
-  const opus_int32 result = opus_encode_float(
-      opus_encoder, data_in, num_samples,
-      reinterpret_cast<uint8_t*>(std::data(*data_out)), kOpusMaxDataBytes);
+  const opus_int32 result =
+      opus_encode_float(opus_encoder, data_in, num_samples, data_out.data(),
+                        static_cast<int>(data_out.size()));
 
   if (result > 1) {
-    // TODO(ajose): Investigate improving this. http://crbug.com/547918
-    data_out->resize(result);
+    *actual_size = result;
     return true;
   }
   // If |result| in {0,1}, do nothing; the documentation says that a return
@@ -195,13 +195,19 @@ void AudioTrackOpusEncoder::EncodeAudio(
     audio_bus->ToInterleaved<media::Float32SampleTypeTraits>(
         audio_bus->frames(), buffer_.get());
 
-    std::string encoded_data;
+    if (packet_buffer_.empty()) {
+      packet_buffer_ = base::HeapArray<uint8_t>::Uninit(kOpusMaxDataBytes);
+    }
+    size_t actual_size;
     if (DoEncode(opus_encoder_, buffer_.get(), kOpusPreferredFramesPerBuffer,
-                 &encoded_data)) {
+                 packet_buffer_, &actual_size)) {
       const base::TimeTicks capture_time_of_first_sample =
           capture_time - media::AudioTimestampHelper::FramesToTime(
                              input_bus->frames(), input_params_.sample_rate());
-      on_encoded_audio_cb_.Run(converted_params_, std::move(encoded_data),
+
+      auto buffer =
+          media::DecoderBuffer::CopyFrom(packet_buffer_.first(actual_size));
+      on_encoded_audio_cb_.Run(converted_params_, std::move(buffer),
                                std::nullopt, capture_time_of_first_sample);
     } else {
       // Opus encoder keeps running even if it fails to encode a frame, which

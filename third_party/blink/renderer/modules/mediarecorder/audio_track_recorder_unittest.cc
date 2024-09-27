@@ -23,6 +23,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
 #include "media/base/mock_media_log.h"
 #include "media/media_buildflags.h"
@@ -317,7 +318,7 @@ class MockAudioTrackRecorderCallbackInterface
       void,
       OnEncodedAudio,
       (const media::AudioParameters& params,
-       std::string encoded_data,
+       scoped_refptr<media::DecoderBuffer> encoded_data,
        std::optional<media::AudioEncoder::CodecDescription> codec_description,
        base::TimeTicks capture_time),
       (override));
@@ -385,7 +386,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     EXPECT_CALL(*mock_callback_interface_, OnEncodedAudio)
         .WillRepeatedly(
             Invoke([this](const media::AudioParameters& params,
-                          std::string encoded_data,
+                          scoped_refptr<media::DecoderBuffer> encoded_data,
                           std::optional<media::AudioEncoder::CodecDescription>
                               codec_description,
                           base::TimeTicks capture_time) {
@@ -665,15 +666,16 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   MOCK_METHOD(void,
               DoOnEncodedAudio,
               (const media::AudioParameters& params,
-               std::string encoded_data,
+               scoped_refptr<media::DecoderBuffer> encoded_data,
                base::TimeTicks timestamp));
 
   void OnEncodedAudio(
       const media::AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) {
-    EXPECT_TRUE(!encoded_data.empty());
+    EXPECT_TRUE(!encoded_data->empty());
+
     switch (codec_) {
       case AudioTrackRecorder::CodecId::kOpus:
         ValidateOpusData(encoded_data);
@@ -693,26 +695,24 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     DoOnEncodedAudio(params, std::move(encoded_data), timestamp);
   }
 
-  void ValidateOpusData(const std::string& encoded_data) {
+  void ValidateOpusData(scoped_refptr<media::DecoderBuffer> encoded_data) {
     // Decode |encoded_data| and check we get the expected number of frames
     // per buffer.
-    ASSERT_GE(static_cast<size_t>(opus_buffer_size_), encoded_data.size());
+    ASSERT_GE(static_cast<size_t>(opus_buffer_size_), encoded_data->size());
     EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
-              opus_decode_float(
-                  opus_decoder_,
-                  reinterpret_cast<const uint8_t*>(std::data(encoded_data)),
-                  static_cast<wtf_size_t>(encoded_data.size()),
-                  opus_buffer_.get(), opus_buffer_size_, 0));
+              opus_decode_float(opus_decoder_, encoded_data->data(),
+                                static_cast<wtf_size_t>(encoded_data->size()),
+                                opus_buffer_.get(), opus_buffer_size_, 0));
   }
 
-  void ValidatePcmData(const std::string& encoded_data) {
+  void ValidatePcmData(scoped_refptr<media::DecoderBuffer> encoded_data) {
     // Manually confirm that we're getting the same data out as what we
     // generated from the sine wave.
-    for (size_t b = 0; b + 3 < encoded_data.size() &&
+    for (size_t b = 0; b + 3 < encoded_data->size() &&
                        first_source_cache_pos_ < first_source_cache_.size();
          b += sizeof(first_source_cache_[0]), ++first_source_cache_pos_) {
       float sample;
-      memcpy(&sample, &(encoded_data)[b], 4);
+      memcpy(&sample, encoded_data->AsSpan().subspan(b).data(), 4);
       ASSERT_FLOAT_EQ(sample, first_source_cache_[first_source_cache_pos_])
           << "(Sample " << first_source_cache_pos_ << ")";
     }
@@ -721,15 +721,13 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   test::TaskEnvironment task_environment_;
 
 #if HAS_AAC_DECODER
-  void ValidateAacData(const std::string& encoded_data) {
+  void ValidateAacData(scoped_refptr<media::DecoderBuffer> encoded_data) {
     // `ExpectOutputsAndRunClosure` sets up `EXPECT_CALL`s for `DecodeCB` and
     // `DecodeOutputCb`, so we can be sure that these will run and the decoded
     // output is validated.
     media::AudioDecoder::DecodeCB decode_cb =
         WTF::BindOnce(&AudioTrackRecorderTest::OnDecode, WTF::Unretained(this));
-    scoped_refptr<media::DecoderBuffer> decoder_buffer =
-        media::DecoderBuffer::CopyFrom(base::as_byte_span(encoded_data));
-    aac_decoder_->Decode(decoder_buffer, std::move(decode_cb));
+    aac_decoder_->Decode(encoded_data, std::move(decode_cb));
   }
 
   void InitializeAacDecoder(int channels, int sample_rate) {
@@ -920,19 +918,22 @@ TEST_P(AudioTrackRecorderTest, PacketSize) {
   EXPECT_CALL(*this, DoOnEncodedAudio)
       .Times(kExpectedNumOutputs - 1)
       .InSequence(s_)
-      .WillRepeatedly([&encodedPacketSizes](const media::AudioParameters&,
-                                            std::string encoded_data,
-                                            base::TimeTicks) {
-        encodedPacketSizes.push_back(encoded_data.size());
+      .WillRepeatedly([&encodedPacketSizes](
+                          const media::AudioParameters&,
+                          scoped_refptr<media::DecoderBuffer> encoded_data,
+                          base::TimeTicks) {
+        encodedPacketSizes.push_back(encoded_data->size());
       });
   EXPECT_CALL(*this, DoOnEncodedAudio)
       .InSequence(s_)
-      .WillOnce(testing::DoAll(
-          RunOnceClosure(run_loop_.QuitClosure()),
-          [&encodedPacketSizes](const media::AudioParameters&,
-                                std::string encoded_data, base::TimeTicks) {
-            encodedPacketSizes.push_back(encoded_data.size());
-          }));
+      .WillOnce(
+          testing::DoAll(RunOnceClosure(run_loop_.QuitClosure()),
+                         [&encodedPacketSizes](
+                             const media::AudioParameters&,
+                             scoped_refptr<media::DecoderBuffer> encoded_data,
+                             base::TimeTicks) {
+                           encodedPacketSizes.push_back(encoded_data->size());
+                         }));
   GenerateAndRecordAudio(/*use_first_source=*/true);
   run_loop_.Run();
 

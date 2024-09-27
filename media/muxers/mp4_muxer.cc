@@ -67,12 +67,12 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
     // exact number of sample entries. The unit of the `trun` box is per
     // fragment, which is based on the video key frame. So, it checks flush
     // only when the next key frame arrives.
-    if (frame.is_keyframe) {
+    if (frame.data->is_key_frame()) {
       MaybeForceFragmentFlush();
     }
-    mp4_muxer_delegate_->AddVideoFrame(
-        *video_params, std::move(frame.data), frame.codec_description,
-        base::TimeTicks() + relative_timestamp, frame.is_keyframe);
+    mp4_muxer_delegate_->AddVideoFrame(*video_params, std::move(frame.data),
+                                       frame.codec_description,
+                                       base::TimeTicks() + relative_timestamp);
   }
   return true;
 }

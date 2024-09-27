@@ -102,9 +102,8 @@ void VEAEncoder::BitstreamBufferReady(
   DVLOG(3) << __func__;
 
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
-  base::span<char> data_span =
-      output_buffer->mapping.GetMemoryAsSpan<char>(metadata.payload_size_bytes);
-  std::string data(data_span.begin(), data_span.end());
+  auto data_span = output_buffer->mapping.GetMemoryAsSpan<const uint8_t>(
+      metadata.payload_size_bytes);
 
   auto front_frame = frames_in_encode_.front();
   frames_in_encode_.pop();
@@ -113,9 +112,11 @@ void VEAEncoder::BitstreamBufferReady(
     front_frame.first.visible_rect_size = *metadata.encoded_size;
   }
 
-  on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
-                           std::nullopt, front_frame.second,
-                           metadata.key_frame);
+  auto buffer = media::DecoderBuffer::CopyFrom(data_span);
+  buffer->set_is_key_frame(metadata.key_frame);
+
+  on_encoded_video_cb_.Run(front_frame.first, std::move(buffer), std::nullopt,
+                           front_frame.second);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }

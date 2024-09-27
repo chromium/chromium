@@ -24,18 +24,17 @@ MuxerTimestampAdapter::~MuxerTimestampAdapter() {
 
 bool MuxerTimestampAdapter::OnEncodedVideo(
     const Muxer::VideoParameters& params,
-    std::string encoded_data,
-    std::string encoded_alpha,
+    scoped_refptr<DecoderBuffer> encoded_data,
     std::optional<media::VideoEncoder::CodecDescription> codec_description,
-    base::TimeTicks timestamp,
-    bool is_key_frame) {
+    base::TimeTicks timestamp) {
   TRACE_EVENT2("media", __func__, "timestamp", timestamp - base::TimeTicks(),
-               "is_key_frame", is_key_frame);
-  DVLOG(2) << __func__ << " - " << encoded_data.size() << "B ts " << timestamp;
+               "is_key_frame", encoded_data->is_key_frame());
+  DVLOG(2) << __func__ << " - " << encoded_data->AsHumanReadableString()
+           << " ts " << timestamp;
 
   has_seen_video_ = true;
 
-  if (encoded_data.size() == 0u) {
+  if (encoded_data->empty()) {
     DLOG(WARNING) << __func__ << ": zero size encoded frame, skipping";
     // Some encoders give sporadic zero-size data, see https://crbug.com/716451.
     return true;
@@ -44,7 +43,8 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
   // TODO(ajose): Support multiple tracks: http://crbug.com/528523
   if (has_audio_ && !has_seen_audio_) {
     DVLOG(1) << __func__ << ": delaying until audio track ready.";
-    if (is_key_frame) {  // Upon Key frame reception, empty the encoded queue.
+    if (encoded_data->is_key_frame()) {  // Upon Key frame reception, empty
+                                         // the encoded queue.
       video_frames_.clear();
     }
   }
@@ -52,8 +52,7 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
   // Compensate for time in pause spent before the first frame.
   auto timestamp_minus_paused = timestamp - total_time_in_pause_;
   video_frames_.push_back(EncodedFrame{
-      {params, std::move(codec_description), std::move(encoded_data),
-       std::move(encoded_alpha), is_key_frame},
+      {params, std::move(codec_description), std::move(encoded_data)},
       UpdateLastTimestampAndGetNext(last_video_timestamp_,
                                     timestamp_minus_paused)});
   return PartiallyFlushQueues();
@@ -61,19 +60,19 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
 
 bool MuxerTimestampAdapter::OnEncodedAudio(
     const AudioParameters& params,
-    std::string encoded_data,
+    scoped_refptr<DecoderBuffer> encoded_data,
     std::optional<media::AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   TRACE_EVENT1("media", __func__, "timestamp", timestamp - base::TimeTicks());
-  DVLOG(2) << __func__ << " - " << encoded_data.size() << "B ts " << timestamp;
+  DVLOG(2) << __func__ << " - " << encoded_data->size() << "B ts " << timestamp;
 
   has_seen_audio_ = true;
 
   // Compensate for time in pause spent before the first frame.
   auto timestamp_minus_paused = timestamp - total_time_in_pause_;
+  encoded_data->set_is_key_frame(true);
   audio_frames_.push_back(EncodedFrame{
-      {params, std::move(codec_description), encoded_data, std::string(),
-       /*is_keyframe=*/true},
+      {params, std::move(codec_description), std::move(encoded_data)},
       UpdateLastTimestampAndGetNext(last_audio_timestamp_,
                                     timestamp_minus_paused)});
   return PartiallyFlushQueues();
@@ -166,7 +165,7 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   relative_timestamp = std::max(relative_timestamp, last_timestamp_written_);
   last_timestamp_written_ = relative_timestamp;
 
-  DCHECK(frame.frame.data.data());
+  DCHECK(!frame.frame.data->empty());
   TRACE_EVENT2("media", __func__, "is_video", take_video, "recorded_timestamp",
                relative_timestamp);
   return muxer_->PutFrame(std::move(frame.frame), relative_timestamp);

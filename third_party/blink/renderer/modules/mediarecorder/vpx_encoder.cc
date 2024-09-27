@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
@@ -92,8 +93,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   bool keyframe = false;
   bool force_keyframe = request_keyframe;
   bool alpha_keyframe = false;
-  std::string data;
-  std::string alpha_data;
+  scoped_refptr<media::DecoderBuffer> output_data;
   switch (frame->format()) {
     case media::PIXEL_FORMAT_NV12: {
       last_frame_had_alpha_ = false;
@@ -104,7 +104,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->stride(VideoFrame::Plane::kUV),
                frame->visible_data(VideoFrame::Plane::kUV) + 1,
                frame->stride(VideoFrame::Plane::kUV), duration, force_keyframe,
-               data, &keyframe, VPX_IMG_FMT_NV12);
+               &output_data, /*is_alpha=*/false, VPX_IMG_FMT_NV12);
       break;
     }
     case media::PIXEL_FORMAT_I420: {
@@ -116,7 +116,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->stride(VideoFrame::Plane::kU),
                frame->visible_data(VideoFrame::Plane::kV),
                frame->stride(VideoFrame::Plane::kV), duration, force_keyframe,
-               data, &keyframe, VPX_IMG_FMT_I420);
+               &output_data, /*is_alpha=*/false, VPX_IMG_FMT_I420);
       break;
     }
     case media::PIXEL_FORMAT_I420A: {
@@ -156,7 +156,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->stride(VideoFrame::Plane::kU),
                frame->visible_data(VideoFrame::Plane::kV),
                frame->stride(VideoFrame::Plane::kV), duration, force_keyframe,
-               data, &keyframe, VPX_IMG_FMT_I420);
+               &output_data, /*is_alpha=*/false, VPX_IMG_FMT_I420);
 
       DoEncode(alpha_encoder_.get(), frame_size,
                frame->data(VideoFrame::Plane::kA),
@@ -165,7 +165,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                base::checked_cast<int>(u_plane_stride_),
                alpha_dummy_planes_.data() + v_plane_offset_,
                base::checked_cast<int>(v_plane_stride_), duration, keyframe,
-               alpha_data, &alpha_keyframe, VPX_IMG_FMT_I420);
+               &output_data, /*is_alpha=*/true, VPX_IMG_FMT_I420);
       DCHECK_EQ(keyframe, alpha_keyframe);
       break;
     }
@@ -176,8 +176,8 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   frame = nullptr;
 
   metrics_provider_->IncrementEncodedFrameCount();
-  on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
-                           std::nullopt, capture_timestamp, keyframe);
+  on_encoded_video_cb_.Run(video_params, std::move(output_data), std::nullopt,
+                           capture_timestamp);
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
@@ -191,9 +191,10 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
                           int v_stride,
                           const base::TimeDelta& duration,
                           bool force_keyframe,
-                          std::string& output_data,
-                          bool* const keyframe,
+                          scoped_refptr<media::DecoderBuffer>* output_data,
+                          bool is_alpha,
                           vpx_img_fmt_t img_fmt) {
+  CHECK(output_data);
   DCHECK(img_fmt == VPX_IMG_FMT_I420 || img_fmt == VPX_IMG_FMT_NV12);
 
   vpx_image_t vpx_image;
@@ -225,15 +226,28 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
     on_error_cb_.Run();
     return;
   }
-  *keyframe = false;
+
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
   while ((pkt = vpx_codec_get_cx_data(encoder, &iter))) {
     if (pkt->kind != VPX_CODEC_CX_FRAME_PKT)
       continue;
-    output_data.assign(static_cast<char*>(pkt->data.frame.buf),
-                       pkt->data.frame.sz);
-    *keyframe = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
+    if (is_alpha) {
+      const auto* alpha_data =
+          reinterpret_cast<const uint8_t*>(pkt->data.frame.buf);
+      // If is_alpha is true, it needs *output_data to already be a valid
+      // scoped_refptr.
+      CHECK(*output_data);
+      (*output_data)
+          ->WritableSideData()
+          .alpha_data.assign(alpha_data, alpha_data + pkt->data.frame.sz);
+    } else {
+      *output_data = media::DecoderBuffer::CopyFrom(
+          {reinterpret_cast<const uint8_t*>(pkt->data.frame.buf),
+           pkt->data.frame.sz});
+    }
+    (*output_data)
+        ->set_is_key_frame((pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0);
     break;
   }
 }

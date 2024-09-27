@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/stream_parser.h"
@@ -132,15 +133,12 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   // Add video stream only.
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_1);
-  std::string video_stream_1(
-      reinterpret_cast<const char*>(mapped_file_1.data()),
-      mapped_file_1.length());
+  auto video_stream_1 = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("bear-320x180-10bit-frame-1.h264", mapped_file_2);
-  std::string video_stream_2(
-      reinterpret_cast<const char*>(mapped_file_2.data()),
-      mapped_file_2.length());
+
+  auto video_stream_2 = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
 
   base::RunLoop run_loop;
 
@@ -151,22 +149,20 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 2:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(moov_written_data));
+            base::ranges::copy(mp4_data, std::back_inserter(moov_written_data));
             break;
           case 3:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(first_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(first_moof_written_data));
             break;
           case 4:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(second_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(second_moof_written_data));
             run_loop.Quit();
             break;
         }
@@ -185,21 +181,25 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   media::Muxer::VideoParameters params(gfx::Size(kWidth, kHeight), 30,
                                        media::VideoCodec::kH264,
                                        gfx::ColorSpace());
+  video_stream_1->set_is_key_frame(true);
   delegate.AddVideoFrame(params, video_stream_1, video_codec_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
+  video_stream_2->set_is_key_frame(false);
   for (int i = 0; i < 3; ++i) {
     delta += base::Milliseconds(kSampleDurations[i]);
     delegate.AddVideoFrame(params, video_stream_2, std::nullopt,
-                           base_time_ticks + delta, false);
+                           base_time_ticks + delta);
   }
 
   delta += base::Milliseconds(kSampleDurations[3]);
+  video_stream_1->set_is_key_frame(true);
   delegate.AddVideoFrame(params, video_stream_1, video_codec_description,
-                         base_time_ticks + delta, true);
+                         base_time_ticks + delta);
+  video_stream_2->set_is_key_frame(false);
   for (int i = 0; i < 2; ++i) {
     delta += base::Milliseconds(kSampleDurations[i]);
     delegate.AddVideoFrame(params, video_stream_2, std::nullopt,
-                           base_time_ticks + delta, false);
+                           base_time_ticks + delta);
   }
 
   // Write box data to the callback.
@@ -450,8 +450,8 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::RunLoop run_loop;
 
@@ -465,18 +465,16 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   // 5 seconds.
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 2:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(moov_written_data));
+            base::ranges::copy(mp4_data, std::back_inserter(moov_written_data));
             break;
           case 3:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(first_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(first_moof_written_data));
             // Quit.
             run_loop.Quit();
         }
@@ -679,8 +677,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::RunLoop run_loop;
 
@@ -690,9 +688,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 1:
@@ -702,8 +699,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
             // DO Nothing.
             break;
           case 5:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(third_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(third_moof_written_data));
             run_loop.Quit();
         }
       }),
@@ -796,13 +793,13 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
-                           mapped_file_2.length());
+
+  auto video_stream = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
 
   base::RunLoop run_loop;
 
@@ -813,9 +810,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         ++callback_count;
         switch (callback_count) {
@@ -826,12 +822,12 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
             // DO Nothing.
             break;
           case 5:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(third_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(third_moof_written_data));
             break;
           case 6:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(fourth_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(fourth_moof_written_data));
             // Quit.
             run_loop.Quit();
         }
@@ -863,17 +859,19 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
                                              media::VideoCodec::kH264,
                                              gfx::ColorSpace());
+  video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_code_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
     delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
+  video_stream->set_is_key_frame(true);
   // video stream, fourth fragment.
   delegate.AddVideoFrame(video_params, video_stream, video_code_description,
-                         base_time_ticks + base::Milliseconds(50), true);
+                         base_time_ticks + base::Milliseconds(50));
   delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + delta + base::Milliseconds(30));
 
@@ -998,13 +996,13 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
-                           mapped_file_2.length());
+
+  auto video_stream = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
 
   base::RunLoop run_loop;
 
@@ -1016,9 +1014,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 1:
@@ -1028,16 +1025,15 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
             // DO Nothing.
             break;
           case 5:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(third_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(third_moof_written_data));
             break;
           case 6:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(fourth_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(fourth_moof_written_data));
             break;
           case 7:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(mfra_written_data));
+            base::ranges::copy(mp4_data, std::back_inserter(mfra_written_data));
             run_loop.Quit();
         }
       }),
@@ -1068,17 +1064,18 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
                                              media::VideoCodec::kH264,
                                              gfx::ColorSpace());
+  video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
     delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
-
+  video_stream->set_is_key_frame(true);
   // video stream, fourth fragment.
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks + base::Milliseconds(50), true);
+                         base_time_ticks + base::Milliseconds(50));
   delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + delta + base::Milliseconds(30));
 
@@ -1205,13 +1202,13 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
-                           mapped_file_2.length());
+
+  auto video_stream = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
 
   base::RunLoop run_loop;
 
@@ -1221,9 +1218,8 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 1:
@@ -1231,8 +1227,8 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
             // Do nothing.
             break;
           case 3:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(first_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(first_moof_written_data));
             run_loop.Quit();
             break;
         }
@@ -1252,14 +1248,16 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
                                              media::VideoCodec::kH264,
                                              gfx::ColorSpace());
+  video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
 
   // audio stream.
   delegate.AddAudioFrame(params, audio_stream, audio_codec_description,
                          base_time_ticks);
-  // Total count is 24, which will have 3 fragments and the last fragment
-  // has 4 samples.
+  // Total count is 24, which will
+  // have 3 fragments and the last
+  // fragment has 4 samples.
   constexpr int kMaxAudioSampleFragment = 23;
 
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
@@ -1348,13 +1346,13 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("aac-44100-packet-0", mapped_file_1);
-  std::string audio_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto audio_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::MemoryMappedFile mapped_file_2;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
-                           mapped_file_2.length());
+
+  auto video_stream = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
 
   base::RunLoop run_loop;
 
@@ -1365,9 +1363,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(total_written_data));
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
         switch (++callback_count) {
           case 1:
@@ -1375,12 +1372,12 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
             // DO Nothing.
             break;
           case 3:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(first_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(first_moof_written_data));
             break;
           case 4:
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(second_moof_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(second_moof_written_data));
             run_loop.Quit();
             break;
         }
@@ -1403,14 +1400,18 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   // The first fragment; audio (1 sample) -> video (2 samples) track.
   delegate.AddAudioFrame(params, audio_stream, audio_codec_description,
                          base_time_ticks);
+  video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
+  video_stream->set_is_key_frame(false);
   delegate.AddVideoFrame(video_params, video_stream, std::nullopt,
-                         base_time_ticks + kDelta, false);
+                         base_time_ticks + kDelta);
 
-  // The second fragment; video (1 sample) -> audio (2 samples) track.
+  video_stream->set_is_key_frame(true);
+  // The second fragment; video (1 sample) -> audio (2
+  // samples) track.
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks + kDelta * 2, true);
+                         base_time_ticks + kDelta * 2);
   delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + kDelta);
   delegate.AddAudioFrame(params, audio_stream, std::nullopt,
@@ -1475,8 +1476,8 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
 
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("bear.h264", mapped_file_1);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+
+  auto video_stream = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
 
   base::RunLoop run_loop;
 
@@ -1487,24 +1488,24 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
   int moof_box_start_offset = 0;
   Mp4MuxerDelegate delegate(
       media::AudioCodec::kAAC, std::nullopt, std::nullopt,
-      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         switch (++callback_count) {
           case 1:
             // 'ftyp' box.
           case 2:
             // 'moov' box.
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(total_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(total_written_data));
             break;
           case 3:
             // 'moof' box.
             moof_box_start_offset = total_written_data.size();
 
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(total_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(total_written_data));
 
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(moof_and_mdat_written_data));
+            base::ranges::copy(mp4_data,
+                               std::back_inserter(moof_and_mdat_written_data));
             run_loop.Quit();
             break;
           case 4:
@@ -1527,8 +1528,9 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
                                              media::VideoCodec::kH264,
                                              gfx::ColorSpace());
 
+  video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
-                         base_time_ticks, true);
+                         base_time_ticks);
 
   // Write box data to the callback.
   delegate.Flush();

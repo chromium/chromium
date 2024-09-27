@@ -171,6 +171,8 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   frame = nullptr;
 
   std::string data;
+  scoped_refptr<media::DecoderBuffer> buffer;
+
   const uint8_t kNALStartCode[4] = {0, 0, 0, 1};
   for (int layer = 0; layer < info.iLayerNum; ++layer) {
     const SLayerBSInfo& layerInfo = info.sLayerInfo[layer];
@@ -189,11 +191,12 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
     // Copy the entire layer's data (including NAL start codes).
     data.append(reinterpret_cast<char*>(layerInfo.pBsBuf), layer_len);
   }
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(data));
 
   metrics_provider_->IncrementEncodedFrameCount();
-  const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
-  on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
-                           std::nullopt, capture_timestamp, is_key_frame);
+  buffer->set_is_key_frame(info.eFrameType == videoFrameTypeIDR);
+  on_encoded_video_cb_.Run(video_params, std::move(buffer), std::nullopt,
+                           capture_timestamp);
 }
 
 bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {

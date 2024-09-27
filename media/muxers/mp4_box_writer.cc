@@ -35,8 +35,7 @@ size_t Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
   std::vector<uint8_t> buffer = writer.Flush();
 
   // Write the entire boxes to the blob.
-  context().GetOutputPositionTracker().WriteString(
-      std::string_view(reinterpret_cast<char*>(buffer.data()), buffer.size()));
+  context().GetOutputPositionTracker().WriteSpan(buffer);
 
   return buffer.size();
 }

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
@@ -263,12 +264,15 @@ void MediaRecorderEncoderWrapper::OutputEncodeData(
   params_in_encode_.pop_front();
   video_params.codec = codec_;
 
-  on_encoded_video_cb_.Run(
-      video_params, std::string(output.data.begin(), output.data.end()),
-      encode_alpha_
-          ? std::string(output.alpha_data.begin(), output.alpha_data.end())
-          : std::string(),
-      std::move(description), capture_timestamp, output.key_frame);
+  auto buffer = media::DecoderBuffer::FromArray(std::move(output.data));
+  if (encode_alpha_) {
+    buffer->WritableSideData().alpha_data.assign(output.alpha_data.begin(),
+                                                 output.alpha_data.end());
+  }
+  buffer->set_is_key_frame(output.key_frame);
+
+  on_encoded_video_cb_.Run(video_params, std::move(buffer),
+                           std::move(description), capture_timestamp);
 }
 
 }  // namespace blink

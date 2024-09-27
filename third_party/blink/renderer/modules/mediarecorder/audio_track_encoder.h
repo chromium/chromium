@@ -13,6 +13,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/encoder_status.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -30,7 +31,7 @@ class AudioTrackEncoder {
  public:
   using OnEncodedAudioCB = base::RepeatingCallback<void(
       const media::AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_desc,
       base::TimeTicks capture_time)>;
 

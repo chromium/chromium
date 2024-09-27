@@ -5,6 +5,7 @@
 #include "media/muxers/mp4_muxer_delegate_fragment.h"
 
 #include "base/notreached.h"
+#include "media/base/decoder_buffer.h"
 #include "media/muxers/mp4_muxer_context.h"
 
 namespace media {
@@ -53,26 +54,28 @@ bool Mp4MuxerDelegateFragment::HasSamples() const {
   return false;
 }
 
-void Mp4MuxerDelegateFragment::AddVideoData(std::string_view encoded_data,
-                                            base::TimeTicks timestamp) {
+void Mp4MuxerDelegateFragment::AddVideoData(
+    scoped_refptr<DecoderBuffer> encoded_data,
+    base::TimeTicks timestamp) {
   // Add sample.
   mp4::writable_boxes::TrackFragmentRun& video_trun =
       moof_.track_fragments[kDefaultVideoIndex].run;
-  AddDataToRun(video_trun, encoded_data, timestamp);
+  AddDataToRun(video_trun, *encoded_data, timestamp);
 
   // Add sample data to the data box.
-  AddDataToMdat(mdat_.track_data[kDefaultVideoIndex], encoded_data);
+  AddDataToMdat(mdat_.track_data[kDefaultVideoIndex], *encoded_data);
 }
 
-void Mp4MuxerDelegateFragment::AddAudioData(std::string_view encoded_data,
-                                            base::TimeTicks timestamp) {
+void Mp4MuxerDelegateFragment::AddAudioData(
+    scoped_refptr<DecoderBuffer> encoded_data,
+    base::TimeTicks timestamp) {
   // Add sample.
   mp4::writable_boxes::TrackFragmentRun& audio_trun =
       moof_.track_fragments[kDefaultAudioIndex].run;
 
-  AddDataToRun(audio_trun, encoded_data, timestamp);
+  AddDataToRun(audio_trun, *encoded_data, timestamp);
   // Add sample data to the data box.
-  AddDataToMdat(mdat_.track_data[kDefaultAudioIndex], encoded_data);
+  AddDataToMdat(mdat_.track_data[kDefaultAudioIndex], *encoded_data);
 }
 
 void Mp4MuxerDelegateFragment::AddVideoLastTimestamp(
@@ -221,7 +224,7 @@ void Mp4MuxerDelegateFragment::AddNewTrack(uint32_t track_index) {
 
 void Mp4MuxerDelegateFragment::AddDataToRun(
     mp4::writable_boxes::TrackFragmentRun& trun,
-    std::string_view encoded_data,
+    const DecoderBuffer& encoded_data,
     base::TimeTicks timestamp) {
   // Additional entries may exist in various sample vectors, such as
   // durations, hence the use of 'sample_count' to ensure an accurate count of
@@ -235,8 +238,9 @@ void Mp4MuxerDelegateFragment::AddDataToRun(
   trun.sample_timestamps.emplace_back(timestamp);
 }
 
-void Mp4MuxerDelegateFragment::AddDataToMdat(std::vector<uint8_t>& track_data,
-                                             std::string_view encoded_data) {
+void Mp4MuxerDelegateFragment::AddDataToMdat(
+    std::vector<uint8_t>& track_data,
+    const DecoderBuffer& encoded_data) {
   // The parameter sets are supplied in-band at the sync samples.
   // It is a default on encoded stream, see
   // `VideoEncoder::produce_annexb=false`.

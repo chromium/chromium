@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
@@ -85,22 +86,19 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // which wasn't encoded by MediaRecorder) video data available.
     // |encoded_alpha| represents the encode output of alpha channel when
     // available, can be empty otherwise.
-    virtual void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
-                                    std::string encoded_data,
-                                    std::string encoded_alpha,
-                                    base::TimeTicks timestamp,
-                                    bool is_key_frame) = 0;
+    virtual void OnPassthroughVideo(
+        const media::Muxer::VideoParameters& params,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
+        base::TimeTicks timestamp) = 0;
 
     // Called to indicate there is encoded video data available. |encoded_alpha|
     // represents the encode output of alpha channel when available, can be
     // empty otherwise.
     virtual void OnEncodedVideo(
         const media::Muxer::VideoParameters& params,
-        std::string encoded_data,
-        std::string encoded_alpha,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
         std::optional<media::VideoEncoder::CodecDescription> codec_description,
-        base::TimeTicks timestamp,
-        bool is_key_frame) = 0;
+        base::TimeTicks timestamp) = 0;
 
     virtual std::unique_ptr<media::VideoEncoderMetricsProvider>
     CreateVideoEncoderMetricsProvider() = 0;
@@ -129,11 +127,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
   using OnEncodedVideoCB = base::RepeatingCallback<void(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_timestamp,
-      bool is_key_frame)>;
+      base::TimeTicks capture_timestamp)>;
   using OnErrorCB = base::RepeatingClosure;
 
   // MediaStreamVideoSink implementation

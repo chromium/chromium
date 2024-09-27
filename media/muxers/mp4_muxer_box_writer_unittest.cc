@@ -100,11 +100,11 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void CreateContext(std::vector<uint8_t>& written_data) {
     auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-            std::string_view mp4_data_string) {
+            base::span<const uint8_t> mp4_data_string) {
           // Callback is called per box output.
 
-          std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                    std::back_inserter(*written_data));
+          base::ranges::copy(mp4_data_string,
+                             std::back_inserter(*written_data));
           std::move(run_loop_quit).Run();
         },
         run_loop_.QuitClosure(), &written_data));

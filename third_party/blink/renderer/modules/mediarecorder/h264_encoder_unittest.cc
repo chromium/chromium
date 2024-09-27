@@ -144,11 +144,9 @@ class H264EncoderFixture : public ::testing::Test {
 
   void OnEncodedVideo(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_timestamp,
-      bool is_key_frame) {}
+      base::TimeTicks capture_timestamp) {}
 
   test::TaskEnvironment task_environment_;
   const std::optional<media::VideoCodecProfile> profile_;

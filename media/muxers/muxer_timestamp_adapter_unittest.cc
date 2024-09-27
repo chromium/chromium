@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/decoder_buffer.h"
 #include "media/muxers/muxer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,24 +81,23 @@ class MuxerTimestampAdapterTestBase {
  public:
   struct Frame {
     Frame& WithData(std::string_view v) {
-      data = v;
+      data = media::DecoderBuffer::CopyFrom(base::as_byte_span(v));
       return *this;
     }
     Frame& WithAlphaData(std::string_view v) {
-      alpha_data = v;
+      data->WritableSideData().alpha_data.assign(v.begin(), v.end());
       return *this;
     }
     Frame& AsKeyframe() {
-      keyframe = true;
+      data->set_is_key_frame(true);
       return *this;
     }
     Frame& WithTimestamp(int relative_timestamp_ms) {
       timestamp = base::TimeTicks() + base::Milliseconds(relative_timestamp_ms);
       return *this;
     }
-    std::string data = "data";
-    std::string alpha_data;
-    bool keyframe = false;
+    scoped_refptr<media::DecoderBuffer> data =
+        media::DecoderBuffer::CopyFrom(base::as_byte_span("data"));
     base::TimeTicks timestamp;
   };
 
@@ -134,9 +134,8 @@ class MuxerTimestampAdapterTestBase {
   bool PutVideoFrame(const Frame& frame) {
     auto video_params = Muxer::VideoParameters(
         *VideoFrame::CreateBlackFrame(gfx::Size(160, 80)));
-    return adapter_->OnEncodedVideo(video_params, frame.data, frame.alpha_data,
-                                    std::nullopt, frame.timestamp,
-                                    frame.keyframe);
+    return adapter_->OnEncodedVideo(video_params, frame.data, std::nullopt,
+                                    frame.timestamp);
   }
 
   MediaTimestamps put_timestamps_;
@@ -148,61 +147,59 @@ class MuxerTimestampAdapterTestBase {
 class MuxerTimestampAdapterTest : public MuxerTimestampAdapterTestBase,
                                   public ::testing::Test {};
 
+MATCHER_P(MatchBufferData, data, "decoderbuffer data matcher") {
+  return arg.data->AsSpan() == base::as_byte_span(data);
+}
+
+MATCHER_P2(MatchBufferDataAndAlphaData,
+           data,
+           alpha_data,
+           "decoderbuffer data matcher") {
+  return arg.data->AsSpan() == base::as_byte_span(data) &&
+         arg.data->WritableSideData().alpha_data ==
+             base::as_byte_span(alpha_data);
+}
+
 TEST_F(MuxerTimestampAdapterTest, ForwardsAudioSamples) {
   CreateAdapterWithSuccessfulPut(/*has_video=*/false, /*has_audio=*/true);
   InSequence s;
-  EXPECT_CALL(*muxer_,
-              PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f1")),
-                             Field(&Muxer::EncodedFrame::params,
-                                   VariantWith<AudioParameters>(_))),
-                       base::Milliseconds(0)));
-  EXPECT_CALL(*muxer_,
-              PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f2")),
-                             Field(&Muxer::EncodedFrame::params,
-                                   VariantWith<AudioParameters>(_))),
-                       base::Milliseconds(1)));
-  PutAudioFrame(Frame().WithData("f1").WithTimestamp(1));
-  PutAudioFrame(Frame().WithData("f2").WithTimestamp(2));
+  std::string str1 = "f1";
+  std::string str2 = "f2";
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferData(str1), base::Milliseconds(0)));
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferData(str2), base::Milliseconds(1)));
+  PutAudioFrame(Frame().WithData(str1).WithTimestamp(1));
+  PutAudioFrame(Frame().WithData(str2).WithTimestamp(2));
 }
 
 TEST_F(MuxerTimestampAdapterTest, ForwardsVideoSamples) {
   CreateAdapterWithSuccessfulPut(/*has_video=*/true, /*has_audio=*/false);
   InSequence s;
-  EXPECT_CALL(
-      *muxer_,
-      PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f1")),
-                     Field(&Muxer::EncodedFrame::alpha_data, StrEq("a1")),
-                     Field(&Muxer::EncodedFrame::params,
-                           VariantWith<Muxer::VideoParameters>(_))),
-               base::Milliseconds(0)));
-  EXPECT_CALL(
-      *muxer_,
-      PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f2")),
-                     Field(&Muxer::EncodedFrame::alpha_data, StrEq("a2")),
-                     Field(&Muxer::EncodedFrame::params,
-                           VariantWith<Muxer::VideoParameters>(_))),
-               base::Milliseconds(1)));
-  PutVideoFrame(Frame().WithData("f1").WithAlphaData("a1").WithTimestamp(2));
-  PutVideoFrame(Frame().WithData("f2").WithAlphaData("a2").WithTimestamp(3));
+  std::string str1 = "f1";
+  std::string str2 = "f2";
+  std::string alpha_data1 = "a1";
+  std::string alpha_data2 = "a2";
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferDataAndAlphaData(str1, alpha_data1),
+                                base::Milliseconds(0)));
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferDataAndAlphaData(str2, alpha_data2),
+                                base::Milliseconds(1)));
+  PutVideoFrame(
+      Frame().WithData(str1).WithAlphaData(alpha_data1).WithTimestamp(2));
+  PutVideoFrame(
+      Frame().WithData(str2).WithAlphaData(alpha_data2).WithTimestamp(3));
 }
 
 TEST_F(MuxerTimestampAdapterTest, ForwardsAudioVideoSamples) {
   CreateAdapterWithSuccessfulPut(/*has_video=*/true, /*has_audio=*/true);
   InSequence s;
-  EXPECT_CALL(
-      *muxer_,
-      PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f1")),
-                     Field(&Muxer::EncodedFrame::alpha_data, StrEq("a1")),
-                     Field(&Muxer::EncodedFrame::params,
-                           VariantWith<Muxer::VideoParameters>(_))),
-               base::Milliseconds(0)));
-  EXPECT_CALL(*muxer_,
-              PutFrame(AllOf(Field(&Muxer::EncodedFrame::data, StrEq("f2")),
-                             Field(&Muxer::EncodedFrame::params,
-                                   VariantWith<AudioParameters>(_))),
-                       base::Milliseconds(1)));
-  PutVideoFrame(Frame().WithData("f1").WithAlphaData("a1").WithTimestamp(3));
-  PutAudioFrame(Frame().WithData("f2").WithTimestamp(4));
+  std::string str1 = "f1";
+  std::string str2 = "f2";
+  std::string alpha_data1 = "a1";
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferDataAndAlphaData(str1, alpha_data1),
+                                base::Milliseconds(0)));
+  EXPECT_CALL(*muxer_, PutFrame(MatchBufferData(str1), base::Milliseconds(1)));
+  PutVideoFrame(
+      Frame().WithData(str1).WithAlphaData(alpha_data1).WithTimestamp(3));
+  PutAudioFrame(Frame().WithData(str1).WithTimestamp(4));
 }
 
 TEST_F(MuxerTimestampAdapterTest, HandlesMuxerErrorInAudioThenVideo) {

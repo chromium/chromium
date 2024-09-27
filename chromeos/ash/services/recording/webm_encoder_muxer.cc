@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -380,12 +381,10 @@ void WebmEncoderMuxer::OnVideoEncoderOutput(
   const base::TimeTicks timestamp = encoded_video_params.frame_reference_time;
   encoded_video_params_.pop();
 
-  // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
-  // with strings, to avoid copying the encoded data.
-  std::string data{output.data.begin(), output.data.end()};
-  muxer_adapter_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
-                                std::move(codec_description), timestamp,
-                                output.key_frame);
+  auto buffer = media::DecoderBuffer::FromArray(std::move(output.data));
+  buffer->set_is_key_frame(output.key_frame);
+  muxer_adapter_.OnEncodedVideo(muxer_params, std::move(buffer),
+                                std::move(codec_description), timestamp);
 }
 
 void WebmEncoderMuxer::OnAudioEncoded(
@@ -394,11 +393,9 @@ void WebmEncoderMuxer::OnAudioEncoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 
-  // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
-  // with strings, to avoid copying the encoded data.
-  std::string encoded_data(encoded_audio.encoded_data.begin(),
-                           encoded_audio.encoded_data.end());
-  muxer_adapter_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
+  auto buffer =
+      media::DecoderBuffer::FromArray(std::move(encoded_audio.encoded_data));
+  muxer_adapter_.OnEncodedAudio(encoded_audio.params, std::move(buffer),
                                 std::move(codec_description),
                                 encoded_audio.timestamp);
 }

@@ -36,14 +36,13 @@ class Mp4MuxerDelegateInterface {
 
   virtual void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame) = 0;
+      base::TimeTicks timestamp) = 0;
 
   virtual void AddAudioFrame(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) = 0;
 
@@ -70,14 +69,13 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame) override;
+      base::TimeTicks timestamp) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
@@ -95,14 +93,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void BuildMovieVideoTrack(
       const Muxer::VideoParameters& params,
-      std::string_view encoded_data,
+      const DecoderBuffer& encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description);
-  void AddDataToVideoFragment(std::string_view encoded_data, bool is_key_frame);
+  void AddDataToVideoFragment(scoped_refptr<DecoderBuffer> encoded_data);
   void BuildMovieAudioTrack(
       const AudioParameters& params,
-      std::string_view encoded_data,
+      const DecoderBuffer& encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description);
-  void AddDataToAudioFragment(std::string_view encoded_data);
+  void AddDataToAudioFragment(scoped_refptr<DecoderBuffer> encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
@@ -119,7 +117,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   size_t GetAudioOnlyFragmentCount() const;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::string ConvertNALUData(std::string_view encoded_data);
+  scoped_refptr<DecoderBuffer> ConvertNALUData(
+      scoped_refptr<DecoderBuffer> encoded_data);
 #endif
 
   std::unique_ptr<Mp4MuxerContext> context_;

@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_encoder.h"
 #include "media/muxers/muxer_timestamp_adapter.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
@@ -112,23 +113,19 @@ class MODULES_EXPORT MediaRecorderHandler final
   // VideoTrackRecorder::CallbackInterface overrides.
   void OnEncodedVideo(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame) override;
+      base::TimeTicks timestamp) override;
   void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
-                          std::string encoded_data,
-                          std::string encoded_alpha,
-                          base::TimeTicks timestamp,
-                          bool is_key_frame) override;
+                          scoped_refptr<media::DecoderBuffer> encoded_data,
+                          base::TimeTicks timestamp) override;
   std::unique_ptr<media::VideoEncoderMetricsProvider>
   CreateVideoEncoderMetricsProvider() override;
   void OnVideoEncodingError() override;
   // AudioTrackRecorder::CallbackInterface overrides.
   void OnEncodedAudio(
       const media::AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   void OnAudioEncodingError(media::EncoderStatus error_status) override;
@@ -139,12 +136,10 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   void HandleEncodedVideo(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame);
-  void WriteData(std::string_view data);
+      base::TimeTicks timestamp);
+  void WriteData(base::span<const uint8_t> data);
 
   // Updates recorded tracks live and enabled.
   void UpdateTracksLiveAndEnabled();

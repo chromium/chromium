@@ -45,14 +45,10 @@ Muxer::EncodedFrame::EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(
     absl::variant<AudioParameters, VideoParameters> params,
     std::optional<media::AudioEncoder::CodecDescription> codec_description,
-    std::string data,
-    std::string alpha_data,
-    bool is_keyframe)
+    scoped_refptr<DecoderBuffer> data)
     : params(std::move(params)),
       codec_description(std::move(codec_description)),
-      data(std::move(data)),
-      alpha_data(std::move(alpha_data)),
-      is_keyframe(is_keyframe) {}
+      data(std::move(data)) {}
 Muxer::EncodedFrame::~EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(EncodedFrame&&) = default;
 

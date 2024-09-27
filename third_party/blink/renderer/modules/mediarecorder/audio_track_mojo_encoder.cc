@@ -165,9 +165,10 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
     return;
   }
 
-  std::string encoded_data(encoded_buffer.encoded_data.begin(),
-                           encoded_buffer.encoded_data.end());
-  on_encoded_audio_cb_.Run(encoded_buffer.params, encoded_data,
+  auto buffer =
+      media::DecoderBuffer::FromArray(std::move(encoded_buffer.encoded_data));
+
+  on_encoded_audio_cb_.Run(encoded_buffer.params, std::move(buffer),
                            std::move(codec_desc), encoded_buffer.timestamp);
 }
 

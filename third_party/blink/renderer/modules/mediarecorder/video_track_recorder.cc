@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/async_destroy_video_encoder.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -396,8 +397,9 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
         } else {
           iter->value.push_back(supported_profile);
         }
-        if (preferred_codec_id_ == CodecId::kLast)
+        if (preferred_codec_id_ == CodecId::kLast) {
           preferred_codec_id_ = codec_id_and_profile.codec_id;
+        }
       }
     }
   }
@@ -441,8 +443,9 @@ std::pair<media::VideoCodecProfile, bool>
 VideoTrackRecorderImpl::CodecEnumerator::GetFirstSupportedVideoCodecProfile(
     CodecId codec) const {
   const auto profile = supported_profiles_.find(codec);
-  if (profile == supported_profiles_.end())
+  if (profile == supported_profiles_.end()) {
     return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
+  }
 
   const auto& supported_profile = profile->value.front();
   const bool vbr_support = supported_profile.rate_control_modes &
@@ -506,8 +509,9 @@ void VideoTrackRecorderImpl::Encoder::Initialize() {}
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
-  if (paused_)
+  if (paused_) {
     return;
+  }
   auto timestamp = video_frame->metadata().capture_begin_time.value_or(
       video_frame->metadata().reference_time.value_or(capture_timestamp));
   bool force_key_frame =
@@ -624,8 +628,9 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     gfx::Size new_visible_size = old_visible_size;
 
     media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
-    if (video_frame->metadata().transformation)
+    if (video_frame->metadata().transformation) {
       video_rotation = video_frame->metadata().transformation->rotation;
+    }
 
     if (video_rotation == media::VIDEO_ROTATION_90 ||
         video_rotation == media::VIDEO_ROTATION_270) {
@@ -648,8 +653,9 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
       bitmap_.allocPixels(info);
       canvas_ = std::make_unique<cc::SkiaPaintCanvas>(bitmap_);
     }
-    if (!video_renderer_)
+    if (!video_renderer_) {
       video_renderer_ = std::make_unique<media::PaintCanvasVideoRenderer>();
+    }
 
     encoder_thread_context_->CopyVideoFrame(video_renderer_.get(),
                                             video_frame.get(), canvas_.get());
@@ -710,8 +716,9 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
   if (frame->HasMappableGpuBuffer()) {
     frame = media::ConvertToMemoryMappedFrame(frame);
   }
-  if (!frame)
+  if (!frame) {
     return nullptr;
+  }
 
   scoped_refptr<media::VideoFrame> i420_frame = frame_pool_.CreateFrame(
       media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),
@@ -725,8 +732,9 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
       i420_frame->writable_data(media::VideoFrame::Plane::kV),
       i420_frame->stride(media::VideoFrame::Plane::kV),
       frame->coded_size().width(), frame->coded_size().height());
-  if (ret)
+  if (ret) {
     return frame;
+  }
   return i420_frame;
 }
 
@@ -753,8 +761,9 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
 
   const auto profiles =
       GetCodecEnumerator()->GetSupportedProfiles(codec_profile.codec_id);
-  if (profiles.empty())
+  if (profiles.empty()) {
     return false;
+  }
 
   for (const auto& profile : profiles) {
     if (profile.profile == media::VIDEO_CODEC_PROFILE_UNKNOWN) {
@@ -895,18 +904,20 @@ void VideoTrackRecorderImpl::ProcessOneVideoFrame(
 
 void VideoTrackRecorderImpl::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (encoder_)
+  if (encoder_) {
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(true);
-  else
+  } else {
     should_pause_encoder_on_initialization_ = true;
+  }
 }
 
 void VideoTrackRecorderImpl::Resume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (encoder_)
+  if (encoder_) {
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(false);
-  else
+  } else {
     should_pause_encoder_on_initialization_ = false;
+  }
 }
 
 void VideoTrackRecorderImpl::OnVideoFrameForTesting(
@@ -1099,8 +1110,9 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   encoder_.AsyncCall(&Encoder::InitializeEncoder)
       .WithArgs(key_frame_config_, std::move(metrics_provider),
                 frame_buffer_pool_limit_);
-  if (should_pause_encoder_on_initialization_)
+  if (should_pause_encoder_on_initialization_) {
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(true);
+  }
 }
 
 void VideoTrackRecorderImpl::OnHardwareEncoderError() {
@@ -1195,8 +1207,9 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> encoded_frame,
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (state_ == KeyFrameState::kPaused)
+  if (state_ == KeyFrameState::kPaused) {
     return;
+  }
   if (state_ == KeyFrameState::kWaitingForKeyFrame &&
       !encoded_frame->IsKeyFrame()) {
     // Don't RequestKeyFrame() here - we already did this implicitly when
@@ -1217,17 +1230,17 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
   if (encoded_frame->ColorSpace()) {
     color_space = encoded_frame->ColorSpace();
   }
-  auto span = encoded_frame->Data();
-  const char* span_begin = reinterpret_cast<const char*>(span.data());
-  std::string data(span_begin, span_begin + span.size());
+
+  auto buffer = media::DecoderBuffer::CopyFrom(encoded_frame->Data());
+  buffer->set_is_key_frame(encoded_frame->IsKeyFrame());
+
   media::Muxer::VideoParameters params(encoded_frame->Resolution(),
                                        /*frame_rate=*/0.0f,
                                        /*codec=*/encoded_frame->Codec(),
                                        color_space);
   if (auto* callback = callback_interface()->Get()) {
-    callback->OnPassthroughVideo(params, std::move(data), {},
-                                 estimated_capture_time,
-                                 encoded_frame->IsKeyFrame());
+    callback->OnPassthroughVideo(params, std::move(buffer),
+                                 estimated_capture_time);
   }
 }
 

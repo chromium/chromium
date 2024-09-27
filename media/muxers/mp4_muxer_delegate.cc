@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "components/version_info/version_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -124,15 +125,14 @@ Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
 
 void Mp4MuxerDelegate::AddVideoFrame(
     const Muxer::VideoParameters& params,
-    std::string encoded_data,
+    scoped_refptr<DecoderBuffer> encoded_data,
     std::optional<VideoEncoder::CodecDescription> codec_description,
-    base::TimeTicks timestamp,
-    bool is_key_frame) {
+    base::TimeTicks timestamp) {
   DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
   if (!video_track_index_.has_value()) {
     CHECK(codec_description.has_value() || (params.codec != VideoCodec::kH264));
-    CHECK(is_key_frame);
+    CHECK(encoded_data->is_key_frame());
     CHECK(start_video_time_.is_null());
     CHECK_NE(params.codec, VideoCodec::kUnknown);
 
@@ -150,16 +150,16 @@ void Mp4MuxerDelegate::AddVideoFrame(
     context_->SetVideoTrack({video_track_index_.value(), timescale});
     DVLOG(1) << __func__ << ", video track timescale:" << timescale;
 
-    BuildMovieVideoTrack(params, encoded_data, std::move(codec_description));
+    BuildMovieVideoTrack(params, *encoded_data, std::move(codec_description));
   }
   last_video_time_ = timestamp;
 
-  AddDataToVideoFragment(encoded_data, is_key_frame);
+  AddDataToVideoFragment(std::move(encoded_data));
 }
 
 void Mp4MuxerDelegate::BuildMovieVideoTrack(
     const Muxer::VideoParameters& params,
-    std::string_view encoded_data,
+    const DecoderBuffer& encoded_data,
     std::optional<VideoEncoder::CodecDescription> codec_description) {
   DCHECK(video_track_index_.has_value());
 
@@ -207,8 +207,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     mp4::writable_boxes::AV1CodecConfiguration av1_config;
     size_t config_size = 0;
     auto codec_descriptions = libgav1::ObuParser::GetAV1CodecConfigurationBox(
-        reinterpret_cast<const uint8_t*>(encoded_data.data()),
-        encoded_data.size(), &config_size);
+        encoded_data.data(), encoded_data.size(), &config_size);
     CHECK(codec_descriptions);
     CHECK_GT(config_size, 0u);
 
@@ -245,10 +244,10 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
   DVLOG(1) << __func__ << ", video track created";
 }
 
-void Mp4MuxerDelegate::AddDataToVideoFragment(std::string_view encoded_data,
-                                              bool is_key_frame) {
+void Mp4MuxerDelegate::AddDataToVideoFragment(
+    scoped_refptr<DecoderBuffer> encoded_data) {
   DCHECK(video_track_index_.has_value());
-  CreateFragmentIfNeeded(false, is_key_frame);
+  CreateFragmentIfNeeded(false, encoded_data->is_key_frame());
 
   Mp4MuxerDelegateFragment* fragment = fragments_.back().get();
   if (!fragment) {
@@ -256,25 +255,21 @@ void Mp4MuxerDelegate::AddDataToVideoFragment(std::string_view encoded_data,
     return;
   }
 
-  std::string converted_encoded_data;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (video_codec_ == VideoCodec::kH264) {
     // Convert Annex-B to AVC bitstream.
-    converted_encoded_data = ConvertNALUData(encoded_data);
+    encoded_data = ConvertNALUData(std::move(encoded_data));
   }
 #endif
 
-  fragment->AddVideoData(converted_encoded_data.empty()
-                             ? std::move(encoded_data)
-                             : std::move(converted_encoded_data),
-                         last_video_time_);
+  fragment->AddVideoData(std::move(encoded_data), last_video_time_);
 
   MaybeFlushFileTypeBoxForStartup();
 }
 
 void Mp4MuxerDelegate::AddAudioFrame(
     const AudioParameters& params,
-    std::string encoded_data,
+    scoped_refptr<DecoderBuffer> encoded_data,
     std::optional<AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   if (!audio_track_index_.has_value()) {
@@ -293,16 +288,16 @@ void Mp4MuxerDelegate::AddAudioFrame(
     context_->SetAudioTrack({audio_track_index_.value(),
                              static_cast<uint32_t>(audio_sample_rate_)});
 
-    BuildMovieAudioTrack(params, encoded_data, std::move(codec_description));
+    BuildMovieAudioTrack(params, *encoded_data, std::move(codec_description));
   }
   last_audio_time_ = timestamp;
 
-  AddDataToAudioFragment(encoded_data);
+  AddDataToAudioFragment(std::move(encoded_data));
 }
 
 void Mp4MuxerDelegate::BuildMovieAudioTrack(
     const AudioParameters& params,
-    std::string_view encoded_data,
+    const DecoderBuffer& encoded_data,
     std::optional<AudioEncoder::CodecDescription> codec_description) {
   DCHECK(audio_track_index_.has_value());
   DCHECK(codec_description.has_value() || (audio_codec_ == AudioCodec::kOpus));
@@ -353,7 +348,8 @@ void Mp4MuxerDelegate::BuildMovieAudioTrack(
   DVLOG(1) << __func__ << ", audio track created";
 }
 
-void Mp4MuxerDelegate::AddDataToAudioFragment(std::string_view encoded_data) {
+void Mp4MuxerDelegate::AddDataToAudioFragment(
+    scoped_refptr<DecoderBuffer> encoded_data) {
   DCHECK(audio_track_index_.has_value());
   CreateFragmentIfNeeded(true, false);
 
@@ -363,7 +359,7 @@ void Mp4MuxerDelegate::AddDataToAudioFragment(std::string_view encoded_data) {
     return;
   }
 
-  fragment->AddAudioData(encoded_data, last_audio_time_);
+  fragment->AddAudioData(std::move(encoded_data), last_audio_time_);
   MaybeFlushFileTypeBoxForStartup();
 }
 
@@ -641,7 +637,8 @@ void Mp4MuxerDelegate::EnsureInitialized() {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-std::string Mp4MuxerDelegate::ConvertNALUData(std::string_view encoded_data) {
+scoped_refptr<DecoderBuffer> Mp4MuxerDelegate::ConvertNALUData(
+    scoped_refptr<DecoderBuffer> encoded_data) {
   if (!h264_converter_) {
     h264_converter_ =
         std::make_unique<media::H264AnnexBToAvcBitstreamConverter>();
@@ -650,19 +647,15 @@ std::string Mp4MuxerDelegate::ConvertNALUData(std::string_view encoded_data) {
   bool config_changed = false;
   size_t desired_size = 0;
   std::vector<uint8_t> output_chunk;
-  base::span<const uint8_t> data_span(
-      reinterpret_cast<const uint8_t*>(encoded_data.data()),
-      encoded_data.size());
-  auto status = h264_converter_->ConvertChunk(data_span, output_chunk,
-                                              &config_changed, &desired_size);
+  auto status = h264_converter_->ConvertChunk(
+      encoded_data->AsSpan(), output_chunk, &config_changed, &desired_size);
   CHECK_EQ(status.code(), media::MP4Status::Codes::kBufferTooSmall);
   output_chunk.resize(desired_size);
-  status = h264_converter_->ConvertChunk(data_span, output_chunk,
+  status = h264_converter_->ConvertChunk(encoded_data->AsSpan(), output_chunk,
                                          &config_changed, &desired_size);
   CHECK(status.is_ok());
 
-  std::string converted_encoded_data =
-      std::string(output_chunk.begin(), output_chunk.end());
+  auto converted_encoded_data = media::DecoderBuffer::CopyFrom(output_chunk);
   return converted_encoded_data;
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
