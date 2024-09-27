@@ -160,7 +160,7 @@ std::string WhatsNewHandler::GetLatestCountry() {
   }
 
   std::string country = variations_service->GetLatestCountry();
-  if (country == "") {
+  if (country.empty()) {
     country = base::ToLowerASCII(
         variations::GetCurrentCountryCode(variations_service));
   }
