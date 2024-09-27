@@ -5462,8 +5462,6 @@ static_library("ui") {
 
   if (use_aura) {
     sources += [
-      "aura/accessibility/automation_manager_aura.cc",
-      "aura/accessibility/automation_manager_aura.h",
       "overscroll_pref_manager.cc",
       "overscroll_pref_manager.h",
       "views/accelerator_utils_aura.cc",
