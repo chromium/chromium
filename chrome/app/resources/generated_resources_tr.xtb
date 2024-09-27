@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chrome size aksini söylemedikçe bağlantınız her zaman güvenlidir</translation>
 <translation id="1175131936083782305">Yöneticiniz bu özelliği devre dışı bıraktı.</translation>
 <translation id="1175364870820465910">Ya&amp;zdır...</translation>
+<translation id="1175572348579024023">Kaydır</translation>
 <translation id="1175914831232945926">Basamak</translation>
 <translation id="1176471985365269981">Cihazınızdaki dosyaları veya klasörleri düzenlemesine izin verilmeyenler</translation>
 <translation id="1177073277575830464">Android cihazınızla hızlı kurulum tamamlandı. Kuruluma <ph name="DEVICE_TYPE" /> cihazınızda devam edin.</translation>
@@ -1428,6 +1429,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1997616988432401742">Sertifikalarınız</translation>
 <translation id="1998715278591719161">Ellerinizi izlemesine izin verilen siteler</translation>
 <translation id="1999115740519098545">Başlangıçta</translation>
+<translation id="1999763610967697511">Sürükleme ve bırakma</translation>
 <translation id="2002109485265116295">Gerçek zamanlı</translation>
 <translation id="2002160221914907025">Deneysel yapay zeka</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" veri hizmetini etkinleştirmek için ilk olarak kablosuz bir ağa bağlanın</translation>
@@ -3480,6 +3482,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3487649228420469005">Tarama tamamlandı</translation>
 <translation id="3488199663160411179">ad</translation>
 <translation id="3490695139702884919">İndiriliyor... %<ph name="PERCENT" /></translation>
+<translation id="3491171603443463516">PIN'inizi veya şifrenizi unutursanız yerel veriler geri yüklenebilir</translation>
 <translation id="3491669675709357988">Çocuğunuzun hesabında Family Link ebeveyn denetimleri kurulu değil. Kurulumu tamamladıktan sonra ebeveyn denetimlerini ekleyebilirsiniz. Ebeveyn denetimleri hakkında bilgileri Keşfet uygulamasında bulabilirsiniz.</translation>
 <translation id="3491678231052507920">VR oturumlarına katılmanızı sağlamak için siteler genellikle sanal gerçeklik cihazlarınızı ve verilerinizi kullanır</translation>
 <translation id="3493043608231401654"><ph name="TAB_TITLE" /> öğesini sekme grubundan kaldırın</translation>
@@ -4158,6 +4161,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> içinde Resim &amp;ara</translation>
 <translation id="3948334586359655083">Bu sekmede ses çalınıyor</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> sitesi şu klasörlerdeki dosyaları düzenleyebilir:</translation>
+<translation id="3948985214866944547">Çoğu kullanıcı bu site için tam konum paylaşımını engelliyor</translation>
 <translation id="394984172568887996">IE'den Aktarıldı</translation>
 <translation id="3949999964543783947">Dosyaları daha güvenli bir şekilde indirmek için <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Oturum açın</translation>
@@ -5369,6 +5373,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4853020600495124913">&amp;Yeni pencerede aç</translation>
 <translation id="4854317507773910281">Onay için ebeveyn hesabı seçin</translation>
 <translation id="485480310608090163">Diğer ayarlar ve izinler</translation>
+<translation id="485806788160414322">Medyayı oynatın veya duraklatın</translation>
 <translation id="4858913220355269194">Futbolcu</translation>
 <translation id="486213875233855629">Ses, yöneticiniz tarafından kapatıldı</translation>
 <translation id="4862642413395066333">İmza OCSP Yanıtları</translation>
@@ -9020,6 +9025,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7566118625369982896">Play uygulama bağlantılarını yönet</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Tuş kombinasyonu oluştur</translation>
+<translation id="7568759527730933493">Bir sitenin IP adresini DNS'de (Alan Adı Sistemi) aramak için güvenli bağlantı kullanın. Bu özellik, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> adresinde yönetilen bir servis sağlayıcı kullanır Yöneticiniz tarafından yapılandırılmış bazı alanlarda güvenli bağlantılar kullanılmaz.</translation>
 <translation id="756876171895853918">Avatarı özelleştir</translation>
 <translation id="7568790562536448087">Güncelleniyor</translation>
 <translation id="7569983096843329377">Siyah</translation>
@@ -9182,6 +9188,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7676867886086876795">Dikte özelliğiyle metin alanına herhangi bir şey yazabilmek için sesinizi Google'a gönderin.</translation>
 <translation id="7678588695732963732">Tüm USB cihaz izinleri sıfırlansın mı?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> adet yönetilen yazıcı var.</translation>
+<translation id="7679895819123160382">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. <ph name="PRODUCT_NAME" />, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır. Yöneticiniz tarafından yapılandırılmış bazı alanlarda güvenli bağlantılar kullanılmaz.</translation>
 <translation id="7680416688940118410">Dokunmatik ekran kalibrasyonu</translation>
 <translation id="7681095912841365527">Site, Bluetooth'u kullanabilir</translation>
 <translation id="7681597159868843240">Sanal gerçeklik veya fitness takibi gibi özelliklerin kullanılması için siteler genellikle cihazınızın hareket sensörlerini kullanır</translation>
@@ -9580,6 +9587,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7955105108888461311">Şahsen sor</translation>
 <translation id="7955177647836564772">Smart Lock açıksa ve telefonunuzun da kilidi açıksa şifre ya da PIN girmeniz gerekmez</translation>
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
+<translation id="7956918070009672177">Cihazınızda <ph name="LANGUAGE" /> için ses bulunmuyor. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="7957074856830851026">Seri numarası veya öğe kimliği gibi cihaz bilgilerini görüntüleyin</translation>
 <translation id="7958157896921135832">Yazı tipi boyutunu büyüt</translation>
 <translation id="7958828865373988933">USB güvenlik anahtarıyla <ph name="APP_NAME" /> için bir geçiş anahtarı oluşturmak istiyorsanız anahtarı takıp dokunun</translation>

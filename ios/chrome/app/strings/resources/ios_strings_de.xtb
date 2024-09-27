@@ -301,7 +301,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2377336083033403521">Tabs suchen…</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
-<translation id="2387703759148866940">Autofill-Passwörter</translation>
 <translation id="2390457533592708044">„<ph name="MODULE_NAME" />“ ausblenden</translation>
 <translation id="2403129868389095715">Paket kann nicht zugestellt werden</translation>
 <translation id="2410754283952462441">Konto auswählen</translation>
@@ -606,6 +605,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3982893814825393515">Problem melden…</translation>
 <translation id="398604237578616937">Angemeldet als <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
+<translation id="3986739045730058129">Zum Tab</translation>
 <translation id="3987993985790029246">Link kopieren</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
 <translation id="3994422733891749358">Benachrichtigungen auswählen, die du erhalten möchtest</translation>
@@ -759,6 +759,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4717844083556844785">Aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
+<translation id="4720530280568305198">Deine Auswahl wurde in einem neuen Tab geöffnet</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
 <translation id="4742897645503301228">„Preis beobachten“ ausblenden</translation>
@@ -1417,7 +1418,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7730973429297233609">Wähle das Konto aus, mit dem du <ph name="FILENAME" /> – <ph name="FILESIZE" /> speichern möchtest</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Nur auf diesem Gerät.</translation>
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
-<translation id="7746165521091043703">Öffne die Autofill-Passworteinstellungen</translation>
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
 <translation id="7757015014239760147">Kein Nutzername ••••••••</translation>
 <translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch ausfüllen</translation>
@@ -1477,7 +1477,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
-<translation id="7978018860671536736">3. Tippe auf „Passwörter automatisch ausfüllen lassen“</translation>
 <translation id="797824194429476746">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
 <translation id="7987685713885608670">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Google Passwortmanager gespeichert werden.</translation>

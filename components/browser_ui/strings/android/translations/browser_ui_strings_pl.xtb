@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="310297983047869047">Poprzedni slajd</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
+<translation id="310979712355504754">Usuń wszystkie</translation>
 <translation id="3114012059975132928">Odtwarzacz</translation>
 <translation id="3115898365077584848">Pokaż informacje</translation>
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń rzeczywistości wirtualnej. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
-<translation id="7284451015630589124">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
-<translation id="7474522811371247902">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Takie pliki są jednak dozwolone w tej witrynie, ponieważ są one w niej niezbędne do świadczenia podstawowych usług.\n\nAby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać prośby o zalogowanie. Gdy jest wyłączona, nie mogą wyświetlać takich próśb.</translation>
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7804248752222191302">Strona używa kamery</translation>
 <translation id="7807060072011926525">Udostępniany przez Google</translation>
-<translation id="7822573154188733812">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>
 <translation id="783819812427904514">Wyłącz wyciszenie filmu</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8617611086246832542">Gdy ta opcja jest włączona, strony internetowe są wyświetlane w wersji na komputery. Gdy jest wyłączona, strony są wyświetlane w wersji na urządzenia mobilne.</translation>
-<translation id="8649036394979866943">Chrome ogranicza większości witryn możliwość uzyskiwania informacji na temat przeglądania przez Ciebie internetu za pomocą plików cookie innych firm. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia</translation>
 <translation id="8676316391139423634">Gdy ta opcja jest włączona, witryny mogą prosić o zgodę na śledzenie Twoich rąk. Gdy jest wyłączona, nie mogą śledzić Twoich rąk.</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>

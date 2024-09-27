@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3109724472072898302">Recolhido</translation>
+<translation id="310979712355504754">Excluir tudo</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> itens selecionados</translation>
 <translation id="7260727271532453612">Permitidas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos de realidade virtual. Quando está desativada, os sites não podem usar dispositivos de realidade virtual.</translation>
-<translation id="7284451015630589124">Você bloqueou o uso de cookies de terceiros para rastreamento durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Você geralmente bloqueia notificações. Para permitir, toque em "Detalhes".</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
-<translation id="7474522811371247902">O Chrome impede que a maioria dos sites use cookies de terceiros. No entanto, cookies de terceiros são permitidos neste site porque eles são necessários para o fornecimento de serviços básicos.\n\nAcesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas Proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando essa configuração está ativada, os sites podem mostrar solicitações de login. Quando está desativada, os sites não podem mostrar solicitações de login.</translation>
 <translation id="7554752735887601236">Um site está usando seu microfone</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7804248752222191302">Um site está usando sua câmera</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
-<translation id="7822573154188733812">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Tocando mídia</translation>
 <translation id="783819812427904514">Ativar som do vídeo</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando essa configuração está ativada, a versão para computadores dos sites aparece. Quando está desativada, a versão para dispositivos móveis aparece.</translation>
-<translation id="8649036394979866943">O Chrome impede que a maioria dos sites use cookies de terceiros para rastrear você durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Quando essa configuração está ativada, os sites podem pedir para acompanhar suas mãos. Quando está desativada, os sites não podem acompanhar suas mãos.</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>

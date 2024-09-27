@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">تلفزيون وفيديو</translation>
 <translation id="1658918301167915956">أجهزة تتضمّن بلوتوث</translation>
 <translation id="1662550410081243962">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
+<translation id="1662980953334786797">الترتيب نفسه</translation>
 <translation id="1663943134801823270">‏يتم أخذ البطاقات والعناوين من Chrome، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">البوليمر الضوئي للطباعة الفلكسغرافية</translation>
 <translation id="166624440456221306">حذف جدول المقارنة</translation>
@@ -1325,7 +1326,6 @@
 <translation id="342781501876943858">‏يُوصي Chromium بإعادة تحديد كلمة المرور في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="3428151540071562330">‏إنّ معرّف واحد أو أكثر من معرّفات الموارد المنتظمة (URI) لنموذج خادم DnsOverHttpsTemplates غير صالح وبالتالي لن يتم استخدامه.</translation>
 <translation id="3428789896412418755">السجلّ المجمَّع</translation>
-<translation id="3430206873883193118">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج معيّنة أو الكشف عن بيانات، مثل كلمة المرور أو رقم الهاتف أو رقم بطاقة الائتمان. وينصح متصفّح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3433111389595862568">برامج تعاون ومكالمات الفيديو</translation>
 <translation id="3433144818443565002">محادثة الفيديو والمحادثة الصوتية</translation>
@@ -1343,7 +1343,6 @@
 <translation id="3447661539832366887">أوقف مالك هذا الجهاز تشغيل لعبة الديناصور.</translation>
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">‏السماح للموقع الإلكتروني بطلب التحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
-<translation id="3451429106322189478">تم السماح باستخدام <ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">الفاصل الزمني للجلب:</translation>
 <translation id="3453962258458347894">عدد مرات إعادة المحاولة</translation>
 <translation id="3457781733462096492">موسيقى "راب" و"هيب هوب"</translation>
@@ -1661,6 +1660,7 @@
 <translation id="4023431997072828269">ستظهر معلوماتك للآخرين لأن هذا النموذج يستخدم اتصالاً غير آمن.</translation>
 <translation id="4025325634010721551">تمت إعادة تحميل السياسات.</translation>
 <translation id="4025338605225449265">عملات وأسعار صرف</translation>
+<translation id="4025777154208238692">ترتيب عكسي</translation>
 <translation id="4027270464942389997">‏<ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />يمكن للمهاجمين قراءة أو تغيير<ph name="END_STRONG" /> المعلومات التي ترسِلها أو تتلقّاها من الموقع الإلكتروني.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />من الأفضل للحفاظ على أمانك زيارة هذا الموقع الإلكتروني لاحقًا<ph name="END_STRONG" /> إذا كنت تستخدم شبكة Wi-Fi عامة. إنّ استخدام شبكة موثوق بها، مثل شبكة Wi-Fi في منزلك أو مكان عملك، يكون أكثر أمانًا.
@@ -2571,7 +2571,6 @@
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="569000877158168851">‏قيمة DnsOverHttpsTemplates ليست مناسبة ولن يتم استخدامها ما لم يتم ضبط سياسة DnsOverHttpsMode على <ph name="SECURE_DNS_MODE_AUTOMATIC" /> أو <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">تم فتح نافذة بطول الشاشة لحفظ البطاقة</translation>
-<translation id="5692655638459249302">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من تثبيت برامج ضارة تعمل على سرقة أو حذف البيانات، مثل كلمة المرور أو الصور أو الرسائل أو رقم بطاقة الائتمان. وينصح متصفّح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">‏هل تريد استخدام Windows Hello لإثبات صحة عملية الشراء وإكمالها؟</translation>
 <translation id="5699628521141772782">منتجات ألبان وبيض</translation>
 <translation id="5700761515355162635">ملفات تعريف الارتباط الخارجية مسموحة</translation>
@@ -2719,7 +2718,6 @@
 <translation id="5995727681868049093">‏إدارة المعلومات والخصوصية والأمان في حسابك على Google</translation>
 <translation id="5996255674476750320">فعاليات للمهتمين بالمركبات</translation>
 <translation id="5997247540087773573">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات. لتأمين حساباتك، ينصح "مدير كلمات المرور" في Google بتغيير كلمة المرور الآن ثم التحقّق من كلمات المرور المحفوظة.</translation>
-<translation id="5999271311987646952">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا برامج ضارة<ph name="END_LINK" /> على الموقع الإلكتروني الذي تحاول الانتقال إليه.</translation>
 <translation id="6000528814684428358">موسيقى "هارد روك" و"بروغريسيف روك"</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">البدء</translation>
@@ -2884,7 +2882,6 @@
 <translation id="6284449872909111707">رسائل نصية وفورية</translation>
 <translation id="6284517535531159884">نوع المحتوى الأساسي للإصدارات المُعدَّلة</translation>
 <translation id="6287197303017372967">احصل على الاتجاهات إلى وجهتك مع إرشادات مفصّلة باستخدام ميزة التنقُّل.</translation>
-<translation id="6288521565586608304">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج ضارة تؤثّر في طريقة التصفُّح من خلال تغيير الصفحة الرئيسية مثلًا أو عرض إعلانات إضافية على المواقع الإلكترونية التي تنتقل إليها. وينصح متصفّح Chrome بشدّة بالرجوع إلى وضع الأمان لتجنُّب حدوث أي ضرر. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">يتوفّر خصم على المنتج.</translation>
 <translation id="6289939620939689042">لون الصفحة</translation>
 <translation id="6292819926564202163">‏محرك البحث الخاص بك في Chrome</translation>
@@ -3078,7 +3075,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">دراسة علوم الكمبيوتر</translation>
 <translation id="6633476656216409494">برامج الأنشطة التجارية والإنتاجية</translation>
-<translation id="6638353438328951386">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا برامج ضارة<ph name="END_LINK" /> على الموقع الإلكتروني الذي تحاول الانتقال إليه.</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6645291930348198241">الوصول إلى بيانات الموقع الإلكتروني وملفات تعريف الارتباط</translation>
 <translation id="6645478838938543427">سيتم إرسال التنبيهات بشأن انخفاض الأسعار إلى عنوان البريد الإلكتروني <ph name="EMAIL_ADDRESS" />.</translation>
@@ -3292,7 +3288,6 @@
 <translation id="701757816833614688">دراسة فنون بصرية وتصميم</translation>
 <translation id="702275896380648118">‏يحدّد هذا الموقع الإلكتروني اهتماماتك، ثم يقدّم إلى المواقع الإلكترونية الأخرى اقتراحات عن الإعلانات ذات الصلة باهتماماتك. ويتعرّف أيضًا هذا الموقع الإلكتروني من خلال Chrome على مواضيع الإعلانات التي تهمّك، وذلك بهدف عرض إعلانات وثيقة الصلة باهتماماتك.</translation>
 <translation id="7023162328967545559">تحذير من المشرف</translation>
-<translation id="7024932305105294144">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا عملية تصيُّد احتيالي<ph name="END_LINK" /> على الموقع الإلكتروني الذي تحاول الانتقال إليه. وتتظاهر مواقع التصيُّد الاحتيالي الإلكترونية بكونها مواقع إلكترونية أخرى لخداعك.<ph name="NEW_LINE" />جدير بالذكر أنّه حتى المواقع الإلكترونية التي تكون آمنة في العادة قد تتعرض أحيانًا للاختراق من قِبل المهاجمين. <ph name="BEGIN_ERROR_LINK" />يُرجى إعلامنا<ph name="END_ERROR_LINK" /> إذا كنت تعتقد أنّ هناك خطأ وأنّ هذا الموقع الإلكتروني لا يشكِّل خطرًا.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7030164307377592766">تعديل الإعدادات لملء بيانات طُرق الدفع.</translation>
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>
@@ -3370,7 +3365,6 @@
 <translation id="7168625890036931112">‫"<ph name="DATA_CONTROLS_RESTRICTION" />" ليس شرطًا متوافقًا على هذا النظام الأساسي</translation>
 <translation id="717330890047184534">‏معرّف GAIA:</translation>
 <translation id="7173338713290252554">سجلّ سعر المنتج على الويب</translation>
-<translation id="7173478186876671324">حظر المشرف إمكانية حصول هذا الموقع الإلكتروني على إذن استخدام <ph name="PERMISSION" /></translation>
 <translation id="7174545416324379297">تم الدمج</translation>
 <translation id="7175097078723125014">تم تحديد خيار تعديل العنوان.</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> وخيار <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> آخر}two{<ph name="SHIPPING_OPTION_PREVIEW" /> وخياران (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />) آخران}few{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات أخرى}many{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا آخر}other{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار آخر}}</translation>
@@ -3404,7 +3398,6 @@
 <translation id="7221857374443660083">يريد المصرف التأكد من هويتك.</translation>
 <translation id="722454870747268814">علامة تبويب للتصفح المتخفي</translation>
 <translation id="7227293336683593977">سجلّ الأسعار</translation>
-<translation id="7227747683324411744">إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج ضارة تؤثر في طريقة التصفُّح من خلال تغيير الصفحة الرئيسية مثلًا أو عرض إعلانات إضافية على المواقع الإلكترونية التي تنتقل إليها.</translation>
 <translation id="7232352818707016189">مزيد من الإجراءات في جدول المقارنة</translation>
 <translation id="7233592378249864828">طباعة ورقة التأكيد</translation>
 <translation id="7234112195906418665">سفر ووسائل نقل</translation>
@@ -3625,7 +3618,6 @@
 <translation id="7598391785903975535">أقل من <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">يتعذر على <ph name="HOST_NAME" /> معالجة هذا الطلب حاليًا.</translation>
 <translation id="7599089013883397081">انتهت مهلة التنزيل</translation>
-<translation id="7605377493722372900">إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من تثبيت برامج ضارة تعمل على سرقة أو حذف البيانات مثل كلمة المرور أو الصور أو الرسائل أو رقم بطاقة الائتمان.</translation>
 <translation id="7608583484192556132">إنّ ظهور إعلانات مخصّصة يعتمد على عدة عوامل، منها هذا الإعداد و<ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تتصفّحه يخصِّص الإعلانات. تعرَّف على مزيد من المعلومات حول <ph name="BEGIN_LINK_3" />إدارة الخصوصية في عرض الإعلانات<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">القيمة خارج النطاق <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">تاريخ انتهاء الصلاحية: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
@@ -4080,7 +4072,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">تم السماح باستخدام الميكروفون هذه المرّة.</translation>
 <translation id="8421158157346464398">معلومات ملف العمل (مثل اسم المستخدم في ملف العمل)</translation>
-<translation id="8422228580902424274">إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج معيّنة أو الكشف عن بيانات مثل كلمة المرور أو الهاتف أو رقم بطاقة الائتمان.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8427848540066057481">500 × 750 ملم</translation>
@@ -4232,7 +4223,6 @@
 <translation id="8722929331701811374">أدوات مكتبية (نموذج رأسي)</translation>
 <translation id="8724824364712796726">‏ظرف B6</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
-<translation id="8725667981218437315">الكاميرا والميكروفون</translation>
 <translation id="8726549941689275341">حجم الصفحة:</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8731268612289859741">رمز الأمان</translation>
@@ -4441,7 +4431,6 @@
 <translation id="9119042192571987207">تم التحميل</translation>
 <translation id="9119308212838450857">يريد "<ph name="PROVIDER_ORIGIN" />" التحقّق من هويتك</translation>
 <translation id="912327514020027767">تنانير</translation>
-<translation id="912414390325846156">لقد سبق أن اخترت عدم منح هذا الإذن إلى هذا الموقع الإلكتروني</translation>
 <translation id="9128870381267983090">الاتصال بالشبكة</translation>
 <translation id="9131119348384879525">هل تريد أخذ لقطة شاشة أو تسجيل فيديو للمحتوى السرّي؟</translation>
 <translation id="9133861214150761123">محاسبة ومراجعة مالية</translation>

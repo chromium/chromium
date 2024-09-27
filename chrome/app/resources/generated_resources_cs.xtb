@@ -250,6 +250,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1174366174291287894">Pokud vás Chrome neinformuje o opaku, je připojení vždy zabezpečené</translation>
 <translation id="1175131936083782305">Váš administrátor tuto funkci zakázal.</translation>
 <translation id="1175364870820465910">Tisk...</translation>
+<translation id="1175572348579024023">Posunout</translation>
 <translation id="1175914831232945926">Číslice</translation>
 <translation id="1176471985365269981">Zákaz upravovat soubory a složky v zařízení</translation>
 <translation id="1177073277575830464">Rychlé nastavení Androidu je dokončeno. Pokračujte v nastavování na zařízení <ph name="DEVICE_TYPE" />.</translation>
@@ -1430,6 +1431,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1997616988432401742">Vaše certifikáty</translation>
 <translation id="1998715278591719161">Povolení sledovat vaše ruce</translation>
 <translation id="1999115740519098545">Při spuštění</translation>
+<translation id="1999763610967697511">Přetažení</translation>
 <translation id="2002109485265116295">V reálném čase</translation>
 <translation id="2002160221914907025">Experimentální umělá inteligence</translation>
 <translation id="2003130567827682533">Chcete-li aktivovat data v síti <ph name="NAME" />, nejprve se připojte k síti Wi-Fi</translation>
@@ -3484,6 +3486,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3487649228420469005">Skenování je dokončeno</translation>
 <translation id="3488199663160411179">jméno</translation>
 <translation id="3490695139702884919">Stahování… <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Místní data jde obnovit, když zapomenete PIN nebo heslo</translation>
 <translation id="3491669675709357988">V účtu dítěte není nastavena rodičovská kontrola Family Link Rodičovskou kontrolu můžete přidat po dokončení nastavení. Informace o rodičovské kontrole najdete v aplikaci Explore.</translation>
 <translation id="3491678231052507920">Weby obvykle používají zařízení a data pro virtuální realitu ke spouštění relací ve VR</translation>
 <translation id="3493043608231401654">Odstranit kartu <ph name="TAB_TITLE" /> ze skupiny karet</translation>
@@ -4161,6 +4164,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3948116654032448504">&amp;Vyhledat obrázek pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Tato karta přehrává zvuk</translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
+<translation id="3948985214866944547">Většina lidí sdílení přesné polohy s tímto webem blokuje</translation>
 <translation id="394984172568887996">Importováno z aplikace IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby bylo stahování souborů bezpečnější</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
@@ -5371,6 +5375,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4853020600495124913">Otevřít v &amp;novém okně</translation>
 <translation id="4854317507773910281">Vyber účet rodiče, který to schválí</translation>
 <translation id="485480310608090163">Další nastavení a oprávnění</translation>
+<translation id="485806788160414322">Přehrát nebo pozastavit média</translation>
 <translation id="4858913220355269194">Fotbal</translation>
 <translation id="486213875233855629">Administrátor zvuk vypnul</translation>
 <translation id="4862642413395066333">Podepisování odpovědí OCSP</translation>
@@ -9022,6 +9027,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7566118625369982896">Spravovat odkazy na aplikace ve službě Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Vytvořit kombinaci kláves</translation>
+<translation id="7568759527730933493">Používat zabezpečené připojení k vyhledávání IP adres webů v DNS (Domain Name System). Využívá spravovaného poskytovatele služeb na adrese <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Zabezpečená připojení se nepoužívají pro některé domény nakonfigurované vaším administrátorem.</translation>
 <translation id="756876171895853918">Upravit avatar</translation>
 <translation id="7568790562536448087">Aktualizace</translation>
 <translation id="7569983096843329377">Černá</translation>
@@ -9184,6 +9190,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7676867886086876795">Odesílat hlasové údaje do Googlu, aby bylo možné diktovat do libovolného textového pole.</translation>
 <translation id="7678588695732963732">Resetovat všechna oprávnění k zařízením USB?</translation>
 <translation id="7679171213002716280">Máte několik spravovaných tiskáren (<ph name="PRINTER_COUNT" />).</translation>
+<translation id="7679895819123160382">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. K vyhledání IP adresy webu v systému názvů domén (DNS) používá <ph name="PRODUCT_NAME" /> zabezpečené připojení. Zabezpečená připojení se nepoužívají pro některé domény nakonfigurované vaším administrátorem.</translation>
 <translation id="7680416688940118410">Kalibrace dotykové obrazovky</translation>
 <translation id="7681095912841365527">Web může použít Bluetooth</translation>
 <translation id="7681597159868843240">Weby obvykle používají senzory pohybu na zařízení kvůli funkcím, jako je virtuální realita nebo sledování fitness aktivit</translation>
@@ -9582,6 +9589,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7955105108888461311">Zeptat se osobně</translation>
 <translation id="7955177647836564772">Pokud je zapnutá funkce Smart Lock a váš telefon je odemknutý, heslo ani PIN zadávat nemusíte.</translation>
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
+<translation id="7956918070009672177">Na zařízení nejsou žádné hlasy pro jazyk <ph name="LANGUAGE" />. Připojte se k internetu a zkuste to znovu.</translation>
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>
 <translation id="7958157896921135832">Zvětšit písmo</translation>
 <translation id="7958828865373988933">Pokud chcete vytvořit přístupový klíč pro <ph name="APP_NAME" /> na bezpečnostním klíči USB, vložte ho a dotkněte se ho</translation>

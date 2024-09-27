@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">ஆரஞ்சு</translation>
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> பக்கக் குழு விருப்பங்கள்</translation>
+<translation id="1293272072740285747">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், இனி தேவையில்லை என்றால் நீக்கிவிடலாம்.
+
+இதை நீக்கிவிட்டால் "<ph name="TITLE_OF_GROUP" />" பக்கக் குழுவிற்கான அணுகலை எல்லோரும் இழப்பார்கள். அத்துடன், இது எல்லாச் சாதனங்களில் இருந்தும் நீக்கப்படும்.</translation>
 <translation id="1340839264183302272">குழுவிலிருந்து வெளியேறு</translation>
 <translation id="1419023007528516122">உங்கள் சாதனத்தில் உள்ள குழுவை இது நிரந்தரமாக நீக்கிவிடும்</translation>
 <translation id="1486715732399361704">உங்கள் பக்கக் குழுக்கள் அனைத்தும் இங்கே இருக்கும்</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">பரிந்துரை: உங்களின் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூட வேண்டுமா?</translation>
 <translation id="2662028055331606429">ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">தளத்திற்குச் செல்</translation>
+<translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_HOURS_MANY" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
+<translation id="5615302411300498438">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், வேண்டாமென்றால் வெளியேறிவிடலாம்.
+
+வெளியேறினால் "<ph name="TITLE_OF_GROUP" />" பக்கக் குழுவிற்கான அணுகலை எல்லோரும் இழப்பார்கள்.</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{பக்கத்தை மீட்டெடு}other{பக்கங்களை மீட்டெடு}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome இணைப்பு: <ph name="TABS_COUNT_ONE" />}other{Chrome இணைப்புகள்: <ph name="TABS_COUNT_MANY" />}}</translation>
@@ -129,6 +136,7 @@
 <translation id="6549021453810473782">ஸ்டோர் தகவலைக் காட்டும்</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">தாவலை இடப்புறம் நகர்த்து</translation>
+<translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவுக்கான பக்கக் குழுச் செயல் மெனுவைத் திறக்கும், <ph name="COLOR_NAME" /> வண்ணம்.</translation>
 <translation id="6615455863669487791">எனக்கு காண்பி</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> பக்கம் மாற்றப்பட்டது}other{<ph name="MANY_CHANGED" /> பக்கங்கள் மாற்றப்பட்டன}}</translation>
 <translation id="6694634756612002311">பகிர்தலை நிர்வகியுங்கள்</translation>
@@ -177,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="8631711675211020168"><ph name="GROUP_NAME" /> பக்கக் குழுவிற்கான அணுகலை அனைவரும் உடனடியாக இழப்பார்கள். அத்துடன், அனைத்து சாதனங்களில் இருந்தும் நீக்கப்படும்.</translation>
 <translation id="8633025649649592204">சமீபத்திய செயல்</translation>
+<translation id="8635399646025169806">பக்கக் குழுவை வைத்திருக்கவா?</translation>
 <translation id="870736955561925754">பக்கத்தை மூடிவிட்டு குழுவை நீக்க வேண்டுமா?</translation>
 <translation id="8714939927607906138">குறைவான விலை</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8730999928494395583">இந்த மறைநிலைப் பக்கங்களில் நீங்கள் மேற்கொண்ட செயல்பாடுகள் குறித்த விவரங்கள் இந்தச் சாதனத்தில் இருந்து அகற்றப்படும்</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> மாதத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_MONTHS_MANY" /> மாதங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
+<translation id="8804742093141782941">குழுவை வைத்திரு</translation>
 <translation id="8820741577754260431">தாவல்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்</translation>
 <translation id="8887921976452567404">மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம்.</translation>
 <translation id="8915916167043355778">அனைத்தையும் மூடு</translation>
@@ -189,6 +199,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="9090098097337832354">இந்த ஸ்டோர் குறித்த தகவல்கள் மூடப்பட்டன</translation>
 <translation id="9111228330448174435">புதிய பக்கக் குழு உருவாக்கப்பட்டதும் உரையாடலைக் காட்டும்</translation>
+<translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> என்ற பக்கக் குழுவுக்கான பக்கக் குழுச் செயல் மெனுவைத் திறக்கும், <ph name="COLOR_NAME" /> வண்ணம்.</translation>
 <translation id="9150694013019234766">திரையின் கீழ்ப்பகுதிக்கு அருகில் உங்கள் பக்கக் குழுவிலுள்ள பக்கங்களுக்கு இடையே மாறலாம்</translation>
 <translation id="9169594135889675189">குழுவில் புதிய பக்கத்தைச் சேர்</translation>
 <translation id="9216898458513705996">இந்தச் சாதனத்தில் பக்கங்கள் திறந்தே இருக்கும். ஆனால், நீங்கள் <ph name="USER_EMAIL" /> கணக்கின் மூலம் உள்நுழைந்துள்ள சாதனங்கள் அனைத்திலும் குழு நீக்கப்படும்.</translation>

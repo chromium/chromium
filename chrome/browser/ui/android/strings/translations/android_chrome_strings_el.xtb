@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
 <translation id="228704530595896923">Λίστα επιλογών κοινοποίησης</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Εμφάνιση <ph name="TABS_COUNT_ONE" /> καρτέλας}other{Εμφάνιση <ph name="TABS_COUNT_MANY" /> καρτελών}}</translation>
 <translation id="2297822946037605517">Κοινή χρήση αυτής της σελίδας</translation>
 <translation id="22981027763501686">Συγχρονίστε για να λαμβάνετε τους σελιδοδείκτες, το ιστορικό και πολλά άλλα στις άλλες συσκευές σας</translation>
 <translation id="230115972905494466">Δεν βρέθηκαν συμβατές συσκευές</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Τρέχουσα επιλογή: <ph name="NAME" />, <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="696447261358045621">Έξοδος από την κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Προβολή <ph name="TABS_COUNT_ONE" /> καρτέλας με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}other{Προβολή <ph name="TABS_COUNT_MANY" /> καρτελών με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}}</translation>
 <translation id="6971862865055170158">Δεν εγκρίνεται</translation>
 <translation id="6978717888677691380">Ιστότοποι που έχετε αποκλείσει</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Περιεχόμενο για νεαρούς χρήστες – ανενεργό</translation>
 <translation id="7903184275147100332">Μπορεί να χρειαστεί λίγα λεπτά</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 αποκλείστηκε από τον οργανισμό σας}other{# αποκλείστηκαν από τον οργανισμό σας}}</translation>
 <translation id="7914399737746719723">Η εφαρμογή εγκαταστάθηκε</translation>
 <translation id="7919123827536834358">Αυτόματη μετάφραση αυτών των γλωσσών</translation>
 <translation id="7926975587469166629">Ψευδώνυμο κάρτας</translation>

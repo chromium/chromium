@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>
+<translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁、變更 <ph name="ANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前建立}other{<ph name="NUM_HOURS_MANY" /> 小時前建立}}</translation>

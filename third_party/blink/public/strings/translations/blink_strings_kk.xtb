@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Камераны пайдалануға рұқсат берілген</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" кейінгі бөлікте "<ph name="INVALIDCHARACTER" />" таңбасы болмауы керек.</translation>
 <translation id="4718048029184481307">"Суреттегі сурет" режимінде ойнатылуда.</translation>
-<translation id="4792862212177489858">Локацияны бөлісу</translation>
 <translation id="4812940957355064477">Нөмірді енгізіңіз.</translation>
 <translation id="49269513399674318">Микрофонды пайдалану</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> таңдалды</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Мән <ph name="MINIMUM" /> мәнінен үлкен немесе тең болуы керек.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5239623327352565343">Локацияны пайдалануға рұқсат берілді.</translation>
 <translation id="5307600278924710095">"<ph name="ATSIGN" />" болып жалғасатын бөлікті енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
 <translation id="5334352251556557839">Медиафайл ойнатылмады.</translation>
 <translation id="537648784377940524">Минималды күн (<ph name="MIN_DATE_OR_TIME" />) максималды күннен (<ph name="MAX_DATE_OR_TIME" />) бұрын болуы тиіс.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Плагинді жүктеу мүмкін емес.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (әзірге 1 таңба пайдаланылған).</translation>
-<translation id="7080893216867146095">Локация бөлісуге рұқсат берілді</translation>
 <translation id="709897737746224366">Сұралған пішімге сәйкес толтырыңыз.</translation>
 <translation id="7134810312945846184">Микрофон мен камераны пайдалану</translation>
 <translation id="7263440858009898357">Тізімдегі элементті таңдаңыз.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Мән <ph name="MINIMUM_TIME" /> және <ph name="MAXIMUM_TIME" /> аралығында болуы қажет</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файл</translation>
 <translation id="8451268428117625855">Файлды таңдаңыз.</translation>
+<translation id="8533587060884335451">Нақты локацияны пайдалану</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Жаңа жолға көшіру</translation>
 <translation id="8750798805984357768">Осы параметрлердің біреуін таңдаңыз.</translation>

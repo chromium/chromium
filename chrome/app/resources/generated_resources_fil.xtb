@@ -250,6 +250,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1174366174291287894">Palaging secure ang koneksyon mo maliban na lang kung sasabihin ng Chrome sa iyo na hindi.</translation>
 <translation id="1175131936083782305">Na-disable ng iyong administrator ang feature na ito.</translation>
 <translation id="1175364870820465910">&amp;I-print...</translation>
+<translation id="1175572348579024023">Mag-scroll</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
 <translation id="1176471985365269981">Hindi pinapayagang mag-edit ng mga file o folder sa iyong device</translation>
 <translation id="1177073277575830464">Tapos na ang mabilisang pag-setup ng Android. Ipagpatuloy ang pag-setup sa iyong <ph name="DEVICE_TYPE" />.</translation>
@@ -1439,6 +1440,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1997616988432401742">Iyong mga certificate</translation>
 <translation id="1998715278591719161">Pinapayagang i-track ang iyong mga kamay</translation>
 <translation id="1999115740519098545">Sa startup</translation>
+<translation id="1999763610967697511">Mag-drag at drop</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">Pang-eksperimentong AI</translation>
 <translation id="2003130567827682533">Para i-activate ang data ng '<ph name="NAME" />,' kumonekta muna sa Wi-Fi network</translation>
@@ -3498,6 +3500,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3487649228420469005">Tapos na ang pag-scan</translation>
 <translation id="3488199663160411179">pangalan</translation>
 <translation id="3490695139702884919">Dina-download... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Puwedeng i-restore ang lokal na data kung makalimutan mo ang iyong PIN o password</translation>
 <translation id="3491669675709357988">Hindi naka-set up ang account ng iyong anak para sa parental controls ng Family Link. Puwede kang magdagdag ng parental controls kapag natapos mo na ang pag-set up. Makikita mo ang impormasyon tungkol sa parental controls sa Explore app.</translation>
 <translation id="3491678231052507920">Karaniwang ginagamit ng mga site ang iyong mga virtual reality device at data para payagan kang pumasok sa mga VR session</translation>
 <translation id="3493043608231401654">Alisin ang <ph name="TAB_TITLE" /> sa grupo ng tab</translation>
@@ -5388,6 +5391,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4853020600495124913">Buksan sa &amp;bagong window</translation>
 <translation id="4854317507773910281">Pumili ng account ng magulang para sa pag-apruba</translation>
 <translation id="485480310608090163">Higit pang setting at pahintulot</translation>
+<translation id="485806788160414322">Mag-play o mag-pause ng media</translation>
 <translation id="4858913220355269194">Azkals</translation>
 <translation id="486213875233855629">Na-mute ng iyong administrator</translation>
 <translation id="4862642413395066333">Paglagda sa Mga Pagtugon sa OCSP</translation>

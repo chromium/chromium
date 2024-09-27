@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">നിർദ്ദേശം: നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്</translation>
 <translation id="266935134738038806">സൈറ്റ് സന്ദർശിക്കുക</translation>
+<translation id="2671423594960767771">ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ടാബ് ചേർത്തു, <ph name="ANY_CHANGED" /> എണ്ണം മാറ്റി, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}other{<ph name="MANY_ADDED" /> ടാബുകൾ ചേർത്തു, <ph name="ANY_CHANGED" /> എണ്ണം മാറ്റി, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_HOURS_MANY" /> മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>

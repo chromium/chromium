@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
-<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">No shortcut assigned</translation>
 <translation id="5826644637650799838">About the art</translation>
 <translation id="5832805196449965646">Add Person</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Device</translation>
+<translation id="6972754398087986839">Get started</translation>
 <translation id="6975620886940770104">A <ph name="GLOWSCAPES_LANDSCAPE" /> with a glowing <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
@@ -1587,6 +1587,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8881098542468797602">Test succeeded</translation>
 <translation id="8882789155418924367">owls</translation>
 <translation id="8892443466059986410">Cancel shortcut editing</translation>
+<translation id="8897043028305808902">File renamed</translation>
 <translation id="8898840733695078011">Signal strength</translation>
 <translation id="8909114361904403025">arrow up</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>

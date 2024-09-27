@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
+<translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{נוצרה לפני שעה (<ph name="NUM_HOURS_ONE" />)}one{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}two{נוצרה לפני שעתיים (<ph name="NUM_HOURS_MANY" />)}other{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}}</translation>

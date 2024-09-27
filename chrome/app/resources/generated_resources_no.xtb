@@ -250,6 +250,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1174366174291287894">Tilkoblingen din er alltid sikker så lenge Chrome ikke forteller deg noe annet</translation>
 <translation id="1175131936083782305">Administratoren din har slått av denne funksjonen.</translation>
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
+<translation id="1175572348579024023">Rull</translation>
 <translation id="1175914831232945926">Siffer</translation>
 <translation id="1176471985365269981">Nettsteder som ikke har lov til å redigere filer eller mapper på enheten</translation>
 <translation id="1177073277575830464">Hurtigkonfigureringen for Android er ferdig. Fortsett konfigureringen på <ph name="DEVICE_TYPE" /></translation>
@@ -1432,6 +1433,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1998715278591719161">Nettsteder som har lov til å spore hendene dine</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
+<translation id="1999763610967697511">Dra-og-slipp</translation>
 <translation id="2002109485265116295">Sanntid</translation>
 <translation id="2002160221914907025">AI på forsøksstadiet</translation>
 <translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et wifi-nettverk</translation>
@@ -3491,6 +3493,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3487649228420469005">Skanningen er fullført</translation>
 <translation id="3488199663160411179">navnet ditt</translation>
 <translation id="3490695139702884919">Laster ned … <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Lokale data kan gjenopprettes hvis du glemmer PIN-koden eller passordet</translation>
 <translation id="3491669675709357988">Kontoen til barnet ditt er ikke konfigurert for foreldrekontroll med Family Link. Du kan legge til foreldrekontroll når du er ferdig med konfigureringen. Du finner informasjon om foreldrekontroll i Utforsk-appen.</translation>
 <translation id="3491678231052507920">Nettsteder bruker vanligvis virtuell virkelighet-enhetene og -dataene dine for å la deg starte VR-økter</translation>
 <translation id="3493043608231401654">Fjern <ph name="TAB_TITLE" /> fra fanegruppen</translation>
@@ -4167,6 +4170,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3948116654032448504">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Denne fanen spiller av lyd</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i disse mappene</translation>
+<translation id="3948985214866944547">De fleste blokkerer deling av nøyaktig posisjon for dette nettstedet</translation>
 <translation id="394984172568887996">Importert fra Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> for å gjøre det tryggere å laste ned filer</translation>
 <translation id="3950820424414687140">Logg på</translation>
@@ -5377,6 +5381,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4853020600495124913">Åpne i &amp;nytt vindu</translation>
 <translation id="4854317507773910281">Velg foreldrekonto for godkjenning</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
+<translation id="485806788160414322">Spill av eller sett medieinnhold på pause</translation>
 <translation id="4858913220355269194">Drible</translation>
 <translation id="486213875233855629">Dempet av administratoren din</translation>
 <translation id="4862642413395066333">Signering av OCSP-svar</translation>
@@ -9027,6 +9032,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7566118625369982896">Administrer Play-applinker</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Opprett en tastekombinasjon</translation>
+<translation id="7568759527730933493">Bruk en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System). Dette gjøres ved bruk av en administrert tjenesteleverandør på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Sikre tilkoblinger brukes ikke for enkelte domener som er konfigurert av administratoren din.</translation>
 <translation id="756876171895853918">Tilpass brukerbildet</translation>
 <translation id="7568790562536448087">Oppdaterer</translation>
 <translation id="7569983096843329377">Svart</translation>
@@ -9189,6 +9195,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7676867886086876795">Send stemmen din til Google for å tillate diktat til hvilket som helst tekstfelt.</translation>
 <translation id="7678588695732963732">Vil du tilbakestille alle USB-enhetstillatelser?</translation>
 <translation id="7679171213002716280">Det er <ph name="PRINTER_COUNT" /> administrerte skrivere.</translation>
+<translation id="7679895819123160382">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. <ph name="PRODUCT_NAME" /> bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System). Sikre tilkoblinger brukes ikke for enkelte domener som er konfigurert av administratoren din.</translation>
 <translation id="7680416688940118410">Kalibrering av berøringsskjerm</translation>
 <translation id="7681095912841365527">Nettstedet kan bruke Bluetooth</translation>
 <translation id="7681597159868843240">Nettsteder bruker vanligvis bevegelsessensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>
@@ -9587,6 +9594,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
+<translation id="7956918070009672177">Det finnes ingen stemmer på <ph name="LANGUAGE" /> på enheten din. Koble til internett, og prøv på nytt.</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>
 <translation id="7958157896921135832">Øk skriftstørrelsen</translation>
 <translation id="7958828865373988933">Hvis du vil opprette en passnøkkel for <ph name="APP_NAME" /> på en USB-sikkerhetsnøkkel, setter du den inn og trykker på den nå</translation>

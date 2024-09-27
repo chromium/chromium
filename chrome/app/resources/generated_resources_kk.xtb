@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Байланыс қауіпсіз болмаса, Chrome сізге бұл туралы хабарлайды.</translation>
 <translation id="1175131936083782305">Әкімшіңіз бұл мүмкіндікті өшірді.</translation>
 <translation id="1175364870820465910">&amp;Басып шығару…</translation>
+<translation id="1175572348579024023">Айналдыру</translation>
 <translation id="1175914831232945926">Цифрлар</translation>
 <translation id="1176471985365269981">Құрылғыңыздағы файлдарды немесе қалталарды өзгертуге рұқсаты жоқтар</translation>
 <translation id="1177073277575830464">Android арқылы жылдам реттеу аяқталды. Реттеуді <ph name="DEVICE_TYPE" /> құрылғысында жалғастырыңыз.</translation>
@@ -1425,6 +1426,7 @@
 <translation id="1997616988432401742">Сертификаттарыңыз</translation>
 <translation id="1998715278591719161">Қолыңызды бақылауға рұқсаты бар</translation>
 <translation id="1999115740519098545">Іске қосу кезінде</translation>
+<translation id="1999763610967697511">Сүйреп қою</translation>
 <translation id="2002109485265116295">Нақты уақыт</translation>
 <translation id="2002160221914907025">Эксперименттік AI</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" деректерін іске қосу үшін алдымен Wi-Fi желісіне жалғаныңыз.</translation>
@@ -4158,6 +4160,7 @@
 <translation id="3948116654032448504">Кескінді <ph name="SEARCH_ENGINE" /> арқылы &amp;іздеу</translation>
 <translation id="3948334586359655083">Бұл қойындыда аудио ойнатылып жатыр</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> мына қалталардағы файлдарды өңдей алады.</translation>
+<translation id="3948985214866944547">Адамдардың көпшілігі өзінің нақты локация деректерін осы сайтпен бөлісуге блок қояды.</translation>
 <translation id="394984172568887996">IE браузерінен импортталған</translation>
 <translation id="3949999964543783947">Файлдарды жүктеп алуды қауіпсіз ету үшін <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Кіру</translation>
@@ -5368,6 +5371,7 @@
 <translation id="4853020600495124913">&amp;Жаңа терезеде ашу</translation>
 <translation id="4854317507773910281">Мақұлдау үшін ата-атаның аккаунтын таңдаңыз</translation>
 <translation id="485480310608090163">Басқа параметрлер мен рұқсаттар</translation>
+<translation id="485806788160414322">Медиафайлды ойнату немесе кідірту</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Әкімшіңіз дыбысын өшірді</translation>
 <translation id="4862642413395066333">OCSP жауаптарына қол қою</translation>
@@ -9014,6 +9018,7 @@
 <translation id="7566118625369982896">Play дүкеніндегі қолданба сілтемелерін басқару</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Пернелер тіркесімін жасау</translation>
+<translation id="7568759527730933493">DNS жүйесінде сайттың IP мекенжайын қарау үшін қауіпсіз байланысты пайдаланыңыз. Бұл үшін <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> серверіндегі басқарылатын қызмет көрсетуші пайдаланылады. Қауіпсіз байланыстар әкімші конфигурациялаған кейбір домендер үшін пайдаланылмайды.</translation>
 <translation id="756876171895853918">Аватарды реттеу</translation>
 <translation id="7568790562536448087">Жаңарту</translation>
 <translation id="7569983096843329377">Қара</translation>
@@ -9176,6 +9181,7 @@
 <translation id="7676867886086876795">Мәтін өрісіне мәтінді дауыспен енгізу үшін Google қызметіне даусыңызды жіберіңіз.</translation>
 <translation id="7678588695732963732">USB құрылғыларының барлық рұқсатын қайта орнату керек пе?</translation>
 <translation id="7679171213002716280">Басқарылатын <ph name="PRINTER_COUNT" /> принтер бар.</translation>
+<translation id="7679895819123160382">Интернет трафигіңізді пайдалана алатын адамдар қандай сайттарға кіретініңізді көрмейтіндей етіңіз. <ph name="PRODUCT_NAME" /> жүйесі DNS жүйесіндегі сайттың IP мекенжайын іздеу үшін қауіпсіз байланысты пайдаланады. Қауіпсіз байланыстар әкімші конфигурациялаған кейбір домендер үшін пайдаланылмайды.</translation>
 <translation id="7680416688940118410">Сенсорлық экранды калибрлеу</translation>
 <translation id="7681095912841365527">Сайт Bluetooth функциясын пайдалана алады</translation>
 <translation id="7681597159868843240">Сайттар әдетте виртуалдық шындық немесе фитнес-трекер сияқты функциялар үшін құрылғының қозғалыс датчиктерін пайдаланады.</translation>
@@ -9574,6 +9580,7 @@
 <translation id="7955105108888461311">Жеке сұрау</translation>
 <translation id="7955177647836564772">Smart Lock қосулы және телефоныңыздың құлпы ашық болса, құпия сөзді немесе PIN кодын енгізудің қажеті жоқ.</translation>
 <translation id="7956373551960864128">Сақталған принтерлер</translation>
+<translation id="7956918070009672177">Құрылғыңызда <ph name="LANGUAGE" /> тіліндегі дауыстар жоқ. Интернетке қосылып, әрекетті қайталап көріңіз.</translation>
 <translation id="7957074856830851026">Сериялық нөмір және актив идентификаторы сияқты құрылғы ақпаратын көру</translation>
 <translation id="7958157896921135832">Қаріп өлшемін ұлғайту</translation>
 <translation id="7958828865373988933">USB қауіпсіздік кілтінде <ph name="APP_NAME" /> кіру кілтін жасау керек болса, салып, оны қазір түртіңіз.</translation>

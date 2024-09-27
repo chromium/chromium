@@ -1323,7 +1323,6 @@
 <translation id="342781501876943858">如果你在其他網站上重複使用過你的密碼，Chromium 會建議你重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3428789896412418755">分類歷史記錄</translation>
-<translation id="3430206873883193118">你嘗試前往的網站可能有攻擊者，會誘騙你安裝軟體或提供資訊，例如密碼、電話號碼或信用卡號。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議通訊軟體</translation>
 <translation id="3433144818443565002">語音及視訊通訊</translation>
@@ -1341,7 +1340,6 @@
 <translation id="3447661539832366887">這個裝置的擁有者已關閉恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">可以要求控制 MIDI 裝置並重設程式</translation>
-<translation id="3451429106322189478">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
 <translation id="3457781733462096492">饒舌樂與嘻哈樂</translation>
@@ -2568,7 +2566,6 @@
 <translation id="5689516760719285838">位置</translation>
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不具關聯性，系統也不會使用該值。</translation>
 <translation id="5691848789297492617">儲存內容資訊卡功能表已完整開啟。</translation>
-<translation id="5692655638459249302">你嘗試前往的網站可能有攻擊者，會安裝有害軟體來竊取或刪除密碼、相片、訊息或信用卡號等資料。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購物嗎？</translation>
 <translation id="5699628521141772782">奶製品與雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -2716,7 +2713,6 @@
 <translation id="5995727681868049093">管理 Google 帳戶的資訊、隱私權和安全性</translation>
 <translation id="5996255674476750320">車展</translation>
 <translation id="5997247540087773573">你剛才使用的密碼已在資料侵害事件中遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即變更這組密碼，並檢查已儲存的密碼。</translation>
-<translation id="5999271311987646952">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近曾在你嘗試造訪的網站上發現惡意軟體<ph name="END_LINK" />。</translation>
 <translation id="6000528814684428358">硬式搖滾與前衛音樂</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6001839398155993679">立即開始</translation>
@@ -2881,7 +2877,6 @@
 <translation id="6284449872909111707">文字與即時通訊</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
 <translation id="6287197303017372967">使用導航功能即時規劃前往目的地的路線。</translation>
-<translation id="6288521565586608304">你嘗試前往的網站可能有攻擊者，會誘騙你安裝有害軟體，影響你的瀏覽方式，例如變更首頁，或在你造訪的網站上顯示額外廣告。Chrome 強烈建議你不要造訪這個網站，避免遭到攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">已找到折扣</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
 <translation id="6292819926564202163">在 Chrome 中使用的搜尋引擎</translation>
@@ -3075,7 +3070,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">電腦教育</translation>
 <translation id="6633476656216409494">商業與效率提升軟體</translation>
-<translation id="6638353438328951386">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現有害軟體<ph name="END_LINK" />。</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">存取 Cookie 和網站資料。</translation>
 <translation id="6645478838938543427">系統會將降價快訊將傳送到 <ph name="EMAIL_ADDRESS" /></translation>
@@ -3289,7 +3283,6 @@
 <translation id="701757816833614688">視覺藝術與設計教育</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
-<translation id="7024932305105294144">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近曾在你嘗試造訪的網站上發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030164307377592766">修改填入付款方式的設定</translation>
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
@@ -3367,7 +3360,6 @@
 <translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」不是這個平台可支援的限制項目</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">網路上的價格記錄</translation>
-<translation id="7173478186876671324">系統管理員已禁止這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="7174545416324379297">已合併</translation>
 <translation id="7175097078723125014">已選取「編輯地址」選項</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" />和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
@@ -3401,7 +3393,6 @@
 <translation id="7221857374443660083">銀行想要確認你的身分</translation>
 <translation id="722454870747268814">新無痕分頁</translation>
 <translation id="7227293336683593977">價格記錄</translation>
-<translation id="7227747683324411744">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝有害軟體，影響你的瀏覽方式，例如變更首頁，或在你造訪的網站上顯示額外廣告。</translation>
 <translation id="7232352818707016189">可對「比較」表格執行的其他動作</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234112195906418665">旅遊與交通</translation>
@@ -3622,7 +3613,6 @@
 <translation id="7598391785903975535">不到 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這項要求。</translation>
 <translation id="7599089013883397081">下載作業逾時</translation>
-<translation id="7605377493722372900">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會在你的裝置上安裝安裝有害軟體，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
 <translation id="7608583484192556132">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告隱私權<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">有效期限：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4075,7 +4065,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">這次允許使用麥克風</translation>
 <translation id="8421158157346464398">工作資料夾資訊 (例如工作資料夾使用者名稱)</translation>
-<translation id="8422228580902424274">如果你嘗試造訪的網站遭到攻擊，攻擊者可能會誘騙你安裝軟體或提供資料，例如密碼、電話號碼或信用卡號碼等資訊。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8427848540066057481">500 x 750 公釐</translation>
@@ -4226,7 +4215,6 @@
 <translation id="8722929331701811374">文具用品 (印頭)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">再試一次</translation>
-<translation id="8725667981218437315">攝影機和麥克風</translation>
 <translation id="8726549941689275341">頁面大小：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全碼</translation>
@@ -4435,7 +4423,6 @@
 <translation id="9119042192571987207">已上傳</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證身分</translation>
 <translation id="912327514020027767">裙子</translation>
-<translation id="912414390325846156">你先前已拒絕將權限授予這個網站</translation>
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
 <translation id="9133861214150761123">會計與稽核</translation>

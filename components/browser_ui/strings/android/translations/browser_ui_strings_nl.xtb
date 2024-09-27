@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
 <translation id="310297983047869047">Vorige dia</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
+<translation id="310979712355504754">Alles verwijderen</translation>
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Informatie bekijken</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="7276071417425470385">Als deze optie aanstaat, kunnen sites vragen of ze virtualreality-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen virtualreality-apparaten gebruiken.</translation>
-<translation id="7284451015630589124">Je hebt sites geblokkeerd voor het gebruik van cookies van derden om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />je trackingbeveiliging te beheren<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Meestal blokkeer je meldingen. Tik op Details om meldingen toe te staan.</translation>
 <translation id="7366415735885268578">Een site toevoegen</translation>
 <translation id="7368695150573390554">Alle offline gegevens worden verwijderd</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7425915948813553151">Donker thema voor sites</translation>
-<translation id="7474522811371247902">Chrome beperkt het gebruik van cookies van derden voor de meeste sites. Cookies van derden zijn wel toegestaan op deze site omdat ze nodig zijn om basisservices te kunnen leveren.\n\nGa naar de instellingen om <ph name="BEGIN_LINK" />je beveiligingsmaatregelen voor het bijhouden van conversies te beheren<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Als deze optie aanstaat, kunnen sites inlogprompts tonen. Staat de optie uit, dan kunnen sites geen inlogprompts tonen.</translation>
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804248752222191302">Een site gebruikt de camera</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
-<translation id="7822573154188733812">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />je trackingbeveiliging te beheren<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Media afspelen</translation>
 <translation id="783819812427904514">Dempen van video opheffen</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8617611086246832542">Als deze optie aanstaat, wordt de desktopweergave van websites getoond. Staat de optie uit, dan wordt de mobiele weergave van websites getoond.</translation>
-<translation id="8649036394979866943">Chrome beperkt het gebruik van cookies van derden voor de meeste sites om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />je trackingbeveiliging te beheren<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Als deze optie aanstaat, kunnen sites vragen of ze je handen mogen volgen. Staat de optie uit, dan kunnen sites je handen niet volgen.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8681886425883659911">Advertenties worden geblokkeerd op sites waarvan bekend is dat ze opdringerige of misleidende advertenties tonen</translation>

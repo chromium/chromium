@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Portokalli</translation>
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
+<translation id="1293272072740285747">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.
+
+Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="TITLE_OF_GROUP" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
 <translation id="1340839264183302272">Largohu nga grupi</translation>
 <translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
 <translation id="1486715732399361704">Mund t'i gjesh të gjitha grupet e skedave këtu</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Vizito sajtin</translation>
+<translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Krijuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Krijuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
+<translation id="5615302411300498438">Mbaje këtë grup për të shtuar skeda më vonë ose largohu.
+
+Nëse largohesh, do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Nuk ka përditësime për skedat</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restauro skedën}other{Restauro skedat}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lidhje nga Chrome}other{<ph name="TABS_COUNT_MANY" /> lidhje nga Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="8631711675211020168">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>
+<translation id="8635399646025169806">Të mbahet grupi i skedave?</translation>
 <translation id="870736955561925754">Të mbyllet skeda dhe të fshihet grupi?</translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8730999928494395583">Aktiviteti yt në këto skeda "të fshehta" do të hiqet nga kjo pajisje</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_MONTHS_ONE" /> muaj më parë}other{Krijuar <ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
+<translation id="8804742093141782941">Mbaje grupin</translation>
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>
 <translation id="8887921976452567404">Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave".</translation>
 <translation id="8915916167043355778">Mbylli të gjitha</translation>

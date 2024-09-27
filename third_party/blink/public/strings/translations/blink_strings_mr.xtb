@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">कॅमेऱ्याला अनुमती आहे</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' चे फॉलो करणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="4718048029184481307">चित्रात-चित्र मध्ये प्ले करत आहे</translation>
-<translation id="4792862212177489858">स्थान शेअर करा</translation>
 <translation id="4812940957355064477">कृपया एक नंबर एंटर करा.</translation>
 <translation id="49269513399674318">मायक्रोफोन वापरा</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> निवडले</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">मूल्य <ph name="MINIMUM" /> पेक्षा मोठे किंवा समान असावे.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">स्थानाला अनुमती आहे</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' मागुन येणारा भाग एंटर करा. '<ph name="INVALIDADDRESS" />' अपूर्ण आहे.</translation>
 <translation id="5334352251556557839">मीडिया प्ले करता आला नाही.</translation>
 <translation id="537648784377940524">आधीची तारीख (<ph name="MIN_DATE_OR_TIME" />) नंतरच्या तारखेपूर्वी (<ph name="MAX_DATE_OR_TIME" />) येणे आवश्यक आहे.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">प्लग-इन लोड करणे शक्य झाले नाही.</translation>
 <translation id="6919891270253167948">१.५</translation>
 <translation id="6989848892321993519">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या 1 वर्ण वापरत आहात).</translation>
-<translation id="7080893216867146095">स्थान शेअर करण्याची अनुमती आहे</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
 <translation id="7134810312945846184">मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="7263440858009898357">कृपया सूचीमधील आयटम निवडा.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">मूल्य <ph name="MINIMUM_TIME" /> आणि <ph name="MAXIMUM_TIME" /> यांच्या मधले असणे आवश्यक आहे.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> फाइल</translation>
 <translation id="8451268428117625855">कृपया एखादी फाइल निवडा.</translation>
+<translation id="8533587060884335451">तंतोतंत स्थान वापरा</translation>
 <translation id="8637593834423658414">१.७५</translation>
 <translation id="8668988909814782445">लाइन रॅप</translation>
 <translation id="8750798805984357768">कृपया या पर्यायांपैकी एक निवडा.</translation>

@@ -44,6 +44,7 @@
 Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne kontoen. Du kan administrere Google-kontoene dine i <ph name="SETTINGS_LINK_BEGIN" />innstillingene<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Laster ned …</translation>
 <translation id="167397405791113306">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
+<translation id="1709772298389099340">Gir overordnet rettighet til <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">For å bidra til å forbedre disse funksjonene sender Chromium informasjon om hvordan du samhandler med dem, til Google. Disse dataene kan bli lest, behandlet og annotert av menneskelige evaluerere.</translation>
 <translation id="1722488837206509557">Dette gjør at du kan velge blant tilgjengelige enheter og vise innhold på dem.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chromium anslår interessene dine basert på den nylige nettleserloggen din.</translation>

@@ -266,6 +266,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> flik}other{Se <ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="2297822946037605517">Dela den här sidan</translation>
 <translation id="22981027763501686">Synkronisera för att få dina bokmärken, din historik och mer på dina andra enheter</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
@@ -1302,6 +1303,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="696447261358045621">Inaktivera inkognitoläge</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> flik med ny aktivitet i delade flikgrupper}other{Se <ph name="TABS_COUNT_MANY" /> flikar med ny aktivitet i delade flikgrupper}}</translation>
 <translation id="6971862865055170158">Godkänn inte</translation>
 <translation id="6978717888677691380">Webbplatser du har blockerat</translation>
 <translation id="6979737339423435258">Sedan start</translation>
@@ -1517,6 +1519,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7896724475402191389">Innehåll för unga – inaktiverat</translation>
 <translation id="7903184275147100332">Det här kan ta någon minut</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 har blockerats av organisationen}other{# har blockerats av organisationen}}</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
 <translation id="7926975587469166629">Kortets namn</translation>

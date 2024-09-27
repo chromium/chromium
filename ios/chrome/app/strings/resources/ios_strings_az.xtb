@@ -301,7 +301,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2377336083033403521">Tabları axtarın…</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
-<translation id="2387703759148866940">Parolları avtomatik doldurun</translation>
 <translation id="2390457533592708044">Gizlədin: "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Bağlamanı çatdırmaq mümkün deyil</translation>
 <translation id="2410754283952462441">Hesab seçin</translation>
@@ -606,6 +605,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3982893814825393515">Problem haqqında bildirin…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> kimi daxil olunub. Hesab menyusunu açın.</translation>
+<translation id="3986739045730058129">Taba keçin</translation>
 <translation id="3987993985790029246">Linki kopyalayın</translation>
 <translation id="3992684624889376114">Bu səhifə haqqında</translation>
 <translation id="3994422733891749358">Qəbul etmək istədiyiniz bildirişləri seçin</translation>
@@ -759,6 +759,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4699172675775169585">Keşlənmiş şəkillər və fayllar</translation>
 <translation id="4717844083556844785">Hazırkı veb-səhifə Anonim rejimdədir</translation>
 <translation id="4719927025381752090">Tərcümə təklif edin</translation>
+<translation id="4720530280568305198">Seçiminiz yeni tabda açıldı</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4742407542027196863">Parolları idarə edin...</translation>
 <translation id="4742897645503301228">Qiymətin izlənməsini gizlədin</translation>
@@ -1417,7 +1418,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7730973429297233609"><ph name="FILENAME" /> faylını (<ph name="FILESIZE" />) yadda saxlamaq üçün istifadə ediləcək hesabı seçin</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Yalnız bu cihazda.</translation>
 <translation id="7744192722284567281">Verilənlərin təhlükəsizliyinin pozulması halı aşkarlanıb</translation>
-<translation id="7746165521091043703">Parolların avtomatik doldurulması ayarlarını açın</translation>
 <translation id="7749790401023484470">Mətn seçməmisiniz.</translation>
 <translation id="7757015014239760147">İstifadəçi adı yoxdur ••••••••</translation>
 <translation id="775755486779745798">Son istifadə ayını (<ph name="MONTH" />) avtomatik doldurun</translation>
@@ -1477,7 +1477,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="7975036700432177008">Cəhd edin</translation>
 <translation id="797588153137233716">Menyu → Tarixçə → Baxış datasını silin</translation>
 <translation id="7977451675950311423">Verilənlərin pozulması nəticəsində ifşa olunan parol istifadə etdikdə xəbərdarlıq edir.</translation>
-<translation id="7978018860671536736">3. Parolların Avtomatik Doldurulmasına toxunun</translation>
 <translation id="797824194429476746">Tablar bu cihazda açıq qalacaq, lakin qrup həmişəlik silinəcək.</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7987685713885608670">Təhlükəsizliyi artırmaq üçün Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin.</translation>

@@ -5223,6 +5223,31 @@ La configurazione del criterio consente di controllare la presentazione dei cont
       Se il criterio viene impostato su false, le informazioni di sistema vengono nascoste forzatamente.
       Se il criterio non viene configurato, ha validità il comportamento predefinito (visualizzato per Canary/canale
       Dev). Gli utenti possono attivare/disattivare la visibilità tramite operazioni specifiche (ad es. Alt + V).</translation>
+<translation id="4946124666877421935">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
+
+      Ogni voce del criterio è un oggetto con un componente obbligatorio:
+      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
+
+      e 6 componenti facoltativi:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione. Se vengono
+      impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e
+      <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo verrà
+      ignorato).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire definitivamente il nome dell'app per tutte le app web e le app web progressive).
+
+      - <ph name="CUSTOM_ICON_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire l'icona delle app installate. Le icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti formati: jpeg, png, gif, webp, ico.
+      Il valore hash deve essere l'hash SHA256 del file dell'icona. L'URL <ph name="URL_LABEL" /> deve essere accessibile senza autenticazione per garantire che l'icona possa essere utilizzata al momento dell'installazione dell'app.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" /> (a partire dalla versione 107 di <ph name="PRODUCT_NAME" />). Se il criterio viene attivato, l'<ph name="URL_LABEL" /> specificato verrà installato come scorciatoia, come se l'azione fosse stata compiuta tramite l'opzione "Crea scorciatoia…" nell'interfaccia utente del browser desktop.
+      Tieni presente che se viene installato come scorciatoia, non verrà aggiornato se il file manifest in <ph name="URL_LABEL" /> cambia.
+      Se il criterio viene disattivato o se non viene configurato, l'app web all'<ph name="URL_LABEL" /> specificato verrà installata normalmente.
+
+      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app nella barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Riavvia all'uscita dell'utente se Android è stato avviato.</translation>
 <translation id="4950447493143157880">Non utilizzare mai il client DNS integrato</translation>
@@ -6728,27 +6753,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6102449843040973938">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="610892566190435199">Attiva i report sullo stato di alimentazione del dispositivo</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
-<translation id="6112524153927257380">Se il criterio viene impostato, gli utenti non potranno aggirare le decisioni relative alla sicurezza dei download.
-
-      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Dannosi, come segnalato dal server di Navigazione sicura
-      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
-      * Un tipo di file pericoloso (ad esempio tutti i download SWF e tanti download EXE)
-
-      Se il criterio viene impostato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
-
-      0: Nessuna limitazione speciale (opzione predefinita).
-
-      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
-
-      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
-
-      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 
@@ -10473,6 +10477,27 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Sui nuovi dispositivi è impostato il fuso orario della costa del Pacifico degli Stati Uniti. Il formato del valore segue quello dei nomi nello IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Se viene inserito un valore non valido, per il criterio viene usato il fuso orario GMT.
 
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
+<translation id="8875202330803089599">Se il criterio viene configurato, gli utenti non potranno bypassare le decisioni relative alla sicurezza dei download.
+
+      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Dannosi, come segnalato dal server di Navigazione sicura
+      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
+      * Un tipo di file pericoloso (ad es. tutti i download SWF e diversi download EXE)
+
+      Se il criterio viene configurato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
+
+      0: Nessuna limitazione speciale. Valore predefinito.
+
+      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
+
+      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi. Opzione consigliata.
+
+      Nota: queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Scarica link…. Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Consente ad alcuni servizi su <ph name="PRODUCT_OS_FLEX_NAME" /> di inviare dati hardware aggiuntivi.
 
 Questi dati hardware vengono utilizzati per migliorare il rendimento generale di <ph name="PRODUCT_OS_FLEX_NAME" />.

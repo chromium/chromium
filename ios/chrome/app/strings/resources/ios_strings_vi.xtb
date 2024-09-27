@@ -301,7 +301,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2377336083033403521">Tìm thẻ…</translation>
 <translation id="2381405137052800939">Thông tin cơ bản</translation>
 <translation id="2386793615875593361">Đã chọn 1</translation>
-<translation id="2387703759148866940">Tự động điền mật khẩu</translation>
 <translation id="2390457533592708044">Ẩn "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Không thể giao gói hàng của bạn</translation>
 <translation id="2410754283952462441">Chọn một tài khoản</translation>
@@ -1419,7 +1418,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="7730973429297233609">Chọn tài khoản bạn muốn dùng để lưu <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Chỉ trên thiết bị này.</translation>
 <translation id="7744192722284567281">Phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
-<translation id="7746165521091043703">Mở chế độ Cài đặt tự động điền mật khẩu</translation>
 <translation id="7749790401023484470">Bạn chưa chọn văn bản nào.</translation>
 <translation id="7757015014239760147">Không có tên người dùng ••••••••</translation>
 <translation id="775755486779745798">Tự động điền tháng hết hạn là <ph name="MONTH" /></translation>
@@ -1442,7 +1440,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="7840771868269352570">Mục đã chọn sẽ bị xóa.</translation>
 <translation id="7841180087127694526">Tìm kiếm văn bản đã sao chép</translation>
 <translation id="7841418003178675048">Chọn những thẻ bạn muốn thấy trên trang thẻ mới.</translation>
-<translation id="7846296061357476882">Dịch vụ của Google</translation>
+<translation id="7846296061357476882">Các dịch vụ của Google</translation>
 <translation id="784934925303690534">Phạm vi thời gian</translation>
 <translation id="7851858861565204677">Thiết bị khác</translation>
 <translation id="7853202427316060426">Hoạt động</translation>
@@ -1479,7 +1477,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="7975036700432177008">Dùng thử</translation>
 <translation id="797588153137233716">Trình đơn → Nhật ký → Xoá dữ liệu duyệt web</translation>
 <translation id="7977451675950311423">Cảnh báo bạn nếu bạn sử dụng mật khẩu đã bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
-<translation id="7978018860671536736">3. Nhấn vào Tự động điền mật khẩu</translation>
 <translation id="797824194429476746">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá vĩnh viễn.</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7987685713885608670">Để tăng mức độ an toàn, hãy mã hoá mật khẩu trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>

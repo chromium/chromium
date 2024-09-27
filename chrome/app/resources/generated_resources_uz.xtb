@@ -250,6 +250,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1174366174291287894">Agar aloqa xavfsiz boʻlmasa, Chrome bu haqida xabar qiladi</translation>
 <translation id="1175131936083782305">Bu funksiya administrator tomonidan faolsizlantirilgan.</translation>
 <translation id="1175364870820465910">&amp;Chop etish...</translation>
+<translation id="1175572348579024023">Aylantirish</translation>
 <translation id="1175914831232945926">Raqamlar</translation>
 <translation id="1176471985365269981">Qurilmangizdagi fayl yoki jildlarni tahrirlash taqiqlangan</translation>
 <translation id="1177073277575830464">Androidni tezkor sozlash tugallandi. Sozlashni <ph name="DEVICE_TYPE" /> qurilmangizda davom ettiring.</translation>
@@ -328,7 +329,9 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1227660082540388410">Kodni tahrirlash</translation>
 <translation id="1227993798763400520">Translatsiya qilib boʻlmadi. Qaytadan urinib koʻring.</translation>
 <translation id="1230417814058465809">Standart himoya yoniq Yanada kuchli himoyalanish uchun kengaytirilgan himoyadan foydalaning.</translation>
+<translation id="1230961867057865279">Sahifa <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="1231426483209637778">Keyingi safar <ph name="DEVICE_TYPE" /> ishlatganingizda tarmoqni eslab qolamiz.</translation>
+<translation id="1231489110997683307">Sahifa <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="1231572247662419826">Saytlar sichqoncha orqali kiritilgan maʼlumotlarni yozib olish va undan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="1232569758102978740">Nomlanmagan</translation>
 <translation id="1233497634904001272">Talabni oxiriga yetkazish uchun elektron kalitdagi tugmacha ustiga bosing.</translation>
@@ -1427,6 +1430,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1997616988432401742">Sertifikatlaringiz</translation>
 <translation id="1998715278591719161">Qoʻllaringiz holatini kuzatishga ruxsat berilgan</translation>
 <translation id="1999115740519098545">Boshlanishda</translation>
+<translation id="1999763610967697511">Tortib tashlash</translation>
 <translation id="2002109485265116295">Real vaqt</translation>
 <translation id="2002160221914907025">Tajribaviy AI</translation>
 <translation id="2003130567827682533">“<ph name="NAME" />” internet paketini faollashtirish uchun, avval Wi-Fi tarmoqqa ulaning</translation>
@@ -2924,6 +2928,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="304644035656848980">Mikrofon namunasi</translation>
 <translation id="3046910703532196514">To‘liq veb-sahifa</translation>
 <translation id="304747341537320566">Nutq sintezatorlari</translation>
+<translation id="3047678109605649715">Qurilmangizda <ph name="LANGUAGE" /> ovozlari mavjud emas. Qurilmada joy boʻshating va qayta urining.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> ishlab chiqargan HID qurilmalar</translation>
 <translation id="3048589239114571785">Ijro (k)</translation>
 <translation id="3048742847101793553">Tekshirilmagani uchun tashkilotingiz bu faylni bloklagan.</translation>
@@ -3484,6 +3489,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3487649228420469005">Tekshiruv yakunlandi</translation>
 <translation id="3488199663160411179">ism</translation>
 <translation id="3490695139702884919">Yuklab olinmoqda... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">PIN kod yoki parolni yoddan chiqarsangiz, mahalliy maʼlumotlarni tiklash mumkin</translation>
 <translation id="3491669675709357988">Farzandingizning hisobi Family Link ota-ona nazorati uchun sozlanmagan. Sozlash tugashi bilan ota-ona nazoratini kirtishingiz mumkin. Ota-ona nazorati haqidagi axborotini “Tanishuv” ilovasi orqali topish mumkin.</translation>
 <translation id="3491678231052507920">Saytlar odatda VR seanslarga kirishingizda virtual reallik qurilmalari va maʼlumotlaridan foydalanadi</translation>
 <translation id="3493043608231401654">Varaqlar guruhidan <ph name="TAB_TITLE" /> sahifasini olib tashlash</translation>
@@ -5373,6 +5379,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4853020600495124913">Yangi oynada &amp;ochish</translation>
 <translation id="4854317507773910281">Ruxsat olish uchun ota-onangiz hisobini tanlang</translation>
 <translation id="485480310608090163">Yana sozlamalar va ruxsatlar</translation>
+<translation id="485806788160414322">Media ijrosi yoki pauza</translation>
 <translation id="4858913220355269194">Futbol</translation>
 <translation id="486213875233855629">Administrator ovozsiz qilgan.</translation>
 <translation id="4862642413395066333">OCSP javoblarini imzolash</translation>
@@ -8543,6 +8550,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7212097698621322584">PIN kodni oʻzgartirish uchun joriy kodni kiriting. PIN kodni bilmasangiz, avval elektron kalit sozlamalarini qayta tiklab, keyingina yangi PIN belgilash mumkin.</translation>
 <translation id="7214047272988222011">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> <ph name="LINK_BEGIN" />Tizim darajasidagi kameraga ruxsat<ph name="LINK_END" /> bering.</translation>
 <translation id="721490496276866468">Parollarni import qilish</translation>
+<translation id="7217208603285112910">Tanlangan matn <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="7219254577985949841">Sayt maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="7219473482981809164">Yuklab olish mumkin bir necha profil topildi. Yuklab olish uchun ulardan birini tanlang.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Hech qaysi parolingiz kuchsiz emas}=1{1 ta kuchsiz parol aniqlandi}other{{NUM_WEAK} ta kuchsiz parol aniqlandi}}</translation>
@@ -10104,6 +10112,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8325413836429495820">Vaqtinchalik xotirani koʻrish taqiqlangan</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat zanjiri</translation>
 <translation id="8327386430364625757">Matematik shrift</translation>
+<translation id="8327490658947427005">Tanlangan matn <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="8327676037044516220">Ruxsatlar va kontent sozlamalari</translation>
 <translation id="8328228852664998535">Davom etsangiz, parollaringiz, kalitlaringiz va boshqa maʼlumotlaringiz <ph name="BRAND" />dan butunlay oʻchirib tashlanadi. Sayt va ilovalar uchun yaratilgan barcha hisoblar saqlanib qoladi.</translation>
 <translation id="8328777765163860529">Hammasini yopish</translation>

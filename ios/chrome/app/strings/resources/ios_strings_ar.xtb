@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">البحث في علامات التبويب…</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
-<translation id="2387703759148866940">الملء التلقائي لكلمات المرور</translation>
 <translation id="2390457533592708044">إخفاء "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">يتعذَّر تسليم الطرد.</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
@@ -1419,7 +1418,6 @@
 <translation id="7730973429297233609">حدِّد الحساب الذي تريد استخدامه لحفظ <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771">حفظ الإشارة المرجعية باسم "<ph name="BOOKMRK_NAME" />" على هذا الجهاز فقط</translation>
 <translation id="7744192722284567281">تم العثور عليها في عملية اختراق البيانات.</translation>
-<translation id="7746165521091043703">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
 <translation id="7749790401023484470">لم يتم تحديد أي نص.</translation>
 <translation id="7757015014239760147">بلا اسم مستخدم ••••••••</translation>
 <translation id="775755486779745798">الملء التلقائي لشهر انتهاء الصلاحية <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@
 <translation id="7975036700432177008">تجربة</translation>
 <translation id="797588153137233716">"القائمة" ← "السجلّ" ← "حذف بيانات التصفّح"</translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
-<translation id="7978018860671536736">‏3. النقر على AutoFill Passwords (الملء التلقائي لكلمات المرور)</translation>
 <translation id="797824194429476746">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7987685713885608670">‏لتوفير مزيد من الأمان، يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>

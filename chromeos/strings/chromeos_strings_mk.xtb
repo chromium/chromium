@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5784136236926853061">Висока латенција на HTTP</translation>
 <translation id="5790391387506209808">лапис лазули</translation>
-<translation id="5810692306010756935">Дипломирање</translation>
 <translation id="5816802250591013230">Не е назначена кратенка</translation>
 <translation id="5826644637650799838">За уметноста</translation>
 <translation id="5832805196449965646">Додај лице</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">За да започнете, ставете го документот на скенерот</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6965978654500191972">Уред</translation>
+<translation id="6972754398087986839">Започни</translation>
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> со сјајна <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">коали</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">Тестот успеа</translation>
 <translation id="8882789155418924367">бувови</translation>
 <translation id="8892443466059986410">Откажи го изменувањето кратенка</translation>
+<translation id="8897043028305808902">Датотеката е преименувана</translation>
 <translation id="8898840733695078011">Јачина на сигнал</translation>
 <translation id="8909114361904403025">стрелка нагоре</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>

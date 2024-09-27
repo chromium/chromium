@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3109724472072898302">Skjult</translation>
+<translation id="310979712355504754">Slet alle</translation>
 <translation id="3114012059975132928">Videoafspiller</translation>
 <translation id="3115898365077584848">Vis info</translation>
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
-<translation id="7284451015630589124">Du har blokeret websites, så de ikke kan bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7368695150573390554">Alle offlinedata slettes</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>
-<translation id="7474522811371247902">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester.\n\nGå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Når dette er slået til, kan websites vise loginmeddelelser. Når dette er slået fra, kan websites ikke vise loginmeddelelser.</translation>
 <translation id="7554752735887601236">Et website anvender din mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
 <translation id="7807060072011926525">Leveret af Google</translation>
-<translation id="7822573154188733812">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du bruger internettet. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Afspilning af medier</translation>
 <translation id="783819812427904514">Slå lyden i videoen til</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8617611086246832542">Når dette er slået til, anvendes computervenlig visning af websites. Når dette er slået fra, anvendes mobilvenlig visning af websites.</translation>
-<translation id="8649036394979866943">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Når dette er aktiveret, kan websites anmode om tilladelse til at registrere dine hænder. Når dette er deaktiveret, kan websites ikke registrere dine hænder.</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>

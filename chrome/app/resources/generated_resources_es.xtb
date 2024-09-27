@@ -250,6 +250,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1174366174291287894">Tu conexión siempre es segura a menos que Chrome te indique lo contrario</translation>
 <translation id="1175131936083782305">Tu administrador ha inhabilitado esta función.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
+<translation id="1175572348579024023">Desplazarse</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1176471985365269981">No tienen permiso para editar archivos ni carpetas en tu dispositivo</translation>
 <translation id="1177073277575830464">Se ha completado la configuración rápida de Android. Continúa con la configuración en tu <ph name="DEVICE_TYPE" />.</translation>
@@ -1428,6 +1429,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1998715278591719161">Con permiso para monitorizar tus manos</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
+<translation id="1999763610967697511">Arrastrar y soltar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", conéctate a una red Wi‑Fi</translation>
@@ -3485,6 +3487,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3487649228420469005">Se ha completado el análisis</translation>
 <translation id="3488199663160411179">nombre</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Los datos locales se pueden restaurar si olvidas tu PIN o contraseña</translation>
 <translation id="3491669675709357988">La cuenta de tu hijo/a no está configurada para el control parental de Family Link. Podrás añadir el control parental cuando termines la configuración. Encontrarás información sobre el control parental en la aplicación Explorar.</translation>
 <translation id="3491678231052507920">Los sitios suelen utilizar tus datos y dispositivos de realidad virtual para permitirte acceder a sesiones de realidad virtual.</translation>
 <translation id="3493043608231401654">Quitar <ph name="TAB_TITLE" /> del grupo de pestañas</translation>
@@ -4162,6 +4165,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Esta pestaña está reproduciendo audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
+<translation id="3948985214866944547">La mayoría de los usuarios bloquean la opción de compartir ubicación precisa en este sitio</translation>
 <translation id="394984172568887996">Importado desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar archivos de forma más segura</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
@@ -5372,6 +5376,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige una cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más ajustes y permisos</translation>
+<translation id="485806788160414322">Reproducir o pausar el contenido multimedia</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="486213875233855629">Silenciado por tu administrador</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
@@ -9023,6 +9028,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7566118625369982896">Gestionar enlaces de aplicaciones de Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Crear combinación de teclas</translation>
+<translation id="7568759527730933493">Usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Esta opción usa un proveedor de servicios gestionados en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Algunos dominios que ha configurado tu administrador no usan conexiones seguras.</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">Actualización</translation>
 <translation id="7569983096843329377">Negro</translation>
@@ -9185,6 +9191,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7676867886086876795">Envía tu voz a Google para utilizar el dictado en cualquier campo de texto.</translation>
 <translation id="7678588695732963732">¿Restablecer todos los permisos del dispositivo USB?</translation>
 <translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras gestionadas.</translation>
+<translation id="7679895819123160382">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Algunos dominios que ha configurado tu administrador no usan conexiones seguras.</translation>
 <translation id="7680416688940118410">Calibración de pantalla táctil</translation>
 <translation id="7681095912841365527">El sitio web puede usar el Bluetooth</translation>
 <translation id="7681597159868843240">Los sitios suelen usar los sensores de movimiento del dispositivo en funciones como la realidad virtual o el seguimiento de actividad física</translation>
@@ -9583,6 +9590,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
+<translation id="7956918070009672177">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
 <translation id="7958157896921135832">Aumentar el tamaño de fuente</translation>
 <translation id="7958828865373988933">Si quieres crear una llave de acceso para <ph name="APP_NAME" /> en una llave de seguridad USB, insértala y tócala ahora</translation>

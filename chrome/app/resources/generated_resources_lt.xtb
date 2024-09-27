@@ -250,6 +250,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1174366174291287894">Jūsų ryšys visada saugus, nebent „Chrome“ nurodo kitaip</translation>
 <translation id="1175131936083782305">Administratorius išjungė šią funkciją.</translation>
 <translation id="1175364870820465910">&amp;Spausdinti...</translation>
+<translation id="1175572348579024023">Slinkti</translation>
 <translation id="1175914831232945926">Skaitmenys</translation>
 <translation id="1176471985365269981">Neleidžiama įrenginyje redaguoti failų ar aplankų</translation>
 <translation id="1177073277575830464">„Android“ sparčioji sąranka atlikta. Tęskite sąranką „<ph name="DEVICE_TYPE" />“ įrenginyje.</translation>
@@ -1441,6 +1442,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1997616988432401742">Jūsų sertifikatai</translation>
 <translation id="1998715278591719161">Leidžiama stebėti rankas</translation>
 <translation id="1999115740519098545">Paleidžiant</translation>
+<translation id="1999763610967697511">Nuvilkti</translation>
 <translation id="2002109485265116295">Realusis laikas</translation>
 <translation id="2002160221914907025">Eksperimentinis DI</translation>
 <translation id="2003130567827682533">Norėdami suaktyvinti „<ph name="NAME" />“ duomenis, pirmiausia prisijunkite prie „Wi-Fi“ tinklo</translation>
@@ -5391,6 +5393,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4853020600495124913">Atidaryti &amp;naujame lange</translation>
 <translation id="4854317507773910281">Pasirinkite vieno iš tėvų paskyrą norėdami patvirtinti</translation>
 <translation id="485480310608090163">Daugiau nustatymų ir leidimų</translation>
+<translation id="485806788160414322">Paleisti arba pristabdyti mediją</translation>
 <translation id="4858913220355269194">Šemberas</translation>
 <translation id="486213875233855629">Nutildė administratorius</translation>
 <translation id="4862642413395066333">OCSP atsakų pasirašymas</translation>

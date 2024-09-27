@@ -46,6 +46,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />Settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="167397405791113306">Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google account.</translation>
+<translation id="1709772298389099340">Provides elevated privileges for <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">To help improve these features, Chromium sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>
 <translation id="17264556997921157">You can see and remove topics of interest that sites use to show you ads. Chromium estimates your interests based on your recent browsing history.</translation>

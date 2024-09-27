@@ -250,6 +250,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174366174291287894">Tengingin þín er alltaf örugg nema Chrome taki annað fram</translation>
 <translation id="1175131936083782305">Stjórnandinn slökkti á þessum eiginleika.</translation>
 <translation id="1175364870820465910">&amp;Prenta...</translation>
+<translation id="1175572348579024023">Fletta</translation>
 <translation id="1175914831232945926">Tölustafi</translation>
 <translation id="1176471985365269981">Mega ekki breyta skrám og möppum í tækinu</translation>
 <translation id="1177073277575830464">Snöggri uppsetningu Android er lokið. Haltu uppsetningunni áfram í <ph name="DEVICE_TYPE" />.</translation>
@@ -1439,6 +1440,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1997616988432401742">Vottorðin þín</translation>
 <translation id="1998715278591719161">Leyfilegt að rekja handahreyfingar</translation>
 <translation id="1999115740519098545">Við ræsingu</translation>
+<translation id="1999763610967697511">Draga og sleppa</translation>
 <translation id="2002109485265116295">Rauntími</translation>
 <translation id="2002160221914907025">Gervigreind á tilraunastigi</translation>
 <translation id="2003130567827682533">Þú þarft að byrja á því að tengjast Wi-Fi neti til að virkja gögn <ph name="NAME" /></translation>
@@ -2936,6 +2938,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="304644035656848980">Forathugun á hljóðnemanum</translation>
 <translation id="3046910703532196514">Vefsíða, í heild</translation>
 <translation id="304747341537320566">Talgervlar</translation>
+<translation id="3047678109605649715">Það eru engar raddir á tungumálinu <ph name="LANGUAGE" /> í tækinu þínu. Losaðu um pláss í tækinu og reyndu aftur.</translation>
 <translation id="3048336643003835855">HID-tæki frá söluaðila <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spila (k)</translation>
 <translation id="3048742847101793553">Fyrirtækið þitt lokaði á þessa skrá því skönnun mistókst.</translation>
@@ -3498,6 +3501,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3487649228420469005">Leit er lokið</translation>
 <translation id="3488199663160411179">nafninu þínu</translation>
 <translation id="3490695139702884919">Sækir... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Hægt er að endurheimta staðbundin gögn ef þú gleymir PIN-númerinu þínu eða aðgangsorði</translation>
 <translation id="3491669675709357988">Reikningur barnsins þíns er ekki settur upp fyrir barnalæsingu Family Link. Þú getur bætt við barnalæsingum þegar uppsetningu er lokið. Þú finnur upplýsingar um barnalæsingar í forritinu Kanna.</translation>
 <translation id="3491678231052507920">Vefsvæði nota yfirleitt sýndarveruleikatækin þín og -gögnin til að þú getir opnað VR-lotur</translation>
 <translation id="3493043608231401654">Fjarlægja <ph name="TAB_TITLE" /> úr þessum flipahópi</translation>
@@ -5388,6 +5392,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4853020600495124913">Opna í &amp;nýjum glugga</translation>
 <translation id="4854317507773910281">Veldu reikning foreldris sem á að samþykkja</translation>
 <translation id="485480310608090163">Fleiri stillingar og heimildir</translation>
+<translation id="485806788160414322">Spila eða gera hlé á efni</translation>
 <translation id="4858913220355269194">Falur</translation>
 <translation id="486213875233855629">Stjórnandi slökkti á hljóði</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>

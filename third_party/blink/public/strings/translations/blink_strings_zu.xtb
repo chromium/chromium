@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Ikhamera ivunyelwe</translation>
 <translation id="4664250907885839816">Ingxenye elandelai-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Idlala kusithombe esiphakathi kwesithombe</translation>
-<translation id="4792862212177489858">Yabelana ngendawo</translation>
 <translation id="4812940957355064477">Sicela ufake inombolo.</translation>
 <translation id="49269513399674318">Sebenzisa imakrofoni</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> okukhethiwe</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Inani kumele libe likhulu noma lilingane nokungu-<ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Indawo ivunyelwe</translation>
 <translation id="5307600278924710095">Sicela ufake ingxenye elandelwa yi-'<ph name="ATSIGN" />'. I-'<ph name="INVALIDADDRESS" />' ayiphelele.</translation>
 <translation id="5334352251556557839">Ayikwazi ukudlala imidiya.</translation>
 <translation id="537648784377940524">Idethi encane (<ph name="MIN_DATE_OR_TIME" />) kumele ifike ngaphambi kwedethi enkulu (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ayikwazanga ukulayisha i-plug-in.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa uhlamvu olungu1.</translation>
-<translation id="7080893216867146095">Ukwabelana ngendawo kuvunyelwe</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
 <translation id="7134810312945846184">Sebenzisa imakrofoni nekhamera</translation>
 <translation id="7263440858009898357">Sicela ukhethe into kuhlu.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Inani kumele libe phakathi kokungu-<ph name="MINIMUM_TIME" /> nokungu-<ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> amafayela</translation>
 <translation id="8451268428117625855">Sicela ukhethe ifayela.</translation>
+<translation id="8533587060884335451">Sebenzisa indawo eqondile</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Ukugoqwa kolayini</translation>
 <translation id="8750798805984357768">Sicela ukhethe eyodwa yalezi zinketho.</translation>

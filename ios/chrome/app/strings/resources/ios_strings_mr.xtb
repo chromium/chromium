@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">टॅब शोधा…</translation>
 <translation id="2381405137052800939">मूलतत्त्वे</translation>
 <translation id="2386793615875593361">1 निवडले</translation>
-<translation id="2387703759148866940">पासवर्ड ऑटोफिल करा</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" लपवा</translation>
 <translation id="2403129868389095715">तुमचे पॅकेज डिलिव्हर केले जाऊ शकत नाही</translation>
 <translation id="2410754283952462441">एक खाते निवडा</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3982893814825393515">समस्येची तक्रार करा…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे. खाते मेनू उघडा.</translation>
+<translation id="3986739045730058129">टॅबवर जा</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
 <translation id="3992684624889376114">या पेजबद्दल</translation>
 <translation id="3994422733891749358">तुम्हाला मिळवायच्या असलेल्या सूचना निवडा</translation>
@@ -759,6 +759,7 @@
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
 <translation id="4717844083556844785">सद्य वेबपेज गुप्त मोडमध्ये उघडले आहे</translation>
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
+<translation id="4720530280568305198">तुमची निवड नवीन टॅबमध्ये उघडली आहे</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4742407542027196863">पासवर्ड व्यवस्थापित करा…</translation>
 <translation id="4742897645503301228">किमतीचा माग ठेवा हे लपवा</translation>
@@ -1418,7 +1419,6 @@
 <translation id="7730973429297233609">तुम्हाला <ph name="FILENAME" /> - <ph name="FILESIZE" /> सेव्ह करण्यासाठी वापरायचे असलेले खाते निवडा</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. फक्त या डिव्हाइसवर.</translation>
 <translation id="7744192722284567281">डेटा भंग करत असल्याचे आढळले</translation>
-<translation id="7746165521091043703">ऑटोफिल पासवर्ड सेटिंग्ज उघडा</translation>
 <translation id="7749790401023484470">तुम्ही कोणताही मजकूर निवडला नाही.</translation>
 <translation id="7757015014239760147">वापरकर्ता नाव नाही ••••••••</translation>
 <translation id="775755486779745798">एक्स्पायरीचा महिना <ph name="MONTH" /> ऑटोफिल करा</translation>
@@ -1478,7 +1478,6 @@
 <translation id="7975036700432177008">वापरुन पहा</translation>
 <translation id="797588153137233716">मेनू → इतिहास → ब्राउझिंग डेटा हटवा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
-<translation id="7978018860671536736">३. AutoFill पासवर्ड वर टॅप करा</translation>
 <translation id="797824194429476746">या डिव्हाइसवर टॅब उघडे राहतील, पण गट कायमचा हटवला जाईल.</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7987685713885608670">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट करा.</translation>

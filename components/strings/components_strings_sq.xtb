@@ -379,6 +379,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1658111267661135323">Televizor dhe video</translation>
 <translation id="1658918301167915956">Pajisjet me Bluetooth</translation>
 <translation id="1662550410081243962">Ruaj dhe plotëso mënyrat e pagesës</translation>
+<translation id="1662980953334786797">Rendi i njëjtë</translation>
 <translation id="1663943134801823270">Kartat dhe adresat janë nga Chrome. Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolimer fleksografik</translation>
 <translation id="166624440456221306">Fshi tabelën e krahasimit</translation>
@@ -1324,7 +1325,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="342781501876943858">Chromium rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
 <translation id="3428789896412418755">Historiku i grupimit</translation>
-<translation id="3430206873883193118">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh softuer ose të zbulosh gjëra të tilla si fjalëkalimin, numrin e telefonit ose të kartës së kreditit. Chrome rekomandon shumë të kthehesh aty ku je i sigurt. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Mbyll faqen</translation>
 <translation id="3433111389595862568">Softuer bashkëpunimi dhe konferencash</translation>
 <translation id="3433144818443565002">Biseda zanore dhe me video</translation>
@@ -1342,7 +1342,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Mund të kërkojë të kontrollojë dhe riprogramojë pajisjet e tua MIDI</translation>
-<translation id="3451429106322189478">"<ph name="PERMISSION" />" është lejuar</translation>
 <translation id="3452404311384756672">Intervali i marrjes:</translation>
 <translation id="3453962258458347894">Numri i ripërpjekjeve</translation>
 <translation id="3457781733462096492">Muzika rap dhe hip-hop</translation>
@@ -1659,6 +1658,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
 <translation id="4025325634010721551">Politikat u ringarkuan</translation>
 <translation id="4025338605225449265">Monedhat dhe këmbimi valutor</translation>
+<translation id="4025777154208238692">Rendi i kundërt</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Sulmuesit mund të shikojnë dhe të ndryshojnë<ph name="END_STRONG" /> informacionet që dërgon ose merr nga sajti.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Është më e sigurt që ta vizitosh këtë sajt më vonë<ph name="END_STRONG" /> nëse po përdor një rrjet publik. Ka më pak rrezik nga një rrjet i besuar, si p.sh. rrjeti Wi-Fi i shtëpisë ose i punës.
@@ -2568,7 +2568,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="569000877158168851">Vlera e DnsOverHttpsTemplates nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse politika DnsOverHttpsMode është caktuar te <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ose <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Karta e ruajtur u hap në lartësi të plotë.</translation>
-<translation id="5692655638459249302">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të instalojnë softuer të dëmshëm që vjedh ose fshin gjëra të tilla si fjalëkalimi, fotografitë, mesazhet ose numri i kartës së kreditit. Chrome rekomandon shumë të kthehesh aty ku je i sigurt. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Dëshiron të përdorësh Windows Hello për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="5699628521141772782">Bulmet dhe vezë</translation>
 <translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
@@ -2716,7 +2715,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5995727681868049093">Menaxho informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
 <translation id="5996255674476750320">Shfaqje me automjete</translation>
 <translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
-<translation id="5999271311987646952">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google", që <ph name="BEGIN_LINK" />së fundi gjeti softuer keqdashës<ph name="END_LINK" /> në sajtin që po përpiqesh të vizitosh.</translation>
 <translation id="6000528814684428358">Muzikë hard rok dhe progresive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">Fillojmë</translation>
@@ -2880,7 +2878,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6284449872909111707">Mesazhe me tekst dhe të çastit</translation>
 <translation id="6284517535531159884">Lloji i burimit të varianteve</translation>
 <translation id="6287197303017372967">Merr udhëzime për te destinacioni yt me informacione kthesë pas kthese duke përdorur veçorinë e navigimit.</translation>
-<translation id="6288521565586608304">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton. Chrome rekomandon shumë të kthehesh aty ku je i sigurt për të shmangur dëmtimet. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">U gjet një zbritje çmimi</translation>
 <translation id="6289939620939689042">Ngjyra e faqes</translation>
 <translation id="6292819926564202163">Motori yt i kërkimit në Chrome</translation>
@@ -3074,7 +3071,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Edukim në shkencë kompjuterike</translation>
 <translation id="6633476656216409494">Softuerë biznesi dhe produktiviteti</translation>
-<translation id="6638353438328951386">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google", që së fundi <ph name="BEGIN_LINK" />gjeti softuer të dëmshëm<ph name="END_LINK" /> në sajtin që po përpiqesh të vizitosh.</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6645291930348198241">Të ketë qasje te kukit dhe të dhënat e sajtit.</translation>
 <translation id="6645478838938543427">Sinjalizimet për uljet e çmimeve do të dërgohen te <ph name="EMAIL_ADDRESS" /></translation>
@@ -3288,7 +3284,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="701757816833614688">Edukim për artet pamore dhe dizajnin</translation>
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7023162328967545559">Paralajmërim nga administratori</translation>
-<translation id="7024932305105294144">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google", që <ph name="BEGIN_LINK" />së fundi gjeti mashtrim<ph name="END_LINK" /> në sajtin që po përpiqesh të vizitosh. Sajtet mashtruese pretendojnë se janë sajte të tjera për të të mashtruar.<ph name="NEW_LINE" />Edhe sajtet që janë zakonisht të sigurta, ndonjëherë kompromentohen nga sulmuesit. <ph name="BEGIN_ERROR_LINK" />Na njofto<ph name="END_ERROR_LINK" /> nëse mendon se ka ndodhur një gabim dhe se ky sajt nuk përbën rrezik.</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030164307377592766">të modifikojë cilësimet për plotësimin e mënyrave të pagesave</translation>
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>
@@ -3365,7 +3360,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" nuk është një kufizim i mbështetur në këtë platformë</translation>
 <translation id="717330890047184534">ID-ja e Gaia:</translation>
 <translation id="7173338713290252554">Historiku i çmimeve nëpër ueb</translation>
-<translation id="7173478186876671324">Administratori yt ka bllokuar "<ph name="PERMISSION" />" për këtë sajt</translation>
 <translation id="7174545416324379297">E shkrirë</translation>
 <translation id="7175097078723125014">Është zgjedhur opsioni i redaktimit të adresës</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
@@ -3399,7 +3393,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7221857374443660083">Banka jote dëshiron të sigurohet që je ti</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
 <translation id="7227293336683593977">Historiku i çmimeve</translation>
-<translation id="7227747683324411744">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton.</translation>
 <translation id="7232352818707016189">Më shumë veprime për "Krahaso tavolinën"</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
 <translation id="7234112195906418665">Udhëtimi dhe transporti</translation>
@@ -3620,7 +3613,6 @@ Detaje shtesë:
 <translation id="7598391785903975535">Më pak se <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> nuk mund ta administrojë këtë kërkesë aktualisht.</translation>
 <translation id="7599089013883397081">Koha e shkarkimit skadoi</translation>
-<translation id="7605377493722372900">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të instalojnë softuer të dëmshëm që vjedh ose fshin gjëra të tilla si fjalëkalimi, fotografitë, mesazhet ose numri i kartës së kreditit.</translation>
 <translation id="7608583484192556132">Nëse një reklamë që shikon është e personalizuar, kjo mund të varet nga shumë gjëra, duke përfshirë këtë cilësim, <ph name="BEGIN_LINK_1" />reklamat e sugjeruara nga sajtet<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e kukive<ph name="END_LINK_2" /> dhe nëse sajti që po shikon i personalizon reklamat. Mëso më shumë rreth <ph name="BEGIN_LINK_3" />menaxhimit të privatësisë së reklamave<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vlera është jashtë gamës <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Data e skadimit: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4073,7 +4065,6 @@ Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofoni lejohet këtë herë</translation>
 <translation id="8421158157346464398">Informacionet e profilit të punës (si p.sh. emri i përdoruesit i profilit të punës)</translation>
-<translation id="8422228580902424274">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh softuer ose të zbulosh gjëra të tilla si fjalëkalimin, numrin e telefonit ose të kartës së kreditit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ndrysho</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4224,7 +4215,6 @@ Detaje shtesë:
 <translation id="8722929331701811374">Kancelari (letër me kokë)</translation>
 <translation id="8724824364712796726">Zarf B6</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
-<translation id="8725667981218437315">Kamera dhe mikrofoni</translation>
 <translation id="8726549941689275341">Madhësia e faqes:</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
@@ -4433,7 +4423,6 @@ Detaje shtesë:
 <translation id="9119042192571987207">Ngarkuar</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> kërkon të verifikojë që je ti</translation>
 <translation id="912327514020027767">Funde</translation>
-<translation id="912414390325846156">Ke zgjedhur më parë që të mos e lejosh për këtë sajt</translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9131119348384879525">Të regjistrohet përmbajtja konfidenciale?</translation>
 <translation id="9133861214150761123">Kontabilitet dhe auditim</translation>

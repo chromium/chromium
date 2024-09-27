@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться</translation>
 <translation id="2286841657746966508">Розрахункова адреса</translation>
 <translation id="228704530595896923">Список параметрів спільного доступу.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Переглянути <ph name="TABS_COUNT_ONE" /> вкладку}one{Переглянути <ph name="TABS_COUNT_MANY" /> вкладку}few{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки}many{Переглянути <ph name="TABS_COUNT_MANY" /> вкладок}other{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2297822946037605517">Поділитися цією сторінкою</translation>
 <translation id="22981027763501686">Увімкніть синхронізацію, щоб переглядати закладки, історію тощо на інших пристроях</translation>
 <translation id="230115972905494466">Сумісних пристроїв не знайдено</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Зараз вибрано: <ph name="NAME" /> (<ph name="EMAIL" />). Виберіть обліковий запис.</translation>
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Переглянути <ph name="TABS_COUNT_ONE" /> вкладку з новими діями в спільних групах}one{Переглянути <ph name="TABS_COUNT_MANY" /> вкладку з новими діями в спільних групах}few{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки з новими діями в спільних групах}many{Переглянути <ph name="TABS_COUNT_MANY" /> вкладок із новими діями в спільних групах}other{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки з новими діями в спільних групах}}</translation>
 <translation id="6971862865055170158">Не схвалювати</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979737339423435258">Увесь час</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Контент для дітей – вимкнено</translation>
 <translation id="7903184275147100332">Це може тривати хвилину</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 завантаження заблоковано вашою організацією}one{# завантаження заблоковано вашою організацією}few{# завантаження заблоковано вашою організацією}many{# завантажень заблоковано вашою організацією}other{# завантаження заблоковано вашою організацією}}</translation>
 <translation id="7914399737746719723">Додаток установлено</translation>
 <translation id="7919123827536834358">Перекладати ці мови автоматично</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>

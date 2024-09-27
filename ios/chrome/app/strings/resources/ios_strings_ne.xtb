@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="2381405137052800939">आधारभूत</translation>
 <translation id="2386793615875593361">1 चयन गरियो</translation>
-<translation id="2387703759148866940">पासवर्डहरू स्वतः भर्नुहोस्</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" लुकाउनुहोस्</translation>
 <translation id="2403129868389095715">तपाईंको प्याकेज डेलिभर गर्न मिल्दैन</translation>
 <translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3982893814825393515">समस्याका बारेमा रिपोर्ट गर्नुहोस्…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> का रूपमा साइन इन गरिएको छ। खाताको मेनु खोल्नुहोस्।</translation>
+<translation id="3986739045730058129">ट्याबमा जानुहोस्</translation>
 <translation id="3987993985790029246">लिंक कपी गर्नुहोस्</translation>
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
 <translation id="3994422733891749358">आफूले प्राप्त गर्न चाहेका सूचनाहरू छनौट गर्नुहोस्</translation>
@@ -759,6 +759,7 @@
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4717844083556844785">हालको वेबपेज इन्कोग्निटो मोडमा खुलेको छ</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
+<translation id="4720530280568305198">तपाईंले चयन गर्नुभएको मेनु नयाँ ट्याबमा खोलिएको छ</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="4742897645503301228">"मूल्य ट्र्याक गर्नुहोस्" लुकाउनुहोस्</translation>
@@ -1417,7 +1418,6 @@
 <translation id="7730973429297233609">तपाईं <ph name="FILENAME" /> - <ph name="FILESIZE" /> जुन खातामा सेभ गर्न चाहनुहुन्छ त्यो खाता चयन गर्नुहोस्</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। यो डिभाइसमा मात्र।</translation>
 <translation id="7744192722284567281">डेटा चोरीको घटनामा फेला परेको</translation>
-<translation id="7746165521091043703">पासवर्ड स्वतः भर्ने सुविधासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="7749790401023484470">तपाईंले कुनै पनि टेक्स्ट चयन गर्नुभएको छैन।</translation>
 <translation id="7757015014239760147">कुनै पनि युजरनेम छैन ••••••••</translation>
 <translation id="775755486779745798">म्याद सकिने महिना (<ph name="MONTH" />) स्वतः भर्नुहोस्</translation>
@@ -1477,7 +1477,6 @@
 <translation id="7975036700432177008">प्रयास गर्नुहोस्</translation>
 <translation id="797588153137233716">मेनु → हिस्ट्री → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
-<translation id="7978018860671536736">३. "पासवर्ड स्वतः भरियोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="797824194429476746">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर यो समूह भने सदाका लागि मेटाइने छ।</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7987685713885608670">आफ्ना पासवर्डहरू अझ सुरक्षित राख्नका निम्ति ती पासवर्डहरू आफ्नो डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गर्नुहोस्।</translation>

@@ -250,6 +250,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1174366174291287894">Conexiunea este întotdeauna sigură dacă Chrome nu anunță contrariul</translation>
 <translation id="1175131936083782305">Administratorul a dezactivat această funcție.</translation>
 <translation id="1175364870820465910">&amp;Printează...</translation>
+<translation id="1175572348579024023">Derulează</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Nu au permisiunea de a modifica fișiere sau dosare de pe dispozitiv</translation>
 <translation id="1177073277575830464">Configurarea rapidă pe Android s-a finalizat. Continuă configurarea pe <ph name="DEVICE_TYPE" />.</translation>
@@ -1429,6 +1430,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1997616988432401742">Certificatele tale</translation>
 <translation id="1998715278591719161">Au permisiunea de a-ți urmări mâinile</translation>
 <translation id="1999115740519098545">La pornire</translation>
+<translation id="1999763610967697511">Trage și plasează</translation>
 <translation id="2002109485265116295">În timp real</translation>
 <translation id="2002160221914907025">AI experimental</translation>
 <translation id="2003130567827682533">Pentru a activa datele „<ph name="NAME" />”, conectează-te mai întâi la o rețea Wi-Fi.</translation>
@@ -3484,6 +3486,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3487649228420469005">Scanarea s-a finalizat</translation>
 <translation id="3488199663160411179">nume</translation>
 <translation id="3490695139702884919">Se descarcă… <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Datele locale pot fi restabilite dacă uiți codul PIN sau parola</translation>
 <translation id="3491669675709357988">Contul copilului nu este configurat pentru control parental din Family Link. După ce finalizezi configurarea, poți adăuga opțiuni de control parental. Vei găsi informații despre controlul parental în aplicația Explorare.</translation>
 <translation id="3491678231052507920">Site-urile folosesc de obicei dispozitivele de realitate virtuală și datele conexe pentru a-ți permite accesul la sesiuni RV</translation>
 <translation id="3493043608231401654">Elimină <ph name="TAB_TITLE" /> din grupul de file</translation>
@@ -5373,6 +5376,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4853020600495124913">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
 <translation id="485480310608090163">Mai multe setări și permisiuni</translation>
+<translation id="485806788160414322">Redă sau întrerupe conținutul media</translation>
 <translation id="4858913220355269194">Jucător</translation>
 <translation id="486213875233855629">Sunet dezactivat de administrator</translation>
 <translation id="4862642413395066333">Semnarea răspunsurilor OCSP</translation>

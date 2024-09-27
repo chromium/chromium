@@ -41,6 +41,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
+<translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę, zmieniono <ph name="ANY_CHANGED" />, zamknięto <ph name="ANY_CLOSED" />}few{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />, zamknięto <ph name="ANY_CLOSED" />}many{Dodano <ph name="MANY_ADDED" /> kart, zmieniono <ph name="ANY_CHANGED" />, zamknięto <ph name="ANY_CLOSED" />}other{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />, zamknięto <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Utworzono <ph name="NUM_HOURS_ONE" /> godzinę temu}few{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}many{Utworzono <ph name="NUM_HOURS_MANY" /> godzin temu}other{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}}</translation>

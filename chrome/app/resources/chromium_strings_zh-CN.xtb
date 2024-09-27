@@ -43,6 +43,7 @@
 您已向网站和应用授予的权限可能会应用于此账号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 账号。</translation>
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="167397405791113306">您的数据已使用口令加密。请输入该口令，以便将 Chromium 数据保存在您的 Google 账号中并使用这些数据。</translation>
+<translation id="1709772298389099340">为 <ph name="BROWSER_NAME" /> 提供提升的权限。</translation>
 <translation id="1715127912119967311">为帮助改进这些功能，Chromium 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>
 <translation id="17264556997921157">您可看到并移除被网站用来向您展示广告的兴趣主题。Chromium 会根据您近期的浏览记录推测出您的兴趣。</translation>

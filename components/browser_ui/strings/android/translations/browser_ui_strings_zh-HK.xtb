@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3109724472072898302">已收合</translation>
+<translation id="310979712355504754">全部刪除</translation>
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資料</translation>
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">揀咗 <ph name="ITEM_COUNT" /> 個</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">開咗之後，網站可以要求使用虛擬實境裝置。閂咗之後，網站唔可以使用虛擬實境裝置。</translation>
-<translation id="7284451015630589124">你已禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。請前往設定頁面<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" />。</translation>
 <translation id="7302486331832100261">您通常會封鎖通知。如要允許，請輕按 [詳情]。</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站深色主題背景</translation>
-<translation id="7474522811371247902">Chrome 會限制大部分網站使用第三方 Cookie。不過，由於此網站需要使用 Cookie 才能提供基本服務，因此系統允許在此網站使用第三方 Cookie。\n\n請前往設定以<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" />。</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">開咗之後，網站可以顯示登入提示。閂咗之後，網站唔可以顯示登入提示。</translation>
 <translation id="7554752735887601236">有網站正在使用您的麥克風</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
-<translation id="7822573154188733812">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。請前往設定頁面<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" />。</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
 <translation id="783819812427904514">將影片取消靜音</translation>
 <translation id="7846076177841592234">取消選取</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">允許 (建議)</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8617611086246832542">開咗之後，系統會用桌面電腦檢視模式顯示網站。閂咗之後，系統會用流動裝置檢視模式顯示網站。</translation>
-<translation id="8649036394979866943">Chrome 會限制大部份網站使用第三方 Cookie 追蹤瀏覽網站的使用者。請前往設定頁面<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手部動作。關閉後，網站便不能追蹤你的手部動作。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>

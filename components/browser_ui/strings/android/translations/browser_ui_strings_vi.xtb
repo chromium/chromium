@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
+<translation id="310979712355504754">Xóa tất cả</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Đã chọn <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Đã cho phép <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị thực tế ảo. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị thực tế ảo.</translation>
-<translation id="7284451015630589124">Bạn đã chặn các trang web dùng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Bạn thường chặn các thông báo. Để cho phép, hãy nhấn vào Chi tiết.</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7368695150573390554">Mọi dữ liệu ngoại tuyến sẽ bị xoá</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
 <translation id="7425915948813553151">Giao diện tối cho các trang web</translation>
-<translation id="7474522811371247902">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba. Tuy nhiên, trang web này được phép sử dụng cookie của bên thứ ba để cung cấp các dịch vụ cơ bản dựa trên loại cookie này.\n\nHãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị lời nhắc đăng nhập. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị lời nhắc đăng nhập.</translation>
 <translation id="7554752735887601236">Một trang web đang sử dụng micrô của bạn</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804248752222191302">Một trang web đang sử dụng máy ảnh của bạn</translation>
 <translation id="7807060072011926525">Do Google cung cấp</translation>
-<translation id="7822573154188733812">Chrome cấm các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Đang phát nội dung nghe nhìn</translation>
 <translation id="783819812427904514">Bật tiếng video</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
-<translation id="8649036394979866943">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi tay bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi tay bạn.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>

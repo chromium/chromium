@@ -41,6 +41,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="2662028055331606429">Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Siirry sivustolle</translation>
+<translation id="2671423594960767771">Jaa ryhmä</translation>
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Luotu <ph name="NUM_HOURS_ONE" /> tunti sitten}other{Luotu <ph name="NUM_HOURS_MANY" /> tuntia sitten}}</translation>

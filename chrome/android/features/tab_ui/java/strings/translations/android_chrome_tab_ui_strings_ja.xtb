@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">提案: しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価</translation>
 <translation id="266935134738038806">サイトを見る</translation>
+<translation id="2671423594960767771">グループを共有</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加、<ph name="ANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個のタブを追加、<ph name="ANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 時間前に作成}other{<ph name="NUM_HOURS_MANY" /> 時間前に作成}}</translation>

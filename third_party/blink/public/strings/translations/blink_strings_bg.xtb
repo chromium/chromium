@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Достъпът до камерата е разрешен</translation>
 <translation id="4664250907885839816">Текстът след „<ph name="ATSIGN" />“ не бива да съдържа символа „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Възпроизвежда се в режим „Картина в картината“</translation>
-<translation id="4792862212177489858">Споделяне на местоположението</translation>
 <translation id="4812940957355064477">Моля, въведете номер.</translation>
 <translation id="49269513399674318">Използване на микрофона</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Стойността трябва да е по-голяма или равна на <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
 <translation id="5307600278924710095">Моля, въведете текст преди „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ е непълно.</translation>
 <translation id="5334352251556557839">Мултимедийното съдържание не може да бъде възпроизведено.</translation>
 <translation id="537648784377940524">Най-ранната дата (<ph name="MIN_DATE_OR_TIME" />) трябва да е преди най-късната (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Приставката не можа да се зареди.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Моля, удължете този текст до поне <ph name="MIN_CHARACTERS" /> знака (понастоящем използвате 1 знак).</translation>
-<translation id="7080893216867146095">Споделянето на местоположението е разрешено</translation>
 <translation id="709897737746224366">Моля, спазвайте изисквания формат.</translation>
 <translation id="7134810312945846184">Използване на микрофона и камерата</translation>
 <translation id="7263440858009898357">Моля, изберете елемент в списъка.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Стойността трябва да бъде между <ph name="MINIMUM_TIME" /> и <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файла</translation>
 <translation id="8451268428117625855">Моля, изберете файл.</translation>
+<translation id="8533587060884335451">Използв. на точно местополож.</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пренасяне на нов ред</translation>
 <translation id="8750798805984357768">Моля, изберете една от тези опции.</translation>

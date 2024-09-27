@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="2662028055331606429">Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтка баш багуу</translation>
+<translation id="2671423594960767771">Топту бөлүшүү</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулду, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү, <ph name="ANY_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_ADDED" /> өтмөк кошулду, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү, <ph name="ANY_CLOSED" /> өтмөк жабылды}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> саат мурун түзүлдү}other{<ph name="NUM_HOURS_MANY" /> саат мурун түзүлдү}}</translation>

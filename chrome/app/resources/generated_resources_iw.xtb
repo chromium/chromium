@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">‏החיבור שלך תמיד מאובטח, אלא אם תתקבל הודעה שונה מ-Chrome</translation>
 <translation id="1175131936083782305">התכונה הזו הושבתה על ידי האדמין.</translation>
 <translation id="1175364870820465910">הדפסה…</translation>
+<translation id="1175572348579024023">גלילה</translation>
 <translation id="1175914831232945926">ספרות</translation>
 <translation id="1176471985365269981">לא מורשים לערוך קבצים או תיקיות במכשיר</translation>
 <translation id="1177073277575830464">‏ההגדרה המהירה של Android הושלמה. צריך להמשיך את ההגדרה במכשיר <ph name="DEVICE_TYPE" />.</translation>
@@ -1437,6 +1438,7 @@
 <translation id="1997616988432401742">האישורים שלך</translation>
 <translation id="1998715278591719161">יש הרשאה לעקוב אחר תנועות הידיים שלך</translation>
 <translation id="1999115740519098545">כשפותחים את הדפדפן</translation>
+<translation id="1999763610967697511">גרירה ושחרור</translation>
 <translation id="2002109485265116295">זמן אמת</translation>
 <translation id="2002160221914907025">‏‫AI ניסיוני</translation>
 <translation id="2003130567827682533">‏כדי להפעיל נתונים של '<ph name="NAME" />', יש להתחבר תחילה לרשת Wi-Fi</translation>
@@ -4175,6 +4177,7 @@
 <translation id="3948116654032448504">&amp;חיפוש תמונה ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">בכרטיסייה הזו פועל תוכן אודיו</translation>
 <translation id="3948507072814225786">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקיות הבאות</translation>
+<translation id="3948985214866944547">רוב המשתמשים חוסמים את השיתוף של המיקום המדויק עם האתר הזה</translation>
 <translation id="394984172568887996">‏מיובא מ-IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> כדי שהורדת הקבצים תהיה בטוחה יותר</translation>
 <translation id="3950820424414687140">כניסה</translation>
@@ -5387,6 +5390,7 @@
 <translation id="4853020600495124913">פתיחה ב&amp;חלון חדש</translation>
 <translation id="4854317507773910281">בחירת חשבון הורה לשליחת בקשת אישור</translation>
 <translation id="485480310608090163">עוד הגדרות והרשאות</translation>
+<translation id="485806788160414322">הפעלה או השהיה של המדיה</translation>
 <translation id="4858913220355269194">מסי</translation>
 <translation id="486213875233855629">הופעלה השתקה על ידי האדמין</translation>
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
@@ -9043,6 +9047,7 @@
 <translation id="7566118625369982896">‏ניהול קישורים של אפליקציות מ-Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">יצירת שילוב מקשים</translation>
+<translation id="7568759527730933493">‏חיפוש כתובות IP של אתרים ב-DNS יתבצע בחיבור מאובטח. ההגדרה הזו פועלת באמצעות ספק שירות מנוהל בכתובת <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. לא נעשה שימוש בחיבורים מאובטחים בחלק מהדומיינים שהוגדרו על ידי האדמין.</translation>
 <translation id="756876171895853918">התאמה אישית של הדמות</translation>
 <translation id="7568790562536448087">העדכון מתבצע</translation>
 <translation id="7569983096843329377">שחור</translation>
@@ -9205,6 +9210,7 @@
 <translation id="7676867886086876795">‏שליחת הקלטה של הקול שלך אל Google מאפשרת הכתבה בכל תיבת טקסט.</translation>
 <translation id="7678588695732963732">‏לאפס את כל ההרשאות של התקן ה-USB?</translation>
 <translation id="7679171213002716280">קיימות <ph name="PRINTER_COUNT" /> מדפסות מנוהלות</translation>
+<translation id="7679895819123160382">‏לאנשים שיש להם גישה לתעבורת הנתונים שלך יהיה קשה יותר לראות את האתרים שביקרת בהם. מערכת <ph name="PRODUCT_NAME" /> משתמשת בחיבור מאובטח לחיפוש כתובות IP של אתרים ב-DNS. לא נעשה שימוש בחיבורים מאובטחים בחלק מהדומיינים שהוגדרו על ידי האדמין.</translation>
 <translation id="7680416688940118410">כיול מסך מגע</translation>
 <translation id="7681095912841365527">‏האתר רשאי להשתמש ב-Bluetooth</translation>
 <translation id="7681597159868843240">בדרך כלל, אתרים משתמשים בחיישני התנועה של המכשיר כדי לתמוך בתכונות כמו מציאות מדומה או מעקב אחר כושר</translation>
@@ -9602,6 +9608,7 @@
 <translation id="7955105108888461311">ביצוע בקשה פנים-אל-פנים</translation>
 <translation id="7955177647836564772">‏אם מצב Smart Lock מופעל והטלפון לא נעול, אין צורך להזין סיסמה או קוד אימות</translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
+<translation id="7956918070009672177">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>
 <translation id="7958157896921135832">הגדלת הגופן</translation>
 <translation id="7958828865373988933">‏כדי ליצור מפתח גישה אל <ph name="APP_NAME" /> שיישמר במפתח אבטחה בחיבור USB, צריך להכניס אותו ולגעת בו עכשיו.</translation>

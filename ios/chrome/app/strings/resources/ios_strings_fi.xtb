@@ -301,7 +301,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2377336083033403521">Hae välilehtiä…</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
 <translation id="2386793615875593361">1 valittu</translation>
-<translation id="2387703759148866940">Salasanojen automaattinen täyttö</translation>
 <translation id="2390457533592708044">Piilota "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Pakettia ei voida toimittaa</translation>
 <translation id="2410754283952462441">Valitse tili</translation>
@@ -1419,7 +1418,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7730973429297233609">Valitse tili, jolle <ph name="FILENAME" /> tallennetaan – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vain tällä laitteella.</translation>
 <translation id="7744192722284567281">Kuului tietosuojaloukkaukseen</translation>
-<translation id="7746165521091043703">Avaa automaattisen täytön salasana-asetukset</translation>
 <translation id="7749790401023484470">Et valinnut tekstiä.</translation>
 <translation id="7757015014239760147">Ei käyttäjätunnusta ••••••••</translation>
 <translation id="775755486779745798">Täytä vanhenemiskuukausi automaattisesti: <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="7975036700432177008">Kokeile</translation>
 <translation id="797588153137233716">Valikko → Historia → Poista selausdata</translation>
 <translation id="7977451675950311423">Varoittaa, jos käytät salasanaa, joka on vaarantunut tietosuojaloukkauksen yhteydessä.</translation>
-<translation id="7978018860671536736">3. Valitse Automaattisen täytön salasanat</translation>
 <translation id="797824194429476746">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi.</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="7987685713885608670">Salasanat kannattaa salata turvallisuussyistä laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>

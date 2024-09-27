@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
 <translation id="5790391387506209808">göy daş</translation>
-<translation id="5810692306010756935">Nəzarətsiz hesaba keçid</translation>
 <translation id="5816802250591013230">Qısayol təyin edilməyib</translation>
 <translation id="5826644637650799838">Rəsm haqqında</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Cihaz</translation>
+<translation id="6972754398087986839">Başlayın</translation>
 <translation id="6975620886940770104">Parıldayan <ph name="GLOWSCAPES_FEATURE" /> ilə <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
@@ -1587,6 +1587,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8881098542468797602">Test uğurlu oldu</translation>
 <translation id="8882789155418924367">bayquşlar</translation>
 <translation id="8892443466059986410">Qısayol redaktəsini ləğv edin</translation>
+<translation id="8897043028305808902">Faylın adı dəyişdi</translation>
 <translation id="8898840733695078011">Siqnal gücü</translation>
 <translation id="8909114361904403025">yuxarı ox</translation>
 <translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>

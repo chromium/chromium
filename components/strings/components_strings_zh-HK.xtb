@@ -1325,7 +1325,6 @@
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3428789896412418755">分類記錄</translation>
-<translation id="3430206873883193118">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議軟件</translation>
 <translation id="3433144818443565002">語音和視像通話</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">網站可要求控制 MIDI 裝置及將其重新編程</translation>
-<translation id="3451429106322189478">已允許<ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
 <translation id="3457781733462096492">饒舌音樂和 Hip-Hop</translation>
@@ -2569,7 +2567,6 @@
 <translation id="5689516760719285838">位置</translation>
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設定為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不相關，系統也不會使用該值。</translation>
 <translation id="5691848789297492617">儲存付款卡宜家顯示喺成個畫面。</translation>
-<translation id="5692655638459249302">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5699628521141772782">奶製品和雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -2717,7 +2714,6 @@
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
 <translation id="5996255674476750320">車展</translation>
 <translation id="5997247540087773573">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「Google 密碼管理工具」建議您立即變更密碼，並檢查已儲存的密碼。</translation>
-<translation id="5999271311987646952">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能<ph name="BEGIN_LINK" />最近曾在你嘗試瀏覽的網站上發現惡意軟件<ph name="END_LINK" />。</translation>
 <translation id="6000528814684428358">重搖滾和前衛音樂</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6001839398155993679">立即使用</translation>
@@ -2882,7 +2878,6 @@
 <translation id="6284449872909111707">短訊和即時通訊</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
 <translation id="6287197303017372967">使用導航功能即時規劃前往目的地的路線。</translation>
-<translation id="6288521565586608304">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這個網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">已找到折扣</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
 <translation id="6292819926564202163">你的 Chrome 搜尋引擎設定</translation>
@@ -3076,7 +3071,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">電腦教育</translation>
 <translation id="6633476656216409494">商業和生產力軟件</translation>
-<translation id="6638353438328951386">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現有害軟件<ph name="END_LINK" />。</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">存取 Cookie 和網站資料。</translation>
 <translation id="6645478838938543427">系統將會向 <ph name="EMAIL_ADDRESS" /> 傳送減價通知</translation>
@@ -3290,7 +3284,6 @@
 <translation id="701757816833614688">視覺藝術和設計教育</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
-<translation id="7024932305105294144">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能<ph name="BEGIN_LINK" />最近曾在你嘗試瀏覽的網站上發現仿冒詐騙內容<ph name="END_LINK" />。仿冒詐騙網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030164307377592766">修改填入付款方法的設定</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
@@ -3368,7 +3361,6 @@
 <translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」不是此平台可支援的限制項目</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">網絡上的價格記錄</translation>
-<translation id="7173478186876671324">管理員已禁止此網站使用<ph name="PERMISSION" /></translation>
 <translation id="7174545416324379297">已合併</translation>
 <translation id="7175097078723125014">揀咗編輯地址選項</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
@@ -3402,7 +3394,6 @@
 <translation id="7221857374443660083">銀行要確認您的身分</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7227293336683593977">過往價格</translation>
-<translation id="7227747683324411744">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。</translation>
 <translation id="7232352818707016189">其他比較表格嘅操作</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234112195906418665">旅遊和交通</translation>
@@ -3623,7 +3614,6 @@
 <translation id="7598391785903975535">小於 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這個請求。</translation>
 <translation id="7599089013883397081">下載逾時</translation>
-<translation id="7605377493722372900">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
 <translation id="7608583484192556132">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否顯示個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告私隱權<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4076,7 +4066,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">呢次批准用咪</translation>
 <translation id="8421158157346464398">工作設定檔資料 (例如工作設定檔使用者名稱)</translation>
-<translation id="8422228580902424274">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
@@ -4227,7 +4216,6 @@
 <translation id="8722929331701811374">文具用品 (信頭)</translation>
 <translation id="8724824364712796726">B6 信封</translation>
 <translation id="8725066075913043281">再試一次</translation>
-<translation id="8725667981218437315">相機和麥克風</translation>
 <translation id="8726549941689275341">頁面大小：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全碼</translation>
@@ -4436,7 +4424,6 @@
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證你的身分</translation>
 <translation id="912327514020027767">短裙</translation>
-<translation id="912414390325846156">你先前已拒絕將權限授予此網站</translation>
 <translation id="9128870381267983090">連接網絡</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
 <translation id="9133861214150761123">會計和核數</translation>

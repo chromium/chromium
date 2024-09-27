@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Benarkan log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="310297983047869047">Slaid sebelumnya</translation>
 <translation id="3109724472072898302">Diruntuhkan</translation>
+<translation id="310979712355504754">Padamkan semua</translation>
 <translation id="3114012059975132928">Pemain video</translation>
 <translation id="3115898365077584848">Tunjukkan Maklumat</translation>
 <translation id="3123473560110926937">Disekat di sesetengah tapak</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> dibenarkan</translation>
 <translation id="7276071417425470385">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti realiti maya. Apabila dimatikan, laman tidak dapat menggunakan peranti realiti maya.</translation>
-<translation id="7284451015630589124">Anda menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus perlindungan penjejakan anda<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Anda biasanya menyekat pemberitahuan. Untuk membenarkan pemberitahuan, ketik Butiran.</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7368695150573390554">Mana-mana data luar talian akan dipadamkan</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>
-<translation id="7474522811371247902">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas.\n\nAkses tetapan untuk <ph name="BEGIN_LINK" />mengurus perlindungan penjejakan anda<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Apabila dihidupkan, laman dapat memaparkan gesaan log masuk. Apabila dimatikan, laman tidak dapat memaparkan gesaan log masuk.</translation>
 <translation id="7554752735887601236">Suatu tapak sedang menggunakan mikrofon anda</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
-<translation id="7822573154188733812">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus perlindungan penjejakan anda<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8617611086246832542">Apabila dihidupkan, paparan desktop laman web akan dipaparkan. Apabila dimatikan, paparan mudah alih laman web akan dipaparkan.</translation>
-<translation id="8649036394979866943">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus perlindungan penjejakan anda<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Apabila pilihan ini dihidupkan, laman boleh meminta untuk menjejaki tangan anda. Apabila pilihan ini dimatikan, laman tidak boleh menjejaki tangan anda.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>

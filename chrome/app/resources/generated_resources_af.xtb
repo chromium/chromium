@@ -250,6 +250,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1174366174291287894">Jou verbinding is altyd veilig, tensy Chrome vir jou sê dat dit nie is nie</translation>
 <translation id="1175131936083782305">Jou administrateur het hierdie kenmerk gedeaktiveer.</translation>
 <translation id="1175364870820465910">Druk uit …</translation>
+<translation id="1175572348579024023">Rollees</translation>
 <translation id="1175914831232945926">Syfers</translation>
 <translation id="1176471985365269981">Mag nie lêers of vouers op jou toestel wysig nie</translation>
 <translation id="1177073277575830464">Vinnige opstelling vir Android is gedoen. Gaan op jou <ph name="DEVICE_TYPE" /> met die opstelling voort.</translation>
@@ -1438,6 +1439,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1997616988432401742">Jou sertifikate</translation>
 <translation id="1998715278591719161">Word toegelaat om jou hande na te spoor</translation>
 <translation id="1999115740519098545">Met afskop</translation>
+<translation id="1999763610967697511">Sleep en los</translation>
 <translation id="2002109485265116295">Intyds</translation>
 <translation id="2002160221914907025">Eksperimentele AI</translation>
 <translation id="2003130567827682533">Om "<ph name="NAME" />"-data te aktiveer, koppel eers aan 'n Wi-Fi-netwerk</translation>
@@ -3497,6 +3499,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3487649228420469005">Skandering is klaar</translation>
 <translation id="3488199663160411179">naam</translation>
 <translation id="3490695139702884919">Laai tans af … <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Plaaslike data kan teruggestel word as jy jou PIN of wagwoord vergeet</translation>
 <translation id="3491669675709357988">Jou kind se rekening is nie vir Family Link-ouerkontroles opgestel nie. Jy kan ouerkontroles byvoeg nadat jy die opstelling voltooi het. Jy kan inligting oor ouerkontroles in die Verken-program kry.</translation>
 <translation id="3491678231052507920">Werwe gebruik gewoonlik jou virtuelerealiteittoestelle en -data sodat jy by VR-sessies kan ingaan</translation>
 <translation id="3493043608231401654">Verwyder <ph name="TAB_TITLE" /> uit oortjiegroep</translation>
@@ -4175,6 +4178,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3948116654032448504">Deursoek <ph name="SEARCH_ENGINE" /> vir prent</translation>
 <translation id="3948334586359655083">Hierdie oortjie speel tans oudio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan jou lêers in die volgende vouers wysig</translation>
+<translation id="3948985214866944547">Die meeste mense blokkeer die deel van presiese ligging vir hierdie werf</translation>
 <translation id="394984172568887996">Van IE af ingevoer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> om die aflaai van lêers veiliger te maak</translation>
 <translation id="3950820424414687140">Meld aan</translation>
@@ -5386,6 +5390,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4853020600495124913">Maak in nuwe venster oop</translation>
 <translation id="4854317507773910281">Kies ouerrekening vir goedkeuring</translation>
 <translation id="485480310608090163">Meer instellings en toestemmings</translation>
+<translation id="485806788160414322">Speel of onderbreek media</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Deur jou administrateur gedemp</translation>
 <translation id="4862642413395066333">Onderteken tans OCSP-reaksies</translation>
@@ -9038,6 +9043,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7566118625369982896">Bestuur Play-programskakels</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Skep sleutelkombinasie</translation>
+<translation id="7568759527730933493">Gebruik ’n veilige verbinding om ’n werf se IP-adres in die DNS (domeinnaamstelsel) op te soek. Dit gebruik ’n bestuurde diensverskaffer by <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Veilige verbindings word nie gebruik vir sommige domeine wat deur jou administrateur opgestel is nie.</translation>
 <translation id="756876171895853918">Pasmaak avatar</translation>
 <translation id="7568790562536448087">Dateer tans op</translation>
 <translation id="7569983096843329377">Swart</translation>
@@ -9200,6 +9206,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7676867886086876795">Stuur jou stem na Google om diktee in enige teksveld moontlik te maak.</translation>
 <translation id="7678588695732963732">Stel alle USB-toesteltoestemmings terug?</translation>
 <translation id="7679171213002716280">Daar is <ph name="PRINTER_COUNT" /> bestuurde drukkers.</translation>
+<translation id="7679895819123160382">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. <ph name="PRODUCT_NAME" /> gebruik ’n veilige verbinding om ’n werf se IP-adres in die DNS (domeinnaamstelsel) op te soek. Veilige verbindings word nie gebruik vir sommige domeine wat deur jou administrateur opgestel is nie.</translation>
 <translation id="7680416688940118410">Raakskermkalibrasie</translation>
 <translation id="7681095912841365527">Werf kan Bluetooth gebruik</translation>
 <translation id="7681597159868843240">Werwe gebruik gewoonlik jou toestel se bewegingsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
@@ -9598,6 +9605,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7955105108888461311">Vra persoonlik</translation>
 <translation id="7955177647836564772">As Smart Lock aan is en jou foon is ontsluit, hoef jy nie ’n wagwoord of PIN in te voer nie</translation>
 <translation id="7956373551960864128">Jou gestoorde drukkers</translation>
+<translation id="7956918070009672177">Daar is geen <ph name="LANGUAGE" /> stemme op jou toestel nie. Koppel aan die internet en probeer weer.</translation>
 <translation id="7957074856830851026">Sien toestelinligting soos sy reeksnommer of bate-ID</translation>
 <translation id="7958157896921135832">Vergroot lettergrootte</translation>
 <translation id="7958828865373988933">As jy ’n toegangsleutel vir <ph name="APP_NAME" /> op ’n USBsekuriteitsleutel wil skep, sit dit nou in en raak daaraan</translation>

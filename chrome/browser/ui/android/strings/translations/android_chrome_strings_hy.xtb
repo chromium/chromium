@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։</translation>
 <translation id="2286841657746966508">Վճարային հասցե</translation>
 <translation id="228704530595896923">Կիսվելու տարբերակների ցանկը։</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Տեսնել <ph name="TABS_COUNT_ONE" /> ներդիր}one{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}other{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2297822946037605517">Կիսվել այս էջով</translation>
 <translation id="22981027763501686">Համաժամացրեք, որպեսզի ձեր էջանիշները, պատմությունը և մյուս կարգավորումները հասանելի լինեն ձեր մյուս սարքերում</translation>
 <translation id="230115972905494466">Համատեղելի սարքեր չեն գտնվել</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Ներկայումս ընտրված է <ph name="NAME" /> (<ph name="EMAIL" />) հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_ONE" /> ներդիր ներդիրների ընդհանուր խմբում}one{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}other{Տեսնել նոր գործողություններով <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}}</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Բովանդակություն երեխաների համար — Անջատված է</translation>
 <translation id="7903184275147100332">Սա կարող է մեկ րոպե տևել</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}one{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}other{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}}</translation>
 <translation id="7914399737746719723">Հավելվածը տեղադրվեց</translation>
 <translation id="7919123827536834358">Ավտոմատ թարգմանել այս լեզուներով էջերը</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>

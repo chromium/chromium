@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
 <translation id="1273910660700874265">Možnosti skupiny karet <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete smazat, jestli ji už nepotřebujete.
+
+Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okamžitě ztratí přístup a smaže se ze všech zařízení.</translation>
 <translation id="1340839264183302272">Opustit skupinu</translation>
 <translation id="1419023007528516122">Tímto skupinu trvale smažete ze svého zařízení</translation>
 <translation id="1486715732399361704">Tady najdete všechny své skupiny karet</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
 <translation id="2662028055331606429">Hodnocení: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Navštívit web</translation>
+<translation id="2671423594960767771">Sdílet skupinu</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Přidána <ph name="ONE_ADDED" /> karta, změněno: <ph name="ANY_CHANGED" />, zavřeno: <ph name="ANY_CLOSED" />}few{Přidány <ph name="MANY_ADDED" /> karty, změněno: <ph name="ANY_CHANGED" />, zavřeno: <ph name="ANY_CLOSED" />}many{Přidáno <ph name="MANY_ADDED" /> karty, změněno: <ph name="ANY_CHANGED" />, zavřeno: <ph name="ANY_CLOSED" />}other{Přidáno <ph name="MANY_ADDED" /> karet, změněno: <ph name="ANY_CHANGED" />, zavřeno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vytvořeno před <ph name="NUM_HOURS_ONE" /> hodinou}few{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodinami}many{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodiny}other{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodinami}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavřít skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Zavřít skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Zobrazit informace o obchodu, možnost dostupná v horní části obrazovky</translation>
+<translation id="5615302411300498438">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit.
+
+Když skupinu karet <ph name="TITLE_OF_GROUP" /> opustíte, okamžitě k ní ztratíte přístup.</translation>
 <translation id="5627941783489838464">Žádné aktualizace karet</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Obnovit kartu}few{Obnovit karty}many{Obnovit karty}other{Obnovit karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> odkaz z Chromu}few{<ph name="TABS_COUNT_MANY" /> odkazy z Chromu}many{<ph name="TABS_COUNT_MANY" /> odkazu z Chromu}other{<ph name="TABS_COUNT_MANY" /> odkazů z Chromu}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Přidána <ph name="ONE_ADDED" /> karta, zavřeno: <ph name="ANY_CLOSED" />}few{Přidány <ph name="MANY_ADDED" /> karty, zavřeno: <ph name="ANY_CLOSED" />}many{Přidáno <ph name="MANY_ADDED" /> karty, zavřeno: <ph name="ANY_CLOSED" />}other{Přidáno <ph name="MANY_ADDED" /> karet, zavřeno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a bude smazána ze všech zařízení</translation>
 <translation id="8633025649649592204">Nedávná aktivita</translation>
+<translation id="8635399646025169806">Zachovat skupinu karet?</translation>
 <translation id="870736955561925754">Zavřít kartu a smazat skupinu?</translation>
 <translation id="8714939927607906138">Nižší cena</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8730999928494395583">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vytvořeno před <ph name="NUM_MONTHS_ONE" /> měsícem}few{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíci}many{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíce}other{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíci}}</translation>
+<translation id="8804742093141782941">Zachovat skupinu</translation>
 <translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>
 <translation id="8887921976452567404">Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet.</translation>
 <translation id="8915916167043355778">Zavřít vše</translation>

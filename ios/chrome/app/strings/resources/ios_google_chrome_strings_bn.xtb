@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">সব ওয়েবসাইটে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করতে, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="2695886661449553974">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2703746758996815929">Chrome সংক্রান্ত সহায়ক পরামর্শ পেতে, আপনার iOS সেটিংসে বিজ্ঞপ্তি চালু করুন।</translation>
+<translation id="2728851697704606655">Google Lens দিয়ে অনুবাদ করুন</translation>
 <translation id="2736805085127235148">আপনার ডিভাইস সেটিংসে বর্তমান Chrome বিজ্ঞপ্তিগুলি বন্ধ করা আছে।</translation>
 <translation id="2754428955276778271">আপনার Chrome ডেটার কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি।
 
@@ -249,6 +250,7 @@
 <translation id="7581063337314642333">Chrome-এর ট্যাব গ্রিডে যান</translation>
 <translation id="7599894504325210080">Chrome-এ বড় করা অটোফিল ভিউ</translation>
 <translation id="7642373780953416937">আপনার জন্য Chrome কোনও গোপনীয়তা বা নিরাপত্তা সংক্রান্ত সমস্যা অটোমেটিক শনাক্ত করলে সতর্কতার বিজ্ঞপ্তি পান।</translation>
+<translation id="7660356333829433649">Chrome থেকে সবচেয়ে বেশি সুবিধা পাওয়ার জন্য এখানে থাকা প্রয়োজনীয় পরামর্শ আবার চেক করুন।</translation>
 <translation id="7662994914830945754">একাধিক ডিভাইসে সাইন-ইন করে থাকুন ও সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="7693590760643069321">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ট্যাপ করে তা যেকোনও সময় Chrome ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="7698568245838009292">Chrome ক্যামেরা অ্যাক্সেস করতে চাইবে</translation>
@@ -259,6 +261,7 @@
 <translation id="778855399387580014">নতুন Chrome ট্যাবে সার্চ করা শুরু করুন।</translation>
 <translation id="7792140019572081272">Chrome, ফেস আইডির মাধ্যমে আপনার সংবেদনশীল ব্যক্তিগত তথ্য সুরক্ষিত রাখে।</translation>
 <translation id="7855730255114109580">Google Chrome আপ টু ডেট আছে</translation>
+<translation id="7861998090118873450">Chrome-এ আপনার পাসওয়ার্ড সেভ করুন</translation>
 <translation id="7897703007638178753">Chrome-এর সাম্প্রতিক ট্যাব দেখুন</translation>
 <translation id="7948283758957877064">Chrome-এ নতুন কী কী রয়েছে</translation>
 <translation id="8000174216052461231">Chrome সম্পর্কিত পরামর্শ: Chrome-এর সবচেয়ে শক্তিশালী সুরক্ষা পান</translation>
@@ -294,6 +297,7 @@
 <translation id="8558480467877843976">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্ক ব্রাউজ বা ট্যাপ করে তা যেকোনও সময় Chrome খুলতে পারেন।</translation>
 <translation id="8603022514504485810">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করুন।<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">“Chrome বন্ধ করার সময় 'ছদ্মবেশী' ট্যাব লক করুন” বিকল্প চালু করুন।</translation>
+<translation id="8673726683583791503">Google Lens দিয়ে কেনাকাটা করুন</translation>
 <translation id="8727043961453758442">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="8765470054473112089">আপনি যখন অ্যাড্রেস বার বা সার্চ বক্সে টাইপ করেন, তখন আরও ভালো পরামর্শ পেতে Chrome আপনি যা টাইপ করেন তা আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়। এটি ছদ্মবেশী মোডে বন্ধ আছে।</translation>
 <translation id="8772179140489533211">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>

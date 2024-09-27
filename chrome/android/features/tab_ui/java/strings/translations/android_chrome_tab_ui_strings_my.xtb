@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>
 <translation id="266935134738038806">ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်</translation>
+<translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ပြီးခဲ့သော <ph name="NUM_HOURS_ONE" /> နာရီက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_HOURS_MANY" /> နာရီက ပြုလုပ်ထားသည်}}</translation>

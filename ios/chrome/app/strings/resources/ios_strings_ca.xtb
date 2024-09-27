@@ -301,7 +301,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2377336083033403521">Cerca pestanyes…</translation>
 <translation id="2381405137052800939">Configuració bàsica</translation>
 <translation id="2386793615875593361">1 seleccionada</translation>
-<translation id="2387703759148866940">Emplena automàticament les contrasenyes</translation>
 <translation id="2390457533592708044">Amaga <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">El paquet no es pot entregar</translation>
 <translation id="2410754283952462441">Tria un compte</translation>
@@ -1419,7 +1418,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7730973429297233609">Selecciona el compte que vols utilitzar per desar <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Només en aquest dispositiu.</translation>
 <translation id="7744192722284567281">S'ha trobat en una violació de les dades</translation>
-<translation id="7746165521091043703">Obre la configuració d'Emplenament automàtic de contrasenyes</translation>
 <translation id="7749790401023484470">No has seleccionat cap text.</translation>
 <translation id="7757015014239760147">Cap nom d'usuari ••••••••</translation>
 <translation id="775755486779745798">Emplena automàticament el mes de caducitat (<ph name="MONTH" />)</translation>
@@ -1479,7 +1477,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="7975036700432177008">Prova</translation>
 <translation id="797588153137233716">Menú → Historial → Suprimeix les dades de navegació</translation>
 <translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
-<translation id="7978018860671536736">3. Toca Emplenament automàtic de contrasenyes.</translation>
 <translation id="797824194429476746">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà permanentment.</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7987685713885608670">Per a una seguretat addicional, encripta les contrasenyes al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>

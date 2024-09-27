@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Laranxa</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
 <translation id="1273910660700874265">Opcións do grupo de pestanas <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.
+
+Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />", que se eliminará de todos os dispositivos.</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1419023007528516122">Con esta acción eliminarase permanentemente o grupo do teu dispositivo</translation>
 <translation id="1486715732399361704">Podes atopar todos os teus grupos de pestanas aquí</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Suxestión: <ph name="NUMBER_OF_TABS" /> das pestanas que tes abertas levan sen utilizarse un bo anaco. Queres pechalas?</translation>
 <translation id="2662028055331606429">Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creouse hai <ph name="NUM_HOURS_ONE" /> hora}other{Creouse hai <ph name="NUM_HOURS_MANY" /> horas}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="5556417849629758491">Ver información sobre a tenda, opción dispoñible preto da parte superior da pantalla</translation>
+<translation id="5615302411300498438">Mantén este grupo para engadir pestanas máis adiante ou sae del.
+
+Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Non hai actualizacións de pestanas</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar pestana}other{Restaurar pestanas}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ligazón de Chrome}other{<ph name="TABS_COUNT_MANY" /> ligazóns de Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
 <translation id="8633025649649592204">Actividade recente</translation>
+<translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="870736955561925754">Queres pechar a pestana e eliminar o grupo?</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creouse hai <ph name="NUM_MONTHS_ONE" /> mes}other{Creouse hai <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8804742093141782941">Manter grupo</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>
 <translation id="8887921976452567404">As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas.</translation>
 <translation id="8915916167043355778">Pechar todo</translation>

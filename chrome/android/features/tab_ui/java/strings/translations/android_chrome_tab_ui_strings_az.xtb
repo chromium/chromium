@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Narıncı</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab qrupu seçimləri</translation>
+<translation id="1293272072740285747">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya ehtiyacınız yoxdursa, silin.
+
+Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək.</translation>
 <translation id="1340839264183302272">Qrupdan çıxın</translation>
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
 <translation id="1486715732399361704">Bütün tab qruplarını burada tapa bilərsiniz</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq</translation>
 <translation id="266935134738038806">Sayta daxil olun</translation>
+<translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> saat əvvəl yaradıldı}other{<ph name="NUM_HOURS_MANY" /> saat əvvəl yaradıldı}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
+<translation id="5615302411300498438">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya çıxın.
+
+Çıxsanız, "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcəksiniz.</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tabı bərpa edin}other{Tabları bərpa edin}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
 <translation id="8631711675211020168">Hər kəs <ph name="GROUP_NAME" /> tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
+<translation id="8635399646025169806">Tab qrupu saxlanılsın?</translation>
 <translation id="870736955561925754">Tab bağlansın və tab qrupu silinsin?</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8730999928494395583">Bu Anonim tablardakı fəaliyyət bu cihazdan silinəcək</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay əvvəl yaradıldı}other{<ph name="NUM_MONTHS_MANY" /> ay əvvəl yaradıldı}}</translation>
+<translation id="8804742093141782941">Qrupu saxlayın</translation>
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>
 <translation id="8915916167043355778">Hamısını bağlayın</translation>

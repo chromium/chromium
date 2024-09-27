@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Permite el inicio de sesión de terceros en un sitio específico.</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3109724472072898302">Contraído</translation>
+<translation id="310979712355504754">Eliminar todos</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Si está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
-<translation id="7284451015630589124">No permites que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas. Ve a la configuración para <ph name="BEGIN_LINK" />gestionar tus protecciones antirrastreo<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Sueles bloquear las notificaciones. Para permitirlas, toca Detalles.</translation>
 <translation id="7366415735885268578">Añadir un sitio</translation>
 <translation id="7368695150573390554">Se eliminarán todos los datos offline</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Preguntar antes</translation>
 <translation id="7423538860840206698">Se ha bloqueado la lectura del portapapeles</translation>
 <translation id="7425915948813553151">Tema oscuro para sitios</translation>
-<translation id="7474522811371247902">Chrome impide que la mayoría de los sitios usen cookies de terceros. Sin embargo, las cookies de terceros están permitidas en este sitio porque depende de ellas para prestar servicios básicos.\n\nAccede a la configuración para <ph name="BEGIN_LINK" />gestionar tus protecciones antirrastreo<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Cuando esta opción está activada, los sitios pueden mostrar solicitudes de inicio de sesión. Si está desactivada, los sitios no pueden mostrar solicitudes de inicio de sesión.</translation>
 <translation id="7554752735887601236">Un sitio web está usando tu micrófono</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio web está usando tu cámara</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>
-<translation id="7822573154188733812">Chrome impide que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas. Ve a la configuración para <ph name="BEGIN_LINK" />gestionar tus protecciones antirrastreo<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>
 <translation id="783819812427904514">Dejar de silenciar vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8617611086246832542">Cuando esta opción está activada, se muestra la vista para ordenador de los sitios web. Si está desactivada, se muestra la vista para móvil de los sitios web.</translation>
-<translation id="8649036394979866943">Chrome impide a la mayoría de los sitios usar cookies de terceros para hacer un seguimiento de tu actividad mientras navegas. Ve a la configuración para <ph name="BEGIN_LINK" />gestionar tus protecciones antirrastreo<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Si activas esta opción, los sitios pueden solicitar permiso para monitorizar tus manos. Si está desactivada, los sitios no pueden monitorizar tus manos.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8681886425883659911">Los anuncios se bloquean en sitios que se caracterizan por mostrar anuncios invasivos o engañosos</translation>

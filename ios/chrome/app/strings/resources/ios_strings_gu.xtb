@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">ટૅબ શોધો…</translation>
 <translation id="2381405137052800939">મૂળભૂત</translation>
 <translation id="2386793615875593361">1 પસંદ કર્યું છે</translation>
-<translation id="2387703759148866940">ઑટોમૅટિક રીતે પાસવર્ડ ભરો</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" છુપાવો</translation>
 <translation id="2403129868389095715">તમારું પૅકેજ ડિલિવર કરી શકાતું નથી</translation>
 <translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3982893814825393515">સમસ્યાની જાણ કરો…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા. એકાઉન્ટ મેનૂ ખોલો.</translation>
+<translation id="3986739045730058129">ટૅબ પર જાઓ</translation>
 <translation id="3987993985790029246">લિંક કૉપિ કરો</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
 <translation id="3994422733891749358">તમે મેળવવા હોય તે નોટિફિકેશન પસંદ કરો</translation>
@@ -759,6 +759,7 @@
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4717844083556844785">વર્તમાન વેબપેજ છૂપા મોડમાં છે</translation>
 <translation id="4719927025381752090">અનુવાદ કરવાનું ઑફર કરો</translation>
+<translation id="4720530280568305198">તમારી પસંદગી નવા ટૅબમાં ખોલવામાં આવી</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4742407542027196863">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="4742897645503301228">કિંમતનું ટ્રૅકિંગ છુપાવો</translation>
@@ -1417,7 +1418,6 @@
 <translation id="7730973429297233609">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" /> - <ph name="FILESIZE" />ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
 <translation id="7744192722284567281">ડેટા ઉલ્લંઘનમાં મળ્યો</translation>
-<translation id="7746165521091043703">પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધાનાં સેટિંગ ખોલો</translation>
 <translation id="7749790401023484470">તમે કોઈ ટેક્સ્ટ પસંદ કરેલી નથી.</translation>
 <translation id="7757015014239760147">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
 <translation id="775755486779745798">સમયસમાપ્તિનો મહિનો <ph name="MONTH" /> ઑટોમૅટિક રીતે ભરાય</translation>
@@ -1477,7 +1477,6 @@
 <translation id="7975036700432177008">પ્રયાસ કરો</translation>
 <translation id="797588153137233716">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
-<translation id="7978018860671536736">3. પાસવર્ડ માટે ઑટોમૅટિક રીતે ભરવાની સુવિધા પર ટૅપ કરો</translation>
 <translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7987685713885608670">વધારાની સલામતી માટે, તમારા પાસવર્ડ Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં એમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરો.</translation>

@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則您的連線一律安全無虞</translation>
 <translation id="1175131936083782305">管理員已停用此功能。</translation>
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
+<translation id="1175572348579024023">捲動</translation>
 <translation id="1175914831232945926">數字</translation>
 <translation id="1176471985365269981">不允許編輯裝置上的檔案或資料夾</translation>
 <translation id="1177073277575830464">Android 快速設定已完成。在你的 <ph name="DEVICE_TYPE" /> 上繼續設定。</translation>
@@ -1438,6 +1439,7 @@
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1998715278591719161">已允許追蹤手部動作</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
+<translation id="1999763610967697511">拖放</translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2002160221914907025">實驗性 AI</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的流動網絡，請先連接 Wi-Fi 網絡</translation>
@@ -5377,6 +5379,7 @@
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇執行審核的家長帳戶</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
+<translation id="485806788160414322">播放或暫停媒體</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="486213875233855629">已由管理員設定為靜音</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>

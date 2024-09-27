@@ -250,6 +250,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174366174291287894">Din anslutning är alltid säker, så länge det inte visas en varning i Chrome</translation>
 <translation id="1175131936083782305">Administratören har inaktiverat den här funktionen.</translation>
 <translation id="1175364870820465910">Skriv &amp;ut...</translation>
+<translation id="1175572348579024023">Scrolla</translation>
 <translation id="1175914831232945926">Siffror</translation>
 <translation id="1176471985365269981">Får inte redigera filer eller mappar på enheten</translation>
 <translation id="1177073277575830464">Snabbkonfigureringen av Android är klar. Fortsätt med konfigureringen på <ph name="DEVICE_TYPE" />.</translation>
@@ -1438,6 +1439,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1997616988432401742">Dina certifikat</translation>
 <translation id="1998715278591719161">Får spåra dina händer</translation>
 <translation id="1999115740519098545">Vid start</translation>
+<translation id="1999763610967697511">Dra och släppa</translation>
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Experimentell AI</translation>
 <translation id="2003130567827682533">Om du vill aktivera data från <ph name="NAME" /> ansluter du först till ett wifi-nätverk</translation>
@@ -2935,6 +2937,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="304644035656848980">Förhandsgranskning av mikrofonen</translation>
 <translation id="3046910703532196514">Webbsida, komplett</translation>
 <translation id="304747341537320566">Talmotorer</translation>
+<translation id="3047678109605649715">Det finns inga <ph name="LANGUAGE" /> röster på enheten. Frigör utrymme på enheten och försök igen.</translation>
 <translation id="3048336643003835855">HID-enheter från leverantören <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spela upp (k)</translation>
 <translation id="3048742847101793553">Organisationen blockerade filen eftersom genomsökningen misslyckades.</translation>
@@ -3497,6 +3500,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3487649228420469005">Genomsökningen är klar</translation>
 <translation id="3488199663160411179">ditt namn</translation>
 <translation id="3490695139702884919">Laddas ned … <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Lokal data kan återställas om du glömmer pinkoden eller lösenordet</translation>
 <translation id="3491669675709357988">Ditt barns konto har inte konfigurerats för föräldrakontroller i Family Link. Du kan lägga till föräldrakontroller när du har slutfört konfigureringen. Information om föräldrakontroller finns i Utforska-appen.</translation>
 <translation id="3491678231052507920">Åtkomst till VR-enheter och VR-data brukar kunna behövas för VR-sessioner på webbplatsen</translation>
 <translation id="3493043608231401654">Ta bort <ph name="TAB_TITLE" /> från flikgruppen</translation>
@@ -5387,6 +5391,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4853020600495124913">Öppna i &amp;nytt fönster</translation>
 <translation id="4854317507773910281">Välj vilket föräldrakonto som ska godkänna</translation>
 <translation id="485480310608090163">Fler inställningar och behörigheter</translation>
+<translation id="485806788160414322">Spela upp eller pausa media</translation>
 <translation id="4858913220355269194">Fotboll</translation>
 <translation id="486213875233855629">Ljudet har stängts av av administratören</translation>
 <translation id="4862642413395066333">Signera OCSP-svar</translation>

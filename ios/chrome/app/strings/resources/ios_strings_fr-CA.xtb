@@ -301,7 +301,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2377336083033403521">Rechercher dans les onglets…</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2386793615875593361">1 sélectionné</translation>
-<translation id="2387703759148866940">Remplir automatiquement les mots de passe</translation>
 <translation id="2390457533592708044">Masquez « <ph name="MODULE_NAME" /> »</translation>
 <translation id="2403129868389095715">Votre colis ne peut pas être livré</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
@@ -606,6 +605,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3982893814825393515">Signaler un problème…</translation>
 <translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
+<translation id="3986739045730058129">Accéder à l'onglet</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="3994422733891749358">Choisissez les notifications que vous souhaitez recevoir</translation>
@@ -759,6 +759,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
 <translation id="4717844083556844785">La page Web actuelle est ouverte en mode Navigation privée</translation>
 <translation id="4719927025381752090">Proposer une traduction</translation>
+<translation id="4720530280568305198">Votre sélection s'est ouverte dans un nouvel onglet</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
 <translation id="4742897645503301228">Masquer Suivre le prix</translation>
@@ -1417,7 +1418,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7730973429297233609">Sélectionnez le compte que vous souhaitez utiliser pour enregistrer <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Uniquement sur cet appareil.</translation>
 <translation id="7744192722284567281">Trouvé dans une violation de données</translation>
-<translation id="7746165521091043703">Ouvrez les paramètres du remplissage automatique des mots de passe</translation>
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
 <translation id="7757015014239760147">Aucun nom d'utilisateur ••••••••</translation>
 <translation id="775755486779745798">Remplir automatiquement le mois d'expiration <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="7975036700432177008">Essayer</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
-<translation id="7978018860671536736">3. Touchez Remplir automatiquement les mots de passe</translation>
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>

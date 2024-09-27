@@ -75,6 +75,7 @@
 <translation id="132683371494960526">Tocca due volte per cambiare la cartella principale.</translation>
 <translation id="1333455942675373522">Tastiera</translation>
 <translation id="1334485477792811969">Servizi web</translation>
+<translation id="1335767868357998043">Scegli la posizione della barra degli indirizzi</translation>
 <translation id="1347468774581902829">Gestisci attività</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Regali-Moglie/s?k=Regali+per+Moglie</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
@@ -157,6 +158,7 @@
 <translation id="1713777106376424209">Consegnato da</translation>
 <translation id="1715515772563243997">Se ritieni attendibile <ph name="SITE" />, puoi usare una password salvata per accedere.</translation>
 <translation id="1728549374069268714">Incolla e vai</translation>
+<translation id="1732468323901456775">Attiva le notifiche per <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
 <translation id="1740650426894359238">Passa a un altro profilo</translation>
 <translation id="1743244221910283364">Ignora modifiche</translation>
@@ -248,6 +250,7 @@
 <translation id="2122754583996902531">Il tuo browser è gestito. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2147127444698817042">Disponibile solo su iPhone</translation>
 <translation id="2148716181193084225">Oggi</translation>
+<translation id="2148799636999124959">Accedi rapidamente ai siti e alle app con le password salvate.</translation>
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2161446265348023004">Passa alla finestra aperta</translation>
 <translation id="2164946989711475905">Accedi…</translation>
@@ -301,7 +304,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2377336083033403521">Cerca tra le schede…</translation>
 <translation id="2381405137052800939">Opzioni di base</translation>
 <translation id="2386793615875593361">Una selezionata</translation>
-<translation id="2387703759148866940">Compila automaticamente le password</translation>
 <translation id="2390457533592708044">Nascondi "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Il pacco non può essere consegnato</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
@@ -314,6 +316,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2462736546165239215">Qui puoi trovare tutta la tua cronologia di navigazione.</translation>
+<translation id="2466518891828668184">Salva le password per accedere facilmente a siti e app.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Il tuo browser è protetto</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
@@ -614,6 +617,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3997522473364371632">La condivisione della password è stata disattivata dall'amministratore.</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4004204301268239848">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo.</translation>
+<translation id="4018440314314549819">Compilazione automatica delle password salvate</translation>
 <translation id="4021447724486050609">Aggiorna il browser</translation>
 <translation id="4021931095789478915">Aggiungi ${url} all'elenco di lettura</translation>
 <translation id="4028871427853484857">Salva nell'account…</translation>
@@ -634,6 +638,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4113957097611235433">Cambia le password</translation>
 <translation id="4120936477286528673">Questo sito sta cercando ripetutamente di aprire un'altra applicazione.</translation>
 <translation id="4121993058175073134">Per inviare dati net-export, configura il tuo account email nell'app Impostazioni.</translation>
+<translation id="4133139945030148655">Hai già completato la configurazione</translation>
 <translation id="4133265950310064865">Protezione avanzata</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -701,6 +706,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4445840280797509738">Altre opzioni per <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Puoi far scorrere il bordo per andare avanti o indietro.</translation>
 <translation id="4460014764210899310">Separa</translation>
+<translation id="446314443268698477">Acquista, traduci e identifica ciò che vedi con la fotocamera o tramite le foto.</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469834037720363704">Numero pacco</translation>
 <translation id="4471472356135655769">Impossibile esportare le password</translation>
@@ -800,6 +806,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4871719318659334896">Chiudi gruppo</translation>
 <translation id="4872664437015695612">Apri in Download</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
+<translation id="4876665338492917862">Ultima apertura: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Ricordamelo più tardi</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4889521386764567563">Profilo corrente</translation>
@@ -1137,6 +1144,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6418346271604475326">Preparazione del PDF</translation>
 <translation id="6429213933892582367">Apri Opzioni password</translation>
 <translation id="6434591244308415567">Si è verificato un errore. Riprova più tardi.</translation>
+<translation id="6436318499800111867">Condivisi con me il: <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6443118737398455446">Data di scadenza non valida</translation>
 <translation id="6444435711855078002">Altre opzioni</translation>
 <translation id="6445051938772793705">Paese</translation>
@@ -1215,6 +1223,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6709964700841491574">Modalità di blocco</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Vai al feed</translation>
+<translation id="6713676799463473249">Ultima modifica: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6723740634201835758">Nell'Account Google</translation>
 <translation id="672735642903863329">Trova i preferiti, le password e altri dati su tutti i dispositivi.</translation>
 <translation id="6732087373923685049">fotocamera</translation>
@@ -1358,6 +1367,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="745899714366929493">Tutto il giorno</translation>
 <translation id="7465351360025415755">Ricevi i contenuti che ti interessano</translation>
 <translation id="7468373585447318060">Tieni sotto controllo i cali di prezzo di tutti i prodotti che monitori.</translation>
+<translation id="746872191028309255">Acquista ciò che vedi con la fotocamera o la galleria fotografica.</translation>
 <translation id="7471557245617580330">Crea nuova scheda</translation>
 <translation id="747956641630879526">Se nascondi questa scheda, il tracciamento della spedizione verrà disattivato e verranno rimossi tutti i tuoi dati</translation>
 <translation id="7484645889979462775">Mai per questo sito</translation>
@@ -1384,6 +1394,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7567579665882069209">I preferiti sono nascosti</translation>
 <translation id="7577900504646297215">Gestisci interessi</translation>
+<translation id="7582666837709186351">Traduci con la fotocamera il testo nelle foto o nell'ambiente circostante.</translation>
 <translation id="7582857256643797524">Questa impostazione è attiva sul tuo dispositivo</translation>
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Chiudere {COUNT} scheda non attiva?}other{Chiudere {COUNT} schede non attive?}}</translation>
@@ -1419,7 +1430,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7730973429297233609">Seleziona l'account che vuoi utilizzare per salvare <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo su questo dispositivo.</translation>
 <translation id="7744192722284567281">Rilevata in una violazione dei dati</translation>
-<translation id="7746165521091043703">Apri le impostazioni di Compila automaticamente le password</translation>
 <translation id="7749790401023484470">Non hai selezionato alcun testo.</translation>
 <translation id="7757015014239760147">Nessun nome utente ••••••••</translation>
 <translation id="775755486779745798">Compila automaticamente il mese di scadenza <ph name="MONTH" /></translation>
@@ -1479,7 +1489,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="7975036700432177008">Prova</translation>
 <translation id="797588153137233716">Menu → Cronologia → Elimina dati di navigazione</translation>
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
-<translation id="7978018860671536736">3. Tocca Riempimento automatico password</translation>
 <translation id="797824194429476746">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato definitivamente.</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7987685713885608670">Per maggiore sicurezza, cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google.</translation>

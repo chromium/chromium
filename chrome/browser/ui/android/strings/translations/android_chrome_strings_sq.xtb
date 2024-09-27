@@ -266,6 +266,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa e faturimit</translation>
 <translation id="228704530595896923">Listë e opsioneve të ndarjes.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Shiko <ph name="TABS_COUNT_ONE" /> skedë}other{Shiko <ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2297822946037605517">Ndaje këtë faqe</translation>
 <translation id="22981027763501686">Sinkronizo për të marrë faqeshënuesit, historikun etj. në pajisjet e tua të tjera</translation>
 <translation id="230115972905494466">Nuk u gjetën pajisje të përputhshme</translation>
@@ -1301,6 +1302,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6964300328304469089">Aktualisht është zgjedhur <ph name="NAME" />, <ph name="EMAIL" />. Zgjidh një llogari.</translation>
 <translation id="696447261358045621">Dil nga modaliteti "i fshehtë"</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Shiko <ph name="TABS_COUNT_ONE" /> skedë me aktivitet të ri në grupet e ndara të skedave}other{Shiko <ph name="TABS_COUNT_MANY" /> skeda me aktivitet të ri në grupet e ndara të skedave}}</translation>
 <translation id="6971862865055170158">Mos e mirato</translation>
 <translation id="6978717888677691380">Sajtet që ke bllokuar</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
@@ -1516,6 +1518,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7896724475402191389">Përmbajtje për mendjet e të vegjëlve - joaktive</translation>
 <translation id="7903184275147100332">Kjo mund të zgjasë një minutë</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 u bllokua nga organizata jote}other{# u bllokuan nga organizata jote}}</translation>
 <translation id="7914399737746719723">Aplikacioni u instalua</translation>
 <translation id="7919123827536834358">Përkthe automatikisht këto gjuhë</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>

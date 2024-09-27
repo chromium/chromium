@@ -1324,7 +1324,6 @@
 <translation id="342781501876943858">Chromium የእርስዎን ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="3428151540071562330">አንድ ወይም ተጨማሪ የDnsOverHttpsTemplates አገልጋይ ቅንብር ደንብ ዩአርአዮች ልክ ያልሆኑ ናቸው፣ እና ሥራ ላይ አይውሉም።</translation>
 <translation id="3428789896412418755">የተቦደነ ታሪክ</translation>
-<translation id="3430206873883193118">ለመጎብኘት እየሞከሩት ባለው ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃል፣ ስልክ ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን እንዲገልጹ ሊያታልሉዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">ገፅ ይዝጉ</translation>
 <translation id="3433111389595862568">የትብብር እና ጉባዔ የማድረግ ሶፍትዌር</translation>
 <translation id="3433144818443565002">የድምጽ እና ቪድዮ ውይይት</translation>
@@ -1342,7 +1341,6 @@
 <translation id="3447661539832366887">የዚህ መሣሪያ ባለቤት የዳይኖሰር ጨዋታውን አጥፍቶታል።</translation>
 <translation id="3447884698081792621">የእውቅና ማረጋገጫን አሳይ (በ<ph name="ISSUER" /> የሚሰጥ)</translation>
 <translation id="3450323514459570273">የእርስዎን MIDI መሣሪያዎች ለመቆጣጠር እና እንደገና ፕሮግራም ለማድረግ መጠየቅ ይችላል</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> ተፈቅዷል</translation>
 <translation id="3452404311384756672">የሚመጣው በየ፦</translation>
 <translation id="3453962258458347894">የዳግም ሙከራዎች ብዛት</translation>
 <translation id="3457781733462096492">ራፕ እና ሂፕ-ሆፕ</translation>
@@ -2569,7 +2567,6 @@
 <translation id="5689516760719285838">አካባቢ</translation>
 <translation id="569000877158168851">የDnsOverHttpsTemplates እሴቱ አይመለከተውም፣ እና ሥራ ላይ አይውልም፣ የDnsOverHttpsMode መመሪያው ወደ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ወይም <ph name="SECURE_DNS_MODE_SECURE" /> ካልተዋቀረ በስተቀር።</translation>
 <translation id="5691848789297492617">በሙሉ ቁመት የተከፈተ ካርድን ያስቀምጡ።</translation>
-<translation id="5692655638459249302">ለመጎብኘት እየሞከሩት ባለው ጣቢያ ላይ ያሉ አጥቂዎች እንደ የእርስዎ የይለፍ ቃል፣ ፎቶዎች፣ መልዕክቶች ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን የሚሰርቅ ወይም የሚሰርዝ ጎጂ ሶፍትዌርን ሊጭኑ ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">ግዢዎን ለማረጋገጥ እና ለማጠናቀቅ Windowsን ይጠቀሙ?</translation>
 <translation id="5699628521141772782">የወተት ምርት እና እንቁላሎች</translation>
 <translation id="5700761515355162635">የሦስተኛ ወገን ኩኪዎች ተፈቅደዋል</translation>
@@ -2717,7 +2714,6 @@
 <translation id="5995727681868049093">በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ያስተዳድሩ</translation>
 <translation id="5996255674476750320">የተሽከርካሪ ትርዒቶች</translation>
 <translation id="5997247540087773573">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ Google የይለፍ ቃል አስተዳዳሪ አሁኑኑ እንዲቀይሩት እና የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
-<translation id="5999271311987646952">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ እንደ የGoogle ጥንቃቄ አሰሳ ያሉ — <ph name="BEGIN_LINK" />በቅርብ ጊዜ ተንኮል አዘል ዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
 <translation id="6000528814684428358">ሃርድ ሮክ እና ፕሮግረሲቭ</translation>
 <translation id="6000758707621254961">ለ«<ph name="SEARCH_TEXT" />» <ph name="RESULT_COUNT" /> ውጤቶችን አሳይ</translation>
 <translation id="6001839398155993679">እንሂድ</translation>
@@ -2882,7 +2878,6 @@
 <translation id="6284449872909111707">ጽሁፍ እና ቅጽበታዊ መልዕክት መላላክ</translation>
 <translation id="6284517535531159884">የአማራጭ ቅርጾች ዘር ዓይነት</translation>
 <translation id="6287197303017372967">የአሰሳ ባህሪውን በመጠቀም ተራ በተራ በሆነ መመሪያ ወደ መድረሻዎ አቅጣጫዎችን ያግኙ።</translation>
-<translation id="6288521565586608304">ለመጎብኘት እየሞከሩት ባለው ጣቢያ ላይ ያሉ አጥቂዎች በእርስዎ የአሰሳ ዘዴ ላይ ተጽዕኖ የሚያደርስ ጎጂ ሶፍትዌር እንዲጭኑ ሊያታልሉዎት ይችላሉ — ለምሳሌ፣ የእርስዎን መነሻ ገጽ በመለወጥ ወይም በሚጎበኟቸው ጣቢያዎች ላይ ተጨማሪ ማስታወቂያዎችን ለእርስዎ በማሳየት። Chrome ጉዳትን ለማስወገድ ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">የዋጋ ቅናሽ ተገኝቷል</translation>
 <translation id="6289939620939689042">ገፅ ቀለም</translation>
 <translation id="6292819926564202163">የእርስዎ የፍለጋ ፕሮግራም በChrome ውስጥ</translation>
@@ -3076,7 +3071,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">የኮምፒውተር ትምህርት</translation>
 <translation id="6633476656216409494">የንግድ እና አምራች ሶፍትዌር</translation>
-<translation id="6638353438328951386">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ — እንደ የGoogle ጥንቃቄ አሰሳ ያሉ <ph name="BEGIN_LINK" />በቅርብ ጊዜ ተንኮል አዘል ዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6645291930348198241">ኩኪዎችን እና የጣቢያ ውሂብን ይድረሱ።</translation>
 <translation id="6645478838938543427">የዋጋ ቅነሳ ማንቂያዎች ወደ <ph name="EMAIL_ADDRESS" /> ይላካሉ</translation>
@@ -3290,7 +3284,6 @@
 <translation id="701757816833614688">የሚታይ ሥነ ጥበብ እና ዲዛይን ትምህርት</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
-<translation id="7024932305105294144">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ — እንደ የGoogle ጥንቃቄ አሰሳ ያሉ<ph name="BEGIN_LINK" />በቅርብ ጊዜ ማስገር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት። የሚያሰግሩ ጣቢያዎች እርስዎን ለመሸወድ ሌሎች ጣቢያዎችን እንደሆኑ ያስመስላሉ።<ph name="NEW_LINE" />በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስህተት ተፈጥሯል ብለው ካሰቡ እና ይህ ጣቢያ አደጋ የማያስከትል ከሆነ <ph name="BEGIN_ERROR_LINK" />ያሳወቁን<ph name="END_ERROR_LINK" />።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7030164307377592766">የመክፈያ ዘዴዎችን ለመሙላት ቅንብሮችን ያስተካክሉ።</translation>
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
@@ -3368,7 +3361,6 @@
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» በዚህ መድረክ ላይ የሚደገፍ ገደብ አይደለም</translation>
 <translation id="717330890047184534">የGaia መታወቂያ፦</translation>
 <translation id="7173338713290252554">በመላው ድር ላይ የዋጋ ታሪክ</translation>
-<translation id="7173478186876671324">የእርስዎ አስተዳዳሪ የእርስዎን <ph name="PERMISSION" /> ለዚህ ጣቢያ አግዶታል</translation>
 <translation id="7174545416324379297">ተዋህደዋል</translation>
 <translation id="7175097078723125014">የአድራሻ አርትዕ ያድርጉ አማራጭ ተመርጧል</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}one{<ph name="SHIPPING_OPTION_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}}</translation>
@@ -3402,7 +3394,6 @@
 <translation id="7221857374443660083">የእርስዎ ባንክ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="722454870747268814">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="7227293336683593977">የዋጋ ታሪክ</translation>
-<translation id="7227747683324411744">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ አጥቂዎች የሚያስሱበት መንገድ ላይ ተጽዕኖ የሚያደርስ ጎጂ ሶፍትዌር እንዲጭኑ ሊያታልሉዎት ይችላሉ — ለምሳሌ፣ የእርስዎን መነሻ ገፅ በመለወጥ ወይም በሚጎበኟቸው ጣቢያዎች ላይ ተጨማሪ ማስታወቂያዎችን ለእርስዎ በማሳየት።</translation>
 <translation id="7232352818707016189">ለሚነጻጸር ሠንጠረዥ ተጨማሪ እርምጃዎች</translation>
 <translation id="7233592378249864828">የህትመት ማረጋገጫ ሉህ</translation>
 <translation id="7234112195906418665">ጉዞ እና መጓጓዣ</translation>
@@ -3623,7 +3614,6 @@
 <translation id="7598391785903975535">ከ<ph name="UPPER_ESTIMATE" /> በታች</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> በአሁኑ ጊዜ ይህን ጥያቄ ተቀብሎ ለማስተናገድ አይችልም።</translation>
 <translation id="7599089013883397081">የእረፍት ጊዜን በማውረድ ላይ</translation>
-<translation id="7605377493722372900">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ አጥቂዎች እንደ የእርስዎ የይለፍ ቃል፣ ፎቶዎች፣ መልዕክቶች ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን የሚሰርቅ ወይም የሚሰርዝ ጎጂ ሶፍትዌርን ሊጭኑ ይችላሉ።</translation>
 <translation id="7608583484192556132">የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ ይሁን አይሁን ይህ ቅንብር፣ <ph name="BEGIN_LINK_1" />በጣቢያ የተጠቆሙ ማስታወቂያዎች<ph name="END_LINK_1" />፣ የእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> እና እያዩት ያለው ጣቢያ ማስታወቂያዎች ግላዊነትን የተላበሱ የሚያደርግ ከሆነ ጨምሮ በብዙ ነገሮች ላይ የሚወሰን ሊሆን ይችላል። <ph name="BEGIN_LINK_3" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="END_LINK_3" /> የበለጠ ይረዱ።</translation>
 <translation id="7610193165460212391">እሴት ከክልል <ph name="VALUE" /> ውጭ ነው።</translation>
 <translation id="7613889955535752492">የሚያበቃበት ጊዜ፦ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4076,7 +4066,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ማይክሮፎን ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="8421158157346464398">የስራ መገለጫ መረጃ (እንደ የእርስዎ የስራ መገለጫ የተጠቃሚ ስም ያለ)</translation>
-<translation id="8422228580902424274">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃል፣ ስልክ ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን እንዲገልጡ ሊያታልሉዎት ይችላሉ።</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8427848540066057481">500 x 750 ሚሜ</translation>
@@ -4228,7 +4217,6 @@
 <translation id="8722929331701811374">የጽሑፍ መሣሪያ (የደብዳቤ ርዕስ)</translation>
 <translation id="8724824364712796726">ቢ6 ፖስታ</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
-<translation id="8725667981218437315">ካሜራ እና ማይክሮፎን</translation>
 <translation id="8726549941689275341">የገጽ መጠን፦</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
@@ -4437,7 +4425,6 @@
 <translation id="9119042192571987207">ተሰቅሏል</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="912327514020027767">ቀሚሶች</translation>
-<translation id="912414390325846156">ከዚህ በፊት ለዚህ ጣቢያ አይፈቀድ የሚለውን መርጠዋል</translation>
 <translation id="9128870381267983090">ከአውታረ መረብ ጋር ይገናኙ</translation>
 <translation id="9131119348384879525">ሚስጥራዊ ይዘት ይቀረጹ?</translation>
 <translation id="9133861214150761123">የሒሳብ አያያዝ እና ኦዲት ማድረግ</translation>

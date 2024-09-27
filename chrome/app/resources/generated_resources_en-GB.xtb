@@ -250,6 +250,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1174366174291287894">Your connection is always secure unless Chrome tells you otherwise</translation>
 <translation id="1175131936083782305">Your administrator has disabled this feature.</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
+<translation id="1175572348579024023">Scroll</translation>
 <translation id="1175914831232945926">Digits</translation>
 <translation id="1176471985365269981">Not allowed to edit files or folders on your device</translation>
 <translation id="1177073277575830464">Android quick setup is done. Continue setup on your <ph name="DEVICE_TYPE" />.</translation>
@@ -1438,6 +1439,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1997616988432401742">Your certificates</translation>
 <translation id="1998715278591719161">Allowed to track your hands</translation>
 <translation id="1999115740519098545">On start-up</translation>
+<translation id="1999763610967697511">Drag and drop</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">Experimental AI</translation>
 <translation id="2003130567827682533">To activate '<ph name="NAME" />' data, first connect to a Wi-Fi network</translation>
@@ -4176,6 +4178,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3948116654032448504">&amp;Search <ph name="SEARCH_ENGINE" /> for Image</translation>
 <translation id="3948334586359655083">This tab is playing audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> can edit files in the following folders</translation>
+<translation id="3948985214866944547">Most people block sharing precise location for this site</translation>
 <translation id="394984172568887996">Imported From IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> to make downloading files safer</translation>
 <translation id="3950820424414687140">Sign in</translation>
@@ -5387,6 +5390,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
 <translation id="4854317507773910281">Choose parent account for approval</translation>
 <translation id="485480310608090163">More settings and permissions</translation>
+<translation id="485806788160414322">Play or pause media</translation>
 <translation id="4858913220355269194">Footy</translation>
 <translation id="486213875233855629">Muted by your administrator</translation>
 <translation id="4862642413395066333">Signing OCSP Responses</translation>
@@ -9039,6 +9043,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7566118625369982896">Manage Play app links</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Create key combination</translation>
+<translation id="7568759527730933493">Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Secure connections are not used for some domains configured by your administrator.</translation>
 <translation id="756876171895853918">Customise avatar</translation>
 <translation id="7568790562536448087">Updating</translation>
 <translation id="7569983096843329377">Black</translation>
@@ -9201,6 +9206,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7676867886086876795">Send your voice to Google to allow dictation into any text field.</translation>
 <translation id="7678588695732963732">Reset all USB device permissions?</translation>
 <translation id="7679171213002716280">There are <ph name="PRINTER_COUNT" /> managed printers.</translation>
+<translation id="7679895819123160382">Make it harder for people with access to your Internet traffic to see which sites you visit. <ph name="PRODUCT_NAME" /> uses a secure connection to look up a site's IP address in the DNS (Domain Name System). Secure connections are not used for some domains configured by your administrator.</translation>
 <translation id="7680416688940118410">Touchscreen calibration</translation>
 <translation id="7681095912841365527">Site can use Bluetooth</translation>
 <translation id="7681597159868843240">Sites usually use your device's motion sensors for features like virtual reality or fitness tracking</translation>
@@ -9599,6 +9605,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7955105108888461311">Ask in person</translation>
 <translation id="7955177647836564772">If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
+<translation id="7956918070009672177">There are no <ph name="LANGUAGE" /> voices on your device. Connect to the Internet and try again.</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
 <translation id="7958157896921135832">Increase font size</translation>
 <translation id="7958828865373988933">If you want to create a passkey for <ph name="APP_NAME" /> on a USB security key, insert and touch it now</translation>

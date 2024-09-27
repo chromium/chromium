@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Muayyan sayt uchun tashqi xizmatga kirishga ruxsat bering.</translation>
 <translation id="310297983047869047">Avvalgi slaydi</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
+<translation id="310979712355504754">Hammasini oʻchirish</translation>
 <translation id="3114012059975132928">Video pleyer</translation>
 <translation id="3115898365077584848">Ma’lumotlarni ko‘rsatish</translation>
 <translation id="3123473560110926937">Ayrim saytlarda bloklangan</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ta element tanlandi</translation>
 <translation id="7260727271532453612">Ruxsat berildi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Yoqilsa, saytlar virtual reallik qurilmalaridan foydalanishni soʻrashi mumkin Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
-<translation id="7284451015630589124">Saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni blokladingiz. <ph name="BEGIN_LINK" />Kuzatuvdan himoyani boshqarish<ph name="END_LINK" /> uchun sozlamalarga kiring.</translation>
 <translation id="7302486331832100261">Odatda bildirishnomalarni bloklaysiz. Ruxsat berish uchun Tafsilotlar ustiga bosing.</translation>
 <translation id="7366415735885268578">Sayt qo‘shish</translation>
 <translation id="7368695150573390554">Barcha oflayn maʼlumotlar oʻchib ketadi</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Avval so‘ralsin</translation>
 <translation id="7423538860840206698">Klipborddan o‘qish taqiqlangan</translation>
 <translation id="7425915948813553151">Saytlar uchun tungi mavzu</translation>
-<translation id="7474522811371247902">Chrome koʻplab saytlarni tashqi cookie fayllardan foydalanishini cheklaydi. Lekin bu saytda tashqi cookie fayllarga ruxsat berilgan, chunki u asosiy xizmatlarni taqdim etishda ularga tayanadi.\n\nSozlamalar orqali <ph name="BEGIN_LINK" />kuzatuvdan himoyani boshqarishingiz mumkin<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Yoqilsa, saytlar kirish soʻrovlarini koʻrsatishi mumkin. Oʻchirilsa, koʻrsata olmaydi.</translation>
 <translation id="7554752735887601236">Sayt mikrofondan foydalanmoqda</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7804248752222191302">Sayt kameradan foydalanmoqda</translation>
 <translation id="7807060072011926525">Google taqdim qilgan</translation>
-<translation id="7822573154188733812">Chrome saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllardan foydalanuvchi saytlarni bloklaydi. <ph name="BEGIN_LINK" />Kuzatuvdan himoyani boshqarish<ph name="END_LINK" /> uchun sozlamalarga kiring.</translation>
 <translation id="7835852323729233924">Mediani ijro etish</translation>
 <translation id="783819812427904514">Video ovozini yoqish</translation>
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8617611086246832542">Yoqilsa, saytlarning desktop versiyasi koʻrinadi. Oʻchirilsa, saytlarning mobil versiyasi koʻrinadi.</translation>
-<translation id="8649036394979866943">Chrome aksariyat saytlarni kezayotganingizda sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni cheklaydi. <ph name="BEGIN_LINK" />Kuzatuvdan himoyani boshqarish<ph name="END_LINK" /> uchun sozlamalarga kiring.</translation>
 <translation id="8676316391139423634">Yoqilsa, saytlar qoʻllaringiz holatini kuzatishga ruxsat soʻrashi mumkin. Yoqilmasa, saytlar qoʻllaringiz holatini kuzatmaydi.</translation>
 <translation id="8676374126336081632">Tozalash</translation>
 <translation id="8681886425883659911">Yoqimsiz yoki befoyda reklamalar chiqadigan saytlarda reklamalar bloklanadi</translation>

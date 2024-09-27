@@ -266,6 +266,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2278052315791335171">Al eliminar esta contraseña, no se eliminará tu cuenta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="228704530595896923">Lista de opciones para compartir.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2297822946037605517">Compartir esta página</translation>
 <translation id="22981027763501686">Sincroniza para acceder a tus marcadores, tu historial y otras opciones en tus otros dispositivos</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
@@ -1301,6 +1302,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6964300328304469089">Se ha seleccionado <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña con actividad nueva en grupos de pestañas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas con actividad nueva en grupos de pestañas compartidos}}</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que has bloqueado</translation>
 <translation id="6979737339423435258">Desde siempre</translation>
@@ -1516,6 +1518,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7896724475402191389">Contenido para mentes jóvenes (desactivado)</translation>
 <translation id="7903184275147100332">Podría tardar un minuto</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tu organización ha bloqueado 1}other{Tu organización ha bloqueado #}}</translation>
 <translation id="7914399737746719723">Aplicación instalada</translation>
 <translation id="7919123827536834358">Traducir estos idiomas automáticamente</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>

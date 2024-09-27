@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">କମଳା</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ବିକଳ୍ପ</translation>
+<translation id="1293272072740285747">ପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ୱା ଆପଣଙ୍କୁ ଯଦି ଆଉ ଏହା ଆବଶ୍ୟକ ନାହିଁ, ତେବେ ଏହାକୁ ଡିଲିଟ କରିଦିଅନ୍ତୁ।
+
+ଯଦି ଆପଣ ଏହାକୁ ଡିଲିଟ କରନ୍ତି, ତେବେ ସମସ୍ତେ ତୁରନ୍ତ "<ph name="TITLE_OF_GROUP" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="1340839264183302272">ଗୋଷ୍ଠୀ ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="1419023007528516122">ଏହା ଆପଣଙ୍କ ଡିଭାଇସରୁ ଗୋଷ୍ଠୀକୁ ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ କରିଦେବ</translation>
 <translation id="1486715732399361704">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ସମସ୍ତ ଟାବ ଗ୍ରୁପ ଖୋଜିପାରିବେ</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
+<translation id="2671423594960767771">ଗୋଷ୍ଠୀ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CHANGED" /> ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CHANGED" /> ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_HOURS_MANY" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}}</translation>
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="5615302411300498438">ପରେ ଟାବ ଯୋଗ କରିବା ପାଇଁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ବା ଏଥିରୁ ବାହାରି ଯାଆନ୍ତୁ।
+
+ଯଦି ଆପଣ ବାହାରି ଯାଆନ୍ତି, ତେବେ ଆପଣ ତୁରନ୍ତ "<ph name="TITLE_OF_GROUP" />" ଟାବ ଗ୍ରୁପକୁ ଆକ୍ସେସ ହରାଇବେ।</translation>
 <translation id="5627941783489838464">କୌଣସି ଟାବ ଅପଡେଟ ନାହିଁ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ଟାବକୁ ରିଷ୍ଟୋର କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeରୁ <ph name="TABS_COUNT_ONE" />ଟି ଲିଙ୍କ}other{Chromeରୁ <ph name="TABS_COUNT_MANY" />ଟି ଲିଙ୍କ}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="8631711675211020168">ସମସ୍ତେ ତୁରନ୍ତ <ph name="GROUP_NAME" /> ଟାବ ଗ୍ରୁପକୁ ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="8633025649649592204">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ</translation>
+<translation id="8635399646025169806">ଟାବ ଗ୍ରୁପ ରଖିବେ?</translation>
 <translation id="870736955561925754">ଟାବକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8730999928494395583">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_MONTHS_MANY" /> ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
+<translation id="8804742093141782941">ଗ୍ରୁପ ରଖନ୍ତୁ</translation>
 <translation id="8820741577754260431">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="8887921976452567404">ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ।</translation>
 <translation id="8915916167043355778">ସବୁ ବନ୍ଦ କରନ୍ତୁ</translation>

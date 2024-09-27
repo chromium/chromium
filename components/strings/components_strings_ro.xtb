@@ -1325,7 +1325,6 @@
 <translation id="342781501876943858">Chromium îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="3428151540071562330">Una sau mai multe dintre adresele URI pentru șabloanele de server DnsOverHttpsTemplates este nevalidă și nu va fi folosită.</translation>
 <translation id="3428789896412418755">Istoric grupat</translation>
-<translation id="3430206873883193118">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parola, numărul de telefon sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3433111389595862568">Software pentru colaborare și conferințe</translation>
 <translation id="3433144818443565002">Chat vocal și video</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3447661539832366887">Proprietarul acestui dispozitiv a dezactivat jocul cu dinozaurul.</translation>
 <translation id="3447884698081792621">Afișează certificatul (emis de <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Poate solicita permisiunea de a controla și a reprograma dispozitivele MIDI</translation>
-<translation id="3451429106322189478">Se permite <ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">Interval de preluare:</translation>
 <translation id="3453962258458347894">Numărul de reîncercări</translation>
 <translation id="3457781733462096492">Rap și hip-hop</translation>
@@ -2570,7 +2568,6 @@
 <translation id="5689516760719285838">Locație</translation>
 <translation id="569000877158168851">Valoarea DnsOverHttpsTemplates nu este relevantă și nu va fi folosită decât dacă politica DnsOverHttpsMode este setată la <ph name="SECURE_DNS_MODE_AUTOMATIC" /> sau la <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Salvează cardul deschis la înălțimea completă.</translation>
-<translation id="5692655638459249302">Atacatorii de pe site-ul pe care încerci să-l accesezi pot instala software dăunător care fură sau șterge informații cum ar fi parola, fotografiile, mesajele sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Folosești Windows Hello ca să confirmi și finalizezi achiziția?</translation>
 <translation id="5699628521141772782">Lactate și ouă</translation>
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
@@ -2718,7 +2715,6 @@
 <translation id="5995727681868049093">Gestionează-ți informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="5996255674476750320">Emisiuni despre automobile</translation>
 <translation id="5997247540087773573">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să schimbi parola acum și să verifici parolele salvate.</translation>
-<translation id="5999271311987646952">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi.</translation>
 <translation id="6000528814684428358">Hard rock și rock progresiv</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6001839398155993679">Să începem</translation>
@@ -2883,7 +2879,6 @@
 <translation id="6284449872909111707">Mesaje text și instantanee</translation>
 <translation id="6284517535531159884">Tipul valorii de bază pentru variante</translation>
 <translation id="6287197303017372967">Primește indicații de orientare spre destinație cu îndrumări pas cu pas folosind funcția de navigare.</translation>
-<translation id="6288521565586608304">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software dăunător care afectează modul în care navighezi, de exemplu, schimbând pagina principală sau afișând anunțuri suplimentare pe site-urile pe care le accesezi. Chrome recomandă insistent să închizi pagina pentru a evita pericolele. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">A fost găsită o reducere</translation>
 <translation id="6289939620939689042">Culoarea paginii</translation>
 <translation id="6292819926564202163">Motorul tău de căutare în Chrome</translation>
@@ -3077,7 +3072,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Educație informatică</translation>
 <translation id="6633476656216409494">Software comercial și de productivitate</translation>
-<translation id="6638353438328951386">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent software dăunător<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi.</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645291930348198241">să acceseze cookie-urile și datele privind site-urile.</translation>
 <translation id="6645478838938543427">Alertele privind scăderea prețului vor fi trimise la <ph name="EMAIL_ADDRESS" /></translation>
@@ -3291,7 +3285,6 @@
 <translation id="701757816833614688">Educație în domeniul artelor vizuale și designului</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7023162328967545559">Avertisment de la administrator</translation>
-<translation id="7024932305105294144">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent activități de phishing<ph name="END_LINK" /> pe site-ul pe care încerci să-l accesezi. Site-urile de phishing falsifică alte site-uri pentru a te înșela.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7030164307377592766">să modifice setările pentru completarea metodelor de plată</translation>
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>
@@ -3369,7 +3362,6 @@
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> nu este o restricție acceptată pe această platformă</translation>
 <translation id="717330890047184534">Cod Gaia:</translation>
 <translation id="7173338713290252554">Istoricul prețurilor pe web</translation>
-<translation id="7173478186876671324">Administratorul a blocat <ph name="PERMISSION" /> pentru acest site</translation>
 <translation id="7174545416324379297">Îmbinată</translation>
 <translation id="7175097078723125014">A fost selectată opțiunea de editare a adresei</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3403,7 +3395,6 @@
 <translation id="7221857374443660083">Banca dorește să îți confirme identitatea</translation>
 <translation id="722454870747268814">Filă incognito nouă</translation>
 <translation id="7227293336683593977">Istoricul prețurilor</translation>
-<translation id="7227747683324411744">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software dăunător care afectează modul în care navighezi, de exemplu, schimbând pagina principală sau afișând anunțuri suplimentare pe site-urile pe care le accesezi.</translation>
 <translation id="7232352818707016189">Mai multe acțiuni pentru tabelul de comparație</translation>
 <translation id="7233592378249864828">Printează foaia de confirmare</translation>
 <translation id="7234112195906418665">Călătorii și transport</translation>
@@ -3624,7 +3615,6 @@ Detalii suplimentare:
 <translation id="7598391785903975535">Mai puțin de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Momentan, <ph name="HOST_NAME" /> nu poate procesa această solicitare.</translation>
 <translation id="7599089013883397081">Descărcarea a expirat</translation>
-<translation id="7605377493722372900">Atacatorii de pe site-ul pe care încerci să îl accesezi pot instala software dăunător care fură sau șterge elemente precum parola, fotografiile, mesajele sau numărul cardului de credit.</translation>
 <translation id="7608583484192556132">Personalizarea unui anunț afișat poate depinde de mai multe aspecte, printre care această setare, <ph name="BEGIN_LINK_1" />anunțurile sugerate de site-uri<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />setările pentru cookie-uri<ph name="END_LINK_2" /> și capacitatea site-ului accesat de a personaliza anunțurile. Află mai multe despre <ph name="BEGIN_LINK_3" />gestionarea confidențialității anunțurilor<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Valoarea este în afara intervalului <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Expiră pe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4077,7 +4067,6 @@ Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfonul este permis de această dată</translation>
 <translation id="8421158157346464398">Informațiile profilului de serviciu (cum ar fi numele de utilizator al profilului de serviciu)</translation>
-<translation id="8422228580902424274">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui lucruri precum parola, telefonul sau numărul cardului de credit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4229,7 +4218,6 @@ Detalii suplimentare:
 <translation id="8722929331701811374">Papetărie (cu antet)</translation>
 <translation id="8724824364712796726">Plic B6</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
-<translation id="8725667981218437315">Cameră și microfon</translation>
 <translation id="8726549941689275341">Dimensiunea paginii:</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731268612289859741">Cod de securitate</translation>
@@ -4438,7 +4426,6 @@ Detalii suplimentare:
 <translation id="9119042192571987207">Încărcat</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> solicită să-ți confirmi identitatea</translation>
 <translation id="912327514020027767">Fuste</translation>
-<translation id="912414390325846156">Anterior, ai ales să nu permiți pentru acest site</translation>
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9131119348384879525">Capturezi conținut confidențial?</translation>
 <translation id="9133861214150761123">Contabilitate și audit</translation>

@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">دیدن سایت</translation>
+<translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش ایجاد شد}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}}</translation>

@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
 <translation id="125153950246128346">ແຕະເພື່ອເບິ່ງແຖບອື່ນ</translation>
 <translation id="1273910660700874265">ຕົວເລືອກກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ລຶບມັນອອກຫາກທ່ານບໍ່ຕ້ອງການມັນແລ້ວ.
+
+ຫາກທ່ານລຶບມັນ, ທຸກຄົນຈະເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="TITLE_OF_GROUP" />" ແລະ ມັນຈະຖືກລຶບອອກຈາກອຸປະກອນທັງໝົດ.</translation>
 <translation id="1340839264183302272">ອອກຈາກກຸ່ມ</translation>
 <translation id="1419023007528516122">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="1486715732399361704">ທ່ານສາມາດຊອກຫາກຸ່ມແຖບທັງໝົດໄດ້ທີ່ນີ້</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">ການແນະນຳ: ທ່ານບໍ່ໄດ້ໃຊ້ແຖບຂອງທ່ານ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
 <translation id="2662028055331606429">ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ເຂົ້າເບິ່ງເວັບໄຊ</translation>
+<translation id="2671423594960767771">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບ, ປ່ຽນ <ph name="ANY_CHANGED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບ, ປ່ຽນ <ph name="ANY_CHANGED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_HOURS_ONE" /> ຊົ່ວໂມງກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_HOURS_MANY" /> ຊົ່ວໂມງກ່ອນ}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
+<translation id="5615302411300498438">ເກັບກຸ່ມໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກ.
+
+ຫາກທ່ານອອກ, ທ່ານຈະເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="TITLE_OF_GROUP" />" ທັນທີ.</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ກູ້ຄືນແຖບ}other{ກູ້ຄືນແຖບ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລິ້ງຈາກ Chrome}other{<ph name="TABS_COUNT_MANY" /> ລິ້ງຈາກ Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
 <translation id="8631711675211020168">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ <ph name="GROUP_NAME" /> ທັນທີ ແລະ ລະບົບຈະລຶບກຸ່ມດັ່ງກ່າວອອກຈາກອຸປະກອນທັງໝົດ</translation>
 <translation id="8633025649649592204">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
+<translation id="8635399646025169806">ເກັບກຸ່ມແຖບໄວ້ບໍ?</translation>
 <translation id="870736955561925754">ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8730999928494395583">ການເຄື່ອນໄຫວຂອງທ່ານໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນເຫຼົ່ານີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_MONTHS_ONE" /> ເດືອນກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_MONTHS_MANY" /> ເດືອນກ່ອນ}}</translation>
+<translation id="8804742093141782941">ເກັບກຸ່ມໄວ້</translation>
 <translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>
 <translation id="8887921976452567404">ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ.</translation>
 <translation id="8915916167043355778">ປິດທັງໝົດ</translation>

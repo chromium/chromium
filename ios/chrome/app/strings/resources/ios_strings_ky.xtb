@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">Өтмөктөрдү издөө…</translation>
 <translation id="2381405137052800939">Негизги параметрлер</translation>
 <translation id="2386793615875593361">1 тандалды</translation>
-<translation id="2387703759148866940">Сырсөздөрдү автоматтык түрдө толтуруу</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" функциясын жашыруу</translation>
 <translation id="2403129868389095715">Таңгагыңызды жеткирүү мүмкүн эмес</translation>
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
@@ -1419,7 +1418,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7730973429297233609"><ph name="FILENAME" /> (<ph name="FILESIZE" />) сактала турган аккаунтту тандаңыз</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ушул түзмөктө гана.</translation>
 <translation id="7744192722284567281">Сырсөз уурдалды</translation>
-<translation id="7746165521091043703">Сырсөздөрдү автотолтуруу жөндөөлөрүн ачыңыз</translation>
 <translation id="7749790401023484470">Текст тандаңыз.</translation>
 <translation id="7757015014239760147">Колдонуучунун аты жок ••••••••</translation>
 <translation id="775755486779745798">Мөөнөтү аяктоочу айды <ph name="MONTH" /> автотолтуруу</translation>
@@ -1479,7 +1477,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7975036700432177008">Байкап көрүү</translation>
 <translation id="797588153137233716">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
-<translation id="7978018860671536736">3. Сырсөздөрдү автотолтурууну таптап коюңуз</translation>
 <translation id="797824194429476746">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ биротоло өчүрүлөт.</translation>
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7987685713885608670">Кошумча коопсуздук үчүн Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрдү түзмөгүңүздө шифрлеңиз.</translation>

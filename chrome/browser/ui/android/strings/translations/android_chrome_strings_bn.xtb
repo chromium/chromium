@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
 <translation id="228704530595896923">শেয়ার করার বিকল্পের তালিকা।</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব দেখুন}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}}</translation>
 <translation id="2297822946037605517">এই পৃষ্ঠাটি শেয়ার করুন</translation>
 <translation id="22981027763501686">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য তথ্য অন্য ডিভাইসে পেতে সিঙ্ক করুন</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">বর্তমানে, <ph name="NAME" />, <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="696447261358045621">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_ONE" />টি ট্যাব দেখুন}one{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}other{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}}</translation>
 <translation id="6971862865055170158">অনুমোদন দেবেন না</translation>
 <translation id="6978717888677691380">আপনার ব্লক করা সাইট</translation>
 <translation id="6979737339423435258">শুরু থেকে</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">অপ্রাপ্তবয়স্কদের জন্য কন্টেন্ট - বন্ধ আছে</translation>
 <translation id="7903184275147100332">এটি করতে এক মিনিট সময় লাগতে পারে</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{আপনার সংস্থার মাধ্যমে ১টি ব্লক করা হয়েছে}one{আপনার সংস্থার মাধ্যমে #টি ব্লক করা হয়েছে}other{আপনার সংস্থার মাধ্যমে #টি ব্লক করা হয়েছে}}</translation>
 <translation id="7914399737746719723">অ্যাপ ইনস্টল করা হয়েছে</translation>
 <translation id="7919123827536834358">এই ভাষাগুলি অটোমেটিক অনুবাদ করা হবে</translation>
 <translation id="7926975587469166629">কার্ডের বিশেষ নাম</translation>

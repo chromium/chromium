@@ -266,6 +266,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste des options de partage.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet}one{Voir <ph name="TABS_COUNT_MANY" /> onglet}other{Voir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="22981027763501686">Activez la synchronisation pour récupérer vos favoris, votre historique et plus sur vos autres appareils</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
@@ -1301,6 +1302,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6964300328304469089">Actuellement sélectionné : <ph name="NAME" />, <ph name="EMAIL" />. Choisissez un compte.</translation>
 <translation id="696447261358045621">Quitter le mode navigation privée</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet avec une nouvelle activité dans les groupes d'onglets partagés}one{Voir <ph name="TABS_COUNT_MANY" /> onglet avec une nouvelle activité dans les groupes d'onglets partagés}other{Voir <ph name="TABS_COUNT_MANY" /> onglets avec une nouvelle activité dans les groupes d'onglets partagés}}</translation>
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
@@ -1516,6 +1518,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7896724475402191389">Contenu pour les plus jeunes (désactivé)</translation>
 <translation id="7903184275147100332">Cela peut prendre une minute</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 a été bloqué par votre organisation}one{# a été bloqué par votre organisation}other{# ont été bloqués par votre organisation}}</translation>
 <translation id="7914399737746719723">Appli installée</translation>
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
 <translation id="7926975587469166629">Nom donné à la carte</translation>

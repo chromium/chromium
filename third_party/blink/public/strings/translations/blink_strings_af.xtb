@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kamera word toegelaat</translation>
 <translation id="4664250907885839816">'n Deel wat '<ph name="ATSIGN" />' volg, behoort nie die simbool '<ph name="INVALIDCHARACTER" />' te bevat nie.</translation>
 <translation id="4718048029184481307">Speel tans prent-in-prent</translation>
-<translation id="4792862212177489858">Deel ligging</translation>
 <translation id="4812940957355064477">Voer asseblief 'n nommer in.</translation>
 <translation id="49269513399674318">Gebruik mikrofoon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> gekies</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Waarde moet groter as of gelyk aan <ph name="MINIMUM" /> wees.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Ligging toegelaat</translation>
 <translation id="5307600278924710095">Voer asseblief 'n deel gevolg deur "<ph name="ATSIGN" />" in. "<ph name="INVALIDADDRESS" />" is onvolledig.</translation>
 <translation id="5334352251556557839">Kan nie media speel nie.</translation>
 <translation id="537648784377940524">Minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor maksimum datum (<ph name="MAX_DATE_OR_TIME" />) wees.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Kon nie inprop laai nie.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans 1 karakter).</translation>
-<translation id="7080893216867146095">Deel van ligging word toegelaat</translation>
 <translation id="709897737746224366">Kry passing vir versoekte formaat.</translation>
 <translation id="7134810312945846184">Gebruik mikrofoon en kamera</translation>
 <translation id="7263440858009898357">Kies asseblief 'n item uit die lys.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Waarde moet tussen <ph name="MINIMUM_TIME" /> en <ph name="MAXIMUM_TIME" /> wees.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> lêers</translation>
 <translation id="8451268428117625855">Kies asseblief 'n lêer.</translation>
+<translation id="8533587060884335451">Gebruik presiese ligging</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Reëlomvouing</translation>
 <translation id="8750798805984357768">Kies asseblief een van hierdie opsies.</translation>

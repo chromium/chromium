@@ -250,6 +250,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1174366174291287894">Twoje połączenie jest zawsze bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej</translation>
 <translation id="1175131936083782305">Administrator wyłączył tę funkcję.</translation>
 <translation id="1175364870820465910">&amp;Drukuj...</translation>
+<translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1175914831232945926">Cyfry</translation>
 <translation id="1176471985365269981">Nie zezwolono na edytowanie plików ani folderów na urządzeniu</translation>
 <translation id="1177073277575830464">Szybka konfiguracja Androida została ukończona. Kontynuuj konfigurację na urządzeniu <ph name="DEVICE_TYPE" /></translation>
@@ -1426,6 +1427,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1997616988432401742">Twoje certyfikaty</translation>
 <translation id="1998715278591719161">Mogą śledzić Twoje ręce</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
+<translation id="1999763610967697511">Przeciąganie i upuszczanie</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
 <translation id="2002160221914907025">Eksperymentalna AI</translation>
 <translation id="2003130567827682533">Aby włączyć usługę transmisji danych „<ph name="NAME" />”, najpierw połącz się z siecią Wi-Fi</translation>
@@ -2906,6 +2908,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="304644035656848980">Podgląd mikrofonu</translation>
 <translation id="3046910703532196514">Strona internetowa, kompletna</translation>
 <translation id="304747341537320566">Mechanizmy syntezy mowy</translation>
+<translation id="3047678109605649715">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="3048336643003835855">Urządzenie HID firmy <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Odtwórz (k)</translation>
 <translation id="3048742847101793553">Twoja organizacja zablokowała ten plik, ponieważ skanowanie się nie powiodło.</translation>
@@ -5354,6 +5357,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4853020600495124913">Otwórz w &amp;nowym oknie</translation>
 <translation id="4854317507773910281">Wybierz konto rodzica na potrzeby zatwierdzenia</translation>
 <translation id="485480310608090163">Więcej ustawień i uprawnień</translation>
+<translation id="485806788160414322">Odtwórz lub wstrzymaj multimedia</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Wyciszony przez administratora</translation>
 <translation id="4862642413395066333">Podpisywanie odpowiedzi protokołu OCSP</translation>

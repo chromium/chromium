@@ -301,7 +301,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2377336083033403521">Lapok keresése…</translation>
 <translation id="2381405137052800939">Alapok</translation>
 <translation id="2386793615875593361">1 kijelölve</translation>
-<translation id="2387703759148866940">Jelszavak automatikus kitöltése</translation>
 <translation id="2390457533592708044">A(z) „<ph name="MODULE_NAME" />” elrejtése</translation>
 <translation id="2403129868389095715">A csomag nem kézbesíthető</translation>
 <translation id="2410754283952462441">Válasszon fiókot</translation>
@@ -1419,7 +1418,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7730973429297233609">Válassza ki a fiókot, amelyet használni szeretne a következő mentéséhez: <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Csak erre az eszközre.</translation>
 <translation id="7744192722284567281">Megtalálható adatvédelmi incidensben</translation>
-<translation id="7746165521091043703">Nyissa meg az automatikus kitöltés jelszóbeállításait.</translation>
 <translation id="7749790401023484470">Nem választott ki szöveget.</translation>
 <translation id="7757015014239760147">Nincs felhasználónév ••••••••</translation>
 <translation id="775755486779745798">A következő lejárati hónap automatikus kitöltése: <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="7975036700432177008">Kipróbálás</translation>
 <translation id="797588153137233716">Menü → Előzmények → Böngészési adatok törlése</translation>
 <translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
-<translation id="7978018860671536736">3. Koppintson az AutoFill Passwords (Jelszavak automatikus kitöltése) lehetőségre</translation>
 <translation id="797824194429476746">A lapok nyitva maradnak ezen az eszközön, de a csoport véglegesen törlődni fog.</translation>
 <translation id="7982789257301363584">Hálózat</translation>
 <translation id="7987685713885608670">A fokozott biztonság érdekében titkosíthatja jelszavait eszközén, mielőtt a rendszer elmenti őket a Google Jelszókezelőbe.</translation>

@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Visoka HTTP latentnost</translation>
 <translation id="5790391387506209808">lapis lazulija</translation>
-<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nema nijedne dodijeljene prečice</translation>
 <translation id="5826644637650799838">O umjetnosti</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
@@ -1019,6 +1018,7 @@
 <translation id="6122191549521593678">Na mreži</translation>
 <translation id="6122277663991249694">Usluga načina unosa u ChromeOS</translation>
 <translation id="6127426868813166163">bijela</translation>
+<translation id="613049107179582049">Kada je zvuk Chromebooka uključen, Diktafon snima sve zvukove koji se reproduciraju na uređaju</translation>
 <translation id="6136285399872347291">brisanje unatrag</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Korisnički certifikat</translation>
@@ -1207,6 +1207,7 @@
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965978654500191972">Uređaj</translation>
+<translation id="6972754398087986839">Započnite</translation>
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> sa svijetlećim objektom "<ph name="GLOWSCAPES_FEATURE" />"</translation>
 <translation id="6975981640379148271">Koale</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
@@ -1587,7 +1588,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8881098542468797602">Test je uspješan</translation>
 <translation id="8882789155418924367">Sove</translation>
 <translation id="8892443466059986410">Otkazivanje izmjene prečice</translation>
-<translation id="8897043028305808902">Datoteka je preimenovana</translation>
+<translation id="8897043028305808902">Naziv fajla je promijenjen</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8909114361904403025">strelica nagore</translation>
 <translation id="8910721771319628100">Zadana mreža je iznad praga latentnosti</translation>

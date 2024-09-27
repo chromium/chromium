@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="SITE" /> не выдаліцца</translation>
 <translation id="2286841657746966508">Адрас для выстаўлення рахункаў</translation>
 <translation id="228704530595896923">Спіс варыянтаў абагульвання.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Праглядзець <ph name="TABS_COUNT_ONE" /> укладку}one{Праглядзець <ph name="TABS_COUNT_MANY" /> укладку}few{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}many{Праглядзець <ph name="TABS_COUNT_MANY" /> укладак}other{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2297822946037605517">Абагуліць гэту старонку</translation>
 <translation id="22981027763501686">Каб закладкі, гісторыя і іншыя даныя былі даступныя на іншых вашых прыладах, уключыце сінхранізацыю</translation>
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Зараз выбрана: <ph name="NAME" />, <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Праглядзець <ph name="TABS_COUNT_ONE" /> укладку з новым дзеяннем у абагуленых групах укладак}one{Праглядзець <ph name="TABS_COUNT_MANY" /> укладку з новым дзеяннем у абагуленых групах укладак}few{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі з новым дзеяннем у абагуленых групах укладак}many{Праглядзець <ph name="TABS_COUNT_MANY" /> укладак з новым дзеяннем у абагуленых групах укладак}other{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі з новым дзеяннем у абагуленых групах укладак}}</translation>
 <translation id="6971862865055170158">Не ўхваляць</translation>
 <translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Змесціва для дзяцей – выключана</translation>
 <translation id="7903184275147100332">Пачакайце</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 спампоўка заблакіравана вашай арганізацыяй}one{# спампоўка заблакіравана вашай арганізацыяй}few{# спампоўкі заблакіраваны вашай арганізацыяй}many{# спамповак заблакіраваны вашай арганізацыяй}other{# спампоўкі заблакіраваны вашай арганізацыяй}}</translation>
 <translation id="7914399737746719723">Праграма ўсталявана</translation>
 <translation id="7919123827536834358">Аўтаматычна перакладаць з гэтых моў</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>

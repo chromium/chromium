@@ -41,6 +41,7 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="2662028055331606429">Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Tembelea tovuti</translation>
+<translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kimeongezwa, <ph name="ANY_CHANGED" /> vimebadilishwa na <ph name="ANY_CLOSED" /> vimefungwa}other{Vichupo <ph name="MANY_ADDED" /> vimeongezwa, <ph name="ANY_CHANGED" /> vimebadilishwa na <ph name="ANY_CLOSED" /> vimefungwa}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Kiliundwa saa <ph name="NUM_HOURS_ONE" /> iliyopita}other{Kiliundwa saa <ph name="NUM_HOURS_MANY" /> zilizopita}}</translation>

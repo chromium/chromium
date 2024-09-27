@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chrome থেকে কোনও সতর্কতা না পাওয়া পর্যন্ত আপনার সংযোগটি সুরক্ষিত</translation>
 <translation id="1175131936083782305">আপনার অ্যাডমিনিস্ট্রেটর এই ফিচারটি বন্ধ করে দিয়েছেন।</translation>
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
+<translation id="1175572348579024023">স্ক্রল করুন</translation>
 <translation id="1175914831232945926">ডিজিট</translation>
 <translation id="1176471985365269981">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করার অনুমতি নেই</translation>
 <translation id="1177073277575830464">Android-এর 'দ্রুত সেট-আপ' সম্পূর্ণ হয়েছে। আপনার <ph name="DEVICE_TYPE" />-এ সেট-আপ করা চালিয়ে যান।</translation>
@@ -1439,6 +1440,7 @@
 <translation id="1997616988432401742">আপনার সংশাপত্রসমূহ</translation>
 <translation id="1998715278591719161">আপনার হাত ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1999115740519098545">প্রারম্ভে</translation>
+<translation id="1999763610967697511">ড্র্যাগ করে ড্রপ করুন</translation>
 <translation id="2002109485265116295">রিয়েল-টাইম</translation>
 <translation id="2002160221914907025">পরীক্ষমূলক AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ডেটা চালু করতে, প্রথমে একটি নেটওয়ার্কে কানেক্ট করুন</translation>
@@ -2936,6 +2938,7 @@
 <translation id="304644035656848980">আপনার মাইক্রোফোনের প্রিভিউ</translation>
 <translation id="3046910703532196514">Webpage, Complete</translation>
 <translation id="304747341537320566">ভাষ্য ইঞ্জিন</translation>
+<translation id="3047678109605649715">আপনার ডিভাইসে <ph name="LANGUAGE" /> ভাষার ভয়েস কাজ করে না। আপনার ডিভাইসে জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" />-এর HID ডিভাইস</translation>
 <translation id="3048589239114571785">চালু করুন (k)</translation>
 <translation id="3048742847101793553">স্ক্যান না হওয়ায় আপনার সংস্থা এই ফাইল ব্লক করে দিয়েছে।</translation>
@@ -3498,6 +3501,7 @@
 <translation id="3487649228420469005">স্ক্যান করা হয়ে গেছে</translation>
 <translation id="3488199663160411179">নাম</translation>
 <translation id="3490695139702884919">ডাউনলোড হচ্ছে... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">আপনি পিন বা পাসওয়ার্ড ভুলে গেলেও, স্থানীয় ডেটা ফিরিয়ে আনা যাবে</translation>
 <translation id="3491669675709357988">আপনার সন্তানের অ্যাকাউন্ট Family Link-এর মাধ্যমে অভিভাবকীয় নিয়ন্ত্রণের জন্য সেট আপ করা হয়নি। সেট আপ করা হয়ে গেলে আপনি অভিভাবকীয় নিয়ন্ত্রণ যোগ করতে পারেন। Explore অ্যাপ থেকে আপনি অভিভাবকীয় নিয়ন্ত্রণ সম্পর্কে জানতে পারবেন।</translation>
 <translation id="3491678231052507920">আপনি যাতে ভিআর (VR) সেশনে যোগ দিতে পারেন, সেই জন্য সাইট সাধারণত আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করে</translation>
 <translation id="3493043608231401654">ট্যাব গ্রুপ থেকে <ph name="TAB_TITLE" /> সরান</translation>
@@ -4175,6 +4179,7 @@
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
 <translation id="3948334586359655083">এই ট্যাবটি অডিও চালাচ্ছে</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
+<translation id="3948985214866944547">বেশিরভাগ লোক এই সাইটের জন্য সুনির্দিষ্ট লোকেশন শেয়ার করার অনুমতি দেয় না</translation>
 <translation id="394984172568887996">IE থেকে আমাদানি করা</translation>
 <translation id="3949999964543783947">ফাইল ডাউনলোড করা আরও নিরাপদ করতে <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
@@ -5387,6 +5392,7 @@
 <translation id="4853020600495124913">&amp;নতুন উইন্ডোতে খুলুন</translation>
 <translation id="4854317507773910281">অনুমোদন করানোর জন্য অভিভাবকের অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="485480310608090163">আরও সেটিংস এবং অনুমতি</translation>
+<translation id="485806788160414322">মিডিয়া চালান অথবা পজ করুন</translation>
 <translation id="4858913220355269194">ফ্রিটজ</translation>
 <translation id="486213875233855629">আপনার অ্যাডমিনিস্ট্রেটর দ্বারা মিউট করা হয়েছে</translation>
 <translation id="4862642413395066333">OCSP টি প্রতিক্রিয়া স্বাক্ষরিত হচ্ছে</translation>
@@ -9042,6 +9048,7 @@
 <translation id="7566118625369982896">Play অ্যাপের লিঙ্ক পরিচালনা করুন</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">কী কম্বিনেশন তৈরি করুন</translation>
+<translation id="7568759527730933493">ডিএনএস (ডোমেন নেম সিস্টেম) থেকে কোনও সাইটের IP অ্যাড্রেস খুঁজতে সুরক্ষিত কানেকশন ব্যবহার করুন। এটি <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-এ ম্যানেজ করা হয়েছে, এমন পরিষেবা প্রদানকারী ব্যবহার করে। আপনার অ্যাডমিনিস্ট্রেটর এমন কিছু ডোমেন কনফিগার করেছে যার জন্য সুরক্ষিত কানেকশন ব্যবহার করা যাবে না।</translation>
 <translation id="756876171895853918">অবতার কাস্টমাইজ করুন</translation>
 <translation id="7568790562536448087">আপডেট হচ্ছে</translation>
 <translation id="7569983096843329377">কালো</translation>
@@ -9204,6 +9211,7 @@
 <translation id="7676867886086876795">যেকোনও টেক্সট ক্ষেত্রে ডিকটেশনের অনুমতি দেওয়ার জন্য Google-কে আপনার ভয়েস পাঠান।</translation>
 <translation id="7678588695732963732">সব USB ডিভাইসের অনুমতি রিসেট করবেন?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" />টি ম্যানেজ করা প্রিন্টার আছে।</translation>
+<translation id="7679895819123160382">আপনি যে ইন্টারনেট ট্রাফিক ব্যবহার করছেন, সেটির অ্যাক্সেস থাকা লোকজনেরা যাতে আপনি কোন কোন সাইট দেখেন তা দেখতে না পারেন তার ব্যবস্থা করুন। <ph name="PRODUCT_NAME" /> ডিএনএস (ডোমেন নেম সিস্টেম)-এ কোনও সাইটের IP অ্যাড্রেস দেখতে সুরক্ষিত কানেকশন ব্যবহার করে। আপনার অ্যাডমিনিস্ট্রেটর এমন কিছু ডোমেন কনফিগার করেছে যার জন্য সুরক্ষিত কানেকশন ব্যবহার করা যাবে না।</translation>
 <translation id="7680416688940118410">টাচস্ক্রিন ক্যালিব্রেশন</translation>
 <translation id="7681095912841365527">সাইটটি ব্লুটুথ ব্যবহার করতে পারে</translation>
 <translation id="7681597159868843240">সাইটগুলি সাধারণত আপনার ডিভাইসের ভার্চুয়াল রিয়েলিটি অথবা ফিটনেস ট্র্যাকিংয়ের মতো মোশন সেন্সর ফিচার ব্যবহার করে</translation>
@@ -9601,6 +9609,7 @@
 <translation id="7955105108888461311">ব্যক্তিগতভাবে অ্যাক্সেস চান</translation>
 <translation id="7955177647836564772">Smart Lock চালু থাকা অবস্থায় আপনার ফোন যদি আনলক থাকে, তাহলে আপনাকে পাসওয়ার্ড বা পিন লিখতে হবে না</translation>
 <translation id="7956373551960864128">আপনার সেভ করা প্রিন্টার</translation>
+<translation id="7956918070009672177">আপনার ডিভাইসে <ph name="LANGUAGE" /> ভয়েস কাজ করে না। ইন্টারনেটের সাথে কানেক্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="7957074856830851026">ডিভাইসের তথ্য দেখুন, যেমন এর সিরিয়াল নম্বর বা অ্যাসেট আইডি</translation>
 <translation id="7958157896921135832">ফন্ট সাইজ বাড়ান</translation>
 <translation id="7958828865373988933">আপনি <ph name="APP_NAME" />-এর জন্য USB নিরাপত্তা কী-তে পাসকী তৈরি করতে চাইলে, এখন সেটি যোগ ও টাচ করুন</translation>

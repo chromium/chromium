@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">টিভি এবং ভিডিও</translation>
 <translation id="1658918301167915956">ব্লুটুথ ডিভাইস</translation>
 <translation id="1662550410081243962">পেমেন্টের পদ্ধতিগুলি পূরণ করে সেভ করুন</translation>
+<translation id="1662980953334786797">একই ক্রমে</translation>
 <translation id="1663943134801823270">Chrome থেকে কার্ড এবং ঠিকানাগুলি এসেছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> এ এগুলি পরিচালনা করতে পারবেন।</translation>
 <translation id="1664389769577564606">ফ্লেক্সো ফটোপলিমার</translation>
 <translation id="166624440456221306">তুলনা সারণী মুছুন</translation>
@@ -1325,7 +1326,6 @@
 <translation id="342781501876943858">Chromium-এর নীতি অনুযায়ী আপনার পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates সার্ভারের এক বা একাধিক টেমপ্লেট ইউআরআই সঠিক নয় এবং ব্যবহার করা যাবে না।</translation>
 <translation id="3428789896412418755">গ্রুপ করা ইতিহাস</translation>
-<translation id="3430206873883193118">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত হ্যাকাররা আপনাকে দিয়ে প্রতারণা করে সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর ফলে, আপনার পাসওয়ার্ড, ফোন অথবা ক্রেডিট কার্ড নম্বরের মতো তথ্য প্রকাশ হয়ে যেতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">পৃষ্ঠা বন্ধ করুন</translation>
 <translation id="3433111389595862568">কোলাবোরেশন ও কনফারেন্সিং সফ্টওয়্যার</translation>
 <translation id="3433144818443565002">ভয়েস ও ভিডিও চ্যাট</translation>
@@ -1343,7 +1343,6 @@
 <translation id="3447661539832366887">এই ডিভাইসের মালিক ডাইনোসর গেমটি বন্ধ করেছেন৷</translation>
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
 <translation id="3450323514459570273">আপনার MIDI ডিভাইসকে নিয়ন্ত্রণ ও রিপ্রোগ্র্যাম করার জন্য অনুমতি চাইতে পারে</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3452404311384756672">বিরামকাল প্রাপ্ত করুন:</translation>
 <translation id="3453962258458347894">কতবার চেষ্টা করা যাবে</translation>
 <translation id="3457781733462096492">র‌্যাপ এবং হিপ-হপ</translation>
@@ -1660,6 +1659,7 @@
 <translation id="4023431997072828269">এই ফর্মটি এমন কানেকশন ব্যবহার করে জমা দেওয়া হয়েছে যা নিরাপদ নয়, তাই আপনার তথ্য অন্যান্য ব্যবহারকারীরা দেখতে পাবেন।</translation>
 <translation id="4025325634010721551">নীতি আবার লোড করা হয়েছে</translation>
 <translation id="4025338605225449265">মুদ্রা ও বৈদেশিক মুদ্রাবিনিময়</translation>
+<translation id="4025777154208238692">বিপরীত ক্রম</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />আক্রমণকারীরা সেই তথ্য দেখতে ও পরিবর্তন করতে পারে<ph name="END_STRONG" /> যা আপনি সাইট থেকে পান বা সাইটে পাঠান।
       <ph name="LIST_ITEM" />আপনি কোনও পাবলিক নেটওয়ার্ক ব্যবহার করাকালীন,<ph name="BEGIN_STRONG" />এই সাইট পরে দেখা সবচেয়ে নিরাপদ<ph name="END_STRONG" />। আপনার বাড়ি বা অফিসের ওয়াই-ফাইয়ের মতো বিশ্বস্ত নেটওয়ার্কের, ক্ষেত্রে ঝুঁকির সম্ভাবনা কম।
@@ -2569,7 +2569,6 @@
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates মান প্রাসঙ্গিক নয় এবং DnsOverHttpsMode নীতি হয় <ph name="SECURE_DNS_MODE_AUTOMATIC" /> অথবা <ph name="SECURE_DNS_MODE_SECURE" />-এ সেট না করা পর্যন্ত ব্যবহার করা যাবে না।</translation>
 <translation id="5691848789297492617">সম্পূর্ণ স্ক্রিন জুড়ে খোলা কার্ড সেভ করুন।</translation>
-<translation id="5692655638459249302">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত হ্যাকাররা আপনাকে দিয়ে প্রতারণা করে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। যা আপনার পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বরের মতো তথ্য চুরি করতে বা মুছে দিতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">আপনার কেনাকাটা যাচাই করা ও তা সম্পূর্ণ করার জন্য Windows Hello-এর সেন্সর ব্যবহার করতে চান?</translation>
 <translation id="5699628521141772782">ডেয়ারি ও ডিম</translation>
 <translation id="5700761515355162635">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
@@ -2717,7 +2716,6 @@
 <translation id="5995727681868049093">আপনার Google অ্যাকাউন্টে নিজের সম্পর্কে তথ্য, গোপনীয়তা এবং সুরক্ষা ম্যানেজ করুন</translation>
 <translation id="5996255674476750320">যানবাহন শো</translation>
 <translation id="5997247540087773573">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার এখনই এটি পরিবর্তন করতে ও সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
-<translation id="5999271311987646952">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে <ph name="BEGIN_LINK" />সম্প্রতি ম্যালওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />।</translation>
 <translation id="6000528814684428358">হার্ড রক ও প্রোগ্রেসিভ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল</translation>
 <translation id="6001839398155993679">শুরু করা যাক</translation>
@@ -2881,7 +2879,6 @@
 <translation id="6284449872909111707">টেক্সট ও ইনস্ট্যান্ট মেসেজিং</translation>
 <translation id="6284517535531159884">ভ্যারিয়েশন সিডের ধরন</translation>
 <translation id="6287197303017372967">'নেভিগেশন' ফিচার ব্যবহার করে এক এক করে আপনার গন্তব্যের দিকনির্দেশ সংক্রান্ত নির্দেশিকা দেখুন।</translation>
-<translation id="6288521565586608304">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত হ্যাকাররা আপনাকে দিয়ে প্রতারণা করে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর ফলে, যেভাবে আপনি ব্রাউজ করেন তা প্রভাবিত হতে পারে — যেমন, আপনার হোমপেজ পরিবর্তন করতে পারে অথবা আপনি ভিজিট করেছেন এমন সাইটে অতিরিক্ত বিজ্ঞাপন দেখাতে পারে। ক্ষতি এড়াতে, Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">প্রোডাক্টে ছাড় খুঁজে পাওয়া গেছে</translation>
 <translation id="6289939620939689042">পৃষ্ঠার রঙ</translation>
 <translation id="6292819926564202163">Chrome-এ আপনার সার্চ ইঞ্জিন</translation>
@@ -3075,7 +3072,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">কম্পিউটার শিক্ষা</translation>
 <translation id="6633476656216409494">ব্যবসা ও প্রোডাক্টিভিটি সফ্টওয়্যার</translation>
-<translation id="6638353438328951386">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে সম্প্রতি <ph name="BEGIN_LINK" />ক্ষতিকর সফ্টওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />।</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645291930348198241">কুকি ও সাইট ডেটা অ্যাক্সেস করার অনুমতি দিন।</translation>
 <translation id="6645478838938543427">দাম কমে যাওয়া সংক্রান্ত বিজ্ঞপ্তি <ph name="EMAIL_ADDRESS" />-এ পাঠানো হবে</translation>
@@ -3289,7 +3285,6 @@
 <translation id="701757816833614688">ভিজ্যুয়াল আর্ট ও ডিজাইন সম্পর্কিত প্রশিক্ষণ</translation>
 <translation id="702275896380648118">এই সাইটটি আপনার পছন্দের জিনিসগুলি নির্ধারণ করে এবং তারপরে অন্যান্য সাইটে বিজ্ঞাপন সাজেস্ট করে। এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়।</translation>
 <translation id="7023162328967545559">অ্যাডমিন সংক্রান্ত সতর্কতা</translation>
-<translation id="7024932305105294144">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে <ph name="BEGIN_LINK" />সম্প্রতি ফিশিং খুঁজে পেয়েছে<ph name="END_LINK" />। আপনার সাথে প্রতারণা করার জন্য ফিশিং সাইট অন্য সাইটের মতো করে নিজেকে প্রস্তুত করে।<ph name="NEW_LINE" />সাধারণত সুরক্ষিত আছে এমন সাইটও কখনও কখনও আক্রমণকারীদের মাধ্যমে হ্যাক হয়ে যায়। আপনি যদি মনে করেন যে কোনও সমস্যা হয়েছে এবং এই সাইট বিপজ্জনক নয়, তাহলে <ph name="BEGIN_ERROR_LINK" />আমাদের জানান<ph name="END_ERROR_LINK" />।</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7030164307377592766">পেমেন্ট পদ্ধতি পূরণ করার জন্য সেটিংস পরিবর্তন করুন</translation>
 <translation id="7031646650991750659">কোন কোন Google Play অ্যাপ আপনি ইনস্টল করেছেন</translation>
@@ -3367,7 +3362,6 @@
 <translation id="7168625890036931112">এই প্ল্যাটফর্মে "<ph name="DATA_CONTROLS_RESTRICTION" />" সম্পর্কিত বিধিনিষেধ ব্যবহার করা যাবে না</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
 <translation id="7173338713290252554">ওয়েব জুড়ে দাম সম্পর্কিত ইতিহাস</translation>
-<translation id="7173478186876671324">আপনার অ্যাডমিনিস্ট্রেটর এই সাইটের জন্য আপনার <ph name="PERMISSION" /> সংক্রান্ত অনুমতি ব্লক করেছেন</translation>
 <translation id="7174545416324379297">মার্জ করা হয়েছে</translation>
 <translation id="7175097078723125014">ঠিকানা এডিট করার বিকল্প বেছে নেওয়া হয়েছে</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টি}one{<ph name="SHIPPING_OPTION_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টি}other{<ph name="SHIPPING_OPTION_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টি}}</translation>
@@ -3401,7 +3395,6 @@
 <translation id="7221857374443660083">আপনার পরিচয় সম্পর্কে ব্যাঙ্ক নিশ্চিত হতে চায়</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7227293336683593977">দাম সম্পর্কিত ইতিহাস</translation>
-<translation id="7227747683324411744">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে কৌশলে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর ফলে, যেভাবে আপনি ব্রাউজ করেন তা প্রভাবিত হতে পারে। যেমন, আপনার হোমপেজ পরিবর্তন করতে অথবা আপনি ভিজিট করেছেন এমন সাইটে অতিরিক্ত বিজ্ঞাপন দেখাতে পারে।</translation>
 <translation id="7232352818707016189">তুলনা করার টেবিল সংক্রান্ত আরও অ্যাকশন</translation>
 <translation id="7233592378249864828">প্রিন্ট কনর্ফামেশন শিট</translation>
 <translation id="7234112195906418665">ভ্রমণ ও পরিবহন</translation>
@@ -3622,7 +3615,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> এর কম</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> বর্তমানে এই অনুরোধটি পরিচালনা করতে অক্ষম।</translation>
 <translation id="7599089013883397081">ডাউনলোড করার সময় শেষ হয়ে গেছে</translation>
-<translation id="7605377493722372900">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে কৌশলে ক্ষতিকরণ সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। যা আপনার পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বরের মতো তথ্য চুরি করতে বা মুছে দিতে পারে।</translation>
 <translation id="7608583484192556132">আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংস সহ বিভিন্ন জিনিসের উপরে নির্ভর করে, যেমন <ph name="BEGIN_LINK_1" />সাইটের সাজেস্ট করা বিজ্ঞাপন<ph name="END_LINK_1" />, আপনার <ph name="BEGIN_LINK_2" />কুকি সেটিংস<ph name="END_LINK_2" />, এবং আপনি যে সাইট দেখছেন তা পছন্দমতো বিজ্ঞাপন দেখায় কিনা। <ph name="BEGIN_LINK_3" />আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="END_LINK_3" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="7610193165460212391">সীমার বাইরে মান <ph name="VALUE" />৷</translation>
 <translation id="7613889955535752492">মেয়াদোত্তীর্ণ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4075,7 +4067,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8421158157346464398">অফিস প্রোফাইল সম্পর্কিত তথ্য (যেমন আপনার অফিস প্রোফাইলের ইউজারনেম)</translation>
-<translation id="8422228580902424274">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে কৌশলে সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর সাহায্যে আপনার পাসওয়ার্ড, ফোন অথবা ক্রেডিট কার্ড নম্বরের মতো তথ্য প্রকাশ করিয়ে দিতে পারে।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8427848540066057481">৫০০ x ৭৫০ মিমি</translation>
@@ -4226,7 +4217,6 @@
 <translation id="8722929331701811374">স্টেশনারি (লেটারহেড)</translation>
 <translation id="8724824364712796726">এনভেলপ B6</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
-<translation id="8725667981218437315">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="8726549941689275341">পৃষ্ঠার সাইজ:</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>
@@ -4435,7 +4425,6 @@
 <translation id="9119042192571987207">আপলোড করা হয়েছে</translation>
 <translation id="9119308212838450857">ব্যবহারকারী আপনিই কিনা তা <ph name="PROVIDER_ORIGIN" /> যাচাই করতে চায়</translation>
 <translation id="912327514020027767">স্কার্ট</translation>
-<translation id="912414390325846156">আপনি আগে এই সাইটের জন্য অনুমতি দেননি</translation>
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="9131119348384879525">গোপনীয় কন্টেন্ট ক্যাপচার করবেন?</translation>
 <translation id="9133861214150761123">অ্যাকাউন্টিং ও অডিটিং</translation>

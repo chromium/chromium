@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ကင်မရာကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'၏ နောက်မှာ ပါလာသည့် အပိုင်း ထဲတွင် သင်္ကေတာ '<ph name="INVALIDCHARACTER" />' မပါရပါ။</translation>
 <translation id="4718048029184481307">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်နေသည်</translation>
-<translation id="4792862212177489858">တည်နေရာ မျှဝေရန်</translation>
 <translation id="4812940957355064477">နံ</translation>
 <translation id="49269513399674318">မိုက်ခရိုဖုန်း သုံးရန်</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ရွေးထား</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">တန်ဖိုးမှာ <ph name="MINIMUM" /> ထက်ကြီး သို့မဟုတ် တူညီရမည်။</translation>
 <translation id="5196716972587102051">၂</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ၏နောက်တွင် တစ်ပိုင်း ရိုက်ထည့်ပါ။ '<ph name="INVALIDADDRESS" />' က မပြည့်စုံပါ။</translation>
 <translation id="5334352251556557839">မီဒီယာ ဖွင့်၍ မရပါ။</translation>
 <translation id="537648784377940524">အနည်းဆုံးရက်စွဲ (<ph name="MIN_DATE_OR_TIME" />) သည် အများဆုံးရက်စွဲ (<ph name="MAX_DATE_OR_TIME" />) အရင် ဖြစ်ရပါမည်။</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ပလတ်အင်ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="6919891270253167948">၁.၅</translation>
 <translation id="6989848892321993519">ဤစာသားကို စာလုံးရေ <ph name="MIN_CHARACTERS" /> နှင့်အထက်ဖြစ်အောင် လုပ်ပါ (လက်ရှိတွင် စာလုံးရေ ၁ လုံးအသုံးပြုထားသည်)။</translation>
-<translation id="7080893216867146095">တည်နေရာမျှဝေခြင်း ခွင့်ပြုထားသည်</translation>
 <translation id="709897737746224366">ကျေးဇူးပြုပြီး တောင်းဆိုထားသည့် ပုံစံနှင့် ကိုက်ညီပါစေ။</translation>
 <translation id="7134810312945846184">မိုက်ခရိုဖုန်းနှင့် ကင်မရာသုံးရန်</translation>
 <translation id="7263440858009898357">စာရင်းမှ အမယ်များကို ကျေးဇူးပြုပြီး ရွေးချယ်ပါ။</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">တန်ဖိုးသည် <ph name="MINIMUM_TIME" /> နှင့် <ph name="MAXIMUM_TIME" /> အကြားတွင် ရှိရမည်။</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ဖိုင်များ</translation>
 <translation id="8451268428117625855">ကျေးဇူးပြုပြီး ဖိုင်ကို ရွေးပါ။</translation>
+<translation id="8533587060884335451">နေရာအတိအကျ သုံးရန်</translation>
 <translation id="8637593834423658414">၁.၇၅</translation>
 <translation id="8668988909814782445">စာကြောင်းကို ပတ်ရန်</translation>
 <translation id="8750798805984357768">ကျေးဇူးပြုပြီး အောက်ပါ ရွေးစရာများ ထဲက တစ်ခုကို ရွေးပါ။</translation>

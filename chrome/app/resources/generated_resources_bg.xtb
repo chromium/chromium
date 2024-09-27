@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Връзката ви винаги е защитена, освен ако Chrome не ви съобщи друго</translation>
 <translation id="1175131936083782305">Администраторът ви е деактивирал тази функция.</translation>
 <translation id="1175364870820465910">&amp;Печат...</translation>
+<translation id="1175572348579024023">Превъртане</translation>
 <translation id="1175914831232945926">Цифри</translation>
 <translation id="1176471985365269981">Сайтове без разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="1177073277575830464">Бързото настройване на Android завърши. Продължете настройването на устройството си <ph name="DEVICE_TYPE" />.</translation>
@@ -1434,6 +1435,7 @@
 <translation id="1997616988432401742">Вашите сертификати</translation>
 <translation id="1998715278591719161">Сайтове с разрешение за проследяване на ръцете</translation>
 <translation id="1999115740519098545">При стартиране</translation>
+<translation id="1999763610967697511">Хващане и преместване с мишката</translation>
 <translation id="2002109485265116295">В реално време</translation>
 <translation id="2002160221914907025">Експериментален AI</translation>
 <translation id="2003130567827682533">За да активирате данните от „<ph name="NAME" />“, първо се свържете с Wi-Fi мрежа</translation>
@@ -5385,6 +5387,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Изберете профил на родител за одобрение</translation>
 <translation id="485480310608090163">Още настройки и разрешения</translation>
+<translation id="485806788160414322">Пускане или поставяне на пауза на мултимедия</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="486213875233855629">Звукът е спрян от администратора ви</translation>
 <translation id="4862642413395066333">Подписване на OCSP отговори</translation>

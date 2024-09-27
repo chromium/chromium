@@ -945,7 +945,6 @@
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="5790391387506209808">లాపస్ లాజులై</translation>
-<translation id="5810692306010756935">గ్రాడ్యుయేషన్</translation>
 <translation id="5816802250591013230">ఏ షార్ట్‌కట్ కూడా కేటాయించబడలేదు</translation>
 <translation id="5826644637650799838">ఆర్ట్ గురించి</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించండి</translation>
@@ -1019,6 +1018,7 @@
 <translation id="6122191549521593678">ఆన్‌లైన్</translation>
 <translation id="6122277663991249694">ChromeOS ఇన్‌పుట్ విధాన సర్వీస్</translation>
 <translation id="6127426868813166163">తెలుపు రంగు</translation>
+<translation id="613049107179582049">Chromebook ఆడియో ఆన్‌లో ఉన్నప్పుడు, ఈ పరికరంలో ప్లే అవుతున్న ఆడియో మొత్తాన్ని రికార్డర్ క్యాప్చర్ చేస్తుంది</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">సైబర్‌పంక్</translation>
 <translation id="6137767437444130246">యూజర్ సర్టిఫికెట్</translation>
@@ -1207,6 +1207,7 @@
 <translation id="6961170852793647506">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6965978654500191972">పరికరం</translation>
+<translation id="6972754398087986839">ప్రారంభించండి</translation>
 <translation id="6975620886940770104">మెరిసే <ph name="GLOWSCAPES_FEATURE" />‌తో <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">కోలాలు</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
@@ -1587,6 +1588,7 @@
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>
 <translation id="8882789155418924367">గుడ్లగూబలు</translation>
 <translation id="8892443466059986410">షార్ట్‌కట్ ఎడిటింగ్‌ను రద్దు చేయండి</translation>
+<translation id="8897043028305808902">ఫైల్ పేరు మార్చబడింది</translation>
 <translation id="8898840733695078011">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="8909114361904403025">పై వైపు బాణం</translation>
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>

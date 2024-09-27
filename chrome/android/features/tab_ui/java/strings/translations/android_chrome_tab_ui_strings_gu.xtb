@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપના વિકલ્પો</translation>
+<translation id="1293272072740285747">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેની જરૂર ન હોય, તો તેને ડિલીટ કરો.
+
+જો તમે તેને ડિલીટ કરશો, તો દરેક વ્યક્તિ તરત જ "<ph name="TITLE_OF_GROUP" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="1340839264183302272">ગ્રૂપ છોડો</translation>
 <translation id="1419023007528516122">આમ કરવાથી ગ્રૂપ તમારા ડિવાઇસમાંથી કાયમ માટે ડિલીટ થઈ જશે</translation>
 <translation id="1486715732399361704">તમે તમારા બધા ટૅબ ગ્રૂપ અહીં મેળવી શકો છો</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
+<translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા, <ph name="ANY_CHANGED" /> બદલ્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> કલાક પહેલાં બનાવ્યું}one{<ph name="NUM_HOURS_MANY" /> કલાક પહેલાં બનાવ્યું}other{<ph name="NUM_HOURS_MANY" /> કલાક પહેલાં બનાવ્યું}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}}</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
+<translation id="5615302411300498438">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા છોડી દો.
+
+જો તમે છોડી દેશો, તો તમે તરત જ "<ph name="TITLE_OF_GROUP" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો.</translation>
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ટૅબને રિસ્ટોર કરો}one{ટૅબને રિસ્ટોર કરો}other{ટૅબને રિસ્ટોર કરો}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="8631711675211020168">દરેક જણ તાત્કાલિક <ph name="GROUP_NAME" /> ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8633025649649592204">તાજેતરની પ્રવૃત્તિ</translation>
+<translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
 <translation id="870736955561925754">શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં બનાવ્યું}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}}</translation>
+<translation id="8804742093141782941">ગ્રૂપ રાખો</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>
 <translation id="8887921976452567404">તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે.</translation>
 <translation id="8915916167043355778">બધા બંધ કરો</translation>

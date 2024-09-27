@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oren</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
 <translation id="1273910660700874265">Dewisiadau grŵp tabiau <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu ddileu ef os nad oes ei angen arnoch fwyach.
+
+Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="TITLE_OF_GROUP" />" ar unwaith, a bydd yn cael ei ddileu o bob dyfais.</translation>
 <translation id="1340839264183302272">Gadael y grŵp</translation>
 <translation id="1419023007528516122">Bydd hyn yn dileu'r grŵp o'ch dyfais yn barhaol</translation>
 <translation id="1486715732399361704">Gallwch ddod o hyd i'ch holl grwpiau tab yma</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Awgrym: Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
 <translation id="2662028055331606429">Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Mynd i'r wefan</translation>
+<translation id="2671423594960767771">Rhannu â grŵp</translation>
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Ychwanegwyd <ph name="ONE_ADDED" /> tab, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}zero{Ychwanegwyd <ph name="MANY_ADDED" /> tabiau, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}two{Ychwanegwyd <ph name="MANY_ADDED" /> dab, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}few{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}many{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}other{Ychwanegwyd <ph name="MANY_ADDED" /> tab, <ph name="ANY_CHANGED" /> wedi newid, <ph name="ANY_CLOSED" /> wedi cau}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Crëwyd <ph name="NUM_HOURS_ONE" /> awr yn ôl}zero{Crëwyd <ph name="NUM_HOURS_MANY" /> awr yn ôl}two{Crëwyd <ph name="NUM_HOURS_MANY" /> awr yn ôl}few{Crëwyd <ph name="NUM_HOURS_MANY" /> awr yn ôl}many{Crëwyd <ph name="NUM_HOURS_MANY" /> awr yn ôl}other{Crëwyd <ph name="NUM_HOURS_MANY" /> awr yn ôl}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cau grŵp tabiau gydag <ph name="TABS_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />.}zero{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}two{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />.}few{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}many{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}other{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Gweld gwybodaeth siop, opsiwn ar gael yn agos at frig y sgrîn</translation>
+<translation id="5615302411300498438">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu adael.
+
+Os byddwch yn gadael, byddwch yn colli mynediad at y grŵp tabiau "<ph name="TITLE_OF_GROUP" />" ar unwaith.</translation>
 <translation id="5627941783489838464">Dim diweddariadau tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Adfer y tab}zero{Adfer y tabiau}two{Adfer y tabiau}few{Adfer y tabiau}many{Adfer y tabiau}other{Adfer y tabiau}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> dolen o Chrome}zero{<ph name="TABS_COUNT_MANY" /> dolen o Chrome}two{<ph name="TABS_COUNT_MANY" /> ddolen o Chrome}few{<ph name="TABS_COUNT_MANY" /> dolen o Chrome}many{<ph name="TABS_COUNT_MANY" /> dolen o Chrome}other{<ph name="TABS_COUNT_MANY" /> dolen o Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Ychwanegwyd <ph name="ONE_ADDED" /> tab, <ph name="ANY_CLOSED" /> wedi cau}zero{Ychwanegwyd <ph name="MANY_ADDED" /> tabiau, <ph name="ANY_CLOSED" /> wedi cau}two{Ychwanegwyd <ph name="MANY_ADDED" /> dab, <ph name="ANY_CLOSED" /> wedi cau}few{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CLOSED" /> wedi cau}many{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CLOSED" /> wedi cau}other{Ychwanegwyd <ph name="MANY_ADDED" /> tab, <ph name="ANY_CLOSED" /> wedi cau}}</translation>
 <translation id="8631711675211020168">Bydd pawb yn colli mynediad at y grŵp tabiau <ph name="GROUP_NAME" /> ar unwaith, a bydd yn cael ei ddileu o bob dyfais</translation>
 <translation id="8633025649649592204">Gweithgarwch diweddar</translation>
+<translation id="8635399646025169806">Cadw'r grŵp tabiau?</translation>
 <translation id="870736955561925754">Cau'r tab a dileu'r grŵp?</translation>
 <translation id="8714939927607906138">Pris is</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8730999928494395583">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael eu tynnu o'r ddyfais hon</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Crëwyd <ph name="NUM_MONTHS_ONE" /> mis yn ôl}zero{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}two{Crëwyd <ph name="NUM_MONTHS_MANY" /> fis yn ôl}few{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}many{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}other{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}}</translation>
+<translation id="8804742093141782941">Cadw'r grŵp</translation>
 <translation id="8820741577754260431">Gweld gostyngiadau prisiau yn eich tabiau</translation>
 <translation id="8887921976452567404">Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau.</translation>
 <translation id="8915916167043355778">Cau'r cyfan</translation>

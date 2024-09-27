@@ -41,6 +41,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
+<translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CHANGED" /> modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CHANGED" /> modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creato <ph name="NUM_HOURS_ONE" /> ora fa}other{Creato <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>

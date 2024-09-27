@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="310297983047869047">Edellinen dia</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
+<translation id="310979712355504754">Poista kaikki</translation>
 <translation id="3114012059975132928">Videosoitin</translation>
 <translation id="3115898365077584848">Näytä tiedot</translation>
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
 <translation id="7276071417425470385">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää virtuaalitodellisuuslaitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää virtuaalitodellisuuslaitteita.</translation>
-<translation id="7284451015630589124">Olet estänyt sivustoja seuraamasta sinua verkossa kolmansien osapuolten evästeiden avulla. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />ylläpitää seurannan estoa<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Estät yleensä ilmoitukset. Voit sallia ne valitsemalla Tiedot.</translation>
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>
 <translation id="7425915948813553151">Sivustojen tumma teema</translation>
-<translation id="7474522811371247902">Chrome rajoittaa useimpien sivustojen kolmannen osapuolen evästeiden käyttöä. Kolmannen osapuolen evästeet on kuitenkin sallittu tällä sivustolla, koska se tarvitsee niitä peruspalvelujen tarjoamiseen.\n\nVoit <ph name="BEGIN_LINK" />muuttaa seurannan estoa<ph name="END_LINK" /> asetuksista.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kun tämä on päällä, sivustot voivat näyttää sisäänkirjautumiskehotteita. Kun tämä on pois päältä, sivustot eivät voi näyttää sisäänkirjautumiskehotteita.</translation>
 <translation id="7554752735887601236">Sivusto käyttää mikrofoniasi</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
-<translation id="7822573154188733812">Chrome estää sivustoja seuraamasta sinua kolmansien osapuolten evästeiden avulla selaamisen aikana. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />ylläpitää seurannan estoa<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
 <translation id="783819812427904514">Poista videon mykistys</translation>
 <translation id="7846076177841592234">Peru valinta</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
-<translation id="8649036394979866943">Chrome estää useimpia sivustoja seuraamasta sinua selaamisen aikana kolmansien osapuolten evästeiden avulla. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />ylläpitää seurannan estoa<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata käsiäsi. Kun tämä on pois päältä, sivustot eivät voi seurata käsiäsi.</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>

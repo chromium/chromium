@@ -3920,6 +3920,11 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
 <translation id="3990834929384096140">Echounterdrückung des Systems nicht erzwingen</translation>
+<translation id="3992082233013655355">Wenn diese Richtlinie konfiguriert ist, wird eine Liste isolierter Web-Apps (IWAs) angegeben, die automatisch installiert werden.
+      IWAs sind Anwendungen mit nützlichen Sicherheitsfunktionen, die normalen Webseiten nicht zur Verfügung stehen. Sie sind in einem signierten Web Bundle verpackt. Der öffentliche Schlüssel des signierten Web Bundles wird verwendet, um eine Web‑Bundle‑ID zu erstellen, mit der die IWA identifiziert wird.
+      Bisher funktioniert diese Richtlinie nur bei verwalteten Gastsitzungen.
+
+      Jedes Listenelement der Richtlinie ist ein Objekt, das zwei Pflichtfelder hat: das Update-Manifest <ph name="URL_LABEL" /> und die Web‑Bundle‑ID der isolierten Web-App. Jedes Element kann auch ein optionales Feld mit dem Namen der Release-Version der IWA haben. Wenn „update_channel“ nicht festgelegt ist, wird der Standardwert „default“ verwendet.</translation>
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="399433537808390819">Nutzern keinen Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="3995880046827722248">Manifest V2 ist deaktiviert</translation>
@@ -6613,27 +6618,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6102449843040973938">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät nicht verhindern</translation>
 <translation id="610892566190435199">Melden des Energiestatus auf Geräten aktivieren</translation>
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
-<translation id="6112524153927257380">Wenn diese Richtlinie konfiguriert ist, können Nutzer keine Sicherheitsentscheidungen für Downloads umgehen.
-
-      In Chrome gibt es verschiedene Arten von Warnungen zu Downloads, die sich in die folgenden Kategorien unterteilen lassen (weitere Informationen über Safe Browsing-Ergebnisse findest du unter https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Schädlich, wie vom Safe Browsing-Server gemeldet
-      * Ungewöhnlich oder unerwünscht, wie vom Safe Browsing-Server gemeldet
-      * Gefährlicher Dateityp (z. B. alle Downloads von SWF-Dateien und manche Downloads von EXE-Dateien)
-
-      Je nachdem, auf welchen Wert die Richtlinie festgelegt ist, werden manche dieser Kategorien blockiert:
-
-      0: Keine besonderen Einschränkungen. Standard.
-
-      1: Schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden, UND alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
-
-      2: Schädliche Dateien UND ungewöhnliche oder unerwünschte Dateien, die vom Safe Browsing-Server gemeldet wurden, SOWIE alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
-
-      3: Alle Downloads werden blockiert. Nur für spezielle Anwendungsfälle empfohlen.
-
-      4: Blockiert schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden. Gefährliche Dateitypen werden nicht blockiert. Empfohlen.
-
-      Hinweis: Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Die Einschränkungen gelten aber weder für das Herunterladen der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen. Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Weniger striktes Verhalten wiederherstellen.</translation>
 <translation id="6119207979839638596">Diese Richtlinie wurde in M75 entfernt, nachdem die Richtlinie zur TLS-Höchstversion aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 
@@ -10291,6 +10275,27 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Bei neuen Geräten ist die Zeitzone "US/Pacific Time" voreingestellt. Das Format des Werts entspricht den Namen der Zeitzonen in der Zeitzonen-Datenbank der IANA (https://de.wikipedia.org/wiki/Zeitzonen-Datenbank). Falls ein ungültiger Wert angegeben ist, wird für die Richtlinie "GMT" verwendet.
 
       Ist die Richtlinie nicht konfiguriert oder ein leerer String angegeben, wird auf dem Gerät die momentan aktive Zeitzone verwendet. Allerdings können Nutzer diese dann ändern.</translation>
+<translation id="8875202330803089599">Wenn diese Richtlinie konfiguriert ist, können Nutzer keine Sicherheitsentscheidungen für Downloads umgehen.
+
+      In Chrome gibt es verschiedene Arten von Warnungen zu Downloads, die sich in die folgenden Kategorien unterteilen lassen (weitere Informationen über Safe Browsing-Ergebnisse findest du unter https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Schädlich, wie vom Safe Browsing-Server gemeldet
+      * Ungewöhnlich oder unerwünscht, wie vom Safe Browsing-Server gemeldet
+      * Gefährlicher Dateityp (z. B. alle Downloads von SWF-Dateien und manche Downloads von EXE-Dateien)
+
+      Je nachdem, auf welchen Wert die Richtlinie festgelegt ist, werden manche dieser Kategorien blockiert:
+
+      0: Keine besonderen Einschränkungen. Standard.
+
+      1: Schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden, UND alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
+
+      2: Schädliche Dateien UND ungewöhnliche oder unerwünschte Dateien, die vom Safe Browsing-Server gemeldet wurden, SOWIE alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
+
+      3: Alle Downloads werden blockiert. Nur für spezielle Anwendungsfälle empfohlen.
+
+      4: Schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden, werden blockiert. Gefährliche Dateitypen werden nicht blockiert. Empfohlen.
+
+      Hinweis: Diese Einschränkungen gelten für Downloads, die durch Webseiteninhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Die Einschränkungen gelten aber weder für das Herunterladen der gerade angezeigten Seite noch für das Speichern als PDF in den Druckoptionen. Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="8880146422959594776">Ermöglicht einigen Diensten unter <ph name="PRODUCT_OS_FLEX_NAME" />, zusätzliche Hardwaredaten zu senden.
 
 Diese Hardwaredaten werden zur allgemeinen Verbesserung von <ph name="PRODUCT_OS_FLEX_NAME" /> verwendet.
@@ -10308,6 +10313,7 @@ Ist die Richtlinie deaktiviert, werden nur Standardhardwaredaten gesendet.</tran
 <translation id="8890438048579188548">Warnungen zu veralteten Funktionen für <ph name="CLOUD_PRINT_NAME" /> ausblenden</translation>
 <translation id="8891334958985336685">Melden der Systeminformationen auf Geräten deaktivieren</translation>
 <translation id="8892286064305622118">Erforderlicher freier Speicherplatz für <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">Der Name der Update-/Release-Version der IWA. Dieser Wert kann ein beliebiger String sein; es gelten keine Einschränkungen. Wenn kein Wert angegeben wird, wird die Standardversion „default“ verwendet.</translation>
 <translation id="8892783613915541293">Verzögerungen und Aktionen, die ausgeführt werden sollen, wenn das Gerät im Netzbetrieb inaktiv ist</translation>
 <translation id="8897796778265450949">Zeit beschränken, während der sich ein über GAIA ohne SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="889814528399907891">Nutzern erlauben, <ph name="LACROS_NAME" /> zu aktivieren und als primären Browser festzulegen</translation>

@@ -266,6 +266,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
 <translation id="2286841657746966508">Fatura adresi</translation>
 <translation id="228704530595896923">Paylaşım seçenekleri listesi.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi göster}other{<ph name="TABS_COUNT_MANY" /> sekmeyi göster}}</translation>
 <translation id="2297822946037605517">Bu sayfayı paylaş</translation>
 <translation id="22981027763501686">Yer işaretlerinize, geçmişinize ve daha fazlasına diğer cihazlarınızdan ulaşmak için senkronize edin</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
@@ -1301,6 +1302,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6964300328304469089">Şu anda <ph name="NAME" />, <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
 <translation id="696447261358045621">Gizli moddan çık</translation>
 <translation id="6965382102122355670">Tamam</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_ONE" /> sekmeyi göster}other{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_MANY" /> sekmeyi göster}}</translation>
 <translation id="6971862865055170158">Onaylama</translation>
 <translation id="6978717888677691380">Engellediğiniz siteler</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>
@@ -1516,6 +1518,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7896724475402191389">Genç zihinler için içerikler: Kapalı</translation>
 <translation id="7903184275147100332">Bu işlem bir dakika sürebilir</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 indirme, kuruluşunuz tarafından engellendi}other{# indirme, kuruluşunuz tarafından engellendi}}</translation>
 <translation id="7914399737746719723">Uygulama yüklendi</translation>
 <translation id="7919123827536834358">Şu dilleri otomatik olarak çevir</translation>
 <translation id="7926975587469166629">Kart için takma ad</translation>

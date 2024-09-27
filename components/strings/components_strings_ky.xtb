@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">Сыналгы жана видео</translation>
 <translation id="1658918301167915956">bluetooth түзмөктөрү</translation>
 <translation id="1662550410081243962">Төлөм ыкмаларын сактоо жана автоматтык түрдө толтуруу</translation>
+<translation id="1662980953334786797">Ошол эле тартипте</translation>
 <translation id="1663943134801823270">Карточкалар жана даректер Chrome’дон алынган. Аларды <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> башкарсаңыз болот.</translation>
 <translation id="1664389769577564606">Флексо басып чыгаруу үчүн фотополимер</translation>
 <translation id="166624440456221306">Салыштыруучу таблицаларды өчүрүү</translation>
@@ -1324,7 +1325,6 @@
 <translation id="342781501876943858">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
 <translation id="3428151540071562330">Бир же бир нече DnsOverHttpsTemplates серверлериндеги URI даректеринин үлгүлөрү жараксыз жана колдонулбайт.</translation>
 <translation id="3428789896412418755">Топторго бириктирилген таржымал</translation>
-<translation id="3430206873883193118">Сиз кирүүгө аракет кылып жаткан сайтта зыянкеч программа орнотулуп же сырсөзүңүз, телефон номериңиз жана насыя картаңыздын номери сыяктуу маалыматыңыз уурдалышы мүмкүн. Chrome артка кайтууну сунуштайт. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Баракты жабуу</translation>
 <translation id="3433111389595862568">Кызматташуу жана конференциялар үчүн программа</translation>
 <translation id="3433144818443565002">Үн жана видео чат</translation>
@@ -1342,7 +1342,6 @@
 <translation id="3447661539832366887">Бул түзмөктүн ээси динозавр оюнун өчүрүп койду.</translation>
 <translation id="3447884698081792621">Тастыктаманы көрсөтүү (чыгарган тарап: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">MIDI түзмөктөрүңүздү көзөмөлдөөнү жана кайра программалоону суранышы мүмкүн</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> уруксат берилди</translation>
 <translation id="3452404311384756672">Алуу аралыгы:</translation>
 <translation id="3453962258458347894">Кайталоолордун саны</translation>
 <translation id="3457781733462096492">Рэп жана хип-хоп</translation>
@@ -1658,6 +1657,7 @@
 <translation id="4023431997072828269">Форманы тапшырууда кооптуу байланыш колдонулуп жаткандыктан, маалыматыңыз башкаларга көрүнүп турат.</translation>
 <translation id="4025325634010721551">Эрежелер кайра жүктөлдү</translation>
 <translation id="4025338605225449265">Валюталар</translation>
+<translation id="4025777154208238692">Тескери тартипте</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Бул сайтка жөнөткөн же алган маалыматты <ph name="BEGIN_STRONG" />чабуулчулар көрүп жана өзгөртө алышат<ph name="END_STRONG" />.
       <ph name="LIST_ITEM" />Эгер жалпыга ачык тармакты колдонуп жатсаңыз, <ph name="BEGIN_STRONG" />коопсуздугуңуз үчүн бул сайтка кийинчерээк өтүңүз<ph name="END_STRONG" />. Үйдөгү же жумуштагы ишенимдүү Wi-Fi тармагынан кирсеңиз, коркунуч азыраак болот.
@@ -2567,7 +2567,6 @@
 <translation id="5689516760719285838">Жайгашкан жер</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates мааниси ылайыксыз, андыктан DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> же <ph name="SECURE_DNS_MODE_SECURE" /> деп коюлмайынча, ал колдонулбайт.</translation>
 <translation id="5691848789297492617">Картаны сактоо бети толук экранда ачылды</translation>
-<translation id="5692655638459249302">Сиз кирүүгө аракет кылып жаткан сайтта зыянкеч программа орнотулуп, сырсөзүңүз, сүрөттөрүңүз, билдирмелериңиз же насыя картаңыздын номери сыяктуу маалымат уурдалышы мүмкүн. Chrome артка кайтууну сунуштайт. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Ырастоо жана сатып алууну бүтүрүү үчүн Window Hello функциясын колдоносузбу?</translation>
 <translation id="5699628521141772782">Сүт азыктары жана жумуртка</translation>
 <translation id="5700761515355162635">Үчүнчү тараптын cookie файлдарына уруксат берилди</translation>
@@ -2715,7 +2714,6 @@
 <translation id="5995727681868049093">Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу</translation>
 <translation id="5996255674476750320">Унаа шоулору</translation>
 <translation id="5997247540087773573">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы аны азыр өзгөртүп жана башка сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
-<translation id="5999271311987646952">Chrome'дун Google Коопсуз серептөө сыяктуу алдын ала орнотулган коопсуздук функциялары серептөө учурунда сизди коргойт. Жакында ал аркылуу сиз кирүүгө аракет кылып жаткан сайттан <ph name="BEGIN_LINK" />кесепеттүү программа табылды<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Hard Rock жана прогрессивдүү</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сурамы боюнча <ph name="RESULT_COUNT" /> жыйынтык табылды</translation>
 <translation id="6001839398155993679">Кеттик</translation>
@@ -2880,7 +2878,6 @@
 <translation id="6284449872909111707">SMS жөнөтүү жана ыкчам жазышуу</translation>
 <translation id="6284517535531159884">Модификациялар булагынын түрү</translation>
 <translation id="6287197303017372967">Багыт алуу функциясын колдонуп, бара турган жерге багыттарды алыңыз.</translation>
-<translation id="6288521565586608304">Сиз кирүүгө аракет кылып жаткан сайттагы чабуулчулар башкы бетти өзгөртүп же кирген сайттарыңызда кошумча жарнамаларды көрсөтүп, серептөөңүзгө кедергисин тийгизе турган зыяндуу программаны орнотушу мүмкүн. Chrome зыяндын алдын алуу үчүн артка кайтууну сунуштайт. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Арзандатуу табылды</translation>
 <translation id="6289939620939689042">Барактын түсү</translation>
 <translation id="6292819926564202163">Chrome'догу издөө куралыңыз</translation>
@@ -3074,7 +3071,6 @@
 <translation id="663260587451432563">JIS B4 (257mm x 364mm)</translation>
 <translation id="6633405994164965230">Компьютердик билим берүү</translation>
 <translation id="6633476656216409494">Бизнес жана майнаптуулук программасы</translation>
-<translation id="6638353438328951386">Chrome'дун Google Коопсуз серептөө сыяктуу алдын ала орнотулган коопсуздук функциялары серептөө учурунда сизди коргойт. Жакында ал аркылуу сиз кирүүгө аракет кылып жаткан сайттан <ph name="BEGIN_LINK" />зыяндуу программа табылды<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645291930348198241">Cookie файлдарына жана сайттын маалыматына кирүү мүмкүнчүлүгүн алуу.</translation>
 <translation id="6645478838938543427">Баалардын түшкөнү жөнүндө эскертүүлөр <ph name="EMAIL_ADDRESS" /> дарегине жөнөтүлөт</translation>
@@ -3288,7 +3284,6 @@
 <translation id="701757816833614688">Визуалдык искусство жана дизайн билими</translation>
 <translation id="702275896380648118">Бул сайт сизге жаккан нерселерди аныктап, башка сайттарга жарнамаларды сунуштап турат. Ошондой эле, ал Сhrome'дон жарнама темаларыңыз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат.</translation>
 <translation id="7023162328967545559">Администратордун эскертүүсү</translation>
-<translation id="7024932305105294144">Chrome'дун Google Коопсуз серептөө сыяктуу алдын ала орнотулган коопсуздук функциялары серептөө учурунда сизди коргойт. Жакында ал аркылуу сиз кирүүгө аракет кылып жаткан сайттан <ph name="BEGIN_LINK" />фишинг табылды<ph name="END_LINK" />. Фишинг сайттары сизди алдоо үчүн өздөрүн башка сайттар катары көрсөтүшөт.<ph name="NEW_LINE" />Ал тургай, адатта коопсуз болгон сайттар да кээде чабуулга дуушар болушат. Эгер муну жаңылыштык деп ойлосоңуз жана бул сайт коркунуч туудурбаса, <ph name="BEGIN_ERROR_LINK" />бизге кабарлап коюңуз<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
 <translation id="7030164307377592766">төлөм ыкмаларын толтуруу параметрлерин өзгөртүү</translation>
 <translation id="7031646650991750659">Кайсы Google Play колдонмолорун орнотуп алдыңыз</translation>
@@ -3365,7 +3360,6 @@
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" бул платформада колдоого алынган чектөө эмес</translation>
 <translation id="717330890047184534">GAIA идентификатору:</translation>
 <translation id="7173338713290252554">Интернеттеги баа таржымалы</translation>
-<translation id="7173478186876671324">Администраторуңуз бул сайтта <ph name="PERMISSION" /> бөгөттөп койгон</translation>
 <translation id="7174545416324379297">Бириктирилди</translation>
 <translation id="7175097078723125014">Даректи түзөтүү параметри тандалды</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> вариант}other{<ph name="SHIPPING_OPTION_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> вариант}}</translation>
@@ -3399,7 +3393,6 @@
 <translation id="7221857374443660083">Банк аныктыгыңызды текшергени жатат</translation>
 <translation id="722454870747268814">Жаңы жашыруун өтмөк</translation>
 <translation id="7227293336683593977">Баалар таржымалы</translation>
-<translation id="7227747683324411744">Сиз кирүүгө аракет кылып жаткан сайттагы чабуулчулар башкы бетти өзгөртүп же кирген сайттарыңызда кошумча жарнамаларды көрсөтүп, серептөөңүзгө кедергисин тийгизе турган зыяндуу программаны орнотушу мүмкүн.</translation>
 <translation id="7232352818707016189">Салыштыруучу таблица боюнча кошумча аракеттер</translation>
 <translation id="7233592378249864828">Басып чыгарууну ырастоо барагы</translation>
 <translation id="7234112195906418665">Саякат жана транспорт</translation>
@@ -3620,7 +3613,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> азыраак</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> учурда бул өтүнүчтү аткара албайт.</translation>
 <translation id="7599089013883397081">Жүктөп алуу убакыты аяктады</translation>
-<translation id="7605377493722372900">Сиз кирүүгө аракет кылып жаткан сайтта зыянкеч программа орнотулуп, сырсөзүңүз, сүрөттөрүңүз, билдирмелериңиз же насыя картаңыздын номери сыяктуу маалымат уурдалышы мүмкүн.</translation>
 <translation id="7608583484192556132">Жарнамалар ушул параметрге, <ph name="BEGIN_LINK_1" />сайттар сунуштаган колдонмолорго<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cookie параметрлерине<ph name="END_LINK_2" /> жана сиз карап жаткан сайттын параметрлерине жараша жекелештирилип көрсөтүлөт. <ph name="BEGIN_LINK_3" />Жарнаманын купуялыгын тескөө<ph name="END_LINK_3" /> тууралуу кеңири маалымат.</translation>
 <translation id="7610193165460212391">Маани <ph name="VALUE" /> аралыгынан чыгып кетти.</translation>
 <translation id="7613889955535752492">Мөөнөтү бүтөт: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4073,7 +4065,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Микрофонду колдонууга бул жолу уруксат берилди</translation>
 <translation id="8421158157346464398">Жумуш профили тууралуу маалымат (мисалы, жумуш профилиндеги колдонуучунун аты)</translation>
-<translation id="8422228580902424274">Сиз кирүүгө аракет кылып жаткан сайтта зыянкеч программа орнотулуп же сырсөзүңүз, телефон номериңиз жана насыя картаңыздын номери сыяктуу маалыматыңыз уурдалышы мүмкүн.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8427848540066057481">500 x 750 мм.</translation>
@@ -4224,7 +4215,6 @@
 <translation id="8722929331701811374">Канцелярия (фирмалык бланк)</translation>
 <translation id="8724824364712796726">Конверт B6</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
-<translation id="8725667981218437315">Камера жана микрофон</translation>
 <translation id="8726549941689275341">Барактын өлчөмү:</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8731268612289859741">Коопсуздук коду</translation>
@@ -4433,7 +4423,6 @@
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> сиз экениңизди ырасташы керек</translation>
 <translation id="912327514020027767">Юбкалар</translation>
-<translation id="912414390325846156">Буга чейин ушул сайтта колдонууга тыюу салгансыз</translation>
 <translation id="9128870381267983090">Тармакка туташуу</translation>
 <translation id="9131119348384879525">Купуя мазмунду тартасызбы?</translation>
 <translation id="9133861214150761123">Бухгалтерия жана аудит</translation>

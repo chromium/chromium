@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chrome ካልነገረዎት በስተቀር የእርስዎ ግንኙነት ሁልጊዜ ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="1175131936083782305">አስተዳዳሪዎ ይህን ባህሪ አሰናክሎታል።</translation>
 <translation id="1175364870820465910">&amp;አትም…</translation>
+<translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1175914831232945926">አኃዞች</translation>
 <translation id="1176471985365269981">በመሳሪያዎ ላይ ፋይሎችን ውይም አቃፊዎችን ለማርትዕ አልተፈቀደም</translation>
 <translation id="1177073277575830464">የAndroid ፈጣን ማዋቀር ተጠናቋል። በእርስዎ <ph name="DEVICE_TYPE" /> ማዋቀሩን ይቀጥሉ</translation>
@@ -1436,6 +1437,7 @@
 <translation id="1997616988432401742">የእርስዎ እውቅና ማረጋገጫዎች</translation>
 <translation id="1998715278591719161">እጆችዎን ለመከታተል ተፈቅዷል</translation>
 <translation id="1999115740519098545">በሚነሳበት ጊዜ</translation>
+<translation id="1999763610967697511">ይጎትቱና ጣል ያድርጉ</translation>
 <translation id="2002109485265116295">እውነተኛ ጊዜ</translation>
 <translation id="2002160221914907025">የሙከራ ሰው ሠራሽ አስተውሎት</translation>
 <translation id="2003130567827682533">የ«<ph name="NAME" />» ውሂብን ለማግበር መጀመሪያ ከWi-Fi አውታረ መረብ ጋር ይገናኙ</translation>
@@ -3493,6 +3495,7 @@
 <translation id="3487649228420469005">ቅኝት ተከናውኗል</translation>
 <translation id="3488199663160411179">ስም</translation>
 <translation id="3490695139702884919">በማውረድ ላይ... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">የእርስዎን ፒን ወይም የይለፍ ቃል ከረሱ አካባቢያዊ ውሂብ ወደነበረበት መመለስ ይችላል</translation>
 <translation id="3491669675709357988">የእርስዎ ልጅ መለያ ለFamily Link ወላጅ መቆጣጠሪያዎች አልተዋቀረም። ልክ ውቅረትን እንደጨረሱ የወላጅ መቆጣጠሪያዎችን ማከል ይችላሉ። በአሳሽ መተግበሪያው ውስጥ በወላጅ መቆጣጠሪያዎች ላይ መረጃ ያገኛሉ።</translation>
 <translation id="3491678231052507920">ጣቢያዎች ወደ የቪአር ክፍለ-ጊዜዎች እንዲገቡ ለማስቻል አብዛኛው ጊዜ የእርስዎን የምናባዊ እውነታ መሣሪያዎች እና ውሂብ ይጠቀሙበታል</translation>
 <translation id="3493043608231401654">ከትር ቡድን <ph name="TAB_TITLE" />ን ያስወግዱ</translation>
@@ -5381,6 +5384,7 @@
 <translation id="4853020600495124913">&amp;በአዲስ መስኮት ውስጥ ክፈት</translation>
 <translation id="4854317507773910281">የሚጸድቅ የወላጅ መለያ ይምረጡ</translation>
 <translation id="485480310608090163">ተጨማሪ ቅንብሮች እና ፈቃዶች</translation>
+<translation id="485806788160414322">ሚዲያን አጫውት ወይም ባለበት አቁም</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">በእርስዎ አስተዳዳሪ ድምጸ-ከል ተደርጓል</translation>
 <translation id="4862642413395066333">OCSP ምላሾችን መፈረም</translation>

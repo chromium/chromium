@@ -379,6 +379,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1658111267661135323">Truyền hình và video</translation>
 <translation id="1658918301167915956">thiết bị Bluetooth</translation>
 <translation id="1662550410081243962">Lưu và điền phương thức thanh toán</translation>
+<translation id="1662980953334786797">Thứ tự giống hệt</translation>
 <translation id="1663943134801823270">Thẻ và địa chỉ từ Chrome. Bạn có thể quản lý thẻ và địa chỉ trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Khuôn in Flexo bằng Photopolymer</translation>
 <translation id="166624440456221306">Xoá bảng so sánh</translation>
@@ -1324,7 +1325,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="342781501876943858">Chromium khuyên bạn nên đặt lại mật khẩu của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
 <translation id="3428151540071562330">Một hoặc nhiều URI mẫu máy chủ DnsOverHttpsTemplates là không hợp lệ và sẽ không được dùng.</translation>
 <translation id="3428789896412418755">Nhật ký sắp xếp theo nhóm</translation>
-<translation id="3430206873883193118">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Đóng trang</translation>
 <translation id="3433111389595862568">Phần mềm hội nghị và cộng tác</translation>
 <translation id="3433144818443565002">Trò chuyện thoại và video</translation>
@@ -1342,7 +1342,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3447661539832366887">Chủ sở hữu của thiết bị này đã tắt trò chơi khủng long.</translation>
 <translation id="3447884698081792621">Hiển thị chứng chỉ (do <ph name="ISSUER" /> cấp)</translation>
 <translation id="3450323514459570273">Có thể yêu cầu điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
-<translation id="3451429106322189478">Đã cho phép sử dụng <ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">Khoảng thời gian tìm nạp:</translation>
 <translation id="3453962258458347894">Số lần thử lại</translation>
 <translation id="3457781733462096492">Nhạc rap và hip-hop</translation>
@@ -1659,6 +1658,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4023431997072828269">Vì bạn đang gửi biểu mẫu này bằng đường kết nối không an toàn nên người khác có thể nhìn thấy thông tin của bạn.</translation>
 <translation id="4025325634010721551">Đã tải lại các chính sách</translation>
 <translation id="4025338605225449265">Tiền tệ và ngoại hối</translation>
+<translation id="4025777154208238692">Thứ tự ngược lại</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Những kẻ tấn công có thể xem và thay đổi<ph name="END_STRONG" /> thông tin bạn gửi hoặc nhận từ trang web này.
       <ph name="LIST_ITEM" />Nếu đang dùng mạng công cộng, <ph name="BEGIN_STRONG" />bạn nên truy cập trang web này vào lúc khác để đảm bảo an toàn<ph name="END_STRONG" />. Những mạng đáng tin cậy, chẳng hạn như Wi-Fi tại nhà hoặc nơi làm việc, sẽ có ít rủi ro hơn.
@@ -2568,7 +2568,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="569000877158168851">Giá trị DnsOverHttpsTemplates là không phù hợp và sẽ không được dùng, trừ phi bạn đặt chính sách DnsOverHttpsMode thành <ph name="SECURE_DNS_MODE_AUTOMATIC" /> hoặc <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Đã mở lời nhắc Lưu thẻ trên toàn màn hình.</translation>
-<translation id="5692655638459249302">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể cài đặt phần mềm độc hại để đánh cắp hoặc xoá các thông tin như mật khẩu, ảnh, tin nhắn hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Dùng Windows Hello để xác minh và hoàn tất giao dịch mua hàng?</translation>
 <translation id="5699628521141772782">Sữa và trứng</translation>
 <translation id="5700761515355162635">Đã cho phép cookie của bên thứ ba</translation>
@@ -2716,7 +2715,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5995727681868049093">Quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
 <translation id="5996255674476750320">Trình diễn xe cộ</translation>
 <translation id="5997247540087773573">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản, Trình quản lý mật khẩu khuyên bạn nên thay đổi mật khẩu này ngay và kiểm tra các mật khẩu bạn đã lưu.</translation>
-<translation id="5999271311987646952">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng <ph name="BEGIN_LINK" />vừa phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web bạn đang cố gắng truy cập.</translation>
 <translation id="6000528814684428358">Nhạc hard rock và progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">Bắt đầu</translation>
@@ -2881,7 +2879,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6284449872909111707">Nhắn tin văn bản và nhắn tin nhanh</translation>
 <translation id="6284517535531159884">Loại khởi đầu biến thể</translation>
 <translation id="6287197303017372967">Sử dụng tính năng tìm đường để xem đường tới điểm đến theo từng chặng.</translation>
-<translation id="6288521565586608304">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập. Bạn nên quay lại trang an toàn để tránh bị tổn hại. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Đã tìm thấy ưu đãi giảm giá</translation>
 <translation id="6289939620939689042">Màu trang</translation>
 <translation id="6292819926564202163">Công cụ tìm kiếm của bạn trong Chrome</translation>
@@ -3075,7 +3072,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Giáo dục máy tính</translation>
 <translation id="6633476656216409494">Phần mềm kinh doanh và tăng năng suất</translation>
-<translation id="6638353438328951386">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng vừa <ph name="BEGIN_LINK" />phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web mà bạn đang cố gắng truy cập.</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6645291930348198241">Truy cập vào cookie và dữ liệu trang web.</translation>
 <translation id="6645478838938543427">Thông báo giảm giá sẽ được gửi đến <ph name="EMAIL_ADDRESS" /></translation>
@@ -3289,7 +3285,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="701757816833614688">Giáo dục thiết kế và nghệ thuật thị giác</translation>
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7023162328967545559">Cảnh báo của quản trị viên</translation>
-<translation id="7024932305105294144">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng <ph name="BEGIN_LINK" />vừa phát hiện thấy trang web tấn công giả mạo<ph name="END_LINK" /> trên trang web bạn đang cố gắng truy cập. Trang web lừa đảo sẽ giả mạo các trang web khác để đánh lừa bạn.<ph name="NEW_LINE" />Ngay cả những trang web thường được coi là an toàn đôi khi vẫn bị kẻ tấn công xâm phạm. <ph name="BEGIN_ERROR_LINK" />Hãy cho chúng tôi biết<ph name="END_ERROR_LINK" /> nếu bạn cho rằng đã có sự nhầm lẫn và trang web này không gây nguy hiểm.</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7030164307377592766">sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán</translation>
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
@@ -3367,7 +3362,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" không phải là chế độ hạn chế được hỗ trợ trên nền tảng này</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7173338713290252554">Giá trên Internet theo thời gian</translation>
-<translation id="7173478186876671324">Quản trị viên đã chặn quyền sử dụng <ph name="PERMISSION" /> của bạn đối với trang web này</translation>
 <translation id="7174545416324379297">Đã hợp nhất</translation>
 <translation id="7175097078723125014">Đã chọn tuỳ chọn chỉnh sửa địa chỉ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn giao hàng khác}other{<ph name="SHIPPING_OPTION_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn giao hàng khác}}</translation>
@@ -3401,7 +3395,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7221857374443660083">Ngân hàng của bạn muốn đảm bảo rằng đây là bạn</translation>
 <translation id="722454870747268814">Thẻ ẩn danh mới</translation>
 <translation id="7227293336683593977">Giá theo thời gian</translation>
-<translation id="7227747683324411744">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập.</translation>
 <translation id="7232352818707016189">Các thao tác khác cho bảng So sánh</translation>
 <translation id="7233592378249864828">In tờ xác nhận</translation>
 <translation id="7234112195906418665">Du lịch và vận tải</translation>
@@ -3622,7 +3615,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7598391785903975535">Dưới <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> hiện không thể xử lý yêu cầu này.</translation>
 <translation id="7599089013883397081">Đã hết thời gian tải xuống</translation>
-<translation id="7605377493722372900">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể cài đặt phần mềm độc hại để đánh cắp hoặc xoá các thông tin như mật khẩu, ảnh, tin nhắn hoặc số thẻ tín dụng.</translation>
 <translation id="7608583484192556132">Việc một quảng cáo bạn thấy có được cá nhân hoá hay không có thể phụ thuộc vào nhiều yếu tố, chẳng hạn như chế độ cài đặt này, <ph name="BEGIN_LINK_1" />quảng cáo do trang web gợi ý<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> mà bạn chọn và trang web bạn đang xem có hay không cá nhân hoá quảng cáo. Tìm hiểu thêm về việc <ph name="BEGIN_LINK_3" />quản lý quyền riêng tư trong quảng cáo<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Giá trị nằm ngoài phạm vi <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Hết hạn: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4075,7 +4067,6 @@ Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Đã cho phép sử dụng micrô cho lần này</translation>
 <translation id="8421158157346464398">Thông tin hồ sơ công việc (chẳng hạn như tên người dùng trên hồ sơ công việc)</translation>
-<translation id="8422228580902424274">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4227,7 +4218,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8722929331701811374">Văn phòng phẩm (Giấy tiêu đề)</translation>
 <translation id="8724824364712796726">Phong bì B6</translation>
 <translation id="8725066075913043281">Thử lại</translation>
-<translation id="8725667981218437315">Máy ảnh và micrô</translation>
 <translation id="8726549941689275341">Kích thước trang:</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>
@@ -4436,7 +4426,6 @@ Thông tin chi tiết bổ sung:
 <translation id="9119042192571987207">Đã tải lên</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> muốn xác minh danh tính của bạn</translation>
 <translation id="912327514020027767">Váy</translation>
-<translation id="912414390325846156">Trước đây, bạn đã chọn không cho phép trang web này</translation>
 <translation id="9128870381267983090">Kết nối đến mạng</translation>
 <translation id="9131119348384879525">Chụp nội dung bảo mật?</translation>
 <translation id="9133861214150761123">Kế toán và kiểm toán</translation>

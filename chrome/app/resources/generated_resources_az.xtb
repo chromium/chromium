@@ -248,6 +248,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1174366174291287894">Chrome sizə əksini bildirmədiyi halda bağlantınız hər zaman təhlükəsizdir</translation>
 <translation id="1175131936083782305">Administrator bu funksiyanı deaktiv edib.</translation>
 <translation id="1175364870820465910">&amp;Çap edin...</translation>
+<translation id="1175572348579024023">Sürüşdürün</translation>
 <translation id="1175914831232945926">Rəqəmlər</translation>
 <translation id="1176471985365269981">Cihazınızdakı faylları və ya qovluqları redaktə etmək icazəsi verilməyib</translation>
 <translation id="1177073277575830464">Sürətli Android ayarlaması hazırdır. <ph name="DEVICE_TYPE" /> cihazında ayarlamağa davam edin.</translation>
@@ -1424,6 +1425,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1997616988432401742">Sertifikatlarınız</translation>
 <translation id="1998715278591719161">Əllərinizi izləmək icazəsi verilib</translation>
 <translation id="1999115740519098545">Başlanğıcda</translation>
+<translation id="1999763610967697511">Çəkib buraxın</translation>
 <translation id="2002109485265116295">Real zaman</translation>
 <translation id="2002160221914907025">Təcrübi AI</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" datasını aktiv etmək üçün əvvəlcə Wi-Fi şəbəkəsinə qoşulun</translation>
@@ -3483,6 +3485,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3487649228420469005">Skanlandı</translation>
 <translation id="3488199663160411179">ad</translation>
 <translation id="3490695139702884919">Endirilir... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">PIN və ya parolunuzu unutsanız, lokal data bərpa edilə bilər</translation>
 <translation id="3491669675709357988">Övladınızın hesabı Family Link valideyn nəzarəti üçün ayarlanmayıb. Ayarlamanı bitirdikdən sonra valideyn nəzarətini əlavə edə bilərsiniz. "Araşdırın" tətbiqində valideyn nəzarəti haqqında məlumat tapa bilərsiniz.</translation>
 <translation id="3491678231052507920">Saytlar adətən sizə VR sessiyalarına daxil olmaq imkanı vermək üçün virtual reallıq cihazlarınızdan və datadan istifadə edir</translation>
 <translation id="3493043608231401654"><ph name="TAB_TITLE" /> tabını tab qrupundan silin</translation>
@@ -4161,6 +4164,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948334586359655083">Bu tab audio oxudur</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
+<translation id="3948985214866944547">Əksər insanlar bu sayt üçün dəqiq məkanı paylaşmağı bloklayır</translation>
 <translation id="394984172568887996">İnternet Explorer'dən import edildi</translation>
 <translation id="3949999964543783947">Faylları sürətli endirmək üçün <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Giriş</translation>
@@ -5370,6 +5374,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4853020600495124913">Yeni pəncərədə açın</translation>
 <translation id="4854317507773910281">Təsdiq üçün valideyn hesabı seçin</translation>
 <translation id="485480310608090163">Daha çox ayar və icazələr</translation>
+<translation id="485806788160414322">Medianı oxudun və ya ona pauza verin</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Administrator səssiz edib</translation>
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
@@ -9019,6 +9024,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7566118625369982896">Play tətbiq linklərini idarə edin</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Düymə kombinasiyası yaradın</translation>
+<translation id="7568759527730933493">DNS-də (Domain Name System) saytın IP ünvanını axtarmaq üçün güvənli bağlantıdan istifadə edin. Bu, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ünvanında idarə olunan xidmət təminatçısından istifadə edir. Güvənli bağlantılar administratorunuz tərəfindən konfiqurasiya edilmiş bəzi domenlər üçün istifadə edilmir.</translation>
 <translation id="756876171895853918">Avatarı fərdiləşdirin</translation>
 <translation id="7568790562536448087">Güncəlləşir</translation>
 <translation id="7569983096843329377">Qara</translation>
@@ -9181,6 +9187,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7676867886086876795">İstənilən mətn sahəsində diktant icazəsi üçün Google'a səs göndərin.</translation>
 <translation id="7678588695732963732">USB cihazı icazələri sıfırlansın?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> idarə edilən printer var.</translation>
+<translation id="7679895819123160382">İnternet trafikinizə girişi olanların daxil olduğunuz saytları görməsini çətinləşdirin. <ph name="PRODUCT_NAME" /> saytın IP ünvanını DNS-də (Domain Name System) axtarmaq üçün güvənli bağlantıdan istifadə edir. Güvənli bağlantılar administratorunuz tərəfindən konfiqurasiya edilmiş bəzi domenlər üçün istifadə edilmir.</translation>
 <translation id="7680416688940118410">Sensor ekranın kalibrlənməsi</translation>
 <translation id="7681095912841365527">Sayt bluetooth istifadə edə bilər</translation>
 <translation id="7681597159868843240">Saytlar, adətən, virtual reallıq və ya fitnes izləmə kimi xüsusiyyətlər üçün cihazınızın hərəkət sensorlarından istifadə edir</translation>
@@ -9579,6 +9586,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
 <translation id="7955177647836564772">Smart Lock aktiv edilibsə və telefonunuzun kilidi açılıbsa, parol və ya PIN daxil etməyinizə ehtiyac yoxdur</translation>
 <translation id="7956373551960864128">Yadda saxlanılmış printerlər</translation>
+<translation id="7956918070009672177">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. İnternetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="7957074856830851026">Seriya nömrəsi və aktiv ID-si kimi cihaz məlumatlarına baxın</translation>
 <translation id="7958157896921135832">Şrift ölçüsünü artırın</translation>
 <translation id="7958828865373988933">USB təhlükəsizlik açarında <ph name="APP_NAME" /> üçün giriş açarı yaratmaq istəsəniz, onu taxıb, toxunun</translation>

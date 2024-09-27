@@ -250,6 +250,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1174366174291287894">Kapcsolata mindig biztonságos, hacsak a Chrome nem értesíti Önt ennek ellenkezőjéről</translation>
 <translation id="1175131936083782305">Az adminisztrátor letiltotta ezt a funkciót.</translation>
 <translation id="1175364870820465910">&amp;Nyomtatás...</translation>
+<translation id="1175572348579024023">Görgetés</translation>
 <translation id="1175914831232945926">Számjegyekként</translation>
 <translation id="1176471985365269981">Nem szerkeszthetik az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1177073277575830464">Az Android gyors beállítása megtörtént. Folytassa a beállítást a(z) <ph name="DEVICE_TYPE" /> eszközön.</translation>
@@ -1437,6 +1438,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1997616988432401742">Az Ön tanúsítványai</translation>
 <translation id="1998715278591719161">Nyomon követhetik az Ön kézmozgását</translation>
 <translation id="1999115740519098545">Induláskor</translation>
+<translation id="1999763610967697511">Húzás</translation>
 <translation id="2002109485265116295">Valós idejű</translation>
 <translation id="2002160221914907025">Kísérleti AI</translation>
 <translation id="2003130567827682533">A(z) „<ph name="NAME" />” adatszolgáltatásának aktiválásához először csatlakozzon Wi-Fi-hálózathoz</translation>
@@ -5386,6 +5388,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4853020600495124913">Megnyitás új &amp;ablakban</translation>
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
+<translation id="485806788160414322">Médiatartalom lejátszása vagy szüneteltetése</translation>
 <translation id="4858913220355269194">Foci</translation>
 <translation id="486213875233855629">A rendszergazda némította el</translation>
 <translation id="4862642413395066333">OCSP (valós idejű tanúsítványlekérdezés) válaszok aláírása</translation>

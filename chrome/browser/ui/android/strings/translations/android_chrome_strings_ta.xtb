@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">இந்தக் கடவுச்சொல்லை நீக்கினால் <ph name="SITE" /> இணையதளத்தில் உள்ள உங்கள் கணக்கு நீக்கப்படாது</translation>
 <translation id="2286841657746966508">பில்லிங் முகவரி</translation>
 <translation id="228704530595896923">பகிர்தல் விருப்பங்களுக்கான பட்டியல்.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கத்தைக் காட்டும்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்களைக் காட்டும்}}</translation>
 <translation id="2297822946037605517">இந்த பக்கத்தைப் பகிர்</translation>
 <translation id="22981027763501686">புக்மார்க்குகள், பதிவுகள், மேலும் பலவற்றை உங்களின் பிற சாதனங்களிலும் அணுக, தரவை ஒத்திசையுங்கள்</translation>
 <translation id="230115972905494466">இணக்கமான சாதனங்கள் இல்லை</translation>
@@ -296,6 +297,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" />ஐ மீண்டும் பதிவிறக்கவா?</translation>
 <translation id="2451607499823206582">கண்காணித்தல்</translation>
 <translation id="2453860139492968684">முடி</translation>
+<translation id="2461378706168271257">பக்கங்களைத் தேடவும்</translation>
 <translation id="2461822463642141190">தற்போது</translation>
 <translation id="2468444275314013497">உங்கள் உலாவி பாதுகாப்பாக உள்ளது</translation>
 <translation id="2472163211318554013">Chromeமில் அதிகப் பலன்களைப் பெற, உள்நுழையவும்</translation>
@@ -600,6 +602,7 @@
 <translation id="3847319713229060696">வலையைப் பயன்படுத்தும் அனைவருக்கும் பாதுகாப்பை மேம்படுத்த உதவுங்கள்</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
 <translation id="3858860766373142691">பெயர்</translation>
+<translation id="3873174561423636563">தொடர, உங்களின் <ph name="FIELDS_STRING" /> ஆகியவற்றை இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />சேவை விதிமுறைகளைப்<ph name="END_LINK1" /> பாருங்கள்.</translation>
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="3899682235662194879">மறைநிலைத் தாவல்கள் அனைத்தையும் மூடுக</translation>
 <translation id="3900966090527141178">கடவுச்சொற்களைப் பதிவிறக்கு</translation>
@@ -1299,6 +1302,7 @@
 <translation id="6964300328304469089">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="NAME" />, <ph name="EMAIL" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
 <translation id="696447261358045621">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="6965382102122355670">சரி</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாடுகளுடன் இருக்கும் <ph name="TABS_COUNT_ONE" /> பக்கத்தைக் காட்டும்}other{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாடுகளுடன் இருக்கும் <ph name="TABS_COUNT_MANY" /> பக்கங்களைக் காட்டும்}}</translation>
 <translation id="6971862865055170158">அனுமதிக்காதே</translation>
 <translation id="6978717888677691380">நீங்கள் தடுத்துள்ள தளங்கள்</translation>
 <translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
@@ -1460,6 +1464,7 @@
 <translation id="7656721520530864426">தளங்கள் எதுவுமில்லை</translation>
 <translation id="7656862631699126784">மறைநிலை லாக்கை இயக்கு</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
+<translation id="7663320421139257046">தொடர, உங்களின் <ph name="FIELDS_STRING" /> ஆகியவற்றை இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />தனியுரிமைக் கொள்கையைப்<ph name="END_LINK1" /> பாருங்கள்.</translation>
 <translation id="7665369617277396874">கணக்கைச் சேர்</translation>
 <translation id="766587987807204883">செய்திகளை இங்கே பார்க்கலாம், ஆஃப்லைனில் இருந்தாலும்கூட அவற்றைப் படிக்கலாம்</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> மூடப்பட்டன</translation>
@@ -1513,6 +1518,7 @@
 <translation id="7896724475402191389">இளம் வயதினருக்கான உள்ளடக்கம் - முடக்கப்பட்டுள்ளது</translation>
 <translation id="7903184275147100332">இதற்கு ஒரு நிமிடம் ஆகக்கூடும்</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{உங்கள் நிறுவனம் தடுத்தது: 1}other{உங்கள் நிறுவனம் தடுத்தவை: #}}</translation>
 <translation id="7914399737746719723">ஆப்ஸ் நிறுவப்பட்டது</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>
 <translation id="7926975587469166629">கார்டின் புனைப்பெயர்</translation>

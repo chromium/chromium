@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="310297983047869047">Prejšnji diapozitiv</translation>
 <translation id="3109724472072898302">Strnjeno</translation>
+<translation id="310979712355504754">Izbriši vse</translation>
 <translation id="3114012059975132928">Videopredvajalnik</translation>
 <translation id="3115898365077584848">Pokaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekaterih spletnih mestih</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav za navidezno resničnost. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav za navidezno resničnost.</translation>
-<translation id="7284451015630589124">Spletnim mestom ste blokirali uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
 <translation id="7366415735885268578">Dodajanje spletnega mesta</translation>
 <translation id="7368695150573390554">Vsi podatki brez povezave bodo izbrisani</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>
-<translation id="7474522811371247902">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve.\n\nObiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Če je ta možnost vklopljena, spletna mesta lahko prikazujejo pozive za prijavo. Če je ta možnost izklopljena, spletna mesta ne smejo prikazovati pozivov za prijavo.</translation>
 <translation id="7554752735887601236">Spletno mesto uporablja mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
-<translation id="7822573154188733812">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb, da bi vam sledila med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>
 <translation id="783819812427904514">Vklop videa</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>
-<translation id="8649036394979866943">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite sledenje potezam z dlanmi. Če je ta možnost izklopljena, spletna mesta ne smejo slediti potezam z dlanmi.</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>

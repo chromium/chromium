@@ -6608,27 +6608,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6102449843040973938">Niet voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
 <translation id="610892566190435199">Rapportage van aan/uit-status van apparaat aanzetten</translation>
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
-<translation id="6112524153927257380">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
-
-      Er zijn veel verschillende typen downloadmeldingen in Chrome, die grofweg zijn onder te verdelen in de volgende categorieën (meer informatie over Safe Browsing-analyseresultaten vind je op https://support.google.com/chrome/?p=ib_download_blocked):
-
-* Schadelijk, zoals gemarkeerd door de Safe Browsing-server
-* Ongebruikelijk of ongewenst, zoals gemarkeerd door de Safe Browsing-server
-* Een gevaarlijk bestandstype (bijv. alle swf-downloads en veel exe-downloads)
-
-Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van deze subsets geblokkeerd:
-
-0: Geen speciale beperkingen. Standaard.
-
-      1: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
-
-      2: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert ongebruikelijke of ongewenste bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
-
-      3: Blokkeert alle downloads. Niet aanbevolen, behalve voor speciale toepassingen.
-
-      4: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server, blokkeert geen gevaarlijke bestandstypen. Aanbevolen.
-
-      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent zijn geactiveerd als voor downloads die via de menuoptie Link downloaden... zijn geactiveerd. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt getoond of voor de afdrukoptie Opslaan als pdf. Lees meer over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Toegestaan gedrag herstellen.</translation>
 <translation id="6119207979839638596">Dit beleid is verwijderd in M75 nadat het maximale TLS-versiebeleid is verwijderd uit <ph name="PRODUCT_NAME" />.
 
@@ -10284,6 +10263,27 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Bij nieuwe apparaten is de tijdzone standaard ingesteld op US/Pacific. De notatie van de waarde volgt de naamgeving in de IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Als je een ongeldige waarde opgeeft, wordt het beleid geactiveerd met de instelling GMT.
 
       Als je het beleid niet instelt of een lege tekenreeks opgeeft, gebruikt het apparaat de momenteel actieve tijdzone. Gebruikers kunnen de tijdzone wijzigen.</translation>
+<translation id="8875202330803089599">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
+
+      Er zijn veel verschillende typen downloadmeldingen in Chrome, die grofweg zijn onder te verdelen in de volgende categorieën (meer informatie over Safe Browsing-analyseresultaten vind je op https://support.google.com/chrome/?p=ib_download_blocked):
+
+* Schadelijk, zoals gemarkeerd door de Safe Browsing-server
+* Ongebruikelijk of ongewenst, zoals gemarkeerd door de Safe Browsing-server
+* Een gevaarlijk bestandstype (bijv. alle swf-downloads en veel exe-downloads)
+
+Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van deze subsets geblokkeerd:
+
+0: Geen speciale beperkingen. Standaard.
+
+      1: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
+
+      2: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert ongebruikelijke of ongewenste bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
+
+      3: Blokkeert alle downloads. Niet aanbevolen, behalve voor speciale toepassingen.
+
+      4: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server, blokkeert geen gevaarlijke bestandstypen. Aanbevolen.
+
+      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Bekijk meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Hiermee kunnen bepaalde services op <ph name="PRODUCT_OS_FLEX_NAME" /> aanvullende hardwaregegevens sturen.
 
 Deze hardwaregegevens worden gebruikt voor algemene verbeteringen van <ph name="PRODUCT_OS_FLEX_NAME" />.

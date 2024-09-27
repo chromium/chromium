@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Tillat tredjepartspålogging for et bestemt nettsted.</translation>
 <translation id="310297983047869047">Forrige lysbilde</translation>
 <translation id="3109724472072898302">Skjult</translation>
+<translation id="310979712355504754">Slett alle</translation>
 <translation id="3114012059975132928">Videospiller</translation>
 <translation id="3115898365077584848">Vis informasjon</translation>
 <translation id="3123473560110926937">Blokkert på enkelte nettsteder</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er valgt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> er tillatt</translation>
 <translation id="7276071417425470385">Når dette er på, kan nettsteder be om å få bruke virtuell virkelighet-enheter. Når dette er av, kan ikke nettsteder bruke virtuell virkelighet-enheter.</translation>
-<translation id="7284451015630589124">Du har blokkert nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg mens du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere sporingsbeskyttelser<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Du blokkerer vanligvis varsler. For å tillate dette trykker du på Detaljer.</translation>
 <translation id="7366415735885268578">Legg til et nettsted</translation>
 <translation id="7368695150573390554">Alle data som er lagret for bruk uten nett, blir slettet</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
-<translation id="7474522811371247902">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter. Men informasjonskapsler fra tredjeparter er tillatt på dette nettstedet fordi det trenger dem for å kunne levere grunnleggende tjenester.\n\nGå til innstillingene for å <ph name="BEGIN_LINK" />administrere sporingsbeskyttelsene dine<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Når dette er på, kan nettsteder vise påloggingsforespørsler. Når dette er av, kan ikke nettsteder vise påloggingsforespørsler.</translation>
 <translation id="7554752735887601236">Et nettsted bruker mikrofonen din</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
 <translation id="7807060072011926525">Levert av Google</translation>
-<translation id="7822573154188733812">Chrome blokkerer nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg når du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere sporingsbeskyttelser<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Spiller av medier</translation>
 <translation id="783819812427904514">Slå på lyden i videoen</translation>
 <translation id="7846076177841592234">Opphev valget</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8617611086246832542">Når dette er på, vises datamaskinvisningen av nettsteder. Når dette er av, vises mobilvisningen av nettsteder.</translation>
-<translation id="8649036394979866943">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg mens du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere sporingsbeskyttelser<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Når dette er på, kan nettsteder be om å få spore hendene dine. Når dette er av, kan ikke nettsteder spore hendene dine.</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8681886425883659911">Annonser blokkeres på nettsteder som er kjent for å vise forstyrrende eller villedende annonser</translation>

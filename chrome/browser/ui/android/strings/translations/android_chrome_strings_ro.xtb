@@ -266,6 +266,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2278052315791335171">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
 <translation id="228704530595896923">Lista cu opțiuni de permitere a accesului.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Vezi <ph name="TABS_COUNT_ONE" /> filă}few{Vezi <ph name="TABS_COUNT_MANY" /> file}other{Vezi <ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="2297822946037605517">Distribuiți această pagină</translation>
 <translation id="22981027763501686">Sincronizează pentru a accesa marcajele, istoricul și alte date pe celelalte dispozitive ale tale</translation>
 <translation id="230115972905494466">Nu s-au găsit dispozitive compatibile</translation>
@@ -1301,6 +1302,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
 <translation id="696447261358045621">Ieși din modul incognito</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Vezi <ph name="TABS_COUNT_ONE" /> filă cu activitate nouă în grupurile de file folosite în comun}few{Vezi <ph name="TABS_COUNT_MANY" /> file cu activitate nouă în grupurile de file folosite în comun}other{Vezi <ph name="TABS_COUNT_MANY" /> de file cu activitate nouă în grupurile de file folosite în comun}}</translation>
 <translation id="6971862865055170158">Nu aproba</translation>
 <translation id="6978717888677691380">Site-uri pe care le-ai blocat</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
@@ -1516,6 +1518,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7896724475402191389">Conținut pentru tineri – dezactivat</translation>
 <translation id="7903184275147100332">Poate dura un timp</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{Una a fost blocată de organizația ta}few{# au fost blocate de organizația ta}other{# au fost blocate de organizația ta}}</translation>
 <translation id="7914399737746719723">Aplicație instalată</translation>
 <translation id="7919123827536834358">Tradu automat aceste limbi</translation>
 <translation id="7926975587469166629">Pseudonimul cardului</translation>

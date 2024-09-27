@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
 <translation id="5790391387506209808">ауған лазуриті</translation>
-<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Пернелер тіркесімі тағайындалмаған</translation>
 <translation id="5826644637650799838">Өнер туралы</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">Бастау үшін құжатты сканерге қойыңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6965978654500191972">Құрылғы</translation>
+<translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6975620886940770104">Жылтыраған <ph name="GLOWSCAPES_FEATURE" /> бар <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">коалалар</translation>
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>
 <translation id="8882789155418924367">үкілер</translation>
 <translation id="8892443466059986410">Пернелер тіркесімін өзгертуден бас тарту</translation>
+<translation id="8897043028305808902">Файл атауы өзгерді.</translation>
 <translation id="8898840733695078011">Сигнал күші</translation>
 <translation id="8909114361904403025">жоғары жақ көрсеткісі</translation>
 <translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>

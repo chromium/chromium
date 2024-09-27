@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ക്യാമറ അനുവദനീയം</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="4718048029184481307">ചിത്രത്തിനുള്ളിൽ ചിത്രത്തിൽ പ്ലേ ചെയ്യുന്നു</translation>
-<translation id="4792862212177489858">ലൊക്കേഷൻ പങ്കിടുക</translation>
 <translation id="4812940957355064477">ഒരു നമ്പർ നൽകുക.</translation>
 <translation id="49269513399674318">മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> തിരഞ്ഞെടുത്തു</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">മൂല്യം <ph name="MINIMUM" /> എന്നതില്‍ കൂടുതലോ സമമോ ആയിരിക്കണം.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചു</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' എന്നതിനുശേഷം ഒരു ഭാഗം നൽകുക.'<ph name="INVALIDADDRESS" />' അപൂർണ്ണമാണ്.</translation>
 <translation id="5334352251556557839">മീഡിയ പ്ലേ ചെയ്യാനായില്ല.</translation>
 <translation id="537648784377940524">കുറഞ്ഞ തീയതി (<ph name="MIN_DATE_OR_TIME" />) പരമാവധി തീയതിയേക്കാൾ (<ph name="MAX_DATE_OR_TIME" />) മുമ്പുള്ളതായിരിക്കണം.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">പ്ലഗിൻ ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> പ്രതീകങ്ങളോ അതിൽ കൂടുതലോ ആയി വർദ്ധിപ്പിക്കുക (നിങ്ങൾ നിലവിൽ ഒരു പ്രതീകം മാത്രമേ ഉപയോഗിക്കുന്നുള്ളൂ).</translation>
-<translation id="7080893216867146095">ലൊക്കേഷൻ പങ്കിടൽ അനുവദനീയമാണ്</translation>
 <translation id="709897737746224366">അഭ്യര്‍ത്ഥി ച്ചഫോര്‍മാറ്റ് ദയവായി പൊരുത്തപ്പെടുത്തുക.</translation>
 <translation id="7134810312945846184">മൈക്രോഫോണും ക്യാമറയും ഉപയോഗിക്കുക</translation>
 <translation id="7263440858009898357">പട്ടികയിലെ ഒരു ഇനം ദയവായി തിരഞ്ഞെടുക്കുക</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">മൂല്യം <ph name="MINIMUM_TIME" />-നും <ph name="MAXIMUM_TIME" />-നും ഇടയിലായിരിക്കണം.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ഫയലുകള്‍</translation>
 <translation id="8451268428117625855">ദയവായി ഒരു ഫയല്‍ തരം തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="8533587060884335451">കൃത്യ ലൊക്കേഷൻ ഉപയോഗിക്കൂ</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ലൈൻ റാപ്പ്</translation>
 <translation id="8750798805984357768">ഈ ഓപ്ഷനുകളിലൊന്ന് ദയവായി തിരഞ്ഞെടുക്കുക.</translation>

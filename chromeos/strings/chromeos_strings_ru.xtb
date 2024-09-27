@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
 <translation id="5790391387506209808">лазурит</translation>
-<translation id="5810692306010756935">Перенос данных из учебного аккаунта</translation>
 <translation id="5816802250591013230">Сочетание клавиш не назначено.</translation>
 <translation id="5826644637650799838">Подробнее</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">Чтобы начать, положите документ в сканер.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965978654500191972">Устройство</translation>
+<translation id="6972754398087986839">Начать</translation>
 <translation id="6975620886940770104">Пейзаж: <ph name="GLOWSCAPES_LANDSCAPE" /> и <ph name="GLOWSCAPES_FEATURE" /> в сиянии света</translation>
 <translation id="6975981640379148271">коалы</translation>
 <translation id="6977381486153291903">Версия встроенного ПО</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8882789155418924367">совы</translation>
 <translation id="8892443466059986410">Не изменять сочетание клавиш</translation>
+<translation id="8897043028305808902">Файл переименован.</translation>
 <translation id="8898840733695078011">Уровень сигнала</translation>
 <translation id="8909114361904403025">стрелка вверх</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>

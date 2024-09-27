@@ -41,6 +41,7 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="2569352796411618312">Ieteikums: vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
 <translation id="2662028055331606429">Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Apmeklēt vietni</translation>
+<translation id="2671423594960767771">Kopīgot grupu</translation>
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />; aizvērtas: <ph name="ANY_CLOSED" />}zero{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />; aizvērtas: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />; aizvērtas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />; aizvērtas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Izveidots pirms <ph name="NUM_HOURS_ONE" /> stundas}zero{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}one{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundas}other{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}}</translation>

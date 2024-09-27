@@ -49,6 +49,7 @@
 <translation id="2195025571279539885">Chromium har doim bu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni taklif qilsinmi?</translation>
 <translation id="22313767259766852">Hozir bu manzil Chromiumga saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="USER_EMAIL" />) saqlang.</translation>
 <translation id="2236584955986023187">Bunda Chromium har safar saytning kompyuter versiyasini talab qiladi.</translation>
+<translation id="2270466829363945454">Xaridlar</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="231828342043114302">Qiziqishlar asosida moslangan kontent olish uchun Chromium hisobiga kiring.</translation>
 <translation id="2326738825692478496">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
@@ -129,6 +130,7 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chromium maʼlumotlarini Google
 <translation id="4432744876818348753">Chromiumning barcha imkoniyatlaridan foydalanish uchun hisobga kiring</translation>
 <translation id="4445228361214254027">Google hisobida saqlangan Chromium maʼlumotlaridan foydalanish tashkilotingiz tomonidan faolsizlantirilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>
 <translation id="4498832288620833153">Kiritilgan URL manzillarni Chromium Saqlangan sahifalariga qoʻshadi.</translation>
+<translation id="4508268628669724828">Chromiumdan unumli foydalanish maslahatlarini olish uchun keyinroq qayta tekshiring.</translation>
 <translation id="452436063477828504">Chromium maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="4527452566931097835">Chromium asosiy brauzer sifatida tanlansinmi?</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjima xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
@@ -240,6 +242,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7228180817326917122">Chromium maslahati: Manzillar qatori joylashuvini tanlang</translation>
 <translation id="725427773388857052">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
 <translation id="7269362888766543920">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>
+<translation id="7279391168585141365">Parollarni Chromiumda saqlang</translation>
 <translation id="7285031092584344905">Boshqa ilovalarda Chromium brauzeridagi parollaringiz va boshqalarni oching.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Tanlangan ma’lumotlar Chromium va sinxronlangan qurilmalardan o‘chirildi. Google hisobingiz orqali amalga oshirilgan qidiruvlar, brauzer tarixi va boshqa internetdagi faoliyatingizni history.google.com sahifasi orqali ko‘rishingiz mumkin.</translation>

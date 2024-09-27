@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">ਸੁਝਾਅ: ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ</translation>
 <translation id="266935134738038806">ਸਾਈਟ 'ਤੇ ਜਾਓ</translation>
+<translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ਟੈਬ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ, <ph name="ANY_CHANGED" /> ਨੂੰ ਬਦਲਿਆ ਗਿਆ <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}one{<ph name="MANY_ADDED" /> ਟੈਬ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ, <ph name="ANY_CHANGED" /> ਨੂੰ ਬਦਲਿਆ ਗਿਆ <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}other{<ph name="MANY_ADDED" /> ਟੈਬਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ, <ph name="ANY_CHANGED" /> ਨੂੰ ਬਦਲਿਆ ਗਿਆ <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ਘੰਟਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}one{<ph name="NUM_HOURS_MANY" /> ਘੰਟਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}other{<ph name="NUM_HOURS_MANY" /> ਘੰਟੇ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}}</translation>

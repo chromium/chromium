@@ -266,6 +266,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="228704530595896923">Lista de opciones para compartir.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2297822946037605517">Compartir esta página</translation>
 <translation id="22981027763501686">Sincroniza para acceder a tus favoritos, historial y más en tus otros dispositivos</translation>
 <translation id="230115972905494466">No se encontraron dispositivos compatibles</translation>
@@ -1301,6 +1302,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña con actividad nueva en los grupos de pestañas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas con actividad nueva en los grupos de pestañas compartidos}}</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
 <translation id="6979737339423435258">Todos</translation>
@@ -1516,6 +1518,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7896724475402191389">Contenido para mentes jóvenes (desactivado)</translation>
 <translation id="7903184275147100332">Esto puede tardar un minuto.</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tu organización bloqueó 1}other{Tu organización bloqueó #}}</translation>
 <translation id="7914399737746719723">Se instaló la app</translation>
 <translation id="7919123827536834358">Traducir estos idiomas de forma automática</translation>
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>

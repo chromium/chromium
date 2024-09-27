@@ -266,6 +266,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2278052315791335171">तपाईंले यो पासवर्ड मेटाउनुभयो भने पनि <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन</translation>
 <translation id="2286841657746966508">बिल पठाउने ठेगाना</translation>
 <translation id="228704530595896923">सेयर गर्ने सुविधासम्बन्धी विकल्पहरूको सूची।</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब हेर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब हेर्नुहोस्}}</translation>
 <translation id="2297822946037605517">यो पेज सेयर गर्नुहोस्</translation>
 <translation id="22981027763501686">तपाईं आफूले चलाउने अन्य डिभाइसमा आफ्ना बुकमार्क र हिस्ट्रीलगायतका कुरा प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
 <translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
@@ -1300,6 +1301,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6964300328304469089">अहिले <ph name="NAME" />, <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> ट्याब हेर्नुहोस्}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब हेर्नुहोस्}}</translation>
 <translation id="6971862865055170158">अनुमोदन नगर्नुहोस्</translation>
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
@@ -1515,6 +1517,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7896724475402191389">साना बालबालिकाका लागि तयार पारिएको सामग्री - अफ छ</translation>
 <translation id="7903184275147100332">यो कार्य पूरा हुन एक मिनेट लाग्न सक्छ</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{तपाईंको सङ्गठनले एउटा सामग्री ब्लक गरेको छ}other{तपाईंको सङ्गठनले # वटा सामग्री ब्लक गरेको छ}}</translation>
 <translation id="7914399737746719723">एप इन्स्टल गरिएको छ</translation>
 <translation id="7919123827536834358">यी भाषाहरू स्वतः अनुवाद गर्नुहोस्</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>

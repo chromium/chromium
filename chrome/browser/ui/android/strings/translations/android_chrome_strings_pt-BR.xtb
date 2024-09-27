@@ -266,6 +266,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2278052315791335171">A exclusão desta senha não excluirá a conta em <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
 <translation id="228704530595896923">Lista de opções de compartilhamento.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> guia}one{Ver <ph name="TABS_COUNT_MANY" /> guia}other{Ver <ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="2297822946037605517">Compartilhar esta página</translation>
 <translation id="22981027763501686">Sincronize para acessar favoritos, histórico e muito mais em outros dispositivos</translation>
 <translation id="230115972905494466">Nenhum dispositivo compatível encontrado</translation>
@@ -1302,6 +1303,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="696447261358045621">Sair do modo de navegação anônima</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> guia com nova atividade nos grupos de guias compartilhados}one{Ver <ph name="TABS_COUNT_MANY" /> guia com nova atividade nos grupos de guias compartilhados}other{Ver <ph name="TABS_COUNT_MANY" /> guias com nova atividade nos grupos de guias compartilhados}}</translation>
 <translation id="6971862865055170158">Não aprovar</translation>
 <translation id="6978717888677691380">Sites bloqueados</translation>
 <translation id="6979737339423435258">Todo o período</translation>
@@ -1517,6 +1519,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7896724475402191389">Conteúdo para jovens: desativado</translation>
 <translation id="7903184275147100332">Isso pode demorar um pouco</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 foi bloqueado pela sua organização}one{# foi bloqueado pela sua organização}other{# foram bloqueados pela sua organização}}</translation>
 <translation id="7914399737746719723">App instalado</translation>
 <translation id="7919123827536834358">Traduzir estes idiomas automaticamente</translation>
 <translation id="7926975587469166629">Apelido do cartão</translation>

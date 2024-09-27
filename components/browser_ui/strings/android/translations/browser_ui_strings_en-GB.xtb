@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Allow third-party sign-in for a specific site.</translation>
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3109724472072898302">Collapsed</translation>
+<translation id="310979712355504754">Delete all</translation>
 <translation id="3114012059975132928">Video player</translation>
 <translation id="3115898365077584848">Show info</translation>
 <translation id="3123473560110926937">Blocked on some sites</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selected</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>
 <translation id="7276071417425470385">When on, sites can ask to use virtual reality devices. When off, sites can't use virtual reality devices.</translation>
-<translation id="7284451015630589124">You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage your tracking protections<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
 <translation id="7366415735885268578">Add a site</translation>
 <translation id="7368695150573390554">Any offline data will be deleted</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>
-<translation id="7474522811371247902">Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK" />manage your tracking protections<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
-<translation id="7822573154188733812">Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage your Tracking Protections<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Playing media</translation>
 <translation id="783819812427904514">Unmute video</translation>
 <translation id="7846076177841592234">Cancel selection</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Allowed (recommended)</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
-<translation id="8649036394979866943">Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage your tracking protections<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">When on, sites can ask to track your hands. When off, sites can't track your hands.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>

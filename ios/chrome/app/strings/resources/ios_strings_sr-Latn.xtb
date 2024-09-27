@@ -304,7 +304,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2377336083033403521">Pretraživanje kartica…</translation>
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2386793615875593361">Izabrana je 1 slika</translation>
-<translation id="2387703759148866940">Automatski popuni lozinke</translation>
 <translation id="2390457533592708044">Sakrij „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Nije moguće isporučiti paket</translation>
 <translation id="2410754283952462441">Izaberite nalog</translation>
@@ -1431,7 +1430,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7730973429297233609">Izaberite nalog koji želite da koristite da biste sačuvali <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7744192722284567281">Pronađeno u upadu u podatke</translation>
-<translation id="7746165521091043703">Otvorite podešavanja za automatsko popunjavanje lozinki</translation>
 <translation id="7749790401023484470">Niste izabrali nikakav tekst.</translation>
 <translation id="7757015014239760147">Nema korisničkog imena ••••••</translation>
 <translation id="775755486779745798">Automatsko popunite mesec isteka <ph name="MONTH" /></translation>
@@ -1491,7 +1489,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="7975036700432177008">Isprobaj</translation>
 <translation id="797588153137233716">Meni → Istorija → Izbriši podatke pregledanja</translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku koja je ugrožena pri povredi podataka.</translation>
-<translation id="7978018860671536736">3. Dodirnite Automatski popuni lozinke</translation>
 <translation id="797824194429476746">Kartice će ostati otvorene na ovom uređaju, ali će grupa biti trajno izbrisana.</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7987685713885608670">Radi dodatne zaštite šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>

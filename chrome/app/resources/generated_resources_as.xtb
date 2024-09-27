@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chromeএ আপোনাক নোকোৱা পৰ্যন্ত আপোনাৰ সংযোগটো সদায় সুৰক্ষিত</translation>
 <translation id="1175131936083782305">আপোনাৰ প্ৰশাসকে এই সুবিধাটো অক্ষম কৰিছে।</translation>
 <translation id="1175364870820465910">&amp;প্ৰিণ্ট কৰক...</translation>
+<translation id="1175572348579024023">স্ক্ৰ’ল কৰক</translation>
 <translation id="1175914831232945926">অংকবোৰ</translation>
 <translation id="1176471985365269981">আপোনাৰ ডিভাইচত ফাইল অথবা ফ’ল্ডাৰ সম্পাদনা কৰাৰ অনুমতি নাই</translation>
 <translation id="1177073277575830464">Android ক্ষিপ্ৰ ছেট আপ সম্পূৰ্ণ হৈছে। আপোনাৰ <ph name="DEVICE_TYPE" />ত ছেটআপ অব্যাহত ৰাখক।</translation>
@@ -1436,6 +1437,7 @@
 <translation id="1997616988432401742">আপোনাৰ প্ৰমাণপত্ৰ</translation>
 <translation id="1998715278591719161">আপোনাৰ হাত ট্ৰেক কৰাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="1999115740519098545">আৰম্ভণি</translation>
+<translation id="1999763610967697511">টানি আনি এৰক</translation>
 <translation id="2002109485265116295">প্ৰকৃত-সময়</translation>
 <translation id="2002160221914907025">পৰীক্ষামূলক AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ডেটা সক্ৰিয় কৰিবলৈ প্ৰথমে কোনো ৱাই-ফাই নেটৱর্কত সংযোগ কৰক</translation>
@@ -3495,6 +3497,7 @@
 <translation id="3487649228420469005">স্কেন কৰা হ’ল</translation>
 <translation id="3488199663160411179">নাম</translation>
 <translation id="3490695139702884919">ডাউনল’ড হৈ আছে... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">আপুনি আপোনাৰ পিন বা পাছৱৰ্ডটো পাহৰিলে স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰিব পাৰি</translation>
 <translation id="3491669675709357988">আপোনাৰ শিশুৰ একাউণ্টটো Family Linkৰ অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ব্যৱহাৰ কৰিব পৰাকৈ ছেট আপ কৰা হোৱা নাই। ছেটআপ সম্পূৰ্ণ কৰাৰ পাছত আপুনি অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ যোগ দিব পাৰে। আপুনি Explore এপ্‌টোত অভিভাৱকীয় নিয়ন্ত্ৰণসমূহৰ বিষয়ে তথ্য বিচাৰি পাব।</translation>
 <translation id="3491678231052507920">ছাইটসমূহে আপোনাক VR ছেশ্বনসমূহত সোমাবলৈ দিবৰ বাবে সচৰাচৰ আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচসমূহ আৰু ডেটা ব্যৱহাৰ কৰে</translation>
 <translation id="3493043608231401654">টেবৰ গোটৰ পৰা <ph name="TAB_TITLE" /> আঁতৰাওক</translation>
@@ -4172,6 +4175,7 @@
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />ত প্ৰতিচ্ছবিৰ &amp;সন্ধান কৰক</translation>
 <translation id="3948334586359655083">এই টেবটোৱে অডিঅ’ প্লে’ কৰি আছে</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
+<translation id="3948985214866944547">বেছিভাগ লোকে এই ছাইটটোৰ বাবে সঠিক অৱস্থান শ্বেয়াৰ কৰাটো অৱৰোধ কৰে</translation>
 <translation id="394984172568887996">IEৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="3949999964543783947">ফাইল আৰু দ্ৰুতভাৱে ডাউনল'ড কৰিবলৈ <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
@@ -5383,6 +5387,7 @@
 <translation id="4853020600495124913">&amp;নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="4854317507773910281">অনুমোদনৰ বাবে অভিভাৱকৰ একাউণ্ট বাছনি কৰক</translation>
 <translation id="485480310608090163">অধিক ছেটিং আৰু অনুমতিসমূহ</translation>
+<translation id="485806788160414322">মিডিয়া প্লে’ অথবা পজ কৰক</translation>
 <translation id="4858913220355269194">ফ্ৰিটজ</translation>
 <translation id="486213875233855629">আপোনাৰ প্ৰশাসকে মিউট কৰিছে</translation>
 <translation id="4862642413395066333">OCSP সঁহাৰিত চহী কৰা</translation>
@@ -9036,6 +9041,7 @@
 <translation id="7566118625369982896">Play এপ্ লিংকসমূহ পৰিচালনা কৰক।</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">একত্ৰিতভাৱে ব্যৱহাৰ কৰা কী সৃষ্টি কৰক</translation>
+<translation id="7568759527730933493">DNSত (ড’মেইন নে’ম ছিষ্টেম) কোনো ছাইটৰ আইপি ঠিকনা বিচাৰিবলৈ এটা সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক। এইটোৱে <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />ত এটা পৰিচালিত সেৱা প্ৰদানকাৰী ব্যৱহাৰ কৰে। আমাৰ প্ৰশাসকে কনফিগাৰ কৰা কিছুমান ড’মেইনৰ বাবে সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰা নহয়।</translation>
 <translation id="756876171895853918">অৱতাৰ কাষ্টমাইজ কৰক</translation>
 <translation id="7568790562536448087">আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="7569983096843329377">ক'লা</translation>
@@ -9198,6 +9204,7 @@
 <translation id="7676867886086876795">সকলো পাঠৰ ক্ষেত্ৰত Googleএ চিনাক্তকৰণৰ অনুমতি দিবলৈ Googleলৈ আপোনাৰ কণ্ঠস্বৰ পঠিয়াওক।</translation>
 <translation id="7678588695732963732">ইউএছবি ডিভাইচৰ আটাইবোৰ অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> টা পৰিচালিত প্ৰিণ্টাৰ আছে।</translation>
+<translation id="7679895819123160382">আপোনাৰ ইণ্টাৰনেটৰ ট্ৰেফিকৰ এক্সেছ থকা লোকসকলে আপুনি কি ছাইটলৈ যায় সেয়া চোৱাটো কঠিন কৰি তোলক। <ph name="PRODUCT_NAME" />এ DNSত (ড’মেইন নে’ম ছিষ্টেম) কোনো ছাইটৰ IP ঠিকনা চাবলৈ এক সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰে। আমাৰ প্ৰশাসকে কনফিগাৰ কৰা কিছুমান ড’মেইনৰ বাবে সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰা নহয়।</translation>
 <translation id="7680416688940118410">টাচ্‌স্ক্ৰীনৰ মানাংকন</translation>
 <translation id="7681095912841365527">ছাইটে ব্লুটুথ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="7681597159868843240">ছাইটে সচৰাচৰ ভাৰ্চুৱেল ৰিয়েলিটি অথবা শৰীৰচৰ্চা ট্ৰেক কৰাৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচৰ ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰে</translation>
@@ -9596,6 +9603,7 @@
 <translation id="7955105108888461311">ব্যক্তিগতভাৱে সোধক</translation>
 <translation id="7955177647836564772">যদি Smart Lock অন কৰা থাকে আৰু আপোনাৰ ফ’নটো আনলক কৰা হয়, তেতিয়া আপুনি কোনো পাছৱৰ্ড অথবা পিন দিব নালাগে</translation>
 <translation id="7956373551960864128">আপুনি ছেভ কৰি থোৱা প্ৰিণ্টাৰবোৰ</translation>
+<translation id="7956918070009672177">আপোনাৰ ডিভাইচত কোনো <ph name="LANGUAGE" /> ভইচ নাই। ইণ্টাৰনেটৰ লগত সংযোগ কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7957074856830851026">ক্ৰমিক নম্বৰ অথবা সম্পদৰ আইডিৰ দৰে ডিভাইচৰ তথ্য চাওক</translation>
 <translation id="7958157896921135832">ফণ্টৰ আকাৰ বঢ়াওক</translation>
 <translation id="7958828865373988933">ইউএছবিৰ সুৰক্ষা সম্পৰ্কীয় চাবিত <ph name="APP_NAME" />ৰ বাবে এটা পাছকী সৃষ্টি কৰিব বিচাৰে, এইটো এতিয়াই ভৰাই স্পৰ্শ কৰক</translation>

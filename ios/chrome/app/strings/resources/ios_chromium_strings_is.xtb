@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Viltu að Chromium bjóðist næst til að þýða síður á <ph name="LANGUAGE_NAME" /> á þessu vefsvæði?</translation>
 <translation id="22313767259766852">Þetta heimilisfang er vistað á Chromium eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Þetta þýðir að Chromium biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
+<translation id="2270466829363945454">Verslun</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="231828342043114302">Til að fá sérsniðið innihald byggt á þínum áhugamálum skaltu skrá þig inn á Chromium.</translation>
 <translation id="2326738825692478496">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
@@ -130,6 +131,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="4432744876818348753">Skráðu þig inn til að fá sem mest út úr Chromium.</translation>
 <translation id="4445228361214254027">Fyrirtækið þitt slökkti á möguleikanum á að nota og vista Chromium-gögn á Google-reikningnum þínum. Ný bókamerki, aðgangsorð og fleira verður aðeins vistað í þessu tæki.</translation>
 <translation id="4498832288620833153">Bætir innfærðum vefslóðum við leslistann þinn í Chromium.</translation>
+<translation id="4508268628669724828">Komdu aftur hingað fyrir nytsamlegri ábendingar um að fá sem mest út úr Chromium.</translation>
 <translation id="452436063477828504">Gakktu úr skugga um að þú getir alltaf notað Chromium-gögnin á Google-reikningnum þínum</translation>
 <translation id="4527452566931097835">Stilla Chromium sem sjálfgefinn vafra?</translation>
 <translation id="4555020257205549924">Þegar þessi eiginleiki er virkur mun Chromium bjóðast til að þýða vefsíður sem eru ritaðar á öðru tungumáli með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7228180817326917122">Chromium-ábending: Veldu staðsetningu veffangastikunnar</translation>
 <translation id="725427773388857052">Chromium getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="7269362888766543920">Einhverjar viðbætur valda því að Chromium hrynur. Prófaðu að fjarlægja þær.</translation>
+<translation id="7279391168585141365">Vista aðgangsorðin þín á Chromium</translation>
 <translation id="7285031092584344905">Nálgastu Chromium-aðgangsorðin þín og fleira í öðrum forritum.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Völdu gögnin hafa verið fjarlægð af Chromium og samstilltum tækjum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, svo sem yfir leit og virkni í annarri þjónustu Google, á history.google.com.</translation>

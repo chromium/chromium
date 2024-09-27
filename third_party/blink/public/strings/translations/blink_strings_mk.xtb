@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Камерата е дозволена</translation>
 <translation id="4664250907885839816">Следниот дел „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Пуштено е во „Слика во слика“</translation>
-<translation id="4792862212177489858">Споделете локација</translation>
 <translation id="4812940957355064477">Внесете број.</translation>
 <translation id="49269513399674318">Користи микрофон</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Вредноста мора да биде поголема или еднаква на <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5307600278924710095">Внесете дел проследен со „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ е нецелосна.</translation>
 <translation id="5334352251556557839">Не може да пушта аудиовизуелни содржини.</translation>
 <translation id="537648784377940524">Најраниот датум (<ph name="MIN_DATE_OR_TIME" />) мора да биде пред најдоцниот датум (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Дополнителната компонента не може да се вчита</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите 1 знак).</translation>
-<translation id="7080893216867146095">Споделувањето локација е дозволено</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>
 <translation id="7134810312945846184">Користи микрофон и камера</translation>
 <translation id="7263440858009898357">Изберете ставка од листата.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Вредноста мора да биде помеѓу <ph name="MINIMUM_TIME" /> и <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> датотеки</translation>
 <translation id="8451268428117625855">Изберете датотека.</translation>
+<translation id="8533587060884335451">Користи прецизна локација</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Прелом на ред</translation>
 <translation id="8750798805984357768">Изберете една од опциите.</translation>

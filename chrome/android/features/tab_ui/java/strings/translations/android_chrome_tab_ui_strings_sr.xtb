@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">Предлог: Имате више картица (<ph name="NUMBER_OF_TABS" />) које нисте користили у скорије време. Желите ли да их затворите?</translation>
 <translation id="2662028055331606429">Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Посети сајт</translation>
+<translation id="2671423594960767771">Дели групу</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Направљено је пре <ph name="NUM_HOURS_ONE" /> сат}one{Направљено је пре <ph name="NUM_HOURS_MANY" /> сат}few{Направљено је пре <ph name="NUM_HOURS_MANY" /> сата}other{Направљено је пре <ph name="NUM_HOURS_MANY" /> сати}}</translation>

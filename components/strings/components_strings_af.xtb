@@ -379,6 +379,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1658111267661135323">TV en video</translation>
 <translation id="1658918301167915956">bluetooth-toestelle</translation>
 <translation id="1662550410081243962">Stoor en vul betaalmetodes in</translation>
+<translation id="1662980953334786797">Dieselfde volgorde</translation>
 <translation id="1663943134801823270">Kaarte en adresse kom uit Chrome. Jy kan hulle in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> bestuur.</translation>
 <translation id="1664389769577564606">Fleksofotopolimeer</translation>
 <translation id="166624440456221306">Vee vergelykingstabel uit</translation>
@@ -1324,7 +1325,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="342781501876943858">Chromium beveel aan dat jy jou wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="3428151540071562330">Een of meer van die DnsOverHttpsTemplates-bedienertemplaat se URI's is ongeldig en sal nie gebruik word nie.</translation>
 <translation id="3428789896412418755">Gegroepeerde geskiedenis</translation>
-<translation id="3430206873883193118">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoord, foon- of kredietkaartnommer bekend te maak. Chrome beveel sterk aan dat jy na veiligheid terugkeer. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Maak bladsy toe</translation>
 <translation id="3433111389595862568">Samewerking- en konferensiesagteware</translation>
 <translation id="3433144818443565002">Stem- en videoklets</translation>
@@ -1342,7 +1342,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3447661539832366887">Die eienaar van hierdie toestel het die dinosaurusspeletjie afgeskakel.</translation>
 <translation id="3447884698081792621">Wys sertifikaat (uitgereik deur <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Kan vra om jou MIDI-toestelle te beheer en te herprogrammeer</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> word toegelaat</translation>
 <translation id="3452404311384756672">Haal-interval:</translation>
 <translation id="3453962258458347894">Aantal herprobeerslae</translation>
 <translation id="3457781733462096492">Rap en hip-hop</translation>
@@ -1659,6 +1658,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4023431997072828269">Ander mense sal jou inligting kan sien omdat hierdie vorm ingedien word oor 'n verbinding wat nie heeltemal veilig is nie.</translation>
 <translation id="4025325634010721551">Beleide is herlaai</translation>
 <translation id="4025338605225449265">Geldeenhede en buitelandse valuta</translation>
+<translation id="4025777154208238692">Omgekeerde volgorde</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Inligting wat jy na die werf stuur of van die werf af ontvang, kan deur <ph name="BEGIN_STRONG" />aanvallers gesien en verander word<ph name="END_STRONG" />.
       <ph name="LIST_ITEM" />As jy 'n publieke netwerk gebruik, <ph name="BEGIN_STRONG" />is dit veiliger om later hierdie werf te besoek<ph name="END_STRONG" />. Daar is minder risiko met ’n vertroude netwerk, soos die wi-fi by jou huis of werk.
@@ -2568,7 +2568,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5689516760719285838">Ligging</translation>
 <translation id="569000877158168851">Die DnsOverHttpsTemplates-waarde is nie relevant nie en sal nie gebruik word nie, tensy die DnsOverHttpsMode-beleid gestel word na <ph name="SECURE_DNS_MODE_AUTOMATIC" /> óf na <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Stoor kaart is op volle hoogte oopgemaak.</translation>
-<translation id="5692655638459249302">Aanvallers op die werf wat jy probeer besoek, kan skadelike sagteware installeer wat dinge soos jou wagwoord, foto’s, boodskappe of kredietkaartnommer steel of uitvee. Chrome beveel sterk aan dat jy na veiligheid terugkeer. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Gebruik Windows Hello om jou aankoop te verifieer en te voltooi?</translation>
 <translation id="5699628521141772782">Suiwel en eiers</translation>
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
@@ -2716,7 +2715,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5995727681868049093">Bestuur jou inligting, privaatheid en sekuriteit in jou Google-rekening</translation>
 <translation id="5996255674476750320">Voertuigskoue</translation>
 <translation id="5997247540087773573">Die wagwoord wat jy gebruik het, is in 'n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy dit nou verander en jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
-<translation id="5999271311987646952">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, <ph name="BEGIN_LINK" />wat onlangs wanware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek.</translation>
 <translation id="6000528814684428358">Harde rock en progressiewe musiek</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultate vir "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">Kom ons begin</translation>
@@ -2881,7 +2879,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6284449872909111707">Teks- en kitsboodskappe</translation>
 <translation id="6284517535531159884">Variasiesaadtipe</translation>
 <translation id="6287197303017372967">Kry rigtingaanwysings na jou bestemming met draai-vir-draai-aanwysings met gebruik van die navigasiekenmerk.</translation>
-<translation id="6288521565586608304">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om skadelike sagteware te installeer wat ’n invloed kan hê op die manier waarop jy blaai – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek. Chrome beveel sterk aan dat jy na veiligheid terugkeer om skade te vermy. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Afslag gevind</translation>
 <translation id="6289939620939689042">Bladsykleur</translation>
 <translation id="6292819926564202163">Jou soekenjin in Chrome</translation>
@@ -3075,7 +3072,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Rekenaaropleiding</translation>
 <translation id="6633476656216409494">Besigheid- en produktiwiteitsagteware</translation>
-<translation id="6638353438328951386">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, wat onlangs <ph name="BEGIN_LINK" />skadelike sagteware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek.</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6645291930348198241">Kry toegang tot webkoekies en werfdata.</translation>
 <translation id="6645478838938543427">Opletberigte oor prysdalings sal na <ph name="EMAIL_ADDRESS" /> toe gestuur word</translation>
@@ -3289,7 +3285,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="701757816833614688">Visuelekuns- en ontwerponderrig</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="7023162328967545559">Adminwaarskuwing</translation>
-<translation id="7024932305105294144">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, <ph name="BEGIN_LINK" />wat onlangs uitvissing gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek. Uitvissingwerwe gee voor om ander werwe te wees om jou te mislei.<ph name="NEW_LINE" />Selfs werwe wat normaalweg veilig is, word soms deur aanvallers gekompromitteer. <ph name="BEGIN_ERROR_LINK" />Laat ons weet<ph name="END_ERROR_LINK" /> as jy dink daar ’n fout is en dat hierdie werf nie ’n gevaar inhou nie.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7030164307377592766">wysig instellings vir die invul van betaalmetodes</translation>
 <translation id="7031646650991750659">Watter Google Play-programme jy geïnstalleer het</translation>
@@ -3366,7 +3361,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" is nie ’n gesteunde beperking op hierdie platform nie</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7173338713290252554">Prysgeskiedenis regoor die web</translation>
-<translation id="7173478186876671324">Jou administrateur het jou <ph name="PERMISSION" /> vir hierdie werf geblokkeer</translation>
 <translation id="7174545416324379297">Saamgevoeg</translation>
 <translation id="7175097078723125014">Die opsie om die adres te wysig, is gekies</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3400,7 +3394,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7221857374443660083">Jou bank wil seker maak dat dit jy is</translation>
 <translation id="722454870747268814">Nuwe Incognito-oortjie</translation>
 <translation id="7227293336683593977">Prysgeskiedenis</translation>
-<translation id="7227747683324411744">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om skadelike sagteware te installeer wat die manier waarop jy blaai beïnvloed – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek.</translation>
 <translation id="7232352818707016189">Meer handeling vir Vergelyktabel</translation>
 <translation id="7233592378249864828">Drukbevestigingbladsy</translation>
 <translation id="7234112195906418665">Reis en vervoer</translation>
@@ -3621,7 +3614,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7598391785903975535">Minder as <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan tans nie hierdie versoek hanteer nie.</translation>
 <translation id="7599089013883397081">Aflaai het uitgetel</translation>
-<translation id="7605377493722372900">Aanvallers op die werf wat jy probeer besoek, kan skadelike sagteware installeer wat dinge soos jou wagwoord, foto’s, boodskappe of kredietkaartnommer steel of uitvee.</translation>
 <translation id="7608583484192556132">Of ’n advertensie wat jy gesien gepersonaliseer is, kan van baie dinge afhang, insluitend hierdie instelling, <ph name="BEGIN_LINK_1" />webwerfvoorgestelde advertensies<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en of die werf waarna jy kyk advertensies personaliseer. Meer inligting oor die <ph name="BEGIN_LINK_3" />bestuur van jou advertensieprivaatheid<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde is buite die reeks <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Verval: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4074,7 +4066,6 @@ Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofoon hierdie keer toegelaat</translation>
 <translation id="8421158157346464398">Werkprofielinligting (soos jou werkprofielgebruikernaam)</translation>
-<translation id="8422228580902424274">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoord, foon- of kredietkaartnommer te openbaar.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Verander</translation>
 <translation id="8427848540066057481">500x750 mm</translation>
@@ -4225,7 +4216,6 @@ Bykomende besonderhede:
 <translation id="8722929331701811374">Skryfbehoeftes (briefhoof)</translation>
 <translation id="8724824364712796726">Koevert B6</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
-<translation id="8725667981218437315">Kamera en mikrofoon</translation>
 <translation id="8726549941689275341">Bladsygrootte:</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>
@@ -4434,7 +4424,6 @@ Bykomende besonderhede:
 <translation id="9119042192571987207">Opgelaai</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wil verifieer dat dit jy is</translation>
 <translation id="912327514020027767">Rompe</translation>
-<translation id="912414390325846156">Jy het voorheen “moenie toelaat nie” vir hierdie werf gekies</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>
 <translation id="9131119348384879525">Vang vertroulike inhoud vas?</translation>
 <translation id="9133861214150761123">Rekeningkunde en ouditeerkunde</translation>

@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
 <translation id="228704530595896923">Список со опции за споделување.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2297822946037605517">Споделете ја страницава</translation>
 <translation id="22981027763501686">Синхронизирајте за да ги добиете обележувачите, историјата и друго на другите ваши уреди</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Тековно избрана: <ph name="NAME" />, <ph name="EMAIL" />. Изберете сметка.</translation>
 <translation id="696447261358045621">Излезете од режимот „Инкогнито“</translation>
 <translation id="6965382102122355670">Во ред</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка со нова активност во споделените групи картички}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка со нова активност во споделените групи картички}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички со нова активност во споделените групи картички}}</translation>
 <translation id="6971862865055170158">Не одобрувај</translation>
 <translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Содржини за млади умови - исклучено</translation>
 <translation id="7903184275147100332">Ова може да потрае малку</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{Вашата организација блокираше 1}one{Вашата организација блокираше #}other{Вашата организација блокираше #}}</translation>
 <translation id="7914399737746719723">Апликацијата е инсталирана</translation>
 <translation id="7919123827536834358">Автоматски преведувај ги овие јазици</translation>
 <translation id="7926975587469166629">Прекар на картичката</translation>

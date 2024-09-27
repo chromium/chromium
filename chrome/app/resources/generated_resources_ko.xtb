@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chrome에 별도의 안내가 없는 한 연결은 항상 안전하게 유지됩니다.</translation>
 <translation id="1175131936083782305">관리자가 이 기능을 사용 중지했습니다.</translation>
 <translation id="1175364870820465910">인쇄(&amp;P)</translation>
+<translation id="1175572348579024023">스크롤</translation>
 <translation id="1175914831232945926">숫자</translation>
 <translation id="1176471985365269981">기기의 파일 또는 폴더 수정이 허용되지 않음</translation>
 <translation id="1177073277575830464">Android 빠른 설정이 완료되었습니다. <ph name="DEVICE_TYPE" />에서 설정을 계속하세요</translation>
@@ -1439,6 +1440,7 @@
 <translation id="1997616988432401742">내 인증서</translation>
 <translation id="1998715278591719161">손 추적이 허용됨</translation>
 <translation id="1999115740519098545">시작 시 설정</translation>
+<translation id="1999763610967697511">드래그 앤 드롭</translation>
 <translation id="2002109485265116295">실시간</translation>
 <translation id="2002160221914907025">실험용 AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' 데이터를 활성화하려면 먼저 Wi-Fi 네트워크에 연결하세요.</translation>
@@ -5389,6 +5391,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
+<translation id="485806788160414322">미디어 재생 또는 일시중지</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="486213875233855629">관리자가 음소거함</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>

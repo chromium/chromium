@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Dozvolite prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3109724472072898302">Skupljeno</translation>
+<translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3114012059975132928">Video plejer</translation>
 <translation id="3115898365077584848">Prikaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekim sajtovima</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Izabrali ste <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Odobrene su dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kada je uključeno, sajtovi mogu da traže da koriste uređaje virtuelne realnosti. Kada je isključeno, sajtovi ne mogu da koriste uređaje virtuelne realnosti.</translation>
-<translation id="7284451015630589124">Blokirali ste sajtove da koriste kolačiće treće strane da bi vas pratili dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali zaštitom od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Obično blokirate obaveštenja. Da biste ih dozvolili, dodirnite Detalji.</translation>
 <translation id="7366415735885268578">Dodajte sajt</translation>
 <translation id="7368695150573390554">Svi oflajn podaci će biti izbrisani</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>
-<translation id="7474522811371247902">Chrome sprečava većinu sajtova da koriste kolačiće treće strane. Međutim, kolačići treće strane su dozvoljeni na ovom sajtu zato što se Chrome oslanja na njih da bi pružao osnovne usluge.\n\nPosetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali zaštitom od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kada je uključeno, sajtovi mogu da prikazuju upite za prijavljivanje. Kada je isključeno, sajtovi ne mogu da prikazuju upite za prijavljivanje.</translation>
 <translation id="7554752735887601236">Sajt koristi mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Sajt koristi kameru</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
-<translation id="7822573154188733812">Chrome onemogućava sajtovima da vas prate pomoću kolačića treće strane dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali zaštitom od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Reprodukcija medija</translation>
 <translation id="783819812427904514">Uključite zvuk videa</translation>
 <translation id="7846076177841592234">Otkaži izbor</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8617611086246832542">Kada je uključeno, vidi se prikaz veb-sajtova za računare. Kada je isključeno, vidi se prikaz veb-sajtova za mobilne uređaje.</translation>
-<translation id="8649036394979866943">Chrome sprečava većinu sajtova da koriste kolačiće treće strane da bi vas pratili dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali zaštitom od praćenja<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kada je uključeno, sajtovi mogu da traže da prate ruke. Kada je isključeno, sajtovi ne mogu da vam prate ruke.</translation>
 <translation id="8676374126336081632">Obriši unos</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na sajtovima za koje je poznato da prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>

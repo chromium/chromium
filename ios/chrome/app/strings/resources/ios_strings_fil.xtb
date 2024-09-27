@@ -301,7 +301,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2377336083033403521">Maghanap sa mga tab…</translation>
 <translation id="2381405137052800939">Mga Pangunahing Kaalaman</translation>
 <translation id="2386793615875593361">1 ang napili</translation>
-<translation id="2387703759148866940">I-autofill ang mga password</translation>
 <translation id="2390457533592708044">I-hide ang "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Hindi mai-deliver ang iyong package</translation>
 <translation id="2410754283952462441">Pumili ng account</translation>
@@ -606,6 +605,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3982893814825393515">Mag-ulat ng isyu…</translation>
 <translation id="398604237578616937">Naka-sign in bilang <ph name="USER_EMAIL" />. Buksan ang menu ng account.</translation>
+<translation id="3986739045730058129">Pumunta sa tab</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="3994422733891749358">Piliin ang mga notification na gusto mong matanggap</translation>
@@ -759,6 +759,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4717844083556844785">Nasa Incognito ang kasalukuyang webpage</translation>
 <translation id="4719927025381752090">Mag-alok na magsalin</translation>
+<translation id="4720530280568305198">Bumukas ang iyong pinili sa isang bagong tab</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4742407542027196863">Pamahalaan ang mga password...</translation>
 <translation id="4742897645503301228">I-hide ang Subaybayan ang presyo</translation>
@@ -1417,7 +1418,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7730973429297233609">Piliin ang account na gusto mong gamitin para i-save ang <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Sa device lang na ito.</translation>
 <translation id="7744192722284567281">Nakita sa paglabag sa data</translation>
-<translation id="7746165521091043703">Buksan ang mga setting ng Pag-autofill ng Password</translation>
 <translation id="7749790401023484470">Wala kang piniling anumang text.</translation>
 <translation id="7757015014239760147">Walang username ••••••</translation>
 <translation id="775755486779745798">I-autofill ang buwan ng pag-expire ng <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="7975036700432177008">Subukan</translation>
 <translation id="797588153137233716">Menu → History → I-delete ang data mula sa pag-browse</translation>
 <translation id="7977451675950311423">Babalaan ka kung gagamit ka ng password na nakompromiso sa isang paglabag sa data.</translation>
-<translation id="7978018860671536736">3. I-tap ang I-autofill ang Mga Password</translation>
 <translation id="797824194429476746">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">Para sa dagdag na kaligtasan, i-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Password Manager.</translation>

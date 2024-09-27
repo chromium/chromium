@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Cámara permitida</translation>
 <translation id="4664250907885839816">El texto después del signo "<ph name="ATSIGN" />" no debe incluir el símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproduciendo en modo de pantalla en pantalla</translation>
-<translation id="4792862212177489858">Compartir ubicación</translation>
 <translation id="4812940957355064477">Debes ingresar un número.</translation>
 <translation id="49269513399674318">Usar el micrófono</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> elementos seleccionados</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">El valor debe ser mayor de o igual a <ph name="MINIMUM" /></translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Se permite la ubicación</translation>
 <translation id="5307600278924710095">Ingresa texto antes del signo "<ph name="ATSIGN" />". La dirección "<ph name="INVALIDADDRESS" />" está incompleta.</translation>
 <translation id="5334352251556557839">No es posible reproducir los archivos multimedia.</translation>
 <translation id="537648784377940524">La fecha mínima (<ph name="MIN_DATE_OR_TIME" />) debe ser anterior a la fecha máxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">No se pudo cargar el complemento.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Extiende este texto para que tenga <ph name="MIN_CHARACTERS" /> caracteres o más (actualmente usas 1 carácter).</translation>
-<translation id="7080893216867146095">Se permite compartir la ubicación</translation>
 <translation id="709897737746224366">Haz coincidir el formato solicitado.</translation>
 <translation id="7134810312945846184">Usar el micrófono y la cámara</translation>
 <translation id="7263440858009898357">Selecciona un elemento de la lista</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">El valor debe estar entre <ph name="MINIMUM_TIME" /> y <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> archivos</translation>
 <translation id="8451268428117625855">Selecciona un archivo.</translation>
+<translation id="8533587060884335451">Usar la ubicación precisa </translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Ajustar líneas</translation>
 <translation id="8750798805984357768">Selecciona una de estas opciones.</translation>

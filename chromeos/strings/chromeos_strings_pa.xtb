@@ -945,7 +945,6 @@
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="5790391387506209808">ਲੈਪਿਸ ਲਜ਼ੂਲੀ</translation>
-<translation id="5810692306010756935">ਗ੍ਰੈਜੂਏਸ਼ਨ</translation>
 <translation id="5816802250591013230">ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਜ਼ਿੰਮੇ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ</translation>
 <translation id="5826644637650799838">ਕਲਾ ਬਾਰੇ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6965978654500191972">ਡੀਵਾਈਸ</translation>
+<translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
 <translation id="6975620886940770104">ਚਮਕਦਾਰ <ph name="GLOWSCAPES_FEATURE" /> ਨਾਲ ਇੱਕ <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">ਕੋਆਲਾ</translation>
 <translation id="6977381486153291903">ਫਰਮਵੇਅਰ ਸੁਧਾਈ</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">ਟੈਸਟ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8882789155418924367">ਉੱਲੂ</translation>
 <translation id="8892443466059986410">ਸ਼ਾਰਟਕੱਟ ਸੰਪਾਦਨ ਨੂੰ ਰੱਦ ਕਰੋ</translation>
+<translation id="8897043028305808902">ਫ਼ਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="8898840733695078011">ਸਿਗਨਲ ਸ਼ਕਤੀ</translation>
 <translation id="8909114361904403025">ਉੱਪਰ ਤੀਰ</translation>
 <translation id="8910721771319628100">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਵਿਲੰਬਤਾ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਉੱਤੇ ਹੈ</translation>

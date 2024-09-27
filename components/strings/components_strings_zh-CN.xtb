@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">电视节目和视频</translation>
 <translation id="1658918301167915956">蓝牙设备</translation>
 <translation id="1662550410081243962">保存并自动填充支付方式</translation>
+<translation id="1662980953334786797">相同排序</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1664389769577564606">柔印光敏聚合物</translation>
 <translation id="166624440456221306">删除比较表格</translation>
@@ -1322,7 +1323,6 @@
 <translation id="342781501876943858">如果您在其他网站上重复使用了您的密码，Chromium 建议您重置该密码。</translation>
 <translation id="3428151540071562330">一个或多个 DnsOverHttpsTemplates 服务器模板 URI 无效，因此不会被使用。</translation>
 <translation id="3428789896412418755">已分组的历史记录</translation>
-<translation id="3430206873883193118">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3433111389595862568">协作与会议软件</translation>
 <translation id="3433144818443565002">语音与视频聊天</translation>
@@ -1340,7 +1340,6 @@
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3450323514459570273">可以请求控制您的 MIDI 设备以及为其重新编程</translation>
-<translation id="3451429106322189478">已授予<ph name="PERMISSION" />权限</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
 <translation id="3453962258458347894">重试次数</translation>
 <translation id="3457781733462096492">说唱</translation>
@@ -1655,6 +1654,7 @@
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
 <translation id="4025325634010721551">已重新加载政策</translation>
 <translation id="4025338605225449265">货币与外汇</translation>
+<translation id="4025777154208238692">反向排序</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />攻击者可以查看和更改<ph name="END_STRONG" />您通过该网站发送或接收的信息。
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />如果您使用的是公共网络，安全起见，建议您稍后再访问此网站<ph name="END_STRONG" />。使用您信任的网络（例如家中或单位的 Wi-Fi）可以降低风险。
@@ -2564,7 +2564,6 @@
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates 值不相关，因此不会被使用，除非 DnsOverHttpsMode 政策设为“<ph name="SECURE_DNS_MODE_AUTOMATIC" />”或“<ph name="SECURE_DNS_MODE_SECURE" />”。</translation>
 <translation id="5691848789297492617">保存的卡片已全屏打开。</translation>
-<translation id="5692655638459249302">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5699628521141772782">乳制品和鸡蛋</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
@@ -2712,7 +2711,6 @@
 <translation id="5995727681868049093">在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="5996255674476750320">车展</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
-<translation id="5999271311987646952">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能，该功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了恶意软件<ph name="END_LINK" />。</translation>
 <translation id="6000528814684428358">硬摇滚与前卫摇滚</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6001839398155993679">开始</translation>
@@ -2876,7 +2874,6 @@
 <translation id="6284449872909111707">短信与即时通讯</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
 <translation id="6287197303017372967">使用导航功能查询前往目的地的精细路线指导。</translation>
-<translation id="6288521565586608304">您正在尝试访问的网站上的攻击者可能会诱使您安装影响浏览体验的有害软件，例如，更改您的主页或在您访问的网站上展示额外的广告。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">发现了折扣</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6292819926564202163">您在 Chrome 中使用的搜索引擎</translation>
@@ -3070,7 +3067,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">计算机教育</translation>
 <translation id="6633476656216409494">商务与办公软件</translation>
-<translation id="6638353438328951386">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能，该功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了有害软件<ph name="END_LINK" />。</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">访问 Cookie 和网站数据。</translation>
 <translation id="6645478838938543427">系统会将降价提醒发送到 <ph name="EMAIL_ADDRESS" /></translation>
@@ -3284,7 +3280,6 @@
 <translation id="701757816833614688">视觉艺术与设计教育</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7023162328967545559">管理员警告</translation>
-<translation id="7024932305105294144">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能，该功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了钓鱼式攻击<ph name="END_LINK" />。钓鱼式攻击网站会假冒其他网站来诱骗您。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030164307377592766">修改用于填充付款方式的设置</translation>
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
@@ -3362,7 +3357,6 @@
 <translation id="7168625890036931112">“<ph name="DATA_CONTROLS_RESTRICTION" />”不是此平台支持的限制条件</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
-<translation id="7173478186876671324">您的管理员已禁止您在此网站上使用<ph name="PERMISSION" /></translation>
 <translation id="7174545416324379297">已合并</translation>
 <translation id="7175097078723125014">已选择“修改地址”选项</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}}</translation>
@@ -3396,7 +3390,6 @@
 <translation id="7221857374443660083">银行想确认您的身份</translation>
 <translation id="722454870747268814">新的无痕式标签页</translation>
 <translation id="7227293336683593977">既往价格</translation>
-<translation id="7227747683324411744">您正在尝试访问的网站上的攻击者可能会诱使您安装有害软件，以操纵您的浏览体验，例如，更改您的主页或在您访问的网站上展示广告。</translation>
 <translation id="7232352818707016189">可对比较表格执行的更多操作</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
 <translation id="7234112195906418665">旅行与交通</translation>
@@ -3617,7 +3610,6 @@
 <translation id="7598391785903975535">少于 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
 <translation id="7599089013883397081">下载超时</translation>
-<translation id="7605377493722372900">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。</translation>
 <translation id="7608583484192556132">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。详细了解如何<ph name="BEGIN_LINK_3" />管理广告隐私权<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
@@ -4070,7 +4062,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
 <translation id="8421158157346464398">工作资料信息（例如工作资料用户名）</translation>
-<translation id="8422228580902424274">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
@@ -4222,7 +4213,6 @@
 <translation id="8722929331701811374">信笺（印有信头）</translation>
 <translation id="8724824364712796726">B6 信封</translation>
 <translation id="8725066075913043281">重试</translation>
-<translation id="8725667981218437315">摄像头和麦克风</translation>
 <translation id="8726549941689275341">页面尺寸：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全码</translation>
@@ -4431,7 +4421,6 @@
 <translation id="9119042192571987207">已上传</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想验证您的身份</translation>
 <translation id="912327514020027767">裙子</translation>
-<translation id="912414390325846156">您先前已选择拒绝针对此网站授予权限</translation>
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9131119348384879525">截取机密内容？</translation>
 <translation id="9133861214150761123">会计与审计</translation>

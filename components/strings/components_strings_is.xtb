@@ -1325,7 +1325,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="342781501876943858">Chromium mælir með því að þú endurstillir aðgangsorðið þitt ef þú notaðir það einnig á öðrum síðum.</translation>
 <translation id="3428151540071562330">Eitt eða fleiri af URI sniðmátum netþjóns DnsOverHttpsTemplates eru ógild og verða ekki notuð.</translation>
 <translation id="3428789896412418755">Flokkaður ferill</translation>
-<translation id="3430206873883193118">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpað atriði á borð við aðgangsorðið þitt, símanúmer eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Loka síðu</translation>
 <translation id="3433111389595862568">Samstarfs- og fundarhugbúnaður</translation>
 <translation id="3433144818443565002">Tal- og myndspjall</translation>
@@ -1343,7 +1342,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3447661539832366887">Eigandi þessa tækis hefur slökkt á risaeðluleiknum.</translation>
 <translation id="3447884698081792621">Sýna vottorð (gefið út af <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Getur beðið um að stjórna og endurforrita MIDI-tækin þín</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> leyft</translation>
 <translation id="3452404311384756672">Tími milli endurnýjunar:</translation>
 <translation id="3453962258458347894">Fjöldi aukatilrauna</translation>
 <translation id="3457781733462096492">Rapp og hipphopp</translation>
@@ -2570,7 +2568,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="569000877158168851">Gildið DnsOverHttpsTemplates á ekki við og verður ekki notað nema reglan DnsOverHttpsMode sé stillt á annaðhvort <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eða <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">„Vista kort“ opnað í fullri hæð.</translation>
-<translation id="5692655638459249302">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu sett upp skaðlegan hugbúnað sem stelur eða eyðir atriðum á borð við aðgangsorð, myndir, skilaboð eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Nota Windows Hello til að staðfesta og ljúka kaupunum?</translation>
 <translation id="5699628521141772782">Mjólkurafurðir og egg</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
@@ -2718,7 +2715,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5995727681868049093">Stjórnaðu upplýsingum, persónuvernd og öryggi á Google reikningnum þínum</translation>
 <translation id="5996255674476750320">Ökutækjasýningar</translation>
 <translation id="5997247540087773573">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun Google mælir með að breyta aðgangsorðinu núna og athuga vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
-<translation id="5999271311987646952">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar. Einn þessara eiginleika, örugg vefskoðun Google, <ph name="BEGIN_LINK" />fann nýlega spilliforrit<ph name="END_LINK" /> á vefsvæðinu sem þú ert að reyna að opna.</translation>
 <translation id="6000528814684428358">Þungarokk og framúrstefnurokk</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> niðurstöður fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6001839398155993679">Byrjum ballið</translation>
@@ -2883,7 +2879,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6284449872909111707">SMS- og spjallþjónusta</translation>
 <translation id="6284517535531159884">Dreifingargerð tilbrigðis (Variations Seed Type)</translation>
 <translation id="6287197303017372967">Fáðu leiðarlýsingu á áfangastað með ítarlegri leiðsögn með leiðsagnareiginleikanum.</translation>
-<translation id="6288521565586608304">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp hugbúnað sem hefur áhrif á vafraupplifun þína, t.d. með því að breyta heimasíðunni þinni eða birta þér fleiri auglýsingar á vefsvæðunum sem þú skoðar. Chrome mælir eindregið með því að þú lokir vefsvæðinu til að forðast skaða. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Afsláttur fannst</translation>
 <translation id="6289939620939689042">Síðulitur</translation>
 <translation id="6292819926564202163">Leitarvélin þín í Chrome</translation>
@@ -3077,7 +3072,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Tölvumenntun</translation>
 <translation id="6633476656216409494">Viðskipta- og framleiðnihugbúnaður</translation>
-<translation id="6638353438328951386">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar. Einn þessara eiginleika, örugg vefskoðun Google, <ph name="BEGIN_LINK" />fann nýlega skaðlegan hugbúnað<ph name="END_LINK" /> á vefsvæðinu sem þú ert að reyna að opna.</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6645291930348198241">Fá aðgang að fótsporum og gögnum vefsvæða.</translation>
 <translation id="6645478838938543427">Tilkynningar um verðlækkanir verða sendar á <ph name="EMAIL_ADDRESS" /></translation>
@@ -3291,7 +3285,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="701757816833614688">Sjónlistar- og hönnunarmenntun</translation>
 <translation id="702275896380648118">Þetta vefsvæði áætlar áhugasvið þitt og sendir svo öðrum vefsvæðum auglýsingatillögur. Þetta vefsvæði fær einnig upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="7023162328967545559">Viðvörun stjórnanda</translation>
-<translation id="7024932305105294144">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar. Einn þessara eiginleika, örugg vefskoðun Google, <ph name="BEGIN_LINK" />fann nýlega vefveiðar<ph name="END_LINK" /> á vefsvæðinu sem þú ert að reyna að opna. Vefveiðavefsvæði þykjast vera önnur vefsvæði til að plata þig.<ph name="NEW_LINE" />Jafnvel vefsvæði sem eru almennt örugg lenda stundum í klóm árásaraðila. <ph name="BEGIN_ERROR_LINK" />Láttu okkur vita<ph name="END_ERROR_LINK" /> ef þú telur þetta vera mistök og að þetta vefsvæði sé ekki hættulegt.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7030164307377592766">breyta stillingum fyrir útfyllingu greiðslumáta</translation>
 <translation id="7031646650991750659">Hvaða Google Play forrit þú hefur sett upp</translation>
@@ -3368,7 +3361,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ er ekki studd takmörkun á þessum verkvangi</translation>
 <translation id="717330890047184534">Gaia-auðkenni:</translation>
 <translation id="7173338713290252554">Verðferill á vefnum</translation>
-<translation id="7173478186876671324">Kerfisstjórinn þinn lokaði á <ph name="PERMISSION" /> fyrir þetta vefsvæði</translation>
 <translation id="7174545416324379297">Sameinað</translation>
 <translation id="7175097078723125014">Valkosturinn breyta heimilisfangi var valinn</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}one{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}}</translation>
@@ -3402,7 +3394,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7221857374443660083">Bankinn þinn vill staðfesta að um þig sé að ræða</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
 <translation id="7227293336683593977">Verðferill</translation>
-<translation id="7227747683324411744">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp skaðlegan hugbúnað sem hefur áhrif á það hvernig þú vafrar. Til dæmis með því að breyta heimasíðunni þinni eða birta þér viðbótarauglýsingar á vefsvæðum sem þú opnar.</translation>
 <translation id="7232352818707016189">Fleiri aðgerðir fyrir samanburðartöflu</translation>
 <translation id="7233592378249864828">Prenta staðfestingarblað</translation>
 <translation id="7234112195906418665">Ferðalög og samgöngur</translation>
@@ -3623,7 +3614,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7598391785903975535">Minna en <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> getur ekki unnið úr þessari beiðni eins og er.</translation>
 <translation id="7599089013883397081">Niðurhal rann út á tíma</translation>
-<translation id="7605377493722372900">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu sett upp skaðlegan hugbúnað sem stelur eða eyðir atriðum á borð við aðgangsorð, myndir, skilaboð eða kreditkortanúmer.</translation>
 <translation id="7608583484192556132">Það veltur á ýmsu hvort að auglýsing sem þú sérð sé sérsniðin eða ekki, þ.m.t. þessari stillingu, <ph name="BEGIN_LINK_1" />auglýsingatillögum vefsvæðis<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingunum þínum<ph name="END_LINK_2" /> og hvort að vefsvæði sem þú skoðar sérsníði auglýsingar. Kynntu þér hvernig þú <ph name="BEGIN_LINK_3" />stjórnar persónuvernd auglýsinga<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Gildið er utan sviðs <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Rennur út: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4076,7 +4066,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Hljóðnemi leyfður í þetta skipti</translation>
 <translation id="8421158157346464398">Upplýsingar um vinnusnið (s.s. notandanafn vinnusniðsins þíns)</translation>
-<translation id="8422228580902424274">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpað atriði á borð við aðgangsorðið þitt, símanúmerið eða kreditkortanúmerið.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Breyta</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4227,7 +4216,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8722929331701811374">Bréfsefni (bréfhaus)</translation>
 <translation id="8724824364712796726">Umslag: B6</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
-<translation id="8725667981218437315">Myndavél og hljóðnemi</translation>
 <translation id="8726549941689275341">Síðustærð:</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8731268612289859741">Öryggiskóði</translation>
@@ -4436,7 +4424,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9119042192571987207">Sent</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vill staðfesta að þetta sért þú</translation>
 <translation id="912327514020027767">Pils</translation>
-<translation id="912414390325846156">Þú valdir áður „ekki leyfa“ fyrir þetta vefsvæði</translation>
 <translation id="9128870381267983090">Tengjast neti</translation>
 <translation id="9131119348384879525">Taka mynd af trúnaðarupplýsingum?</translation>
 <translation id="9133861214150761123">Bókhald og endurskoðun</translation>

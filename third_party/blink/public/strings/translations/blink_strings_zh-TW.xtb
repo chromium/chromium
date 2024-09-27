@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">可使用攝影機</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」後面的部分不應包含「<ph name="INVALIDCHARACTER" />」符號。</translation>
 <translation id="4718048029184481307">在子母畫面中播放</translation>
-<translation id="4792862212177489858">分享位置資訊</translation>
 <translation id="4812940957355064477">請輸入一個數字。</translation>
 <translation id="49269513399674318">使用麥克風</translation>
 <translation id="4975562563186953947">已選取 <ph name="SELECTED_COUNT" /> 個項目</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">值必須大於或等於 <ph name="MINIMUM" />。</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">允許存取位置資訊</translation>
 <translation id="5307600278924710095">請輸入「<ph name="ATSIGN" />」後面的部分。「<ph name="INVALIDADDRESS" />」不是完整值。</translation>
 <translation id="5334352251556557839">無法播放媒體。</translation>
 <translation id="537648784377940524">最小日期 (<ph name="MIN_DATE_OR_TIME" />) 必須早於最大日期 (<ph name="MAX_DATE_OR_TIME" />)。</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">無法載入外掛程式。</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">請將這段文字加長到 <ph name="MIN_CHARACTERS" /> 個字元以上 (目前已有 1 個字元)。</translation>
-<translation id="7080893216867146095">已允許分享位置資訊</translation>
 <translation id="709897737746224366">請符合要求的格式。</translation>
 <translation id="7134810312945846184">使用麥克風和攝影機</translation>
 <translation id="7263440858009898357">請選取一個清單中的項目。</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">值必須介於<ph name="MINIMUM_TIME" /> 到<ph name="MAXIMUM_TIME" /> 之間。</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> 個檔案</translation>
 <translation id="8451268428117625855">請選取檔案。</translation>
+<translation id="8533587060884335451">使用精確位置</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">自動換行</translation>
 <translation id="8750798805984357768">請選取其中一個選項。</translation>

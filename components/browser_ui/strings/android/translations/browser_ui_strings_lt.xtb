@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3109724472072898302">Suskleista</translation>
+<translation id="310979712355504754">Ištrinti viską</translation>
 <translation id="3114012059975132928">Vaizdo įrašų leistuvė</translation>
 <translation id="3115898365077584848">Rodyti informaciją</translation>
 <translation id="3123473560110926937">Užblokuota kai kuriose svetainėse</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Pasirinkta: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Leidžiama: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Įjungus svetainėse gali būti prašoma naudoti virtualiosios realybės įrenginius. Išjungus svetainėse negalima naudoti virtualiosios realybės įrenginių.</translation>
-<translation id="7284451015630589124">Užblokavote svetaines, kad nebūtų naudojami trečiųjų šalių slapukai, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Įprastai blokuojate pranešimus. Norėdami leisti, palieskite „Išsami informacija“.</translation>
 <translation id="7366415735885268578">Svetainės pridėjimas</translation>
 <translation id="7368695150573390554">Visi duomenys ne iš interneto bus ištrinti</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7423538860840206698">Neleidžiama skaityti iškarpinės</translation>
 <translation id="7425915948813553151">Tamsioji tema, skirta svetainėms</translation>
-<translation id="7474522811371247902">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą. Tačiau trečiųjų šalių slapukai leidžiami šioje svetainėje, nes jie priklauso nuo jų teikiamų pagrindinių paslaugų.\n\nApsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
 <translation id="7547989957535180761">Įjungus svetainėse gali būti rodomi raginimai prisijungti. Išjungus svetainėse negalima rodyti raginimų prisijungti.</translation>
 <translation id="7554752735887601236">Svetainėje naudojamas jūsų mikrofonas</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804248752222191302">Svetainėje naudojamas jūsų fotoaparatas</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
-<translation id="7822573154188733812">„Chrome“ neleidžia svetainėms naudoti trečiųjų šalių slapukų, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Leidžiama medija</translation>
 <translation id="783819812427904514">Įjungti vaizdo įrašo garsą</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8617611086246832542">Įjungus rodoma svetainių rodinio versija staliniams kompiuteriams. Išjungus rodoma svetainių rodinio versija mobiliesiems.</translation>
-<translation id="8649036394979866943">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą, siekiant stebėti jus, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Įjungus svetainėse gali būti prašoma stebėti jūsų rankas. Išjungus svetainės negali stebėti jūsų rankų.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8681886425883659911">Skelbimai blokuojami svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>

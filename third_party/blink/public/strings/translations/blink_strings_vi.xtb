@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>
-<translation id="4792862212177489858">Chia sẻ vị trí</translation>
 <translation id="4812940957355064477">Vui lòng nhập một số.</translation>
 <translation id="49269513399674318">Sử dụng micrô</translation>
 <translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Giá trị phải lớn hơn hoặc bằng <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Cho phép truy cập thông tin vị trí</translation>
 <translation id="5307600278924710095">Vui lòng nhập phần đứng trước '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
 <translation id="5334352251556557839">Không thể phát nội dung đa phương tiện.</translation>
 <translation id="537648784377940524">Ngày tối thiểu (<ph name="MIN_DATE_OR_TIME" />) phải trước ngày tối đa (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Không thể tải plugin.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
-<translation id="7080893216867146095">Đã cho phép chia sẻ thông tin vị trí</translation>
 <translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
 <translation id="7134810312945846184">Sử dụng micrô và camera</translation>
 <translation id="7263440858009898357">Vui lòng chọn một mục trong danh sách.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Giá trị phải nằm trong khoảng từ <ph name="MINIMUM_TIME" /> đến <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> tệp</translation>
 <translation id="8451268428117625855">Vui lòng chọn một tệp.</translation>
+<translation id="8533587060884335451">Sử dụng vị trí chính xác</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Tự ngắt dòng</translation>
 <translation id="8750798805984357768">Vui lòng chọn một trong các tùy chọn sau.</translation>

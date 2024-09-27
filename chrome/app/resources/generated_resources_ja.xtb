@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">接続は常に保護されます（保護されない場合は通知されます）</translation>
 <translation id="1175131936083782305">この機能は管理者が無効にしています。</translation>
 <translation id="1175364870820465910">印刷(&amp;P)...</translation>
+<translation id="1175572348579024023">スクロール</translation>
 <translation id="1175914831232945926">1 桁ずつ</translation>
 <translation id="1176471985365269981">デバイスのファイルやフォルダの編集を許可しないサイト</translation>
 <translation id="1177073277575830464">Android のクイック セットアップが完了しました。<ph name="DEVICE_TYPE" /> で設定を続行してください。</translation>
@@ -1425,6 +1426,7 @@
 <translation id="1997616988432401742">ユーザーの証明書</translation>
 <translation id="1998715278591719161">ハンド トラッキングを許可するサイト</translation>
 <translation id="1999115740519098545">起動時</translation>
+<translation id="1999763610967697511">ドラッグ＆ドロップ</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2002160221914907025">試験運用版 AI</translation>
 <translation id="2003130567827682533">「<ph name="NAME" />」データサービスを有効にするには、まず Wi-Fi ネットワークに接続してください</translation>
@@ -5363,6 +5365,7 @@
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
 <translation id="485480310608090163">その他の設定と権限</translation>
+<translation id="485806788160414322">メディアを再生または一時停止する</translation>
 <translation id="4858913220355269194">フリッツ</translation>
 <translation id="486213875233855629">管理者によってミュートされています</translation>
 <translation id="4862642413395066333">OCSP 応答の署名</translation>

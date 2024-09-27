@@ -301,7 +301,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2377336083033403521">Chwilio tabiau…</translation>
 <translation id="2381405137052800939">Hanfodion</translation>
 <translation id="2386793615875593361">Mae 1 wedi'i ddewis</translation>
-<translation id="2387703759148866940">Awtolenwi cyfrineiriau</translation>
 <translation id="2390457533592708044">Cuddio '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Ni ellir danfon eich pecyn</translation>
 <translation id="2410754283952462441">Dewiswch gyfrif</translation>
@@ -606,6 +605,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3982893814825393515">Adrodd am broblem…</translation>
 <translation id="398604237578616937">Wedi mewngofnodi fel <ph name="USER_EMAIL" />. Agor dewislen cyfrif.</translation>
+<translation id="3986739045730058129">Mynd i'r tab</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="3994422733891749358">Dewiswch yr hysbysiadau rydych am eu derbyn</translation>
@@ -759,6 +759,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4699172675775169585">Lluniau a ffeiliau sydd wedi'u storio dros dro</translation>
 <translation id="4717844083556844785">Mae'r dudalen we bresennol yn y modd Anhysbys</translation>
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
+<translation id="4720530280568305198">Mae eich dewis wedi agor mewn tab newydd</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4742407542027196863">Rheoli cyfrineiriau…</translation>
 <translation id="4742897645503301228">Cuddio Olrhain pris</translation>
@@ -1417,7 +1418,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7730973429297233609">Dewiswch y cyfrif yr hoffech ei ddefnyddio i gadw <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ar y ddyfais hon yn unig.</translation>
 <translation id="7744192722284567281">Wedi darganfod tor data</translation>
-<translation id="7746165521091043703">Agorwch y gosodiadau Awtolenwi Cyfrinair</translation>
 <translation id="7749790401023484470">Ni wnaethoch ddewis unrhyw destun.</translation>
 <translation id="7757015014239760147">Dim enw defnyddiwr ••••••••</translation>
 <translation id="775755486779745798">Awtolenwi'r mis darfod <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="7975036700432177008">Rhoi cynnig arni</translation>
 <translation id="797588153137233716">Dewislen → Hanes → Dileu Data Pori</translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
-<translation id="7978018860671536736">3. Tapiwch Awtolenwi Cyfrineiriau</translation>
 <translation id="797824194429476746">Bydd y tabiau yn aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu yn barhaol.</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="7987685713885608670">Am ddiogelwch ychwanegol, amgryptiwch gyfrineiriau ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>

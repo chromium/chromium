@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">ብርቱካናማ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> የትር ቡድን አማራጮች</translation>
+<translation id="1293272072740285747">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ የማይፈልጉት ከሆነ ይሰርዙት።
+
+ከሰረዙት ሁሉም ሰው ወዲያውኑ የ«<ph name="TITLE_OF_GROUP" />» የትር ቡድን መዳረሻን ያጣል እና ከሁሉም መሣሪያዎች ይሰረዛል።</translation>
 <translation id="1340839264183302272">ቡድኑን ለቅቀው ይውጡ</translation>
 <translation id="1419023007528516122">ይህ ቡድኑን ከመሣሪያዎ እስከመጨረሻው ይሰርዘዋል</translation>
 <translation id="1486715732399361704">ሁሉንም የትር ቡድኖችዎን እዚህ ማግኘት ይችላሉ</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
+<translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል።}other{<ph name="MANY_ADDED" /> ትሮች ታክለዋል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግተዋል።}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ከ<ph name="NUM_HOURS_ONE" /> ሰዓት በፊት የተፈጠረ}one{ከ<ph name="NUM_HOURS_MANY" /> ሰዓት በፊት የተፈጠረ}other{ከ<ph name="NUM_HOURS_MANY" /> ሰዓቶች በፊት የተፈጠረ}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}}</translation>
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
+<translation id="5615302411300498438">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ለቅቀው ይውጡ
+
+ለቅቀው ከወጡ፣ ወዲያውኑ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድን መዳረሻን ያጣሉ</translation>
 <translation id="5627941783489838464">ምንም የትር ዝማኔዎች የሉም</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ትርን ወደነበረበት መልስ}one{ትርን ወደነበረበት መልስ}other{ትሮችን ወደነበረበት መልስ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> አገናኝ ከChrome}one{<ph name="TABS_COUNT_MANY" /> አገናኝ ከChrome}other{<ph name="TABS_COUNT_MANY" /> አገናኞች ከChrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}other{<ph name="MANY_ADDED" /> ትር ታክለዋል፣ <ph name="ANY_CLOSED" /> ተዘግተዋል}}</translation>
 <translation id="8631711675211020168">ሁሉም ሰው ወዲያውኑ የ<ph name="GROUP_NAME" /> ትር ቡድን መዳረሻን ያጣል እና ከሁሉም መሣሪያዎች ይሰረዛል</translation>
 <translation id="8633025649649592204">የቅርብ ጊዜ እንቅስቃሴ</translation>
+<translation id="8635399646025169806">የትር ቡድን ይቆይ?</translation>
 <translation id="870736955561925754">ትር ይዘጋ እና ቡድን ይሰረዝ?</translation>
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8730999928494395583">በእነዚህ ማንነትን የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይወገዳል</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት የተፈጠረ}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት የተፈጠረ}other{ከ<ph name="NUM_MONTHS_MANY" /> ወሮች በፊት የተፈጠረ}}</translation>
+<translation id="8804742093141782941">ቡድን አቆይ</translation>
 <translation id="8820741577754260431">በትሮችዎ ላይ የዋጋ ቅነሳዎችን ይመልከቱ</translation>
 <translation id="8887921976452567404">የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ።</translation>
 <translation id="8915916167043355778">ሁሉንም ዝጋ</translation>

@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">特定のサイトのサードパーティのログインを許可します。</translation>
 <translation id="310297983047869047">前のスライド</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
+<translation id="310979712355504754">すべて削除</translation>
 <translation id="3114012059975132928">動画プレーヤー</translation>
 <translation id="3115898365077584848">情報を表示</translation>
 <translation id="3123473560110926937">一部のサイトでブロックされています</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>
 <translation id="7276071417425470385">オンにすると、サイトはバーチャル リアリティ デバイスの使用を要求できます。オフにすると、サイトはバーチャル リアリティ デバイスを使用できません。</translation>
-<translation id="7284451015630589124">ブラウジング中にトラッキングされないように、サイトによるサードパーティ Cookie の使用をブロックしました。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="7302486331832100261">通知はデフォルトでブロックされています。許可するには [詳細] をタップしてください。</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>
-<translation id="7474522811371247902">Chrome ではほとんどのサイトに対してサードパーティ Cookie の使用を制限しています。しかしこのサイトでは、基本的なサービスの提供にサードパーティ Cookie を使用しているため許可されています。\n\n<ph name="BEGIN_LINK" />トラッキング防止機能を管理する<ph name="END_LINK" />には、設定に移動してください。</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">オンにすると、サイトはログイン メッセージを表示できます。オフにすると、サイトはログイン メッセージを表示できません。</translation>
 <translation id="7554752735887601236">サイトでマイクが使用されています</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
-<translation id="7822573154188733812">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>
 <translation id="783819812427904514">動画のミュートを解除</translation>
 <translation id="7846076177841592234">選択解除</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8617611086246832542">オンにすると、ウェブサイトのデスクトップ ビューが表示されます。オフにすると、ウェブサイトのモバイルビューが表示されます。</translation>
-<translation id="8649036394979866943">Chrome はほとんどのサイトに対してサードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください</translation>
 <translation id="8676316391139423634">オンにすると、サイトはハンド トラッキングを要求できます。オフにすると、サイトはハンド トラッキングを要求できません。</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>

@@ -250,6 +250,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1174366174291287894">A túa conexión sempre é segura a menos que Chrome che diga o contrario</translation>
 <translation id="1175131936083782305">A persoa administradora desactivou esta función.</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
+<translation id="1175572348579024023">Desprazarse</translation>
 <translation id="1175914831232945926">Díxitos</translation>
 <translation id="1176471985365269981">Permiso denegado para editar ficheiros ou cartafoles do teu dispositivo</translation>
 <translation id="1177073277575830464">Completouse a configuración rápida de Android. Continúa coa configuración no <ph name="DEVICE_TYPE" />.</translation>
@@ -1427,6 +1428,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1997616988432401742">Os teus certificados</translation>
 <translation id="1998715278591719161">Permiso concedido para facer un seguimento das mans</translation>
 <translation id="1999115740519098545">No inicio</translation>
+<translation id="1999763610967697511">Arrastrar e soltar</translation>
 <translation id="2002109485265116295">Tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar <ph name="NAME" />, primeiro conéctate a unha rede wifi</translation>
@@ -3483,6 +3485,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3487649228420469005">Completouse a análise</translation>
 <translation id="3488199663160411179">nome</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Os datos locais poderán restaurarse se esqueces o contrasinal ou o PIN</translation>
 <translation id="3491669675709357988">A conta do teu fillo ou filla non está configurada para os controis parentais de Family Link. Podes engadilos unha vez rematada a configuración. Atoparás información ao respecto na aplicación Explorar.</translation>
 <translation id="3491678231052507920">Os sitios adoitan usar os datos e dispositivos de realidade virtual para permitirche acceder a sesións de RV</translation>
 <translation id="3493043608231401654">Quitar <ph name="TAB_TITLE" /> do grupo de pestanas</translation>
@@ -4164,6 +4167,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3948116654032448504">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Esta pestana está reproducindo audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar os ficheiros dos seguintes cartafoles</translation>
+<translation id="3948985214866944547">A maioría das persoas non permite compartir a localización precisa para este sitio</translation>
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar ficheiros de forma máis segura</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
@@ -5375,6 +5379,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4853020600495124913">Abrir nunha ventá &amp;nova</translation>
 <translation id="4854317507773910281">Escolle a conta parental para a aprobación</translation>
 <translation id="485480310608090163">Máis opcións de configuración e permisos</translation>
+<translation id="485806788160414322">Reproducir ou pór en pausa o contido multimedia</translation>
 <translation id="4858913220355269194">Balón de fútbol</translation>
 <translation id="486213875233855629">A persoa administradora silenciou o dispositivo</translation>
 <translation id="4862642413395066333">Sinatura de respostas de OCSP</translation>
@@ -9023,6 +9028,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7566118625369982896">Xestionar ligazóns da aplicación Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Crear combinación de teclas</translation>
+<translation id="7568759527730933493">Usa unha conexión segura para buscar o enderezo IP dun sitio no DNS (Sistema de nomes de dominios) Para esta acción utilízase un fornecedor de servizos xestionado en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. As conexións seguras non se usan para algúns dominios configurados pola persoa administradora.</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">Actualizando</translation>
 <translation id="7569983096843329377">Negro</translation>
@@ -9185,6 +9191,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7676867886086876795">Envía a túa voz a Google para utilizar o ditado en calquera campo de texto.</translation>
 <translation id="7678588695732963732">Queres restablecer os permisos de todos os dispositivos USB?</translation>
 <translation id="7679171213002716280">Hai <ph name="PRINTER_COUNT" /> impresoras xestionadas.</translation>
+<translation id="7679895819123160382">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. <ph name="PRODUCT_NAME" /> usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios). As conexións seguras non se usan para algúns dominios configurados pola persoa administradora.</translation>
 <translation id="7680416688940118410">Calibración da pantalla táctil</translation>
 <translation id="7681095912841365527">O sitio pode usar o Bluetooth</translation>
 <translation id="7681597159868843240">Os sitios adoitan usar os sensores de movemento do dispositivo para ofrecerche determinadas funcións (por exemplo, as relacionadas coa realidade virtual ou co seguimento da forma física)</translation>
@@ -9583,6 +9590,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7955105108888461311">Preguntar en persoa</translation>
 <translation id="7955177647836564772">Se activas Smart Lock e o teu teléfono está desbloqueado, non é necesario que poñas un contrasinal ou PIN</translation>
 <translation id="7956373551960864128">As túas impresoras gardadas</translation>
+<translation id="7956918070009672177">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Conéctate a Internet e téntao de novo.</translation>
 <translation id="7957074856830851026">Consultar información do dispositivo, como o seu número de serie ou código de identificación de recurso</translation>
 <translation id="7958157896921135832">Aumentar o tamaño do tipo de letra</translation>
 <translation id="7958828865373988933">Se queres crear unha clave de acceso para <ph name="APP_NAME" /> nunha chave de seguranza con USB, insírea e tócaa agora</translation>

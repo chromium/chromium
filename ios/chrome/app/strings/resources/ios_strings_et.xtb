@@ -301,7 +301,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2377336083033403521">Otsige vahelehtedelt …</translation>
 <translation id="2381405137052800939">Põhiteave</translation>
 <translation id="2386793615875593361">1 on valitud</translation>
-<translation id="2387703759148866940">Paroolide automaatne täitmine</translation>
 <translation id="2390457533592708044">Peitke moodul „<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">Teie saadetist ei saa kohale toimetada</translation>
 <translation id="2410754283952462441">Konto valimine</translation>
@@ -1419,7 +1418,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7730973429297233609">Valige konto, mida soovite faili <ph name="FILENAME" /> (<ph name="FILESIZE" />) salvestamiseks kasutada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ainult selles seadmes.</translation>
 <translation id="7744192722284567281">Ilmnes andmetega seotud rikkumises</translation>
-<translation id="7746165521091043703">Avage funktsiooni AutoFill Password menüü Settings</translation>
 <translation id="7749790401023484470">Te ei valinud mingisugust teksti.</translation>
 <translation id="7757015014239760147">Kasutajanimi puudub ••••••••</translation>
 <translation id="775755486779745798">Aegumiskuu <ph name="MONTH" /> automaatne sisestamine</translation>
@@ -1479,7 +1477,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="7975036700432177008">Proovi</translation>
 <translation id="797588153137233716">Menüü → Ajalugu → Sirvimisandmete kustutamine</translation>
 <translation id="7977451675950311423">Hoiatab teid, kui kasutate parooli, mis on andmetega seotud rikkumise tõttu ohtu sattunud.</translation>
-<translation id="7978018860671536736">3. Puudutage valikut AutoFill Passwords</translation>
 <translation id="797824194429476746">Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse jäädavalt.</translation>
 <translation id="7982789257301363584">Võrk</translation>
 <translation id="7987685713885608670">Turvalisuse suurendamiseks krüpteerige paroolid oma seadmes, enne kui need salvestatakse Google'i paroolihaldurisse.</translation>

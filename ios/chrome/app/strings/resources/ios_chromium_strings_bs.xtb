@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Želite li da vam Chromium sljedeći put ponudi prijevod stranica na <ph name="LANGUAGE_NAME" /> jeziku s ove web lokacije?</translation>
 <translation id="22313767259766852">Adresa je trenutno sačuvana u Chromiumu. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Ovo znači da će Chromium svaki put zatražiti web lokaciju za računar.</translation>
+<translation id="2270466829363945454">Kupovina</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="231828342043114302">Da primate personaliziran sadržaj na osnovu svojih interesovanja, prijavite se u Chromium.</translation>
 <translation id="2326738825692478496">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun.
@@ -130,6 +131,7 @@ Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuva
 <translation id="4432744876818348753">Prijavite se da iskoristite prednosti Chromiuma.</translation>
 <translation id="4445228361214254027">Vaša organizacija je isključila mogućnost korištenja i pohranjivanja podataka Chromiuma na vaš Google račun. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovaj uređaj.</translation>
 <translation id="4498832288620833153">Dodaje unesene URL-ove na listu za čitanje u Chromiumu.</translation>
+<translation id="4508268628669724828">Provjerite ponovo ovdje za više korisnih savjeta za iskorištavanje svih prednosti Chromiuma.</translation>
 <translation id="452436063477828504">Pobrinite se da uvijek možete koristiti podatke Chromiuma na Google računu</translation>
 <translation id="4527452566931097835">Postaviti Chromium kao zadani preglednik?</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će ponuditi prevođenje stranica koje su napisane na drugim jezicima, pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7228180817326917122">Savjet za Chromium: odaberite položaj trake za adresu</translation>
 <translation id="725427773388857052">Chromium vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju pad aplikacije Chromium. Pokušajte ih deinstalirati.</translation>
+<translation id="7279391168585141365">Pohranjujte lozinke u Chromiumu</translation>
 <translation id="7285031092584344905">Pristupajte lozinkama u Chromiumu i ostalom u drugim aplikacijama.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Odabrani podaci su uklonjeni iz Chromiuma i sinhroniziranih uređaja. Vaš Google uređaj može imati druge oblike historije pregledanja kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na history.google.com.</translation>

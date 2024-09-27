@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' पछ्याउने भागले '<ph name="INVALIDCHARACTER" />' चिन्ह समावेश गर्नु हुँदैन।</translation>
 <translation id="4718048029184481307">picture-in-picture मा प्ले गर्दै</translation>
-<translation id="4792862212177489858">लोकेसन सेयर गर्नुहोस्</translation>
 <translation id="4812940957355064477">कृपया एक नम्बर प्रविष्टि गर्नुहोस्।</translation>
 <translation id="49269513399674318">माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> चयन गरिएको</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">मान <ph name="MINIMUM" /> भन्दा धेरै वा बराबर हुनै पर्छ।</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> पीबी</translation>
+<translation id="5239623327352565343">लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' पछिको भाग प्रविष्टि गर्नुहोस्। '<ph name="INVALIDADDRESS" />' अपूरो छ।</translation>
 <translation id="5334352251556557839">मिडिया प्ले गर्न सकिएन।</translation>
 <translation id="537648784377940524">न्यूनतम मिति (<ph name="MIN_DATE_OR_TIME" />) अधिकतम मिति (<ph name="MAX_DATE_OR_TIME" />) भन्दा अगाडिको मिति हुनु पर्छ।</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">प्लगइन लोड गर्न सकेन।</translation>
 <translation id="6919891270253167948">१.५</translation>
 <translation id="6989848892321993519">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> वर्ण वा अझ बढीमा लम्ब्याउनुहोस् (तपाईं हाल १ वर्ण प्रयोग गर्दै हुनुहुन्छ )।</translation>
-<translation id="7080893216867146095">लोकेसन सेयर गर्ने अनुमति दिइएको छैन</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>
 <translation id="7134810312945846184">माइक्रोफोन र क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="7263440858009898357">कृपया सूचीमा एक वस्तु चयन गर्नुहोस्।</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">मान अनिवार्य रूपमा <ph name="MINIMUM_TIME" /> र <ph name="MAXIMUM_TIME" /> का बिचमा हुनु पर्छ।</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> फाइलहरू</translation>
 <translation id="8451268428117625855">कृपया एउटा फाइल चयन गर्नुहोस्।</translation>
+<translation id="8533587060884335451">सटीक स्थान को प्रयोग गर्नुहोस्</translation>
 <translation id="8637593834423658414">१.७५</translation>
 <translation id="8668988909814782445">लाइन र्‍याप गर्नुहोस्</translation>
 <translation id="8750798805984357768">कृपया यी विकल्पहरू मध्ये एउटा चयन गर्नुहोस्।</translation>

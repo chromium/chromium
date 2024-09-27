@@ -250,6 +250,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1174366174291287894">Đường kết nối của bạn luôn an toàn, trừ phi Chrome thông báo cho bạn thông tin khác</translation>
 <translation id="1175131936083782305">Quản trị viên của bạn đã tắt tính năng này.</translation>
 <translation id="1175364870820465910">&amp;In...</translation>
+<translation id="1175572348579024023">Cuộn</translation>
 <translation id="1175914831232945926">Chữ số</translation>
 <translation id="1176471985365269981">Không được phép chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="1177073277575830464">Quá trình thiết lập nhanh Android đã hoàn tất. Hãy tiếp tục thiết lập trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
@@ -1438,6 +1439,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1997616988432401742">Chứng chỉ của bạn</translation>
 <translation id="1998715278591719161">Được phép theo dõi tay bạn</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
+<translation id="1999763610967697511">Kéo và thả</translation>
 <translation id="2002109485265116295">Thời gian thực</translation>
 <translation id="2002160221914907025">AI thử nghiệm</translation>
 <translation id="2003130567827682533">Để kích hoạt dữ liệu '<ph name="NAME" />', trước tiên hãy kết nối mạng Wi-Fi</translation>
@@ -4176,6 +4178,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Thẻ này đang phát âm thanh</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
+<translation id="3948985214866944547">Hầu hết mọi người đều chặn khả năng chia sẻ vị trí chính xác cho trang web này</translation>
 <translation id="394984172568887996">Đã nhập từ IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> để việc tải tệp xuống trở nên an toàn hơn</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
@@ -5387,6 +5390,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4853020600495124913">Mở trong &amp;cửa sổ mới</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
 <translation id="485480310608090163">Các quyền và tùy chọn cài đặt khác</translation>
+<translation id="485806788160414322">Phát hoặc tạm dừng nội dung nghe nhìn</translation>
 <translation id="4858913220355269194">Nam cầu thủ Fritz</translation>
 <translation id="486213875233855629">Quản trị viên của bạn đã tắt tiếng</translation>
 <translation id="4862642413395066333">Ký Phản hồi OCSP</translation>
@@ -9041,6 +9045,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7566118625369982896">Quản lý các liên kết ứng dụng Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Tạo tổ hợp phím</translation>
+<translation id="7568759527730933493">Dùng kết nối bảo mật để tra cứu địa chỉ IP của một trang web trong DNS (Hệ thống tên miền). Hệ thống tên miền sử dụng nhà cung cấp dịch vụ được quản lý tại <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Không sử dụng kết nối bảo mật cho một số miền do quản trị viên của bạn định cấu hình.</translation>
 <translation id="756876171895853918">Tùy chỉnh hình đại diện</translation>
 <translation id="7568790562536448087">Đang cập nhật</translation>
 <translation id="7569983096843329377">Đen</translation>
@@ -9203,6 +9208,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7676867886086876795">Gửi giọng nói của bạn tới Google để cho phép nhập bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
 <translation id="7678588695732963732">Đặt lại tất cả các quyền của thiết bị USB?</translation>
 <translation id="7679171213002716280">Có <ph name="PRINTER_COUNT" /> máy in được quản lý.</translation>
+<translation id="7679895819123160382">Giữ kín danh sách các trang web bạn truy cập sao cho những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được hơn. <ph name="PRODUCT_NAME" /> dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền). Không sử dụng kết nối bảo mật cho một số miền do quản trị viên của bạn định cấu hình.</translation>
 <translation id="7680416688940118410">Hiệu chỉnh màn hình cảm ứng</translation>
 <translation id="7681095912841365527">Trang web có thể sử dụng Bluetooth</translation>
 <translation id="7681597159868843240">Các trang web thường sử dụng cảm biến chuyển động của thiết bị cho các tính năng như thực tế ảo hoặc theo dõi hoạt động thể dục</translation>
@@ -9601,6 +9607,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7955105108888461311">Gặp trực tiếp để hỏi</translation>
 <translation id="7955177647836564772">Nếu bật Smart Lock và mở khoá điện thoại, bạn sẽ không cần nhập mật khẩu hoặc mã PIN</translation>
 <translation id="7956373551960864128">Các máy in bạn đã lưu</translation>
+<translation id="7956918070009672177">Không có giọng nói <ph name="LANGUAGE" /> nào trên thiết bị của bạn. Vui lòng kết nối Internet rồi thử lại.</translation>
 <translation id="7957074856830851026">Xem thông tin thiết bị, chẳng hạn như số sê-ri hoặc mã tài sản</translation>
 <translation id="7958157896921135832">Tăng cỡ chữ</translation>
 <translation id="7958828865373988933">Nếu bạn muốn tạo khoá truy cập cho <ph name="APP_NAME" /> trên khoá bảo mật USB, hãy cắm rồi chạm vào khoá bảo mật đó ngay</translation>

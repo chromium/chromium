@@ -301,7 +301,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2377336083033403521">Bilatu fitxetan…</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
-<translation id="2387703759148866940">Bete automatikoki pasahitzak</translation>
 <translation id="2390457533592708044">Ezkutatu "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Paketea ezin da entregatu</translation>
 <translation id="2410754283952462441">Aukeratu kontu bat</translation>
@@ -606,6 +605,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3982893814825393515">Eman arazo baten berri…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> gisa hasi duzu saioa. Ireki kontuaren menua.</translation>
+<translation id="3986739045730058129">Joan fitxara</translation>
 <translation id="3987993985790029246">Kopiatu esteka</translation>
 <translation id="3992684624889376114">Orri honi buruz</translation>
 <translation id="3994422733891749358">Aukeratu zein jakinarazpen jaso nahi duzun</translation>
@@ -759,6 +759,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4717844083556844785">Web-orri hau ezkutuko moduan dago</translation>
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
+<translation id="4720530280568305198">Hautatutakoa beste fitxa batean ireki da</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4742407542027196863">Kudeatu pasahitzak…</translation>
 <translation id="4742897645503301228">Ezkutatu "Egin prezioen jarraipena"</translation>
@@ -1417,7 +1418,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7730973429297233609">Hautatu <ph name="FILENAME" /> (<ph name="FILESIZE" />) gordetzeko erabili nahi duzun kontua</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Gailu honetan soilik.</translation>
 <translation id="7744192722284567281">Datuen isilpekotasunaren urratze batean aurkitu da</translation>
-<translation id="7746165521091043703">Ireki pasahitzak automatikoki betetzeko ezarpenak</translation>
 <translation id="7749790401023484470">Ez duzu hautatu testurik.</translation>
 <translation id="7757015014239760147">Ez dago erabiltzaile-izenik ••••••••</translation>
 <translation id="775755486779745798">Bete automatikoki iraungitze-hilabetea <ph name="MONTH" /> hilabetearekin</translation>
@@ -1477,7 +1477,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="7975036700432177008">Probatu</translation>
 <translation id="797588153137233716">Menua → Historia → Ezabatu arakatze-datuak</translation>
 <translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
-<translation id="7978018860671536736">3. Sakatu AutoFill Passwords (pasahitzak automatikoki betetzeko aukera).</translation>
 <translation id="797824194429476746">Fitxak irekita mantenduko dira gailu honetan, baina taldea betiko ezabatuko da.</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7987685713885608670">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>

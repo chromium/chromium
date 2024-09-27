@@ -301,7 +301,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2377336083033403521">Ieškoti skirtukų…</translation>
 <translation id="2381405137052800939">Pagrindiniai</translation>
 <translation id="2386793615875593361">Pasirinkta: 1</translation>
-<translation id="2387703759148866940">Automatinis slaptažodžių pildymas</translation>
 <translation id="2390457533592708044">Slėpti „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Siuntinio pristatyti negalima</translation>
 <translation id="2410754283952462441">Pasirinkite paskyrą</translation>
@@ -1419,7 +1418,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7730973429297233609">Pasirinkite paskyrą, kurią norite naudoti, kad išsaugotumėte „<ph name="FILENAME" />“ – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tik šiame įrenginyje.</translation>
 <translation id="7744192722284567281">Rasta duomenų saugos pažeidime</translation>
-<translation id="7746165521091043703">Atidarykite automatinio slaptažodžių pildymo nustatymus</translation>
 <translation id="7749790401023484470">Nepasirinkote jokio teksto.</translation>
 <translation id="7757015014239760147">Nėra naudotojo vardo ••••••</translation>
 <translation id="775755486779745798">Automatiškai pildyti galiojimo pabaigos mėnesį <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="7975036700432177008">Išbandykite</translation>
 <translation id="797588153137233716">Meniu → „Istorija“ → „Ištrinti naršymo duomenis“</translation>
 <translation id="7977451675950311423">Įspėjama, jei naudojate slaptažodį, kuris pažeistas dėl duomenų saugos pažeidimo.</translation>
-<translation id="7978018860671536736">3. Palieskite „AutoFill Passwords“</translation>
 <translation id="797824194429476746">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus visam laikui ištrinta.</translation>
 <translation id="7982789257301363584">Tinklas</translation>
 <translation id="7987685713885608670">Kad būtų saugiau, šifruokite slaptažodžius įrenginyje prieš išsaugodami juos „Google“ slaptažodžių tvarkytuvėje.</translation>

@@ -301,7 +301,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2377336083033403521">Søk i faner…</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
 <translation id="2386793615875593361">1 er valgt</translation>
-<translation id="2387703759148866940">Autoutfyll-passord</translation>
 <translation id="2390457533592708044">Skjul «<ph name="MODULE_NAME" />»</translation>
 <translation id="2403129868389095715">Pakken kan ikke leveres</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
@@ -606,6 +605,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3982893814825393515">Rapporter et problem…</translation>
 <translation id="398604237578616937">Logget på som <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
+<translation id="3986739045730058129">Gå til fanen</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
 <translation id="3992684624889376114">Om denne siden</translation>
 <translation id="3994422733891749358">Velg hvilke varsler du vil motta</translation>
@@ -759,6 +759,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4717844083556844785">Den gjeldende nettsiden er i Inkognito</translation>
 <translation id="4719927025381752090">Tilby å oversette</translation>
+<translation id="4720530280568305198">Valget ditt ble åpnet på en ny fane</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4742407542027196863">Administrer passord…</translation>
 <translation id="4742897645503301228">Skjul Spor prisen</translation>
@@ -1417,7 +1418,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7730973429297233609">Velg kontoen du vil bruke til å lagre <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bare på denne enheten.</translation>
 <translation id="7744192722284567281">Funnet i databrudd</translation>
-<translation id="7746165521091043703">Åpne innstillinger for Autoutfyll-passord</translation>
 <translation id="7749790401023484470">Du har ikke merket noe tekst.</translation>
 <translation id="7757015014239760147">Uten brukernavn ••••••••</translation>
 <translation id="775755486779745798">Autofyll utløpsmåneden <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Meny → Logg → Slett nettlesingsdata</translation>
 <translation id="7977451675950311423">Advarer deg hvis du bruker passord som er utsatt for databrudd.</translation>
-<translation id="7978018860671536736">3. Trykk på Autofyll passord</translation>
 <translation id="797824194429476746">Fanene fortsetter å være åpne på denne enheten, men gruppen slettes permanent.</translation>
 <translation id="7982789257301363584">Nettverk</translation>
 <translation id="7987685713885608670">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring.</translation>

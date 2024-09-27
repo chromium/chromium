@@ -945,7 +945,6 @@
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784136236926853061">HTTP লেটেন্সি বেশি</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
-<translation id="5810692306010756935">গ্র্যাজুয়েশন</translation>
 <translation id="5816802250591013230">কোনও শর্টকাট অ্যাসাইন করা নেই</translation>
 <translation id="5826644637650799838">আর্ট সম্পর্কে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
@@ -1019,6 +1018,7 @@
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="6127426868813166163">সাদা</translation>
+<translation id="613049107179582049">Chromebook-এর অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">সাইবারপাঙ্ক</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
@@ -1207,6 +1207,7 @@
 <translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965978654500191972">ডিভাইস</translation>
+<translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6975620886940770104">গ্লোয়িং <ph name="GLOWSCAPES_FEATURE" /> সহ একটি <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">কোয়ালা</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
@@ -1587,6 +1588,7 @@
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
 <translation id="8882789155418924367">প্যাঁচা</translation>
 <translation id="8892443466059986410">শর্টকাট এডিটিং বাতিল করুন</translation>
+<translation id="8897043028305808902">ফাইলের নাম পরিবর্তন করা হয়েছে</translation>
 <translation id="8898840733695078011">সংকেতের ক্ষমতা</translation>
 <translation id="8909114361904403025">উপরের দিকের তীরচিহ্ন</translation>
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>

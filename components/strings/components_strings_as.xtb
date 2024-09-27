@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">টিভি আৰু ভিডিঅ’</translation>
 <translation id="1658918301167915956">ব্লুটুথ ডিভাইচ</translation>
 <translation id="1662550410081243962">পৰিশোধ পদ্ধতি ছেভ কৰক আৰু পূৰ কৰক</translation>
+<translation id="1662980953334786797">একেই ক্ৰম</translation>
 <translation id="1663943134801823270">কাৰ্ড আৰু ঠিকনাসমূহ Chromeৰ পৰা লোৱা হয়। আপুনি সেয়া <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />-ত পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1664389769577564606">ফ্লেক্স’ ফট’পলিমাৰ</translation>
 <translation id="166624440456221306">তুলনাৰ তালিকা মচক</translation>
@@ -1322,7 +1323,6 @@
 <translation id="342781501876943858">আপুনি যদি নিজৰ পাছৱৰ্ডটো অন্য ছাইটত পুনৰ ব্যৱহাৰ কৰিছিল Chromiumএ আপোনাৰ পাছৱর্ডটো ৰিছেট কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="3428151540071562330">এটা অথবা একাধিক DnsOverHttpsTemplates ছার্ভাৰ টেম্পলে’টৰ URIসমূহ মান্য নহয় আৰু সেয়া ব্যৱহাৰ কৰা নহ’ব।</translation>
 <translation id="3428789896412418755">গোট হিচাপে ৰখা ইতিহাস</translation>
-<translation id="3430206873883193118">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে আপোনাক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ বা আপোনাৰ পাছৱৰ্ড, ফ’ন বা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে তথ্য ফাদিল কৰাৰ বাবে ছলনা কৰিব পাৰে। Chromeএ পুনৰ সুৰক্ষা ব্যৱস্থা গ্ৰহণ কৰিবলৈ দৃঢ়ভাৱে চুপাৰিছ কৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
 <translation id="3433111389595862568">সহযোগিতা আৰু কনফাৰেন্সিং ছফ্টৱেৰ</translation>
 <translation id="3433144818443565002">ভইচ আৰু ভিডিঅ’ চাট</translation>
@@ -1340,7 +1340,6 @@
 <translation id="3447661539832366887">এই ডিভাইচৰ গৰাকীয়ে ডাইন’ছৰ গে’মটো অফ কৰিছে।</translation>
 <translation id="3447884698081792621">প্ৰমাণপত্ৰ দেখুৱাওক (<ph name="ISSUER" />এ প্ৰদান কৰা)</translation>
 <translation id="3450323514459570273">আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰিবলৈ ক’ব পাৰে</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" />ৰ অনুমতি দিয়া আছে</translation>
 <translation id="3452404311384756672">অন্তৰাল বিচাৰক:</translation>
 <translation id="3453962258458347894">পুনঃচেষ্টাৰ সংখ্যা</translation>
 <translation id="3457781733462096492">ৰেপ আৰু হিপ-হপ</translation>
@@ -1656,6 +1655,7 @@
 <translation id="4023431997072828269">যিহেতু এই ফৰ্মখন এটা অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি দাখিল কৰি থকা হৈছে, আপোনাৰ তথ্য অন্য লোকে দেখা পাব।</translation>
 <translation id="4025325634010721551">নীতিসমূহ পুনৰ ল’ড কৰা হৈছে</translation>
 <translation id="4025338605225449265">মুদ্ৰা আৰু বিদেশী মুদ্ৰা বিনিময়</translation>
+<translation id="4025777154208238692">ওলোটা ক্ৰম</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />আপুনি ছাইটটোলৈ পঠিওৱা বা ছাইটটোৰ পৰা লাভ কৰা তথ্য <ph name="BEGIN_STRONG" />আক্ৰমণকাৰীয়ে চাব আৰু সলনি কৰিব পাৰে<ph name="END_STRONG" />।
       <ph name="LIST_ITEM" />আপুনি যদি ৰাজহুৱা নেটৱৰ্ক ব্যৱহাৰ কৰি আছে, <ph name="BEGIN_STRONG" />এই ছাইটটো পাছত চোৱাটো নিৰাপদ হ’ব<ph name="END_STRONG" />। আপোনাৰ ঘৰ বা কৰ্মস্থানৰ ৱাই-ফাইৰ দৰে বিশ্বস্ত নেটৱৰ্কৰ পৰা চালে বিপদাশংকা কম হয়।
@@ -2564,7 +2564,6 @@
 <translation id="5689516760719285838">অৱস্থান</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplatesৰ মানটো প্ৰাসংগিক নহয় আৰু DnsOverHttpsMode নীতিটো <ph name="SECURE_DNS_MODE_AUTOMATIC" /> অথবা <ph name="SECURE_DNS_MODE_SECURE" /> হিচাপে ছেট নকৰা পর্যন্ত সেয়া ব্যৱহাৰ কৰা নহ’ব।</translation>
 <translation id="5691848789297492617">ছেভ কৰি থোৱা কার্ড পূৰ্ণ উচ্চতাত খোলা হৈছে।</translation>
-<translation id="5692655638459249302">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে ক্ষতিকাৰক ছফ্টৱেৰ ইনষ্টল কৰিব পাৰে যিয়ে আপোনাৰ পাছৱৰ্ড, ফট’, বাৰ্তা বা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে তথ্য চুৰি কৰে বা মচি পেলায়। Chromeএ পুনৰ সুৰক্ষা ব্যৱস্থা গ্ৰহণ কৰিবলৈ দৃঢ়ভাৱে চুপাৰিছ কৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">আপোনাৰ ক্ৰয়টো সত্যাপন আৰু সম্পূৰ্ণ কৰিবলৈ Windows Hello ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="5699628521141772782">দুগ্ধজাত খাদ্যবস্তু আৰু কণী</translation>
 <translation id="5700761515355162635">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দিয়া হৈছে</translation>
@@ -2712,7 +2711,6 @@
 <translation id="5995727681868049093">আপোনাৰ Google একাউণ্টত আপোনাৰ তথ্য, গোপনীয়তা আৰু সুৰক্ষা পৰিচালনা কৰক</translation>
 <translation id="5996255674476750320">বাহনৰ শ্ব’</translation>
 <translation id="5997247540087773573">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Google পাছৱৰ্ড পৰিচালকে এতিয়াই এইটো সলনি কৰি আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
-<translation id="5999271311987646952">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে, যিয়ে আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত <ph name="BEGIN_LINK" />শেহতীয়াকৈ মালৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />।</translation>
 <translation id="6000528814684428358">হাৰ্ড ৰক প্ৰগ্ৰেছিভ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল</translation>
 <translation id="6001839398155993679">আৰম্ভ কৰক</translation>
@@ -2876,7 +2874,6 @@
 <translation id="6284449872909111707">পাঠ আৰু তাৎক্ষণিক বাৰ্তা বিনিময়</translation>
 <translation id="6284517535531159884">ৰূপভেদ ছীডৰ প্ৰকাৰ</translation>
 <translation id="6287197303017372967">নেভিগেশ্বন সুবিধাটো ব্যৱহাৰ কৰি প্ৰতিটো আলি-কেঁকুৰিসহ দিক্-নিৰ্দেশনাৰে আপোনাৰ গন্তব্যস্থানলৈ দিক্-নিৰ্দেশনা পাওক।</translation>
-<translation id="6288521565586608304">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে আপোনাক এনেকুৱা ক্ষতিকাৰক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ ছলনা কৰিব পাৰে যিয়ে আপুনি ব্ৰাউজ কৰাৰ ধৰণত প্ৰভাৱ পেলাব পাৰে — উদাহৰণস্বৰূপে, আপোনাৰ গৃহপৃষ্ঠা সলনি কৰি বা আপুনি চোৱা ছাইটটোত অতিৰিক্ত বিজ্ঞাপন দেখুৱায়। ক্ষতি নহ’বলৈ Chromeএ পুনৰ সুৰক্ষা ব্যৱস্থা গ্ৰহণ কৰিবলৈ দৃঢ়ভাৱে চুপাৰিছ কৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">ডিছকাউণ্ট বিচাৰি পোৱা গৈছে</translation>
 <translation id="6289939620939689042">পৃষ্ঠাৰ ৰং</translation>
 <translation id="6292819926564202163">Chromeত আপোনাৰ সন্ধানৰ ইঞ্জিন</translation>
@@ -3070,7 +3067,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">কম্পিউটাৰ সম্পৰ্কীয় শিক্ষা</translation>
 <translation id="6633476656216409494">ব্যৱসায় আৰু উৎপাদনশীলতাৰ ছফ্টৱেৰ</translation>
-<translation id="6638353438328951386">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে, যিয়ে আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত শেহতীয়াকৈ <ph name="BEGIN_LINK" />ক্ষতিকাৰক ছফ্টৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />।</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6645291930348198241">কুকীসমূহ আৰু ছাইটৰ ডেটা এক্সেছ কৰক।</translation>
 <translation id="6645478838938543427">মূল্য কমাৰ সতৰ্কবাৰ্তা <ph name="EMAIL_ADDRESS" />লৈ পঠিওৱা হ’ব</translation>
@@ -3284,7 +3280,6 @@
 <translation id="701757816833614688">ভিজুৱেল আৰ্ট আৰু ডিজাইন সম্পৰ্কীয় শিক্ষা</translation>
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
 <translation id="7023162328967545559">প্ৰশাসকে দিয়া সকীয়নি</translation>
-<translation id="7024932305105294144">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে, যিয়ে আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত <ph name="BEGIN_LINK" />শেহতীয়াকৈ ফিশ্বিং ধৰা পেলাইছে<ph name="END_LINK" />। ফিশ্বিং ছাইটসমূহে আপোনাক ঠগিবলৈ অন্য ছাইটৰ ছদ্মৱেশ ধাৰণ কৰে।<ph name="NEW_LINE" />আনকি সাধাৰণতে সুৰক্ষিত ছাইটসমূহো কেতিয়াবা আক্ৰমণকাৰীয়ে হেক কৰে। আপুনি যদি কিবা ভুল হৈছে আৰু এই ছাইটটোত কোনো বিপদ নাই বুলি ভাবে <ph name="BEGIN_ERROR_LINK" />আমাক জনাওক<ph name="END_ERROR_LINK" />।</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="7030164307377592766">পৰিশোধ পদ্ধতি পূৰ কৰিবলৈ ছেটিং সংশোধন কৰক</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>
@@ -3361,7 +3356,6 @@
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" এই প্লেটফৰ্মত সমৰ্থিত প্ৰতিবন্ধকতা নহয়</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
 <translation id="7173338713290252554">সমগ্ৰ ৱেবত মূল্যৰ ইতিহাস</translation>
-<translation id="7173478186876671324">আপোনাৰ প্ৰশাসকে এই ছাইটৰ বাবে আপোনাৰ <ph name="PERMISSION" /> অৱৰোধ কৰিছে</translation>
 <translation id="7174545416324379297">একত্ৰিত কৰা হৈছে</translation>
 <translation id="7175097078723125014">ঠিকনা সম্পাদনা কৰাৰ বিকল্প বাছনি কৰা হৈছে</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
@@ -3395,7 +3389,6 @@
 <translation id="7221857374443660083">আপোনাৰ বেংকে এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰে</translation>
 <translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7227293336683593977">মূল্যৰ ইতিহাস</translation>
-<translation id="7227747683324411744">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে আপোনাক এনেকুৱা ক্ষতিকাৰক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ ছলনা কৰিব পাৰে যিয়ে আপুনি ব্ৰাউজ কৰাৰ ধৰণত প্ৰভাৱ পেলাব পাৰে — উদাহৰণস্বৰূপে, আপোনাৰ গৃহপৃষ্ঠা সলনি কৰি অথবা আপুনি চোৱা ছাইটটোত অতিৰিক্ত বিজ্ঞাপন দেখুৱায়।</translation>
 <translation id="7232352818707016189">তুলনাৰ তালিকাৰ বাবে অধিক কাৰ্য</translation>
 <translation id="7233592378249864828">প্ৰিণ্ট নিশ্চিতি শ্বীট</translation>
 <translation id="7234112195906418665">ভ্ৰমণ আৰু পৰিবহণ</translation>
@@ -3616,7 +3609,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />তকৈ কম</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" />এ এই মুহূৰ্তত এই অনুৰোধটো নিয়ন্ত্ৰণ কৰিব নোৱাৰে।</translation>
 <translation id="7599089013883397081">ডাউনল’ড কৰাৰ সময় উকলিছে</translation>
-<translation id="7605377493722372900">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে ক্ষতিকাৰক ছফ্টৱেৰ ইনষ্টল কৰিব পাৰে যিয়ে আপোনাৰ পাছৱৰ্ড, ফট’, বাৰ্তা অথবা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে বস্তু চুৰি কৰে অথবা মচি পেলায়।</translation>
 <translation id="7608583484192556132">আপুনি দেখা পোৱা কোনো বিজ্ঞাপন ব্যক্তিগতকৰণ কৰা হয়নে নহয় সেয়া বহুতো বিষয়ৰ ওপৰত নিৰ্ভৰ কৰে, য’ত এইটো ছেটিং, <ph name="BEGIN_LINK_1" />ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপন<ph name="END_LINK_1" />, আপোনাৰ <ph name="BEGIN_LINK_2" />কুকিৰ ছেটিং<ph name="END_LINK_2" /> আৰু আপুনি চাই থকা ছাইটটোৱে বিজ্ঞাপন ব্যক্তিগত কৰেনে নকৰে আদি বিষয় অন্তৰ্ভুক্ত। <ph name="BEGIN_LINK_3" />আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰা<ph name="END_LINK_3" />ৰ বিষয়ে অধিক জানক।</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> মান পৰিসৰৰ বাহিৰৰ।</translation>
 <translation id="7613889955535752492">ম্যাদ উকলিব: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4069,7 +4061,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">এইবাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="8421158157346464398">কৰ্মস্থানৰ প্ৰ’ফাইলৰ তথ্য (যেনে, আপোনাৰ কৰ্মস্থানৰ প্ৰ’ফাইলৰ ব্যৱহাৰকাৰীৰ নাম)</translation>
-<translation id="8422228580902424274">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোৰ আক্ৰমণকাৰীসকলে আপোনাক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ অথবা আপোনাৰ পাছৱৰ্ড, ফ’ন অথবা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে বস্তু ফাদিল কৰাৰ বাবে ছলনা কৰিব পাৰে।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
 <translation id="8427848540066057481">৫০০ x ৭৫০ মি.মি.</translation>
@@ -4220,7 +4211,6 @@
 <translation id="8722929331701811374">লেখন সামগ্ৰী (লেটাৰহে’ড)</translation>
 <translation id="8724824364712796726">এনভেল’প B6</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
-<translation id="8725667981218437315">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
 <translation id="8726549941689275341">পৃষ্ঠাৰ আকাৰ:</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8731268612289859741">সুৰক্ষা ক’ড</translation>
@@ -4429,7 +4419,6 @@
 <translation id="9119042192571987207">আপল’ড কৰা হৈছে</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" />এ এয়া আপুনিয়েই বুলি সত্যাপন কৰিব বিচাৰে</translation>
 <translation id="912327514020027767">স্কাৰ্ট</translation>
-<translation id="912414390325846156">আপুনি পূৰ্বতে এই ছাইটৰ বাবে অনুমতি নিদিয়াটো বাছনি কৰিছিল</translation>
 <translation id="9128870381267983090">নেটৱৰ্কত সংযোগ কৰক</translation>
 <translation id="9131119348384879525">গোপনীয় সমল কেপচাৰ কৰিবনে?</translation>
 <translation id="9133861214150761123">হিচাপৰক্ষা আৰু অডিটিং</translation>

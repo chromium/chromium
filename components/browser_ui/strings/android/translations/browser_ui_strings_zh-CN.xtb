@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3109724472072898302">已收起</translation>
+<translation id="310979712355504754">全部删除</translation>
 <translation id="3114012059975132928">视频播放器</translation>
 <translation id="3115898365077584848">显示信息</translation>
 <translation id="3123473560110926937">已禁止部分网站显示广告</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="7276071417425470385">开启此设置后，网站可以请求使用虚拟现实设备。关闭此设置后，网站无法使用虚拟现实设备。</translation>
-<translation id="7284451015630589124">您已禁止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”以<ph name="BEGIN_LINK" />管理您的跟踪保护措施<ph name="END_LINK" />。</translation>
 <translation id="7302486331832100261">您通常会屏蔽通知。要允许显示通知，请点按“详细信息”。</translation>
 <translation id="7366415735885268578">添加网站</translation>
 <translation id="7368695150573390554">所有离线数据都将被删除</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">先询问</translation>
 <translation id="7423538860840206698">已阻止读取剪贴板中的内容</translation>
 <translation id="7425915948813553151">为网站开启深色主题</translation>
-<translation id="7474522811371247902">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站已获准使用第三方 Cookie，因为它需要依赖这类 Cookie 来提供基本服务。\n\n访问“设置”可<ph name="BEGIN_LINK" />管理您的跟踪保护措施<ph name="END_LINK" />。</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">开启此设置后，网站可以显示登录提示。关闭此设置后，网站无法显示登录提示。</translation>
 <translation id="7554752735887601236">有一个网站正在使用您的麦克风</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
-<translation id="7822573154188733812">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="BEGIN_LINK" />管理您的跟踪保护措施<ph name="END_LINK" />。</translation>
 <translation id="7835852323729233924">正在播放媒体</translation>
 <translation id="783819812427904514">将视频取消静音</translation>
 <translation id="7846076177841592234">取消选择</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">允许（推荐）</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">开启此设置后，系统会显示网站的桌面版视图。关闭此设置后，系统会显示网站的移动版视图。</translation>
-<translation id="8649036394979866943">Chrome 会限制大多数网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”以<ph name="BEGIN_LINK" />管理您的跟踪保护措施<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">开启此设置后，网站可以请求跟踪您的双手。关闭此设置后，网站无法跟踪您的双手。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>

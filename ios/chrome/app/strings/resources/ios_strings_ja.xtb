@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">タブを検索…</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
-<translation id="2387703759148866940">パスワードを自動入力</translation>
 <translation id="2390457533592708044">「<ph name="MODULE_NAME" />」を非表示にします</translation>
 <translation id="2403129868389095715">配達不能</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
@@ -1419,7 +1418,6 @@
 <translation id="7730973429297233609"><ph name="FILENAME" />（<ph name="FILESIZE" />）の保存に使用するアカウントを選択してください</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>
-<translation id="7746165521091043703">[パスワードを自動入力] 設定を開く</translation>
 <translation id="7749790401023484470">テキストが選択されていません。</translation>
 <translation id="7757015014239760147">ユーザー名なし ••••••••</translation>
 <translation id="775755486779745798">有効期限（月）「<ph name="MONTH" />」を自動入力する</translation>
@@ -1479,7 +1477,6 @@
 <translation id="7975036700432177008">使ってみる</translation>
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
-<translation id="7978018860671536736">3.[パスワードを自動入力] をタップする</translation>
 <translation id="797824194429476746">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>

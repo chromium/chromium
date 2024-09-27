@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Επιτρέπεται η κάμερα</translation>
 <translation id="4664250907885839816">Το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>
-<translation id="4792862212177489858">Κοινοποίηση τοποθεσίας</translation>
 <translation id="4812940957355064477">Εισαγάγετε έναν αριθμό.</translation>
 <translation id="49269513399674318">Χρήση μικροφώνου</translation>
 <translation id="4975562563186953947">Επιλέχτηκαν <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Η τιμή πρέπει να είναι μεγαλύτερη ή ίση του <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Η πρόσβαση στην τοποθεσία επιτράπηκε</translation>
 <translation id="5307600278924710095">Καταχωρίστε το τμήμα της διεύθυνσης πριν το σύμβολο "<ph name="ATSIGN" />". Η διεύθυνση "<ph name="INVALIDADDRESS" />" δεν είναι πλήρης.</translation>
 <translation id="5334352251556557839">Δεν είναι δυνατή η αναπαραγωγή μέσων.</translation>
 <translation id="537648784377940524">Η ελάχιστη ημερομηνία (<ph name="MIN_DATE_OR_TIME" />) πρέπει να είναι προγενέστερη της μέγιστης ημερομηνίας (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Δεν είναι δυνατή η φόρτωση της προσθήκης.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε 1 χαρακτήρα).</translation>
-<translation id="7080893216867146095">Επιτράπηκε η κοινοποίηση τοποθεσίας</translation>
 <translation id="709897737746224366">Αντιστοιχίστε τη ζητούμενη μορφή.</translation>
 <translation id="7134810312945846184">Χρήση μικροφώνου και κάμερας</translation>
 <translation id="7263440858009898357">Επιλέξτε ένα στοιχείο από τη λίστα.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Η τιμή πρέπει να είναι μεταξύ <ph name="MINIMUM_TIME" /> και <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> αρχεία</translation>
 <translation id="8451268428117625855">Επιλέξτε ένα αρχείο.</translation>
+<translation id="8533587060884335451">Χρήση ακριβούς τοποθεσίας</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Αναδίπλωση γραμμής</translation>
 <translation id="8750798805984357768">Ορίστε μία από αυτές τις επιλογές.</translation>

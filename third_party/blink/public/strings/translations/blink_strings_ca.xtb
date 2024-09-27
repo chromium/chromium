@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">La càmera es pot utilitzar</translation>
 <translation id="4664250907885839816">Un domini precedit per "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">S'està reproduint imatge sobre imatge</translation>
-<translation id="4792862212177489858">Comparteix la ubicació</translation>
 <translation id="4812940957355064477">Introduïu un número.</translation>
 <translation id="49269513399674318">Utilitza el micròfon</translation>
 <translation id="4975562563186953947">Elements seleccionats: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">El valor ha de ser més gran o igual que <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Està permès utilitzar la ubicació</translation>
 <translation id="5307600278924710095">Introduïu un nom d'usuari seguit de "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" no és una adreça completa.</translation>
 <translation id="5334352251556557839">No s'ha pogut reproduir el contingut multimèdia.</translation>
 <translation id="537648784377940524">La data mínima (<ph name="MIN_DATE_OR_TIME" />) ha de ser anterior a la data màxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">El connector no s'ha pogut carregar.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Allarga aquest text fins a <ph name="MIN_CHARACTERS" /> caràcters o més (ara n'utilitzes 1).</translation>
-<translation id="7080893216867146095">Compartició d'ubicació permesa</translation>
 <translation id="709897737746224366">Feu servir el format sol·licitat.</translation>
 <translation id="7134810312945846184">Utilitza el micròfon i la càmera</translation>
 <translation id="7263440858009898357">Seleccioneu un element de la llista.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">El valor ha d'oscil·lar entre <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fitxers</translation>
 <translation id="8451268428117625855">Seleccioneu un fitxer.</translation>
+<translation id="8533587060884335451">Utilitza la ubicació precisa</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Unió de línies</translation>
 <translation id="8750798805984357768">Seleccioneu una d'aquestes opcions.</translation>

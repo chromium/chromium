@@ -945,7 +945,6 @@
 <translation id="57838592816432529">মিউট কৰক</translation>
 <translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
 <translation id="5790391387506209808">লেপিছ লেজুলি</translation>
-<translation id="5810692306010756935">স্নাতক</translation>
 <translation id="5816802250591013230">কোনো শ্বৰ্টকাট এছাইন কৰা হোৱা নাই</translation>
 <translation id="5826644637650799838">কলাটোৰ বিষয়ে</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">আৰম্ভ কৰিবলৈ আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965978654500191972">ডিভাইচ</translation>
+<translation id="6972754398087986839">আৰম্ভ কৰক</translation>
 <translation id="6975620886940770104">উজ্জ্বল <ph name="GLOWSCAPES_FEATURE" />ৰ সৈতে এটা <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">কোৱালা</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8882789155418924367">ফেঁচা</translation>
 <translation id="8892443466059986410">শ্বৰ্টকাট সম্পাদনা বাতিল কৰক</translation>
+<translation id="8897043028305808902">ফাইলৰ নতুন নাম দিয়া হৈছে</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>
 <translation id="8909114361904403025">ওপৰলৈ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="8910721771319628100">ডিফ’ল্ট নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>

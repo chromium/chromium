@@ -250,6 +250,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1174366174291287894">Teie ühendus on alati turvaline, kui Chrome teisiti ei teavita</translation>
 <translation id="1175131936083782305">Teie administraator on selle funktsiooni keelanud.</translation>
 <translation id="1175364870820465910">&amp;Prindi...</translation>
+<translation id="1175572348579024023">Keri</translation>
 <translation id="1175914831232945926">Numbrid</translation>
 <translation id="1176471985365269981">Pole lubatud muuta teie seadmes olevaid faile ega kaustu</translation>
 <translation id="1177073277575830464">Androidi kiirseadistus on tehtud. Jätkake seadistamist seadmes <ph name="DEVICE_TYPE" />.</translation>
@@ -1429,6 +1430,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1997616988432401742">Teie sertifikaadid</translation>
 <translation id="1998715278591719161">Saidid, millel on luba teie käeliigutusi jälgida</translation>
 <translation id="1999115740519098545">Käivitamisel</translation>
+<translation id="1999763610967697511">Pukseerimine</translation>
 <translation id="2002109485265116295">Reaalajas</translation>
 <translation id="2002160221914907025">Katseline AI</translation>
 <translation id="2003130567827682533">Võrgu „<ph name="NAME" />” andmeside aktiveerimiseks looge esmalt ühendus WiFi-võrguga</translation>
@@ -4167,6 +4169,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3948116654032448504">&amp;Otsi teenusest <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="3948334586359655083">See vaheleht esitab heli</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saab muuta järgmistes kaustades olevaid faile</translation>
+<translation id="3948985214866944547">Enamik inimesi blokeerivad selle saidi puhul täpse asukoha jagamise</translation>
 <translation id="394984172568887996">Imporditud IE'st</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, et faile ohutumalt alla laadida</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
@@ -5378,6 +5381,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4853020600495124913">Ava &amp;uues aknas</translation>
 <translation id="4854317507773910281">Vali kinnitamiseks vanema konto</translation>
 <translation id="485480310608090163">Rohkem seadeid ja lube</translation>
+<translation id="485806788160414322">Esita või peata meediasisu</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Teie administraatori vaigistatud</translation>
 <translation id="4862642413395066333">Signeerimise OCSP vastused</translation>
@@ -9030,6 +9034,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7566118625369982896">Play rakenduse linkide haldamine</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Klahvikombinatsiooni loomine</translation>
+<translation id="7568759527730933493">Kasutage DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust. See kasutab hallatud teenusepakkujat serverist <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Turvalisi ühendusi ei kasutata teatud domeenide jaoks, mille on seadistanud teie administraator.</translation>
 <translation id="756876171895853918">Avatari kohandamine</translation>
 <translation id="7568790562536448087">Värskendamine</translation>
 <translation id="7569983096843329377">Must</translation>
@@ -9192,6 +9197,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7676867886086876795">Saatke oma hääl Google'ile, et lubada dikteerimine kõigil tekstiväljadel.</translation>
 <translation id="7678588695732963732">Kas lähtestada kõik USB-seadme õigused?</translation>
 <translation id="7679171213002716280">Olemas on <ph name="PRINTER_COUNT" /> hallatud printerit.</translation>
+<translation id="7679895819123160382">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. <ph name="PRODUCT_NAME" /> kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust. Turvalisi ühendusi ei kasutata teatud domeenide jaoks, mille on seadistanud teie administraator.</translation>
 <translation id="7680416688940118410">Puuteekraani kalibreerimine</translation>
 <translation id="7681095912841365527">Sait saab kasutada Bluetoothi</translation>
 <translation id="7681597159868843240">Saidid kasutavad teie seadme liikumisandureid näiteks VR-kogemuse pakkumiseks või treeningu jälgimiseks</translation>
@@ -9590,6 +9596,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7955105108888461311">Küsi isiklikult</translation>
 <translation id="7955177647836564772">Kui Smart Lock on sisse lülitatud ja teie telefon on avatud, ei pea te parooli või PIN-koodi sisestama.</translation>
 <translation id="7956373551960864128">Teie salvestatud printerid</translation>
+<translation id="7956918070009672177">Seadmest puuduvad järgmises keeles hääled: <ph name="LANGUAGE" />. Looge internetiühendus ja proovige uuesti.</translation>
 <translation id="7957074856830851026">Seadme teabe (nt seerianumbri või vara ID) vaatamine</translation>
 <translation id="7958157896921135832">Fondi suuruse suurendamine</translation>
 <translation id="7958828865373988933">Kui soovite luua USB-turvavõtmele rakenduse <ph name="APP_NAME" /> pääsukoodi, sisestage see ja puudutage seda kohe</translation>

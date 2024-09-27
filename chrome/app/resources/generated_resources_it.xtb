@@ -250,6 +250,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1174366174291287894">La tua connessione è sempre sicura, a meno che non ti venga data una comunicazione diversa in Chrome</translation>
 <translation id="1175131936083782305">L'amministratore ha disattivato questa funzionalità.</translation>
 <translation id="1175364870820465910">&amp;Stampa...</translation>
+<translation id="1175572348579024023">Scorri</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Non autorizzati a modificare file o cartelle sul dispositivo</translation>
 <translation id="1177073277575830464">Configurazione rapida di Android completata. Continua la configurazione sul tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -328,7 +329,9 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1227660082540388410">Modifica passkey</translation>
 <translation id="1227993798763400520">Impossibile trasmettere. Riprova.</translation>
 <translation id="1230417814058465809">È attiva la protezione standard. Per una maggiore sicurezza, utilizza la protezione avanzata.</translation>
+<translation id="1230961867057865279">Pagina non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Memorizzeremo la tua rete la prossima volta che userai il <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Pagina non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">I siti possono chiedere di acquisire e utilizzare gli input del mouse</translation>
 <translation id="1232569758102978740">Senza titolo</translation>
 <translation id="1233497634904001272">Tocca di nuovo il token di sicurezza per completare la richiesta.</translation>
@@ -1428,6 +1431,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1997616988432401742">I tuoi certificati</translation>
 <translation id="1998715278591719161">Autorizzati a monitorare le tue mani</translation>
 <translation id="1999115740519098545">All'avvio</translation>
+<translation id="1999763610967697511">Trascinare</translation>
 <translation id="2002109485265116295">In tempo reale</translation>
 <translation id="2002160221914907025">AI sperimentale</translation>
 <translation id="2003130567827682533">Per poter attivare i dati "<ph name="NAME" />", collegati a una rete Wi-Fi.</translation>
@@ -2922,6 +2926,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="304644035656848980">Anteprima del microfono</translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
+<translation id="3047678109605649715">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Libera spazio sul dispositivo e riprova.</translation>
 <translation id="3048336643003835855">Dispositivi HID del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Riproduci (k)</translation>
 <translation id="3048742847101793553">La tua organizzazione ha bloccato questo file perché l'analisi non è riuscita.</translation>
@@ -5374,6 +5379,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4853020600495124913">Apri in &amp;un'altra finestra</translation>
 <translation id="4854317507773910281">Scegli un account genitore per l'approvazione</translation>
 <translation id="485480310608090163">Altre impostazioni e autorizzazioni</translation>
+<translation id="485806788160414322">Riproduci o metti in pausa i contenuti multimediali</translation>
 <translation id="4858913220355269194">Holly</translation>
 <translation id="486213875233855629">Audio disattivato dall'amministratore</translation>
 <translation id="4862642413395066333">Firma risposte OCSP</translation>
@@ -8542,6 +8548,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
 <translation id="7214047272988222011">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importa password</translation>
+<translation id="7217208603285112910">Selezione non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
 <translation id="7219473482981809164">Sono stati trovati più profili disponibili per il download. Seleziona quelli che vuoi scaricare prima di continuare.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nessuna password inefficace}=1{1 password inefficace}other{{NUM_WEAK} password inefficaci}}</translation>
@@ -10105,6 +10112,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
 <translation id="8327386430364625757">Carattere matematico</translation>
+<translation id="8327490658947427005">Selezione non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Autorizzazioni e impostazioni contenuti</translation>
 <translation id="8328228852664998535">Se continui, le password, le passkey e altri dati verranno eliminati definitivamente da <ph name="BRAND" />. Gli account creati per siti o app non verranno eliminati.</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>

@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Оранжевый</translation>
 <translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
 <translation id="1273910660700874265">Настройки группы вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
+<translation id="1293272072740285747">Вы сможете пользоваться ей в дальнейшем. Если группа больше не нужна, удалите ее.
+
+Тогда группа вкладок "<ph name="TITLE_OF_GROUP" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="1340839264183302272">Покинуть группу</translation>
 <translation id="1419023007528516122">Группа будет навсегда удалена с устройства.</translation>
 <translation id="1486715732399361704">Здесь вы найдете все группы вкладок</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Открыть сайт</translation>
+<translation id="2671423594960767771">Открыть доступ</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Вкладок добавлено: <ph name="ONE_ADDED" />, изменено: <ph name="ANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}one{Вкладок добавлено: <ph name="MANY_ADDED" />, изменено: <ph name="ANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}few{Вкладок добавлено: <ph name="MANY_ADDED" />, изменено: <ph name="ANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}many{Вкладок добавлено: <ph name="MANY_ADDED" />, изменено: <ph name="ANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}other{Вкладок добавлено: <ph name="MANY_ADDED" />, изменено: <ph name="ANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Создано <ph name="NUM_HOURS_ONE" /> час назад}one{Создано <ph name="NUM_HOURS_MANY" /> час назад}few{Создано <ph name="NUM_HOURS_MANY" /> часа назад}many{Создано <ph name="NUM_HOURS_MANY" /> часов назад}other{Создано <ph name="NUM_HOURS_MANY" /> часа назад}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Выделить все</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="5556417849629758491">Просмотр сведений о магазине, параметр вверху экрана</translation>
+<translation id="5615302411300498438">Вы сможете пользоваться ей в дальнейшем.
+
+Если выбрать "Покинуть группу", вы сразу потеряете доступ к группе вкладок "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Нет изменений вкладок.</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Восстановить вкладку}one{Восстановить вкладки}few{Восстановить вкладки}many{Восстановить вкладки}other{Восстановить вкладки}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ссылка из Chrome}one{<ph name="TABS_COUNT_MANY" /> ссылка из Chrome}few{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}many{<ph name="TABS_COUNT_MANY" /> ссылок из Chrome}other{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Вкладок добавлено: <ph name="ONE_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}one{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}few{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}many{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}other{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}}</translation>
 <translation id="8631711675211020168">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства</translation>
 <translation id="8633025649649592204">Последние действия</translation>
+<translation id="8635399646025169806">Оставить группу вкладок?</translation>
 <translation id="870736955561925754">Закрыть вкладку и удалить группу?</translation>
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Информация о действиях на этих вкладках инкогнито будет удалена с устройства.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Создано <ph name="NUM_MONTHS_ONE" /> месяц назад}one{Создано <ph name="NUM_MONTHS_MANY" /> месяц назад}few{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}many{Создано <ph name="NUM_MONTHS_MANY" /> месяцев назад}other{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}}</translation>
+<translation id="8804742093141782941">Оставить</translation>
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>
 <translation id="8887921976452567404">Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок".</translation>
 <translation id="8915916167043355778">Закрыть все</translation>

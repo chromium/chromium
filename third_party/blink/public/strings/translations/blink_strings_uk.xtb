@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Дозволено використовувати камеру</translation>
 <translation id="4664250907885839816">Частина після знака "<ph name="ATSIGN" />" не може містити символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Відтворюється в режимі "Картинка в картинці"</translation>
-<translation id="4792862212177489858">Поділитися геоданими</translation>
 <translation id="4812940957355064477">Введіть число.</translation>
 <translation id="49269513399674318">Використовувати мікрофон</translation>
 <translation id="4975562563186953947">Вибрано <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Значення має бути більшим або дорівнювати <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
+<translation id="5239623327352565343">Доступ до геоданих дозволено</translation>
 <translation id="5307600278924710095">Введіть частину електронної адреси до знака "<ph name="ATSIGN" />". Електронна адреса "<ph name="INVALIDADDRESS" />" неповна.</translation>
 <translation id="5334352251556557839">Не вдалося відтворити медіавміст.</translation>
 <translation id="537648784377940524">Мінімальна дата (<ph name="MIN_DATE_OR_TIME" />) має передувати максимальній (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Не вдалося завантажити плагін.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">У тексті має бути не менше стількох символів: <ph name="MIN_CHARACTERS" />. Наразі ви ввели 1 символ.</translation>
-<translation id="7080893216867146095">Дозволено ділитися місцезнаходженням</translation>
 <translation id="709897737746224366">Виберіть потрібний формат.</translation>
 <translation id="7134810312945846184">Використовувати мікрофон і камеру</translation>
 <translation id="7263440858009898357">Виберіть елемент зі списку.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Значення має бути від <ph name="MINIMUM_TIME" /> до <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">файлів: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Виберіть файл.</translation>
+<translation id="8533587060884335451">Використати моє місцезнаходження</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Переносити рядки</translation>
 <translation id="8750798805984357768">Виберіть один із запропонованих варіантів.</translation>

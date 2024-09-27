@@ -250,6 +250,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1174366174291287894">Veza je uvijek sigurna, osim ako Chrome kaže da nije</translation>
 <translation id="1175131936083782305">Administrator je onemogućio tu značajku.</translation>
 <translation id="1175364870820465910">&amp;Ispis...</translation>
+<translation id="1175572348579024023">Pomicanje</translation>
 <translation id="1175914831232945926">Znamenke</translation>
 <translation id="1176471985365269981">Nije dopušteno uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="1177073277575830464">Dovršeno je brzo postavljanje Androida. Nastavite s postavljanjem na uređaju <ph name="DEVICE_TYPE" />.</translation>
@@ -1430,6 +1431,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1997616988432401742">Vaši certifikati</translation>
 <translation id="1998715278591719161">Dopušteno je praćenje ruku</translation>
 <translation id="1999115740519098545">Prilikom pokretanja</translation>
+<translation id="1999763610967697511">Povlačenje i ispuštanje</translation>
 <translation id="2002109485265116295">U stvarnom vremenu</translation>
 <translation id="2002160221914907025">Eksperimentalna umjetna inteligencija</translation>
 <translation id="2003130567827682533">Da biste aktivirali podatke na usluzi "<ph name="NAME" />", povežite se s Wi-Fi mrežom</translation>
@@ -2925,6 +2927,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="304644035656848980">Pregled mikrofona</translation>
 <translation id="3046910703532196514">Web-stranica, potpuna</translation>
 <translation id="304747341537320566">Alati za pretvaranje teksta u govor</translation>
+<translation id="3047678109605649715">Na uređaju nema glasova za <ph name="LANGUAGE" />. Oslobodite prostor na uređaju i pokušajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodukcija (k)</translation>
 <translation id="3048742847101793553">Vaša je organizacija blokirala ovu datoteku jer skeniranje nije uspjelo.</translation>
@@ -5376,6 +5379,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4853020600495124913">Otvaranje u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
 <translation id="485480310608090163">Više postavki i dopuštenja</translation>
+<translation id="485806788160414322">Reproduciranje ili pauziranje medija</translation>
 <translation id="4858913220355269194">Zvone</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>

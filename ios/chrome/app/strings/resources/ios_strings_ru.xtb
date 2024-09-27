@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">Поиск по вкладкам</translation>
 <translation id="2381405137052800939">Основные</translation>
 <translation id="2386793615875593361">Выбрана 1 фотография</translation>
-<translation id="2387703759148866940">Автозаполнение паролей</translation>
 <translation id="2390457533592708044">Скрыть карточку "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Недоступно</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3982893814825393515">Сообщить о проблеме</translation>
 <translation id="398604237578616937">Вы вошли как <ph name="USER_EMAIL" />. Открыть меню аккаунта.</translation>
+<translation id="3986739045730058129">Перейти на вкладку</translation>
 <translation id="3987993985790029246">Скопировать ссылку</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3994422733891749358">Выберите уведомления, которые вы хотите получать</translation>
@@ -759,6 +759,7 @@
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4717844083556844785">Открыто в режиме инкогнито</translation>
 <translation id="4719927025381752090">Предлагать перевести</translation>
+<translation id="4720530280568305198">В результате вашего выбора открылась новая вкладка.</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4742407542027196863">Управление паролями</translation>
 <translation id="4742897645503301228">Скрыть раздел "Отслеживание цен"</translation>
@@ -1417,7 +1418,6 @@
 <translation id="7730973429297233609">Выберите аккаунт, в котором вы хотите сохранить файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />).</translation>
 <translation id="7733646263819020771">Закладка <ph name="BOOKMRK_NAME" />. Только на этом устройстве.</translation>
 <translation id="7744192722284567281">Раскрыт при утечке данных</translation>
-<translation id="7746165521091043703">Откройте настройки автозаполнения паролей.</translation>
 <translation id="7749790401023484470">Выберите текст.</translation>
 <translation id="7757015014239760147">Имя пользователя не указано ••••••••</translation>
 <translation id="775755486779745798">Автозаполнить поле месяцем окончания срока действия: <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@
 <translation id="7975036700432177008">Запустить</translation>
 <translation id="797588153137233716">Меню → История → Удалить данные о работе в браузере</translation>
 <translation id="7977451675950311423">Предупреждает, если вы используете пароль, скомпрометированный в результате утечки данных.</translation>
-<translation id="7978018860671536736">3. Нажмите "Автозаполнение пароля".</translation>
 <translation id="797824194429476746">Вкладки на устройстве останутся открытыми, но группа будет навсегда удалена.</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7987685713885608670">В целях повышения безопасности шифруйте пароли на устройстве, прежде чем они будут сохраняться в Google Менеджере паролей.</translation>

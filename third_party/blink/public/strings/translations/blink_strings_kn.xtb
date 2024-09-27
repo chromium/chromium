@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="4718048029184481307">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="4792862212177489858">ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4812940957355064477">ದಯವಿಟ್ಟು ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="49269513399674318">ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">ಮೌಲ್ಯವು <ph name="MINIMUM" /> ಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಾಗಿರಬೇಕು ಅಥವಾ ಸಮನಾಗಿರಬೇಕು.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವನ್ನು ನಮೂದಿಸಿ. '<ph name="INVALIDADDRESS" />' ಅಪೂರ್ಣವಾಗಿದೆ.</translation>
 <translation id="5334352251556557839">ಮೀಡಿಯಾ ಪ್ಲೇ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="537648784377940524">ಕನಿಷ್ಠ ದಿನಾಂಕವು (<ph name="MIN_DATE_OR_TIME" />) ಗರಿಷ್ಠ ದಿನಾಂಕ (<ph name="MAX_DATE_OR_TIME" />) ಕ್ಕಿಂತ ಮೊದಲು ಬರಬೇಕು.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ಪ್ಲಗ್-ಇನ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಥವಾ ಇದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳಿಗೆ ಉದ್ದಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ 1 ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
-<translation id="7080893216867146095">ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="709897737746224366">ದಯವಿಟ್ಟು ವಿನಂತಿಸಿದ ಸ್ವರೂಪವನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="7134810312945846184">ಮೈಕ್ರೊಫೋನ್ ಮತ್ತು ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="7263440858009898357">ಪಟ್ಟಿಯಲ್ಲಿನ ಐಟಂ ಅನ್ನು ದಯವಿಟ್ಟು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">ಮೌಲ್ಯವು, <ph name="MINIMUM_TIME" /> ಮತ್ತು <ph name="MAXIMUM_TIME" /> ನಡುವೆ ಇರಬೇಕು.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳು</translation>
 <translation id="8451268428117625855">ದಯವಿಟ್ಟು ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="8533587060884335451">ನಿಖರ ಸ್ಥಾನ ಬಳಸಿ</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ಲೈನ್ ವ್ರ್ಯಾಪ್</translation>
 <translation id="8750798805984357768">ದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಆರಿಸಿ.</translation>

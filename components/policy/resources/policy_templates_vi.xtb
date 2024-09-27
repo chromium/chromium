@@ -6755,27 +6755,6 @@ chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="6102449843040973938">Cho phép <ph name="BOREALIS_NAME" /> chạy trên một thiết bị</translation>
 <translation id="610892566190435199">Bật tính năng báo cáo trạng thái nguồn của thiết bị</translation>
 <translation id="6111936128861357925">Cho phép trò chơi trứng khủng long Phục sinh</translation>
-<translation id="6112524153927257380">Nếu bạn đặt chính sách này, người dùng sẽ không thể bỏ qua các quyết định về bảo mật khi tải xuống.
-
-      Có nhiều loại cảnh báo khi tải xuống trong Chrome, thường được chia thành các danh mục sau (tìm hiểu thêm về kết quả Duyệt web an toàn tại https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Độc hại, theo trạng thái gắn cờ trên máy chủ Duyệt web an toàn
-      * Không phổ biến hoặc không mong muốn, theo trạng thái gắn cờ trên máy chủ Duyệt web an toàn
-      * Một loại tệp nguy hiểm (ví dụ: tất cả các tệp SWF tải xuống và nhiều tệp EXE tải xuống)
-
-      Nếu bạn đặt chính sách này, nhiều nhóm nhỏ của các danh mục nêu trên sẽ bị chặn, tuỳ vào giá trị của chính sách:
-
-      0: Không có quy định hạn chế đặc biệt. Mặc định.
-
-      1: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn tất cả các loại tệp nguy hiểm. Chỉ khuyên dùng cho các đơn vị tổ chức/trình duyệt/người dùng có sai số Cảnh báo giả ở mức cao.
-
-      2: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn các tệp không phổ biến hoặc không mong muốn bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn tất cả các loại tệp nguy hiểm. Chỉ khuyên dùng cho các đơn vị tổ chức/trình duyệt/người dùng có sai số Cảnh báo giả ở mức cao.
-
-      3: Chặn tải tất cả các tệp xuống. Không khuyên dùng trừ các trường hợp sử dụng đặc biệt.
-
-      4: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ, không chặn các loại tệp nguy hiểm. Khuyên dùng.
-
-      Lưu ý: Những quy định hạn chế này áp dụng cho các tệp đã tải xuống được kích hoạt từ nội dung trang web, cũng như tuỳ chọn trình đơn "Đường liên kết tải xuống...". Những quy định hạn chế này không áp dụng cho việc tải trang đang hiển thị xuống hay việc lưu ở dạng tệp PDF từ các tuỳ chọn in. Đọc thêm về tính năng Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Khôi phục hành vi được phép.</translation>
 <translation id="6119207979839638596">Chính sách này đã bị xoá khỏi M75 sau khi chính sách phiên bản TLS (Bảo mật tầng truyền tải) tối đa bị xoá khỏi <ph name="PRODUCT_NAME" />.
 
@@ -10510,6 +10489,27 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
       Các thiết bị mới có múi giờ mặc định là Hoa Kỳ/Thái Bình Dương. Định dạng của giá trị sẽ dựa trên tên của múi giờ trong Cơ sở dữ liệu múi giờ IANA (https://en.wikipedia.org/wiki/Tz_database). Việc nhập giá trị không hợp lệ sẽ kích hoạt chính sách sử dụng giờ GMT.
 
       Nếu bạn không đặt chính sách này hoặc nếu bạn nhập một chuỗi trống, thì thiết bị sẽ sử dụng múi giờ hiện đang hoạt động. Tuy nhiên, người dùng có thể thay đổi múi giờ này.</translation>
+<translation id="8875202330803089599">Nếu bạn đặt chính sách này thì người dùng sẽ không thể bỏ qua các quyết định về bảo mật khi tải xuống.
+
+      Có nhiều loại cảnh báo khi tải xuống trong Chrome, thường được chia thành các danh mục sau (tìm hiểu thêm về kết quả Duyệt web an toàn tại https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Độc hại, theo trạng thái gắn cờ trên máy chủ Duyệt web an toàn
+      * Không phổ biến hoặc không mong muốn, theo trạng thái gắn cờ trên máy chủ Duyệt web an toàn
+      * Một loại tệp nguy hiểm (ví dụ: tất cả các tệp SWF tải xuống và nhiều tệp EXE tải xuống)
+
+      Nếu bạn đặt chính sách này, nhiều nhóm nhỏ của các danh mục nêu trên sẽ bị chặn, tuỳ vào giá trị của chính sách:
+
+      0: Không có quy định hạn chế đặc biệt. Mặc định.
+
+      1: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn tất cả các loại tệp nguy hiểm. Chỉ khuyên dùng cho các đơn vị tổ chức/trình duyệt/người dùng có sai số Dương tính giả ở mức cao.
+
+      2: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn các tệp không phổ biến hoặc không mong muốn bị máy chủ Duyệt web an toàn gắn cờ VÀ Chặn tất cả các loại tệp nguy hiểm. Chỉ khuyên dùng cho các đơn vị tổ chức/trình duyệt/người dùng có sai số Dương tính giả ở mức cao.
+
+      3: Chặn tất cả các tệp đã tải xuống. Không khuyên dùng trừ các trường hợp sử dụng đặc biệt.
+
+      4: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ, không chặn các loại tệp nguy hiểm. Khuyên dùng.
+
+      Lưu ý: Những hạn chế này áp dụng cho các tệp đã tải xuống được kích hoạt từ nội dung trang web, cũng như tuỳ chọn trình đơn Đường liên kết để tải xuống. Những hạn chế này không áp dụng cho việc tải xuống trang đang hiển thị, cũng như không áp dụng cho việc lưu ở dạng tệp PDF từ các tuỳ chọn in. Đọc thêm về tính năng Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Cho phép một số dịch vụ trên <ph name="PRODUCT_OS_FLEX_NAME" /> gửi thêm dữ liệu phần cứng.
 
 Dữ liệu phần cứng này được dùng để cải tiến tổng thể <ph name="PRODUCT_OS_FLEX_NAME" />.

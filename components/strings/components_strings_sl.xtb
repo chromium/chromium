@@ -1325,7 +1325,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="342781501876943858">Chromium priporoča, da ponastavite geslo, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="3428151540071562330">Eden ali več URI-jev strežniških predlog pravilnika DnsOverHttpsTemplates je neveljaven in ne bo uporabljen.</translation>
 <translation id="3428789896412418755">Združena zgodovina</translation>
-<translation id="3430206873883193118">Napadalci vas lahko na spletnem mestu, ki ga poskušate obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so geslo, telefonska številka ali številka kreditne kartice. Chrome močno priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3433111389595862568">Programska oprema za sodelovanje in konference</translation>
 <translation id="3433144818443565002">Glasovni klepet in videoklepet</translation>
@@ -1343,7 +1342,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3447661539832366887">Lastnik te naprave je izklopil igro z dinozavri</translation>
 <translation id="3447884698081792621">Prikaz potrdila (izdal: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Lahko zahteva nadzor in vnovično programiranje naprav MIDI</translation>
-<translation id="3451429106322189478">Dovoljeno: <ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">Interval prejemanja:</translation>
 <translation id="3453962258458347894">Število vnovičnih poskusov</translation>
 <translation id="3457781733462096492">Rap in hip-hop</translation>
@@ -2570,7 +2568,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="569000877158168851">Vrednost pravilnika DnsOverHttpsTemplates ni ustrezna in ne bo uporabljena, razen če je pravilnik DnsOverHttpsMode nastavljen na nastavitev <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ali <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Shranjevanje kartice je odprto pri polni višini.</translation>
-<translation id="5692655638459249302">Napadalci lahko na spletnem mestu, ki ga poskušate obiskati, namestijo škodljivo programsko opremo, ki ukrade ali izbriše stvari, kot so geslo, fotografije, sporočila ali številka kreditne kartice. Chrome močno priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Ali želite za potrditev in dokončanje nakupa uporabiti Windows Hello?</translation>
 <translation id="5699628521141772782">Mlečni izdelki in jajca</translation>
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
@@ -2718,7 +2715,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5995727681868049093">Upravljanje podatkov, zasebnosti in varnosti v računu Google</translation>
 <translation id="5996255674476750320">Predstavitve vozil</translation>
 <translation id="5997247540087773573">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Google Upravitelj gesel priporoča, da ga spremenite zdaj in preverite shranjena gesla.</translation>
-<translation id="5999271311987646952">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ga poskušate obiskati, <ph name="BEGIN_LINK" />nedavno našlo zlonamerno programsko opremo<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Hard rock in progresivni rock</translation>
 <translation id="6000758707621254961">Rezultati za »<ph name="SEARCH_TEXT" />« (<ph name="RESULT_COUNT" />)</translation>
 <translation id="6001839398155993679">Pa začnimo</translation>
@@ -2883,7 +2879,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6284449872909111707">Pošiljanje sporočil SMS in neposredno sporočanje</translation>
 <translation id="6284517535531159884">Vrsta semen podrazličic</translation>
 <translation id="6287197303017372967">Uporabite navigacijo in pridobite podrobna navodila za pot do cilja.</translation>
-<translation id="6288521565586608304">Napadalci vas lahko na spletnem mestu, ki ga poskušate obiskati, zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase. Chrome močno priporoča, da se vrnete na varno, da se izognete škodi. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Popust je bil najden</translation>
 <translation id="6289939620939689042">Barva strani</translation>
 <translation id="6292819926564202163">Vaš iskalnik v Chromu</translation>
@@ -3077,7 +3072,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Računalniški tečaji</translation>
 <translation id="6633476656216409494">Programska oprema za podjetja in storilnost</translation>
-<translation id="6638353438328951386">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ga poskušate obiskati, nedavno <ph name="BEGIN_LINK" />odkrilo škodljivo programsko opremo<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645291930348198241">Dostop do piškotkov in podatkov spletnih mest.</translation>
 <translation id="6645478838938543427">Opozorila o znižanju cen bodo poslana na <ph name="EMAIL_ADDRESS" />.</translation>
@@ -3291,7 +3285,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="701757816833614688">Izobraževanje, povezano z vizualno umetnostjo in oblikovanjem</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
-<translation id="7024932305105294144">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ga poskušate obiskati, <ph name="BEGIN_LINK" />nedavno našlo lažno predstavljanje<ph name="END_LINK" />. Spletna mesta z lažnim predstavljanjem se pretvarjajo, da so druga spletna mesta, in vas tako zavedejo.<ph name="NEW_LINE" />Tudi spletna mesta, ki so običajno varna, včasih ogrozijo napadalci. <ph name="BEGIN_ERROR_LINK" />Sporočite nam<ph name="END_ERROR_LINK" />, če menite, da je prišlo do napake in da to spletno mesto ne predstavlja nevarnosti.</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7030164307377592766">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="7031646650991750659">Katere aplikacije iz Googla Play ste namestili</translation>
@@ -3369,7 +3362,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7168625890036931112">»<ph name="DATA_CONTROLS_RESTRICTION" />« ni podprta omejitev na tej platformi</translation>
 <translation id="717330890047184534">ID za Gaio:</translation>
 <translation id="7173338713290252554">Zgodovina cen v spletu</translation>
-<translation id="7173478186876671324">Skrbnik je blokiral dovoljenje »<ph name="PERMISSION" />« za to spletno mesto</translation>
 <translation id="7174545416324379297">Združeno</translation>
 <translation id="7175097078723125014">Izbrana je bila možnost za urejanje naslova</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3403,7 +3395,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7221857374443660083">Vaša banka se želi prepričati, da ste to vi</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>
 <translation id="7227293336683593977">Zgodovina cen</translation>
-<translation id="7227747683324411744">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase.</translation>
 <translation id="7232352818707016189">Več dejanj za Primerjavo tabel</translation>
 <translation id="7233592378249864828">Tiskanje potrditvenega lista</translation>
 <translation id="7234112195906418665">Potovanja in potniški promet</translation>
@@ -3624,7 +3615,6 @@ Dodatne podrobnosti:
 <translation id="7598391785903975535">Manj kot <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Spletno mesto <ph name="HOST_NAME" /> trenutno ne more obdelati te zahteve.</translation>
 <translation id="7599089013883397081">Časovna omejitev za prenos je potekla</translation>
-<translation id="7605377493722372900">Napadalci na spletnem mestu, ki ga poskušate obiskati, lahko namestijo škodljivo programsko opremo, ki ukrade ali izbriše stvari, kot so geslo, fotografije, sporočila ali številka kreditne kartice.</translation>
 <translation id="7608583484192556132">Ali je oglas, ki je prikazan, osebno prilagojen, je lahko odvisno od več dejavnikov, vključno s to nastavitvijo, <ph name="BEGIN_LINK_1" />oglasi, ki jih predlaga spletno mesto<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitvami piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase. Preberite več o <ph name="BEGIN_LINK_3" />upravljanju zasebnosti pri oglaševanju<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vrednost je zunaj obsega <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Veljavnost do: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4077,7 +4067,6 @@ Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je tokrat dovoljen</translation>
 <translation id="8421158157346464398">Podatki o delovnem profilu (na primer uporabniško ime delovnega profila)</translation>
-<translation id="8422228580902424274">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so geslo, telefonska številka ali številka kreditne kartice.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Spremeni</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4228,7 +4217,6 @@ Dodatne podrobnosti:
 <translation id="8722929331701811374">Stationery (Letterhead)</translation>
 <translation id="8724824364712796726">Kuverta B6</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
-<translation id="8725667981218437315">Kamera in mikrofon</translation>
 <translation id="8726549941689275341">Velikost strani:</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731268612289859741">Varnostna koda</translation>
@@ -4437,7 +4425,6 @@ Dodatne podrobnosti:
 <translation id="9119042192571987207">Naloženo</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> želi preveriti, ali ste to vi</translation>
 <translation id="912327514020027767">Krila</translation>
-<translation id="912414390325846156">Prej ste izbrali, da ne želite dovoliti za to spletno mesto</translation>
 <translation id="9128870381267983090">Vzpostavi povezavo z omrežjem</translation>
 <translation id="9131119348384879525">Želite zajeti zaupno vsebino?</translation>
 <translation id="9133861214150761123">Računovodstvo in revizija</translation>

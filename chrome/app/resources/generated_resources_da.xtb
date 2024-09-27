@@ -250,6 +250,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174366174291287894">Din forbindelse er altid sikker, medmindre Chrome angiver andet.</translation>
 <translation id="1175131936083782305">Din administrator har deaktiveret denne funktion.</translation>
 <translation id="1175364870820465910">&amp;Udskriv...</translation>
+<translation id="1175572348579024023">Rul</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Har ikke tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="1177073277575830464">Den hurtige Android-konfiguration er gennemført. Fortsæt konfigurationen på din <ph name="DEVICE_TYPE" />.</translation>
@@ -1439,6 +1440,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1997616988432401742">Dine certifikater</translation>
 <translation id="1998715278591719161">Har tilladelse til at registrere dine hænder</translation>
 <translation id="1999115740519098545">Ved opstart</translation>
+<translation id="1999763610967697511">Træk og slip</translation>
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Eksperimentel AI</translation>
 <translation id="2003130567827682533">Hvis du vil aktivere data fra "<ph name="NAME" />", skal du først oprette forbindelse til et Wi-Fi-netværk</translation>
@@ -4177,6 +4179,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3948116654032448504">&amp;Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Denne fane afspiller lyd</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i følgende mapper</translation>
+<translation id="3948985214866944547">De fleste personer blokerer for deling af præcis lokation for dette website</translation>
 <translation id="394984172568887996">Importeret fra IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> for at gøre det mere sikkert at downloade filer</translation>
 <translation id="3950820424414687140">Log ind</translation>
@@ -5388,6 +5391,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4853020600495124913">Åbn i &amp;nyt vindue</translation>
 <translation id="4854317507773910281">Vælg en forældrekonto, der skal godkende</translation>
 <translation id="485480310608090163">Flere indstillinger og tilladelser</translation>
+<translation id="485806788160414322">Afspil eller sæt medie på pause</translation>
 <translation id="4858913220355269194">Laudrup</translation>
 <translation id="486213875233855629">Slået fra af din administrator</translation>
 <translation id="4862642413395066333">Signering af OCSP-svar</translation>
@@ -9042,6 +9046,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7566118625369982896">Administrer applinks til Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Opret tastekombination</translation>
+<translation id="7568759527730933493">Brug en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS). En administreret tjenesteudbyder på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> anvendes. Sikre forbindelser bruges ikke til visse domæner, der er konfigureret af din administrator.</translation>
 <translation id="756876171895853918">Tilpas avatar</translation>
 <translation id="7568790562536448087">Opdatering</translation>
 <translation id="7569983096843329377">Sort</translation>
@@ -9204,6 +9209,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7676867886086876795">Send din stemme til Google, så du kan diktere i ethvert tekstfelt.</translation>
 <translation id="7678588695732963732">Vil du nulstille alle USB-enhedstilladelser?</translation>
 <translation id="7679171213002716280">Der er <ph name="PRINTER_COUNT" /> administrerede printere.</translation>
+<translation id="7679895819123160382">Gør det sværere for personer med adgang til din internettrafik at se, hvilke websites du besøger. <ph name="PRODUCT_NAME" /> anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS). Sikre forbindelser bruges ikke til visse domæner, der er konfigureret af din administrator.</translation>
 <translation id="7680416688940118410">Kalibrering af touchskærm</translation>
 <translation id="7681095912841365527">Websitet kan anvende Bluetooth</translation>
 <translation id="7681597159868843240">Websites bruger normalt din enheds bevægelsessensorer til funktioner som f.eks. virtual reality eller registrering af motion</translation>
@@ -9601,6 +9607,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7955105108888461311">Spørg ansigt til ansigt</translation>
 <translation id="7955177647836564772">Hvis Smart Lock er aktiveret, og din telefon er låst op, behøver du ikke at angive en adgangskode eller pinkode</translation>
 <translation id="7956373551960864128">Dine gemte printere</translation>
+<translation id="7956918070009672177">Der er ingen <ph name="LANGUAGE" /> stemmer på din enhed. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="7957074856830851026">Se enhedsoplysninger som f.eks. serienummer eller aktiv-id</translation>
 <translation id="7958157896921135832">Forøg skriftstørrelse</translation>
 <translation id="7958828865373988933">Hvis du vil oprette en adgangsnøgle til <ph name="APP_NAME" /> på en USB-sikkerhedsnøgle, skal du indsætte og trykke på den nu</translation>

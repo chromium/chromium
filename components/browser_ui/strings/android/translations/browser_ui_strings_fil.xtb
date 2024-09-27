@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Payagan ang third-party na pag-sign in para sa partikular na site.</translation>
 <translation id="310297983047869047">Nakaraang slide</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
+<translation id="310979712355504754">Tanggalin lahat</translation>
 <translation id="3114012059975132928">Player ng video</translation>
 <translation id="3115898365077584848">Ipakita ang Impormasyon</translation>
 <translation id="3123473560110926937">Naka-block sa ilang site</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ang napili</translation>
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga virtual reality device. Kapag naka-off, hindi makakagamit ang mga site ng mga virtual reality device.</translation>
-<translation id="7284451015630589124">Na-block mo ang mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Tingnan ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Kadalasan mong bina-block ang mga notification. Para payagan, i-tap ang Mga Detalye.</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7368695150573390554">Made-delete ang anumang offline data</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
-<translation id="7474522811371247902">Nililimitahan ng Chrome ang karamihan ng mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo.\n\nBisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kapag naka-on, makakapagpakita ang mga site ng mga prompt sa pag-sign in. Kapag naka-off, hindi makakapagpakita ang mga site ng mga prompt sa pag-sign in.</translation>
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804248752222191302">Ginagamit ng isang site ang iyong camera</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
-<translation id="7822573154188733812">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Nagpe-play ng media</translation>
 <translation id="783819812427904514">I-unmute ang video</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
-<translation id="8649036394979866943">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Tingnan ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kapag naka-on, puwedeng magtanong ang mga site na i-track ang iyong mga kamay. Kapag naka-off, hindi mata-track ng mga site ang iyong mga kamay.</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8681886425883659911">Bina-block ang mga ad sa mga site na kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>

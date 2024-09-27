@@ -3916,6 +3916,11 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3989829840000169163">Bloquer les anciens points d'extension du navigateur</translation>
 <translation id="3990391739475801018">Le mode Économiseur de batterie sera désactivé.</translation>
 <translation id="3990834929384096140">Ne pas appliquer l'annulation de l'écho audio du système</translation>
+<translation id="3992082233013655355">Cette règle permet d'établir la liste des applis Web isolées (AWI) qui s'installent de manière autonome.
+      Les AWI sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'AWI.
+      Pour l'instant, cette règle ne fonctionne que pour les sessions Invité gérées.
+
+      Chaque élément de la règle correspond à un objet avec deux champs obligatoires : l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'appli Web isolée. Chaque élément peut également comporter un champ facultatif avec le nom du canal de version de l'AWI. Si "update_channel" n'est pas défini, la valeur "default" est utilisée.</translation>
 <translation id="3994043824457743421">Afficher l'annonce d'espace intermédiaire sur la page "Nouvel onglet"</translation>
 <translation id="399433537808390819">Ne pas rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="3995880046827722248">Manifest V2 est désactivé</translation>
@@ -6633,27 +6638,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6102449843040973938">Ne pas empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="610892566190435199">Activer les rapports sur l'état de l'alimentation de l'appareil</translation>
 <translation id="6111936128861357925">Autoriser le jeu Easter Egg du dinosaure</translation>
-<translation id="6112524153927257380">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
-
-      Il y a de nombreux types d'avertissements concernant les téléchargements dans Chrome. Les catégories sont les suivantes (consultez la page https://support.google.com/chrome/?p=ib_download_blocked pour en savoir plus sur les alertes de la navigation sécurisée) :
-
-      * Téléchargements malveillants, tels qu'identifiés par le serveur de navigation sécurisée
-      * Téléchargements peu courants ou indésirables, tels qu'identifiés par le serveur de navigation sécurisée
-      * Types de fichiers dangereux (par exemple, tous les téléchargements SWF et la plupart des téléchargements EXE)
-
-      Les catégories bloquées diffèrent selon la valeur définie pour la règle :
-
-      0 : pas de restrictions particulières. Par défaut.
-
-      1 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
-
-      2 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET des fichiers peu courants ou indésirables identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
-
-      3 : blocage de tous les téléchargements. Non recommandé, sauf pour les cas d'utilisation spéciaux.
-
-      4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
-
-      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Restaurer le comportement permissif.</translation>
 <translation id="6119207979839638596">Cette règle a été supprimée dans la version M75, après que la règle concernant la version maximale de TLS a été supprimée de <ph name="PRODUCT_NAME" />.
 
@@ -10316,6 +10300,27 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Il est défini sur "États-Unis/Pacifique" pour tous les nouveaux appareils. Le format utilisé est celui de la base de données "IANA Time Zone Database" (pour en savoir plus, consultez la page https://fr.wikipedia.org/wiki/Tz_database). Si la valeur saisie n'est pas valide, le fuseau horaire GMT est utilisé par défaut.
 
       Si cette règle n'est pas configurée ou qu'aucune valeur n'est spécifiée, l'appareil utilise le fuseau horaire actuellement défini (les utilisateurs peuvent le modifier).</translation>
+<translation id="8875202330803089599">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
+
+      Il y a de nombreux types d'avertissements concernant les téléchargements dans Chrome. Les catégories sont les suivantes (consultez https://support.google.com/chrome/?p=ib_download_blocked pour en savoir plus sur les alertes de la navigation sécurisée) :
+
+      * Téléchargements malveillants, tels qu'identifiés par le serveur de navigation sécurisée
+      * Téléchargements peu courants ou indésirables, tels qu'identifiés par le serveur de navigation sécurisée
+      * Types de fichiers dangereux (par exemple, tous les téléchargements SWF et la plupart des téléchargements EXE)
+
+      Les catégories bloquées diffèrent selon la valeur définie pour la règle :
+
+      0 : pas de restrictions particulières. Par défaut.
+
+      1 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
+
+      2 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET des fichiers peu courants ou indésirables identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
+
+      3 : blocage de tous les téléchargements. Non recommandé, sauf pour les cas d'utilisation spéciaux.
+
+      4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
+
+      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez https://developers.google.com/safe-browsing.</translation>
 <translation id="8880146422959594776">Autorise certains services sur <ph name="PRODUCT_OS_FLEX_NAME" /> à envoyer des données matérielles supplémentaires.
 
 Ces données matérielles sont utilisées pour l'amélioration générale de <ph name="PRODUCT_OS_FLEX_NAME" />.
@@ -10333,6 +10338,7 @@ Si cette règle est désactivée, seules les données matérielles standards ser
 <translation id="8890438048579188548">Masquer les avertissements liés à l'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Désactiver les rapports sur les informations système de l'appareil</translation>
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">Nom du canal de mise à jour/publication de l'AWI. Cette valeur peut être n'importe quelle chaîne. Aucune restriction n'est imposée. Si aucune valeur n'est spécifiée, le canal "default" sera utilisé.</translation>
 <translation id="8892783613915541293">Délais et actions à effectuer en cas d'inactivité de l'utilisateur quand l'appareil fonctionne sur secteur.</translation>
 <translation id="8897796778265450949">Limiter la durée pendant laquelle un utilisateur authentifié via GAIA sans SAML peut se connecter hors connexion</translation>
 <translation id="889814528399907891">Autoriser les utilisateurs à activer <ph name="LACROS_NAME" /> et à en faire le navigateur principal</translation>

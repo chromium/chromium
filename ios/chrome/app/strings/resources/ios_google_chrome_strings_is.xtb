@@ -72,6 +72,7 @@ Hafðu í huga:
 <translation id="2689064829982324496">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="2703746758996815929">Til að fá gagnleg ráð um Chrome skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
+<translation id="2728851697704606655">Þýða með Google-linsu</translation>
 <translation id="2736805085127235148">Slökkt er á Chrome-tilkynningum í stillingum tækisins.</translation>
 <translation id="2754428955276778271">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
 
@@ -249,6 +250,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7581063337314642333">Opna flipayfirlit Chrome</translation>
 <translation id="7599894504325210080">Stækkað yfirlit yfir sjálfvirka útfyllingu í Chrome</translation>
 <translation id="7642373780953416937">Fáðu viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chrome greinir sjálfkrafa fyrir þig.</translation>
+<translation id="7660356333829433649">Komdu aftur hingað fyrir nytsamlegri ábendingar um að fá sem mest út úr Chrome.</translation>
 <translation id="7662994914830945754">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>
@@ -259,6 +261,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="778855399387580014">Hefja leit í nýjum flipa í Chrome.</translation>
 <translation id="7792140019572081272">Chrome notar andlitskennsl til að halda viðkvæmu upplýsingunum þínum öruggum.</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
+<translation id="7861998090118873450">Vista aðgangsorðin þín á Chrome</translation>
 <translation id="7897703007638178753">Sjá nýlega flipa Chrome</translation>
 <translation id="7948283758957877064">Nýjungar í Chrome</translation>
 <translation id="8000174216052461231">Ábending frá Chrome: Fáðu hámarksöryggi Chrome</translation>
@@ -294,6 +297,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8558480467877843976">Núna geturðu notað Chrome hvenær sem þú skoðar eða ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chrome“.</translation>
+<translation id="8673726683583791503">Versla með Google-linsu</translation>
 <translation id="8727043961453758442">Fáðu sem mest út úr Chrome</translation>
 <translation id="8765470054473112089">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chrome það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>

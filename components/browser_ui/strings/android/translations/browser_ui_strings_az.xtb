@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
 <translation id="310297983047869047">Əvvəlki slayd</translation>
 <translation id="3109724472072898302">Yığcamlaşdı</translation>
+<translation id="310979712355504754">Hamısını silin</translation>
 <translation id="3114012059975132928">Video pleyer</translation>
 <translation id="3115898365077584848">Məlumatı göstərin</translation>
 <translation id="3123473560110926937">Bəzi saytlarda bloklandı</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> seçildi</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> və <ph name="PERMISSION_2" /> üçün icazə verilib</translation>
 <translation id="7276071417425470385">Aktiv ediləndə saytlar virtual reallıq cihazlarından istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar virtual reallıq cihazlarından istifadə edə bilməz.</translation>
-<translation id="7284451015630589124">Saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini blokladınız. Ayarlara daxil olaraq <ph name="BEGIN_LINK" />izləmədən qorumanı idarə edin<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Adətən bildirişləri bloklayırsınız. İcazə vermək üçün Detallar seçiminə toxunun.</translation>
 <translation id="7366415735885268578">Sayt əlavə edin</translation>
 <translation id="7368695150573390554">Oflayn data silinəcək</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7423538860840206698">Buferdə oxu girişi blok edildi</translation>
 <translation id="7425915948813553151">Saytlar üçün tünd tema</translation>
-<translation id="7474522811371247902">Chrome əksər saytların üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Lakin bu sayt kukilər vasitəsilə əsas xidmətləri təmin etdiyi üçün onlara icazə verir.\n\n<ph name="BEGIN_LINK" />İzlənmədən qorunmanı idarə etmək<ph name="END_LINK" /> üçün Ayarlara keçin.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Aktiv ediləndə saytlar giriş sorğularını göstərə bilər. Deaktiv ediləndə saytlar giriş sorğularını göstərə bilməz.</translation>
 <translation id="7554752735887601236">Sayt mikrofonunuzdan istifadə edir</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7804248752222191302">Sayt kameranızdan istifadə edir</translation>
 <translation id="7807060072011926525">Google tərəfindən təmin edilib</translation>
-<translation id="7822573154188733812">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır. Ayarlara daxil olaraq <ph name="BEGIN_LINK" />izləmədən qorumanı idarə edin<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Medianın oxudulması</translation>
 <translation id="783819812427904514">Videonu səssiz rejimdən çıxarın</translation>
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8617611086246832542">Aktiv ediləndə veb-saytların masaüstü görünüşü göstərilir. Deaktiv ediləndə veb saytların mobil görünüşü göstərilir.</translation>
-<translation id="8649036394979866943">Chrome əksər saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Ayarlara daxil olaraq <ph name="BEGIN_LINK" />izləmədən qorumanı idarə edin<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Yanılı olduqda saytlar əllərinizi izləmək istəyə bilər. Sönülü olduqda saytlar əllərinizi izləyə bilməz.</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
 <translation id="8681886425883659911">İntruziv və ya aldadıcı reklamlar göstərdiyi məlum olan saytlarda reklamlar bloklanır</translation>

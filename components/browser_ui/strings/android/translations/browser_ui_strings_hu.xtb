@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="310297983047869047">Előző dia</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
+<translation id="310979712355504754">Az összes törlése</translation>
 <translation id="3114012059975132928">Videólejátszó</translation>
 <translation id="3115898365077584848">Információk megjelenítése</translation>
 <translation id="3123473560110926937">Letiltva egyes webhelyeken</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> engedélyezve</translation>
 <translation id="7276071417425470385">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a virtuálisvalóság-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak virtuálisvalóság-eszközöket.</translation>
-<translation id="7284451015630589124">Ön letiltotta a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Ön általában letiltja az értesítéseket. Az engedélyezéshez koppintson a Részletek elemre.</translation>
 <translation id="7366415735885268578">Webhely hozzáadása</translation>
 <translation id="7368695150573390554">Minden offline adat törlődik</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
 <translation id="7425915948813553151">Sötét téma a webhelyeknél</translation>
-<translation id="7474522811371247902">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak. A harmadik féltől származó cookie-k azonban engedélyezettek ezen a webhelyen, mivel az alapvető szolgáltatások nyújtásához szüksége van rájuk.\n\nA beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Ha be van kapcsolva, a webhelyek megjeleníthetnek bejelentkezési értesítéseket. Ha ki van kapcsolva, a webhelyek nem jeleníthetnek meg bejelentkezési értesítéseket.</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804248752222191302">Egy webhely használja az Ön kameráját</translation>
 <translation id="7807060072011926525">A Google biztosítja</translation>
-<translation id="7822573154188733812">A Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>
 <translation id="783819812427904514">Videó némításának feloldása</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Engedélyezve (ajánlott)</translation>
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
 <translation id="8617611086246832542">Ha be van kapcsolva, a webhelyek asztali nézete jelenik meg. Ha ki van kapcsolva, a webhelyek mobilnézete látható.</translation>
-<translation id="8649036394979866943">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Ha be van kapcsolva, a webhelyek kérhetik a kézmozgása nyomon követését. Ha ki van kapcsolva, a webhelyek nem követhetik a kézmozgását.</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>

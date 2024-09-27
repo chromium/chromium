@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
-<translation id="4792862212177489858">Абагуліць геаданыя</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
 <translation id="49269513399674318">Выкарыстоўваць мікрафон</translation>
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Значэнне павінна быць большым або роўным <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5307600278924710095">Адрас "<ph name="INVALIDADDRESS" />" – няпоўны. Увядзіце частку перад сімвалам "<ph name="ATSIGN" />".</translation>
 <translation id="5334352251556557839">Не ўдалося прайграць мультымедыйны файл.</translation>
 <translation id="537648784377940524">Мінімальная дата (<ph name="MIN_DATE_OR_TIME" />) павінна быць ранейшая за максімальную (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Не ўдалося загрузіць убудову.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
-<translation id="7080893216867146095">Абагульванне геаданых дазволена</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
 <translation id="7134810312945846184">Выкарыстоўваць мікрафон і камеру</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Значэнне павінна быць у дыяпазоне паміж <ph name="MINIMUM_TIME" /> і <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">Файлаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Выберыце файл.</translation>
+<translation id="8533587060884335451">Улічваць маё месцазнаходжанне</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пераносіць радкі</translation>
 <translation id="8750798805984357768">Выберыце адзін з варыянтаў.</translation>

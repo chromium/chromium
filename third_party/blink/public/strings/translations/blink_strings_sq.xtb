@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kamera lejohet</translation>
 <translation id="4664250907885839816">Një pjesë që ndjek "<ph name="ATSIGN" />" nuk duhet të përmbajë simbolin "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Po luhet në "Figura brenda figurës"</translation>
-<translation id="4792862212177489858">Ndaj vendndodhjen</translation>
 <translation id="4812940957355064477">Fut një numër.</translation>
 <translation id="49269513399674318">Përdor mikrofonin</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> të përzgjedhur</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Vlera duhet të jetë më e madhe ose e barabartë me <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Vendndodhja lejohet</translation>
 <translation id="5307600278924710095">Fut një pjesë të ndjekur nga "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" është e paplotë.</translation>
 <translation id="5334352251556557839">Nuk mund të luajë media.</translation>
 <translation id="537648784377940524">Data minimale (<ph name="MIN_DATE_OR_TIME" />) duhet të jetë përpara datës maksimale (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Nuk mund ta ngarkonte përbërësin shtesë.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Zgjate këtë tekst në <ph name="MIN_CHARACTERS" /> karaktere ose më shumë (aktualisht po përdor 1 karakter).</translation>
-<translation id="7080893216867146095">Ndarja e vendndodhjes lejohet</translation>
 <translation id="709897737746224366">Përputhe me formatin e kërkuar.</translation>
 <translation id="7134810312945846184">Përdor mikrofonin dhe kamerën</translation>
 <translation id="7263440858009898357">Përzgjidh një artikull në listë.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Vlera duhet të jetë nga <ph name="MINIMUM_TIME" /> deri në <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> skedarë</translation>
 <translation id="8451268428117625855">Zgjidh një skedar.</translation>
+<translation id="8533587060884335451">Përdor vendndodhjen e saktë</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Thyerja e rreshtit</translation>
 <translation id="8750798805984357768">Përzgjidh një nga këto opsione.</translation>

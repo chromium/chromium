@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">‏جب تک کہ Chrome آپ کو بصورت دیگر کچھ نہیں بتاتا ہے تب تک آپ کا کنکشن ہمیشہ محفوظ رہتا ہے</translation>
 <translation id="1175131936083782305">آپ کے منتظم نے اس خصوصیت کو غیر فعال کر دیا ہے۔</translation>
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
+<translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1175914831232945926">ہندسے</translation>
 <translation id="1176471985365269981">آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کی اجازت نہیں ہے</translation>
 <translation id="1177073277575830464">‏Android کا فوری سیٹ اپ ہو گیا ہے۔ اپنے <ph name="DEVICE_TYPE" /> پر سیٹ اپ جاری رکھیں۔</translation>
@@ -1428,6 +1429,7 @@
 <translation id="1997616988432401742">آپ کے سرٹیفیکیٹس</translation>
 <translation id="1998715278591719161">آپ کے ہاتھوں کو ٹریک کرنے کی اجازت ہے</translation>
 <translation id="1999115740519098545">شروعات میں</translation>
+<translation id="1999763610967697511">کھینچ کر ڈالیں</translation>
 <translation id="2002109485265116295">ریئل ٹائم</translation>
 <translation id="2002160221914907025">‏تجرباتی AI</translation>
 <translation id="2003130567827682533">‏'<ph name="NAME" />' کے ڈیٹا کو فعال کرنے کیلئے، پہلے Wi-Fi نیٹ ورک سے منسلک ہوں</translation>
@@ -2924,6 +2926,7 @@
 <translation id="304644035656848980">آپ کے مائیکروفون کا پیش منظر</translation>
 <translation id="3046910703532196514">ویب صفحہ، مکمل</translation>
 <translation id="304747341537320566">اسپیچ انجنز</translation>
+<translation id="3047678109605649715">آپ کے آلے پر کوئی <ph name="LANGUAGE" /> کی آوازیں نہیں ہیں۔ اپنے آلے پر اسپیس کو صاف کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3048336643003835855">‏<ph name="VENDOR_ID" /> وینڈر کی جانب سے HID آلات</translation>
 <translation id="3048589239114571785">‏چلائیں (k)</translation>
 <translation id="3048742847101793553">آپ کی تنظیم نے اس فائل کو مسدود کر دیا کیونکہ اسکین ناکام ہو گیا۔</translation>
@@ -4163,6 +4166,7 @@
 <translation id="3948116654032448504">تصویر کیلئے <ph name="SEARCH_ENGINE" /> میں &amp;تلاش کریں</translation>
 <translation id="3948334586359655083">یہ ٹیب آڈیو چلا رہا ہے</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
+<translation id="3948985214866944547">زیادہ تر لوگ اس سائٹ کے لیے قطعی مقام کے اشتراک کو مسدود کر دیتے ہیں</translation>
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
 <translation id="3949999964543783947">فائلز ڈاؤن لوڈ کرنا محفوظ تر بنانے کے لیے <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
@@ -5373,6 +5377,7 @@
 <translation id="4853020600495124913">&amp;نئی ونڈو میں کھولیں</translation>
 <translation id="4854317507773910281">منظوری کے لیے والد/والدہ کا اکاؤنٹ منتخب کریں</translation>
 <translation id="485480310608090163">مزید ترتیبات اور اجازتیں</translation>
+<translation id="485806788160414322">میڈیا چلائیں یا موقوف کریں</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">آپ کے منتظم نے خاموش کر دیا</translation>
 <translation id="4862642413395066333">‏سائننگ OCSP جوابات</translation>
@@ -9022,6 +9027,7 @@
 <translation id="7566118625369982896">‏Play ایپ لنکس کا نظم کریں</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">کلید کا جوڑا تخلیق کریں</translation>
+<translation id="7568759527730933493">‏‫DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے۔ آپ کے منتظم کے ذریعے کنفیگر کیے گئے کچھ ڈومینز کے لیے محفوظ کنکشنز استعمال نہیں کیے جاتے ہیں۔</translation>
 <translation id="756876171895853918">اوتار کو حسب ضرورت بنائیں</translation>
 <translation id="7568790562536448087">اپ ڈیٹنگ</translation>
 <translation id="7569983096843329377">سیاہ</translation>
@@ -9184,6 +9190,7 @@
 <translation id="7676867886086876795">‏کسی بھی متنی فیلڈ میں املا کی اجازت دینے کیلئے Google کو اپنی آواز بھیجیں۔</translation>
 <translation id="7678588695732963732">‏USB آلے کی تمام اجازتیں ری سیٹ کریں؟</translation>
 <translation id="7679171213002716280">نظم کردہ <ph name="PRINTER_COUNT" /> پرنٹرز ہیں۔</translation>
+<translation id="7679895819123160382">‏آپ کے انٹرنیٹ ٹریفک تک رسائی رکھنے والے افراد کے لیے یہ دیکھنا مزید مشکل بنائیں کہ آپ کون سی سائٹس ملاحظہ کرتے ہیں۔ <ph name="PRODUCT_NAME" /> ‏DNS (ڈومین ناموں کے نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے ایک محفوظ کنکشن کا استعمال کرتا ہے۔ آپ کے منتظم کے ذریعے کنفیگر کیے گئے کچھ ڈومینز کے لیے محفوظ کنکشنز استعمال نہیں کیے جاتے ہیں۔</translation>
 <translation id="7680416688940118410">ٹچ اسکرین کیلیبریشن</translation>
 <translation id="7681095912841365527">سائٹ بلوٹوتھ استعمال کر سکتی ہے</translation>
 <translation id="7681597159868843240">سائٹس عام طور پر ورچوئل رئیلٹی یا تندرستی کو ٹریک کرنے جیسی خصوصیات کے لیے آپ کے آلے کے موشن سینسرز کا استعمال کرتی ہیں</translation>
@@ -9582,6 +9589,7 @@
 <translation id="7955105108888461311">ذاتی طور پر پوچھیں</translation>
 <translation id="7955177647836564772">‏Smart Lock کے آن ہونے اور آپ کے فون کے غیر مقفل ہونے پر آپ کو پاس ورڈ یا PIN درج کرنے کی ضرورت نہیں ہے</translation>
 <translation id="7956373551960864128">آپ کے محفوظ کردہ پرنٹرز</translation>
+<translation id="7956918070009672177">آپ کے آلے پر کوئی <ph name="LANGUAGE" /> کی آوازیں نہیں ہیں۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="7957074856830851026">‏آلہ کی معلومات دیکھیں، جیسے اس کا نمبر شمار یا اثاثہ ID</translation>
 <translation id="7958157896921135832">فونٹ سائز بڑھائیں</translation>
 <translation id="7958828865373988933">‏اگر آپ USB سیکیورٹی کلید پر <ph name="APP_NAME" /> کے لیے پاس کی بنانا چاہتے ہیں تو اسے ابھی درج کریں اور ٹچ کریں</translation>

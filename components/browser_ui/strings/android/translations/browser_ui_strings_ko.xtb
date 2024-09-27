@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3109724472072898302">접힘</translation>
+<translation id="310979712355504754">모두 삭제</translation>
 <translation id="3114012059975132928">동영상 플레이어</translation>
 <translation id="3115898365077584848">정보 표시</translation>
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>
 <translation id="7276071417425470385">사용 설정하면 사이트에서 가상 현실 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 가상 현실 기기를 사용할 수 없습니다.</translation>
-<translation id="7284451015630589124">탐색 중인 사용자를 추적하려는 목적으로 사이트에서 서드 파티 쿠키를 사용하지 못하도록 차단했습니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 보호 조치를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="7302486331832100261">기본적으로 알림을 차단하는 중입니다. 허용하려면 '세부정보'를 탭하세요.</translation>
 <translation id="7366415735885268578">사이트 추가</translation>
 <translation id="7368695150573390554">오프라인 데이터가 모두 삭제됩니다.</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
 <translation id="7425915948813553151">사이트에 어두운 테마 적용</translation>
-<translation id="7474522811371247902">Chrome은 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 하지만 이 사이트에서는 서드 파티 쿠키를 사용하여 기본 서비스를 제공하기 때문에 서드 파티 쿠키가 허용됩니다.\n\n설정으로 이동하여 <ph name="BEGIN_LINK" />추적 보호 조치를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
 <translation id="7547989957535180761">사용 설정하면 사이트에서 로그인 메시지를 표시할 수 있습니다. 사용 중지하면 사이트에서 로그인 메시지를 표시할 수 없습니다.</translation>
 <translation id="7554752735887601236">사이트에서 마이크를 사용 중입니다.</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">사용 안함</translation>
 <translation id="7804248752222191302">사이트에서 카메라 사용 중</translation>
 <translation id="7807060072011926525">Google 제공</translation>
-<translation id="7822573154188733812">Chrome에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 차단합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 보호 조치를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="7835852323729233924">재생 중인 미디어</translation>
 <translation id="783819812427904514">동영상 음소거 해제</translation>
 <translation id="7846076177841592234">선택 취소</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8617611086246832542">사용 설정하면 웹사이트 데스크톱 뷰가 표시됩니다. 사용 중지하면 웹사이트 모바일 뷰가 표시됩니다.</translation>
-<translation id="8649036394979866943">Chrome은 대부분의 사이트에 대해 서드 파티 쿠키를 사용하여 탐색 중인 사용자를 추적하지 못하도록 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 방지 기능을 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="8676316391139423634">이 옵션을 사용 설정하면 사이트에서 손 추적을 요청할 수 있습니다. 사용 중지하면 사이트에서 내 손을 추적할 수 없습니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>

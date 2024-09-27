@@ -45,6 +45,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Účty Google môžete spravovať v <ph name="SETTINGS_LINK_BEGIN" />Nastaveniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Sťahuje sa…</translation>
 <translation id="167397405791113306">Údaje sú šifrované pomocou vašej prístupovej frázy. Ak chcete používať a ukladať údaje prehliadača Chromium do svojho účtu Google, zadajte ju.</translation>
+<translation id="1709772298389099340">Poskytuje vyššie oprávnenia pre <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Chromium odosiela vaše interakcie s nimi Googlu, aby pomohol tieto funkcie zlepšovať. Tieto údaje môžu čítať, spracúvať a označovať poznámkami kontrolóri.</translation>
 <translation id="1722488837206509557">Budete si môcť vybrať z dostupných zariadení a zobraziť v nich obsah.</translation>
 <translation id="17264556997921157">Môžete si prezrieť témy záujmu, pomocou ktorých vám weby zobrazujú reklamy, a odstrániť ich. Chromium odhaduje záujmy na základe nedávnej histórie prehliadania.</translation>

@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">თქვენი კავშირი ყოველთვის დაცულია, სანამ Chrome საწინააღმდეგოზე გამცნობდეთ</translation>
 <translation id="1175131936083782305">თქვენმა ადმინისტრატორმა გათიშა ეს ფუნქცია.</translation>
 <translation id="1175364870820465910">&amp;ბეჭდვა…</translation>
+<translation id="1175572348579024023">გადაადგილება</translation>
 <translation id="1175914831232945926">ციფრები</translation>
 <translation id="1176471985365269981">თქვენს მოწყობილობაზე არსებული ფაილებისა თუ საქაღალდეების რედაქტირება დაუშვებელია</translation>
 <translation id="1177073277575830464">Android-ის სწრაფი დაყენება დასრულდა. გააგრძელეთ დაყენება თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
@@ -1428,6 +1429,7 @@
 <translation id="1997616988432401742">თქვენი სერტიფიკატები</translation>
 <translation id="1998715278591719161">თქვენი ხელების მოძრაობაზე თვალის დევნება ნებადართულია</translation>
 <translation id="1999115740519098545">ჩატვირთვისას</translation>
+<translation id="1999763610967697511">ჩავლებით გადატანა</translation>
 <translation id="2002109485265116295">რეალური დროის</translation>
 <translation id="2002160221914907025">ექსპერიმენტული ხელოვნური ინტელექტი</translation>
 <translation id="2003130567827682533">„<ph name="NAME" />“-ის მონაცემთა გადაცემის გასააქტიურებლად, პირველ რიგში, დაუკავშირდით Wi-Fi ქსელს</translation>
@@ -5376,6 +5378,7 @@
 <translation id="4853020600495124913">&amp;ახალ ფანჯარაში გახსნა</translation>
 <translation id="4854317507773910281">აირჩიეთ მშობლის ანგარიში დასადასტურებლად</translation>
 <translation id="485480310608090163">სხვა პარამეტრები და ნებართვები</translation>
+<translation id="485806788160414322">მედიის დაკვრა ან დაპაუზება</translation>
 <translation id="4858913220355269194">ფრიცი</translation>
 <translation id="486213875233855629">დადუმებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>

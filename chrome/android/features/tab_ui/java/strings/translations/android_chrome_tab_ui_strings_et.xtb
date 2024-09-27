@@ -41,6 +41,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang</translation>
 <translation id="266935134738038806">Külasta saiti</translation>
+<translation id="2671423594960767771">Jaga gruppi</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati, <ph name="ANY_CHANGED" /> muudeti, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_ADDED" /> vahelehte lisati, <ph name="ANY_CHANGED" /> muudeti, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Loodud <ph name="NUM_HOURS_ONE" /> tund tagasi}other{Loodud <ph name="NUM_HOURS_MANY" /> tundi tagasi}}</translation>

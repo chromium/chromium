@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Hier kannst du Websites angeben, für die die Anmeldung über Drittanbieter erlaubt werden soll.</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3109724472072898302">Minimiert</translation>
+<translation id="310979712355504754">Alle löschen</translation>
 <translation id="3114012059975132928">Videoplayer</translation>
 <translation id="3115898365077584848">Informationen anzeigen</translation>
 <translation id="3123473560110926937">Auf einigen Websites blockiert</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
 <translation id="7276071417425470385">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Virtual-Reality-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Virtual-Reality-Geräte verwenden.</translation>
-<translation id="7284451015630589124">Du hast Websites daran gehindert, Drittanbieter-Cookies zu verwenden, mit denen deine Aktivitäten während des Surfens erfasst werden. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Normalerweise blockierst du Benachrichtigungen. Du kannst auf Details tippen, um sie zuzulassen.</translation>
 <translation id="7366415735885268578">Website hinzufügen</translation>
 <translation id="7368695150573390554">Sämtliche Offlinedaten werden gelöscht</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>
-<translation id="7474522811371247902">In Chrome ist die Verwendung von Drittanbieter-Cookies für die meisten Websites eingeschränkt. Drittanbieter-Cookies sind jedoch auf dieser Website erlaubt, weil sie für die Bereitstellung grundlegender Dienste erforderlich sind.\n\nRufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Wenn dieser Schalter aktiviert ist, können Websites Aufforderungen zur Anmeldung anzeigen. Wenn er deaktiviert ist, können Websites keine Aufforderungen zur Anmeldung anzeigen.</translation>
 <translation id="7554752735887601236">Eine Website verwendet dein Mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nein danke</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
-<translation id="7822573154188733812">Chrome verhindert, dass Websites Drittanbieter-Cookies verwenden, um deine Aktivitäten während des Surfens zu erfassen. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
 <translation id="783819812427904514">Stummschaltung des Videos aufheben</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>
 <translation id="8617611086246832542">Wenn dieser Schalter aktiviert ist, wird die Desktop-Ansicht von Websites angezeigt. Wenn er deaktiviert ist, wird die mobile Ansicht von Websites angezeigt.</translation>
-<translation id="8649036394979866943">Chrome schränkt die Verwendung von Drittanbieter-Cookies, mit denen deine Aktivitäten während des Surfens erfasst werden, für die meisten Websites ein. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Handbewegungen verfolgen dürfen. Wenn er deaktiviert ist, können Websites deine Handbewegungen nicht verfolgen.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>

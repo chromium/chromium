@@ -1322,7 +1322,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="342781501876943858">Chromium raadt je aan je wachtwoord te resetten als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="3428151540071562330">Een of meer van de servertemplate-URI's voor DnsOverHttpsTemplates zijn ongeldig en worden niet gebruikt.</translation>
 <translation id="3428789896412418755">Gegroepeerde geschiedenis</translation>
-<translation id="3430206873883193118">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoord, telefoonnummer of creditcardnummer openbaar maakt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3433111389595862568">Samenwerkings- en conferentiesoftware</translation>
 <translation id="3433144818443565002">Spraak- en videochat</translation>
@@ -1340,7 +1339,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3447661539832366887">De eigenaar van dit apparaat heeft de dinosaurusgame uitgezet.</translation>
 <translation id="3447884698081792621">Certificaat bekijken (uitgegeven door <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Kan vragen om je MIDI-apparaten te bedienen en te herprogrammeren</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> toegestaan</translation>
 <translation id="3452404311384756672">Ophaalinterval:</translation>
 <translation id="3453962258458347894">Aantal nieuwe pogingen</translation>
 <translation id="3457781733462096492">Rap en hiphop</translation>
@@ -2564,7 +2562,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5689516760719285838">Locatie</translation>
 <translation id="569000877158168851">De waarde voor DnsOverHttpsTemplates is niet relevant en wordt niet gebruikt, tenzij het beleid DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> of <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kaart opslaan is op volledige hoogte geopend.</translation>
-<translation id="5692655638459249302">Aanvallers op de site die je wilt bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoord, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Windows Hello gebruiken om je aankoop te verifiëren en af te ronden?</translation>
 <translation id="5699628521141772782">Zuivel en eieren</translation>
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
@@ -2712,7 +2709,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5995727681868049093">Je gegevens, privacy en beveiliging beheren in je Google-account</translation>
 <translation id="5996255674476750320">Autobeurzen</translation>
 <translation id="5997247540087773573">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
-<translation id="5999271311987646952">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent malware heeft gevonden<ph name="END_LINK" /> op de site die je wilt bezoeken.</translation>
 <translation id="6000528814684428358">Hardrock en progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">Aan de slag</translation>
@@ -2876,7 +2872,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6284449872909111707">Sms en chatten</translation>
 <translation id="6284517535531159884">Type variantseed</translation>
 <translation id="6287197303017372967">Met de navigatiefunctie krijg je stapsgewijze routeaanwijzingen voor je bestemming.</translation>
-<translation id="6288521565586608304">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website om schade te voorkomen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Korting gevonden</translation>
 <translation id="6289939620939689042">Paginakleur</translation>
 <translation id="6292819926564202163">Je zoekmachine in Chrome</translation>
@@ -3070,7 +3065,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Computeronderwijs</translation>
 <translation id="6633476656216409494">Bedrijfs- en productiviteitssoftware</translation>
-<translation id="6638353438328951386">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat recent <ph name="BEGIN_LINK" />schadelijke software heeft gevonden<ph name="END_LINK" /> op de site die je wilt bezoeken.</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6645291930348198241">Toegang krijgen tot cookies en sitegegevens.</translation>
 <translation id="6645478838938543427">Meldingen over prijsdalingen worden naar <ph name="EMAIL_ADDRESS" /> gestuurd</translation>
@@ -3284,7 +3278,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="701757816833614688">Design- en beeldende-kunstonderwijs</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
-<translation id="7024932305105294144">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent phishing heeft gevonden<ph name="END_LINK" /> op de site die je wilt bezoeken. Phishingsites doen zich voor als een andere site om je te misleiden.<ph name="NEW_LINE" />Ook sites die normaal gesproken veilig zijn, worden soms gehackt door aanvallers. <ph name="BEGIN_ERROR_LINK" />Laat het ons weten<ph name="END_ERROR_LINK" /> als je denkt dat er een fout is gemaakt en dat deze site geen gevaar vormt.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030164307377592766">instellingen voor het invullen van betaalmethoden aanpassen</translation>
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>
@@ -3362,7 +3355,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> is geen ondersteunde beperking op dit platform</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7173338713290252554">Prijsgeschiedenis op internet</translation>
-<translation id="7173478186876671324">Je beheerder heeft je <ph name="PERMISSION" /> geblokkeerd voor deze site</translation>
 <translation id="7174545416324379297">Samengevoegd</translation>
 <translation id="7175097078723125014">De optie Adres bewerken is geselecteerd</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3396,7 +3388,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7221857374443660083">Je bank wil zeker weten dat jij het bent</translation>
 <translation id="722454870747268814">Nieuw incognitotabblad</translation>
 <translation id="7227293336683593977">Prijsgeschiedenis</translation>
-<translation id="7227747683324411744">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt.</translation>
 <translation id="7232352818707016189">Meer acties voor vergelijkingstabel</translation>
 <translation id="7233592378249864828">Bevestigingsblad afdrukken</translation>
 <translation id="7234112195906418665">Reizen en transport</translation>
@@ -3617,7 +3608,6 @@ Aanvullende informatie:
 <translation id="7598391785903975535">Minder dan <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
 <translation id="7599089013883397081">Time-out bij downloaden</translation>
-<translation id="7605377493722372900">Aanvallers op de site die je wilt bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoord, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd.</translation>
 <translation id="7608583484192556132">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK_1" />door sites voorgestelde advertenties<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert. Meer informatie over hoe je <ph name="BEGIN_LINK_3" />je advertentieprivacy beheert<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
 <translation id="7613889955535752492">Vervaldatum: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4070,7 +4060,6 @@ Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfoon deze keer toegestaan</translation>
 <translation id="8421158157346464398">Informatie over je werkprofiel (zoals de gebruikersnaam van je werkprofiel)</translation>
-<translation id="8422228580902424274">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoord, telefoon of creditcardnummer openbaar maakt.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4221,7 +4210,6 @@ Aanvullende informatie:
 <translation id="8722929331701811374">Briefpapier (briefhoofd)</translation>
 <translation id="8724824364712796726">Envelop B6</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
-<translation id="8725667981218437315">Camera en microfoon</translation>
 <translation id="8726549941689275341">Paginagrootte:</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>
@@ -4430,7 +4418,6 @@ Aanvullende informatie:
 <translation id="9119042192571987207">Geüpload</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wil verifiëren dat jij het bent</translation>
 <translation id="912327514020027767">Rokken</translation>
-<translation id="912414390325846156">Je hebt eerder 'niet toestaan voor deze site' gekozen</translation>
 <translation id="9128870381267983090">Verbinding maken met netwerk</translation>
 <translation id="9131119348384879525">Vertrouwelijke content vastleggen?</translation>
 <translation id="9133861214150761123">Boekhouding en auditing</translation>

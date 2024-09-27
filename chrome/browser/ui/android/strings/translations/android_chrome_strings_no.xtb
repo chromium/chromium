@@ -266,6 +266,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="228704530595896923">Liste over delingsalternativer.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> fane}other{Se <ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="2297822946037605517">Del denne siden</translation>
 <translation id="22981027763501686">Synkroniser for å få blant annet bokmerkene og loggen din på andre enheter</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
@@ -1301,6 +1302,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6964300328304469089"><ph name="NAME" /> (<ph name="EMAIL" />) er valgt. Velg en konto.</translation>
 <translation id="696447261358045621">Avslutt Inkognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> fane med ny aktivitet i delte fanegrupper}other{Se <ph name="TABS_COUNT_MANY" /> faner med ny aktivitet i delte fanegrupper}}</translation>
 <translation id="6971862865055170158">Ikke godkjenn</translation>
 <translation id="6978717888677691380">Nettsteder du har blokkert</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
@@ -1516,6 +1518,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7896724475402191389">Innhold for unge hoder – av</translation>
 <translation id="7903184275147100332">Dette kan ta en liten stund</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 ble blokkert av organisasjonen din}other{# ble blokkert av organisasjonen din}}</translation>
 <translation id="7914399737746719723">Appen er installert</translation>
 <translation id="7919123827536834358">Oversett disse språkene automatisk</translation>
 <translation id="7926975587469166629">Kallenavn på kortet</translation>

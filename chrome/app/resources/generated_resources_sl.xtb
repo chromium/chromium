@@ -250,6 +250,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1174366174291287894">Vaša povezava je vedno varna, razen če Chrome ne sporoči drugače.</translation>
 <translation id="1175131936083782305">To funkcijo je onemogočil skrbnik.</translation>
 <translation id="1175364870820465910">&amp;Natisni ...</translation>
+<translation id="1175572348579024023">Drseče pomikanje</translation>
 <translation id="1175914831232945926">Števke</translation>
 <translation id="1176471985365269981">Ni dovoljeno urejanje datotek ali map v napravi.</translation>
 <translation id="1177073277575830464">Hitra nastavitev Androida je končana. Nadaljujte nastavitev v napravi <ph name="DEVICE_TYPE" />.</translation>
@@ -1441,6 +1442,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1997616988432401742">Vaša potrdila</translation>
 <translation id="1998715278591719161">Dovoljeno je sledenje potezam z dlanmi</translation>
 <translation id="1999115740519098545">Ob zagonu</translation>
+<translation id="1999763610967697511">Vlečenje in spuščanje</translation>
 <translation id="2002109485265116295">Sprotno</translation>
 <translation id="2002160221914907025">Preizkusna umetna inteligenca</translation>
 <translation id="2003130567827682533">Če želite aktivirati podatke omrežja »<ph name="NAME" />«, se najprej povežite z omrežjem Wi-Fi.</translation>
@@ -2938,6 +2940,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="304644035656848980">Predogled mikrofona</translation>
 <translation id="3046910703532196514">Spletna stran, dokončano</translation>
 <translation id="304747341537320566">Mehanizmi za govor</translation>
+<translation id="3047678109605649715">V napravi ni glasov v tem jeziku: <ph name="LANGUAGE" />. Počistite prostor v napravi in poskusite znova.</translation>
 <translation id="3048336643003835855">Naprave HID ponudnika <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Predvajanje (k)</translation>
 <translation id="3048742847101793553">Vaša organizacija je blokirala to datoteko, ker pregled ni uspel.</translation>
@@ -5391,6 +5394,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4853020600495124913">Odpri v &amp;novem oknu</translation>
 <translation id="4854317507773910281">Izbira starševskega računa za odobritev</translation>
 <translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
+<translation id="485806788160414322">Predvajanje ali začasna zaustavitev predstavnosti</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Zvok je izklopil skrbnik</translation>
 <translation id="4862642413395066333">Podpisovanje odgovorov OCSP</translation>
@@ -10266,7 +10270,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Ni pladnja</translation>
 <translation id="8424250197845498070">Blokirala dodatna zaščita</translation>
-<translation id="842501938276307467">Preizkusite preizkusne funkcije umetne inteligence</translation>
+<translation id="842501938276307467">Preizkusite funkcije preizkusne umetne inteligence</translation>
 <translation id="8425213833346101688">Spremeni</translation>
 <translation id="8425492902634685834">Pripni v opravilno vrstico</translation>
 <translation id="8425768983279799676">Kodo PIN lahko uporabite za odklepanje naprave.</translation>

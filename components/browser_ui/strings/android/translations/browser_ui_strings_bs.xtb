@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Dozvolite prijavu trećih stana za određenu web lokaciju.</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3109724472072898302">Skupljeno</translation>
+<translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3114012059975132928">Video plejer</translation>
 <translation id="3115898365077584848">Prikaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekim web lokacijama</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Odabrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozvoljeno: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kada je postavka uključena, web lokacije mogu zatražiti da koriste uređaje virtuelne realnosti. Kada je postavka isključena, web lokacije ne mogu koristiti uređaje virtuelne realnosti.</translation>
-<translation id="7284451015630589124">Blokirali ste da web lokacije koriste kolačiće trećih strana kako bi vas pratile dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Obično blokirate obavještenja. Da dozvolite, dodirnite Detalji.</translation>
 <translation id="7366415735885268578">Dodajte web lokaciju</translation>
 <translation id="7368695150573390554">Svi offline podaci će se izbrisati</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje međumemorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za web lokacije</translation>
-<translation id="7474522811371247902">Chrome ograničava većini web lokacija da koriste kolačiće trećih strana. Međutim, kolačići trećih strana su dozvoljeni na ovoj web lokaciji jer se ona oslanja na njih radi pružanja osnovnih usluga.\n\nIdite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kada je postavka uključena, web lokacije mogu prikazivati upite za prijavu. Kada je postavka isključena, web lokacije ne mogu prikazivati upite za prijavu.</translation>
 <translation id="7554752735887601236">Web lokacija koristi vaš mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web lokacija koristi vašu kameru</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
-<translation id="7822573154188733812">Chrome blokira da web lokacije koriste kolačiće trećih strana da vas prate dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Reproduciranje medija</translation>
 <translation id="783819812427904514">Uključi zvuk videozapisa</translation>
 <translation id="7846076177841592234">Otkazivanje odabira</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8617611086246832542">Kada je postavka uključena, web lokacije se prikazuju u obliku prikaza na računaru. Kada je postavka isključena, web lokacije se prikazuju u obliku prikaza na mobilnom uređaju.</translation>
-<translation id="8649036394979866943">Chrome ograničava većini web lokacija da koriste kolačiće trećih strana kako bi vas pratile dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kada je ova postavka uključena, web lokacije mogu zatražiti da prate vaše ruke. Kada je isključena, web lokacije ne mogu pratiti vaše ruke.</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi se blokiraju na web lokacijama za koje je poznato da prikazuju ometajuće ili obmanjujuće oglase</translation>

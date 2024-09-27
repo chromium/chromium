@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4664250907885839816">Dio koji slijedi nakon znaka "<ph name="ATSIGN" />" ne smije sadržavati simbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproduciranje u načinu rada slike u slici</translation>
-<translation id="4792862212177489858">Dijeli lokaciju</translation>
 <translation id="4812940957355064477">Unesite broj.</translation>
 <translation id="49269513399674318">Koristi mikrofon</translation>
 <translation id="4975562563186953947">Odabrano <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Vrijednost mora biti veća od ili jednaka <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Lokacija je dozvoljena</translation>
 <translation id="5307600278924710095">Unesite dio ispred znaka "<ph name="ATSIGN" />". Adresa "<ph name="INVALIDADDRESS" />" je nepotpuna.</translation>
 <translation id="5334352251556557839">Nije moguće reproducirati medijski sadržaj.</translation>
 <translation id="537648784377940524">Najraniji datum (<ph name="MIN_DATE_OR_TIME" />) mora doći prije najkasnijeg datuma (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Učitavanje dodatka nije uspjelo.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst tako da broj znakova bude najmanje <ph name="MIN_CHARACTERS" /> (trenutno koristite 1 znak).</translation>
-<translation id="7080893216867146095">Dijeljenje lokacije je dozvoljeno</translation>
 <translation id="709897737746224366">Prilagodite da se podudara s traženim formatom.</translation>
 <translation id="7134810312945846184">Koristi mikrofon i kameru</translation>
 <translation id="7263440858009898357">Odaberite stavku s liste.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Vrijednost mora biti između <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">Broj fajlova: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Odaberite fajl.</translation>
+<translation id="8533587060884335451">Koristi tačnu lokaciju</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Prijelom reda</translation>
 <translation id="8750798805984357768">Odaberite jednu od ovih opcija.</translation>

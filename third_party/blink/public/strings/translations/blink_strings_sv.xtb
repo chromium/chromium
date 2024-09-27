@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kamera är tillåten</translation>
 <translation id="4664250907885839816">En del efter <ph name="ATSIGN" /> får inte innehålla symbolen <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Spelas upp i bild-i-bild-läge</translation>
-<translation id="4792862212177489858">Dela plats</translation>
 <translation id="4812940957355064477">Ange ett nummer.</translation>
 <translation id="49269513399674318">Använd mikrofonen</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valda</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Värdet måste vara större än eller lika med <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Plats tillåts</translation>
 <translation id="5307600278924710095">Ange en del följt av <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> är ofullständig.</translation>
 <translation id="5334352251556557839">Det går inte att spela upp media.</translation>
 <translation id="537648784377940524">Tidigaste datum (<ph name="MIN_DATE_OR_TIME" />) måste vara före senaste datum (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Det gick inte att läsa in plugin-programmet.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lägg till minst <ph name="MIN_CHARACTERS" /> tecken (för närvarande har du angett 1 tecken).</translation>
-<translation id="7080893216867146095">Platsdelning tillåts</translation>
 <translation id="709897737746224366">Matcha det format som anges.</translation>
 <translation id="7134810312945846184">Använd mikrofonen och kameran</translation>
 <translation id="7263440858009898357">Välj ett alternativ i listan.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Värdet måste vara mellan <ph name="MINIMUM_TIME" /> och <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> filer</translation>
 <translation id="8451268428117625855">Välj en fil.</translation>
+<translation id="8533587060884335451">Använd exakt plats</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Radbrytning</translation>
 <translation id="8750798805984357768">Välj ett av följande alternativ.</translation>

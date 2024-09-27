@@ -266,6 +266,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
 <translation id="2286841657746966508">Faktureringadres</translation>
 <translation id="228704530595896923">Lys deelopsies.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Sien <ph name="TABS_COUNT_ONE" /> oortjie}other{Sien <ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="2297822946037605517">Deel hierdie bladsy</translation>
 <translation id="22981027763501686">Sinkroniseer om jou boekmerke, geskiedenis en meer op jou ander toestelle te kry</translation>
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
@@ -1301,6 +1302,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is tans gekies. Kies ’n rekening.</translation>
 <translation id="696447261358045621">Verlaat Incognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Sien <ph name="TABS_COUNT_ONE" /> oortjie met nuwe aktiwiteit in gedeelde oortjiegroepe}other{Sien <ph name="TABS_COUNT_MANY" /> oortjies met nuwe aktiwiteit in gedeelde oortjiegroepe}}</translation>
 <translation id="6971862865055170158">Moenie goedkeur nie</translation>
 <translation id="6978717888677691380">Werwe wat jy geblokkeer het</translation>
 <translation id="6979737339423435258">Van die begin af</translation>
@@ -1516,6 +1518,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7896724475402191389">Inhoud vir jong verstande – af</translation>
 <translation id="7903184275147100332">Dit kan 'n rukkie neem</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 is deur jou organisasie geblokkeer}other{# is deur jou organisasie geblokkeer}}</translation>
 <translation id="7914399737746719723">App is geïnstalleer</translation>
 <translation id="7919123827536834358">Vertaal hierdie tale outomaties</translation>
 <translation id="7926975587469166629">Kaart se bynaam</translation>

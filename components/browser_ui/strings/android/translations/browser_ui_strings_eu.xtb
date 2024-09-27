@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
 <translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3109724472072898302">Tolestuta</translation>
+<translation id="310979712355504754">Ezabatu guztiak</translation>
 <translation id="3114012059975132928">Bideo-erreproduzigailua</translation>
 <translation id="3115898365077584848">Erakutsi informazioa</translation>
 <translation id="3123473560110926937">Webgune batzuetan blokeatu dira iragarkiak</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
 <translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Aktibatuta dagoenean, webguneek errealitate birtualeko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili errealitate birtualeko gailurik.</translation>
-<translation id="7284451015630589124">Arakatzen duzun bitartean hirugarrenen cookieen bidez zure jarraipena egiteko aukera kendu diezu webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Jakinarazpenak blokeatu ohi dituzu. Baimena emateko, sakatu "Xehetasunak".</translation>
 <translation id="7366415735885268578">Gehitu webgune bat</translation>
 <translation id="7368695150573390554">Konexiorik gabeko datuak ezabatuko dira</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
 <translation id="7425915948813553151">Webguneetarako gai iluna</translation>
-<translation id="7474522811371247902">Hirugarrenen cookieak erabiltzea galarazten die Chrome-k webgune gehienei. Webgune honetan, ordea, hirugarrenen cookieak erabiltzeko baimena eman da, beharrezkoak baitira oinarrizko zerbitzuak emateko.\n\nJoan ezarpenetara<ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Aktibatuta dagoenean, webguneek saioa hasteko eskaera-mezuak erakusteko aukera dute. Desaktibatuta dagoenean, webguneek ezin dute erakutsi saioa hasteko eskaera-mezurik.</translation>
 <translation id="7554752735887601236">Webgune bat mikrofonoa erabiltzen ari da</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
-<translation id="7822573154188733812">Arakatzen duzun bitartean zure jarraipena egiteko hirugarrenen cookieak erabiltzea eragozten die Chrome-k webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Multimedia-edukia erreproduzitzen</translation>
 <translation id="783819812427904514">Aktibatu bideoaren audioa</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8617611086246832542">Aktibatuta dagoenean, webguneen ordenagailuetarako ikuspegia erakusten da. Desaktibatuta dagoenean, webguneen mugikorretarako ikuspegia erakusten da.</translation>
-<translation id="8649036394979866943">Arakatzen duzun bitartean hirugarrenen cookieen bidez zure jarraipena egitea galarazten die Chrome-k webgune gehienei. Joan ezarpenetara<ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Aktibatuta dagoenean, zure eskuen jarraipena egiteko baimena eska dezakete webguneek. Desaktibatuta dagoenean, webguneek ezin dute egin zure eskuen jarraipena.</translation>
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8681886425883659911">Iragarki oztopatzaileak edo engainagarriak erakusten dituzten webguneak blokeatzen dira</translation>

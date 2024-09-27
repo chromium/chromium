@@ -41,6 +41,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="2569352796411618312">Đề xuất: Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> thẻ. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="2662028055331606429">Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Truy cập trang web</translation>
+<translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Tạo <ph name="NUM_HOURS_ONE" /> giờ trước}other{Tạo <ph name="NUM_HOURS_MANY" /> giờ trước}}</translation>

@@ -1325,7 +1325,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="342781501876943858">O Chromium recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
 <translation id="3428789896412418755">Histórico agrupado</translation>
-<translation id="3430206873883193118">Os atacantes no site que está a tentar visitar podem fazer com que instale software ou revele informações como a palavra-passe, o número de telefone ou o número do cartão de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software de colaboração e videoconferência</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
@@ -1343,7 +1342,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Pode pedir para controlar e reprogramar os seus dispositivos MIDI</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> permitido(a)</translation>
 <translation id="3452404311384756672">Intervalo de obtenção:</translation>
 <translation id="3453962258458347894">Número de tentativas</translation>
 <translation id="3457781733462096492">Rap e hip-hop</translation>
@@ -2570,7 +2568,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5689516760719285838">Local</translation>
 <translation id="569000877158168851">O valor DnsOverHttpsTemplates não é relevante e não será utilizado, a menos que a política DnsOverHttpsMode esteja definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Cartão guardado aberto à altura total.</translation>
-<translation id="5692655638459249302">Os atacantes no site que está a tentar visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, a sua palavra-passe, fotos, mensagens ou número do cartão de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Quer utilizar o Windows Hello para validar e concluir a sua compra?</translation>
 <translation id="5699628521141772782">Laticínios e ovos</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
@@ -2718,7 +2715,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5995727681868049093">Faça a gestão das suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="5996255674476750320">Exposições de veículos</translation>
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
-<translation id="5999271311987646952">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software malicioso<ph name="END_LINK" /> no site que está a tentar visitar.</translation>
 <translation id="6000528814684428358">Hard rock e música progressiva</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">Vamos lá</translation>
@@ -2883,7 +2879,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6284449872909111707">Mensagens de texto e instantâneas</translation>
 <translation id="6284517535531159884">Tipo de semente das variações</translation>
 <translation id="6287197303017372967">Obtenha direções para o seu destino com as orientações curva a curva da funcionalidade de navegação.</translation>
-<translation id="6288521565586608304">Os atacantes no site que está a tentar visitar podem fazer com que instale software prejudicial que afeta a forma como navega, por exemplo, alterando a sua página inicial ou apresentando anúncios adicionais nos sites que visita. O Chrome recomenda vivamente voltar para um site seguro de forma a evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Desconto encontrado</translation>
 <translation id="6289939620939689042">Cor da página</translation>
 <translation id="6292819926564202163">O seu motor de pesquisa no Chrome</translation>
@@ -3077,7 +3072,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Ensino de informática</translation>
 <translation id="6633476656216409494">Software empresarial e de produtividade</translation>
-<translation id="6638353438328951386">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software prejudicial<ph name="END_LINK" /> no site que está a tentar visitar.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645291930348198241">Aceder aos cookies e dados de sites.</translation>
 <translation id="6645478838938543427">Os alertas de descida do preço vão ser enviados para <ph name="EMAIL_ADDRESS" /></translation>
@@ -3291,7 +3285,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="701757816833614688">Educação em artes visuais e design</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso para administradores</translation>
-<translation id="7024932305105294144">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente phishing<ph name="END_LINK" /> no site que está a tentar visitar. Os sites de phishing simulam ser outros sites para enganar os utilizadores.<ph name="NEW_LINE" />Por vezes, até os sites normalmente seguros são comprometidos por atacantes. <ph name="BEGIN_ERROR_LINK" />Informe-nos<ph name="END_ERROR_LINK" /> se considerar que houve um erro e que este site não representa um perigo.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7030164307377592766">modificar as definições de preenchimento dos métodos de pagamento</translation>
 <translation id="7031646650991750659">As apps do Google Play que instalou.</translation>
@@ -3369,7 +3362,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" não é uma restrição suportada nesta plataforma</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7173338713290252554">Histórico de preços na Web</translation>
-<translation id="7173478186876671324">O administrador bloqueou o(a) <ph name="PERMISSION" /> para este site</translation>
 <translation id="7174545416324379297">Unida</translation>
 <translation id="7175097078723125014">A opção de edição da morada foi selecionada</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3403,7 +3395,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7221857374443660083">O banco quer confirmar a sua identidade</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
-<translation id="7227747683324411744">Os atacantes no site que está a tentar visitar podem enganar o utilizador para que instale software prejudicial que afeta a forma como navega, por exemplo, alterando a sua página inicial ou apresentando anúncios adicionais nos sites que visita.</translation>
 <translation id="7232352818707016189">Mais ações para a tabela Comparar</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
 <translation id="7234112195906418665">Viagens e transportes</translation>
@@ -3623,7 +3614,6 @@ Detalhes adicionais:
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue processar este pedido de momento.</translation>
 <translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
-<translation id="7605377493722372900">Os atacantes no site que está a tentar visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, a sua palavra-passe, fotos, mensagens ou número do cartão de crédito.</translation>
 <translation id="7608583484192556132">A personalização de um anúncio que lhe é mostrado pode depender de vários fatores, incluindo esta definição, os <ph name="BEGIN_LINK_1" />anúncios sugeridos por sites<ph name="END_LINK_1" />, as <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios. Saiba mais sobre a <ph name="BEGIN_LINK_3" />gestão da privacidade dos anúncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>
 <translation id="7613889955535752492">Exp.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4076,7 +4066,6 @@ Detalhes adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfone permitido desta vez</translation>
 <translation id="8421158157346464398">Informações do perfil de trabalho (como o nome de utilizador do perfil de trabalho)</translation>
-<translation id="8422228580902424274">Os atacantes no site que está a tentar visitar podem tentar enganar o utilizador para que instale software ou revele informações como a palavra-passe, o número de telefone ou o número do cartão de crédito.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4228,7 +4217,6 @@ Detalhes adicionais:
 <translation id="8722929331701811374">Artigos de papelaria (papel timbrado)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
-<translation id="8725667981218437315">Câmara e microfone</translation>
 <translation id="8726549941689275341">Tamanho das páginas:</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
@@ -4437,7 +4425,6 @@ Detalhes adicionais:
 <translation id="9119042192571987207">Carregado</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> quer validar a sua identidade</translation>
 <translation id="912327514020027767">Saias</translation>
-<translation id="912414390325846156">Optou por não permitir neste site anteriormente</translation>
 <translation id="9128870381267983090">Ligar à rede</translation>
 <translation id="9131119348384879525">Capturar conteúdo confidencial?</translation>
 <translation id="9133861214150761123">Contabilidade e auditoria</translation>

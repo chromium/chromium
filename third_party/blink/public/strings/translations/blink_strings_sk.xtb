@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kamera je povolená</translation>
 <translation id="4664250907885839816">Časť za znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Prehráva sa v režime obrazu v obraze</translation>
-<translation id="4792862212177489858">Zdieľať polohu</translation>
 <translation id="4812940957355064477">Zadajte číslo.</translation>
 <translation id="49269513399674318">Používať mikrofón</translation>
 <translation id="4975562563186953947">Počet vybraných položiek: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Hodnota musí byť väčšia alebo rovná hodnote <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Poloha je povolená</translation>
 <translation id="5307600278924710095">Zadajte časť pred znakom <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> je neúplná.</translation>
 <translation id="5334352251556557839">Nepodarilo sa prehrať médiá.</translation>
 <translation id="537648784377940524">Minimálny dátum (<ph name="MIN_DATE_OR_TIME" />) musí byť pred maximálnym dátumom (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Doplnok sa nepodarilo načítať.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Predĺžte tento text aspoň na <ph name="MIN_CHARACTERS" /> alebo viac znakov (momentálne používate jeden znak).</translation>
-<translation id="7080893216867146095">Zdieľanie polohy je povolené</translation>
 <translation id="709897737746224366">Zadajte hodnotu zodpovedajúcu požadovanému formátu.</translation>
 <translation id="7134810312945846184">Používať mikrofón a kameru</translation>
 <translation id="7263440858009898357">Vyberte položku zo zoznamu.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Hodnota musí byť v rozsahu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">Počet súborov: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Vyberte súbor.</translation>
+<translation id="8533587060884335451">Použiť presnú polohu</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zalomiť riadok</translation>
 <translation id="8750798805984357768">Vyberte jednu z týchto možností.</translation>

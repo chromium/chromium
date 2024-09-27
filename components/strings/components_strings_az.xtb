@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">TV və video</translation>
 <translation id="1658918301167915956">bluetooth cihazları</translation>
 <translation id="1662550410081243962">Ödəniş üsullarını yadda saxlayın və doldurun</translation>
+<translation id="1662980953334786797">Eyni sıra</translation>
 <translation id="1663943134801823270">Kart və ünvanlar Chrome'dandır. Onları <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən idarə edə bilərsiniz.</translation>
 <translation id="1664389769577564606">Flekso fotopolimer</translation>
 <translation id="166624440456221306">Müqayisə cədvəlini silin</translation>
@@ -1322,7 +1323,6 @@
 <translation id="342781501876943858">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="3428151540071562330">Bir və ya bir neçə DnsOverHttpsTemplates server şablonu URI'si yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="3428789896412418755">Qruplaşdırılmış tarixçə</translation>
-<translation id="3430206873883193118">Daxil olduğunuz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parol, telefon və ya kredit kartı nömrəsi kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3433111389595862568">Əməkdaşlıq və konfrans təşkili üzrə proqram təminatı</translation>
 <translation id="3433144818443565002">Səsli və videoçat</translation>
@@ -1340,7 +1340,6 @@
 <translation id="3447661539832366887">Bu cihazın sahibi dinozavr oyununu söndürüb.</translation>
 <translation id="3447884698081792621">Sertifikatı göstərin (<ph name="ISSUER" /> tərəfindən paylaşılan)</translation>
 <translation id="3450323514459570273">MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyə bilər</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> icazəsi verilib</translation>
 <translation id="3452404311384756672">Əldə etmə intervalı:</translation>
 <translation id="3453962258458347894">Təkrar cəhdlərin sayı</translation>
 <translation id="3457781733462096492">Rep və Hip-hop</translation>
@@ -1655,6 +1654,7 @@
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>
 <translation id="4025325634010721551">Siyasətlər yenidən yükləndi</translation>
 <translation id="4025338605225449265">Valyuta və Xarici Mübadilə</translation>
+<translation id="4025777154208238692">Tərs sıra</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Hücumçular sayta göndərdiyiniz və ya oradan qəbul etdiyiniz <ph name="BEGIN_STRONG" />məlumatlara baxa və onu dəyişə<ph name="END_STRONG" /> bilər.
       <ph name="LIST_ITEM" />İctimai şəbəkə istifadə edirsinizsə, <ph name="BEGIN_STRONG" />bu sayta daha sonra daxil olmaq ən təhlükəsiz seçimdir<ph name="END_STRONG" />. Ev və ya iş Wi-Fi-ı kimi etibarlı şəbəkədə risk daha azdır.
@@ -2564,7 +2564,6 @@
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates dəyəri uyğun deyil və DnsOverHttpsMode siyasəti <ph name="SECURE_DNS_MODE_AUTOMATIC" /> və ya <ph name="SECURE_DNS_MODE_SECURE" /> kimi ayarlanana qədər istifadə edilməyəcək.</translation>
 <translation id="5691848789297492617">Kartın yadda saxlanması tam hündürlükdə açıldı.</translation>
-<translation id="5692655638459249302">Daxil olduğunuz saytda hücumçular parol, foto, mesaj və ya kredit kartı nömrəsi kimi məlumatları oğurlayan və ya silən zərərli proqram təminatı quraşdıra bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Doğrulamaq və alışı tamamlamaq üçün Windows Hello istifadə edilsin?</translation>
 <translation id="5699628521141772782">Süd məhsulları və yumurta</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
@@ -2712,7 +2711,6 @@
 <translation id="5995727681868049093">Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
 <translation id="5996255674476750320">Avtomobil Şouları</translation>
 <translation id="5997247540087773573">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri onu indi dəyişməyi və sonra yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
-<translation id="5999271311987646952">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="6000528814684428358">Hard Rok və Proqressiv</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
 <translation id="6001839398155993679">Başlayaq</translation>
@@ -2877,7 +2875,6 @@
 <translation id="6284449872909111707">Mətn və Ani Mesajlaşma</translation>
 <translation id="6284517535531159884">Çeşidlərin başlanğıc dəyər növü</translation>
 <translation id="6287197303017372967">Naviqasiya funksiyası vasitəsilə təyinat yeri üzrə istiqamətləri əldə edin.</translation>
-<translation id="6288521565586608304">Daxil olduğunuz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər. Zərərdən yayınmaq üçün Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Endirim tapıldı</translation>
 <translation id="6289939620939689042">Səhifə Rəngi</translation>
 <translation id="6292819926564202163">Chrome-da axtarış mexanizmi</translation>
@@ -3071,7 +3068,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Kompüter təhsili</translation>
 <translation id="6633476656216409494">Biznes və məhsuldarlıq üzrə proqram təminatı</translation>
-<translation id="6638353438328951386">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram təminatı tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6645291930348198241">Kukilər və sayt datasına giriş.</translation>
 <translation id="6645478838938543427">Qiymət endirimi xəbərdarlıqları <ph name="EMAIL_ADDRESS" /> ünvanına göndəriləcək</translation>
@@ -3285,7 +3281,6 @@
 <translation id="701757816833614688">Vizual incəsənət və dizayn təhsili</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7023162328967545559">Admin xəbərdarlığı</translation>
-<translation id="7024932305105294144">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda fişinq tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır. Fişinq saytları sizi aldatmaq üçün özlərini digər saytlar kimi təqdim edir.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030164307377592766">ödəniş metodlarını doldurmaq üçün ayarları dəyişməyə çalışır</translation>
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>
@@ -3362,7 +3357,6 @@
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" bu platformada dəstəklənən məhdudiyyət deyil</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7173338713290252554">Vebdə qiymət tarixçəsi</translation>
-<translation id="7173478186876671324">Bu sayt üzrə <ph name="PERMISSION" /> administrator tərəfindən bloklanıb</translation>
 <translation id="7174545416324379297">Birləşdirildi</translation>
 <translation id="7175097078723125014">Ünvan redaktəsi seçilib</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3396,7 +3390,6 @@
 <translation id="7221857374443660083">Bank kimliyinizi təsdiq etmək istəyir</translation>
 <translation id="722454870747268814">Yeni Incognito tabı</translation>
 <translation id="7227293336683593977">Qiymət tarixçəsi</translation>
-<translation id="7227747683324411744">Daxil olduğunuz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər.</translation>
 <translation id="7232352818707016189">Müqayisə cədvəli üçün digər əməliyyatlar</translation>
 <translation id="7233592378249864828">Təsdiq vərəqini çap edin</translation>
 <translation id="7234112195906418665">Səyahət və Nəqliyyat</translation>
@@ -3617,7 +3610,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> həcmindən az</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> hal-hazırda bu tələbi idarə edə bilmir.</translation>
 <translation id="7599089013883397081">Endirmə vaxtı bitdi</translation>
-<translation id="7605377493722372900">Daxil olduğunuz saytda hücumçular parol, foto, mesaj və ya kredit kartı nömrəsi kimi məlumatları oğurlayan və ya silən zərərli proqram təminatı quraşdıra bilər.</translation>
 <translation id="7608583484192556132">Gördüyünüz reklamın fərdiləşdirilməsi bu ayar, <ph name="BEGIN_LINK_1" />sayt tərəfindən təklif olunan reklamlar<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />kuki ayarları<ph name="END_LINK_2" /> və baxdığınız saytın reklamları fərdiləşdirib-fərdiləşdirməməsindən asılı ola bilər. <ph name="BEGIN_LINK_3" />Reklam məxfiliyinin idarə edilməsi<ph name="END_LINK_3" /> haqqında ətraflı məlumat.</translation>
 <translation id="7610193165460212391">Dəyər <ph name="VALUE" /> aralığından kənardır.</translation>
 <translation id="7613889955535752492">Bitmə tarixi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4070,7 +4062,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Bu dəfə üçün mikrofona icazə verilib</translation>
 <translation id="8421158157346464398">İş profili məlumatları (məsələn, iş profilinin istifadəçi adı)</translation>
-<translation id="8422228580902424274">Daxil olduğunuz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parol, telefon və ya kredit kartı nömrəsi kimi məlumatları açıqlamağa təşviq edə bilər.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Dəyişin</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4221,7 +4212,6 @@
 <translation id="8722929331701811374">Yazı ləvazimatları (başlıqlı)</translation>
 <translation id="8724824364712796726">Zərf B6</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
-<translation id="8725667981218437315">Kamera və mikrofon</translation>
 <translation id="8726549941689275341">Səhifə ölçüsü:</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731268612289859741">Təhlükəsizlik kodu</translation>
@@ -4430,7 +4420,6 @@
 <translation id="9119042192571987207">Yüklənib</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> kimliyinizi doğrulamaq istəyir</translation>
 <translation id="912327514020027767">Ətəklər</translation>
-<translation id="912414390325846156">Daha əvvəl bu sayta icazə verməməyi seçmisiniz</translation>
 <translation id="9128870381267983090">Şəbəkəyə qoşulun</translation>
 <translation id="9131119348384879525">Məxfi kontent çəkilsin?</translation>
 <translation id="9133861214150761123">Mühasibat və Audit</translation>

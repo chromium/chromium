@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' bir hissəsi '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
 <translation id="4718048029184481307">Şəkildə şəkil rejimində oxudulur</translation>
-<translation id="4792862212177489858">Məkanı paylaşın</translation>
 <translation id="4812940957355064477">Rəqəm daxil edin.</translation>
 <translation id="49269513399674318">Mikrofondan istifadə edin</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seçilib</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Dəyər daha böyük və ya <ph name="MINIMUM" /> ilə bərabər olmalıdır.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Məkana icazə verilib</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ilə davam edən hissəni daxil edin. '<ph name="INVALIDADDRESS" />' natamamdır.</translation>
 <translation id="5334352251556557839">Medianı oxutmaq mümkün deyil.</translation>
 <translation id="537648784377940524">Minimum tarix (<ph name="MIN_DATE_OR_TIME" />) Maksimum tarixdən (<ph name="MAX_DATE_OR_TIME" />) əvvəl gəlməlidir.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Plaqin yüklənə bilmədi.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvola qədər uzadın (hazırda 1 simvol istifadə edirsiniz).</translation>
-<translation id="7080893216867146095">Məkan paylaşımına icazə verilib</translation>
 <translation id="709897737746224366">Tələb olunan formata uyğun edin.</translation>
 <translation id="7134810312945846184">Mikrofon və kameradan istifadə edin</translation>
 <translation id="7263440858009898357">Lütfən, siyahıdan bir element seçin.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Dəyər <ph name="MINIMUM_TIME" /> ilə <ph name="MAXIMUM_TIME" /> arasında olmalıdır.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fayl</translation>
 <translation id="8451268428117625855">Fayl seçin.</translation>
+<translation id="8533587060884335451">Məkan dəqiq aşkarlansın</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Sətrin sığışdırılması</translation>
 <translation id="8750798805984357768">Bu variantlardan birini seçin.</translation>

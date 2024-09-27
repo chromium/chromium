@@ -4000,6 +4000,11 @@ Not: Bu ayar sonucunda ana makine ve istemci tarafında her iki tarafın destekl
 <translation id="3989829840000169163">Tarayıcıdaki Eski Uzantı Noktalarını Engelle</translation>
 <translation id="3990391739475801018">Pil Tasarrufu Modu devre dışı bırakılır.</translation>
 <translation id="3990834929384096140">Sistem ses yankısı giderme özelliğini zorunlu kılma</translation>
+<translation id="3992082233013655355">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
+      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
+      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
+
+      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği. Her öğede ayrıca yalıtılmış web uygulaması sürüm kanalının adını içeren isteğe bağlı bir alan da bulunabilir. "update_channel" ayarlanmazsa "default" değeri kullanılır.</translation>
 <translation id="3994043824457743421">Yeni sekme sayfasında orta aralık duyurusunu göster</translation>
 <translation id="399433537808390819">Birleşik Masaüstü modunu kullanıcının erişimine açma</translation>
 <translation id="3995880046827722248">Manifest v2 devre dışı</translation>
@@ -6746,27 +6751,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6102449843040973938"><ph name="BOREALIS_NAME" /> politikasının cihazda çalışması engellenmesin</translation>
 <translation id="610892566190435199">Cihazın güç durumu raporlamasını etkinleştir</translation>
 <translation id="6111936128861357925">Dinozor Paskalya Yumurtası Oyununa İzin Verme</translation>
-<translation id="6112524153927257380">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
-
-      Chrome'da birçok farklı indirme uyarısı vardır. Bu uyarılar genel olarak aşağıdaki gibi sınıflandırılabilir (Güvenli Tarama sonuçları hakkında daha fazla bilgi https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Kötü amaçlı (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
-      * Yaygın olmayan veya istenmeyen (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
-      * Tehlikeli dosya türü (ör. SWF indirmelerinin tümü ve EXE indirmelerinin birçoğu)
-
-      Politika ayarlanırsa, değerine bağlı olarak bu kategorilerin farklı alt grupları engellenir:
-
-      0: Özel kısıtlama yok. Varsayılan.
-
-      1: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
-
-      2: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları, Güvenli Tarama sunucusu tarafından işaretlenen yaygın olmayan ya da istenmeyen dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
-
-      3: Tüm indirmeleri engeller. Özel kullanım alanları hariç önerilmez.
-
-      4: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları engeller, tehlikeli dosya türlerini engellemez. Önerilen.
-
-      Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Daha az kısıtlayıcı davranışı geri yükle.</translation>
 <translation id="6119207979839638596">Bu politika, <ph name="PRODUCT_NAME" /> ürünündeki maksimum TLS sürümü politikası kaldırıldıktan sonra M75 sürümünden kaldırılmıştır.
 
@@ -10515,6 +10499,27 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
       Yeni cihazlarda saat dilimi ABD Pasifik olarak ayarlıdır. Değer biçimi, IANA Saat Dilimi Veritabanı (https://en.wikipedia.org/wiki/Tz_database) içindeki isimlere uygundur. Geçersiz bir değer girilirse politika GMT kullanılarak etkinleştirilir.
 
       Ayarlanmazsa veya boş bir bir dize girerseniz cihaz o anda etkin olan saat dilimini kullanır ama kullanıcılar saat dilimini değiştirebilirler.</translation>
+<translation id="8875202330803089599">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
+
+      Chrome'da birçok farklı indirme uyarısı vardır. Bu uyarılar genel olarak aşağıdaki gibi sınıflandırılabilir (Güvenli Tarama sonuçları hakkında daha fazla bilgi https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Kötü amaçlı (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
+      * Yaygın olmayan veya istenmeyen (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
+      * Tehlikeli dosya türü (ör. SWF indirmelerinin tümü ve EXE indirmelerinin birçoğu)
+
+      Politika ayarlanırsa, değerine bağlı olarak bu kategorilerin farklı alt grupları engellenir:
+
+      0: Özel kısıtlama yok. Varsayılan.
+
+      1: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
+
+      2: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları, Güvenli Tarama sunucusu tarafından işaretlenen yaygın olmayan ya da istenmeyen dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
+
+      3: Tüm indirmeleri engeller. Özel kullanım alanları hariç önerilmez.
+
+      4: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları engeller, tehlikeli dosya türlerini engellemez. Önerilir.
+
+      Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de İndirme bağlantısı… menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776"><ph name="PRODUCT_OS_FLEX_NAME" /> ürününde bazı hizmetlerin ek donanım verisi göndermesine izin verir.
 
 Bu donanım verileri, <ph name="PRODUCT_OS_FLEX_NAME" /> ile ilgili genel iyileştirmeler için kullanılır.
@@ -10532,6 +10537,7 @@ Devre Dışı değerine ayarlanırsa yalnızca standart donanım verileri gönde
 <translation id="8890438048579188548"><ph name="CLOUD_PRINT_NAME" /> ürününün kullanımdan kaldırma uyarılarını gizler</translation>
 <translation id="8891334958985336685">Cihazın sistem bilgileri raporlamasını devre dışı bırak</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> için gereken boş disk alanı</translation>
+<translation id="8892771980172542172">Yalıtılmış web uygulamasının güncelleme/sürüm kanalının adı. Bu değer herhangi bir dize olabilir; kısıtlama yoktur. Değer belirtilmezse "varsayılan" kanal kullanılır.</translation>
 <translation id="8892783613915541293">Cihaz boşta kalıp AC gücünde çalışırken yapılacak işlemler ve gecikmeler</translation>
 <translation id="8897796778265450949">Kimlik doğrulaması, SAML olmadan GAIA ile yapılan kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırlar</translation>
 <translation id="889814528399907891">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcısını etkinleştirmesine ve birincil tarayıcı yapmasına izin ver</translation>

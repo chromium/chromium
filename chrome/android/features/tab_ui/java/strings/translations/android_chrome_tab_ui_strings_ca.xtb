@@ -41,6 +41,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita el lloc web</translation>
+<translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya, se n'ha canviat <ph name="ANY_CHANGED" /> i se n'ha tancat <ph name="ANY_CLOSED" />}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes, se n'han canviat <ph name="ANY_CHANGED" /> i se n'han tancat <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat fa <ph name="NUM_HOURS_ONE" /> hora}other{Creat fa <ph name="NUM_HOURS_MANY" /> hores}}</translation>

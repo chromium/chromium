@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">ለአንድ የተወሰነ ጣቢያ የሦስተኛ ወገን መግባትን ይፍቀዱ።</translation>
 <translation id="310297983047869047">ቀዳሚ ተንሸራታች</translation>
 <translation id="3109724472072898302">ተሰብስቧል</translation>
+<translation id="310979712355504754">ሁሉንም ይሰርዙ</translation>
 <translation id="3114012059975132928">ቪዲዮ ማጫወቻ</translation>
 <translation id="3115898365077584848">መረጃ አሳይ</translation>
 <translation id="3123473560110926937">በአንዳንድ ጣቢያዎች ላይ ታግዷል</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ተመርጠዋል</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> እና <ph name="PERMISSION_2" /> ተፈቅደዋል</translation>
 <translation id="7276071417425470385">ሲበራ፣ ጣቢያዎች የምናባዊ እውነታ መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የምናባዊ እውነታ መሳሪያዎችን መጠቀም አይችሉም።</translation>
-<translation id="7284451015630589124">በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ጣቢያዎችን አግደዋል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮች ይጎብኙ።</translation>
 <translation id="7302486331832100261">ማሳወቂያዎችን ብዙውን ጊዜ ያግዳሉ። ለመፍቀድ፣ ዝርዝሮች ላይ መታ ያድርጉ።</translation>
 <translation id="7366415735885268578">አንድ ጣቢያ ያክሉ</translation>
 <translation id="7368695150573390554">ማንኛውም ከመስመር ውጭ ውሂብ ይሰረዛል</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">መጀመሪያ ጠይቅ</translation>
 <translation id="7423538860840206698">ቅንጥብ ሰሌዳን ከማንበብ ታግዷል</translation>
 <translation id="7425915948813553151">ለጣቢያዎች ጠቆር ያለ ገጽታ</translation>
-<translation id="7474522811371247902">Chrome አብዛኛዎቹን ጣቢያዎች የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ይገድባል። ነገር ግን የሶስተኛ ወገን ኩኪዎች መሰረታዊ አገልግሎቶችን ለማቅረብ በእነሱ ላይ ስለሚተማመን በዚህ ጣቢያ ላይ ተፈቅዶላቸዋል።\n\n <ph name="BEGIN_LINK" />የመከታተያ ጥበቃዎን ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጐብኙ።</translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
 <translation id="7547989957535180761">ሲበራ፣ ጣቢያዎች የመግባት ጥያቄዎችን ሊያሳዩ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የመግባት ጥያቄዎችን ማሳየት አይችሉም።</translation>
 <translation id="7554752735887601236">አንድ ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7804248752222191302">አንድ ጣቢያ ካሜራዎን እየተጠቀመ ነው</translation>
 <translation id="7807060072011926525">በGoogle የቀረበ</translation>
-<translation id="7822573154188733812">ጣቢያዎች እርስዎ በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ Chrome ያግዳቸዋል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮች ይጎብኙ።</translation>
 <translation id="7835852323729233924">ሚዲያን በማጫወት ላይ</translation>
 <translation id="783819812427904514">የቪዲዮን ድምጸ-ከል አንሳ</translation>
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8617611086246832542">ሲበራ፣ የድር ጣቢያዎች የዴስክቶፕ እይታ ይታያል። ሲጠፋ፣ የድር ጣቢያዎች የሞባይል እይታ ይታያል።</translation>
-<translation id="8649036394979866943">Chrome በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ አብዛኛዎቹን ጣቢያዎች ይገድባል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጎብኙ</translation>
 <translation id="8676316391139423634">በሚበራበት ጊዜ ጣቢያዎች እጆችዎን መከታተል ይችላሉ። በሚጠፋበት ጊዜ ጣቢያዎች እጆችዎን መከታተል አይችሉም።</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>

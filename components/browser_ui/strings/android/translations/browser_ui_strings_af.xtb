@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
 <translation id="310297983047869047">Vorige skyfie</translation>
 <translation id="3109724472072898302">Ingevou</translation>
+<translation id="310979712355504754">Vee almal uit</translation>
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Wys inligting</translation>
 <translation id="3123473560110926937">Geblokkeer op sommige werwe</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> gekies</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word toegelaat</translation>
 <translation id="7276071417425470385">Wanneer dit aan is, kan werwe vra om virtuelerealiteittoestelle en te gebruik. Wanneer dit af is, kan werwe nie virtuelerealiteittoestelle gebruik nie.</translation>
-<translation id="7284451015630589124">Jy het werwe geblokkeer om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Jy blokkeer gewoonlik kennisgewings. Tik op Besonderhede om toe te laat.</translation>
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7368695150573390554">Enige vanlyn data sal uitgevee word</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
 <translation id="7425915948813553151">Donkertema vir werwe</translation>
-<translation id="7474522811371247902">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik. Maar derdepartywebkoekies word op hierdie werf toegelaat omdat dit daarop staatmaak om basiese dienste te verskaf.\n\nBesoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Wanneer dit aan is, kan werwe aanmeldporboodskappe wys. Wanneer dit af is, kan werwe nie aanmeldporboodskappe wys nie.</translation>
 <translation id="7554752735887601236">'n Werf gebruik tans jou mikrofoon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804248752222191302">'n Werf gebruik tans jou kamera</translation>
 <translation id="7807060072011926525">Verskaf deur Google</translation>
-<translation id="7822573154188733812">Chrome blokkeer werwe om derdepartywebkoekies te gebruik om jou na te spoor terwyl jy blaai. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Speel tans media</translation>
 <translation id="783819812427904514">Ontdemp video</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
 <translation id="8609465669617005112">Skuif op</translation>
 <translation id="8617611086246832542">Wanneer dit aan is, word die lessenaaraansig van webwerwe gewys. Wanneer dit af is, word die mobielaansig van webwerwe gewys.</translation>
-<translation id="8649036394979866943">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Wanneer dit aan is, kan werwe vra om jou hande na te spoor. Wanneer dit af is, kan werwe nie jou hande naspoor nie.</translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>

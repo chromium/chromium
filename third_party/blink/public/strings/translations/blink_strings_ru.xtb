@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Доступ к камере разрешен</translation>
 <translation id="4664250907885839816">Часть адреса после символа "<ph name="ATSIGN" />" не должна содержать символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Воспроизведение в режиме "Картинка в картинке"</translation>
-<translation id="4792862212177489858">Разрешить доступ к геоданным</translation>
 <translation id="4812940957355064477">Введите число.</translation>
 <translation id="49269513399674318">Использовать микрофон</translation>
 <translation id="4975562563186953947">Выбрано: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Значение должно быть больше или равно <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5239623327352565343">Доступ к данным о местоположении разрешен</translation>
 <translation id="5307600278924710095">Введите часть адреса до символа "<ph name="ATSIGN" />". Адрес "<ph name="INVALIDADDRESS" />" неполный.</translation>
 <translation id="5334352251556557839">Не удалось воспроизвести медиафайл.</translation>
 <translation id="537648784377940524">Минимальная дата (<ph name="MIN_DATE_OR_TIME" />) должна быть раньше максимальной даты (<ph name="MAX_DATE_OR_TIME" />)</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Не удалось загрузить плагин</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
-<translation id="7080893216867146095">Доступ к геоданным разрешен</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>
 <translation id="7134810312945846184">Использовать микрофон и камеру</translation>
 <translation id="7263440858009898357">Выберите один из пунктов списка.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Укажите значение времени от <ph name="MINIMUM_TIME" /> до <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">Число файлов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Выберите файл.</translation>
+<translation id="8533587060884335451">Точное местоположение</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Переносить строки</translation>
 <translation id="8750798805984357768">Выберите один из вариантов.</translation>

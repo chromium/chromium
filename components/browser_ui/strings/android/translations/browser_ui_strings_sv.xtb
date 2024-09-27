@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Tillåt tredjepartsinloggning på en viss webbplats.</translation>
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
+<translation id="310979712355504754">Ta bort alla</translation>
 <translation id="3114012059975132928">Videospelare</translation>
 <translation id="3115898365077584848">Visa info</translation>
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> har valts</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> tillåts</translation>
 <translation id="7276071417425470385">När detta är aktiverat kan webbplatser be om att få använda VR-enheter. När detta är inaktiverat får webbplatser inte använda VR-enheter.</translation>
-<translation id="7284451015630589124">Du blockerade webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera spårningsskydd<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Du brukar blockera aviseringar. Tryck på Info om du vill tillåta dem.</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7368695150573390554">All offlinedata raderas</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7425915948813553151">Mörkt tema för webbplatser</translation>
-<translation id="7474522811371247902">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies tillåts dock på den här webbplatsen eftersom den förlitar sig på att de tillhandahåller grundläggande tjänster.\n\nÖppna inställningarna för att <ph name="BEGIN_LINK" />hantera spårningsskydd<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">När detta är aktiverat kan webbplatser visa inloggningspromptar. När detta är inaktiverat får webbplatser inte visa inloggningspromptar.</translation>
 <translation id="7554752735887601236">En webbplats använder mikrofonen</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7804248752222191302">En webbplats använder kameran</translation>
 <translation id="7807060072011926525">Tillhandahålls av Google</translation>
-<translation id="7822573154188733812">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera spårningsskydd<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Spelar upp media</translation>
 <translation id="783819812427904514">Slå på ljudet för videon</translation>
 <translation id="7846076177841592234">Rensa val</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>
-<translation id="8649036394979866943">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera spårningsskydd<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">När detta är aktiverat kan webbplatser be om att få spåra dina händer. När detta är inaktiverat får webbplatser inte spåra dina händer.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>

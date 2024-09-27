@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="4718048029184481307">ছবির-মধ্যে-ছবি মোডে চলছে</translation>
-<translation id="4792862212177489858">লোকেশন শেয়ার করুন</translation>
 <translation id="4812940957355064477">দয়া করে একটি সংখ্যা লিখুন৷</translation>
 <translation id="49269513399674318">মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টি নির্বাচিত</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">মানটি অবশ্যই <ph name="MINIMUM" />এর চেয়ে বেশি বা সমান হবে৷</translation>
 <translation id="5196716972587102051">২</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">লোকেশনের অনুমতি আছে</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' অনুসরণ করে একটি অংশ লিখুন৷ '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ৷</translation>
 <translation id="5334352251556557839">মিডিয়া চালানো যাচ্ছে না।</translation>
 <translation id="537648784377940524">আগের তারিখ (<ph name="MIN_DATE_OR_TIME" />) অবশ্যই পরের তারিখের (<ph name="MAX_DATE_OR_TIME" />) আগে লিখতে হবে।</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">প্লাগ-ইন লোড করা যায়নি।</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি দৈর্ঘ্যের করুন (আপনি বর্তমানে ১টি অক্ষর ব্যবহার করেছেন)।</translation>
-<translation id="7080893216867146095">লোকেশন শেয়ার করা অনুমোদিত</translation>
 <translation id="709897737746224366">দয়া করে অনুরোধ হওয়া বিন্যাসটি মেলান৷</translation>
 <translation id="7134810312945846184">মাইক্রোফোন ও ক্যামেরা ব্যবহার করুন</translation>
 <translation id="7263440858009898357">তালিকা থেকে একটি আইটেম নির্বাচন করুন৷ </translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">সময়ের মান অবশ্যই <ph name="MINIMUM_TIME" /> থেকে <ph name="MAXIMUM_TIME" />-এর মধ্যে হতে হবে।</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> টি ফাইল</translation>
 <translation id="8451268428117625855">দয়া করে একটি ফাইল নির্বাচন করুন৷</translation>
+<translation id="8533587060884335451">যথাযথ লোকেশন ব্যবহার করুন</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">লাইন র‍্যাপ করা</translation>
 <translation id="8750798805984357768">দয়া করে বিকল্পগুলির একটি নির্বাচন করুন৷</translation>

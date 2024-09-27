@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Vumela ukungena ngemvume kwenkampani yangaphandle kusayithi elithile.</translation>
 <translation id="310297983047869047">Islayidi sangaphambilini</translation>
 <translation id="3109724472072898302">Igoqiwe</translation>
+<translation id="310979712355504754">Susa konke</translation>
 <translation id="3114012059975132928">Isidlali sevidiyo</translation>
 <translation id="3115898365077584848">Khombisa ulwazi</translation>
 <translation id="3123473560110926937">Kuvinjelwe kwamanye amasayithi</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> kukhethiwe</translation>
 <translation id="7260727271532453612">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvunyelwe</translation>
 <translation id="7276071417425470385">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi ento engekho ngokoqobo. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi ento engekho ngokoqobo.</translation>
-<translation id="7284451015630589124">Uvimbe amasayithi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza. Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukuvikela kwakho kokulandela<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Uvamise ukuvimba izaziso. Ukuze uvumele, thepha imininingwane.</translation>
 <translation id="7366415735885268578">Engeza isayithi</translation>
 <translation id="7368695150573390554">Noma iyiphi idatha engekho ku-inthanethi izosulwa</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Buza kuqala</translation>
 <translation id="7423538860840206698">Kuvinjelwe kusukela ekufundeni ibhodi lokunamathisela</translation>
 <translation id="7425915948813553151">Itimu emnyama yamasayithi</translation>
-<translation id="7474522811371247902">I-Chrome ikhawulela amasayithi amaningi ekusebenziseni amakhukhi ongahlangene ngqo. Kodwa amakhukhi ongahlangene ngqo awavunyelwe kule sayithi ngenxa yokuthi ithembela kuwo ukuze ahlinzeke ngamasevisi ayisisekelo.\n\nAmasethingi okuvakasha ukuze <ph name="BEGIN_LINK" />uphathe izivikelo zokulandelela zakho<ph name="END_LINK" /></translation>
 <translation id="7521387064766892559">I-JavaScript</translation>
 <translation id="7547989957535180761">Lapho ivuliwe, amasayithi angabonisa imiyalo yokungena ngemvume. Lapho ivaliwe, amasayithi awakwazi ukubonisa imiyalo yokungena ngemvume.</translation>
 <translation id="7554752735887601236">Isayithi isebenzisa imakrofoni yakho</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Cha ngiyabonga</translation>
 <translation id="7804248752222191302">Isayithi lisebenzisa ikhamera yakho</translation>
 <translation id="7807060072011926525">Kuhlinzekwe yi-Google</translation>
-<translation id="7822573154188733812">I-Chrome ikhawulela amasayithi amaningi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza. Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukuvikela kwakho kokulandela<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Ukudlala imidiya</translation>
 <translation id="783819812427904514">Susa ukuthula kuvidiyo</translation>
 <translation id="7846076177841592234">Khansela ukukhetha</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
 <translation id="8617611086246832542">Lapho ivuliwe, kuboniswa ukubuka kwedeskithophu yamawebhusayithi. Lapho ivaliwe, kuboniswa ukubuka kweselula yamawebhusayithi.</translation>
-<translation id="8649036394979866943">I-Chrome ikhawulela amasayithi amaningi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukuvikela kwakho kokulandela<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Uma kuvuliwe, amasayithi angacela ukulandelela izandla zakho. Uma kuvaliwe, amasayithi angeke alandelele izandla zakho.</translation>
 <translation id="8676374126336081632">Sula okokufaka</translation>
 <translation id="8681886425883659911">Izikhangiso zivinjelwe kumasayithi aziwa ngokubonisa izikhangiso ezizivelelayo noma ezidukisayo</translation>

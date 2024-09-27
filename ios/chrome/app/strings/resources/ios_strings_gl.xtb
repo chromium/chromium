@@ -301,7 +301,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2377336083033403521">Facer buscas nas pestanas…</translation>
 <translation id="2381405137052800939">Opcións básicas</translation>
 <translation id="2386793615875593361">Seleccionouse un</translation>
-<translation id="2387703759148866940">AutoFill Passwords</translation>
 <translation id="2390457533592708044">Oculta <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Non se pode entregar o paquete</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
@@ -606,6 +605,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3982893814825393515">Informar dun problema…</translation>
 <translation id="398604237578616937">Sesión iniciada como <ph name="USER_EMAIL" />. Abrir menú da conta.</translation>
+<translation id="3986739045730058129">Ir á pestana</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="3994422733891749358">Escolle que notificacións queres recibir</translation>
@@ -759,6 +759,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
 <translation id="4717844083556844785">A páxina web actual está no modo de incógnito</translation>
 <translation id="4719927025381752090">Ofrecer a tradución</translation>
+<translation id="4720530280568305198">A túa selección abriuse nunha pestana nova</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4742407542027196863">Xestionar contrasinais…</translation>
 <translation id="4742897645503301228">Ocultar Facer seguimento do prezo</translation>
@@ -1417,7 +1418,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7730973429297233609">Selecciona a conta que queres usar para gardar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7744192722284567281">O contrasinal viuse implicado nunha violación da seguranza dos datos</translation>
-<translation id="7746165521091043703">Abre os axustes de AutoFill Password (Autocompletar contrasinal)</translation>
 <translation id="7749790401023484470">Non seleccionaches ningún texto.</translation>
 <translation id="7757015014239760147">Sen nome de usuario ••••••••</translation>
 <translation id="775755486779745798">Autocompletar o mes de caducidade <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
-<translation id="7978018860671536736">3. Toca AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="797824194429476746">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de maneira permanente.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>

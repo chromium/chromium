@@ -250,6 +250,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1174366174291287894">A sua ligação é sempre segura a menos que o Chrome indique o contrário</translation>
 <translation id="1175131936083782305">O seu administrador desativou esta funcionalidade.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
+<translation id="1175572348579024023">Deslocar</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1176471985365269981">Sem autorização para editar ficheiros ou pastas no seu dispositivo</translation>
 <translation id="1177073277575830464">A configuração rápida do Android está concluída. Continue a configuração no seu <ph name="DEVICE_TYPE" />.</translation>
@@ -1428,6 +1429,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1997616988432401742">Os seus certificados</translation>
 <translation id="1998715278591719161">Com autorização para monitorizar as suas mãos</translation>
 <translation id="1999115740519098545">No arranque</translation>
+<translation id="1999763610967697511">Arrastar e largar</translation>
 <translation id="2002109485265116295">Tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para ativar os dados de "<ph name="NAME" />", primeiro, ligue-se a uma rede Wi-Fi.</translation>
@@ -2923,6 +2925,7 @@ Quer pará-lo?</translation>
 <translation id="304644035656848980">Pré-visualização do microfone</translation>
 <translation id="3046910703532196514">Página Web, Completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047678109605649715">Não existem vozes em <ph name="LANGUAGE" /> no dispositivo. Liberte espaço no dispositivo e tente novamente.</translation>
 <translation id="3048336643003835855">Dispositivos HID do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Ouvir (k)</translation>
 <translation id="3048742847101793553">A sua organização bloqueou este ficheiro porque a análise falhou.</translation>
@@ -5376,6 +5379,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4853020600495124913">Abrir numa &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolhe a conta parental para aprovação</translation>
 <translation id="485480310608090163">Mais definições e autorizações</translation>
+<translation id="485806788160414322">Reproduzir ou pausar o conteúdo multimédia</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Som desativado pelo seu administrador</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>

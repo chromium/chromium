@@ -266,6 +266,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
 <translation id="228704530595896923">Lista de opcións para compartir.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestana}other{Ver <ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="22981027763501686">Sincroniza os datos para obter os marcadores, o historial e outra información dos teus outros dispositivos</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
@@ -1301,6 +1302,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" /> Escolle unha conta.</translation>
 <translation id="696447261358045621">Saír do modo de incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestana con actividade nova en grupos de pestanas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestanas con actividade nova en grupos de pestanas compartidos}}</translation>
 <translation id="6971862865055170158">Non aprobar</translation>
 <translation id="6978717888677691380">Sitios bloqueados</translation>
 <translation id="6979737339423435258">Desde sempre</translation>
@@ -1516,6 +1518,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7896724475402191389">Contido para mentes novas (desactivado)</translation>
 <translation id="7903184275147100332">Esta acción pode tardar un minuto</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 bloqueada pola túa organización}other{# bloqueadas pola túa organización}}</translation>
 <translation id="7914399737746719723">Instalouse a aplicación</translation>
 <translation id="7919123827536834358">Traducir automaticamente texto escrito nestes idiomas</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>

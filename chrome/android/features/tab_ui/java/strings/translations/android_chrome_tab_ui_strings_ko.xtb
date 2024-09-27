@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="266935134738038806">사이트 방문</translation>
+<translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{탭 <ph name="ONE_ADDED" />개 추가됨, <ph name="ANY_CHANGED" />개 변경됨, <ph name="ANY_CLOSED" />개 닫힘}other{탭 <ph name="MANY_ADDED" />개 추가됨, <ph name="ANY_CHANGED" />개 변경됨, <ph name="ANY_CLOSED" />개 닫힘}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" />시간 전 생성됨}other{<ph name="NUM_HOURS_MANY" />시간 전 생성됨}}</translation>

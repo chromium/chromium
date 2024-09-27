@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Πορτοκαλί</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα ή διαγράψτε την, αν δεν τη χρειάζεστε πλέον.
+
+Εάν τη διαγράψετε, όλοι οι χρήστες θα χάσουν άμεσα την πρόσβαση στην ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, ενώ θα διαγραφεί και από όλες τις συσκευές.</translation>
 <translation id="1340839264183302272">Αποχώρηση από την ομάδα</translation>
 <translation id="1419023007528516122">Με αυτή την ενέργεια θα διαγραφεί οριστικά η ομάδα από τη συσκευή σας</translation>
 <translation id="1486715732399361704">Μπορείτε να βρείτε εδώ όλες τις ομάδες καρτελών</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
+<translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_ONE" /> ώρα}other{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_MANY" /> ώρες}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
+<translation id="5615302411300498438">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα. Εναλλακτικά, αποχωρήστε.
+
+Εάν αποχωρήσετε, θα χάσετε αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Επαναφορά καρτέλας}other{Επαναφορά καρτελών}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και θα διαγραφεί από όλες τις συσκευές</translation>
 <translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
+<translation id="8635399646025169806">Να διατηρηθεί η ομάδα καρτελών;</translation>
 <translation id="870736955561925754">Να κλείσει η καρτέλα και να διαγραφεί η ομάδα;</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8730999928494395583">Η δραστηριότητά σας σε αυτές τις καρτέλες ανώνυμης περιήγησης θα καταργηθεί από αυτήν τη συσκευή.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MONTHS_ONE" /> μήνα}other{Δημιουργήθηκε πριν από <ph name="NUM_MONTHS_MANY" /> μήνες}}</translation>
+<translation id="8804742093141782941">Διατήρηση ομάδας</translation>
 <translation id="8820741577754260431">Δείτε πτώσεις τιμών στις καρτέλες σας.</translation>
 <translation id="8887921976452567404">Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών.</translation>
 <translation id="8915916167043355778">Κλείσιμο όλων</translation>

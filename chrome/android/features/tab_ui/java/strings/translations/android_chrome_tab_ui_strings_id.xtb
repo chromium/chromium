@@ -41,6 +41,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
+<translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> diubah, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> diubah, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Dibuat <ph name="NUM_HOURS_ONE" /> jam lalu}other{Dibuat <ph name="NUM_HOURS_MANY" /> jam lalu}}</translation>

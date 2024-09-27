@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Konkreetse saidi jaoks kolmanda osapoole sisselogimise lubamine.</translation>
 <translation id="310297983047869047">Eelmine slaid</translation>
 <translation id="3109724472072898302">Ahendatud</translation>
+<translation id="310979712355504754">Kustuta kõik</translation>
 <translation id="3114012059975132928">Videopleier</translation>
 <translation id="3115898365077584848">Kuva teave</translation>
 <translation id="3123473560110926937">Blokeeritud teatud saitidel</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
 <translation id="7276071417425470385">Kui see on sisse lülitatud, võivad saidid küsida luba VR-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid VR-seadmeid kasutada.</translation>
-<translation id="7284451015630589124">Blokeerisite saitide jaoks kolmanda osapoole küpsisefailide kasutamise sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Tavaliselt blokeerite märguanded. Lubamiseks puudutage valikut Üksikasjad.</translation>
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7368695150573390554">Kõik võrguvälised andmed kustutatakse</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
-<translation id="7474522811371247902">Chrome piirab enamikul saitidel kolmanda osapoole küpsisefailide kasutamist. Kolmanda osapoole küpsisefailid on sellel saidil siiski lubatud, kuna need sõltuvad nende pakutavatest põhiteenustest.\n\nKülastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kui see on sisse lülitatud, saavad saidid sisselogimisviipasid kuvada. Kui see on välja lülitatud, ei saa saidid sisselogimisviipasid kuvada.</translation>
 <translation id="7554752735887601236">Sait kasutab teie mikrofoni</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Tänan, ei</translation>
 <translation id="7804248752222191302">Sait kasutab teie kaamerat</translation>
 <translation id="7807060072011926525">Pakub Google</translation>
-<translation id="7822573154188733812">Chrome blokeerib saitide puhul kolmanda osapoole küpsisefailide kasutamise teie jälgimiseks sirvimise ajal. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Meedia esitamine</translation>
 <translation id="783819812427904514">Video vaigistuse tühistamine</translation>
 <translation id="7846076177841592234">Tühista valik</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
 <translation id="8617611086246832542">Kui see on sisse lülitatud, kuvatakse veebisaitide arvutivaade. Kui see on välja lülitatud, kuvatakse veebisaitide mobiilivaade.</translation>
-<translation id="8649036394979866943">Chrome piirab enamiku saitide jaoks kolmanda osapoole küpsisefailide kasutamist sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kui see on sisse lülitatud, saavad saidid küsida teie käeliigutuste jälgimiseks luba. Kui see on välja lülitatud, ei saa saidid teie käeliigutusi jälgida.</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8681886425883659911">Reklaamid on blokeeritud saitidel, mis teadaolevalt kuvavad sekkuvaid või eksitavaid reklaame</translation>

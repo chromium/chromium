@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="310297983047869047">Slaidi iliyotangulia</translation>
 <translation id="3109724472072898302">Imekunjwa</translation>
+<translation id="310979712355504754">Futa zote</translation>
 <translation id="3114012059975132928">Kicheza video</translation>
 <translation id="3115898365077584848">Onyesha Maelezo</translation>
 <translation id="3123473560110926937">Yamezuiwa kwenye baadhi ya tovuti</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Umechagua <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Umeruhusu <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya uhalisia pepe. Kikizimwa, tovuti haziwezi kutumia vifaa vya uhalisia pepe.</translation>
-<translation id="7284451015630589124">Umezuia tovuti zisitumie vidakuzi vya washirika wengine ili kukufuatilia unapovinjari. Nenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti ulinzi wako dhidi ya ufuatiliaji<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Huwa unazuia arifa. Ili uziruhusu, gusa Maelezo.</translation>
 <translation id="7366415735885268578">Ongeza tovuti</translation>
 <translation id="7368695150573390554">Data yoyote ya nje ya mtandao itafutwa</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7423538860840206698">Imezuiwa kusoma ubao wa kunakili</translation>
 <translation id="7425915948813553151">Mandhari meusi ya tovuti</translation>
-<translation id="7474522811371247902">Chrome huzuia tovuti nyingi zisitumie vidakuzi vya washirika wengine. Lakini vidakuzi vya washirika wengine vinaruhusiwa kwenye tovuti hii kwa sababu inavitegemea ili kutoa huduma za msingi.\n\nNenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti ulinzi wako dhidi ya ufuatiliaji<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kikiwashwa, tovuti zinaweza kuonyesha vidokezo vya kuingia katika akaunti. Kikizimwa, tovuti haziwezi kuonyesha vidokezo vya kuingia katika akaunti.</translation>
 <translation id="7554752735887601236">Tovuti inatumia maikrofoni yako</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
 <translation id="7807060072011926525">Imetolewa na Google</translation>
-<translation id="7822573154188733812">Chrome huzuia tovuti zisitumie vidakuzi vya washirika wengine kukufuatilia unapovinjari. Nenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti mipangilio yako ya kuzuia ufuatiliaji<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Kucheza maudhui</translation>
 <translation id="783819812427904514">Rejesha sauti ya video</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Imeruhusiwa (inapendekezwa)</translation>
 <translation id="8609465669617005112">Songa juu</translation>
 <translation id="8617611086246832542">Kikiwashwa, mwonekano wa kompyuta wa tovuti utaonyeshwa. Kikizimwa, mwonekano wa kifaa cha mkononi wa tovuti utaonyeshwa.</translation>
-<translation id="8649036394979866943">Chrome huzuia tovuti nyingi zisitumie vidakuzi vya washirika wengine ili kukufuatilia unapovinjari. Nenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti ulinzi wako dhidi ya ufuatiliaji<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Ukiwasha, tovuti zinaweza kuomba kufuatilia mijongeo ya mikono yako. Ukizima, tovuti haziwezi kufuatilia mijongeo ya mikono yako.</translation>
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>
 <translation id="8681886425883659911">Matangazo yamezuiwa kwenye tovuti ambazo huonyesha matangazo yanayopotosha au yanayokatiza matumizi</translation>

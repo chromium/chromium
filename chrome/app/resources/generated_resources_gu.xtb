@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">તમારું કનેક્શન હંમેશાં સુરક્ષિત હોય છે, સિવાય કે Chrome તમને અન્યથા જણાવે</translation>
 <translation id="1175131936083782305">તમારા ઍડમિનિસ્ટ્રેટરે આ સુવિધા બંધ કરી છે.</translation>
 <translation id="1175364870820465910">&amp;છાપો...</translation>
+<translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
 <translation id="1175914831232945926">અંકો</translation>
 <translation id="1176471985365269981">તમારા ડિવાઇસમાંની ફાઇલોમાં કે ફોલ્ડરોમાં ફેરફાર કરવાની મંજૂરી નથી</translation>
 <translation id="1177073277575830464">Androidનું ઝડપી સેટઅપ થઈ ગયું છે. તમારા <ph name="DEVICE_TYPE" /> પર સેટઅપ ચાલુ રાખો.</translation>
@@ -329,7 +330,9 @@
 <translation id="1227660082540388410">પાસકીમાં ફેરફાર કરો</translation>
 <translation id="1227993798763400520">કાસ્ટ કરવામાં નિષ્ફળ થયાં. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="1230417814058465809">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
+<translation id="1230961867057865279">જે પેજ <ph name="LANGUAGE" />માં ન હોય</translation>
 <translation id="1231426483209637778">આગલી વખતે તમે <ph name="DEVICE_TYPE" />નો ઉપયોગ કરો ત્યારે અમે તમારું નેટવર્ક યાદ રાખીશું</translation>
+<translation id="1231489110997683307">જે પેજ <ph name="LANGUAGE" />માં ન હોય</translation>
 <translation id="1231572247662419826">સાઇટ તમારા માઉસ ઇનપુટને કૅપ્ચર કરવા અને તેનો ઉપયોગ કરવા દેવા માટે પૂછી શકે છે</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
 <translation id="1233497634904001272">વિનંતી પૂરી કરવા માટે તમારા સુરક્ષા કોડને ફરી સ્પર્શ કરો.</translation>
@@ -1425,6 +1428,7 @@
 <translation id="1997616988432401742">તમારા પ્રમાણપત્રો</translation>
 <translation id="1998715278591719161">તમારા હાથને ટ્રૅક કરવાની મંજૂરી આપી છે</translation>
 <translation id="1999115740519098545">સ્ટાર્ટઅપ પર</translation>
+<translation id="1999763610967697511">ખેંચો અને છોડો</translation>
 <translation id="2002109485265116295">રિઅલ-ટાઇમ</translation>
 <translation id="2002160221914907025">પ્રયોગાત્મક AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ડેટાને સક્રિય કરવા માટે, પહેલા વાઇ-ફાઇ નેટવર્કથી કનેક્ટ કરો</translation>
@@ -3482,6 +3486,7 @@
 <translation id="3487649228420469005">સ્કૅન થઈ ગયું</translation>
 <translation id="3488199663160411179">નામ</translation>
 <translation id="3490695139702884919">ડાઉનલોડ કરી રહ્યાં છીએ... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">જો તમે તમારો પિન અથવા પાસવર્ડ ભૂલી જાઓ, તો સ્થાનિક ડેટા રિસ્ટોર કરી શકાય છે</translation>
 <translation id="3491669675709357988">તમારા બાળકના એકાઉન્ટનું Family Linkના માતાપિતાના યોગ્ય નિયંત્રણો માટે સેટઅપ કરવામાં આવ્યું નથી. એકવાર તમારું સેટઅપ પૂર્ણ થઈ જાય, પછી તમે માતાપિતાના યોગ્ય નિયંત્રણો ઉમેરી શકશો. તમે 'શોધખોળ કરો' ઍપમાં માતાપિતાના યોગ્ય નિયંત્રણો વિશે માહિતી મેળવી શકશો.</translation>
 <translation id="3491678231052507920">VR સત્રોમાં તમારા પ્રવેશ માટે, સાઇટ સામાન્ય રીતે તમારા વર્ચ્યુઅલ રિયાલિટી ડિવાઇસનો અને ડેટાનો ઉપયોગ કરે છે</translation>
 <translation id="3493043608231401654">ટૅબના ગ્રૂપમાંથી <ph name="TAB_TITLE" /> કાઢી નાખો</translation>
@@ -4160,6 +4165,7 @@
 <translation id="3948116654032448504">છબી માટે <ph name="SEARCH_ENGINE" /> પર &amp;શોધો</translation>
 <translation id="3948334586359655083">આ ટૅબ ઑડિયો ચલાવી રહ્યું છે</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
+<translation id="3948985214866944547">મોટાભાગના લોકો આ સાઇટ માટે સચોટ લોકેશન શેર કરવાનું બ્લૉક કરે છે</translation>
 <translation id="394984172568887996">IE થી આયાત કરેલ</translation>
 <translation id="3949999964543783947">સલામત રીતે ફાઇલો ડાઉનલોડ કરવા માટે <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
@@ -5371,6 +5377,7 @@
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
+<translation id="485806788160414322">મીડિયા ચલાવો અથવા થોભાવો</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">તમારા ઍડમિનિસ્ટ્રેટર મ્યૂટ કરવામાં આવ્યું છે</translation>
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
@@ -8546,6 +8553,7 @@ USB ડિવાઇસ</translation>
 <translation id="7212097698621322584">પિન બદલવા માટે તમારો વર્તમાન પિન દાખલ કરો. જો તમને તમારો પિન યાદ ન હોય, તો તમારે સુરક્ષા કોડ રીસેટ કરવો પડશે, અને પછી નવો પિન બનાવવો પડશે.</translation>
 <translation id="7214047272988222011">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />સિસ્ટમનો કૅમેરાનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
 <translation id="721490496276866468">પાસવર્ડ આયાત કરો</translation>
+<translation id="7217208603285112910">જે પસંદગી <ph name="LANGUAGE" />માં ન હોય</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="7219473482981809164">અમને ડાઉનલોડ કરવા માટે, એકથી વધુ ઉપલબ્ધ પ્રોફાઇલ મળી છે. આગળ વધતા પહેલાં, તમે જે ડાઉનલોડ કરવા ઇચ્છતા હો, તે પ્રોફાઇલ પસંદ કરો.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{એકેય નબળો પાસવર્ડ નથી}=1{1 નબળો પાસવર્ડ}one{{NUM_WEAK} નબળો પાસવર્ડ}other{{NUM_WEAK} નબળા પાસવર્ડ}}</translation>
@@ -9027,6 +9035,7 @@ USB ડિવાઇસ</translation>
 <translation id="7566118625369982896">Play ઍપ લિંક મેનેજ કરો</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">કીનું કૉમ્બિનેશન બનાવો</translation>
+<translation id="7568759527730933493">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો. આ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> પર મેનેજ કરેલા સેવા પ્રદાતાનો ઉપયોગ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ગોઠવવામાં આવેલા અમુક ડોમેન માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="756876171895853918">અવતારને કસ્ટમાઇઝ કરો</translation>
 <translation id="7568790562536448087">અપડેટ થઈ રહ્યું છે</translation>
 <translation id="7569983096843329377">શ્યામ</translation>
@@ -9189,6 +9198,7 @@ USB ડિવાઇસ</translation>
 <translation id="7676867886086876795">કોઈપણ ટેક્સ્ટ ફીલ્ડમાં ડિક્ટેશનને મંજૂરી આપવા માટે Googleને તમારો વૉઇસ મોકલો.</translation>
 <translation id="7678588695732963732">USB ડિવાઇસની બધી પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="7679171213002716280">અહીં મેનેજ કરેલા <ph name="PRINTER_COUNT" /> પ્રિન્ટર ઉપલબ્ધ છે.</translation>
+<translation id="7679895819123160382">તમારા ઇન્ટરનેટ ટ્રાફિકનો ઍક્સેસ ધરાવતા લોકો માટે, તમે કઈ સાઇટની મુલાકાત લો છો તે જોવાનું વધુ મુશ્કેલ બનાવો. <ph name="PRODUCT_NAME" /> દ્વારા DNS (ડોમેન નેમ સિસ્ટમ)માં સાઇટનું IP ઍડ્રેસ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ગોઠવવામાં આવેલા અમુક ડોમેન માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="7680416688940118410">ટચસ્ક્રીનનું કેલિબ્રેશન</translation>
 <translation id="7681095912841365527">સાઇટ બ્લૂટૂથનો ઉપયોગ કરી શકે</translation>
 <translation id="7681597159868843240">વર્ચ્યુઅલ રિયાલિટી કે ફિટનેસ ટ્રૅક કરવા જેવી સુવિધાઓ માટે સાઇટ સામાન્ય રીતે તમારા ડિવાઇસના મોશન સેન્સરનો ઉપયોગ કરે છે</translation>
@@ -9586,6 +9596,7 @@ USB ડિવાઇસ</translation>
 <translation id="7955105108888461311">રૂબરૂ પૂછો</translation>
 <translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
+<translation id="7956918070009672177">તમારા ડિવાઇસમાં કોઈ <ph name="LANGUAGE" /> વૉઇસ નથી. ઇન્ટરનેટ સાથે કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>
 <translation id="7958157896921135832">ફૉન્ટનું કદ વધારો</translation>
 <translation id="7958828865373988933">જો તમે <ph name="APP_NAME" /> માટે USB સિક્યુરિટી કી પર કોઈ પાસકી બનાવવા માગતા હો, તો હમણાં તેને દાખલ કરો અને ટચ કરો</translation>
@@ -10100,6 +10111,7 @@ USB ડિવાઇસ</translation>
 <translation id="8325413836429495820">તમારું ક્લિપબોર્ડ જોવાની મંજૂરી નથી</translation>
 <translation id="8326478304147373412">PKCS #7, પ્રમાણપત્ર ચેન</translation>
 <translation id="8327386430364625757">ગણિતિક ફૉન્ટ</translation>
+<translation id="8327490658947427005">જે પસંદગી <ph name="LANGUAGE" />માં ન હોય</translation>
 <translation id="8327676037044516220">પરવાનગીઓ અને કન્ટેન્ટ સેટિંગ</translation>
 <translation id="8328228852664998535">જો તમે ચાલુ રાખશો, તો તમારા પાસવર્ડ, પાસકી અને અન્ય ડેટા કાયમ માટે <ph name="BRAND" />માંથી ડિલીટ કરવામાં આવશે. તમે સાઇટ અથવા ઍપ માટે બનાવેલા કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>

@@ -301,7 +301,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2377336083033403521">Search tabs…</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
-<translation id="2387703759148866940">Autofill passwords</translation>
 <translation id="2390457533592708044">Hide '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
 <translation id="2410754283952462441">Choose an account</translation>
@@ -1419,7 +1418,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7730973429297233609">Select the account that you want to use to save <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Only on this device.</translation>
 <translation id="7744192722284567281">Found in data breach</translation>
-<translation id="7746165521091043703">Open autofill password settings</translation>
 <translation id="7749790401023484470">You have not selected any text.</translation>
 <translation id="7757015014239760147">No username ••••••••</translation>
 <translation id="775755486779745798">Autofill the expiry month <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
-<translation id="7978018860671536736">3. Tap auto-fill passwords</translation>
 <translation id="797824194429476746">The tabs will remain open on this device but the group will be permanently deleted.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>

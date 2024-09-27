@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଫଳରେ <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ</translation>
 <translation id="2286841657746966508">ବିଲିଂ ଠିକଣା</translation>
 <translation id="228704530595896923">ସେୟାରିଂ ବିକଳ୍ପଗୁଡ଼ିକର ତାଲିକା।</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ଟାବ ଦେଖନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଟାବ ଦେଖନ୍ତୁ}}</translation>
 <translation id="2297822946037605517">ଏହି ପୃଷ୍ଠାକୁ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="22981027763501686">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="230115972905494466">କୌଣସି ସୁସଙ୍ଗତ ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ।</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" />କୁ ବର୍ତ୍ତମାନ ଚୟନ କରାଯାଇଛି। ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
 <translation id="696447261358045621">ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରିଯାଆନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_ONE" /> ଟାବ ଦେଖନ୍ତୁ}other{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_MANY" /> ଟାବ ଦେଖନ୍ତୁ}}</translation>
 <translation id="6971862865055170158">ଅନୁମୋଦନ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6978717888677691380">ଆପଣ ବ୍ଲକ କରିଥିବା ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="6979737339423435258">ସବୁ ସମୟରେ</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ - ବନ୍ଦ ଅଛି</translation>
 <translation id="7903184275147100332">ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା 1 ବ୍ଲକ କରାଯାଇଛି}other{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା # ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="7914399737746719723">ଆପ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="7919123827536834358">ଏହି ଭାଷାଗୁଡ଼ିକରେ ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="7926975587469166629">କାର୍ଡର ଡାକନାମ</translation>

@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Yhteytesi on aina suojattu, ellei Chrome ilmoita toisin</translation>
 <translation id="1175131936083782305">Järjestelmänvalvoja on poistanut tämän ominaisuuden käytöstä.</translation>
 <translation id="1175364870820465910">Tulo&amp;sta...</translation>
+<translation id="1175572348579024023">Vieritä</translation>
 <translation id="1175914831232945926">Numerot</translation>
 <translation id="1176471985365269981">Laitteen tiedostojen tai kansioiden muokkaaminen kielletty</translation>
 <translation id="1177073277575830464">Androidin pikakäyttöönotto on valmis. Avaa <ph name="DEVICE_TYPE" /> ja jatka käyttöönottoa sillä.</translation>
@@ -1437,6 +1438,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1997616988432401742">Omat varmenteet</translation>
 <translation id="1998715278591719161">Käsien seuraaminen sallittu</translation>
 <translation id="1999115740519098545">Käynnistyksessä</translation>
+<translation id="1999763610967697511">Vedä ja pudota</translation>
 <translation id="2002109485265116295">Reaaliaikainen</translation>
 <translation id="2002160221914907025">Kokeellinen tekoäly</translation>
 <translation id="2003130567827682533">Jos haluat aktivoida dataa (<ph name="NAME" />), muodosta yhteys Wi-Fi-verkkoon.</translation>
@@ -5385,6 +5387,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4853020600495124913">Avaa uudessa ikkunassa</translation>
 <translation id="4854317507773910281">Valitse vanhemman tili hyväksymistä varten</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
+<translation id="485806788160414322">Toista mediaa tai keskeytä se</translation>
 <translation id="4858913220355269194">Litti</translation>
 <translation id="486213875233855629">Järjestelmänvalvojan mykistämä</translation>
 <translation id="4862642413395066333">OCSP-vastauksien allekirjoittaminen</translation>

@@ -250,6 +250,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1174366174291287894">Mae eich cysylltiad bob amser yn ddiogel oni bai bod Chrome yn dweud wrthych fel arall</translation>
 <translation id="1175131936083782305">Mae eich gweinyddwr wedi analluogi'r nodwedd hon.</translation>
 <translation id="1175364870820465910">&amp;Argraffu...</translation>
+<translation id="1175572348579024023">Sgrolio</translation>
 <translation id="1175914831232945926">Digidau</translation>
 <translation id="1176471985365269981">Ni chaniateir golygu ffeiliau na ffolderi ar eich dyfais</translation>
 <translation id="1177073277575830464">Mae proses gosodiad cyflym Android wedi'i gorffen. Parhau i osod ar eich <ph name="DEVICE_TYPE" />.</translation>
@@ -3500,6 +3501,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3487649228420469005">Sganio wedi gorffen</translation>
 <translation id="3488199663160411179">enw</translation>
 <translation id="3490695139702884919">Wrthi'n lawrlwytho... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Gellir adfer data lleol os byddwch yn anghofio eich PIN neu gyfrinair</translation>
 <translation id="3491669675709357988">Nid yw cyfrif eich plentyn wedi'i osod ar gyfer rheolaethau rhieni Family Link. Gallwch ychwanegu rheolaethau rhieni ar ôl i chi orffen gosod. Byddwch yn gweld gwybodaeth am reolaethau rhieni yn yr ap Explore.</translation>
 <translation id="3491678231052507920">Mae gwefannau fel arfer yn defnyddio eich dyfeisiau a data realiti rhithwir i roi mynediad i chi at sesiynau VR</translation>
 <translation id="3493043608231401654">Tynnu <ph name="TAB_TITLE" /> o'r grŵp tab</translation>
@@ -4178,6 +4180,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3948116654032448504">&amp;Chwilio <ph name="SEARCH_ENGINE" /> am Lun</translation>
 <translation id="3948334586359655083">Mae'r tab hwn yn chwarae sain</translation>
 <translation id="3948507072814225786">Gall <ph name="ORIGIN" /> olygu ffeiliau yn y ffolderi canlynol</translation>
+<translation id="3948985214866944547">Mae'r rhan fwyaf o bobl yn rhwystro rhannu union leoliad y wefan hon</translation>
 <translation id="394984172568887996">Mewnforiwyd O IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> i wneud lawrlwytho ffeiliau yn fwy diogel</translation>
 <translation id="3950820424414687140">Mewngofnodwch</translation>
@@ -5389,6 +5392,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4853020600495124913">Agor mewn &amp;ffenestr newydd</translation>
 <translation id="4854317507773910281">Dewiswch gyfrif rhiant i'w gymeradwyo</translation>
 <translation id="485480310608090163">Rhagor o osodiadau a chaniatadau</translation>
+<translation id="485806788160414322">Chwarae neu oedi cyfryngau</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Wedi'i ddistewi gan eich gweinyddwr</translation>
 <translation id="4862642413395066333">Llofnodi Ymatebion OCSP</translation>
@@ -9048,6 +9052,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7566118625369982896">Rheoli dolenni ap Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Creu cyfuniad bysellau</translation>
+<translation id="7568759527730933493">Defnyddiwch gysylltiad diogel i chwilio am gyfeiriad IP gwefan yn y DNS (System Enw Parth). Mae hwn yn defnyddio darparwr gwasanaeth a reolir yn <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Ni ddefnyddir cysylltiadau diogel ar gyfer rhai parthau sydd wedi'u ffurfweddu gan eich gweinyddwr.</translation>
 <translation id="756876171895853918">Personoleiddio rhithffurf</translation>
 <translation id="7568790562536448087">Wrthi’n diweddaru</translation>
 <translation id="7569983096843329377">Du</translation>
@@ -9210,6 +9215,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7676867886086876795">Anfonwch eich llais at Google i ganiatáu arddweud i unrhyw faes testun.</translation>
 <translation id="7678588695732963732">Ailosod pob caniatâd dyfais USB?</translation>
 <translation id="7679171213002716280">Mae yna <ph name="PRINTER_COUNT" /> argraffydd a reolir.</translation>
+<translation id="7679895819123160382">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae <ph name="PRODUCT_NAME" /> yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP gwefan yn y DNS (System Enw Parth). Ni ddefnyddir cysylltiadau diogel ar gyfer rhai parthau sydd wedi'u ffurfweddu gan eich gweinyddwr.</translation>
 <translation id="7680416688940118410">Calibradu'r sgrîn gyffwrdd</translation>
 <translation id="7681095912841365527">Gall y wefan ddefnyddio Bluetooth</translation>
 <translation id="7681597159868843240">Mae gwefannau fel arfer yn defnyddio synwyryddion symudiad eich dyfais ar gyfer nodweddion megis rhithwironedd neu olrhain ffitrwydd</translation>
@@ -9608,6 +9614,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7955105108888461311">Gofyn yn bersonol</translation>
 <translation id="7955177647836564772">Os caiff Smart Lock ei droi ymlaen a bod eich ffôn wedi'i ddatgloi, nid oes angen i chi roi cyfrinair na PIN</translation>
 <translation id="7956373551960864128">Argraffyddion rydych wedi'u cadw</translation>
+<translation id="7956918070009672177">Does dim lleisiau <ph name="LANGUAGE" /> ar eich dyfais. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="7957074856830851026">Gweld gwybodaeth am y ddyfais, megis ei rhif cyfresol neu rif adnabod ased</translation>
 <translation id="7958157896921135832">Cynyddu maint y ffont</translation>
 <translation id="7958828865373988933">Os ydych am greu cod pas ar gyfer <ph name="APP_NAME" /> ar allwedd ddiogelwch USB, mewnosodwch hi a chyffwrddwch â hi nawr</translation>

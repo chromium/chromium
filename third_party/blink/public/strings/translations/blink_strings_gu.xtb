@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ને અનુસરી રહેલા ભાગમાં '<ph name="INVALIDCHARACTER" />' પ્રતીક શામેલ હોવું જોઈએ નહીં.</translation>
 <translation id="4718048029184481307">ચિત્રમાં ચિત્રમાંથી ચલાવી રહ્યાં છીએ</translation>
-<translation id="4792862212177489858">લોકેશન શેર કરો</translation>
 <translation id="4812940957355064477">કૃપા કરીને એક નંબર દાખલ કરો.</translation>
 <translation id="49269513399674318">માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> પસંદ કર્યા</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">મૂલ્ય <ph name="MINIMUM" /> જેટલું અથવા આનાથી વધુ હોવું આવશ્યક છે.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">લોકેશનની મંજૂરી છે</translation>
 <translation id="5307600278924710095">કૃપા કરીને '<ph name="ATSIGN" />' ની આગળનો ભાગ દાખલ કરો. '<ph name="INVALIDADDRESS" />' અપૂર્ણ છે.</translation>
 <translation id="5334352251556557839">મીડિયા ચલાવવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="537648784377940524">ન્યૂનતમ તારીખ (<ph name="MIN_DATE_OR_TIME" />) એ મહત્તમ તારીખ (<ph name="MAX_DATE_OR_TIME" />) કરતાં પહેલાંની હોવી આવશ્યક છે.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">પ્લગિન લોડ કરી શક્યાં નથી.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">કૃપા કરીને આ ટેક્સ્ટને <ph name="MIN_CHARACTERS" /> અથવા તેથી વધુ અક્ષર સુધી લંબાવો (તમે હાલમાં 1 અક્ષરનો ઉપયોગ કરી રહ્યાં છો).</translation>
-<translation id="7080893216867146095">લોકેશન શેર કરવાની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="709897737746224366">કૃપા કરીને વિનંતી કરેલા ફોર્મેટ સાથે મેળ કરો.</translation>
 <translation id="7134810312945846184">માઇક્રોફોન અને કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="7263440858009898357">કૃપા કરીને સૂચિમાંથી એક આઇટમ પસંદ કરો.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">મૂલ્ય <ph name="MINIMUM_TIME" /> અને <ph name="MAXIMUM_TIME" />ની વચ્ચેનું હોવું જોઈએ.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ફાઇલ</translation>
 <translation id="8451268428117625855">કૃપા કરીને કોઈ ફાઇલ પસંદ કરો.</translation>
+<translation id="8533587060884335451">સચોટ લોકેશનનો ઉપયોગ કરો</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">લાઇન વીંટો</translation>
 <translation id="8750798805984357768">કૃપા કરીને આ વિકલ્પોમાંથી કોઈ એક પસંદ કરો.</translation>

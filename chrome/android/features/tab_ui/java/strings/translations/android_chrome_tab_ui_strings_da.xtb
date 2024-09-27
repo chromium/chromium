@@ -41,6 +41,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="2662028055331606429">Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøg website</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane blev tilføjet, <ph name="ANY_CHANGED" /> blev ændret, og <ph name="ANY_CLOSED" /> blev lukket}one{<ph name="MANY_ADDED" /> fane blev tilføjet, <ph name="ANY_CHANGED" /> blev ændret, og <ph name="ANY_CLOSED" /> blev lukket}other{<ph name="MANY_ADDED" /> faner blev tilføjet, <ph name="ANY_CHANGED" /> blev ændret, og <ph name="ANY_CLOSED" /> blev lukket}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Oprettet for <ph name="NUM_HOURS_ONE" /> time siden}one{Oprettet for <ph name="NUM_HOURS_MANY" /> time siden}other{Oprettet for <ph name="NUM_HOURS_MANY" /> timer siden}}</translation>

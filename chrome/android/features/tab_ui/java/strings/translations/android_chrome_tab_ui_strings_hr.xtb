@@ -41,6 +41,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="2569352796411618312">Prijedlog: broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
 <translation id="2662028055331606429">Ocjena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otvori web-lokaciju</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Dodana je <ph name="ONE_ADDED" /> kartica, promijenjeno: <ph name="ANY_CHANGED" />, zatvoreno: <ph name="ANY_CLOSED" />}one{Dodana je <ph name="MANY_ADDED" /> kartica, promijenjeno: <ph name="ANY_CHANGED" />, zatvoreno: <ph name="ANY_CLOSED" />}few{Dodane su <ph name="MANY_ADDED" /> kartice, promijenjeno: <ph name="ANY_CHANGED" />, zatvoreno: <ph name="ANY_CLOSED" />}other{Dodano je <ph name="MANY_ADDED" /> kartica, promijenjeno: <ph name="ANY_CHANGED" />, zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Izrađeno prije <ph name="NUM_HOURS_ONE" /> sat}one{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sat}few{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sata}other{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sati}}</translation>

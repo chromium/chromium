@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
 <translation id="5790391387506209808">laciverttaş</translation>
-<translation id="5810692306010756935">Mezuniyet</translation>
 <translation id="5816802250591013230">Kısayol atanmadı</translation>
 <translation id="5826644637650799838">Eser hakkında</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6965978654500191972">Cihaz</translation>
+<translation id="6972754398087986839">Başla</translation>
 <translation id="6975620886940770104">Parlak <ph name="GLOWSCAPES_FEATURE" /> bulunan <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
@@ -1587,6 +1587,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8881098542468797602">Test başarılı oldu</translation>
 <translation id="8882789155418924367">baykuşlar</translation>
 <translation id="8892443466059986410">Kısayolu düzenlemeyi iptal et</translation>
+<translation id="8897043028305808902">Dosya yeniden adlandırıldı</translation>
 <translation id="8898840733695078011">Sinyal gücü</translation>
 <translation id="8909114361904403025">yukarı ok</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>

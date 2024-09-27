@@ -250,6 +250,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1174366174291287894">Veza je uvek bezbedna ako vam Chrome ne kaže drugačije</translation>
 <translation id="1175131936083782305">Administrator je onemogućio ovu funkciju.</translation>
 <translation id="1175364870820465910">&amp;Odštampaj...</translation>
+<translation id="1175572348579024023">Pomeraj</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Nije im dozvoljeno da menjaju fajlove ili foldere na uređaju</translation>
 <translation id="1177073277575830464">Brzo podešavanje Android-a je završeno. Nastavite sa podešavanjem na uređaju <ph name="DEVICE_TYPE" />.</translation>
@@ -330,7 +331,9 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1227660082540388410">Izmenite pristupni kôd</translation>
 <translation id="1227993798763400520">Prebacivanje nije uspelo. Probajte ponovo.</translation>
 <translation id="1230417814058465809">Standardna zaštita je uključena. Koristite naprednu zaštitu da biste se dodatno zaštitili.</translation>
+<translation id="1230961867057865279">Stranica nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Zapamtićemo mrežu kada sledeći put koristite <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Stranica nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Sajtovi mogu da traže da snimaju i koriste unos mišem</translation>
 <translation id="1232569758102978740">Bez naslova</translation>
 <translation id="1233497634904001272">Ponovo dodirnite bezbednosni ključ da biste dovršili zahtev.</translation>
@@ -1427,6 +1430,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1997616988432401742">Vaši sertifikati</translation>
 <translation id="1998715278591719161">Dozvoljeno im je da prate ruke</translation>
 <translation id="1999115740519098545">Pri pokretanju</translation>
+<translation id="1999763610967697511">Prevlačenje i otpuštanje</translation>
 <translation id="2002109485265116295">U realnom vremenu</translation>
 <translation id="2002160221914907025">Eksperimentalna veštačka inteligencija</translation>
 <translation id="2003130567827682533">Da biste aktivirali podatke „<ph name="NAME" />“, prvo se povežite sa WiFi mrežom</translation>
@@ -5374,6 +5378,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4853020600495124913">Otvori u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi nalog roditelja za odobrenje</translation>
 <translation id="485480310608090163">Još podešavanja i dozvola</translation>
+<translation id="485806788160414322">Pusti ili pauziraj medije</translation>
 <translation id="4858913220355269194">Fric</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
@@ -8548,6 +8553,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7212097698621322584">Unesite aktuelni PIN da biste ga promenili. Ako ne znate PIN, morate da resetujete bezbednosni ključ, pa da napravite novi PIN.</translation>
 <translation id="7214047272988222011">Dozvoljeno je – <ph name="PERMISSION_DETAILS" />. Uključite <ph name="LINK_BEGIN" />pristup sistemskoj kameri<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Uvezi lozinke</translation>
+<translation id="7217208603285112910">Izabrana stavka nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
 <translation id="7219473482981809164">Pronašli smo više profila dostupnih za preuzimanje. Izaberite one koje želite da preuzmete pre nego što nastavite.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nema slabih lozinki}=1{1 slaba lozinka}one{{NUM_WEAK} slaba lozinka}few{{NUM_WEAK} slabe lozinke}other{{NUM_WEAK} slabih lozinki}}</translation>
@@ -10111,6 +10117,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8325413836429495820">Nije im dozvoljeno da vide privremenu memoriju</translation>
 <translation id="8326478304147373412">PKCS #7, lanac sertifikata</translation>
 <translation id="8327386430364625757">Matematički font</translation>
+<translation id="8327490658947427005">Izabrana stavka nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Podešavanja dozvola i sadržaja</translation>
 <translation id="8328228852664998535">Ako nastavite, lozinke, pristupni ključevi i drugi podaci će biti trajno izbrisani sa uređaja <ph name="BRAND" />. Nalozi koje ste otvorili za sajtove ili aplikacije neće biti izbrisani.</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>

@@ -1325,7 +1325,6 @@
 <translation id="342781501876943858">‏Chromium توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="3428151540071562330">‏یک یا چند سرور نشانی وب الگوی سرور DnsOverHttpsTemplates نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="3428789896412418755">سابقه گروه‌بندی‌شده</translation>
-<translation id="3430206873883193118">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری را ارائه دهید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3433111389595862568">نرم‌افزار کنفرانس و مشارکت</translation>
 <translation id="3433144818443565002">گپ صوتی و ویدیویی</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3447661539832366887">مالک این دستگاه بازی دایناسور را خاموش کرده است</translation>
 <translation id="3447884698081792621">نمایش  گواهی (صادرشده توسط <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">‏می‌تواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> مجاز است</translation>
 <translation id="3452404311384756672">فاصله زمانی واکشی:</translation>
 <translation id="3453962258458347894">تعداد امتحان مجدد</translation>
 <translation id="3457781733462096492">رپ و هیپ‌هاپ</translation>
@@ -2570,7 +2568,6 @@
 <translation id="5689516760719285838">مکان</translation>
 <translation id="569000877158168851">‏مقدار DnsOverHttpsTemplates مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی DnsOverHttpsMode روی <ph name="SECURE_DNS_MODE_AUTOMATIC" /> یا<ph name="SECURE_DNS_MODE_SECURE" /> تنظیم شده باشد.</translation>
 <translation id="5691848789297492617">ذخیره کردن کارت به‌صورت کامل باز شده است.</translation>
-<translation id="5692655638459249302">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید نرم‌افزار مخربی نصب کنند که مواردی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری شما را به‌سرقت می‌برد یا حذف می‌کند. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">‏برای تأیید و تکمیل خریدتان از Windows Hello استفاده شود؟</translation>
 <translation id="5699628521141772782">لبنیات و تخم‌مرغ</translation>
 <translation id="5700761515355162635">کوکی‌های شخص ثالث مجاز هستند</translation>
@@ -2718,7 +2715,6 @@
 <translation id="5995727681868049093">‏مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»</translation>
 <translation id="5996255674476750320">نمایش‌های خودرو</translation>
 <translation id="5997247540087773573">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
-<translation id="5999271311987646952">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />بدافزار پیدا کرده است<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">هارد راک و پراگرسیو</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6001839398155993679">بیایید شروع کنیم</translation>
@@ -2883,7 +2879,6 @@
 <translation id="6284449872909111707">پیامک و پیام‌رسانی فوری</translation>
 <translation id="6284517535531159884">نوع پیگردی گونه‌ها</translation>
 <translation id="6287197303017372967">با‌استفاده از ویژگی ناوبری، مسیرهای رسیدن به مقصد را با راهنمایی گام‌به‌گام دریافت کنید.</translation>
-<translation id="6288521565586608304">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزار مخربی را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد — برای مثال، با تغییر صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید. ‫Chrome اکیداً توصیه می‌کند برای جلوگیری از آسیب، به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">تخفیف پیدا شد</translation>
 <translation id="6289939620939689042">رنگ صفحه</translation>
 <translation id="6292819926564202163">‏موتور جستجوی شما در Chrome</translation>
@@ -3077,7 +3072,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">تحصیلات رایانه</translation>
 <translation id="6633476656216409494">نرم‌افزار بهره‌وری و کسب‌وکار</translation>
-<translation id="6638353438328951386">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />نرم‌افزار مخرب پیدا کرده است<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645291930348198241">به کوکی‌ها و داده‌های سایت دسترسی داشته باشد.</translation>
 <translation id="6645478838938543427">هشدارهای کاهش قیمت به <ph name="EMAIL_ADDRESS" /> ارسال خواهد شد</translation>
@@ -3291,7 +3285,6 @@
 <translation id="701757816833614688">آموزش هنرهای تجسمی و طراحی</translation>
 <translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="7023162328967545559">هشدار سرپرست</translation>
-<translation id="7024932305105294144">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />رمزگیری پیدا کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند که سایت‌های دیگری هستند تا شما را فریب دهند.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030164307377592766">تنظیمات مربوط به تکمیل روش‌های پرداخت را تغییر دهد</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
@@ -3369,7 +3362,6 @@
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» محدودیت پشتیبانی‌شده‌ای در این پلاتفرم نیست</translation>
 <translation id="717330890047184534">‏شناسه Gaia:</translation>
 <translation id="7173338713290252554">سابقه قیمت در سراسر وب</translation>
-<translation id="7173478186876671324">سرپرستتان <ph name="PERMISSION" /> شما را برای این سایت مسدود کرد</translation>
 <translation id="7174545416324379297">ادغام شد</translation>
 <translation id="7175097078723125014">گزینه ویرایش نشانی انتخاب شد</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
@@ -3403,7 +3395,6 @@
 <translation id="7221857374443660083">بانک شما می‌خواهد از هویت شما مطمئن شود</translation>
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
-<translation id="7227747683324411744">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزار مخربی را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد، برای مثال با تغییر دادن صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید.</translation>
 <translation id="7232352818707016189">کنش‌های بیشتر برای «مقایسه کردن جدول»</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
 <translation id="7234112195906418665">سفر و حمل‌ونقل</translation>
@@ -3624,7 +3615,6 @@
 <translation id="7598391785903975535">کمتر از <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> درحال حاضر نمی‌تواند این درخواست را انجام دهد.</translation>
 <translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
-<translation id="7605377493722372900">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است نرم‌افزار مخربی را نصب کنند که مواردی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری‌تان را به‌سرقت می‌برد یا حذف می‌کند.</translation>
 <translation id="7608583484192556132">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK_1" />آگهی‌های پیشنهادی سایت<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK_3" />مدیریت حریم خصوصی آگهی<ph name="END_LINK_3" /> بیشتر بدانید.</translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>
 <translation id="7613889955535752492">انقضا: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4077,7 +4067,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
 <translation id="8421158157346464398">اطلاعات نمایه کاری (مانند نام کاربری نمایه کاری شما)</translation>
-<translation id="8422228580902424274">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزاری را نصب کنید یا مواردی مثل گذرواژه، تلفن، یا شماره کارت اعتباری‌تان را دراختیار آن‌ها قرار دهید.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8427848540066057481">۷۵۰ × ۵۰۰ میلی‌متر</translation>
@@ -4228,7 +4217,6 @@
 <translation id="8722929331701811374">نوشت‌افزار (سربرگ)</translation>
 <translation id="8724824364712796726">پاکت بی۶</translation>
 <translation id="8725066075913043281">تلاش دوباره</translation>
-<translation id="8725667981218437315">دوربین و میکروفن</translation>
 <translation id="8726549941689275341">اندازه صفحه:</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8731268612289859741">کد امنیتی</translation>
@@ -4437,7 +4425,6 @@
 <translation id="9119042192571987207">بارگذاری‌شده</translation>
 <translation id="9119308212838450857">‫<ph name="PROVIDER_ORIGIN" /> می‌خواهد هویتتان را درستی‌سنجی کند</translation>
 <translation id="912327514020027767">دامن</translation>
-<translation id="912414390325846156">قبلاً انتخاب کرده بودید برای این سایت مجاز نباشد</translation>
 <translation id="9128870381267983090">اتصال به شبکه</translation>
 <translation id="9131119348384879525">محتوای محرمانه ضبط شود؟</translation>
 <translation id="9133861214150761123">حسابداری و حسابرسی</translation>

@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2703746758996815929">หากต้องการรับเคล็ดลับที่มีประโยชน์เกี่ยวกับ Chrome ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
+<translation id="2728851697704606655">แปลด้วย Google Lens</translation>
 <translation id="2736805085127235148">ตอนนี้การแจ้งเตือนของ Chrome ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="2754428955276778271">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
 
@@ -249,6 +250,7 @@
 <translation id="7581063337314642333">ไปที่ตารางกริดของแท็บใน Chrome</translation>
 <translation id="7599894504325210080">ขยายมุมมองการป้อนข้อความอัตโนมัติของ Chrome อยู่</translation>
 <translation id="7642373780953416937">รับการแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chrome ตรวจหาให้คุณโดยอัตโนมัติ</translation>
+<translation id="7660356333829433649">กลับมาที่นี่เพื่อดูเคล็ดลับที่มีประโยชน์เพิ่มเติมในการใช้ประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="7662994914830945754">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="7693590760643069321">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="7698568245838009292">Chrome ต้องการเข้าถึงกล้องถ่ายรูป</translation>
@@ -259,6 +261,7 @@
 <translation id="778855399387580014">เริ่มการค้นหาในแท็บใหม่ของ Chrome</translation>
 <translation id="7792140019572081272">Chrome ช่วยรักษาข้อมูลที่ละเอียดอ่อนของคุณให้ปลอดภัยด้วย Face ID</translation>
 <translation id="7855730255114109580">Google Chrome อัปเดตแล้ว</translation>
+<translation id="7861998090118873450">บันทึกรหัสผ่านใน Chrome</translation>
 <translation id="7897703007638178753">ดูแท็บล่าสุดใน Chrome</translation>
 <translation id="7948283758957877064">มีอะไรใหม่ใน Chrome</translation>
 <translation id="8000174216052461231">เคล็ดลับสำหรับ Chrome: รับการรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome</translation>
@@ -294,6 +297,7 @@
 <translation id="8558480467877843976">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่เรียกดูหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
 <translation id="8603022514504485810">เครื่องมือจัดการรหัสผ่านบน Google ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome"</translation>
+<translation id="8673726683583791503">เลือกซื้อด้วย Google Lens</translation>
 <translation id="8727043961453758442">ใช้ประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="8765470054473112089">เมื่อคุณพิมพ์ในแถบที่อยู่หรือช่องค้นหา Chrome จะส่งสิ่งที่คุณพิมพ์ไปยังเครื่องมือค้นหาเริ่มต้นเพื่อให้ได้รับการแนะนำที่ดียิ่งขึ้น ตัวเลือกนี้จะปิดไว้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="8772179140489533211">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>

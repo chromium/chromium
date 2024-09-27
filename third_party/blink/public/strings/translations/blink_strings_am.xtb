@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ካሜራ ተፈቅዷል</translation>
 <translation id="4664250907885839816">ከ«<ph name="ATSIGN" />» በኋላ የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="4718048029184481307">በሥዕል-ውስጥ-ሥዕልን በማጫወት ላይ</translation>
-<translation id="4792862212177489858">አካባቢ አጋራ</translation>
 <translation id="4812940957355064477">እባክዎ ቁጥር ያስገቡ።</translation>
 <translation id="49269513399674318">ማይክፎሮን ይጠቀሙ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ተመርጠዋል</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">ዋጋ ከ<ph name="MINIMUM" /> የሚበልጥ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ፔታ</translation>
+<translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
 <translation id="5307600278924710095">እባክዎ አንድ ክፍል ያስገቡና «<ph name="ATSIGN" />»ን ያስከትሉ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
 <translation id="537648784377940524">አነስተኛው ቀን (<ph name="MIN_DATE_OR_TIME" />) ከከፍተኛው ቀን (<ph name="MAX_DATE_OR_TIME" />) በፊት መምጣት አለበት።</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ተሰኪን መጫን አልተቻለም።</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
-<translation id="7080893216867146095">አካባቢ ማጋራት ይቻላል</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
 <translation id="7134810312945846184">ማይክሮፎን እና ካሜራ ይጠቀሙ</translation>
 <translation id="7263440858009898357">እባክዎ በዝርዝሩ ውስጥ አንድ ንጥል ይምረጡ።</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">እሴት በ<ph name="MINIMUM_TIME" /> እና <ph name="MAXIMUM_TIME" /> መካከል መሆን አለበት።</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ፋይሎች</translation>
 <translation id="8451268428117625855">እባክዎ ፋይል ይምረጡ።</translation>
+<translation id="8533587060884335451">ትክክለኛ አካባቢ ተጠቀም</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">የመስመር መጠቅለያ</translation>
 <translation id="8750798805984357768">እባክዎ ከእነዚህ አማራጮች ውስጥ አንዱን ይምረጡ።</translation>

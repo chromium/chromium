@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
 <translation id="3109724472072898302">Sbaleno</translation>
+<translation id="310979712355504754">Smazat vše</translation>
 <translation id="3114012059975132928">Přehrávač videa</translation>
 <translation id="3115898365077584848">Zobrazit informace</translation>
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou povolena</translation>
 <translation id="7276071417425470385">Když je tato možnost zapnutá, mohou weby žádat o použití zařízení pro virtuální realitu. Když je vypnutá, weby zařízení pro virtuální realitu používat nemohou.</translation>
-<translation id="7284451015630589124">Zablokovali jste webům používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="BEGIN_LINK" />spravovat ochranu před sledováním<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="7302486331832100261">Obvykle oznámení blokujete. Chcete-li je povolit, klepněte na Podrobnosti.</translation>
 <translation id="7366415735885268578">Přidání webu</translation>
 <translation id="7368695150573390554">Všechna offline data budou smazána</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
 <translation id="7425915948813553151">Tmavý motiv pro weby</translation>
-<translation id="7474522811371247902">Chrome většině webů omezuje používání souborů cookie třetích stran. Na tomto webu jsou však soubory cookie třetích stran povoleny, protože je potřebuje k poskytování základních služeb.\n\nPokud chcete <ph name="BEGIN_LINK" />spravovat ochranu před sledováním<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Když je tato možnost zapnutá, weby mohou zobrazovat výzvy k přihlášení. Když je tato možnost vypnutá, weby výzvy k přihlášení zobrazovat nemohou.</translation>
 <translation id="7554752735887601236">Webové stránky používají váš mikrofon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7804248752222191302">Web používá váš fotoaparát</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
-<translation id="7822573154188733812">Chrome brání webům v používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="BEGIN_LINK" />spravovat ochranu před sledováním<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="7835852323729233924">Přehrávání médií</translation>
 <translation id="783819812427904514">Zapnout zvuk videa</translation>
 <translation id="7846076177841592234">Zrušit výběr</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8617611086246832542">Když je tato možnost zapnutá, zobrazuje se verze webů pro počítače. Když je vypnutá, zobrazuje se verze webů pro mobilní zařízení.</translation>
-<translation id="8649036394979866943">Chrome většině webů brání v používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="BEGIN_LINK" />spravovat ochranu před sledováním<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="8676316391139423634">Když je tato možnost zapnutá, můžou weby žádat o sledování vašich rukou. Když je vypnutá, weby vaše ruce sledovat nemůžou.</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="8681886425883659911">Na webech, o kterých je známo, že zobrazují rušivé nebo zavádějící reklamy, jsou reklamy blokovány</translation>

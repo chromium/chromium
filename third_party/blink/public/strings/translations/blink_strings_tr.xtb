@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="4718048029184481307">Pencere içinde pencere modunda oynatılıyor</translation>
-<translation id="4792862212177489858">Konumu paylaş</translation>
 <translation id="4812940957355064477">Lütfen bir sayı girin.</translation>
 <translation id="49269513399674318">Mikrofonu kullan</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> öğe seçildi</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Değer <ph name="MINIMUM" /> veya daha büyük olmalıdır.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Konuma izin veriliyor</translation>
 <translation id="5307600278924710095">Lütfen başına "<ph name="ATSIGN" />" ekleyin. "<ph name="INVALIDADDRESS" />" adresi eksik.</translation>
 <translation id="5334352251556557839">Medya oynatılamıyor.</translation>
 <translation id="537648784377940524">Minimum tarih (<ph name="MIN_DATE_OR_TIME" />), Maksimum tarihten (<ph name="MAX_DATE_OR_TIME" />) önce gelmelidir.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Eklenti yüklenemedi.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
-<translation id="7080893216867146095">Konum paylaşımına izin veriliyor</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>
 <translation id="7134810312945846184">Mikrofon ve kamerayı kullan</translation>
 <translation id="7263440858009898357">Lütfen listeden bir öğe seçin.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Değer, <ph name="MINIMUM_TIME" /> ile <ph name="MAXIMUM_TIME" /> arasında olmalıdır.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> dosya</translation>
 <translation id="8451268428117625855">Lütfen bir dosya seçin.</translation>
+<translation id="8533587060884335451">Tam konumu kullan</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Satır kaydır</translation>
 <translation id="8750798805984357768">Lütfen bu seçeneklerden birini belirleyin.</translation>

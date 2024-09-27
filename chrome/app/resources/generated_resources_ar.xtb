@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">‏اتصالك آمن دائمًا ما لم يخبرك Chrome بعكس ذلك.</translation>
 <translation id="1175131936083782305">لقد أوقف مشرفك هذه الميزة.</translation>
 <translation id="1175364870820465910">ط&amp;باعة...</translation>
+<translation id="1175572348579024023">التمرير</translation>
 <translation id="1175914831232945926">أرقام</translation>
 <translation id="1176471985365269981">المواقع الإلكترونية التي لا يُسمح لها بتعديل الملفات أو المجلدات على جهازك</translation>
 <translation id="1177073277575830464">‏اكتملت خطوة الإعداد السريع لجهاز Android. يمكنك متابعة عملية الإعداد على جهاز <ph name="DEVICE_TYPE" />.</translation>
@@ -1433,6 +1434,7 @@
 <translation id="1997616988432401742">شهاداتك</translation>
 <translation id="1998715278591719161">المواقع الإلكترونية التي يُسمح لها بتتبّع حركات يديك</translation>
 <translation id="1999115740519098545">عند بدء التشغيل</translation>
+<translation id="1999763610967697511">السحب والإفلات</translation>
 <translation id="2002109485265116295">الوقت الفعلي</translation>
 <translation id="2002160221914907025">الذكاء الاصطناعي التجريبي</translation>
 <translation id="2003130567827682533">‏لتفعيل بيانات "<ph name="NAME" />"، يمكنك أولاً الاتصال بشبكة Wi-Fi.</translation>
@@ -4166,6 +4168,7 @@
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948334586359655083">تشغّل علامة التبويب هذه محتوى صوتيًا.</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
+<translation id="3948985214866944547">يَحظر معظم المستخدمين مشاركة الموقع الجغرافي الدقيق لهذا الموقع الإلكتروني.</translation>
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
@@ -5377,6 +5380,7 @@
 <translation id="4853020600495124913">فتح في &amp;نافذة جديدة</translation>
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
+<translation id="485806788160414322">تشغيل الوسائط أو إيقافها مؤقتًا</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="486213875233855629">الصوت مكتوم حسب إعدادات المشرف.</translation>
 <translation id="4862642413395066333">‏توقيع استجابات OCSP</translation>
@@ -9037,6 +9041,7 @@
 <translation id="7566118625369982896">‏إدارة روابط تطبيق Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">إنشاء مجموعة مفاتيح</translation>
+<translation id="7568759527730933493">‏استخدِم اتصالاً آمنًا للبحث عن عنوان IP لموقع إلكتروني في نظام أسماء النطاقات (DNS). يعتمد ذلك على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />، علمًا بأنّه لا يتم استخدام الاتصالات الآمنة لبعض النطاقات التي ضبطها المشرف.</translation>
 <translation id="756876171895853918">تخصيص الصورة الرمزية</translation>
 <translation id="7568790562536448087">تحديث</translation>
 <translation id="7569983096843329377">أسود</translation>
@@ -9199,6 +9204,7 @@
 <translation id="7676867886086876795">‏يمكنك إرسال صوتك إلى Google للسماح بالإملاء في أي حقل نصي.</translation>
 <translation id="7678588695732963732">‏هل تريد إعادة ضبط جميع أذونات أجهزة USB؟</translation>
 <translation id="7679171213002716280">تتوفّر <ph name="PRINTER_COUNT" /> طابعة مُدارة.</translation>
+<translation id="7679895819123160382">‏يمكنك الحفاظ على خصوصية حركة مرور بياناتك على الإنترنت لكي لا يطّلع الآخرون على المواقع الإلكترونية التي تزورها. يستخدم <ph name="PRODUCT_NAME" /> اتصالاً آمنًا للبحث عن عنوان IP الخاص بأي موقع إلكتروني في نظام أسماء النطاقات (DNS)، علمًا بأنّه لا يتم استخدام الاتصالات الآمنة لبعض النطاقات التي ضبطها المشرف.</translation>
 <translation id="7680416688940118410">معايرة الشاشة التي تعمل باللمس</translation>
 <translation id="7681095912841365527">يمكن للموقع الإلكتروني استخدام البلوتوث.</translation>
 <translation id="7681597159868843240">تستخدم المواقع الإلكترونية عادةً مستشعرات الحركة في جهازك لتتيح ميزات مثل الواقع الافتراضي أو تتبُّع مستوى اللياقة البدنية.</translation>
@@ -9597,6 +9603,7 @@
 <translation id="7955105108888461311">الطلب شخصيًا</translation>
 <translation id="7955177647836564772">‏في حال تفعيل مجموعة ميزات Smart Lock وكان هاتفك غير مقفل، لن تحتاج إلى إدخال كلمة مرور أو رقم تعريف شخصي.</translation>
 <translation id="7956373551960864128">الطابعات المحفوظة</translation>
+<translation id="7956918070009672177">ما مِن أصوات باللغة <ph name="LANGUAGE" /> على جهازك. يجب الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="7957074856830851026">الاطّلاع على معلومات الجهاز، مثل الرقم التسلسلي أو رقم تعريف مادة العرض</translation>
 <translation id="7958157896921135832">تكبير الخط</translation>
 <translation id="7958828865373988933">‏إذا أردت إنشاء مفتاح مرور يخصّ "<ph name="APP_NAME" />" وحفظه في مفتاح أمان USB، أدخِل مفتاح الأمان واضغط على الزر الآن.</translation>

@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Chrome तुम्हाला सांगत नाही तोपर्यंत तुमचे कनेक्शन नेहमी सुरक्षित असते</translation>
 <translation id="1175131936083782305">तुमचा अ‍ॅडमिनिस्ट्रेटरने हे वैशिष्‍ट्य बंद केले आहे.</translation>
 <translation id="1175364870820465910">&amp;मुद्रण...</translation>
+<translation id="1175572348579024023">स्क्रोल करा</translation>
 <translation id="1175914831232945926">अंक</translation>
 <translation id="1176471985365269981">तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर संपादित करण्याची अनुमती नाही</translation>
 <translation id="1177073277575830464">Android चे झटपट सेटअप पूर्ण झाले आहे. तुमच्या <ph name="DEVICE_TYPE" /> वर सेटअप सुरू ठेवा.</translation>
@@ -1437,6 +1438,7 @@
 <translation id="1997616988432401742">तुमची प्रमाणपत्रे</translation>
 <translation id="1998715278591719161">तुमचे हात ट्रॅक करण्याची अनुमती आहे</translation>
 <translation id="1999115740519098545">स्टार्टअप वर</translation>
+<translation id="1999763610967697511">ड्रॅग आणि ड्रॉप करा</translation>
 <translation id="2002109485265116295">रीअल टाइम</translation>
 <translation id="2002160221914907025">प्रायोगिक AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' डेटा ॲक्टिव्हेट करण्यासाठी, आधी वाय-फाय नेटवर्कशी कनेक्ट करा</translation>
@@ -3496,6 +3498,7 @@
 <translation id="3487649228420469005">स्कॅन पूर्ण झाले आहे</translation>
 <translation id="3488199663160411179">नाव</translation>
 <translation id="3490695139702884919">डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">तुम्ही तुमचा पिन किंवा पासवर्ड विसरल्यास, स्थानिक डेटा रिस्टोअर केला जाऊ शकतो</translation>
 <translation id="3491669675709357988">तुमच्‍या लहान मुलाचे खाते Family Link पालक नियंत्रणांसाठी सेट केलेले नाही. सेटअप पूर्ण केल्‍यानंतर तुम्‍ही पालक नियंत्रणे जोडू शकता. तुम्‍हाला Explore ॲपमध्ये पालक नियंत्रणांविषयी माहिती मिळेल.</translation>
 <translation id="3491678231052507920">तुम्हाला VR सेशन एंटर करू देण्यासाठी साइट सामान्यपणे तुमची आभासी वास्तविकता डिव्हाइस आणि डेटा वापरतात</translation>
 <translation id="3493043608231401654">टॅब गटामधून <ph name="TAB_TITLE" /> काढून टाका</translation>
@@ -4174,6 +4177,7 @@
 <translation id="3948116654032448504">इमेज <ph name="SEARCH_ENGINE" /> वर शोधा</translation>
 <translation id="3948334586359655083">हा टॅब ऑडिओ प्ले करत आहे</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> खालील फोल्डरमधील फाइल संपादित करू शकते</translation>
+<translation id="3948985214866944547">बहुतेक लोक या साइटसाठी अचूक स्थान शेअर करणे ब्लॉक करतात</translation>
 <translation id="394984172568887996">IE मधून आयातित</translation>
 <translation id="3949999964543783947">फाइल डाउनलोड करणे आणखी सुरक्षित करण्यासाठी <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
@@ -5383,6 +5387,7 @@
 <translation id="4853020600495124913">&amp;नवीन विंडोमध्ये उघडा</translation>
 <translation id="4854317507773910281">मंजुरीसाठी पालक खाते निवडा</translation>
 <translation id="485480310608090163">आणखी सेटिंग्ज आणि परवानग्या</translation>
+<translation id="485806788160414322">मीडिया प्ले करा किंवा थांबवा</translation>
 <translation id="4858913220355269194">फ्रिटझ</translation>
 <translation id="486213875233855629">तुमच्या अ‍ॅडमिनिस्ट्रेटरने म्यूट केले आहे</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद साइन करत आहे</translation>
@@ -9038,6 +9043,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7566118625369982896">Play ॲप लिंक व्‍यवस्‍थापित करा</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">की कॉंबिनेशन तयार करा</translation>
+<translation id="7568759527730933493">DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी सुरक्षित कनेक्शन वापरा. हे <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> येथे व्यवस्थापित केलेला सेवा पुरवठादार वापरते. तुमच्या ॲडमिनिस्ट्रेटरने कॉन्फिगर केलेल्या काही डोमेनसाठी सुरक्षित कनेक्शन वापरले जात नाहीत.</translation>
 <translation id="756876171895853918">अवतार कस्टमाइझ करा</translation>
 <translation id="7568790562536448087">अपडेट करीत आहे</translation>
 <translation id="7569983096843329377">काळा</translation>
@@ -9200,6 +9206,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7676867886086876795">कोणत्याही मजकूर फील्डमध्ये डिक्टेशनला अनुमती देण्यासाठी Google ला तुमचा व्हॉइस पाठवा.</translation>
 <translation id="7678588695732963732">सर्व USB डिव्हाइस परवानग्या रीसेट करायच्या का?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> व्यवस्थापित केलेले प्रिंटर आहेत.</translation>
+<translation id="7679895819123160382">तुमच्या इंटरनेट ट्रॅफिकचा ॲक्सेस असलेल्या लोकांसाठी तुम्ही कोणत्या साइटला भेट देता हे पाहणे कठीण करा. DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी <ph name="PRODUCT_NAME" /> सुरक्षित कनेक्शन वापरते. तुमच्या ॲडमिनिस्ट्रेटरने कॉन्फिगर केलेल्या काही डोमेनसाठी सुरक्षित कनेक्शन वापरले जात नाहीत.</translation>
 <translation id="7680416688940118410">टचस्क्रीन कॅलिब्रेशन</translation>
 <translation id="7681095912841365527">साइट ब्लूटूथ वापरू शकते</translation>
 <translation id="7681597159868843240">आभासी वास्तविकता किंवा फिटनेस ट्रॅकिंग यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसची मोशन सेन्सर वापरतात</translation>
@@ -9596,6 +9603,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7955105108888461311">प्रत्यक्ष मंजुरी घ्या</translation>
 <translation id="7955177647836564772">Smart Lock सुरू असल्यास आणि तुमचा फोन अनलॉक केलेला असल्यास, तुम्ही पासवर्ड किंवा पिन एंटर करणे आवश्यक नाही</translation>
 <translation id="7956373551960864128">तुमचे सेव्ह केलेले प्रिंटर</translation>
+<translation id="7956918070009672177">तुमच्या डिव्हाइसवर कोणतेही <ph name="LANGUAGE" /> आवाज नाहीत. इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7957074856830851026">सिरीअल नंबर किंवा मालमत्ता आयडी यांसारखी डिव्हाइसची माहिती पहा</translation>
 <translation id="7958157896921135832">फॉंटचा आकार वाढवा</translation>
 <translation id="7958828865373988933">तुम्हाला USB सिक्युरिटी कीवर <ph name="APP_NAME" /> साठी पासकी तयार करायची असल्यास, ती आता घाला आणि स्पर्श करा</translation>

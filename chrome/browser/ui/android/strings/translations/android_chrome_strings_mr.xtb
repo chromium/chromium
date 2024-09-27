@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही</translation>
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
 <translation id="228704530595896923">शेअरिंग पर्यायांची सूची.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब पहा}other{<ph name="TABS_COUNT_MANY" /> टॅब पहा}}</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
 <translation id="22981027763501686">तुमचे बुकमार्क, इतिहास आणि आणखी बऱ्याच गोष्टी तुमच्या इतर डिव्हाइसवर मिळवण्यासाठी सिंक करा</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">सध्या <ph name="NAME" />, <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
 <translation id="696447261358045621">गुप्त मोडमधून बाहेर पडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> टॅब पहा}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> टॅब पहा}}</translation>
 <translation id="6971862865055170158">मंजुरी देऊ नका</translation>
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">लहान मुलांसाठीचा आशय - बंद केला आहे</translation>
 <translation id="7903184275147100332">यासाठी एक मिनिट लागू शकतो</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{तुमच्या संस्थेने १ ब्लॉक केला आहे}other{तुमच्या संस्थेने # ब्लॉक केले आहेत}}</translation>
 <translation id="7914399737746719723">अ‍ॅप इंस्टॉल केले</translation>
 <translation id="7919123827536834358">या भाषांचे आपोआप भाषांतर करा</translation>
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>

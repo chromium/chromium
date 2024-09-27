@@ -4067,6 +4067,11 @@ enviar relatórios corporativos.
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
 <translation id="3990391739475801018">O modo Economia de bateria vai ser desativado.</translation>
 <translation id="3990834929384096140">Não aplicar o cancelamento de eco do áudio do sistema</translation>
+<translation id="3992082233013655355">A definição da política especifica uma lista de Apps Isolados da Web (AIWs) que são instalados sem interação do usuário.
+      AIWs são apps que têm propriedades de segurança úteis que não estão presentes em páginas da Web normais. Eles são incluídos em um Pacote assinado da Web. A chave pública do Pacote assinado da Web é usada para criar o ID do pacote que identifica o AIW.
+      Até agora, essa política funciona apenas para a Sessão de visitante gerenciada.
+
+      Cada item da lista da política é um objeto com dois campos obrigatórios: o manifesto de atualização <ph name="URL_LABEL" /> e o ID do pacote do App Isolado da Web. Cada item também pode ter um campo opcional com o nome do canal de lançamento do AIW. Se o "update_channel" não for definido, o valor padrão será usado.</translation>
 <translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="399433537808390819">Não disponibilizar o Modo área de trabalho unificada para o usuário</translation>
 <translation id="3995880046827722248">O Manifest v2 está desativado</translation>
@@ -6885,27 +6890,6 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6102449843040973938">Não evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
 <translation id="610892566190435199">Ativar relatórios de status de energia do dispositivo</translation>
 <translation id="6111936128861357925">Permitir jogo easter egg de dinossauro</translation>
-<translation id="6112524153927257380">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
-
-      Há muitos tipos de alertas de download no Chrome, que os divide nas categorias a seguir. Saiba mais sobre os vereditos do Navegação segura (https://support.google.com/chrome/?p=ib_download_blocked).
-
-      * Malicioso, conforme sinalizado pelo servidor do Navegação segura
-      * Incomum ou indesejado, conforme sinalizado pelo servidor do Navegação segura
-      * Perigoso (por exemplo, todos os downloads de arquivos SWF e muitos downloads de arquivos EXE)
-
-      Se a política for definida, vários subconjuntos dessas categorias serão bloqueados, dependendo do valor:
-
-      0: nenhuma restrição especial (padrão).
-
-      1: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
-
-      2: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, bloqueia arquivos incomuns ou indesejados sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
-
-      3: bloqueia todos os downloads. Não recomendado, exceto em casos de uso especiais.
-
-      4: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, não bloqueia tipos de arquivo perigosos (recomendado).
-
-      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Restaurar o comportamento de permissões.</translation>
 <translation id="6119207979839638596">Essa política foi removida na versão M75 após a remoção da política de versão máxima do TLS do produto <ph name="PRODUCT_NAME" />.
 
@@ -10727,6 +10711,27 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Os dispositivos novos vêm com o horário do Pacífico (EUA). O formato do valor segue a nomenclatura do banco de dados da IANA (https://en.wikipedia.org/wiki/Tz_database, link em inglês). A inserção de um valor inválido ativa a política que usa GMT.
 
       Se a política não for definida ou se você inserir uma string vazia, o dispositivo usará o fuso horário ativo no momento, mas os usuários poderão mudá-lo.</translation>
+<translation id="8875202330803089599">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
+
+      Há muitos tipos de alertas de download no Chrome, que os divide nas categorias abaixo. Saiba mais sobre os vereditos da Navegação segura (https://support.google.com/chrome/?p=ib_download_blocked).
+
+      * Malicioso, conforme sinalizado pelo servidor da Navegação segura
+      * Incomum ou indesejado, conforme sinalizado pelo servidor da Navegação segura
+      * Perigoso (por exemplo, todos os downloads de arquivos SWF e muitos downloads de arquivos EXE)
+
+      Se a política for definida, vários subconjuntos dessas categorias serão bloqueados, dependendo do valor:
+
+      0: nenhuma restrição especial. Padrão.
+
+      1: bloqueia arquivos maliciosos sinalizados pelo servidor da Navegação segura e também bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      2: bloqueia arquivos maliciosos sinalizados pelo servidor da Navegação segura, bloqueia arquivos incomuns ou indesejados sinalizados pelo servidor da Navegação segura e também bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      3: bloqueia todos os downloads. Não recomendado, exceto em casos de uso especiais.
+
+      4: bloqueia arquivos maliciosos sinalizados pelo servidor da Navegação segura, não bloqueia tipos de arquivo perigosos Recomendado.
+
+      Observação: essas restrições são válidas para downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Elas não são válidas para a opção de baixar a página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre a Navegação segura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Permite que alguns serviços no <ph name="PRODUCT_OS_FLEX_NAME" /> enviem outros dados de hardware.
 
 Esses dados são usados para fazer melhorias gerais no <ph name="PRODUCT_OS_FLEX_NAME" />.
@@ -10747,6 +10752,7 @@ Se desativada, apenas os dados de hardware padrão serão enviados.</translation
 <translation id="8890438048579188548">Ocultar avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Desativar relatórios de informações do sistema do dispositivo</translation>
 <translation id="8892286064305622118">Espaço livre em disco necessário para o <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">O nome do canal de atualização/lançamento do AIW. Esse valor pode ser qualquer string. Não há restrições. Se nenhum valor for fornecido, o canal "default" (padrão) será usado.</translation>
 <translation id="8892783613915541293">Intervalos e ações a serem tomadas quando o dispositivo estiver inativo e funcionando com energia CA.</translation>
 <translation id="8897796778265450949">Limitar o tempo em que um usuário autenticado via GAIA sem SAML pode fazer login off-line</translation>
 <translation id="889814528399907891">Permitir que os usuários ativem o <ph name="LACROS_NAME" /> e torná-lo o navegador principal</translation>

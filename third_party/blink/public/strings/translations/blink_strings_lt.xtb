@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Fotoaparatas leidžiamas</translation>
 <translation id="4664250907885839816">Po „<ph name="ATSIGN" />“ esančioje dalyje neturėtų būti simbolio „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Leidžiama vaizdo vaizde režimu</translation>
-<translation id="4792862212177489858">Bendrinti vietovę</translation>
 <translation id="4812940957355064477">Įveskite skaičių.</translation>
 <translation id="49269513399674318">Naudoti mikrofoną</translation>
 <translation id="4975562563186953947">Pasirinkta: <ph name="SELECTED_COUNT" /></translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Vertė turi būti <ph name="MINIMUM" /> arba didesnė.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Vietovė leidžiama</translation>
 <translation id="5307600278924710095">Įveskite el. pašto adreso dalį iki „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ nėra visas el. pašto adresas.</translation>
 <translation id="5334352251556557839">Nepavyko paleisti medijos.</translation>
 <translation id="537648784377940524">Anksčiausia data (<ph name="MIN_DATE_OR_TIME" />) turi būti prieš vėliausią datą (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Nepavyko įkelti papildinio.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Pailginkite šį tekstą iki <ph name="MIN_CHARACTERS" /> simb. ar daugiau (šiuo metu naudojate 1 simbolį).</translation>
-<translation id="7080893216867146095">Leidžiama bendrinti vietovės informaciją</translation>
 <translation id="709897737746224366">Priderinkite reikalaujamą formatą.</translation>
 <translation id="7134810312945846184">Naudoti mikrofoną ir vaizdo kamerą</translation>
 <translation id="7263440858009898357">Pasirinkite sąraše pateiktą elementą.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Vertė turi būti nuo <ph name="MINIMUM_TIME" /> iki <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> failai (-ų)</translation>
 <translation id="8451268428117625855">Pasirinkite failą.</translation>
+<translation id="8533587060884335451">Naudoti tikslią vietą</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Eilučių skaidymas</translation>
 <translation id="8750798805984357768">Pasirinkite vieną iš šių parinkčių.</translation>

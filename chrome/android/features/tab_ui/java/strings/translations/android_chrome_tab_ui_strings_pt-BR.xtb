@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="125153950246128346">Toque para ver outra guia</translation>
 <translation id="1273910660700874265">Opções do grupo de guias <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Mantenha este grupo para adicionar guias mais tarde ou exclua se não precisar mais dele.
+
+Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias <ph name="TITLE_OF_GROUP" /> e ele será excluído de todos os dispositivos.</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
 <translation id="1419023007528516122">Essa ação vai excluir permanentemente o grupo do seu dispositivo</translation>
 <translation id="1486715732399361704">Todos os seus grupos de guias vão aparecer aqui</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar o site</translation>
+<translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s), <ph name="ANY_CLOSED" /> fechada(s)}one{<ph name="MANY_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s), <ph name="ANY_CLOSED" /> fechada(s)}other{<ph name="MANY_ADDED" /> guias adicionadas, <ph name="ANY_CHANGED" /> modificada(s), <ph name="ANY_CLOSED" /> fechada(s)}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Criado há <ph name="NUM_HOURS_ONE" /> hora}one{Criado há <ph name="NUM_HOURS_MANY" /> hora}other{Criado há <ph name="NUM_HOURS_MANY" /> horas}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fechar o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver informações da loja, opção disponível perto da parte superior da tela</translation>
+<translation id="5615302411300498438">Mantenha este grupo para adicionar guias mais tarde ou saia dele.
+
+Se você sair, vai perder imediatamente o acesso ao grupo de guias <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Nenhuma atualização de guias</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar guia}one{Restaurar guia}other{Restaurar guias}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}one{<ph name="TABS_COUNT_MANY" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada, <ph name="ANY_CLOSED" /> fechada(s)}one{<ph name="MANY_ADDED" /> guia adicionada, <ph name="ANY_CLOSED" /> fechada(s)}other{<ph name="MANY_ADDED" /> guias adicionadas, <ph name="ANY_CLOSED" /> fechada(s)}}</translation>
 <translation id="8631711675211020168">Todos vão perder imediatamente o acesso ao grupo de guias <ph name="GROUP_NAME" /> e ele vai ser excluído de todos os dispositivos</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
+<translation id="8635399646025169806">Manter o grupo de guias?</translation>
 <translation id="870736955561925754">Fechar guia e excluir grupo?</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8730999928494395583">Sua atividade nessas guias anônimas será removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}one{Criado há <ph name="NUM_MONTHS_MANY" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8804742093141782941">Manter grupo</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>

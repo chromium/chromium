@@ -75,6 +75,7 @@
 <translation id="132683371494960526">แตะ 2 ครั้งเพื่อเปลี่ยนโฟลเดอร์ระดับบนสุด</translation>
 <translation id="1333455942675373522">แป้นพิมพ์</translation>
 <translation id="1334485477792811969">เว็บเซอร์วิส</translation>
+<translation id="1335767868357998043">เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
@@ -157,6 +158,7 @@
 <translation id="1713777106376424209">จัดส่งโดย</translation>
 <translation id="1715515772563243997">หากคุณเชื่อถือ <ph name="SITE" /> ก็ใช้รหัสผ่านที่บันทึกไว้ในการลงชื่อเข้าใช้ได้</translation>
 <translation id="1728549374069268714">วางแล้วไป</translation>
+<translation id="1732468323901456775">เปิดการแจ้งเตือนสำหรับ<ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
 <translation id="1740650426894359238">เปลี่ยนไปใช้โปรไฟล์อื่น</translation>
 <translation id="1743244221910283364">ทิ้งการเปลี่ยนแปลง</translation>
@@ -248,6 +250,7 @@
 <translation id="2122754583996902531">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2147127444698817042">ใช้ได้ใน iPhone เท่านั้น</translation>
 <translation id="2148716181193084225">วันนี้</translation>
+<translation id="2148799636999124959">ลงชื่อเข้าใช้เว็บไซต์และแอปได้อย่างรวดเร็วด้วยรหัสผ่านที่บันทึกไว้</translation>
 <translation id="2149968176347646218">การเชื่อมต่อไม่ปลอดภัย</translation>
 <translation id="2161446265348023004">เปลี่ยนเพื่อเปิดหน้าต่าง</translation>
 <translation id="2164946989711475905">ลงชื่อเข้าใช้…</translation>
@@ -301,7 +304,6 @@
 <translation id="2377336083033403521">ค้นหาแท็บ…</translation>
 <translation id="2381405137052800939">พื้นฐาน</translation>
 <translation id="2386793615875593361">เลือก 1 รูป</translation>
-<translation id="2387703759148866940">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="2390457533592708044">ซ่อน "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">ไม่สามารถนําส่งพัสดุภัณฑ์ได้</translation>
 <translation id="2410754283952462441">เลือกบัญชี</translation>
@@ -314,6 +316,7 @@
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
 <translation id="2462736546165239215">คุณดูประวัติการท่องเว็บทั้งหมดได้ที่นี่</translation>
+<translation id="2466518891828668184">บันทึกรหัสผ่านเพื่อลงชื่อเข้าใช้เว็บไซต์และแอปได้อย่างง่ายดาย</translation>
 <translation id="2468132863574325555">ไดรฟ์</translation>
 <translation id="2468444275314013497">เบราว์เซอร์ของคุณไม่มีปัญหา</translation>
 <translation id="2473876017985765807">คุณบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้แล้ว</translation>
@@ -614,6 +617,7 @@
 <translation id="3997522473364371632">ผู้ดูแลระบบปิดใช้การแชร์รหัสผ่าน</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4004204301268239848">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
+<translation id="4018440314314549819">ป้อนรหัสผ่านที่บันทึกไว้โดยอัตโนมัติ</translation>
 <translation id="4021447724486050609">อัปเดตเบราว์เซอร์ของคุณ</translation>
 <translation id="4021931095789478915">เพิ่ม ${url} ลงในเรื่องรออ่าน</translation>
 <translation id="4028871427853484857">บันทึกในบัญชี…</translation>
@@ -634,6 +638,7 @@
 <translation id="4113957097611235433">เปลี่ยนรหัสผ่าน</translation>
 <translation id="4120936477286528673">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่นอยู่เรื่อยๆ</translation>
 <translation id="4121993058175073134">หากต้องการส่งข้อมูล net-export โปรดกำหนดค่าบัญชีอีเมลของคุณในแอปการตั้งค่า</translation>
+<translation id="4133139945030148655">พร้อมใช้งานแล้ว</translation>
 <translation id="4133265950310064865">การปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -701,6 +706,7 @@
 <translation id="4445840280797509738">ตัวเลือกเพิ่มเติมสำหรับ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">คุณสามารถปัดขอบเพื่อย้อนกลับหรือไปข้างหน้า</translation>
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
+<translation id="446314443268698477">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องหรือรูปภาพ</translation>
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469834037720363704">หมายเลขพัสดุ</translation>
 <translation id="4471472356135655769">ส่งออกรหัสผ่านไม่ได้</translation>
@@ -800,6 +806,7 @@
 <translation id="4871719318659334896">ปิดกลุ่ม</translation>
 <translation id="4872664437015695612">เปิดใน "ดาวน์โหลด"</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
+<translation id="4876665338492917862">เปิดเมื่อ <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">เตือนฉันในภายหลัง</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4889521386764567563">โปรไฟล์ปัจจุบัน</translation>
@@ -1137,6 +1144,7 @@
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6434591244308415567">เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง</translation>
+<translation id="6436318499800111867">แชร์กับฉันแล้วเมื่อวันที่ <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6443118737398455446">วันหมดอายุไม่ถูกต้อง</translation>
 <translation id="6444435711855078002">ตัวเลือกเพิ่มเติม</translation>
 <translation id="6445051938772793705">ประเทศ</translation>
@@ -1215,6 +1223,7 @@
 <translation id="6709964700841491574">โหมดปิดล็อก</translation>
 <translation id="6710079714193676716">จัดการโดยองค์กร ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">ไปที่ฟีด</translation>
+<translation id="6713676799463473249">แก้ไขเมื่อ <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6723740634201835758">ในบัญชี Google</translation>
 <translation id="672735642903863329">รับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6732087373923685049">กล้อง</translation>
@@ -1358,6 +1367,7 @@
 <translation id="745899714366929493">ตลอดวัน</translation>
 <translation id="7465351360025415755">รับเนื้อหาที่คุณสนใจ</translation>
 <translation id="7468373585447318060">ติดตามการลดราคาของผลิตภัณฑ์ทั้งหมดที่คุณติดตาม</translation>
+<translation id="746872191028309255">เลือกซื้อสิ่งที่คุณเห็นโดยใช้กล้องหรือแกลเลอรีรูปภาพ</translation>
 <translation id="7471557245617580330">สร้างแท็บใหม่</translation>
 <translation id="747956641630879526">การซ่อนการ์ดนี้จะปิดการติดตามพัสดุภัณฑ์และนำข้อมูลทั้งหมดของคุณออก</translation>
 <translation id="7484645889979462775">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
@@ -1384,6 +1394,7 @@
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7567579665882069209">บุ๊กมาร์กซ่อนอยู่</translation>
 <translation id="7577900504646297215">จัดการความสนใจ</translation>
+<translation id="7582666837709186351">แปลข้อความในรูปภาพหรือสิ่งรอบตัวด้วยกล้อง</translation>
 <translation id="7582857256643797524">การตั้งค่านี้เปิดใช้อยู่ในอุปกรณ์ของคุณ</translation>
 <translation id="7583004045319035904">ใช้ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> เพื่อปลดล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}other{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}}</translation>
@@ -1419,7 +1430,6 @@
 <translation id="7730973429297233609">เลือกบัญชีที่ต้องการใช้เพื่อบันทึก <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" /> เฉพาะในอุปกรณ์นี้</translation>
 <translation id="7744192722284567281">พบในการละเมิดข้อมูล</translation>
-<translation id="7746165521091043703">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="7749790401023484470">คุณไม่ได้เลือกข้อความใดๆ</translation>
 <translation id="7757015014239760147">ไม่มีชื่อผู้ใช้ ••••••••</translation>
 <translation id="775755486779745798">ป้อนเดือนที่หมดอายุเป็น <ph name="MONTH" /> โดยอัตโนมัติ</translation>
@@ -1479,7 +1489,6 @@
 <translation id="7975036700432177008">ลอง</translation>
 <translation id="797588153137233716">เมนู → ประวัติการเข้าชม → ลบข้อมูลการท่องเว็บ</translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
-<translation id="7978018860671536736">3. แตะ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="797824194429476746">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7987685713885608670">เข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google เพื่อเพิ่มความปลอดภัย</translation>

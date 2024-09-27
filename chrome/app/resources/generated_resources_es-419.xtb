@@ -250,6 +250,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1174366174291287894">Tu conexión siempre será segura, a menos que Chrome te indique lo contrario</translation>
 <translation id="1175131936083782305">Tu administrador inhabilitó esta función.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
+<translation id="1175572348579024023">Desplazamiento</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1176471985365269981">No pueden editar archivos ni carpetas del dispositivo</translation>
 <translation id="1177073277575830464">Se completó la configuración rápida de Android; continúa con la configuración en tu <ph name="DEVICE_TYPE" /></translation>
@@ -1425,6 +1426,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1998715278591719161">Pueden hacer un seguimiento de tus manos</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
+<translation id="1999763610967697511">Arrastrar y soltar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", debes conectarte a una red Wi-Fi</translation>
@@ -3481,6 +3483,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3487649228420469005">Se completó el análisis</translation>
 <translation id="3488199663160411179">nombre</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Se pueden restablecer los datos locales si olvidas el PIN o la contraseña</translation>
 <translation id="3491669675709357988">La cuenta de tu hijo no está configurada para los controles parentales de Family Link; podrás agregarlos cuando completes la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3491678231052507920">Por lo general los sitios utilizan los datos y dispositivos de realidad virtual para otorgarte acceso a las sesiones de RV.</translation>
 <translation id="3493043608231401654">Quitar <ph name="TAB_TITLE" /> del grupo de pestañas</translation>
@@ -5371,6 +5374,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
+<translation id="485806788160414322">Reproducir o pausar contenido multimedia</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="486213875233855629">El administrador lo silenció</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>

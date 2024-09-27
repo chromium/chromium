@@ -945,7 +945,6 @@
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="5790391387506209808">கருநீலக்கல்</translation>
-<translation id="5810692306010756935">பட்டமளிப்பு</translation>
 <translation id="5816802250591013230">ஷார்ட்கட் ஒதுக்கப்படவில்லை</translation>
 <translation id="5826644637650799838">கலை குறித்த விவரம்</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">ஸ்கேன் செய்ய, ஆவணத்தை ஸ்கேனர் மீது வைக்கவும்</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6965978654500191972">சாதனம்</translation>
+<translation id="6972754398087986839">தொடங்குக</translation>
 <translation id="6975620886940770104">ஒளிரும் <ph name="GLOWSCAPES_FEATURE" /> இருக்கும் <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">கோலா கரடிகள்</translation>
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
@@ -1587,6 +1587,7 @@
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8882789155418924367">ஆந்தைகள்</translation>
 <translation id="8892443466059986410">ஷார்ட்கட்டைத் திருத்துவதை ரத்துசெய்யும்</translation>
+<translation id="8897043028305808902">ஃபைலின் பெயர் மாற்றப்பட்டது</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8909114361904403025">மேல்நோக்கிய அம்புக்குறி ஐகான்</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>

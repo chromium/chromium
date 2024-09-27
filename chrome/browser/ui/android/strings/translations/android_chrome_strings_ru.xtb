@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
 <translation id="228704530595896923">Список способов отправки.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Посмотреть <ph name="TABS_COUNT_ONE" /> вкладку}one{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладку}few{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}many{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладок}other{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2297822946037605517">Поделиться этой страницей</translation>
 <translation id="22981027763501686">Включите синхронизацию, чтобы закладки, история и прочие данные стали доступны на других устройствах.</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
@@ -1301,6 +1302,7 @@
 <translation id="6964300328304469089">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" /> (<ph name="NAME" />).</translation>
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Посмотреть <ph name="TABS_COUNT_ONE" /> вкладку с новым действием из групп с общим доступом}one{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладку с новыми действиями из групп с общим доступом}few{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки с новыми действиями из групп с общим доступом}many{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладок с новыми действиями из групп с общим доступом}other{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки с новыми действиями из групп с общим доступом}}</translation>
 <translation id="6971862865055170158">Не разрешать</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979737339423435258">Все время</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7896724475402191389">Контент для детей – отключен</translation>
 <translation id="7903184275147100332">Подождите немного…</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{Ваша организация заблокировала скачивание 1 файла.}one{Ваша организация заблокировала скачивание # файла.}few{Ваша организация заблокировала скачивание # файлов.}many{Ваша организация заблокировала скачивание # файлов.}other{Ваша организация заблокировала скачивание # файла.}}</translation>
 <translation id="7914399737746719723">Приложение установлено</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
 <translation id="7926975587469166629">Название карты</translation>

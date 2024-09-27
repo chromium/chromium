@@ -4065,6 +4065,11 @@ se pueden enviar informes de la empresa.
 <translation id="3989829840000169163">Bloquear los puntos de extensiones heredados del navegador</translation>
 <translation id="3990391739475801018">Inhabilitar el modo de Ahorro de batería</translation>
 <translation id="3990834929384096140">No aplicar de manera forzosa la cancelación del eco de audio del sistema</translation>
+<translation id="3992082233013655355">Si estableces la política, se especificará una lista de apps web aisladas (IWA) que se instalan de manera silenciosa.
+      Las IWA son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles para las páginas web normales. Se agrupan en un paquete web firmado. La clave pública del paquete web firmado se usa para crear el ID del paquete web que identifica la IWA.
+      Hasta ahora, esta política solo funciona para las sesiones de invitado administradas.
+
+      Cada elemento de la lista de la política es un objeto que tiene dos campos obligatorios: el manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la app web aislada. Cada elemento también puede tener un campo opcional con el nombre del canal de versión de la IWA. Si no se establece "update_channel", se usará el valor "default".</translation>
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el Modo de escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Inhabilitar Manifest v2</translation>
@@ -6888,27 +6893,6 @@ política mientras se esté ejecutando el navegador.</translation>
 <translation id="6102449843040973938">No impide que se ejecute <ph name="BOREALIS_NAME" /> en un dispositivo</translation>
 <translation id="610892566190435199">Habilitar los informes de estado de energía del dispositivo</translation>
 <translation id="6111936128861357925">Permitir juego del huevo de pascua del dinosaurio</translation>
-<translation id="6112524153927257380">Si estableces la política, los usuarios no podrán omitir las decisiones de seguridad relacionadas con las descargas.
-
-      Chrome tiene varios tipos de advertencias de descarga, que pueden desglosarse en las siguientes categorías (puedes obtener más información sobre los veredictos de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Contenido malicioso (detectado por el servidor de Navegación segura)
-      * Contenido desconocido o no deseado (detectado por el servidor de Navegación segura)
-      * Tipo de archivo peligroso (p. ej., todas las descargas de SWF y varias EXE)
-
-      Configurar la política permite bloquear diversos subconjuntos de advertencias, en función de su valor:
-
-      0: Sin restricciones especiales (predeterminado)
-
-      1: Bloquear los archivos maliciosos detectados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos (solo se recomienda para UO/navegadores/usuarios que tengan una alta tolerancia a los falsos positivos)
-
-      2: Bloquear los archivos maliciosos y los archivos desconocidos o no deseados detectados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos (solo se recomienda para UO/navegadores/usuarios que tengan una alta tolerancia a los falsos positivos)
-
-      3: Bloquear todas las descargas (no se recomienda, excepto en casos de uso especiales)
-
-      4: Bloquear los archivos maliciosos detectados por el servidor de Navegación segura, pero no los tipos de archivos peligrosos (recomendado)
-
-      Nota: Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o con la opción "Descargar vínculo" del menú. No se aplican a la acción de descargar la página que se muestra actualmente ni a la opción para guardar como PDF desde las opciones de impresión. Obtén más información sobre la Navegación segura ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="6118226055960302400">Restablecer el comportamiento permisivo</translation>
 <translation id="6119207979839638596">Se quitó esta política en M75 después de que se quitara la política de la versión máx. de TLS de <ph name="PRODUCT_NAME" />.
 
@@ -10761,6 +10745,27 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Los dispositivos nuevos tienen configurada la zona horaria "EE.UU./Pacífico". El formato del valor sigue los nombres de las zonas horarias de la "Base de datos de zona horaria de IANA" (https://en.wikipedia.org/wiki/Tz_database). Si ingresas un valor no válido, se establecerá la política con el formato GMT.
 
       Si no la estableces o ingresas una string vacía, el dispositivo utilizará la zona horaria que esté activa actualmente, pero los usuarios podrán cambiarla.</translation>
+<translation id="8875202330803089599">Si estableces la política, los usuarios no podrán omitir las decisiones de seguridad relacionadas con las descargas.
+
+      Chrome tiene varios tipos de advertencias de descarga, que pueden desglosarse en las siguientes categorías (puedes obtener más información sobre los veredictos de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Contenido malicioso (detectado por el servidor de Navegación segura)
+      * Contenido desconocido o no deseado (detectado por el servidor de Navegación segura)
+      * Tipo de archivo peligroso (p. ej., todas las descargas de SWF y varias EXE)
+
+      Configurar la política permite bloquear diversos subconjuntos de advertencias, en función de su valor:
+
+      0: Sin restricciones especiales (predeterminado)
+
+      1: Bloquear los archivos maliciosos detectados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos (solo se recomienda para UO/navegadores/usuarios que tengan una alta tolerancia a los falsos positivos)
+
+      2: Bloquear los archivos maliciosos y los archivos desconocidos o no deseados detectados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos (solo se recomienda para UO/navegadores/usuarios que tengan una alta tolerancia a los falsos positivos)
+
+      3: Bloquear todas las descargas (no se recomienda, excepto en casos de uso especiales)
+
+      4: Bloquear los archivos maliciosos detectados por el servidor de Navegación segura, pero no los tipos de archivos peligrosos (recomendado)
+
+      Nota: Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o con la opción Descargar vínculo… del menú. No se aplican a la acción de descargar la página que se muestra actualmente ni a la opción para guardar como PDF desde las opciones de impresión. Obtén más información sobre la Navegación segura ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="8880146422959594776">Permite que algunos servicios de <ph name="PRODUCT_OS_FLEX_NAME" /> envíen datos de hardware adicionales.
 
 Estos datos de hardware se usan para realizar mejoras generales en <ph name="PRODUCT_OS_FLEX_NAME" />.
@@ -10781,6 +10786,7 @@ Si la inhabilitas, solo se enviarán datos de hardware estándar.</translation>
 <translation id="8890438048579188548">Oculta las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Inhabilitar los informes del sistema del dispositivo</translation>
 <translation id="8892286064305622118">Espacio libre en disco que se requiere para <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">El nombre del canal de versiones/actualizaciones de IWA. Este valor puede ser cualquier cadena; no se imponen restricciones. Si no se proporciona ningún valor, se usará el canal "default".</translation>
 <translation id="8892783613915541293">Retrasos y acciones que se deben tomar cuando el dispositivo esté inactivo y funcionando con CA.</translation>
 <translation id="8897796778265450949">Limita el tiempo durante el cual puede acceder sin conexión un usuario que se autenticó mediante GAIA sin SAML</translation>
 <translation id="889814528399907891">Permitir que los usuarios habiliten <ph name="LACROS_NAME" /> y lo seleccionen como el navegador principal</translation>

@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
 <translation id="310297983047869047">Slide-ul anterior</translation>
 <translation id="3109724472072898302">Restrâns</translation>
+<translation id="310979712355504754">Ștergeți tot</translation>
 <translation id="3114012059975132928">Player video</translation>
 <translation id="3115898365077584848">Afișează informațiile</translation>
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selectate</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /> sunt permise</translation>
 <translation id="7276071417425470385">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive de realitate virtuală.</translation>
-<translation id="7284451015630589124">Ai împiedicat site-urile să folosească cookie-uri terță parte pentru a te urmări în timp ce navighezi. Accesează setările pentru a <ph name="BEGIN_LINK" />gestiona protecțiile împotriva urmăririi<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">De obicei blochezi notificările. Ca să le permiți, atinge Detalii.</translation>
 <translation id="7366415735885268578">Adaugă un site</translation>
 <translation id="7368695150573390554">Toate datele offline vor fi șterse</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>
-<translation id="7474522811371247902">Chrome restricționează folosirea cookie-urilor terță parte pentru majoritatea site-urilor. Dar cookie-urile terță parte sunt permise pe acest site, deoarece se bazează pe ele pentru a oferi servicii de bază.\n\nAccesează setările pentru a <ph name="BEGIN_LINK" />gestiona protecțiile împotriva urmăririi<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Când opțiunea este activată, site-urile pot afișa solicitări de conectare. Când opțiunea este dezactivată, site-urile nu pot afișa solicitări de conectare.</translation>
 <translation id="7554752735887601236">Un site folosește microfonul</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7804248752222191302">Un site folosește camera foto</translation>
 <translation id="7807060072011926525">Oferit de Google</translation>
-<translation id="7822573154188733812">Chrome împiedică site-urile să folosească cookie-uri terță parte pentru a te urmări în timp ce navighezi. Accesează setările pentru a <ph name="BEGIN_LINK" />gestiona protecțiile împotriva urmăririi<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Se redă conținutul media</translation>
 <translation id="783819812427904514">Activează sunetul videoclipului</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Acordată (recomandat)</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8617611086246832542">Când opțiunea este activată, apare afișarea pe desktop a site-urilor. Când opțiunea este dezactivată, apare afișarea pe mobil a site-urilor.</translation>
-<translation id="8649036394979866943">Chrome împiedică majoritatea site-urilor să utilizeze cookie-uri terță parte pentru a te urmări în timp ce navighezi. Accesează setările pentru a <ph name="BEGIN_LINK" />gestiona protecțiile împotriva urmăririi<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Când opțiunea este activată, site-urile pot solicita permisiunea de a-ți urmări mâinile. Când opțiunea este dezactivată, site-urile nu îți pot urmări mâinile.</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8681886425883659911">Anunțurile sunt blocate pe site-urile despre care se știe că afișează anunțuri deranjante sau înșelătoare</translation>

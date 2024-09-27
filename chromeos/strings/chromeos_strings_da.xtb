@@ -945,7 +945,6 @@
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
-<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Der er ikke tildelt nogen genvej</translation>
 <translation id="5826644637650799838">Om baggrunden</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
@@ -1207,6 +1206,7 @@
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Enhed</translation>
+<translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6975620886940770104">En <ph name="GLOWSCAPES_LANDSCAPE" /> med en lysende <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koalaer</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
@@ -1587,6 +1587,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8881098542468797602">Testen blev gennemført</translation>
 <translation id="8882789155418924367">ugler</translation>
 <translation id="8892443466059986410">Annuller redigering af genvej</translation>
+<translation id="8897043028305808902">Filen er omdøbt</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8909114361904403025">pil op</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>

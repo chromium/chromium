@@ -250,6 +250,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1174366174291287894">Deine Verbindung ist immer sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist</translation>
 <translation id="1175131936083782305">Dein Administrator hat diese Funktion deaktiviert.</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
+<translation id="1175572348579024023">Scrollen</translation>
 <translation id="1175914831232945926">Ziffern</translation>
 <translation id="1176471985365269981">Dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="1177073277575830464">Die schnelle Einrichtung von Android ist abgeschlossen. Fahr mit der Einrichtung auf deinem <ph name="DEVICE_TYPE" /> fort.</translation>
@@ -1425,6 +1426,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1997616988432401742">Meine Zertifikate</translation>
 <translation id="1998715278591719161">Dürfen deine Handbewegungen verfolgen</translation>
 <translation id="1999115740519098545">Beim Start</translation>
+<translation id="1999763610967697511">Drag-and-drop</translation>
 <translation id="2002109485265116295">Echtzeit</translation>
 <translation id="2002160221914907025">Experimentelle KI</translation>
 <translation id="2003130567827682533">Damit du "<ph name="NAME" />"-Daten aktivieren kannst, musst du zuerst eine Verbindung zu einem WLAN herstellen</translation>
@@ -2041,7 +2043,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfe die Konfiguration und probiere es dann noch einmal.</translation>
 <translation id="2434758125294431199">Wähle aus, wer Inhalte mit dir teilen kann</translation>
 <translation id="2434915728183570229">Du kannst jetzt die Apps von deinem Smartphone aufrufen</translation>
-<translation id="2435137177546457207">Google Chrome und Chrome OS Flex – zusätzliche Nutzungsbedingungen</translation>
+<translation id="2435137177546457207">Google Chrome und Chrome OS Flex – Zusatzbedingungen</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2436385001956947090">&amp;Link kopieren</translation>
@@ -3479,6 +3481,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3487649228420469005">Scan abgeschlossen</translation>
 <translation id="3488199663160411179">deinen Namen</translation>
 <translation id="3490695139702884919">Wird heruntergeladen... <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Lokale Daten können wiederhergestellt werden, falls du deine PIN oder dein Passwort vergisst</translation>
 <translation id="3491669675709357988">Das Konto deines Kindes ist nicht für die Jugendschutzeinstellungen von Family Link eingerichtet. Du kannst die Jugendschutzeinstellungen hinzufügen, sobald du die Einrichtung beendet hast. Informationen zu den Jugendschutzeinstellungen findest du in der App "Entdecken".</translation>
 <translation id="3491678231052507920">Websites verwenden normalerweise Virtual-Reality-Geräte und ‑Daten, um VR-Sitzungen für dich zu starten</translation>
 <translation id="3493043608231401654"><ph name="TAB_TITLE" /> aus Tabgruppe entfernen</translation>
@@ -3897,7 +3900,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3771290962915251154">Diese Einstellung ist deaktiviert, weil die Jugendschutzeinstellungen aktiviert sind</translation>
 <translation id="3771294271822695279">Videodateien</translation>
 <translation id="3771851622616482156">Du wirst von dieser Website abgemeldet, auch in offenen Tabs</translation>
-<translation id="3772046291955677288">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
+<translation id="3772046291955677288">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die Zusatzbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
 <translation id="3774059845329307709">Seriennummer</translation>
 <translation id="3774166835015494435">Letzte Fotos und Benachrichtigungen</translation>
 <translation id="3775432569830822555">SSL-Serverzertifikat</translation>
@@ -3938,7 +3941,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3798632811625902122">Das Bluetooth-Gerät „<ph name="DEVICE" />“ bittet um Erlaubnis für Kopplung.</translation>
 <translation id="3798670284305777884">Lautsprecher (intern)</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
-<translation id="3800828618615365228">Google Chrome und Chrome OS – zusätzliche Nutzungsbedingungen</translation>
+<translation id="3800828618615365228">Google Chrome und Chrome OS – Zusatzbedingungen</translation>
 <translation id="3800898876950197674">Gib dein Passwort ein, um diese Erweiterung zuzulassen.</translation>
 <translation id="3801449494961771207">Standardstimme für die Sprachausgabe</translation>
 <translation id="3802486193901166966">Diese Erweiterung erfordert keine speziellen Berechtigungen und ermöglicht keinen zusätzlichen Websitezugriff</translation>
@@ -3994,7 +3997,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3827548509471720579">Helligkeit des Displays</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
 <translation id="3828029223314399057">In Lesezeichen suchen</translation>
-<translation id="3828953470056652895">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> sowie die <ph name="BEGIN_LINK3" />Google Play-Nutzungsbedingungen<ph name="END_LINK3" /> gelesen und stimme ihnen zu.</translation>
+<translation id="3828953470056652895">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />die Zusatzbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> sowie die <ph name="BEGIN_LINK3" />Google Play-Nutzungsbedingungen<ph name="END_LINK3" /> gelesen und stimme ihnen zu.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Hohe Arbeitsspeichernutzung – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-Netzwerkfreigabe</translation>
 <translation id="38298897782945211">Für isolierte Web-Apps wird diese Einstellung automatisch übernommen.</translation>
@@ -5368,6 +5371,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
 <translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
+<translation id="485806788160414322">Medien wiedergeben oder pausieren</translation>
 <translation id="4858913220355269194">Fußball</translation>
 <translation id="486213875233855629">Vom Administrator stummgeschaltet</translation>
 <translation id="4862642413395066333">Signatur von OCSP-Antworten</translation>
@@ -7892,7 +7896,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6746124502594467657">Nach unten</translation>
 <translation id="674632704103926902">Antippen und Ziehen aktivieren</translation>
 <translation id="67465227497040338">Passwort für <ph name="DOMAIN" /> anzeigen</translation>
-<translation id="6748980958975836188">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> sowie <ph name="BEGIN_LINK2" />die zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
+<translation id="6748980958975836188">Ich habe die <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> sowie <ph name="BEGIN_LINK2" />die Zusatzbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> gelesen und stimme ihnen zu.</translation>
 <translation id="6749077623962119521">Berechtigungen zurücksetzen?</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Mobilfunknetz deaktivieren</translation>

@@ -250,6 +250,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1174366174291287894">Savienojums vienmēr ir drošs, ja vien pārlūkā Chrome nav norādīts citādi</translation>
 <translation id="1175131936083782305">Jūsu administrators ir atspējojis šo funkciju.</translation>
 <translation id="1175364870820465910">Drukāt...</translation>
+<translation id="1175572348579024023">Ritināt</translation>
 <translation id="1175914831232945926">Cipari</translation>
 <translation id="1176471985365269981">Nedrīkst rediģēt failus vai mapes jūsu ierīcē</translation>
 <translation id="1177073277575830464">Android ātrā iestatīšana ir pabeigta. Turpiniet iestatīšanu savā ierīcē (<ph name="DEVICE_TYPE" />)!</translation>
@@ -1430,6 +1431,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1997616988432401742">Jūsu sertifikāti</translation>
 <translation id="1998715278591719161">Drīkst izsekot jūsu roku kustības</translation>
 <translation id="1999115740519098545">Sākumlapā</translation>
+<translation id="1999763610967697511">Vilkšana un nomešana</translation>
 <translation id="2002109485265116295">Reāllaiks</translation>
 <translation id="2002160221914907025">Eksperimentālais MI</translation>
 <translation id="2003130567827682533">Lai aktivizētu <ph name="NAME" /> datus, vispirms izveidojiet savienojumu ar Wi-Fi tīklu.</translation>
@@ -5375,6 +5377,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4853020600495124913">Atvērt &amp;jaunā logā</translation>
 <translation id="4854317507773910281">Izvēlieties vecāku kontu apstiprinājuma saņemšanai.</translation>
 <translation id="485480310608090163">Citi iestatījumi un atļaujas</translation>
+<translation id="485806788160414322">Atskaņot multivides saturu vai apturēt tā atskaņošanu</translation>
 <translation id="4858913220355269194">Futbolbumba</translation>
 <translation id="486213875233855629">Administrators ir izslēdzis skaņu.</translation>
 <translation id="4862642413395066333">OCSP atbilžu parakstīšana</translation>

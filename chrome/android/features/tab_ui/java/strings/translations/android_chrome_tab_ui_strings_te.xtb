@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
+<translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ట్యాబ్ జోడించబడింది, <ph name="ANY_CHANGED" /> మారింది, <ph name="ANY_CLOSED" /> మూసివేయబడింది}other{<ph name="MANY_ADDED" /> ట్యాబ్‌లు జోడించబడ్డాయి, <ph name="ANY_CHANGED" /> మారాయి, <ph name="ANY_CLOSED" /> మూసివేయబడ్డాయి}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> గంట క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_HOURS_MANY" /> గంటల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>

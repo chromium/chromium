@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">搜尋分頁…</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
-<translation id="2387703759148866940">自動填入密碼</translation>
 <translation id="2390457533592708044">隱藏「<ph name="MODULE_NAME" />」</translation>
 <translation id="2403129868389095715">無法配送包裹</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
@@ -1419,7 +1418,6 @@
 <translation id="7730973429297233609">選取要用來儲存 <ph name="FILENAME" /> (<ph name="FILESIZE" />) 的帳戶</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>
 <translation id="7744192722284567281">發生資料侵害事件</translation>
-<translation id="7746165521091043703">開啟「自動填入密碼」設定</translation>
 <translation id="7749790401023484470">未選取任何文字。</translation>
 <translation id="7757015014239760147">沒有使用者名稱 ••••••••</translation>
 <translation id="775755486779745798">自動填入到期月份 <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">「選單」→「歷史記錄」→「刪除瀏覽資料」</translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
-<translation id="7978018860671536736">3. 輕觸 [自動填入密碼]</translation>
 <translation id="797824194429476746">這些分頁會在這部裝置上保持開啟，但該群組會永久刪除。</translation>
 <translation id="7982789257301363584">網路</translation>
 <translation id="7987685713885608670">為進一步加強安全性，系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>

@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4664250907885839816">Den del, der kommer efter "<ph name="ATSIGN" />", må ikke indeholde symbolet "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Afspiller i integreret billede</translation>
-<translation id="4792862212177489858">Del lokation</translation>
 <translation id="4812940957355064477">Angiv et nummer.</translation>
 <translation id="49269513399674318">Brug mikrofon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Værdien skal være større end eller lig med <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Adgang til lokation er tilladt</translation>
 <translation id="5307600278924710095">Angiv den del, der kommer før "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" er ufuldstændig.</translation>
 <translation id="5334352251556557839">Mediet kunne ikke afspilles.</translation>
 <translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) skal finde sted før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Pluginnet kunne ikke indlæses.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
-<translation id="7080893216867146095">Deling af lokation er tilladt</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>
 <translation id="7134810312945846184">Brug mikrofon og kamera</translation>
 <translation id="7263440858009898357">Vælg et punkt på listen.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Værdien skal være mellem <ph name="MINIMUM_TIME" /> og <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> filer</translation>
 <translation id="8451268428117625855">Vælg en fil.</translation>
+<translation id="8533587060884335451">Brug præcis lokation</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Linjeombrydning</translation>
 <translation id="8750798805984357768">Vælg en af disse muligheder.</translation>

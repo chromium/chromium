@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Atļauja trešajai pusei pierakstīties konkrētā vietnē</translation>
 <translation id="310297983047869047">Iepriekšējais slaids</translation>
 <translation id="3109724472072898302">Sakļauts</translation>
+<translation id="310979712355504754">Dzēst visu</translation>
 <translation id="3114012059975132928">Videoklipu atskaņotājs</translation>
 <translation id="3115898365077584848">Rādīt informāciju</translation>
 <translation id="3123473560110926937">Bloķētas dažās vietnēs</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378">Atlasīti vienumi: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Atļautas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot virtuālās realitātes ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot virtuālās realitātes ierīces.</translation>
-<translation id="7284451015630589124">Jūs bloķējāt savu darbību izsekošanu ar trešo pušu sīkfailiem vietnēs pārlūkošanas laikā. Pārejiet uz iestatījumiem, lai <ph name="BEGIN_LINK" />pārvaldītu izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Parasti jūs bloķējat paziņojumus. Lai tos atļautu, pieskarieties vienumam Detalizēta informācija.</translation>
 <translation id="7366415735885268578">Vietnes pievienošana</translation>
 <translation id="7368695150573390554">Visi bezsaistes dati tiks izdzēsti</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Vispirms jautāt</translation>
 <translation id="7423538860840206698">Bloķēta starpliktuves satura lasīšana</translation>
 <translation id="7425915948813553151">Tumšā motīva lietošana vietnēs</translation>
-<translation id="7474522811371247902">Pārlūkā Chrome lielākajai daļai vietņu tiek liegts izmantot trešo pušu sīkfailus. Tomēr šajā vietnē trešo pušu sīkfaili ir atļauti, jo vietnei tie ir nepieciešami, lai nodrošinātu pamatpakalpojumus.\n\nPārejiet uz iestatījumiem, lai <ph name="BEGIN_LINK" />pārvaldītu izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kad šis slēdzis ir ieslēgts, vietnēs var rādīt pierakstīšanās uzvednes. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt pierakstīšanās uzvednes.</translation>
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804248752222191302">Kāda vietne izmanto jūsu kameru</translation>
 <translation id="7807060072011926525">Nodrošina Google</translation>
-<translation id="7822573154188733812">Pārlūkā Chrome vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības. Pārejiet uz iestatījumiem, lai <ph name="BEGIN_LINK" />pārvaldītu izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Multivides atskaņošana</translation>
 <translation id="783819812427904514">Ieslēgt video skaņu</translation>
 <translation id="7846076177841592234">Atcelt atlasi</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8617611086246832542">Kad šis slēdzis ir ieslēgts, tiek rādīts vietņu skats datorā. Kad šis slēdzis ir izslēgts, tiek rādīts vietņu skats mobilajā ierīcē.</translation>
-<translation id="8649036394979866943">Pārlūkā Chrome lielākajai daļai vietņu tiek ierobežotas iespējas pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības. Pārejiet uz iestatījumiem, lai <ph name="BEGIN_LINK" />pārvaldītu izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Kad šis slēdzis ir ieslēgts, vietnes drīkst pieprasīt atļauju izsekot jūsu roku kustības. Kad šis slēdzis ir izslēgts, vietnes nedrīkst izsekot jūsu roku kustības.</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
 <translation id="8681886425883659911">Reklāmas tiek bloķētas vietnēs, kurās ir konstatēta traucējošu vai maldinošu reklāmu rādīšana</translation>

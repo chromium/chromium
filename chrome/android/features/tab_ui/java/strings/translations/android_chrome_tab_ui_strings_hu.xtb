@@ -41,6 +41,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
+<translation id="2671423594960767771">Csoport megosztása</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> lap hozzáadva, <ph name="ANY_CHANGED" /> módosítva, <ph name="ANY_CLOSED" /> bezárva}other{<ph name="MANY_ADDED" /> lap hozzáadva, <ph name="ANY_CHANGED" /> módosítva, <ph name="ANY_CLOSED" /> bezárva}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> órája létrehozva}other{<ph name="NUM_HOURS_MANY" /> órája létrehozva}}</translation>

@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">การเชื่อมต่อของคุณปลอดภัยเสมอ เว้นแต่ Chrome จะบอกเป็นอย่างอื่น</translation>
 <translation id="1175131936083782305">ผู้ดูแลระบบปิดใช้ฟีเจอร์นี้</translation>
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
+<translation id="1175572348579024023">เลื่อน</translation>
 <translation id="1175914831232945926">ตัวเลข</translation>
 <translation id="1176471985365269981">ไม่ได้รับอนุญาตให้แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
 <translation id="1177073277575830464">การตั้งค่าด่วนของ Android เสร็จแล้ว ตั้งค่าต่อใน <ph name="DEVICE_TYPE" /></translation>
@@ -1428,6 +1429,7 @@
 <translation id="1997616988432401742">ใบรับรองของคุณ</translation>
 <translation id="1998715278591719161">ได้รับอนุญาตให้ติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="1999115740519098545">เมื่อเริ่มต้นใช้งาน</translation>
+<translation id="1999763610967697511">ลากและวาง</translation>
 <translation id="2002109485265116295">เรียลไทม์</translation>
 <translation id="2002160221914907025">AI เวอร์ชันทดลอง</translation>
 <translation id="2003130567827682533">หากต้องการเปิดใช้งานเน็ตมือถือ "<ph name="NAME" />" ให้เชื่อมต่อกับเครือข่าย Wi-Fi ก่อน</translation>
@@ -2922,6 +2924,7 @@
 <translation id="304644035656848980">ตัวอย่างไมโครโฟน</translation>
 <translation id="3046910703532196514">หน้าเว็บ ทั้งหมด</translation>
 <translation id="304747341537320566">เครื่องมืออ่านออกเสียง</translation>
+<translation id="3047678109605649715">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ ล้างพื้นที่ในอุปกรณ์แล้วลองอีกครั้ง</translation>
 <translation id="3048336643003835855">อุปกรณ์ HID จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">เล่น (k)</translation>
 <translation id="3048742847101793553">องค์กรบล็อกไฟล์นี้เนื่องจากสแกนไม่สำเร็จ</translation>
@@ -5372,6 +5375,7 @@
 <translation id="4853020600495124913">เปิดใน&amp;หน้าต่างใหม่</translation>
 <translation id="4854317507773910281">เลือกบัญชีผู้ปกครองที่จะเป็นผู้อนุมัติ</translation>
 <translation id="485480310608090163">การตั้งค่าและสิทธิ์อื่นๆ</translation>
+<translation id="485806788160414322">เล่นหรือหยุดสื่อชั่วคราว</translation>
 <translation id="4858913220355269194">ฟริทซ์</translation>
 <translation id="486213875233855629">ผู้ดูแลระบบได้ปิดเสียง</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>

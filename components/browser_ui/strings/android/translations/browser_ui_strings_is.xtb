@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Leyfa innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="310297983047869047">Fyrri skyggna</translation>
 <translation id="3109724472072898302">Minnkað</translation>
+<translation id="310979712355504754">Eyða öllum</translation>
 <translation id="3114012059975132928">Myndspilari</translation>
 <translation id="3115898365077584848">Sýna upplýsingar</translation>
 <translation id="3123473560110926937">Útilokaðar á sumum vefsvæðum</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valin</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> leyft</translation>
 <translation id="7276071417425470385">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota sýndarveruleikatæki. Þegar slökkt er á þessu geta vefsvæði ekki notað sýndarveruleikatæki.</translation>
-<translation id="7284451015630589124">Þú lokaðir á getu vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Þú lokar yfirleitt á tilkynningar. Ýttu á „Upplýsingar“ til að leyfa þær.</translation>
 <translation id="7366415735885268578">Bæta vefsvæði við</translation>
 <translation id="7368695150573390554">Öllum gögnum utan nets verður eytt</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Spyrja fyrst</translation>
 <translation id="7423538860840206698">Lokað fyrir lestur klippiborðs</translation>
 <translation id="7425915948813553151">Dökkt þema fyrir vefsvæði</translation>
-<translation id="7474522811371247902">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila. Fótspor þriðju aðila eru þó leyfð á þessu vefsvæði vegna þess að það reiðir sig á þau til að veita grunnþjónustu.\n\nFarðu í stillingarnar til að <ph name="BEGIN_LINK" />stjórna rakningarvörnum<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Þegar kveikt er á þessu geta vefsvæði sýnt innskráningarbeiðnir. Þegar slökkt er á þessu geta vefsvæði ekki sýnt innskráningarbeiðnir.</translation>
 <translation id="7554752735887601236">Vefsvæði er að nota hljóðnemann</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7804248752222191302">Vefsvæði er að nota myndavélina</translation>
 <translation id="7807060072011926525">Frá Google</translation>
-<translation id="7822573154188733812">Chrome lokar á getu vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Spilar efni</translation>
 <translation id="783819812427904514">Kveikja á mynd</translation>
 <translation id="7846076177841592234">Hætta við val</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
-<translation id="8649036394979866943">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að rekja handahreyfingarnar þínar. Þegar slökkt er á þessu geta vefsvæði ekki rakið handahreyfingarnar þínar.</translation>
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>

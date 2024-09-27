@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">Зөвлөмж: Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ</translation>
 <translation id="266935134738038806">Сайтад зочлох</translation>
+<translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>

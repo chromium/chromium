@@ -266,6 +266,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">Listahan ng mga opsyon sa pagbabahagi</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="2297822946037605517">Ibahagi ang pahinang ito</translation>
 <translation id="22981027763501686">I-sync para makuha ang iyong mga bookmark, history, at higit pa sa iba pang device mo</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
@@ -1301,6 +1302,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6964300328304469089">Kasalukuyang pinili ang <ph name="NAME" />, <ph name="EMAIL" />. Pumili ng account.</translation>
 <translation id="696447261358045621">Umalis sa Incognito mode?</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab na may bagong aktibidad sa mga naka-share na grupo ng tab}}</translation>
 <translation id="6971862865055170158">Huwag aprubahan</translation>
 <translation id="6978717888677691380">Ang mga site na na-block mo</translation>
 <translation id="6979737339423435258">Lahat ng oras</translation>
@@ -1516,6 +1518,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7896724475402191389">Content para sa kabataan - naka-off</translation>
 <translation id="7903184275147100332">Puwede itong abutin nang ilang sandali</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 ang na-block ng iyong organisasyon}one{# ang na-block ng iyong organisasyon}other{# ang na-block ng iyong organisasyon}}</translation>
 <translation id="7914399737746719723">Na-install ang app</translation>
 <translation id="7919123827536834358">Awtomatikong isalin ang mga wikang ito</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>

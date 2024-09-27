@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
+<translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}other{Добавихте <ph name="MANY_ADDED" /> раздела, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Създадено преди <ph name="NUM_HOURS_ONE" /> час}other{Създадено преди <ph name="NUM_HOURS_MANY" /> часа}}</translation>

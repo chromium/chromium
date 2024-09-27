@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">הפעלה במצב תמונה בתוך תמונה</translation>
-<translation id="4792862212177489858">שיתוף המיקום</translation>
 <translation id="4812940957355064477">יש להזין מספר.</translation>
 <translation id="49269513399674318">הרשאה לשימוש במיקרופון</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> נבחרו</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">הערך חייב להיות גדול מ-<ph name="MINIMUM" /> או שווה לו.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
+<translation id="5239623327352565343">יש הרשאת גישה למיקום</translation>
 <translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">לא ניתן היה לטעון את הפלאגין.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע יש תו אחד).</translation>
-<translation id="7080893216867146095">שיתוף המיקום מותר</translation>
 <translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>
 <translation id="7134810312945846184">הרשאה לשימוש במיקרופון ובמצלמה</translation>
 <translation id="7263440858009898357">יש לבחור פריט מהרשימה.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">יש להזין ערך בין <ph name="MINIMUM_TIME" /> לבין <ph name="MAXIMUM_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> קבצים</translation>
 <translation id="8451268428117625855">יש לבחור קובץ.</translation>
+<translation id="8533587060884335451">שימוש במיקום מדויק</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">גלישת שורות</translation>
 <translation id="8750798805984357768">יש לבחור אחת מהאפשרויות הבאות.</translation>

@@ -41,6 +41,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
+<translation id="2671423594960767771">Share group</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Created <ph name="NUM_HOURS_ONE" /> hour ago}other{Created <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>

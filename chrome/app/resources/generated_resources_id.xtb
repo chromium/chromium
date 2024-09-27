@@ -250,6 +250,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1174366174291287894">Koneksi Anda selalu aman kecuali jika Chrome menyatakan sebaliknya</translation>
 <translation id="1175131936083782305">Administrator Anda telah menonaktifkan fitur ini.</translation>
 <translation id="1175364870820465910">&amp;Cetak...</translation>
+<translation id="1175572348579024023">Scroll</translation>
 <translation id="1175914831232945926">Digit</translation>
 <translation id="1176471985365269981">Tidak diizinkan mengedit file atau folder di perangkat Anda</translation>
 <translation id="1177073277575830464">Penyiapan cepat Android selesai. Lanjutkan penyiapan di <ph name="DEVICE_TYPE" />.</translation>
@@ -1438,6 +1439,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1997616988432401742">Sertifikat Anda</translation>
 <translation id="1998715278591719161">Diizinkan melacak tangan Anda</translation>
 <translation id="1999115740519098545">Saat memulai</translation>
+<translation id="1999763610967697511">Menarik lalu melepaskan</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">AI Eksperimental</translation>
 <translation id="2003130567827682533">Untuk mengaktifkan kuota '<ph name="NAME" />', sambungan ke jaringan Wi-Fi terlebih dahulu</translation>
@@ -5388,6 +5390,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4853020600495124913">Buka di &amp;jendela baru</translation>
 <translation id="4854317507773910281">Pilih akun orang tua yang akan memberi persetujuan</translation>
 <translation id="485480310608090163">Setelan dan izin lainnya</translation>
+<translation id="485806788160414322">Putar atau jeda media</translation>
 <translation id="4858913220355269194">Ronaldo</translation>
 <translation id="486213875233855629">Dibisukan oleh administrator</translation>
 <translation id="4862642413395066333">Tanggapan OCSP Penandatanganan</translation>

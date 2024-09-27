@@ -250,6 +250,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1174366174291287894">Lidhja jote është gjithnjë e sigurt përveç nëse Chrome të thotë ndryshe</translation>
 <translation id="1175131936083782305">Administratori yt e ka çaktivizuar këtë veçori.</translation>
 <translation id="1175364870820465910">&amp;Printo...</translation>
+<translation id="1175572348579024023">Lëviz</translation>
 <translation id="1175914831232945926">Shifra</translation>
 <translation id="1176471985365269981">Nuk lejohen të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="1177073277575830464">Konfigurimi i shpejtë i Android ka përfunduar. Vazhdo konfigurimin në <ph name="DEVICE_TYPE" />.</translation>
@@ -1425,6 +1426,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1997616988432401742">Certifikatat e tua</translation>
 <translation id="1998715278591719161">Lejohen që të gjurmojnë duart e tua</translation>
 <translation id="1999115740519098545">Në nisje</translation>
+<translation id="1999763610967697511">Zvarrit dhe lësho</translation>
 <translation id="2002109485265116295">Kohë reale</translation>
 <translation id="2002160221914907025">Inteligjenca artificiale eksperimentale</translation>
 <translation id="2003130567827682533">Për të aktivizuar të dhënat e "<ph name="NAME" />", në fillim lidhu me një rrjet Wi-Fi</translation>
@@ -3480,6 +3482,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3487649228420469005">Skanimi përfundoi</translation>
 <translation id="3488199663160411179">emrin tënd</translation>
 <translation id="3490695139702884919">Po shkarkon... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Të dhënat lokale mund të restaurohen nëse e harron kodin PIN ose fjalëkalimin tënd</translation>
 <translation id="3491669675709357988">Llogaria e fëmijës tënd nuk është konfiguruar për kontrollet prindërore të Family Link. Mund t'i shtosh kontrollet prindërore pasi të përfundosh konfigurimin. Informacionet për kontrollet prindërore mund t'i gjesh në aplikacionin "Eksploro".</translation>
 <translation id="3491678231052507920">Sajtet përdorin zakonisht të dhënat dhe pajisjet e realitetit virtual për të të lejuar të hysh në sesionet e realitetit VR</translation>
 <translation id="3493043608231401654">Hiq "<ph name="TAB_TITLE" />" nga grupi i skedave</translation>
@@ -4158,6 +4161,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3948116654032448504">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për imazhin</translation>
 <translation id="3948334586359655083">Kjo skedë po luan audion</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> mund t'i modifikojnë skedarët në dosjet e mëposhtme</translation>
+<translation id="3948985214866944547">Shumica e njerëzve e bllokojnë ndarjen e vendndodhjes së saktë për këtë sajt</translation>
 <translation id="394984172568887996">U importua nga IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> për të shkarkuar më shpejt skedarët</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
@@ -5368,6 +5372,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4853020600495124913">Hape në dritare &amp;të re</translation>
 <translation id="4854317507773910281">Zgjidh llogarinë e prindit për miratimin</translation>
 <translation id="485480310608090163">Cilësime dhe leje të tjera</translation>
+<translation id="485806788160414322">Luaj ose vendos në pauzë median</translation>
 <translation id="4858913220355269194">Maradona</translation>
 <translation id="486213875233855629">Vendosur në heshtje nga administratori</translation>
 <translation id="4862642413395066333">Po nënshkruan përgjigjet OCSP</translation>
@@ -9018,6 +9023,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7566118625369982896">Menaxho lidhjet për aplikacionet në Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Krijo një kombinim të tasteve</translation>
+<translation id="7568759527730933493">Përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Kjo përdor një ofrues të menaxhuar të shërbimit në <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Lidhjet e sigurta nuk përdoren për disa domene të konfiguruara nga administratori yt.</translation>
 <translation id="756876171895853918">Personalizo simbolin</translation>
 <translation id="7568790562536448087">Po përditësohet</translation>
 <translation id="7569983096843329377">E zezë</translation>
@@ -9180,6 +9186,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7676867886086876795">Dërgoja zërin Google për të lejuar diktimin në çfarëdo fushe teksti.</translation>
 <translation id="7678588695732963732">Të rivendosen të gjitha lejet për pajisjet USB?</translation>
 <translation id="7679171213002716280">Ka <ph name="PRINTER_COUNT" /> printerë të menaxhuar.</translation>
+<translation id="7679895819123160382">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. <ph name="PRODUCT_NAME" /> përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Lidhjet e sigurta nuk përdoren për disa domene të konfiguruara nga administratori yt.</translation>
 <translation id="7680416688940118410">Kalibrimi i ekranit me prekje</translation>
 <translation id="7681095912841365527">Sajti mund të përdorë Bluetooth-in</translation>
 <translation id="7681597159868843240">Sajtet përdorin zakonisht sensorët e lëvizjes të pajisjes për veçoritë si realiteti virtual ose monitorimi i fitnesit</translation>
@@ -9577,6 +9584,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7955105108888461311">Kërkoja personalisht</translation>
 <translation id="7955177647836564772">Nëse Smart Lock është aktivizuar dhe telefoni yt është i shkyçur, nuk është e nevojshme të futësh një fjalëkalim ose kod PIN</translation>
 <translation id="7956373551960864128">Printerët e tu të ruajtur</translation>
+<translation id="7956918070009672177">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Lidhu me rrjetin dhe provo përsëri.</translation>
 <translation id="7957074856830851026">Të shikojë informacionet e pajisjes, të tilla si numri i serisë ose ID-ja e punës</translation>
 <translation id="7958157896921135832">Rrit madhësinë e fontit</translation>
 <translation id="7958828865373988933">Nëse dëshiron të krijosh një çelës kalimi për <ph name="APP_NAME" /> në një çelës sigurie USB, fute dhe preke atë tani</translation>

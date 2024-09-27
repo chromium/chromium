@@ -304,7 +304,6 @@
 <translation id="2377336083033403521">Претраживање картица…</translation>
 <translation id="2381405137052800939">Основе</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
-<translation id="2387703759148866940">Аутоматски попуни лозинке</translation>
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
@@ -1431,7 +1430,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7730973429297233609">Изаберите налог који желите да користите да бисте сачували <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на овом уређају.</translation>
 <translation id="7744192722284567281">Пронађено у упаду у податке</translation>
-<translation id="7746165521091043703">Отворите подешавања за аутоматско попуњавање лозинки</translation>
 <translation id="7749790401023484470">Нисте изабрали никакав текст.</translation>
 <translation id="7757015014239760147">Нема корисничког имена ••••••</translation>
 <translation id="775755486779745798">Аутоматско попуните месец истека <ph name="MONTH" /></translation>
@@ -1491,7 +1489,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7975036700432177008">Испробај</translation>
 <translation id="797588153137233716">Мени → Историја → Избриши податке прегледања</translation>
 <translation id="7977451675950311423">Упозорава вас ако користите лозинку која је угрожена при повреди података.</translation>
-<translation id="7978018860671536736">3. Додирните Аутоматски попуни лозинке</translation>
 <translation id="797824194429476746">Картице ће остати отворене на овом уређају, али ће група бити трајно избрисана.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7987685713885608670">Ради додатне заштите шифрујте лозинке на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>

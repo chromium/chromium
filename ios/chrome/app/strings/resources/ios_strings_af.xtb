@@ -301,7 +301,6 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2377336083033403521">Soek oortjies …</translation>
 <translation id="2381405137052800939">Basiese beginsels</translation>
 <translation id="2386793615875593361">1 gekies</translation>
-<translation id="2387703759148866940">Vul wagwoorde outomaties in</translation>
 <translation id="2390457533592708044">Versteek “<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">Jou pakkie kon nie afgelewer word nie</translation>
 <translation id="2410754283952462441">Kies 'n rekening</translation>
@@ -606,6 +605,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3982893814825393515">Meld ’n kwessie aan …</translation>
 <translation id="398604237578616937">Aangemeld as <ph name="USER_EMAIL" />. Maak rekeningkieslys oop.</translation>
+<translation id="3986739045730058129">Gaan na oortjie</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="3994422733891749358">Kies die kennisgewings wat jy wil ontvang</translation>
@@ -759,6 +759,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4699172675775169585">Gekaste prente en lêers</translation>
 <translation id="4717844083556844785">Huidige webbladsy is op Incognito</translation>
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
+<translation id="4720530280568305198">Jou seleksie het in ’n nuwe oortjie oopgemaak</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4742407542027196863">Bestuur wagwoorde …</translation>
 <translation id="4742897645503301228">Versteek Spoor prys na</translation>
@@ -1417,7 +1418,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7730973429297233609">Kies die rekening wat jy wil gebruik om <ph name="FILENAME" /> - <ph name="FILESIZE" /> te stoor</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Net op hierdie toestel.</translation>
 <translation id="7744192722284567281">Bevind dat dit data skend</translation>
-<translation id="7746165521091043703">Maak Outovulwagwoord-instellings oop</translation>
 <translation id="7749790401023484470">Jy het nie enige teks geselekteer nie.</translation>
 <translation id="7757015014239760147">Geen gebruikernaam nie ••••••••</translation>
 <translation id="775755486779745798">Vul die vervalmaand <ph name="MONTH" /> outomaties in</translation>
@@ -1477,7 +1477,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="7975036700432177008">Probeer</translation>
 <translation id="797588153137233716">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
-<translation id="7978018860671536736">3. Tik op AutoFill Passwords</translation>
 <translation id="797824194429476746">Die oortjies sal op hierdie toestel oop bly, maar die groep sal permanent uitgevee word.</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7987685713885608670">Jy kan vir bykomende veiligheid wagwoorde op jou toestel enkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>

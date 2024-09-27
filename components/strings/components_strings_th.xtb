@@ -1325,7 +1325,6 @@
 <translation id="342781501876943858">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="3428151540071562330">URI ของเซิร์ฟเวอร์เทมเพลต DnsOverHttpsTemplates อย่างน้อย 1 รายการไม่ถูกต้องและจะไม่มีการนำไปใช้</translation>
 <translation id="3428789896412418755">ประวัติที่จัดกลุ่ม</translation>
-<translation id="3430206873883193118">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">ปิดหน้า</translation>
 <translation id="3433111389595862568">ซอฟต์แวร์เพื่อการทำงานร่วมกันและการประชุม</translation>
 <translation id="3433144818443565002">การแชทด้วยเสียงและวิดีโอแชท</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
-<translation id="3451429106322189478">อนุญาตให้เข้าถึง<ph name="PERMISSION" /></translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="3453962258458347894">จำนวนการลองใหม่</translation>
 <translation id="3457781733462096492">แร็ปและฮิปฮอป</translation>
@@ -2569,7 +2567,6 @@
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="569000877158168851">ค่า DnsOverHttpsTemplates ไม่เกี่ยวข้องและจะไม่มีการนำไปใช้ นอกเสียจากจะมีการตั้งค่านโยบาย DnsOverHttpsMode เป็น <ph name="SECURE_DNS_MODE_AUTOMATIC" /> หรือ <ph name="SECURE_DNS_MODE_SECURE" /></translation>
 <translation id="5691848789297492617">ข้อความแจ้งให้บันทึกบัตรที่เปิดอยู่แบบเต็มความสูง</translation>
-<translation id="5692655638459249302">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">ใช้ Windows Hello เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
 <translation id="5699628521141772782">ผลิตภัณฑ์นมและไข่</translation>
 <translation id="5700761515355162635">อนุญาตคุกกี้ของบุคคลที่สามแล้ว</translation>
@@ -2717,7 +2714,6 @@
 <translation id="5995727681868049093">จัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
 <translation id="5996255674476750320">งานแสดงรถยนต์</translation>
 <translation id="5997247540087773573">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้เปลี่ยนรหัสผ่านทันทีและตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
-<translation id="5999271311987646952">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบมัลแวร์<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="6000528814684428358">ฮาร์ดร็อกและโพรเกรสซีฟ</translation>
 <translation id="6000758707621254961">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" <ph name="RESULT_COUNT" /> รายการ</translation>
 <translation id="6001839398155993679">เริ่มเลย</translation>
@@ -2882,7 +2878,6 @@
 <translation id="6284449872909111707">การส่ง SMS และการรับส่งข้อความโต้ตอบแบบทันที</translation>
 <translation id="6284517535531159884">ประเภท Seed ของรูปแบบ</translation>
 <translation id="6287197303017372967">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
-<translation id="6288521565586608304">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งส่งผลต่อการท่องเว็บ เช่น เปลี่ยนหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่เข้าชม Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัยเพื่อหลีกเลี่ยงอันตราย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">พบส่วนลด</translation>
 <translation id="6289939620939689042">สีของหน้าเว็บ</translation>
 <translation id="6292819926564202163">เครื่องมือค้นหาใน Chrome</translation>
@@ -3076,7 +3071,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">การศึกษาด้านคอมพิวเตอร์</translation>
 <translation id="6633476656216409494">ซอฟต์แวร์สำหรับธุรกิจและประสิทธิภาพการทำงาน</translation>
-<translation id="6638353438328951386">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบซอฟต์แวร์ที่เป็นอันตราย<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645291930348198241">เข้าถึงคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6645478838938543427">ระบบจะส่งการแจ้งเตือนราคาลดลงไปยัง <ph name="EMAIL_ADDRESS" /></translation>
@@ -3290,7 +3284,6 @@
 <translation id="701757816833614688">ทัศนศิลป์และการศึกษาด้านการออกแบบ</translation>
 <translation id="702275896380648118">เว็บไซต์นี้จะระบุสิ่งที่คุณชื่นชอบแล้วแนะนําโฆษณาในเว็บไซต์อื่น เว็บไซต์นี้ยังรับหัวข้อโฆษณาของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
 <translation id="7023162328967545559">คำเตือนจากผู้ดูแลระบบ</translation>
-<translation id="7024932305105294144">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบฟิชชิง<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้ เว็บไซต์ฟิชชิงปลอมเป็นเว็บไซต์อื่นๆ เพื่อหลอกคุณ<ph name="NEW_LINE" />บางครั้งเว็บไซต์ที่โดยปกติจะปลอดภัยก็อาจถูกบุกรุกจากผู้โจมตีได้ โปรด<ph name="BEGIN_ERROR_LINK" />แจ้งให้เราทราบ<ph name="END_ERROR_LINK" />หากคุณคิดว่ามีข้อผิดพลาดเกิดขึ้นและเว็บไซต์นี้ไม่ก่อให้เกิดอันตราย</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7030164307377592766">แก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="7031646650991750659">แอปจาก Google Play ที่คุณติดตั้ง</translation>
@@ -3368,7 +3361,6 @@
 <translation id="7168625890036931112">แพลตฟอร์มนี้ไม่รองรับข้อจำกัด "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="717330890047184534">รหัส GAIA:</translation>
 <translation id="7173338713290252554">ประวัติราคาในเว็บ</translation>
-<translation id="7173478186876671324">ผู้ดูแลระบบบล็อก<ph name="PERMISSION" />สำหรับเว็บไซต์นี้</translation>
 <translation id="7174545416324379297">รวมแล้ว</translation>
 <translation id="7175097078723125014">เลือกตัวเลือกแก้ไขที่อยู่แล้ว</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> วิธี}other{<ph name="SHIPPING_OPTION_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> วิธี}}</translation>
@@ -3402,7 +3394,6 @@
 <translation id="7221857374443660083">ธนาคารต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="7227293336683593977">ประวัติราคา</translation>
-<translation id="7227747683324411744">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้ติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งส่งผลต่อการท่องเว็บ เช่น เปลี่ยนหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่เข้าชม</translation>
 <translation id="7232352818707016189">การดำเนินการเพิ่มเติมสำหรับตารางเปรียบเทียบ</translation>
 <translation id="7233592378249864828">พิมพ์แผ่นงานยืนยัน</translation>
 <translation id="7234112195906418665">การเดินทางและการขนส่ง</translation>
@@ -3623,7 +3614,6 @@
 <translation id="7598391785903975535">ไม่ถึง <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
 <translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
-<translation id="7605377493722372900">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต</translation>
 <translation id="7608583484192556132">โฆษณาที่คุณเห็นจะได้รับการปรับตามโปรไฟล์ของคุณหรือไม่นั้นขึ้นอยู่กับหลายอย่าง ซึ่งรวมถึงการตั้งค่านี้ <ph name="BEGIN_LINK_1" />โฆษณาที่เว็บไซต์แนะนำ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK_3" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
 <translation id="7613889955535752492">หมดอายุ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4076,7 +4066,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">อนุญาตให้ใช้ไมโครโฟนในครั้งนี้</translation>
 <translation id="8421158157346464398">ข้อมูลโปรไฟล์งาน (เช่น ชื่อผู้ใช้ในโปรไฟล์งาน)</translation>
-<translation id="8422228580902424274">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้ติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8427848540066057481">500 x 750 มม.</translation>
@@ -4228,7 +4217,6 @@
 <translation id="8722929331701811374">กระดาษจดหมาย (หัวจดหมาย)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
-<translation id="8725667981218437315">กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="8726549941689275341">ขนาดหน้า:</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
@@ -4437,7 +4425,6 @@
 <translation id="9119042192571987207">อัปโหลดแล้ว</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="912327514020027767">กระโปรง</translation>
-<translation id="912414390325846156">คุณเคยเลือกไม่อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="9128870381267983090">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="9131119348384879525">จับภาพเนื้อหาที่เป็นความลับไหม</translation>
 <translation id="9133861214150761123">การบัญชีและการตรวจสอบ</translation>

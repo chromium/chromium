@@ -1325,7 +1325,6 @@
 <translation id="342781501876943858">パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates サーバー テンプレートの一部の URI が無効なため、使用されません。</translation>
 <translation id="3428789896412418755">グループに分類した履歴</translation>
-<translation id="3430206873883193118">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">ページを閉じる</translation>
 <translation id="3433111389595862568">コラボレーション、会議用ソフトウェア</translation>
 <translation id="3433144818443565002">ボイスチャット、ビデオチャット</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
 <translation id="3450323514459570273">MIDI デバイスの操作と再プログラムを要求できる</translation>
-<translation id="3451429106322189478"><ph name="PERMISSION" /> が許可されました</translation>
 <translation id="3452404311384756672">取得間隔:</translation>
 <translation id="3453962258458347894">再試行の回数</translation>
 <translation id="3457781733462096492">ラップ、ヒップホップ</translation>
@@ -2570,7 +2568,6 @@
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates の値は関連するものでないため、使用されません。ただし、DnsOverHttpsMode ポリシーが「<ph name="SECURE_DNS_MODE_AUTOMATIC" />」または「<ph name="SECURE_DNS_MODE_SECURE" />」に設定されている場合は除きます。</translation>
 <translation id="5691848789297492617">カード保存のメッセージが画面全体に表示されています。</translation>
-<translation id="5692655638459249302">アクセスしようとしているサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Windows Hello を使用して本人確認し、購入手続きを完了しますか？</translation>
 <translation id="5699628521141772782">乳製品、卵</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
@@ -2718,7 +2715,6 @@
 <translation id="5995727681868049093">Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
 <translation id="5996255674476750320">モーターショー、オートショー</translation>
 <translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
-<translation id="5999271311987646952">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="6000528814684428358">ハードロック、プログレッシブ</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6001839398155993679">開始する</translation>
@@ -2883,7 +2879,6 @@
 <translation id="6284449872909111707">テキスト メッセージ、インスタント メッセージ</translation>
 <translation id="6284517535531159884">バリエーション シードタイプ</translation>
 <translation id="6287197303017372967">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内します。</translation>
-<translation id="6288521565586608304">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。危害を避けるため安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">割引が見つかりました</translation>
 <translation id="6289939620939689042">ページの色</translation>
 <translation id="6292819926564202163">Chrome で使用する検索エンジン</translation>
@@ -3077,7 +3072,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">コンピュータ教育</translation>
 <translation id="6633476656216409494">ビジネス、生産性ソフトウェア</translation>
-<translation id="6638353438328951386">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで最近<ph name="BEGIN_LINK" />有害なソフトウエアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645291930348198241">Cookie とサイトデータへのアクセス</translation>
 <translation id="6645478838938543427">値下げアラートを <ph name="EMAIL_ADDRESS" /> に送信します</translation>
@@ -3291,7 +3285,6 @@
 <translation id="701757816833614688">ビジュアル アート、デザイン教育</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
-<translation id="7024932305105294144">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで<ph name="BEGIN_LINK" />最近フィッシングが検出<ph name="END_LINK" />されました。フィッシング サイトは、他のサイトになりすましてユーザーを騙そうとするサイトです。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030164307377592766">お支払い方法の入力の設定を変更します</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
@@ -3369,7 +3362,6 @@
 <translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」はこのプラットフォームではサポートされていない制限です</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7173338713290252554">ウェブ全体での価格の推移</translation>
-<translation id="7173478186876671324">管理者によりこのサイトでは <ph name="PERMISSION" /> はブロックされています</translation>
 <translation id="7174545416324379297">統合された値</translation>
 <translation id="7175097078723125014">住所を編集するオプションが選択されました</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件）}other{<ph name="SHIPPING_OPTION_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件）}}</translation>
@@ -3403,7 +3395,6 @@
 <translation id="7221857374443660083">ご利用のカード発行会社が本人確認を求めています</translation>
 <translation id="722454870747268814">新しいシークレット タブ</translation>
 <translation id="7227293336683593977">価格の推移</translation>
-<translation id="7227747683324411744">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。</translation>
 <translation id="7232352818707016189">比較表のその他の操作</translation>
 <translation id="7233592378249864828">確認シートの印刷</translation>
 <translation id="7234112195906418665">旅行、交通</translation>
@@ -3625,7 +3616,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 未満</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> では現在このリクエストを処理できません。</translation>
 <translation id="7599089013883397081">ダウンロードがタイムアウトしました</translation>
-<translation id="7605377493722372900">アクセスしようとしているサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。</translation>
 <translation id="7608583484192556132">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK_1" />サイトによる広告の提案<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定<ph name="END_LINK_2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK_3" />広告のプライバシー管理について<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
 <translation id="7613889955535752492">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
@@ -4078,7 +4068,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
 <translation id="8421158157346464398">仕事用プロファイルの情報（仕事用プロファイルのユーザー名など）</translation>
-<translation id="8422228580902424274">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8427848540066057481">500x750 mm</translation>
@@ -4230,7 +4219,6 @@
 <translation id="8722929331701811374">ステーショナリー（レターヘッド）</translation>
 <translation id="8724824364712796726">B6 封筒</translation>
 <translation id="8725066075913043281">もう一度試す</translation>
-<translation id="8725667981218437315">カメラとマイク</translation>
 <translation id="8726549941689275341">ページサイズ:</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
@@ -4439,7 +4427,6 @@
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> が本人確認を求めています</translation>
 <translation id="912327514020027767">スカート</translation>
-<translation id="912414390325846156">以前にこのサイトへのアクセスを許可しないことを選択しています</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9131119348384879525">機密コンテンツをキャプチャしますか？</translation>
 <translation id="9133861214150761123">会計、監査</translation>

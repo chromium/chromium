@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="4718048029184481307">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਵਿੱਚ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
-<translation id="4792862212177489858">ਟਿਕਾਣਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4812940957355064477">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨੰਬਰ ਦਰਜ ਕਰੋ।</translation>
 <translation id="49269513399674318">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ਚੁਣਿਆ ਗਿਆ</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">ਵੈਲਯੂ <ph name="MINIMUM" /> ਤੋਂ ਵੱਧ ਜਾਂ ਇਸਦੇ ਬਰਾਬਰ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">ਟਿਕਾਣੇ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="5307600278924710095">ਕਿਰਪਾ ਕਰਕੇ  '<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਦਰਜ ਕਰੋ। '<ph name="INVALIDADDRESS" />' ਅਧੂਰਾ ਹੈ।</translation>
 <translation id="5334352251556557839">ਮੀਡੀਆ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।</translation>
 <translation id="537648784377940524">ਘੱਟੋ ਘੱਟ ਤਾਰੀਖ (<ph name="MIN_DATE_OR_TIME" />) ਵੱਧ ਤੋਂ ਵੱਧ ਤਾਰੀਖ (<ph name="MAX_DATE_OR_TIME" />) ਤੋਂ ਪਹਿਲਾਂ ਆਉਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ਪਲੱਗਇਨ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ 1 ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
-<translation id="7080893216867146095">ਟਿਕਾਣੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="709897737746224366">ਕਿਰਪਾ ਕਰਕੇ ਬੇਨਤੀ ਕੀਤਾ ਫੌਰਮੈਟ ਮੈਚ ਕਰੋ।</translation>
 <translation id="7134810312945846184">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="7263440858009898357">ਕਿਰਪਾ ਕਰਕੇ ਸੂਚੀ ਵਿੱਚ ਇੱਕ ਆਈਟਮ ਚੁਣੋ।</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">ਮੁੱਲ <ph name="MINIMUM_TIME" /> ਅਤੇ <ph name="MAXIMUM_TIME" /> ਦੇ ਵਿਚਕਾਰ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ਫਾਈਲਾਂ</translation>
 <translation id="8451268428117625855">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਫਾਈਲ ਚੁਣੋ।</translation>
+<translation id="8533587060884335451">ਸਟੀਕ ਟਿਕਾਣਾ ਵਰਤੋ</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ਲਾਈਨ ਨੂੰ ਸੀਮਾਬੱਧ ਕਰੋ</translation>
 <translation id="8750798805984357768">ਕਿਰਪਾ ਕਰਕੇ ਇਹਨਾਂ ਚੋਣਾਂ ਵਿੱਚੋਂ ਇੱਕ ਚੁਣੋ।</translation>

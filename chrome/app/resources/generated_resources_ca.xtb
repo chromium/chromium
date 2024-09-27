@@ -250,6 +250,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1174366174291287894">La teva connexió és sempre segura tret que Chrome t'indiqui el contrari</translation>
 <translation id="1175131936083782305">El teu administrador ha desactivat aquesta funció.</translation>
 <translation id="1175364870820465910">&amp;Imprimeix...</translation>
+<translation id="1175572348579024023">Desplaça</translation>
 <translation id="1175914831232945926">Dígits</translation>
 <translation id="1176471985365269981">Sense permís per editar els fitxers o les carpetes del dispositiu</translation>
 <translation id="1177073277575830464">La configuració ràpida d'Android ha finalitzat. Continua amb la configuració al teu dispositiu (<ph name="DEVICE_TYPE" />).</translation>
@@ -1428,6 +1429,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1997616988432401742">Els meus certificats</translation>
 <translation id="1998715278591719161">Amb permís per fer un seguiment de les teves mans</translation>
 <translation id="1999115740519098545">A l'inici</translation>
+<translation id="1999763610967697511">Arrossega i deixa anar</translation>
 <translation id="2002109485265116295">En temps real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Per activar les dades del servei <ph name="NAME" />, primer connecta't a una xarxa Wi‑Fi</translation>
@@ -5371,6 +5373,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4853020600495124913">Obre en una &amp;finestra nova</translation>
 <translation id="4854317507773910281">Tria un compte parental per a l'aprovació</translation>
 <translation id="485480310608090163">Més opcions de configuració i permisos</translation>
+<translation id="485806788160414322">Reprodueix o posa en pausa el contingut multimèdia</translation>
 <translation id="4858913220355269194">Pilota</translation>
 <translation id="486213875233855629">Silenciat per l'administrador</translation>
 <translation id="4862642413395066333">Signatura de respostes OCSP</translation>

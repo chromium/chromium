@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3109724472072898302">Reduït</translation>
+<translation id="310979712355504754">Suprimeix-ho tot</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elements seleccionats</translation>
 <translation id="7260727271532453612">S'han permès <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius de realitat virtual. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius de realitat virtual.</translation>
-<translation id="7284451015630589124">Has bloquejat els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Visita la configuració per <ph name="BEGIN_LINK" />gestionar les proteccions de seguiment<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Normalment bloqueges les notificacions. Per permetre-les, toca Detalls.</translation>
 <translation id="7366415735885268578">Afegeix un lloc</translation>
 <translation id="7368695150573390554">Se suprimiran totes les dades fora de línia</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
 <translation id="7425915948813553151">Tema fosc per als llocs web</translation>
-<translation id="7474522811371247902">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics.\n\nVes a la configuració per <ph name="BEGIN_LINK" />gestionar les proteccions antiseguiment<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quan aquesta opció està activada, els llocs web poden mostrar sol·licituds d'inici de sessió. Quan aquesta opció està desactivada, els llocs web no poden mostrar sol·licituds d'inici de sessió.</translation>
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7804248752222191302">Un lloc web està utilitzant la càmera</translation>
 <translation id="7807060072011926525">Proporcionat per Google</translation>
-<translation id="7822573154188733812">Chrome bloqueja els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Visita la configuració per <ph name="BEGIN_LINK" />gestionar les proteccions de seguiment<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Reproduint contingut multimèdia</translation>
 <translation id="783819812427904514">Deixa de silenciar el vídeo</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8617611086246832542">Quan aquesta opció està activada, es mostra la visualització per a ordinadors dels llocs web. Quan aquesta opció està desactivada, es mostra la visualització per a mòbils dels llocs web.</translation>
-<translation id="8649036394979866943">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Visita la configuració per <ph name="BEGIN_LINK" />gestionar les proteccions de seguiment<ph name="END_LINK" />.</translation>
 <translation id="8676316391139423634">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de les teves mans. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de les teves mans.</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="8681886425883659911">Els anuncis es bloquegen en llocs web que se sap que mostren anuncis intrusius o enganyosos</translation>

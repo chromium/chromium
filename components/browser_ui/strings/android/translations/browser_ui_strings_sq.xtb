@@ -125,6 +125,7 @@
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
 <translation id="3109724472072898302">Palosur</translation>
+<translation id="310979712355504754">Fshiji të gjitha</translation>
 <translation id="3114012059975132928">Luajtësi i videos</translation>
 <translation id="3115898365077584848">Shfaq informacionin</translation>
 <translation id="3123473560110926937">Bllokuar në disa sajte</translation>
@@ -408,7 +409,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> janë lejuar</translation>
 <translation id="7276071417425470385">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet e realitetit virtual. Kur cilësimi është joaktiv, sajtet mund të përdorin pajisjet e realitetit virtual.</translation>
-<translation id="7284451015630589124">I ke bllokuar sajtet që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Ti i bllokon zakonisht njoftimet. Për t'i lejuar, trokit te "Detajet".</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7368695150573390554">Çdo e dhënë offline do të fshihet</translation>
@@ -418,7 +418,6 @@
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7425915948813553151">Tema e errët për sajtet</translation>
-<translation id="7474522811371247902">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar mbrojtjet e tua nga gjurmimi<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kur cilësimi është aktiv, sajtet mund të shfaqin kërkesat për identifikim. Kur cilësimi është joaktiv, sajtet nuk mund të shfaqin kërkesat për identifikim.</translation>
 <translation id="7554752735887601236">Një sajt po përdor mikrofonin tënd</translation>
@@ -439,7 +438,6 @@
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7804248752222191302">Një sajt po përdor kamerën tënde</translation>
 <translation id="7807060072011926525">Ofruar nga Google</translation>
-<translation id="7822573154188733812">Chrome i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Po luan media</translation>
 <translation id="783819812427904514">Aktivizo zërin e videos</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
@@ -495,7 +493,6 @@
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8617611086246832542">Kur cilësimi është aktiv, shfaqet pamja e uebsajteve për desktop. Kur cilësimi është joaktiv, shfaqet pamja e uebsajteve për celular.</translation>
-<translation id="8649036394979866943">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të gjurmojnë duart e tua. Kur cilësimi është joaktiv, sajtet nuk mund të gjurmojnë duart e tua.</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>

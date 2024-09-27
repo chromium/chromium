@@ -250,6 +250,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1174366174291287894">Votre connexion est toujours sécurisée, à moins que Chrome ne vous indique le contraire</translation>
 <translation id="1175131936083782305">Votre administrateur a désactivé cette fonctionnalité.</translation>
 <translation id="1175364870820465910">Im&amp;primer...</translation>
+<translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1175914831232945926">des chiffres</translation>
 <translation id="1176471985365269981">Sites non autorisés à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="1177073277575830464">La configuration rapide d'Android est terminée. Poursuivez la configuration sur votre <ph name="DEVICE_TYPE" />.</translation>
@@ -1429,6 +1430,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1997616988432401742">Vos certificats</translation>
 <translation id="1998715278591719161">Autorisé(s) à suivre vos mains</translation>
 <translation id="1999115740519098545">Au démarrage</translation>
+<translation id="1999763610967697511">Glisser-déposer</translation>
 <translation id="2002109485265116295">En temps réel</translation>
 <translation id="2002160221914907025">IA expérimentale</translation>
 <translation id="2003130567827682533">Pour activer les données "<ph name="NAME" />", connectez-vous tout d'abord à un réseau Wi-Fi</translation>
@@ -3483,6 +3485,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3487649228420469005">L'analyse est terminée</translation>
 <translation id="3488199663160411179">nom</translation>
 <translation id="3490695139702884919">Téléchargement… <ph name="PERCENT" /> %</translation>
+<translation id="3491171603443463516">Les données locales peuvent être restaurées si vous oubliez votre code ou votre mot de passe</translation>
 <translation id="3491669675709357988">Le contrôle parental Family Link n'est pas configuré pour le compte de votre enfant. Vous pourrez l'activer lorsque vous aurez terminé la configuration. Vous trouverez plus d'informations sur cette fonctionnalité dans l'application Explorer.</translation>
 <translation id="3491678231052507920">Les sites utilisent généralement vos données et appareils de réalité virtuelle pour que vous puissiez lancer des sessions de réalité virtuelle</translation>
 <translation id="3493043608231401654">Supprimer <ph name="TAB_TITLE" /> du groupe d'onglets</translation>
@@ -4161,6 +4164,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Cet onglet lit des fichiers audio</translation>
 <translation id="3948507072814225786">Le site <ph name="ORIGIN" /> peut modifier les fichiers des dossiers suivants</translation>
+<translation id="3948985214866944547">La plupart des internautes bloquent le partage de la position exacte pour ce site</translation>
 <translation id="394984172568887996">Importés depuis IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pour sécuriser davantage le téléchargement de fichiers</translation>
 <translation id="3950820424414687140">Se connecter</translation>
@@ -5371,6 +5375,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4853020600495124913">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="4854317507773910281">Sélectionnez un compte parental pour la demande d'autorisation</translation>
 <translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
+<translation id="485806788160414322">Lancer ou mettre en pause le contenu multimédia</translation>
 <translation id="4858913220355269194">Foot</translation>
 <translation id="486213875233855629">Désactivé par votre administrateur</translation>
 <translation id="4862642413395066333">Réponses OCSP de signature</translation>
@@ -9025,6 +9030,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7566118625369982896">Gérer les liens des applications Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Créer une combinaison de touches</translation>
+<translation id="7568759527730933493">Utiliser une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS). Un fournisseur de services géré situé à l'adresse <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> est utilisé. Les connexions sécurisées ne sont pas utilisées pour certains domaines configurés par votre administrateur.</translation>
 <translation id="756876171895853918">Personnaliser l'avatar</translation>
 <translation id="7568790562536448087">Mise à jour en cours</translation>
 <translation id="7569983096843329377">Noir</translation>
@@ -9187,6 +9193,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7676867886086876795">Transmettez votre voix à Google pour pouvoir dicter ce que vous voulez dans n'importe quelle zone de texte.</translation>
 <translation id="7678588695732963732">Réinitialiser toutes les autorisations de périphérique USB ?</translation>
 <translation id="7679171213002716280">Il y a <ph name="PRINTER_COUNT" /> imprimantes gérées.</translation>
+<translation id="7679895819123160382">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. <ph name="PRODUCT_NAME" /> utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS). Les connexions sécurisées ne sont pas utilisées pour certains domaines configurés par votre administrateur.</translation>
 <translation id="7680416688940118410">Calibrage de l'écran tactile</translation>
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7681597159868843240">Les sites utilisent généralement les capteurs de mouvement de votre appareil pour proposer des fonctionnalités comme la réalité virtuelle ou le suivi de vos activités de remise en forme</translation>
@@ -9585,6 +9592,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7955177647836564772">Si Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin de saisir de mot de passe ni de code</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
+<translation id="7956918070009672177">Aucune voix en <ph name="LANGUAGE" /> n'est disponible sur votre appareil. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="7957074856830851026">Voir les informations sur l'appareil telles que son numéro de série ou son identifiant</translation>
 <translation id="7958157896921135832">Augmenter la taille de la police</translation>
 <translation id="7958828865373988933">Si vous souhaitez créer une clé d'accès pour <ph name="APP_NAME" /> sur une clé de sécurité USB, insérez-la et appuyez dessus maintenant</translation>

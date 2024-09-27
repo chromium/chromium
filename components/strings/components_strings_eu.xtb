@@ -379,6 +379,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1658111267661135323">Telebista eta bideoak</translation>
 <translation id="1658918301167915956">Bluetooth bidezko gailuak</translation>
 <translation id="1662550410081243962">Gorde eta bete ordainketa-metodoak</translation>
+<translation id="1662980953334786797">Ordena bera</translation>
 <translation id="1663943134801823270">Chrome-tik hartu dira txartelak eta helbideak. Kudeatu nahi badituzu, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="1664389769577564606">Flexo fotopolimeroa</translation>
 <translation id="166624440456221306">Ezabatu konparazio-taula</translation>
@@ -1321,7 +1322,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="342781501876943858">Pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chromium-ek.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates aukeraren zerbitzariko txantiloien URI batek edo gehiagok ez dute balio, eta ez dira erabiliko.</translation>
 <translation id="3428789896412418755">Taldekatutako historia</translation>
-<translation id="3430206873883193118">Baliteke webguneko erasotzaileak zu iruzurtzen saiatzea softwarea instala dezazun, edo informazioa eman dezazun, hala nola pasahitza, telefono-zenbakia edo kreditu-txartelaren zenbakia. Chrome-k atzera egitea gomendatzen dizu, zeure burua babesteko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Itxi orria</translation>
 <translation id="3433111389595862568">Elkarlanean jarduteko eta bideokonferentziak egiteko softwarea</translation>
 <translation id="3433144818443565002">Ahots- eta bideodeiak</translation>
@@ -1339,7 +1339,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3447661539832366887">Gailuaren jabeak Dinosaur jokoa desaktibatu du.</translation>
 <translation id="3447884698081792621">Erakutsi ziurtagiria (jaulkitzailea: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Zure MIDI gailuak kontrolatu eta berriro programatzeko eska dezake</translation>
-<translation id="3451429106322189478">Baimena daukazu <ph name="PERMISSION" /> erabiltzeko</translation>
 <translation id="3452404311384756672">Eskuratzeko denbora tartea:</translation>
 <translation id="3453962258458347894">Saiakera kopurua</translation>
 <translation id="3457781733462096492">Rapa eta hip-hopa</translation>
@@ -1655,6 +1654,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4023431997072828269">Inprimakia segurua ez den konexio baten bidez bidaliko denez, gainerako erabiltzaileek zure informazioa ikusi ahalko dute.</translation>
 <translation id="4025325634010721551">Kargatu dira berriro gidalerroak</translation>
 <translation id="4025338605225449265">Monetak eta trukea</translation>
+<translation id="4025777154208238692">Alderantzizko ordena</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Webgunera bidaltzen edo bertatik jasotzen duzun informazioa <ph name="BEGIN_STRONG" />ikusi eta alda dezakete erasotzaileek<ph name="END_STRONG" />.
       <ph name="LIST_ITEM" />Sare publiko bat badarabilzu, <ph name="BEGIN_STRONG" />webgunea geroago bisitatzea seguruagoa da<ph name="END_STRONG" />. Arrisku gutxiago dago sare fidagarri bat erabiltzean; adibidez, etxeko edo laneko wifia.
@@ -2564,7 +2564,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates aukerako balioa ez da egokia, eta ez da erabiliko DnsOverHttpsMode gidalerroan <ph name="SECURE_DNS_MODE_AUTOMATIC" /> edo <ph name="SECURE_DNS_MODE_SECURE" /> ezarri ezean.</translation>
 <translation id="5691848789297492617">Txartela gordetzeko leihoa altuera osoan irekita dago.</translation>
-<translation id="5692655638459249302">Baliteke webguneko erasotzaileak software kaltegarria instalatzea, pasahitza, argazkiak, mezuak, kreditu-txartelaren zenbakia edo beste zerbait lapurtzeko edo ezabatzeko asmoz. Chrome-k atzera egitea gomendatzen dizu, zeure burua babesteko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Windows Hello erabili nahi duzu erosketa egiaztatzeko eta osatzeko?</translation>
 <translation id="5699628521141772782">Esnekiak eta arrautzak</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
@@ -2712,7 +2711,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5995727681868049093">Kudeatu Google-ko kontuko informazioa, pribatutasuna eta segurtasuna</translation>
 <translation id="5996255674476750320">Ibilgailuen erakusketak</translation>
 <translation id="5997247540087773573">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitza orain aldatzea gomendatzen du, eta gordeta dauzkazun pasahitzak seguruak direla egiaztatzea.</translation>
-<translation id="5999271311987646952">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da, eta <ph name="BEGIN_LINK" />duela gutxi malwarea aurkitu du<ph name="END_LINK" /> bisitatu nahi duzun webgunean.</translation>
 <translation id="6000528814684428358">Hard rocka eta rock progresiboa</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
 <translation id="6001839398155993679">Has gaitezen</translation>
@@ -2876,7 +2874,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6284449872909111707">Testu-mezuak eta istanteko mezularitza</translation>
 <translation id="6284517535531159884">Aldaeren iturburu mota</translation>
 <translation id="6287197303017372967">Jaso helmugara iristeko urratsez urratseko jarraibideak nabigazio-eginbidea erabilita.</translation>
-<translation id="6288521565586608304">Baliteke webguneko erasotzaileak zu iruzurtzen saiatzea sarea arakatzeko modua oztopatuko dizuten software kaltegarria instala dezazun. Besteak beste, baliteke orri nagusia aldatzea edo ikusten dituzun webguneetan iragarki gehiago erakustea. Chrome-k atzera egitea gomendatzen dizu, zeure burua babesteko eta kalteak ekiditeko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Deskontu bat aurkitu da</translation>
 <translation id="6289939620939689042">Orriaren kolorea</translation>
 <translation id="6292819926564202163">Chrome-n darabilzun bilatzailea</translation>
@@ -3070,7 +3067,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Informatika-hezkuntza</translation>
 <translation id="6633476656216409494">Enpresa- eta produktibitate-softwarea</translation>
-<translation id="6638353438328951386">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da, eta duela gutxi <ph name="BEGIN_LINK" />software kaltegarria aurkitu du<ph name="END_LINK" /> bisitatu nahi duzun webgunean.</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6645291930348198241">Cookieak eta webguneko datuak atzitu.</translation>
 <translation id="6645478838938543427">Helbide honetara bidaliko dira prezio-jaitsieren alertak: <ph name="EMAIL_ADDRESS" /></translation>
@@ -3284,7 +3280,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="701757816833614688">Ikusizko arteen eta diseinuaren inguruko ikasketak</translation>
 <translation id="702275896380648118">Webguneak gustatzen zaizkizun gauzak zehazten ditu eta, gero, beste webguneei iragarkiak iradokitzen dizkie. Halaber, Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun.</translation>
 <translation id="7023162328967545559">Administratzailearen abisua</translation>
-<translation id="7024932305105294144">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da, eta <ph name="BEGIN_LINK" />duela gutxi phishinga aurkitu du<ph name="END_LINK" /> bisitatu nahi duzun webgunean. Phishing-webguneek beste webgune batzuk direnaren plantak egiten dituzte zu iruzurtzeko.<ph name="NEW_LINE" />Normalean seguruak diren webguneak ere kutsatzen dituzte erasotzaileek. Akats bat izan dela eta webgune hau arriskutsua ez dela uste baduzu, <ph name="BEGIN_ERROR_LINK" />jakinaraz iezaguzu<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7030164307377592766">ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu</translation>
 <translation id="7031646650991750659">instalatuta dauzkazun Google Play-ko aplikazioak</translation>
@@ -3361,7 +3356,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" murriztapena ez da onartzen plataforma honetan</translation>
 <translation id="717330890047184534">GAIAidentifikatzailea:</translation>
 <translation id="7173338713290252554">Prezioaren historia sarean</translation>
-<translation id="7173478186876671324">Webgune honetan <ph name="PERMISSION" /> erabiltzeko baimena blokeatu dizu administratzaileak</translation>
 <translation id="7174545416324379297">Bateratuta</translation>
 <translation id="7175097078723125014">Helbidea editatzeko aukera hautatu da</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3395,7 +3389,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7221857374443660083">Bankuak zeu zarela berretsi nahi du</translation>
 <translation id="722454870747268814">Ezkutuko moduko fitxa berria</translation>
 <translation id="7227293336683593977">Prezioen historia</translation>
-<translation id="7227747683324411744">Baliteke webguneko erasotzaileak zu iruzurtzen saiatzea sarea arakatzeko modua oztopatuko dizuten software kaltegarria instala dezazun. Besteak beste, baliteke orri nagusia aldatzea edo ikusten dituzun webguneetan iragarki gehiago erakustea.</translation>
 <translation id="7232352818707016189">Konparazio-taularako ekintza gehiago</translation>
 <translation id="7233592378249864828">Inprimatu berrespen-orria</translation>
 <translation id="7234112195906418665">Bidaiak eta garraioa</translation>
@@ -3616,7 +3609,6 @@ Xehetasun gehiago:
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> baino gutxiago</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> webguneak ezin du gauzatu eskaera.</translation>
 <translation id="7599089013883397081">Deskargatzeko denbora-muga gainditu da</translation>
-<translation id="7605377493722372900">Baliteke webguneko erasotzaileak software kaltegarria instalatzea, pasahitza, argazkiak, mezuak, kreditu-txartelaren zenbakia edo beste zerbait lapurtzeko edo ezabatzeko asmoz.</translation>
 <translation id="7608583484192556132">Ikusten duzun iragarki bat pertsonalizatua den edo ez gauza askoren araberakoa da; adibidez, ezarpen hau, <ph name="BEGIN_LINK_1" />webguneek iradokitako iragarkiak<ph name="END_LINK_1" />, zure <ph name="BEGIN_LINK_2" />cookieen ezarpenak<ph name="END_LINK_2" /> eta arakatzen ari zaren webguneak iragarki pertsonalizatuak erabiltzen dituen. Lortu informazio gehiago <ph name="BEGIN_LINK_3" />iragarkien pribatutasuna kudeatzeari<ph name="END_LINK_3" /> buruz.</translation>
 <translation id="7610193165460212391">Balioa barrutitik kanpo dago: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Iraungitze-data: <ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
@@ -4069,7 +4061,6 @@ Xehetasun gehiago:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonoa erabil daiteke une honetan</translation>
 <translation id="8421158157346464398">laneko profileko informazioa (adibidez, laneko profileko erabiltzaile-izena)</translation>
-<translation id="8422228580902424274">Baliteke webguneko erasotzaileak zu iruzurtzen saiatzea softwarea instala dezazun, edo informazioa eman dezazun, hala nola pasahitza, telefono-zenbakia edo kreditu-txartelaren zenbakia.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Aldatu</translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
@@ -4220,7 +4211,6 @@ Xehetasun gehiago:
 <translation id="8722929331701811374">Paper-gaiak (gutun-goiburua)</translation>
 <translation id="8724824364712796726">B6 gutun-azala</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
-<translation id="8725667981218437315">Kamera eta mikrofonoa</translation>
 <translation id="8726549941689275341">Orriaren tamaina:</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8731268612289859741">Segurtasun-kodea</translation>
@@ -4429,7 +4419,6 @@ Xehetasun gehiago:
 <translation id="9119042192571987207">Kargatuta</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> webguneak zeu zarela egiaztatu behar du</translation>
 <translation id="912327514020027767">Gonak</translation>
-<translation id="912414390325846156">Webgune honetan erabiltzeko baimena ez ematea aukeratu zenuen</translation>
 <translation id="9128870381267983090">Konektatu sarera</translation>
 <translation id="9131119348384879525">Isilpeko edukia kapturatu nahi duzu?</translation>
 <translation id="9133861214150761123">Kontabilitatea eta auditoretza</translation>

@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="125153950246128346">Trykk for å se en annen fane</translation>
 <translation id="1273910660700874265">Alternativer for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Behold denne gruppen for å legge til faner senere, eller slett den hvis du ikke trenger den lenger.
+
+Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph name="TITLE_OF_GROUP" />», og den blir slettet fra alle enheter.</translation>
 <translation id="1340839264183302272">Forlat gruppen</translation>
 <translation id="1419023007528516122">Dette fører til at gruppen slettes fra enheten permanent</translation>
 <translation id="1486715732399361704">Du finner alle fanegruppene dine her</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
 <translation id="2662028055331606429">Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøk nettstedet</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CHANGED" /> er endret og <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CHANGED" /> er endret, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Opprettet for <ph name="NUM_HOURS_ONE" /> time siden}other{Opprettet for <ph name="NUM_HOURS_MANY" /> timer siden}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Lukk fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Lukk fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
+<translation id="5615302411300498438">Behold denne gruppen for å legge til faner senere, eller forlat den.
+
+Hvis du forlater gruppen, mister du umiddelbart tilgangen til fanegruppen «<ph name="TITLE_OF_GROUP" />».</translation>
 <translation id="5627941783489838464">Ingen faneoppdateringer</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Gjenopprett fanen}other{Gjenopprett fanene}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> linker fra Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="8631711675211020168">Alle mister tilgangen til fanegruppen <ph name="GROUP_NAME" /> umiddelbart, og den blir slettet fra alle enheter</translation>
 <translation id="8633025649649592204">Nylig aktivitet</translation>
+<translation id="8635399646025169806">Vil du beholde fanegruppen?</translation>
 <translation id="870736955561925754">Vil du lukke fanen og slette gruppen?</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_MONTHS_ONE" /> måned siden}other{Opprettet for <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
+<translation id="8804742093141782941">Behold gruppen</translation>
 <translation id="8820741577754260431">Se avslag på fanene dine</translation>
 <translation id="8887921976452567404">Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen.</translation>
 <translation id="8915916167043355778">Lukk alle</translation>

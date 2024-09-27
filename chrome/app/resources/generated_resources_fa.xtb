@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">‏اتصال شما همیشه امن است، مگر اینکه Chrome چیز دیگری به شما بگوید</translation>
 <translation id="1175131936083782305">سرپرستتان این ویژگی را غیرفعال کرده است.</translation>
 <translation id="1175364870820465910">&amp;چاپ...</translation>
+<translation id="1175572348579024023">پیمایش</translation>
 <translation id="1175914831232945926">ارقام</translation>
 <translation id="1176471985365269981">اجازه ندارد فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="1177073277575830464">‏راه‌اندازی سریع Android تمام شد. راه‌اندازی را در <ph name="DEVICE_TYPE" /> خود ادامه دهید.</translation>
@@ -1435,6 +1436,7 @@
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
 <translation id="1998715278591719161">برای ردیابی کردن دست‌هایتان مجاز است</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
+<translation id="1999763610967697511">کشیدن و رها کردن</translation>
 <translation id="2002109485265116295">بی‌درنگ</translation>
 <translation id="2002160221914907025">هوش مصنوعی آزمایشی</translation>
 <translation id="2003130567827682533">‏برای فعال کردن داده «<ph name="NAME" />»، ابتدا به شبکه Wi-Fi متصل شوید</translation>
@@ -5385,6 +5387,7 @@
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
+<translation id="485806788160414322">پخش یا مکث رسانه</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="486213875233855629">توسط سرپرست بی‌صدا شده است</translation>
 <translation id="4862642413395066333">‏امضا کردن پاسخ‌های OCSP</translation>

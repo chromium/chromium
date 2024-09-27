@@ -250,6 +250,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1174366174291287894">Vaša veza je uvijek sigurna osim ako vas Chrome ne obavijesti o suprotnom</translation>
 <translation id="1175131936083782305">Administrator je onemogućio ovu funkciju.</translation>
 <translation id="1175364870820465910">Štam&amp;panje...</translation>
+<translation id="1175572348579024023">Klizanje</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Nije dozvoljeno uređivanje fajlova ili foldera na vašem uređaju</translation>
 <translation id="1177073277575830464">Brzo postavljanje Androida je gotovo. Nastavite postavljanje na uređaju <ph name="DEVICE_TYPE" />.</translation>
@@ -1437,6 +1438,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1997616988432401742">Vaše potvrde</translation>
 <translation id="1998715278591719161">Dozvoljeno je praćenje ruku</translation>
 <translation id="1999115740519098545">Prilikom pokretanja</translation>
+<translation id="1999763610967697511">Prevuci i spusti</translation>
 <translation id="2002109485265116295">U stvarnom vremenu</translation>
 <translation id="2002160221914907025">Eksperimentalni AI</translation>
 <translation id="2003130567827682533">Da aktivirate podatke na usluzi "<ph name="NAME" />", prvo se povežite na WiFi mrežu</translation>
@@ -2934,6 +2936,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="304644035656848980">Pregled mikrofona</translation>
 <translation id="3046910703532196514">Web stranica, kompletna</translation>
 <translation id="304747341537320566">Alati za govor</translation>
+<translation id="3047678109605649715">Na uređaju nema glasova koji koriste <ph name="LANGUAGE" />. Obrišite prostor na uređaju i pokušajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodukcija (k)</translation>
 <translation id="3048742847101793553">Organizacija je blokirala fajl jer skeniranje nije uspjelo.</translation>
@@ -4175,7 +4178,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3948116654032448504">Traženje slike koristeći <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Ova kartica reproducira zvuk</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može uređivati fajlove u sljedećim folderima</translation>
-<translation id="3948985214866944547">Većina korisnika blokira dijeljenje točne lokacije za tu web-lokaciju</translation>
+<translation id="3948985214866944547">Većina osoba blokira dijeljenje tačne lokacije za ovu web lokaciju</translation>
 <translation id="394984172568887996">Uvezeno iz IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> za sigurnije preuzimanje fajlova</translation>
 <translation id="3950820424414687140">Prijava</translation>
@@ -5387,6 +5390,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4853020600495124913">Otvori u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
 <translation id="485480310608090163">Više postavki i odobrenja</translation>
+<translation id="485806788160414322">Reproduciranje ili pauziranje medija</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
@@ -9043,7 +9047,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7566118625369982896">Upravljanje linkovima za Play aplikacije</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Kreirajte kombinaciju tipki</translation>
-<translation id="7568759527730933493">Upotrijebite sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System). Ova aplikacija upotrebljava upravljanog davatelja usluga na web-lokaciji <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Sigurne veze ne upotrebljavaju se za neke domene koje je konfigurirao administrator.</translation>
+<translation id="7568759527730933493">Koristite sigurnu vezu da potražite IP adresu web lokacije u DNS-u (Sistemu naziva domena). Ovo koristi upravljanog pružaoca usluga na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Sigurne veze se ne koriste za određene domene koje je administrator konfigurirao.</translation>
 <translation id="756876171895853918">Prilagođavanje avatara</translation>
 <translation id="7568790562536448087">Ažuriranje</translation>
 <translation id="7569983096843329377">Crna</translation>
@@ -9206,7 +9210,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7676867886086876795">Pošaljite Googleu svoj glas da dozvolite diktiranje u bilo koje tekstualno polje.</translation>
 <translation id="7678588695732963732">Poništiti sva odobrenja za USB uređaj?</translation>
 <translation id="7679171213002716280">Postoji sljedeći broj upravljanih štampača: <ph name="PRINTER_COUNT" />.</translation>
-<translation id="7679895819123160382">Otežajte korisnicima s pristupom vašem internetskom prometu da vide koje web-lokacije posjećujete. <ph name="PRODUCT_NAME" /> upotrebljava sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System). Sigurne veze ne upotrebljavaju se za neke domene koje je konfigurirao vaš administrator.</translation>
+<translation id="7679895819123160382">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. <ph name="PRODUCT_NAME" /> koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistemu naziva domena). Sigurne veze se ne koriste za određene domene koje je administrator konfigurirao.</translation>
 <translation id="7680416688940118410">Kalibracija ekrana na dodir</translation>
 <translation id="7681095912841365527">Web lokacija može koristiti bluetooth</translation>
 <translation id="7681597159868843240">Web lokacije obično koriste senzore kretanja vašeg uređaja radi funkcija kao što je virtuelna realnost ili praćenje fitnesa</translation>
@@ -9605,7 +9609,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7955105108888461311">Pitajte lično</translation>
 <translation id="7955177647836564772">Ako je Smart Lock uključen i telefon otključan, ne morate unijeti lozinku ili PIN</translation>
 <translation id="7956373551960864128">Vaši sačuvani štampači</translation>
-<translation id="7956918070009672177">Na uređaju nema glasova za <ph name="LANGUAGE" />. Povežite se s internetom i pokušajte ponovo.</translation>
+<translation id="7956918070009672177">Na uređaju nema glasova koji koriste <ph name="LANGUAGE" />. Povežite se s internetom i pokušajte ponovo.</translation>
 <translation id="7957074856830851026">Pregled informacija o uređaju, kao što su serijski broj ili ID materijala</translation>
 <translation id="7958157896921135832">Povećavanje veličine fonta</translation>
 <translation id="7958828865373988933">Ako želite kreirati pristupni ključ za aplikaciju <ph name="APP_NAME" /> na USB sigurnosnom ključu, sada ga umetnite i dodirnite</translation>

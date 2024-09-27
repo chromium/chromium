@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">ТВ и видео</translation>
 <translation id="1658918301167915956">уреди со Bluetooth</translation>
 <translation id="1662550410081243962">Зачувувај и пополнувај начини на плаќање</translation>
+<translation id="1662980953334786797">Ист редослед</translation>
 <translation id="1663943134801823270">Картичките и адресите се од Chrome. Со нив може да управувате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Флексибилен фотополимер</translation>
 <translation id="166624440456221306">Избришете ги табелите за споредба</translation>
@@ -1324,7 +1325,6 @@
 <translation id="342781501876943858">Chromium препорачува ресетирање на лозинката ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="3428151540071562330">Една или повеќе од шаблонските URI на серверот DnsOverHttpsTemplates се неважечки и нема да се користат.</translation>
 <translation id="3428789896412418755">Групирана историја</translation>
-<translation id="3430206873883193118">Напаѓачите на сајтот што се обидувате да го отворите може да ве измамат да инсталирате софтвер или да откриете работи како лозинка, телефон или број на кредитна картичка. Chrome силно препорачува да се вратите на безбедно. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Затвори ја страницата</translation>
 <translation id="3433111389595862568">Софтвер за соработка и конференции</translation>
 <translation id="3433144818443565002">Гласовен и видеоразговор</translation>
@@ -1342,7 +1342,6 @@
 <translation id="3447661539832366887">Сопственикот на уредов ја исклучил играта со диносауруси.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаден од <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Сајтот може да побара да ги контролира и репрограмира вашите MIDI-уреди</translation>
-<translation id="3451429106322189478">Дозволата за <ph name="PERMISSION" /> е доделена</translation>
 <translation id="3452404311384756672">Интервал на освежување:</translation>
 <translation id="3453962258458347894">Број на повторни обиди</translation>
 <translation id="3457781733462096492">Рап и хип-хоп</translation>
@@ -1659,6 +1658,7 @@
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
 <translation id="4025325634010721551">Правилата се вчитани повторно</translation>
 <translation id="4025338605225449265">Валути и размена на пари</translation>
+<translation id="4025777154208238692">Обратен редослед</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />напаѓачите може да ги гледаат и променуваат<ph name="END_STRONG" /> податоците што ги испраќате или примате од сајтот
       <ph name="LIST_ITEM" />ако користите јавна мрежа, <ph name="BEGIN_STRONG" />најбезбедно е да го отворите сајтов подоцна<ph name="END_STRONG" />. Ризикот е помал кога користите доверлива мрежа, како домашна или работна Wi-Fi мрежа
@@ -2568,7 +2568,6 @@
 <translation id="5689516760719285838">Локација</translation>
 <translation id="569000877158168851">Вредноста DnsOverHttpsTemplates не е важна и нема да се користи, освен ако правилото DnsOverHttpsMode не е поставено на<ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Долниот лист со барање за зачувување картичка е отворен на цел екран.</translation>
-<translation id="5692655638459249302">Напаѓачите на сајтот што се обидувате да го отворите може да инсталираат штетен софтвер што краде или брише работи како вашите лозинка, фотографии, пораки или број на кредитна картичка. Chrome силно препорачува да се вратите на безбедно. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Дали сакате да користите Windows Hello за да го потврдите и завршите купувањето?</translation>
 <translation id="5699628521141772782">Млечни производи и јајца</translation>
 <translation id="5700761515355162635">Колачињата од трети страни се дозволени</translation>
@@ -2716,7 +2715,6 @@
 <translation id="5995727681868049093">Управувајте со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
 <translation id="5996255674476750320">Саеми за автомобили</translation>
 <translation id="5997247540087773573">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Google Password Manager препорачува веднаш да ја промените и да ги проверите зачуваните лозинки.</translation>
-<translation id="5999271311987646952">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како што е „Безбедно прелистување со Google“, што <ph name="BEGIN_LINK" />неодамна најде злонамерен софтвер<ph name="END_LINK" /> на сајтот што се обидувате да го отворите.</translation>
 <translation id="6000528814684428358">Хард-рок и прогресивна музика</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултати за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6001839398155993679">Ајде</translation>
@@ -2881,7 +2879,6 @@
 <translation id="6284449872909111707">Размена на SMS и инстант пораки</translation>
 <translation id="6284517535531159884">Тип извори на варијации</translation>
 <translation id="6287197303017372967">Добијте детални насоки до вашата дестинација со функцијата за навигација.</translation>
-<translation id="6288521565586608304">Напаѓачите на сајтот што се обидувате да го отворите може да ве измамат да инсталирате штетен софтвер што влијае на тоа како прелистувате, на пример, со променување на вашата почетна страница или прикажување дополнителни реклами на сајтовите што ги отворате. Chrome силно препорачува да се вратите на безбедно за да се избегнат штети. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Најден е попуст</translation>
 <translation id="6289939620939689042">Боја на страницата</translation>
 <translation id="6292819926564202163">Вашиот пребарувач во Chrome</translation>
@@ -3075,7 +3072,6 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Компјутерско образование</translation>
 <translation id="6633476656216409494">Софтвер за бизнис и продуктивност</translation>
-<translation id="6638353438328951386">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како што е „Безбедно прелистување со Google“, што неодамна <ph name="BEGIN_LINK" />најде штетен софтвер<ph name="END_LINK" /> на сајтот што се обидувате да го отворите.</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6645291930348198241">да пристапува до колачиња и податоци за сајтот.</translation>
 <translation id="6645478838938543427">Известувањата за намалување на цената ќе се испраќаат на <ph name="EMAIL_ADDRESS" /></translation>
@@ -3289,7 +3285,6 @@
 <translation id="701757816833614688">Образование за визуелни уметности и дизајн</translation>
 <translation id="702275896380648118">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="7023162328967545559">Предупредување од администратор</translation>
-<translation id="7024932305105294144">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како што е „Безбедно прелистување со Google“, што <ph name="BEGIN_LINK" />неодамна најде фишинг<ph name="END_LINK" /> на сајтот што се обидувате да го отворите. Сајтовите за фишинг се преправаат дека се други сајтови за да ве измамат.<ph name="NEW_LINE" />Дури и сајтовите што се обично безбедни понекогаш се компромитирани од напаѓачи. <ph name="BEGIN_ERROR_LINK" />Известете нѐ<ph name="END_ERROR_LINK" /> ако сметате дека сме погрешиле и дека сајтов не е опасен.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030164307377592766">да ги измени поставките за пополнување на начините на плаќање</translation>
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
@@ -3366,7 +3361,6 @@
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ не е поддржано ограничување на оваа платформа</translation>
 <translation id="717330890047184534">ID на Gaia:</translation>
 <translation id="7173338713290252554">Историја на цени на интернет</translation>
-<translation id="7173478186876671324">Администраторот ја отстрани вашата дозвола за <ph name="PERMISSION" /> за сајтов</translation>
 <translation id="7174545416324379297">Споена</translation>
 <translation id="7175097078723125014">Избрана е опцијата за изменување адреса</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3400,7 +3394,6 @@
 <translation id="7221857374443660083">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
 <translation id="7227293336683593977">Историја на цените</translation>
-<translation id="7227747683324411744">Напаѓачите на сајтот што се обидувате да го отворите може да ве измамат да инсталирате штетен софтвер што влијае на тоа како прелистувате, на пример, со променување на вашата почетна страница или прикажување дополнителни реклами на сајтовите што ги отворате.</translation>
 <translation id="7232352818707016189">Повеќе дејства за табелата во „Споредба“</translation>
 <translation id="7233592378249864828">Испечати лист за потврда</translation>
 <translation id="7234112195906418665">Патување и транспорт</translation>
@@ -3621,7 +3614,6 @@
 <translation id="7598391785903975535">Помалку од <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> моментално не може да го изврши барањето.</translation>
 <translation id="7599089013883397081">Времето за преземање истече</translation>
-<translation id="7605377493722372900">Напаѓачите на сајтот што се обидувате да го отворите може да инсталираат штетен софтвер што краде или брише работи како вашите лозинка, фотографии, пораки или број на кредитна картичка.</translation>
 <translation id="7608583484192556132">Дали ќе се персонализира конкретна реклама може да зависи од многу работи, меѓу кои и оваа поставка, <ph name="BEGIN_LINK_1" />рекламите предложени од сајтови<ph name="END_LINK_1" />, вашите <ph name="BEGIN_LINK_2" />поставки за колачиња<ph name="END_LINK_2" />, како и дали сајтот што го прегледувате персонализира реклами. Дознајте повеќе за <ph name="BEGIN_LINK_3" />управувањето со приватноста за рекламите<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Вредноста е надвор од опсегот <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Истекува: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4074,7 +4066,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Микрофонот е дозволен овој пат</translation>
 <translation id="8421158157346464398">податоци за работниот профил (како корисничкото име за работниот профил)</translation>
-<translation id="8422228580902424274">Напаѓачите на сајтот што се обидувате да го отворите може да ве измамат да инсталирате софтвер или да откриете работи како лозинка, телефон или број на кредитна картичка.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
@@ -4225,7 +4216,6 @@
 <translation id="8722929331701811374">Канцелариски материјали (меморандум)</translation>
 <translation id="8724824364712796726">Плик B6</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
-<translation id="8725667981218437315">Камера и микрофон</translation>
 <translation id="8726549941689275341">Големина на страницата:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Безбедносен код</translation>
@@ -4434,7 +4424,6 @@
 <translation id="9119042192571987207">Прикачен</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> сака да го потврди вашиот идентитет</translation>
 <translation id="912327514020027767">Здолништа</translation>
-<translation id="912414390325846156">Претходно избравте „Не дозволувај“ за сајтов</translation>
 <translation id="9128870381267983090">Поврзете се на мрежа</translation>
 <translation id="9131119348384879525">Да се снимат доверливи содржини?</translation>
 <translation id="9133861214150761123">Сметководство и ревизија</translation>

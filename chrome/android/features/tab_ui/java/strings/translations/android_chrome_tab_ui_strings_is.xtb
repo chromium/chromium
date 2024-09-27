@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Appelsínugulur</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
 <translation id="1273910660700874265">Valkostir fyrir flipahópinn „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1293272072740285747">Haltu flipahópnum ef þú vilt bæta flipum við síðar eða eyddu honum ef þú hefur ekki þörf fyrir hann lengur.
+
+Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahópnum „<ph name="TITLE_OF_GROUP" />“ og honum verður eytt úr öllum tækjum.</translation>
 <translation id="1340839264183302272">Yfirgefa hóp</translation>
 <translation id="1419023007528516122">Þetta mun eyða hópnum úr tækinu þínu varanlega</translation>
 <translation id="1486715732399361704">Hér finnurðu alla flipahópana þína</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Tillaga: <ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn</translation>
 <translation id="266935134738038806">Fara á vefsvæði</translation>
+<translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flipa bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}one{<ph name="MANY_ADDED" /> flipa bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}other{<ph name="MANY_ADDED" /> flipum bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Búinn til fyrir <ph name="NUM_HOURS_ONE" /> klukkustund}one{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustund}other{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustundum}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Velja allt</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Loka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Loka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Loka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="5556417849629758491">Skoða upplýsingar um verslun, valkostir eru ofarlega á skjánum</translation>
+<translation id="5615302411300498438">Haltu hópnum ef þú vilt bæta flipum við síðar eða yfirgefðu hann.
+
+Ef þú yfirgefur hann muntu umsvifalaust missa aðgang að flipahópnum „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="5627941783489838464">Engar uppfærslur á flipum</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Endurheimta flipa}one{Endurheimta flipa}other{Endurheimta flipa}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tengill frá Chrome}one{<ph name="TABS_COUNT_MANY" /> tengill frá Chrome}other{<ph name="TABS_COUNT_MANY" /> tenglar frá Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flipa bætt við, <ph name="ANY_CLOSED" /> lokað}one{<ph name="MANY_ADDED" /> flipa bætt við, <ph name="ANY_CLOSED" /> lokað}other{<ph name="MANY_ADDED" /> flipum bætt við, <ph name="ANY_CLOSED" /> lokað}}</translation>
 <translation id="8631711675211020168">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum</translation>
 <translation id="8633025649649592204">Nýleg virkni</translation>
+<translation id="8635399646025169806">Halda flipahóp?</translation>
 <translation id="870736955561925754">Loka flipa og eyða hóp?</translation>
 <translation id="8714939927607906138">Lægra verð</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8730999928494395583">Virknin þín í þessum huliðsflipum verður fjarlægð úr þessu tæki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
+<translation id="8804742093141782941">Halda hópnum</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
 <translation id="8915916167043355778">Loka öllu</translation>

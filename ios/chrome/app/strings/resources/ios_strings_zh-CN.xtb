@@ -301,7 +301,6 @@
 <translation id="2377336083033403521">搜索标签页…</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
-<translation id="2387703759148866940">自动填充密码</translation>
 <translation id="2390457533592708044">隐藏“<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">您的包裹无法送达</translation>
 <translation id="2410754283952462441">选择账号</translation>
@@ -1419,7 +1418,6 @@
 <translation id="7730973429297233609">选择您要使用哪个账号来保存“<ph name="FILENAME" />”- <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。仅在该设备上。</translation>
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
-<translation id="7746165521091043703">打开“自动填充密码”设置</translation>
 <translation id="7749790401023484470">您未选择任何文字。</translation>
 <translation id="7757015014239760147">无用户名 ••••••</translation>
 <translation id="775755486779745798">自动填充失效月份 <ph name="MONTH" /></translation>
@@ -1479,7 +1477,6 @@
 <translation id="7975036700432177008">试用</translation>
 <translation id="797588153137233716">菜单 → 历史记录 → 删除浏览数据</translation>
 <translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
-<translation id="7978018860671536736">3. 点按“自动填充密码”</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>

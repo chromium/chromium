@@ -6906,27 +6906,6 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6102449843040973938">Jangan cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="610892566190435199">Aktifkan pelaporan status daya perangkat</translation>
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
-<translation id="6112524153927257380">Jika kebijakan ini disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
-
-      Ada banyak jenis peringatan download dalam Chrome, yang secara umum dibagi menjadi kategori berikut (pelajari keputusan Safe Browsing lebih lanjut https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Berbahaya, seperti yang ditandai oleh server Safe Browsing
-      * Tidak biasa atau tidak diinginkan, seperti yang ditandai oleh server Safe Browsing
-      * Jenis file berbahaya (misalnya, semua download SWF dan sebagian besar download EXE)
-
-      Menyetel kebijakan ini akan memblokir subset yang berbeda dari kategori berikut, bergantung pada nilai kebijakan:
-
-      0: Tidak ada batasan khusus. Default.
-
-      1: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
-
-      2: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir file yang tidak biasa atau tidak diinginkan yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
-
-      3: Memblokir semua download. Tidak direkomendasikan, kecuali untuk kasus penggunaan khusus.
-
-      4: Memblokir file berbahaya yang ditandai oleh server Safe Browsing; tidak memblokir jenis file berbahaya. Direkomendasikan.
-
-      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="6118226055960302400">Pulihkan perilaku permisif.</translation>
 <translation id="6119207979839638596">Kebijakan ini dihapus di M75 setelah kebijakan versi TLS maksimum dihapus dari <ph name="PRODUCT_NAME" />.
 
@@ -10753,6 +10732,27 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Perangkat baru akan dimulai dengan zona waktu yang disetel ke AS Pasifik. Format nilai mengikuti nama di Database Zona Waktu IANA (https://en.wikipedia.org/wiki/Tz_database). Jika nilai yang tidak valid dimasukkan, kebijakan akan diaktifkan menggunakan GMT.
 
       Jika tidak ditetapkan atau jika Anda memasukkan string kosong, perangkat akan menggunakan zona waktu aktif saat ini, tetapi pengguna dapat mengubahnya.</translation>
+<translation id="8875202330803089599">Jika kebijakan ini disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
+
+      Ada banyak jenis peringatan download dalam Chrome, yang secara umum dibagi menjadi kategori berikut (pelajari lebih lanjut keputusan Safe Browsing https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Berbahaya, seperti yang ditandai oleh server Safe Browsing
+      * Tidak biasa atau tidak diinginkan, seperti yang ditandai oleh server Safe Browsing
+      * Jenis file berbahaya (misalnya, semua download SWF dan sebagian besar download EXE)
+
+      Jika kebijakan ini disetel, subset yang berbeda dari kategori berikut akan diblokir, bergantung pada nilainya:
+
+      0: Tidak ada batasan khusus. Default.
+
+      1: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
+
+      2: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir file yang tidak biasa atau tidak diinginkan yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
+
+      3: Memblokir semua download. Tidak direkomendasikan, kecuali untuk kasus penggunaan khusus.
+
+      4: Memblokir file berbahaya yang ditandai oleh server Safe Browsing; tidak memblokir jenis file berbahaya. Direkomendasikan.
+
+      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link…. Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="8880146422959594776">Mengizinkan beberapa layanan di <ph name="PRODUCT_OS_FLEX_NAME" /> untuk mengirim data hardware tambahan.
 
 Data hardware ini digunakan untuk meningkatkan kualitas <ph name="PRODUCT_OS_FLEX_NAME" /> secara keseluruhan.

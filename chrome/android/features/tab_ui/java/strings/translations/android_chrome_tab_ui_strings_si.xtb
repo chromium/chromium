@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">යෝජනාව: ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
 <translation id="2662028055331606429">ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">අඩවියට පිවිසෙන්න</translation>
+<translation id="2671423594960767771">සමූහය බෙදා ගන්න</translation>
 <translation id="2677748264148917807">හැර යන්න</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />ක් පටිත්තක් එක් කරන ලදි, <ph name="ANY_CHANGED" /> වෙනස් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}one{පටිති <ph name="MANY_ADDED" />ක් එක් කරන ලදි, <ph name="ANY_CHANGED" /> වෙනස් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}other{පටිති <ph name="MANY_ADDED" />ක් එක් කරන ලදි, <ph name="ANY_CHANGED" /> වෙනස් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{පැය <ph name="NUM_HOURS_ONE" />ට පෙර තනන ලදි}one{පැය <ph name="NUM_HOURS_MANY" />ට පෙර තනන ලදි}other{පැය <ph name="NUM_HOURS_MANY" />ට පෙර තනන ලදි}}</translation>

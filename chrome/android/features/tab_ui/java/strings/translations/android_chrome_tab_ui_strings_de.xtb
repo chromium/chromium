@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1273910660700874265">Optionen für Tapgruppe „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1293272072740285747">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.
+
+Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren alle Mitglieder sofort den Zugriff darauf und sie wird von allen Geräten gelöscht.</translation>
 <translation id="1340839264183302272">Gruppe verlassen</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="1486715732399361704">Hier findest du alle deine Tabgruppen</translation>
@@ -38,6 +41,7 @@
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
+<translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde erstellt}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden erstellt}}</translation>
@@ -105,6 +109,9 @@
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
+<translation id="5615302411300498438">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen.
+
+Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ verlässt, verlierst du sofort den Zugriff darauf.</translation>
 <translation id="5627941783489838464">Keine Tab-Updates</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tab wiederherstellen}other{Tabs wiederherstellen}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Link aus Chrome}other{<ph name="TABS_COUNT_MANY" /> Links aus Chrome}}</translation>
@@ -178,11 +185,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
 <translation id="8631711675211020168">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen Geräten gelöscht</translation>
 <translation id="8633025649649592204">Letzte Aktivität</translation>
+<translation id="8635399646025169806">Tabgruppe beibehalten?</translation>
 <translation id="870736955561925754">Tab schließen und Gruppe löschen?</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat erstellt}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten erstellt}}</translation>
+<translation id="8804742093141782941">Gruppe beibehalten</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>
 <translation id="8887921976452567404">Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden.</translation>
 <translation id="8915916167043355778">Alle schließen</translation>

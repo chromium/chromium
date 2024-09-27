@@ -41,6 +41,7 @@
 <translation id="2569352796411618312">Predlog: Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Na spletno mesto</translation>
+<translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> zavihek je dodan, spremenjenih: <ph name="ANY_CHANGED" />, zaprtih: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> zavihek je dodan, spremenjenih: <ph name="ANY_CHANGED" />, zaprtih: <ph name="ANY_CLOSED" />}two{<ph name="MANY_ADDED" /> zavihka sta dodana, spremenjenih: <ph name="ANY_CHANGED" />, zaprtih: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> zavihki so dodani, spremenjenih: <ph name="ANY_CHANGED" />, zaprtih: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> zavihkov je dodanih, spremenjenih: <ph name="ANY_CHANGED" />, zaprtih: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ustvarjeno pred <ph name="NUM_HOURS_ONE" /> uro}one{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> uro}two{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urama}few{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}other{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}}</translation>

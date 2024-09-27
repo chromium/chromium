@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
-<translation id="4792862212177489858">లొకేషన్‌ను షేర్ చేయండి</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
 <translation id="49269513399674318">మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ఎంచుకోబడ్డాయి</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">విలువ ఖచ్చితంగా <ph name="MINIMUM" /> కంటే ఎక్కువగా లేదా సమానంగా ఉండాలి.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">లొకేషన్ అనుమతించబడింది</translation>
 <translation id="5307600278924710095">దయచేసి '<ph name="ATSIGN" />'కి ముందు ఉన్న భాగాన్ని నమోదు చేయండి. '<ph name="INVALIDADDRESS" />' అసంపూర్ణంగా ఉంది.</translation>
 <translation id="5334352251556557839">మీడియాను ప్లే చేయడం సాధ్యపడలేదు.</translation>
 <translation id="537648784377940524">కనిష్ఠ తేదీ (<ph name="MIN_DATE_OR_TIME" />) తప్పనిసరిగా గరిష్ఠ తేదీ (<ph name="MAX_DATE_OR_TIME" />) కంటే ముందు ఉండాలి.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">ప్లగ్ఇన్‌‌ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
-<translation id="7080893216867146095">లొకేషన్ షేరింగ్ అనుమతించబడింది</translation>
 <translation id="709897737746224366">దయచేసి రిక్వెస్ట్ చేసిన ఫార్మాటింగ్‌ను సరిపోల్చండి.</translation>
 <translation id="7134810312945846184">మైక్రోఫోన్, కెమెరాను ఉపయోగించండి</translation>
 <translation id="7263440858009898357">దయచేసి లిస్ట్‌లోని ఒక అంశాన్ని ఎంచుకోండి.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">విలువ ఖచ్చితంగా <ph name="MINIMUM_TIME" />, <ph name="MAXIMUM_TIME" /> మధ్యలో ఉండాలి.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ఫైళ్ళు</translation>
 <translation id="8451268428117625855">దయచేసి ఒక ఫైల్‌ని ఎంచుకోండి.</translation>
+<translation id="8533587060884335451">ఖచ్చితమైన స్థానం ఉపయోగించండి</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">లైన్ ర్యాప్</translation>
 <translation id="8750798805984357768">దయచేసి ఈ ఎంపికలలో ఒకదాన్ని ఎంచుకోండి.</translation>

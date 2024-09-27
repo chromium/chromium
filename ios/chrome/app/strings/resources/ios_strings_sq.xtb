@@ -301,7 +301,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2377336083033403521">Kërko skedat…</translation>
 <translation id="2381405137052800939">Bazat</translation>
 <translation id="2386793615875593361">1 e përzgjedhur</translation>
-<translation id="2387703759148866940">Plotëso automatikisht fjalëkalimet</translation>
 <translation id="2390457533592708044">Fshih "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Pakoja jote nuk mund të dorëzohet</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
@@ -606,6 +605,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3982893814825393515">Raporto një problem…</translation>
 <translation id="398604237578616937">Identifikuar si <ph name="USER_EMAIL" />. Hap menynë e llogarisë.</translation>
+<translation id="3986739045730058129">Shko te skeda</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="3994422733891749358">Zgjidh se cilat njoftime dëshiron të marrësh</translation>
@@ -759,6 +759,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4717844083556844785">Faqja aktuale e uebit është në modalitetin "i fshehtë"</translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
+<translation id="4720530280568305198">Zgjedhja jote u hap në një skedë të re</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
 <translation id="4742897645503301228">Fshih "Monitoro çmimin"</translation>
@@ -1417,7 +1418,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7730973429297233609">Zgjidh llogarinë që dëshiron të përdorësh për të ruajtur skedarin <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vetëm në këtë pajisje.</translation>
 <translation id="7744192722284567281">U gjet në një nxjerrje të paautorizuar të të dhënave</translation>
-<translation id="7746165521091043703">Hap cilësimet e "Plotësimit automatik të fjalëkalimit"</translation>
 <translation id="7749790401023484470">Nuk zgjodhe asnjë tekst.</translation>
 <translation id="7757015014239760147">Nuk ka emër përdoruesi ••••••••</translation>
 <translation id="775755486779745798">Plotëso automatikisht muajin e skadimit: <ph name="MONTH" /></translation>
@@ -1477,7 +1477,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="7975036700432177008">Provo</translation>
 <translation id="797588153137233716">Menyja → Historiku → Fshi të dhënat e shfletimit</translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
-<translation id="7978018860671536736">3. Trokit "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="797824194429476746">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet përgjithmonë.</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
 <translation id="7987685713885608670">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>

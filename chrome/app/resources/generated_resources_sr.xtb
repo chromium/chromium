@@ -250,6 +250,7 @@
 <translation id="1174366174291287894">Веза је увек безбедна ако вам Chrome не каже другачије</translation>
 <translation id="1175131936083782305">Администратор је онемогућио ову функцију.</translation>
 <translation id="1175364870820465910">&amp;Одштампај...</translation>
+<translation id="1175572348579024023">Померај</translation>
 <translation id="1175914831232945926">Цифре</translation>
 <translation id="1176471985365269981">Није им дозвољено да мењају фајлове или фолдере на уређају</translation>
 <translation id="1177073277575830464">Брзо подешавање Android-а је завршено. Наставите са подешавањем на уређају <ph name="DEVICE_TYPE" />.</translation>
@@ -330,7 +331,9 @@
 <translation id="1227660082540388410">Измените приступни кôд</translation>
 <translation id="1227993798763400520">Пребацивање није успело. Пробајте поново.</translation>
 <translation id="1230417814058465809">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
+<translation id="1230961867057865279">Страница није на језику <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Запамтићемо мрежу када следећи пут користите <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Страница није на језику <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Сајтови могу да траже да снимају и користе унос мишем</translation>
 <translation id="1232569758102978740">Без наслова</translation>
 <translation id="1233497634904001272">Поново додирните безбедносни кључ да бисте довршили захтев.</translation>
@@ -1427,6 +1430,7 @@
 <translation id="1997616988432401742">Ваши сертификати</translation>
 <translation id="1998715278591719161">Дозвољено им је да прате руке</translation>
 <translation id="1999115740519098545">При покретању</translation>
+<translation id="1999763610967697511">Превлачење и отпуштање</translation>
 <translation id="2002109485265116295">У реалном времену</translation>
 <translation id="2002160221914907025">Експериментална вештачка интелигенција</translation>
 <translation id="2003130567827682533">Да бисте активирали податке „<ph name="NAME" />“, прво се повежите са WiFi мрежом</translation>
@@ -5374,6 +5378,7 @@
 <translation id="4853020600495124913">Отвори у &amp;новом прозору</translation>
 <translation id="4854317507773910281">Одабери налог родитеља за одобрење</translation>
 <translation id="485480310608090163">Још подешавања и дозвола</translation>
+<translation id="485806788160414322">Пусти или паузирај медије</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="486213875233855629">Администратор је искључио звук</translation>
 <translation id="4862642413395066333">Потписивање OCSP одговора</translation>
@@ -8548,6 +8553,7 @@
 <translation id="7212097698621322584">Унесите актуелни PIN да бисте га променили. Ако не знате PIN, морате да ресетујете безбедносни кључ, па да направите нови PIN.</translation>
 <translation id="7214047272988222011">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Укључите <ph name="LINK_BEGIN" />приступ системској камери<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Увези лозинке</translation>
+<translation id="7217208603285112910">Изабрана ставка није на језику <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Желите да избришете податке сајта?</translation>
 <translation id="7219473482981809164">Пронашли смо више профила доступних за преузимање. Изаберите оне које желите да преузмете пре него што наставите.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Нема слабих лозинки}=1{1 слаба лозинка}one{{NUM_WEAK} слаба лозинка}few{{NUM_WEAK} слабе лозинке}other{{NUM_WEAK} слабих лозинки}}</translation>
@@ -10111,6 +10117,7 @@
 <translation id="8325413836429495820">Није им дозвољено да виде привремену меморију</translation>
 <translation id="8326478304147373412">PKCS #7, ланац сертификата</translation>
 <translation id="8327386430364625757">Математички фонт</translation>
+<translation id="8327490658947427005">Изабрана ставка није на језику <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Подешавања дозвола и садржаја</translation>
 <translation id="8328228852664998535">Ако наставите, лозинке, приступни кључеви и други подаци ће бити трајно избрисани са уређаја <ph name="BRAND" />. Налози које сте отворили за сајтове или апликације неће бити избрисани.</translation>
 <translation id="8328777765163860529">Затвори све</translation>

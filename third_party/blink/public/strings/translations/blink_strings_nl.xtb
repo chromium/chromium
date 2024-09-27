@@ -45,7 +45,6 @@
 <translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4664250907885839816">Het adresgedeelte na '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>
-<translation id="4792862212177489858">Locatie delen</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
 <translation id="49269513399674318">Microfoon gebruiken</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
@@ -54,6 +53,7 @@
 <translation id="5164977714490026579">Waarde moet groter dan of gelijk zijn aan <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5239623327352565343">Locatie toegestaan</translation>
 <translation id="5307600278924710095">Geef een naamgedeelte op, gevolgd door '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
 <translation id="5334352251556557839">Kan media niet afspelen.</translation>
 <translation id="537648784377940524">De minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor de maximum datum (<ph name="MAX_DATE_OR_TIME" />) liggen.</translation>
@@ -79,7 +79,6 @@
 <translation id="6820355525329141109">Kan plug-in niet laden.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
-<translation id="7080893216867146095">Locatie delen toegestaan</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
 <translation id="7134810312945846184">Microfoon en camera gebruiken</translation>
 <translation id="7263440858009898357">Selecteer een item in de lijst.</translation>
@@ -99,6 +98,7 @@
 <translation id="839593075537728968">Waarde moet tussen <ph name="MINIMUM_TIME" /> en <ph name="MAXIMUM_TIME" /> liggen.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> bestanden</translation>
 <translation id="8451268428117625855">Selecteer een bestand.</translation>
+<translation id="8533587060884335451">Precieze locatie gebruiken</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Regelterugloop</translation>
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>
