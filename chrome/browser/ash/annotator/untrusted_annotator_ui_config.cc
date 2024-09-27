@@ -9,9 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 
 ChromeUntrustedAnnotatorUIDelegate::
     ChromeUntrustedAnnotatorUIDelegate() = default;
