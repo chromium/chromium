@@ -77,6 +77,9 @@ class PDFiumPage {
   // Gets the number of characters in the page.
   int GetCharCount();
 
+  // Resets loaded text and loads it again.
+  void ReloadTextPage();
+
   // See definition of PDFiumEngine::GetTextRunInfo().
   std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
@@ -108,6 +111,9 @@ class PDFiumPage {
   // image pixels in the `image_data` field. Otherwise do not populate the
   // `image_data` field.
   std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
+
+  // Returns the indices of image objects.
+  std::vector<int> GetImageObjectIndices();
 
   // Returns the image as a 32-bit bitmap format for OCR.
   SkBitmap GetImageForOcr(int page_object_index);

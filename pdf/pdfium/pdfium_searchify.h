@@ -23,6 +23,11 @@ class Size;
 
 namespace chrome_pdf {
 
+using PerformOcrCallbackAsync = base::RepeatingCallback<void(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(
+        screen_ai::mojom::VisualAnnotationPtr annotation)>)>;
+
 struct SearchifyBoundingBoxOrigin {
   gfx::PointF point;
   float theta;

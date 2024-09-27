@@ -94,6 +94,11 @@
 #include "gin/public/cppgc.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "pdf/pdfium/pdfium_on_demand_searchifier.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "pdf/pdfium/pdfium_font_linux.h"
 #endif
@@ -567,6 +572,10 @@ PDFiumEngine::~PDFiumEngine() {
   // Clear all the containers that can prevent unloading.
   find_results_.clear();
   selection_.clear();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Should be reset before document is unloaded.
+  searchifier_.reset();
+#endif
 
   for (auto& page : pages_)
     page->Unload();
@@ -4245,6 +4254,66 @@ void PDFiumEngine::UpdatePageCount() {
   InvalidateAllPages();
 }
 #endif  // defined(PDF_ENABLE_XFA)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PDFiumEngine::StartSearchify(
+    PerformOcrCallbackAsync perform_ocr_callback) {
+  // Searchify requests may be sent to the engine when PDF pages are loaded and
+  // before this function is called. In that case, `searchifier_` is already
+  // created and is waiting for the `Start` command to start processing the
+  // requests.
+  if (!searchifier_) {
+    searchifier_ = std::make_unique<PDFiumOnDemandSearchifier>(this);
+  }
+  searchifier_->Start(std::move(perform_ocr_callback));
+}
+
+base::RepeatingClosure PDFiumEngine::GetOcrDisconnectHandler() {
+  return base::BindRepeating(&PDFiumEngine::OnOcrDisconnected,
+                             weak_factory_.GetWeakPtr());
+}
+
+void PDFiumEngine::OnOcrDisconnected() {
+  if (searchifier_) {
+    searchifier_->OnOcrDisconnected();
+  }
+}
+
+bool PDFiumEngine::PageNeedsSearchify(int page_index) const {
+  CHECK(PageIndexInBounds(page_index));
+  return searchifier_ && searchifier_->IsPageScheduled(page_index);
+}
+
+void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
+      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+    return;
+  }
+
+  // TODO(crbug.com/40066441): Explore heuristics to run OCR on pages with large
+  // images and a little text.
+  if (!page->available() || page->GetCharCount()) {
+    return;
+  }
+
+  // This function is called during page load, which can be before when the
+  // client calls `StartSearchify`, or after searchifier has failed to call OCR
+  // and is considered as not available.
+  if (!searchifier_) {
+    searchifier_ = std::make_unique<PDFiumOnDemandSearchifier>(this);
+  } else if (searchifier_->HasFailed()) {
+    return;
+  }
+
+  searchifier_->SchedulePage(page->index());
+}
+
+void PDFiumEngine::CancelPendingSearchify(int page_index) {
+  if (searchifier_) {
+    searchifier_->RemovePageFromQueue(page_index);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {
   client_->SetLinkUnderCursor(target_url);

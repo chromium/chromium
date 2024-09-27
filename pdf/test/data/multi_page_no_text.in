@@ -1,0 +1,81 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 4
+  /Kids [3 0 R 4 0 R 5 0 R 6 0 R]
+  /Resources <<
+    /XObject <<
+      /I1 7 0 R
+    >>
+  >>
+  /MediaBox [0 0 600 800]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents [8 0 R]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents [8 0 R]
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents [8 0 R]
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents [8 0 R]
+>>
+endobj
+{{object 7 0}} <<
+ /Type /XObject
+  /Subtype /Image
+  /Width 600
+  /Height 800
+  /BitsPerComponent 8
+  /ColorSpace /DeviceCMYK
+  /Decode [1 0 1 0 1 0 1 0]
+  /Filter [/ASCIIHexDecode /FlateDecode /DCTDecode]
+  /Name /I1
+  {{streamlen}}
+>>
+stream
+789cedcd3d4ec2001806e00f680529d4165a643671f112c6901095b09838b01983899bd7e02c9ec
+2c143f8b37802af50cba81770799eef9ddebcc9d7bc355f515c2faf96d1e974e2b2bd68be23bfd8
+3edd3fc436f69acf5844afdbdda795b44907699a24e9b0df3f188c86a35136ccb2713e29c679996
+759312bca6955d7f5e8e8783eabe693aaae9a97a806d3dd74972c4e625dc6a68c5519cd6bd4ede3
+f8edb0adabe26f1bcd47e4c922d6b18955c4793cdf9ddedc9e3dfe9d01000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000fc835ef
+3fe03ce2e1eba
+endstream
+endobj
+{{object 8 0}} <<
+  {{streamlen}}
+>>
+stream
+q
+600 0 0 800 0 0 cm
+/I1 Do
+Q
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

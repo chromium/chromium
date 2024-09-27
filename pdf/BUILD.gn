@@ -236,6 +236,8 @@ if (enable_pdf) {
 
     if (enable_screen_ai_service) {
       sources += [
+        "pdfium/pdfium_on_demand_searchifier.cc",
+        "pdfium/pdfium_on_demand_searchifier.h",
         "pdfium/pdfium_progressive_searchifier.cc",
         "pdfium/pdfium_progressive_searchifier.h",
         "pdfium/pdfium_searchify.cc",
@@ -493,7 +495,10 @@ if (enable_pdf) {
     }
 
     if (enable_screen_ai_service) {
-      sources += [ "pdfium/pdfium_searchify_unittest.cc" ]
+      sources += [
+        "pdfium/pdfium_on_demand_searchifier_unittest.cc",
+        "pdfium/pdfium_searchify_unittest.cc",
+      ]
     }
 
     if (v8_use_external_startup_data) {

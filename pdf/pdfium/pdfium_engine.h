@@ -59,6 +59,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
 
@@ -86,6 +87,10 @@ struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
 struct PageCharacterIndex;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PDFiumOnDemandSearchifier;
+#endif
 
 namespace draw_utils {
 class ShadowMatrix;
@@ -417,6 +422,29 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #if defined(PDF_ENABLE_XFA)
   void UpdatePageCount();
 #endif  // defined(PDF_ENABLE_XFA)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Starts the searchify process and passes a callback to a function that
+  // performs OCR. This function is expected to be called only once.
+  void StartSearchify(PerformOcrCallbackAsync perform_ocr_callback);
+
+  // Returns a function to pass OCR disconnection events to the searchifier.
+  base::RepeatingClosure GetOcrDisconnectHandler();
+
+  // Tells if the page is waiting to be searchified.
+  bool PageNeedsSearchify(int page_index) const;
+
+  // Schedules searchify for the page if it has no text.
+  void ScheduleSearchifyIfNeeded(PDFiumPage* page);
+
+  // Cancels a pending searchify if it has not started yet. Ignores the request
+  // if the page is not scheduled for searchify.
+  void CancelPendingSearchify(int page_index);
+
+  PDFiumOnDemandSearchifier* GetSearchifierForTesting() {
+    return searchifier_.get();
+  }
+#endif
 
   void UnsupportedFeature(const std::string& feature);
 
@@ -851,6 +879,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Called if OCR service gets disconnected.
+  void OnOcrDisconnected();
+#endif
+
   const raw_ptr<PDFiumEngineClient> client_;
 
   // The current document layout.
@@ -880,6 +913,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Needs to be above pages_, as destroying a page may call some methods of
   // form filler.
   PDFiumFormFiller form_filler_;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  std::unique_ptr<PDFiumOnDemandSearchifier> searchifier_;
+#endif
 
   std::unique_ptr<PDFiumDocument> document_;
   bool document_pending_ = false;

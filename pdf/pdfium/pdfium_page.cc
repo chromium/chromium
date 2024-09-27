@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -403,6 +404,10 @@ void PDFiumPage::Unload() {
   text_page_.reset();
 
   if (page_) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // TODO(crbug.com/360803943): Keep previously generated OCR results.
+    engine_->CancelPendingSearchify(index_);
+#endif
     if (engine_->form()) {
       FORM_OnBeforeClosePage(page(), engine_->form());
     }
@@ -417,8 +422,13 @@ FPDF_PAGE PDFiumPage::GetPage() {
   if (!page_) {
     ScopedUnloadPreventer scoped_unload_preventer(this);
     page_.reset(FPDF_LoadPage(engine_->doc(), index_));
-    if (page_ && engine_->form()) {
-      FORM_OnAfterLoadPage(page(), engine_->form());
+    if (page_) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      engine_->ScheduleSearchifyIfNeeded(this);
+#endif
+      if (engine_->form()) {
+        FORM_OnAfterLoadPage(page(), engine_->form());
+      }
     }
   }
   return page();
@@ -432,6 +442,12 @@ FPDF_TEXTPAGE PDFiumPage::GetTextPage() {
     text_page_.reset(FPDFText_LoadPage(GetPage()));
   }
   return text_page();
+}
+
+void PDFiumPage::ReloadTextPage() {
+  CHECK_EQ(preventing_unload_count_, 0);
+  text_page_.reset();
+  GetTextPage();
 }
 
 void PDFiumPage::CalculatePageObjectTextRunBreaks() {
@@ -807,6 +823,16 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
     image_info.push_back(std::move(cur_info));
   }
   return image_info;
+}
+
+std::vector<int> PDFiumPage::GetImageObjectIndices() {
+  if (!available_) {
+    return {};
+  }
+
+  CalculateImages();
+  return base::ToVector(
+      images_, [](const Image& image) { return image.page_object_index; });
 }
 
 SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
