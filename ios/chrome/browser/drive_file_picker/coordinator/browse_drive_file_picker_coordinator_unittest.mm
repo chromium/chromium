@@ -24,7 +24,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
+    scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
     root_view_controller_ = [[UIViewController alloc] init];
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:root_view_controller_];

@@ -171,7 +171,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
+    scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
     profile_ = TestProfileIOS::Builder().Build();
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     _accountManagerService =

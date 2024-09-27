@@ -48,7 +48,8 @@ DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      !base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
     return nullptr;
   }
 
