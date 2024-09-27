@@ -159,6 +159,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderWinrt.SessionResult"
+    enum="Hresult" expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the overall result of a geolocation session using the
+    LocationProviderWinrt. This metric captures the HRESULT representing the
+    final outcome of the session, which could be a success (S_OK) or any error
+    encountered that prevented the provider from obtaining a valid position.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.StartProvider"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
