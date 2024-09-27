@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -23,6 +24,7 @@ class DownloadManagerTabHelperTest : public PlatformTest {
   DownloadManagerTabHelperTest()
       : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeDownloadManagerTabHelperDelegate alloc] init]) {
+    DriveTabHelper::GetOrCreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::FromWebState(web_state_.get())
         ->SetDelegate(delegate_);
@@ -30,6 +32,16 @@ class DownloadManagerTabHelperTest : public PlatformTest {
 
   DownloadManagerTabHelper* tab_helper() {
     return DownloadManagerTabHelper::FromWebState(web_state_.get());
+  }
+
+  // Creates a fake download task associated with `web_state_`.
+  std::unique_ptr<web::FakeDownloadTask> CreateFakeDownloadTask(
+      const GURL& original_url,
+      const std::string& mime_type) {
+    auto task =
+        std::make_unique<web::FakeDownloadTask>(original_url, mime_type);
+    task->SetWebState(web_state_.get());
+    return task;
   }
 
   std::unique_ptr<web::FakeWebState> web_state_;
@@ -40,7 +52,8 @@ class DownloadManagerTabHelperTest : public PlatformTest {
 TEST_F(DownloadManagerTabHelperTest, DownloadCreationForVisibleWebState) {
   web_state_->WasShown();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
 
   tab_helper()->SetCurrentDownload(std::move(task));
 
@@ -52,12 +65,14 @@ TEST_F(DownloadManagerTabHelperTest, DownloadCreationForVisibleWebState) {
 TEST_F(DownloadManagerTabHelperTest, DownloadAcceptationOnceCompleted) {
   web_state_->WasShown();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   task->SetDone(true);
   tab_helper()->SetCurrentDownload(std::move(task));
   EXPECT_EQ(web::DownloadTask::State::kComplete, *delegate_.state);
 
-  auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  auto task2 = CreateFakeDownloadTask(GURL(kUrl), kMimeType);
+  task2->SetWebState(web_state_.get());
   tab_helper()->SetCurrentDownload(std::move(task2));
 
   ASSERT_TRUE(delegate_.state);
@@ -69,10 +84,11 @@ TEST_F(DownloadManagerTabHelperTest, DownloadAcceptationOnceCompleted) {
 TEST_F(DownloadManagerTabHelperTest, DownloadRejectionViaDelegate) {
   web_state_->WasShown();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   tab_helper()->SetCurrentDownload(std::move(task));
 
-  auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  auto task2 = CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   const web::FakeDownloadTask* task2_ptr = task2.get();
   tab_helper()->SetCurrentDownload(std::move(task2));
 
@@ -89,10 +105,11 @@ TEST_F(DownloadManagerTabHelperTest, DownloadRejectionViaDelegate) {
 TEST_F(DownloadManagerTabHelperTest, DownloadReplacingViaDelegate) {
   web_state_->WasShown();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   tab_helper()->SetCurrentDownload(std::move(task));
 
-  auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  auto task2 = CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   const web::FakeDownloadTask* task2_ptr = task2.get();
   tab_helper()->SetCurrentDownload(std::move(task2));
 
@@ -112,7 +129,8 @@ TEST_F(DownloadManagerTabHelperTest, DownloadReplacingViaDelegate) {
 TEST_F(DownloadManagerTabHelperTest, DownloadCreationForHiddenWebState) {
   web_state_->WasHidden();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
 
   tab_helper()->SetCurrentDownload(std::move(task));
 
@@ -123,7 +141,8 @@ TEST_F(DownloadManagerTabHelperTest, DownloadCreationForHiddenWebState) {
 TEST_F(DownloadManagerTabHelperTest, HideAndShowWebState) {
   web_state_->WasShown();
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   tab_helper()->SetCurrentDownload(std::move(task));
   ASSERT_TRUE(delegate_.state);
   EXPECT_EQ(web::DownloadTask::State::kNotStarted, *delegate_.state);
@@ -139,7 +158,8 @@ TEST_F(DownloadManagerTabHelperTest, HideAndShowWebState) {
 // Tests that has_download_task() returns correct result.
 TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
   ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
 
   web::FakeDownloadTask* task_ptr = task.get();
   ASSERT_FALSE(tab_helper()->has_download_task());

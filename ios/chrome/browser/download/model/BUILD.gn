@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui_bundled:features",
+    "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/ui/fullscreen:internal",
     "//ios/chrome/browser/ui/fullscreen/test",

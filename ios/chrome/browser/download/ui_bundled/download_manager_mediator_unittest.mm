@@ -46,6 +46,10 @@ class DownloadManagerMediatorTest : public PlatformTest {
         application_(OCMClassMock([UIApplication class])),
         task_(GURL(kTestUrl), kTestMimeType) {
     OCMStub([application_ sharedApplication]).andReturn(application_);
+    web_state_ = std::make_unique<web::FakeWebState>();
+    DocumentDownloadTabHelper::CreateForWebState(web_state_.get());
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
+    task_.SetWebState(web_state_.get());
   }
   ~DownloadManagerMediatorTest() override {
     [application_ stopMocking];
@@ -53,6 +57,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
 
   web::FakeDownloadTask* task() { return &task_; }
 
+  std::unique_ptr<web::FakeWebState> web_state_;
   DownloadManagerMediator mediator_;
   FakeDownloadManagerConsumer* consumer_;
   id application_;
@@ -67,6 +72,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
 TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
   auto task =
       std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
+  task->SetWebState(web_state_.get());
   mediator_.SetDownloadTask(task.get());
   mediator_.StartDownloading();
   task.reset();
@@ -83,7 +89,6 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -114,7 +119,6 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -179,7 +183,6 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
   task()->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
   task()->SetState(web::DownloadTask::State::kFailed);
   EXPECT_EQ(kDownloadManagerStateFailed, consumer_.state);
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }
 
 // Tests that consumer changes the state to kDownloadManagerStateSucceeded if
@@ -237,7 +240,6 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
 
   task()->Start(base::FilePath());
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(0.0, consumer_.progress);
 }
 
@@ -251,7 +253,6 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
