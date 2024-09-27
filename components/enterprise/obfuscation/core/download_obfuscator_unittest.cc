@@ -221,6 +221,16 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
 
   EXPECT_EQ(deobfuscated_content, StringToVector(test_data));
   EXPECT_EQ(deobfuscator.GetNextChunkOffset(), obfuscated->size());
+
+  // Obfuscate an empty chunk to test scenarios where size is not given.
+  auto empty_obfuscated =
+      obfuscator.ObfuscateChunk(std::vector<uint8_t>(), true);
+  ASSERT_TRUE(empty_obfuscated.has_value());
+
+  auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
+      base::make_span(empty_obfuscated.value()));
+  ASSERT_TRUE(deobfuscated_chunk.has_value());
+  EXPECT_EQ(deobfuscated_chunk.value(), std::vector<uint8_t>());
 }
 
 }  // namespace enterprise_obfuscation

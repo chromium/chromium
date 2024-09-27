@@ -107,12 +107,17 @@ DownloadObfuscator::GetNextDeobfuscatedChunk(
 base::expected<std::vector<uint8_t>, Error>
 DownloadObfuscator::DeobfuscateChunk(base::span<const uint8_t> data,
                                      size_t& obfuscated_file_offset) {
-  if (data.size() < kHeaderSize + kChunkSizePrefixSize) {
+  // Check if data is unobfuscated or corrupted.
+  size_t per_chunk_overhead = kChunkSizePrefixSize + kAuthTagSize;
+  if (data.size() < per_chunk_overhead) {
     return base::unexpected(Error::kDeobfuscationFailed);
   }
 
   // If it's the first chunk, get obfuscation data from header.
   if (chunk_counter_ == 0) {
+    if (data.size() < kHeaderSize + per_chunk_overhead) {
+      return base::unexpected(Error::kDeobfuscationFailed);
+    }
     std::vector<uint8_t> header(data.begin(), data.begin() + kHeaderSize);
     auto header_data = GetHeaderData(header);
     if (!header_data.has_value()) {
