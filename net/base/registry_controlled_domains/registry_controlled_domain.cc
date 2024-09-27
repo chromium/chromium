@@ -392,6 +392,12 @@ std::string GetDomainAndRegistry(std::string_view host,
   return std::string(GetDomainAndRegistryImpl(canon_host, filter));
 }
 
+std::string_view GetDomainAndRegistryAsStringPiece(
+    const url::Origin& origin,
+    PrivateRegistryFilter filter) {
+  return GetDomainAndRegistryAsStringPiece(origin.host(), filter);
+}
+
 bool SameDomainOrHost(
     const GURL& gurl1,
     const GURL& gurl2,

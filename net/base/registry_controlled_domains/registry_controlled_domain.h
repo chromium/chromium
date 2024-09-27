@@ -195,6 +195,12 @@ NET_EXPORT std::string GetDomainAndRegistry(const url::Origin& origin,
 NET_EXPORT std::string GetDomainAndRegistry(std::string_view host,
                                             PrivateRegistryFilter filter);
 
+// Same as above, but returns a StringPiece that is backed by the supplied
+// url::Origin.
+NET_EXPORT std::string_view GetDomainAndRegistryAsStringPiece(
+    const url::Origin& origin,
+    PrivateRegistryFilter filter);
+
 // These convenience functions return true if the two GURLs or Origins both have
 // hosts and one of the following is true:
 // * The hosts are identical.
