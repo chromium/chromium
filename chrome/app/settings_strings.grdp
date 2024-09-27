@@ -633,14 +633,20 @@
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
     Chrome asks if you want to use saved info to fill forms
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_ADAPTS"  desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
-    TODO: Describe how autofill adapts to user preferences
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL"  desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
+    We use prediction improvements to fill
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
-    Your info is saved on your device and isn't shared with others
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_NEW_FEATURE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
+    TODO: Describe the feature
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
     TODO: Describe how data is used
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_STORAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
+    TODO: Describe how data is stored
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
+    TODO: Describe how data is improved
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
     Saved information
@@ -649,19 +655,19 @@
     Saved information will appear here
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE"  desc="The title of the delete user annotations entry confirmation dialog." translateable="false">
-    Delete annotation entry
+    Delete data
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT"  desc="The body text of the delete user annotations entry confirmation dialog dscribing the entry." translateable="false">
-    The following entry will be deleted: <ph name="KEY">$1<ex>Date of birth</ex></ph> / <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
+    The following data will be deleted: <ph name="KEY">$1<ex>Date of birth</ex></ph> / <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL"  desc="The label of the delete all user annotations entries button." translateable="false">
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL" desc="The label of the delete all user annotations entries button." translateable="false">
     Delete all
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE"  desc="The title of the delete all user annotations entries confirmation dialog." translateable="false">
-    Delete all entries
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE" desc="The title of the delete all user annotations entries confirmation dialog." translateable="false">
+    Delete all
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT"  desc="The body text of the delete all user annotations entries confirmation dialog." translateable="false">
-    All the annotation entries will be deleted. This action cannot be undone
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT" desc="The body text of the delete all user annotations entries confirmation dialog." translateable="false">
+    All data will be deleted. This action cannot be undone
   </message>
 
   <if expr="is_win or is_macosx">
