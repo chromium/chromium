@@ -1191,7 +1191,7 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
         host_impl->GetInputHandler().ScrollUpdate(scroll_state);
 
         EXPECT_TRUE(
-            !!host_impl->mutator_host()->ImplOnlyScrollAnimatingElement());
+            host_impl->mutator_host()->HasImplOnlyScrollAnimatingElement());
       }
     } else if (!scroll_end_requested_) {
       host_impl->GetInputHandler().ScrollEnd(false);

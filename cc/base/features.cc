@@ -224,4 +224,12 @@ const base::FeatureParam<int> kNumDidNotProduceFrameBeforeThrottle{
     &kThrottleFrameRateOnManyDidNotProduceFrame,
     "num_did_not_produce_frame_before_throttle", 4};
 
+BASE_FEATURE(kMultipleImplOnlyScrollAnimations,
+             "MultipleImplOnlyScrollAnimations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool MultiImplOnlyScrollAnimationsSupported() {
+  return base::FeatureList::IsEnabled(
+      features::kMultipleImplOnlyScrollAnimations);
+}
+
 }  // namespace features

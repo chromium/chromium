@@ -118,9 +118,11 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // ScrollBy is a better place to do it).
   if (scroll_state->delta_granularity() ==
       ui::ScrollGranularity::kScrollByPrecisePixel) {
+    ScrollNode* scroll_node = CurrentlyScrollingNode();
     compositor_delegate_->GetImplDeprecated()
         .mutator_host()
-        ->ScrollAnimationAbort();
+        ->ScrollAnimationAbort(scroll_node ? scroll_node->element_id
+                                           : ElementId());
     scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
   }
 
@@ -460,9 +462,7 @@ void InputHandler::ScrollEnd(bool should_snap) {
 
   // Note that if we deferred the scroll end then we should not snap. We will
   // snap once we deliver the deferred scroll end.
-  if (compositor_delegate_->GetImplDeprecated()
-          .mutator_host()
-          ->ImplOnlyScrollAnimatingElement()) {
+  if (GetAnimatingNodeForCurrentScrollingNode()) {
     DCHECK(!deferred_scroll_end_);
     deferred_scroll_end_ = true;
     return;
@@ -1637,6 +1637,32 @@ gfx::Vector2dF InputHandler::ScrollSingleNode(const ScrollNode& scroll_node,
   return ScrollNodeWithLocalDelta(scroll_node, adjusted_delta);
 }
 
+ScrollNode* InputHandler::GetAnimatingNodeForCurrentScrollingNode() {
+  ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (compositor_delegate_->GetImplDeprecated()
+          .mutator_host()
+          ->ElementHasImplOnlyScrollAnimation(scroll_node->element_id)) {
+    return scroll_node;
+  }
+
+  // Usually the CurrentlyScrollingNode will be the currently animating
+  // one. The one exception is the inner viewport. Scrolling the combined
+  // viewport will always set the outer viewport as the currently scrolling
+  // node. However, if an animation is created on the inner viewport we
+  // must use it when updating the animation curve.
+  ScrollNode* inner_viewport_scroll_node = InnerViewportScrollNode();
+  if (scroll_node->scrolls_outer_viewport && inner_viewport_scroll_node) {
+    if (compositor_delegate_->GetImplDeprecated()
+            .mutator_host()
+            ->ElementHasImplOnlyScrollAnimation(
+                inner_viewport_scroll_node->element_id)) {
+      return inner_viewport_scroll_node;
+    }
+  }
+
+  return nullptr;
+}
+
 void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
                                          base::TimeDelta delayed_by) {
   DCHECK(CurrentlyScrollingNode());
@@ -1653,21 +1679,13 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   if (ShouldAnimateScroll(scroll_state)) {
     DCHECK(!scroll_state.is_in_inertial_phase());
 
-    if (ElementId id = compositor_delegate_->GetImplDeprecated()
-                           .mutator_host()
-                           ->ImplOnlyScrollAnimatingElement()) {
+    if (ScrollNode* animating_scroll_node =
+            GetAnimatingNodeForCurrentScrollingNode()) {
       TRACE_EVENT_INSTANT0("cc", "UpdateExistingAnimation",
                            TRACE_EVENT_SCOPE_THREAD);
 
-      ScrollNode* animating_scroll_node =
-          GetScrollTree().FindNodeFromElementId(id);
-      DCHECK(animating_scroll_node);
-
-      // Usually the CurrentlyScrollingNode will be the currently animating
-      // one. The one exception is the inner viewport. Scrolling the combined
-      // viewport will always set the outer viewport as the currently scrolling
-      // node. However, if an animation is created on the inner viewport we
-      // must use it when updating the animation curve.
+      // See comment in GetAnimatingNodeForCurrentScrollingNode for explanation
+      // of this DCHECK.
       DCHECK(animating_scroll_node->id == scroll_node.id ||
              animating_scroll_node->scrolls_inner_viewport);
 
@@ -1872,7 +1890,7 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
       ->ScrollBegin();
   compositor_delegate_->GetImplDeprecated()
       .mutator_host()
-      ->ScrollAnimationAbort();
+      ->ScrollAnimationAbort(CurrentlyScrollingNode()->element_id);
 
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
 
@@ -2034,9 +2052,9 @@ std::optional<gfx::PointF> InputHandler::ScrollAnimationUpdateTarget(
     base::TimeDelta delayed_by) {
   // TODO(bokan): Remove |scroll_node| as a parameter and just use the value
   // coming from |mutator_host|.
-  DCHECK_EQ(scroll_node.element_id, compositor_delegate_->GetImplDeprecated()
-                                        .mutator_host()
-                                        ->ImplOnlyScrollAnimatingElement());
+  DCHECK(compositor_delegate_->GetImplDeprecated()
+             .mutator_host()
+             ->ElementHasImplOnlyScrollAnimation(scroll_node.element_id));
 
   float scale_factor = compositor_delegate_->PageScaleFactor();
   gfx::Vector2dF adjusted_delta =
@@ -2051,7 +2069,7 @@ std::optional<gfx::PointF> InputHandler::ScrollAnimationUpdateTarget(
               compositor_delegate_->GetImplDeprecated()
                   .CurrentBeginFrameArgs()
                   .frame_time,
-              delayed_by);
+              delayed_by, scroll_node.element_id);
   if (animation_target) {
     compositor_delegate_->DidUpdateScrollAnimationCurve();
 

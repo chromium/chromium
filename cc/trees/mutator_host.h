@@ -126,14 +126,20 @@ class MutatorHost {
       const gfx::Vector2dF& scroll_delta,
       const gfx::PointF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,
-      base::TimeDelta delayed_by) = 0;
+      base::TimeDelta delayed_by,
+      ElementId element_id) = 0;
 
-  virtual void ScrollAnimationAbort() = 0;
+  virtual void ScrollAnimationAbort(ElementId element_id) = 0;
 
-  // If there is an ongoing scroll animation on Impl, return the ElementId of
-  // the scroller. Otherwise returns an invalid ElementId.
-  virtual ElementId ImplOnlyScrollAnimatingElement() const = 0;
-  virtual void ImplOnlyScrollAnimatingElementRemoved() = 0;
+  // Returns whether there is an ongoing scroll animation on Impl.
+  virtual bool HasImplOnlyScrollAnimatingElement() const = 0;
+  // Returns whether there is an ongoing auto-scroll animation on Impl.
+  virtual bool HasImplOnlyAutoScrollAnimatingElement() const = 0;
+  // Returns whether there is an ongoing scroll animation on the element
+  // with the given id.
+  virtual bool ElementHasImplOnlyScrollAnimation(ElementId) const = 0;
+  // Discard animations on elements that have been removed from the layer tree.
+  virtual void HandleRemovedScrollAnimatingElements(bool commits_to_active) = 0;
 
   virtual size_t MainThreadAnimationsCount() const = 0;
   virtual bool HasInvalidationAnimation() const = 0;
@@ -145,7 +151,6 @@ class MutatorHost {
   virtual bool HasSmilAnimation() const = 0;
   virtual bool HasViewTransition() const = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
-  virtual bool IsAutoScrolling() const = 0;
 
   // Iterates through all animations and returns the minimum tick interval.
   // Returns 0 if there is a continuous animation which should be ticked

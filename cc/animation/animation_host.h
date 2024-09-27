@@ -185,12 +185,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       const gfx::Vector2dF& scroll_delta,
       const gfx::PointF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,
-      base::TimeDelta delayed_by) override;
+      base::TimeDelta delayed_by,
+      ElementId element_id) override;
 
-  void ScrollAnimationAbort() override;
+  void ScrollAnimationAbort(ElementId element_id) override;
 
-  ElementId ImplOnlyScrollAnimatingElement() const override;
-  void ImplOnlyScrollAnimatingElementRemoved() override;
+  bool HasImplOnlyScrollAnimatingElement() const override;
+  bool HasImplOnlyAutoScrollAnimatingElement() const override;
+  bool ElementHasImplOnlyScrollAnimation(ElementId) const override;
+  bool IsElementInPropertyTrees(ElementId element_id,
+                                bool commits_to_active) const;
+  void HandleRemovedScrollAnimatingElements(bool commits_to_active) override;
 
   // This should only be called from the main thread.
   ScrollOffsetAnimations& scroll_offset_animations();
@@ -225,7 +230,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
-  bool IsAutoScrolling() const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);

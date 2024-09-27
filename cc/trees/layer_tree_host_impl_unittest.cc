@@ -5158,7 +5158,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
     update_state.data()->delta_granularity =
         ui::ScrollGranularity::kScrollByPixel;
 
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). It should cause an animation to be created.
@@ -5168,13 +5168,14 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
 
-    GetImplAnimationHost()->ScrollAnimationAbort();
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    GetImplAnimationHost()->ScrollAnimationAbort(
+        host_impl_->OuterViewportScrollNode()->element_id);
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). This time we change the granularity to precise (as
@@ -5190,7 +5191,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
@@ -5225,7 +5226,7 @@ TEST_P(LayerTreeHostImplTest, NonAnimatedGranularityCausesInstantScroll) {
     update_state.data()->delta_granularity =
         ui::ScrollGranularity::kScrollByPixel;
 
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). It should cause an animation to be created.
@@ -5235,7 +5236,7 @@ TEST_P(LayerTreeHostImplTest, NonAnimatedGranularityCausesInstantScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
@@ -13504,14 +13505,14 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
     EXPECT_NE(gfx::PointF(), CurrentScrollOffset(outer_scroll));
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   // End the scroll gesture. We should still be latched to the scroll layer
   // since the animation is still in progress.
   {
     GetInputHandler().ScrollEnd();
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
 
@@ -13522,7 +13523,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->UpdateAnimationState(true);
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
   }
@@ -13552,7 +13553,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->UpdateAnimationState(true);
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
-    EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
   }
@@ -13679,8 +13680,8 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
 
     // However, the animating scroll node should be the inner viewport.
     ASSERT_TRUE(InnerViewportScrollLayer()->element_id());
-    EXPECT_EQ(InnerViewportScrollLayer()->element_id(),
-              GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->ElementHasImplOnlyScrollAnimation(
+        InnerViewportScrollLayer()->element_id()));
   }
 
   base::TimeTicks start_time = base::TimeTicks() + base::Milliseconds(100);
@@ -14744,7 +14745,7 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
     EXPECT_TRUE(GetInputHandler()
                     .scrollbar_controller_for_testing()
                     ->ScrollbarScrollIsActive());
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   {
@@ -14763,7 +14764,7 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
         ->autoscroll_state_->pressed_scrollbar_part =
         ScrollbarPart::kForwardTrack;
     GetInputHandler().scrollbar_controller_for_testing()->StartAutoScroll();
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
@@ -14833,7 +14834,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
     EXPECT_TRUE(GetInputHandler()
                     .scrollbar_controller_for_testing()
                     ->ScrollbarScrollIsActive());
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   {
@@ -14860,12 +14861,12 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
                   .thread);
 
     // Autoscroll animation should be aborted at this point.
-    EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     GetInputHandler().ScrollUpdate(
         AnimatedUpdateState(gfx::Point(350, 560), gfx::Vector2d(0, 40)));
 
     // Mousewheel animation should be active.
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // This should not trigger any DCHECKs and will be a no-op.
     GetInputHandler().scrollbar_controller_for_testing()->WillBeginImplFrame();
@@ -18305,7 +18306,8 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
     did_request_commit_ = false;
 
     AnimatedScrollUpdate(gfx::Vector2d(0, 10));
-    ASSERT_TRUE(host_impl_->mutator_host()->ImplOnlyScrollAnimatingElement());
+    ASSERT_TRUE(
+        host_impl_->mutator_host()->HasImplOnlyScrollAnimatingElement());
     ASSERT_EQ(gfx::PointF(0, 10), ScrollerOffset());
 
     StartAnimation();
@@ -19013,6 +19015,158 @@ TEST_P(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
 
   host_impl_->SetVisible(false);
   EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
+}
+
+class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMultipleImplOnlyScrollAnimations);
+    LayerTreeHostImplTest::SetUp();
+  }
+  gfx::PointF CreateAndTickScrollAnimations();
+  void CompleteScrollAnimations();
+
+ protected:
+  gfx::PointF current_offset1_ = gfx::PointF(0., 1.);
+  gfx::PointF current_offset2_ = gfx::PointF(0., 3.);
+  gfx::PointF target_offset1_ = gfx::PointF(0., 2.);
+  gfx::PointF target_offset2_ = gfx::PointF(0., 4.);
+  raw_ptr<LayerImpl> scroller1_;
+  raw_ptr<LayerImpl> scroller2_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(ConcurrentImplOnlyScrollAnimationsTest);
+
+gfx::PointF
+ConcurrentImplOnlyScrollAnimationsTest::CreateAndTickScrollAnimations() {
+  gfx::Size content_size = gfx::Size(360, 600);
+  gfx::Size scroll_content_size = gfx::Size(3600, 3800);
+
+  SetupViewportLayersNoScrolls(content_size);
+  scroller1_ = AddScrollableLayer(OuterViewportScrollLayer(), content_size,
+                                  scroll_content_size);
+  scroller2_ = AddScrollableLayer(OuterViewportScrollLayer(), content_size,
+                                  scroll_content_size);
+
+  AnimationHost* animation_host = GetImplAnimationHost();
+  animation_host->ImplOnlyScrollAnimationCreate(
+      scroller1_->element_id(), target_offset1_, current_offset1_,
+      base::TimeDelta(), base::TimeDelta());
+  animation_host->ImplOnlyScrollAnimationCreate(
+      scroller2_->element_id(), target_offset2_, current_offset2_,
+      base::TimeDelta(), base::TimeDelta());
+
+  // Bring the animations to their initial values (current_offset).
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(200),
+                                 host_impl_->GetScrollTree(), true);
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller1_->element_id()),
+            current_offset1_);
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller2_->element_id()),
+            current_offset2_);
+
+  // Promote the animations from STARTING to RUNNING.
+  animation_host->UpdateAnimationState(true, nullptr);
+
+  // Bring the animations to intermediate values.
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(300),
+                                 host_impl_->GetScrollTree(), true);
+  EXPECT_GT(host_impl_->GetScrollTree()
+                .current_scroll_offset(scroller1_->element_id())
+                .y(),
+            current_offset1_.y());
+  // Store the scroller2's intermediate value which might be its final value.
+  gfx::PointF intermediate_scroller2_offset =
+      host_impl_->GetScrollTree().current_scroll_offset(
+          scroller2_->element_id());
+  EXPECT_GT(intermediate_scroller2_offset.y(), current_offset2_.y());
+  return intermediate_scroller2_offset;
+}
+
+void ConcurrentImplOnlyScrollAnimationsTest::CompleteScrollAnimations() {
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Bring the animations to their final values.
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(600),
+                                 host_impl_->GetScrollTree(), true);
+  // Bring the animations to a FINISHED state.
+  animation_host->UpdateAnimationState(true, nullptr);
+
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller1_->element_id()),
+            target_offset1_);
+
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller2_->element_id()),
+            target_offset2_);
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Create) {
+  CreateAndTickScrollAnimations();
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Update) {
+  CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  gfx::Vector2dF update_delta1(1., 1.);
+  gfx::Vector2dF update_delta2(2., 2.);
+  // Update the target offsets the test should verify against.
+  target_offset1_ += update_delta1;
+  target_offset2_ += update_delta2;
+  // Update the animations' targets.
+  animation_host->ImplOnlyScrollAnimationUpdateTarget(
+      update_delta1, gfx::PointF(1000., 1000.),
+      base::TimeTicks() + base::Milliseconds(400), base::TimeDelta(),
+      scroller1_->element_id());
+  animation_host->ImplOnlyScrollAnimationUpdateTarget(
+      update_delta2, gfx::PointF(1000., 1000.),
+      base::TimeTicks() + base::Milliseconds(400), base::TimeDelta(),
+      scroller2_->element_id());
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Abort) {
+  target_offset2_ = CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Abort the animation on scroller2 targets.
+  animation_host->ScrollAnimationAbort(scroller2_->element_id());
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, RemovedByCommit) {
+  target_offset2_ = CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Remove scroller2 from the property trees.
+  host_impl_->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .RemoveNodes(1);
+  host_impl_->active_tree()
+      ->property_trees()
+      ->transform_tree_mutable()
+      .RemoveNodes(1);
+  animation_host->HandleRemovedScrollAnimatingElements(true);
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
 }
 
 }  // namespace cc

@@ -685,13 +685,9 @@ void LayerTreeHostImpl::FinishCommit(
     tree->PullPropertiesFrom(state, unsafe_state);
   }
 
-  // Check whether the impl scroll animating node was removed by the commit.
-  if (ElementId impl_only_scrolling_element =
-          mutator_host()->ImplOnlyScrollAnimatingElement()) {
-    if (!tree->property_trees()->HasElement(impl_only_scrolling_element)) {
-      mutator_host()->ImplOnlyScrollAnimatingElementRemoved();
-    }
-  }
+  // Check whether the impl scroll animating nodes were removed by the commit.
+  mutator_host()->HandleRemovedScrollAnimatingElements(CommitsToActiveTree());
+
   PullLayerTreeHostPropertiesFrom(state);
 
   // Transfer image decode requests to the impl thread.
@@ -4528,8 +4524,9 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
   commit_data->swap_promises.swap(swap_promises_for_main_thread_scroll_update_);
 
   commit_data->ongoing_scroll_animation =
-      !!mutator_host_->ImplOnlyScrollAnimatingElement();
-  commit_data->is_auto_scrolling = mutator_host_->IsAutoScrolling();
+      mutator_host_->HasImplOnlyScrollAnimatingElement();
+  commit_data->is_auto_scrolling =
+      mutator_host_->HasImplOnlyAutoScrollAnimatingElement();
 
   if (browser_controls_manager()) {
     commit_data->browser_controls_constraint =
