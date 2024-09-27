@@ -5535,6 +5535,27 @@
             ]
         }
     ],
+    "ClayBlocking": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DarkLaunch",
+                    "params": {
+                        "dialog_timeout_millis": "60000",
+                        "is_dark_launch": "true",
+                        "silent_pending_duration_millis": "0",
+                        "use_fake_backend": "false"
+                    },
+                    "enable_features": [
+                        "ClayBlocking"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearDeviceDataOnSignOutForManagedUsers": [
         {
             "platforms": [
