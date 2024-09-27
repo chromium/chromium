@@ -30925,8 +30925,6 @@ Called by update_net_error_codes.py.-->
   <int value="15"
       label="Choice Screen dialog skipped as app stared by external intent"/>
   <int value="16" label="Dialog is already shown in the same browser"/>
-  <int value="17"
-      label="Skipped by using a choice persisted across guest sessions"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenConditions) -->
