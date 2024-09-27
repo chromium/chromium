@@ -3332,6 +3332,15 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   // BrowsingInstance/SiteInstance, which is unsupported by
   // RenderFrameHostManager::CommitPending(). To avoid this conundrum, we evict
   // A2 from the cache.
+  SCOPED_CRASH_KEY_NUMBER("rvh_double", "pending_entry_si",
+                          pending_entry_->site_instance()
+                              ? pending_entry_->site_instance()->GetId().value()
+                              : -1);
+  SCOPED_CRASH_KEY_NUMBER(
+      "rvh_double", "pending_entry_bi",
+      pending_entry_->site_instance()
+          ? pending_entry_->site_instance()->GetBrowsingInstanceId().value()
+          : -1);
   if (pending_entry_->site_instance()) {
     back_forward_cache_.EvictFramesInRelatedSiteInstances(
         pending_entry_->site_instance());

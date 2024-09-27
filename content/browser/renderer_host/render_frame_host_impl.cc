@@ -2159,10 +2159,21 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           .GetBackForwardCache()
           .IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
               *render_view_host_);
-  if (rfh_in_bfcache || rfph_in_bfcache || rvh_in_bfcache) {
+  bool related_site_instance_in_bfcache =
+      frame_tree->controller()
+          .GetBackForwardCache()
+          .IsRelatedSiteInstanceInBackForwardCacheForDebugging(*site_instance_);
+  if (rfh_in_bfcache || rfph_in_bfcache || rvh_in_bfcache ||
+      related_site_instance_in_bfcache) {
     SCOPED_CRASH_KEY_BOOL("rvh-double", "rfh_in_bfcache", rfh_in_bfcache);
     SCOPED_CRASH_KEY_BOOL("rvh-double", "rfph_in_bfcache", rfph_in_bfcache);
     SCOPED_CRASH_KEY_BOOL("rvh-double", "rvh_in_bfcache", rvh_in_bfcache);
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "si_id",
+                            site_instance_->GetId().value());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "bi_id",
+                            site_instance_->GetBrowsingInstanceId().value());
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "related_si_in_bfcache",
+                          related_site_instance_in_bfcache);
     SCOPED_CRASH_KEY_NUMBER("rvh-double", "related_active_contents",
                             GetSiteInstance()->GetRelatedActiveContentsCount());
     base::debug::DumpWithoutCrashing();

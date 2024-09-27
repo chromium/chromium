@@ -799,7 +799,6 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
                             render_view_host_map_[id]->renderer_view_created());
       CHECK_EQ(rvh, render_view_host_map_[id]);
     }
-    base::debug::DumpWithoutCrashing();
   }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);

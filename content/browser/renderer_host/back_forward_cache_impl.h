@@ -424,6 +424,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
   bool IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
       const RenderViewHostImpl& rvh);
 
+  bool IsRelatedSiteInstanceInBackForwardCacheForDebugging(
+      SiteInstance& site_instance);
+
   // StoredPage::Delegate overrides:
   void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;
 

@@ -1617,9 +1617,15 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
 
   IsSameSiteGetter is_same_site_getter(is_same_site);
+  std::string site_instance_reason;
   scoped_refptr<SiteInstanceImpl> dest_site_instance =
       GetSiteInstanceForNavigationRequest(request, is_same_site_getter,
-                                          browsing_context_group_swap, reason);
+                                          browsing_context_group_swap,
+                                          &site_instance_reason);
+  SCOPED_CRASH_KEY_STRING256("rvh-double", "si_reason", site_instance_reason);
+  if (reason) {
+    reason->append(site_instance_reason);
+  }
 
   // A subframe should always be in the same BrowsingInstance as the parent
   // (see also https://crbug.com/1107269).

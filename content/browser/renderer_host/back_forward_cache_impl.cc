@@ -1641,6 +1641,17 @@ bool BackForwardCacheImpl::
   return found;
 }
 
+bool BackForwardCacheImpl::IsRelatedSiteInstanceInBackForwardCacheForDebugging(
+    SiteInstance& site_instance) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    if (entry->render_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+            &site_instance)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool BackForwardCacheImpl::
     IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
         SiteInstanceGroupId site_instance_group_id) {
