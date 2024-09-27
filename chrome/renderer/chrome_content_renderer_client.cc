@@ -1734,25 +1734,6 @@ void ChromeContentRendererClient::
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-void ChromeContentRendererClient::
-    SetupExtensionFeaturesBeforeBlinkInitialization() {
-  // TODO(crbug.com/350642260): the prompt API for extension OT is affecting
-  // ChromeOS. The logic may crashes `LoginApitest` on ChromeOS, so we skip the
-  // logic for it first. This needs to be investigated and fixed later.
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
-  if (IsStandaloneContentExtensionProcess() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kEnableAIPromptAPIForExtension)) {
-    // Make blink prompt API accessible for mirroring from extensions. The
-    // prompt API might be reset after the mirroring is done.
-    // We need to do this in this special way from `ChromeContentRendererClient`
-    // because the `implied_by` property in the
-    // `runtime_enabled_features.json5` cannot be applied only for extension.
-    blink::WebRuntimeFeatures::EnableAIPromptAPI(true);
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
-}
-
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
     const url::Origin& script_origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

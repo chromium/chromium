@@ -5,6 +5,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("exported") {
   sources = [
+    "web_ai_assistant.cc",
     "web_ax_context.cc",
     "web_ax_object.cc",
     "web_crypto_histograms.cc",
@@ -21,6 +22,7 @@ blink_modules_sources("exported") {
 
   deps = [
     "//third_party/blink/renderer/modules/accessibility",
+    "//third_party/blink/renderer/modules/ai",
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/filesystem",
     "//third_party/blink/renderer/modules/mediastream",
