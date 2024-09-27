@@ -521,6 +521,17 @@
     "dependencies": ["behavior:imprivata_login_screen_extension"],
     "extension_types": ["login_screen_extension"],
     "min_manifest_version": 3
+  },
+  {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "min_manifest_version": 3,
+    "allowlist": [
+      "5C825E850034490380BCB756D43ABB2CF537AA91"  // b/359290130
+    ]
   }],
   "power": [{
     "channel": "stable",
@@ -566,7 +577,8 @@
         "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
         // https://crbug.com/1194693
         "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta CSSI Smart Card Middleware
+        "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
       ]
     },
     {
