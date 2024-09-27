@@ -112,6 +112,12 @@ class SyncPrefs {
   // parent/guardian of a child account).
   bool IsTypeManagedByCustodian(UserSelectableType type) const;
 
+  // Returns true if no value exists for the type pref. Otherwise,
+  // returns false.
+  bool DoesTypeHaveDefaultValueForAccount(
+      const UserSelectableType type,
+      const signin::GaiaIdHash& gaia_id_hash);
+
   // Returns true if the type is disabled; that was either set by a user
   // choice, or when a policy enforces disabling the type. Otherwise, returns
   // false if no value exists for the type pref (default), or if it is enabled.

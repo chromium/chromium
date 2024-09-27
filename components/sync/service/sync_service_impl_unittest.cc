@@ -702,6 +702,73 @@ TEST_F(
       UserSelectableType::kAutofill));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(
+    SyncServiceImplTest,
+    AddressesSyncValueShouldRemainUnchangedForCustomPassphraseUsersAfterTheirInitialSignin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {syncer::kReplaceSyncPromosWithSignInPromos,
+       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+       syncer::kSyncEnableContactInfoDataTypeInTransportMode},
+      /*disabled_features=*/{});
+
+  // Sign-in.
+  SignInWithoutSyncConsent();
+  // Registering CONTACT_INFO which includes addresses.
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(CONTACT_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(service()->IsSyncFeatureActive());
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(PassphraseType::kCustomPassphrase);
+
+  // UserSelectableType::kAutofill should have been disabled.
+  EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
+      UserSelectableType::kAutofill));
+
+  // The user enables addresses sync.
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kAutofill, true);
+
+  // UserSelectableType::kAutofill should have been enabled.
+  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
+      UserSelectableType::kAutofill));
+
+  // Sign-out.
+  signin::PrimaryAccountMutator* account_mutator =
+      identity_manager()->GetPrimaryAccountMutator();
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
+  account_mutator->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+  // Wait for SyncServiceImpl to be notified.
+  base::RunLoop().RunUntilIdle();
+
+  // Sign-in.
+  SignInWithoutSyncConsent();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(service()->IsSyncFeatureActive());
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(PassphraseType::kCustomPassphrase);
+
+  // UserSelectableType::kAutofill should stay enabled.
+  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
+      UserSelectableType::kAutofill));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncShouldNotBeDisabledForSignedInUsersWithNewlyCustomPassphraseSet) {

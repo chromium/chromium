@@ -376,6 +376,19 @@ bool SyncPrefs::IsTypeManagedByCustodian(UserSelectableType type) const {
   return pref_service_->IsPreferenceManagedByCustodian(pref_name);
 }
 
+bool SyncPrefs::DoesTypeHaveDefaultValueForAccount(
+    const UserSelectableType type,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  const char* pref_name = GetPrefNameForType(type);
+  DCHECK(pref_name);
+
+  const base::Value* value = GetAccountKeyedPrefDictEntry(
+      pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
+      pref_name);
+
+  return !value;
+}
+
 bool SyncPrefs::IsTypeDisabledByUserForAccount(
     const UserSelectableType type,
     const signin::GaiaIdHash& gaia_id_hash) {

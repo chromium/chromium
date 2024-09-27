@@ -1361,14 +1361,17 @@ void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
 
 void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // if kReplaceSyncPromosWithSignInPromos is enabled, kAutofill should be
-  // disabled for newly sign in users who have already custom passphrase set.
-  // The first `PassphraseTypeChanged()` call reflects the server-side
-  // passphrase type before signing in.
+  // if kReplaceSyncPromosWithSignInPromos is enabled, new users with custom
+  // passphrases should have kAutofill disabled upon the initial sign-in. The
+  // first `PassphraseTypeChanged()` call reflects the server-side passphrase
+  // type before signing in.
   if (!sync_prefs_.GetCachedPassphraseType().has_value() &&
       IsExplicitPassphrase(passphrase_type) &&
       GetSyncAccountStateForPrefs() ==
           SyncPrefs::SyncAccountState::kSignedInNotSyncing &&
+      sync_prefs_.DoesTypeHaveDefaultValueForAccount(
+          UserSelectableType::kAutofill,
+          signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia)) &&
       base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     GetUserSettings()->SetSelectedType(UserSelectableType::kAutofill, false);
   }
