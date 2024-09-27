@@ -290,17 +290,13 @@ GetWinAccessibilityAPIUsageObserverList() {
 // Used to simplify calling StartFiringUIAEvents and EndFiringEvents
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    observer.StartFiringUIAEvents();
-  }
+  GetWinAccessibilityAPIUsageObserverList().Notify(
+      &WinAccessibilityAPIUsageObserver::StartFiringUIAEvents);
 }
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     ~WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    observer.EndFiringUIAEvents();
-  }
+  GetWinAccessibilityAPIUsageObserverList().Notify(
+      &WinAccessibilityAPIUsageObserver::EndFiringUIAEvents);
 }
 
 //
@@ -1790,10 +1786,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accName(VARIANT var_id, BSTR* name_bstr) {
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, name_bstr, target);
   NotifyObserverForMSAAUsage();
 
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    observer.OnAccNameCalled();
-  }
+  GetWinAccessibilityAPIUsageObserverList().Notify(
+      &WinAccessibilityAPIUsageObserver::OnAccNameCalled);
 
   if (!IsNameExposed())
     return S_FALSE;
@@ -8411,10 +8405,8 @@ void AXPlatformNodeWin::SanitizeTextAttributeValue(const std::string& input,
 }
 
 void AXPlatformNodeWin::NotifyObserverForMSAAUsage() const {
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    observer.OnMSAAUsed();
-  }
+  GetWinAccessibilityAPIUsageObserverList().Notify(
+      &WinAccessibilityAPIUsageObserver::OnMSAAUsed);
 }
 
 void AXPlatformNodeWin::NotifyAddAXModeFlagsForIA2(

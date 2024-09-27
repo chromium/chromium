@@ -41,9 +41,7 @@ void AXPlatform::RemoveModeObserver(AXModeObserver* observer) {
 }
 
 void AXPlatform::NotifyModeAdded(AXMode mode) {
-  for (auto& observer : observers_) {
-    observer.OnAXModeAdded(mode);
-  }
+  observers_.Notify(&AXModeObserver::OnAXModeAdded, mode);
 }
 
 bool AXPlatform::IsCaretBrowsingEnabled() {
