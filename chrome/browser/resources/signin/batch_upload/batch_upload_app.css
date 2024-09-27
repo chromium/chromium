@@ -30,14 +30,13 @@
 }
 
 #account-info-row {
-  align-items: center;
   display: flex;
   flex-direction: row;
   margin-bottom: 24px;
 }
 
 #account-icon {
-  --account-icon-size: 15px;
+  --account-icon-size: 16px;
   border-radius: 50%;
   height: var(--account-icon-size);
   width: var(--account-icon-size);

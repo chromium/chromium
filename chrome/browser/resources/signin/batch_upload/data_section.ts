@@ -22,7 +22,6 @@ import {getHtml} from './data_section.html.js';
 function createEmptyContainer(): DataContainer {
   return {
     sectionTitle: '',
-    dialogSubtitle: '',
     dataItems: [],
   };
 }

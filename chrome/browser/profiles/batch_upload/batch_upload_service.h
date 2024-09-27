@@ -48,6 +48,9 @@ class BatchUploadService : public KeyedService {
   // the dialog was closed with a Cancel/Upload request.
   void OnBatchUplaodDialogClosed(bool move_requested);
 
+  // Whether the profile is in the proper sign in state to see the dialog.
+  bool IsUserEligibleToOpenDialog() const;
+
   base::raw_ref<Profile> profile_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 

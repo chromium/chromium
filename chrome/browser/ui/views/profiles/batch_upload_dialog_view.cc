@@ -7,11 +7,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -29,6 +31,19 @@ BatchUploadUI* GetBatchUploadUI(views::WebView* web_view) {
       ->GetWebUI()
       ->GetController()
       ->GetAs<BatchUploadUI>();
+}
+
+// Account is expected not to be in error.
+AccountInfo GetBatchUploadPrimaryAccountInfo(Profile& profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+
+  AccountInfo primary_account = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  CHECK(!primary_account.email.empty());
+  CHECK(!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      primary_account.account_id));
+  return primary_account;
 }
 
 }  // namespace
@@ -91,7 +106,7 @@ BatchUploadDialogView::BatchUploadDialogView(
 
   // Initializes the UI that will initialize the handler when ready.
   web_ui->Initialize(
-      data_providers_list,
+      GetBatchUploadPrimaryAccountInfo(*profile), data_providers_list,
       base::BindRepeating(&BatchUploadDialogView::SetHeightAndShowWidget,
                           base::Unretained(this)),
       base::BindOnce(&BatchUploadDialogView::OnDialogSelectionMade,
@@ -100,6 +115,9 @@ BatchUploadDialogView::BatchUploadDialogView(
   AddChildView(std::move(web_view));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  // TODO(b/369306124): Observer IdentityManager to know if the user signed out
+  // to close the dialog.
 }
 
 void BatchUploadDialogView::OnClose() {

@@ -23,13 +23,25 @@ struct DataItem {
   string subtitle;
 };
 
-// Container that has a list of `DataItem` and a title/subtitle. This is used to
+// Container that has a list of `DataItem` and a section title. This is used to
 // display a section in the Batch Upload dialog. There should be one container
 // per data type displayed in the dialog.
 struct DataContainer {
   string section_title;
-  string dialog_subtitle;
   array<DataItem> data_items;
+};
+
+// Information related to the signed in account to be displayed in the web view.
+struct BatchUploadAccountInfo {
+  string email;
+  string data_picture_url;
+};
+
+// A structure containing all the data needed by the web view to be displayed.
+struct BatchUploadData {
+  BatchUploadAccountInfo account_info;
+  string dialog_subtitle;
+  array<DataContainer> data_containers;
 };
 
 // Called from TS side of chrome://batch-upload (Renderer -> Browser)
@@ -51,8 +63,11 @@ interface PageHandler {
 
 // Called from C++ side of chrome://batch-upload. (Browser -> Renderer)
 interface Page {
-  // Sending the list of local data to be displayed in the web content view;
-  // which the user can select/unselect to proceed with moving the individual
-  // items to the account storage.
-  SendDataItems(array<DataContainer> data);
+  // Sending the Batch Upload data to be displayed in the web content view;
+  // - Account Information
+  // - The dialog subtitle
+  // - A list of `DataContainer` that each have a list of `DataItem` which the
+  // user can select/unselect to proceed with moving the individual items to the
+  // account storage, through the `PageHandler::SaveToAccount()` method.
+  SendBatchUploadData(BatchUploadData data);
 };

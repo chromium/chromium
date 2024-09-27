@@ -9,8 +9,10 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
 
@@ -109,6 +111,10 @@ BatchUploadService::BatchUploadService(
 BatchUploadService::~BatchUploadService() = default;
 
 bool BatchUploadService::OpenBatchUpload(Browser* browser) {
+  if (!IsUserEligibleToOpenDialog()) {
+    return false;
+  }
+
   // Do not allow to have more than one controller/dialog shown at a time.
   if (controller_) {
     // TODO(b/361330952): give focus to the browser that is showing the dialog
@@ -139,7 +145,31 @@ void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
 
 bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(
     BatchUploadDataType type) {
+  if (!IsUserEligibleToOpenDialog()) {
+    return false;
+  }
+
   std::unique_ptr<BatchUploadDataProvider> local_data_provider =
       GetBatchUploadDataProvider(profile_.get(), type);
   return local_data_provider->HasLocalData();
+}
+
+bool BatchUploadService::IsUserEligibleToOpenDialog() const {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile_.get());
+
+  AccountInfo primary_account = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  // If not signed in, the user should not have access to the dialog.
+  if (primary_account.IsEmpty()) {
+    return false;
+  }
+
+  // If is in Sign in pending, the user should not have access to the dialog.
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account.account_id)) {
+    return false;
+  }
+
+  return true;
 }

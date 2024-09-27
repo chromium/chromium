@@ -7,17 +7,25 @@
 #include "base/i18n/number_formatting.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/batch_upload_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
+
+const gfx::Image kSignedInImage = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+const char kSignedInImageUrl[] = "SIGNED_IN_IMAGE_URL";
 
 // Testing implementation of `BatchUploadDataProvider`.
 // TODO(b/362733052): Separate into its own file to be used by
@@ -108,7 +116,28 @@ class BatchUploadDialogViewPixelTest
     }
   }
 
+  void SigninWithFullInfo() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(account_info.IsEmpty());
+
+    account_info.full_name = "Joe Testing";
+    account_info.given_name = "Joe";
+    account_info.picture_url = "SOME_FAKE_URL";
+    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info.locale = "en";
+    ASSERT_TRUE(account_info.IsValid());
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+    signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
+                                      kSignedInImageUrl, kSignedInImage);
+  }
+
   void ShowUi(const std::string& name) override {
+    SigninWithFullInfo();
+
     content::TestNavigationObserver observer{
         GURL(chrome::kChromeUIBatchUploadURL)};
     observer.StartWatchingNewWebContents();

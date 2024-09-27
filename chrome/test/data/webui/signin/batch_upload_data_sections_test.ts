@@ -31,7 +31,6 @@ suite('BatchUploadViewTest', function() {
     };
     const passwordSection: DataContainer = {
       sectionTitle: 'Passwords',
-      dialogSubtitle: '2 passwords',
       dataItems: [],
     };
     passwordSection.dataItems.push(password1);

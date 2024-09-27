@@ -65,12 +65,6 @@ SkColor GetProfileHighlightColor(Profile* profile) {
   return entry->GetProfileThemeColors().profile_highlight_color;
 }
 
-std::string GetAccountPictureUrl(const AccountInfo& info) {
-  return info.account_image.IsEmpty()
-             ? profiles::GetPlaceholderAvatarIconUrl()
-             : webui::GetBitmapDataUrl(info.account_image.AsBitmap());
-}
-
 base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
   std::string_view avatar_badge = "";
@@ -81,7 +75,7 @@ base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
     avatar_badge = kSupervisedBadgeSource;
   }
   account_info_value.Set("avatarBadge", avatar_badge);
-  account_info_value.Set("pictureUrl", GetAccountPictureUrl(info));
+  account_info_value.Set("pictureUrl", signin::GetAccountPictureUrl(info));
   return account_info_value;
 }
 
@@ -254,7 +248,8 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   parameters.Set("email", intercepted_account().email);
   parameters.Set("fullName", intercepted_account().full_name);
   parameters.Set("givenName", intercepted_account().given_name);
-  parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
+  parameters.Set("pictureUrl",
+                 signin::GetAccountPictureUrl(intercepted_account()));
 
   std::string_view managed_user_badge = "";
   if (IsSupervisedUser(intercepted_account().capabilities) &&

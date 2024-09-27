@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "components/signin/public/base/signin_switches.h"
 
@@ -25,7 +26,9 @@ ProfileSelections CreateBatchUploadProfileSelections() {
 
 BatchUploadServiceFactory::BatchUploadServiceFactory()
     : ProfileKeyedServiceFactory("BatchUpload",
-                                 CreateBatchUploadProfileSelections()) {}
+                                 CreateBatchUploadProfileSelections()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 BatchUploadServiceFactory::~BatchUploadServiceFactory() = default;
 

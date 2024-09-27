@@ -8,7 +8,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from '//resources/js/assert.js';
 import {BatchUploadBrowserProxyImpl} from 'chrome://batch-upload/batch_upload.js';
-import type {BatchUploadAppElement, DataContainer, DataItem, DataSectionElement, PageRemote} from 'chrome://batch-upload/batch_upload.js';
+import type {BatchUploadAppElement, BatchUploadData, DataContainer, DataItem, DataSectionElement, PageRemote} from 'chrome://batch-upload/batch_upload.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -19,12 +19,13 @@ suite('BatchUploadViewTest', function() {
   let testBatchUploadProxy: TestBatchUploadBrowserProxy;
   let callbackRouterRemote: PageRemote;
 
-  // Input mapping to the number of sections displayed. In each section, some
-  // data items are pushed; check `prepareDataInput`.
-  const TEST_DATA: DataContainer[] = prepareDataInput();
+  // Input of data displayed in the Ui containing account info, data sections
+  // and dialog subtitles. In each section, some data items are pushed; check
+  // `prepareDataInput()`.
+  const TEST_DATA: BatchUploadData = prepareDataInput();
 
   // Prepare data for testing, simulating information coming from the browser.
-  function prepareDataInput(): DataContainer[] {
+  function prepareDataInput(): BatchUploadData {
     // Create passwords section.
     const password1: DataItem = {
       id: 1,
@@ -40,7 +41,6 @@ suite('BatchUploadViewTest', function() {
     };
     const passwordSection: DataContainer = {
       sectionTitle: 'Passwords',
-      dialogSubtitle: '2 passwords',
       dataItems: [],
     };
     passwordSection.dataItems.push(password1);
@@ -56,27 +56,33 @@ suite('BatchUploadViewTest', function() {
     const addressSection: DataContainer = {
       dataItems: [],
       sectionTitle: 'Addresses',
-      dialogSubtitle: '',
     };
     addressSection.dataItems.push(address);
 
-    const dataInput: DataContainer[] = [];
-    dataInput.push(passwordSection);
-    dataInput.push(addressSection);
+    const dataContainers: DataContainer[] = [];
+    dataContainers.push(passwordSection);
+    dataContainers.push(addressSection);
+
+    const dataInput: BatchUploadData = {
+      accountInfo: {email: 'test@test.com', dataPictureUrl: ''},
+      dialogSubtitle: '2 passwords and other items ...',
+      dataContainers: dataContainers,
+    };
+
     return dataInput;
   }
 
   function getTotalNumberOfItemsInSection(index: number): number {
     assert(TEST_DATA);
-    assert(TEST_DATA[index]);
-    return TEST_DATA[index].dataItems.length;
+    assert(TEST_DATA.dataContainers[index]);
+    return TEST_DATA.dataContainers[index].dataItems.length;
   }
 
   function getSectionElement(index: number): DataSectionElement {
     const dataSections =
         batchUploadApp.shadowRoot!.querySelectorAll('data-section');
-    assertEquals(TEST_DATA.length, dataSections.length);
-    assertLT(index, TEST_DATA.length);
+    assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
+    assertLT(index, TEST_DATA.dataContainers.length);
     return dataSections[index]!;
   }
 
@@ -89,7 +95,7 @@ suite('BatchUploadViewTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     batchUploadApp = document.createElement('batch-upload-app');
     document.body.append(batchUploadApp);
-    callbackRouterRemote.sendDataItems(TEST_DATA);
+    callbackRouterRemote.sendBatchUploadData(TEST_DATA);
     return testBatchUploadProxy.handler.whenCalled('updateViewHeight');
   });
 
@@ -100,10 +106,9 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isChildVisible(batchUploadApp, '#header'));
     assertTrue(isChildVisible(batchUploadApp, '#title'));
     assertTrue(isChildVisible(batchUploadApp, '#subtitle'));
-    assertGT(TEST_DATA.length, 1);
-    // TODO(b/365954465): Adapt based on latest decision of the subtitle.
+    assertGT(TEST_DATA.dataContainers.length, 1);
     assertEquals(
-        TEST_DATA[0]!.dialogSubtitle,
+        TEST_DATA.dialogSubtitle,
         batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
                                       '#subtitle')!.textContent!.trim());
 
@@ -111,9 +116,8 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isChildVisible(batchUploadApp, '#account-info-row'));
     assertTrue(isChildVisible(batchUploadApp, '#account-icon'));
     assertTrue(isChildVisible(batchUploadApp, '#email'));
-    // TODO(b/359796907): adapt when properly sending account information.
     assertEquals(
-        'elisa.g.beckett@gmail.com',
+        TEST_DATA.accountInfo.email,
         batchUploadApp.shadowRoot!
             .querySelector<CrButtonElement>(
                 '#account-info-row')!.textContent!.trim());
@@ -126,7 +130,7 @@ suite('BatchUploadViewTest', function() {
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
-    assertEquals(TEST_DATA.length, idsToMove.length);
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // By default all items are selected and should be part of the result.
     const expectedSelectedItemsIds = [[1, 2], [1]];
     assertDeepEquals(expectedSelectedItemsIds, idsToMove);
@@ -145,7 +149,7 @@ suite('BatchUploadViewTest', function() {
 
     const dataSections =
         batchUploadApp.shadowRoot!.querySelectorAll('data-section');
-    assertEquals(TEST_DATA.length, dataSections.length);
+    assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
   });
 
   test('ClickSaveWithUnselectingItems', async function() {
@@ -174,7 +178,7 @@ suite('BatchUploadViewTest', function() {
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
-    assertEquals(TEST_DATA.length, idsToMove.length);
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // Expected result does not contain the removed Id.
     const expectedSelectedItemsIds = [[1], [1]];
     assertDeepEquals(expectedSelectedItemsIds, idsToMove);
@@ -217,7 +221,7 @@ suite('BatchUploadViewTest', function() {
 
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
-    assertEquals(TEST_DATA.length, idsToMove.length);
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
     // A section with no element selected should still appear as empty to
     // keep the consistency of the input/output.
     const expectedSelectedItemsIds = [[], [1]];
@@ -244,7 +248,7 @@ suite('BatchUploadViewTest', function() {
     batchUploadApp.$.saveButton.click();
     const idsToMove =
         await testBatchUploadProxy.handler.whenCalled('saveToAccount');
-    assertEquals(idsToMove.length, TEST_DATA.length);
+    assertEquals(idsToMove.length, TEST_DATA.dataContainers.length);
     // A section with the toggle off should still appear as empty even if
     // it had some selected items before the toggle off.
     const expectedSelectedItemsIds = [[], [1]];
@@ -260,7 +264,7 @@ suite('BatchUploadViewTest', function() {
 
     const dataSections =
         batchUploadApp.shadowRoot!.querySelectorAll('data-section');
-    assertEquals(dataSections.length, TEST_DATA.length);
+    assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
 
     // Disable all toggles.
     for (let i = 0; i < dataSections.length; ++i) {
@@ -283,7 +287,7 @@ suite('BatchUploadViewTest', function() {
 
     const dataSections =
         batchUploadApp.shadowRoot!.querySelectorAll('data-section');
-    assertEquals(dataSections.length, TEST_DATA.length);
+    assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
 
     // Unckeck all checkboxes of each section to toggle the sections off.
     for (let i = 0; i < dataSections.length; ++i) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/signin/public/identity_manager/account_info.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -46,12 +47,13 @@ BatchUploadUI::~BatchUploadUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(BatchUploadUI)
 
 void BatchUploadUI::Initialize(
+    const AccountInfo& account_info,
     const std::vector<raw_ptr<const BatchUploadDataProvider>>&
         data_providers_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
     SelectedDataTypeItemsCallback completion_callback) {
   initialize_handler_callback_ = base::BindOnce(
-      &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this),
+      &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this), account_info,
       data_providers_list, update_view_height_callback,
       std::move(completion_callback));
 }
@@ -75,6 +77,7 @@ void BatchUploadUI::CreateBatchUploadHandler(
 }
 
 void BatchUploadUI::OnMojoHandlersReady(
+    const AccountInfo& account_info,
     std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
     SelectedDataTypeItemsCallback completion_callback,
@@ -82,6 +85,6 @@ void BatchUploadUI::OnMojoHandlersReady(
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver) {
   CHECK(!handler_);
   handler_ = std::make_unique<BatchUploadHandler>(
-      std::move(receiver), std::move(page), data_providers_list,
+      std::move(receiver), std::move(page), account_info, data_providers_list,
       update_view_height_callback, std::move(completion_callback));
 }

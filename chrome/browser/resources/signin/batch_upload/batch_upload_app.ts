@@ -11,11 +11,18 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
-import type {DataContainer} from './batch_upload.js';
+import type {BatchUploadAccountInfo, BatchUploadData, DataContainer} from './batch_upload.js';
 import {getCss} from './batch_upload_app.css.js';
 import {getHtml} from './batch_upload_app.html.js';
 import {BatchUploadBrowserProxyImpl} from './browser_proxy.js';
 import type {BatchUploadBrowserProxy} from './browser_proxy.js';
+
+function createEmptyAccountInfo() {
+  return {
+    email: '',
+    dataPictureUrl: '',
+  };
+}
 
 export interface BatchUploadAppElement {
   $: {
@@ -42,6 +49,8 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
 
   static override get properties() {
     return {
+      accountInfo_: {type: Object},
+      dialogSubtitle_: {type: String},
       dataSections_: {type: Array},
       isSaveEnabled_: {type: Boolean},
     };
@@ -49,6 +58,10 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
 
   private batchUploadBrowserProxy_: BatchUploadBrowserProxy =
       BatchUploadBrowserProxyImpl.getInstance();
+
+  // Account information displayed in the view.
+  protected accountInfo_: BatchUploadAccountInfo = createEmptyAccountInfo();
+  protected dialogSubtitle_: string = '';
 
   // Stores the input coming from the browser initialized in
   // `initializeInputAndOutputData_()`.
@@ -64,10 +77,13 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.batchUploadBrowserProxy_.callbackRouter.sendDataItems.addListener(
-        (containerList: DataContainer[]) => {
+    this.batchUploadBrowserProxy_.callbackRouter.sendBatchUploadData
+        .addListener((batchUploadData: BatchUploadData) => {
+          this.accountInfo_ = batchUploadData.accountInfo;
+          this.dialogSubtitle_ = batchUploadData.dialogSubtitle;
+
           // Populate data with input from browser.
-          this.initializeInputAndOutputData_(containerList);
+          this.initializeInputAndOutputData_(batchUploadData.dataContainers);
 
           this.requestUpdate();
 
@@ -133,15 +149,6 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     }
 
     this.batchUploadBrowserProxy_.handler.saveToAccount(idsToMove);
-  }
-
-  protected getDialogSubtitle_(): string {
-    // Dialog may start loading before receiving the data.
-    if (!this.dataSections_ || this.dataSections_.length === 0) {
-      return '';
-    }
-
-    return this.dataSections_[0]!.dialogSubtitle;
   }
 }
 

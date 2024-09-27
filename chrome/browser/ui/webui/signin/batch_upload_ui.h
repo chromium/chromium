@@ -17,6 +17,7 @@ namespace content {
 class WebUI;
 }
 
+struct AccountInfo;
 class BatchUploadHandler;
 class BatchUploadUI;
 
@@ -38,6 +39,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
 
   // Prepares the information to be given to the handler once ready.
   void Initialize(
+      const AccountInfo& account_info,
       const std::vector<raw_ptr<const BatchUploadDataProvider>>&
           data_providers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
@@ -63,6 +65,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
   // Callback awaiting `CreateBatchUploadHandler` to create the handlers with
   // all the needed information to display.
   void OnMojoHandlersReady(
+      const AccountInfo& account_info,
       std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       SelectedDataTypeItemsCallback completion_callback,

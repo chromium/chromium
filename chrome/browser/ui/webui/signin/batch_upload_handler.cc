@@ -10,19 +10,31 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-// Construct the list of data to be shown on the batch upload ui.
+// Construct the `BatchUploadData` structure to be used in the Ui. Combining the
+// account info, dialog subtitle and a list of data containers.
+// The Data contaiers are a list items to be shown on the batch upload ui.
 // Sending the information using the Mojo equivalent structures:
 // `BatchUploadDataContainer` -> `batch_upload::mojom::DataContainer`
 // `BatchUploadDataItem` -> `batch_upload::mojom::DataItem`
-std::vector<batch_upload::mojom::DataContainerPtr> ConstructMojoData(
+batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
+    const AccountInfo& account_info,
     const std::vector<raw_ptr<const BatchUploadDataProvider>>&
         data_providers_list) {
+  CHECK(!account_info.IsEmpty());
   CHECK(!data_providers_list.empty());
+
+  batch_upload::mojom::BatchUploadAccountInfoPtr account_info_mojo =
+      batch_upload::mojom::BatchUploadAccountInfo::New();
+  account_info_mojo->email = account_info.email;
+  account_info_mojo->data_picture_url =
+      signin::GetAccountPictureUrl(account_info);
 
   std::vector<batch_upload::mojom::DataContainerPtr> data_containers_mojo;
   for (const auto& data_provider : data_providers_list) {
@@ -33,10 +45,7 @@ std::vector<batch_upload::mojom::DataContainerPtr> ConstructMojoData(
         batch_upload::mojom::DataContainer::New();
     data_container_mojo->section_title =
         l10n_util::GetStringUTF8(container.section_title_id);
-    // TODO(b/365954465): This string is still not comlpete and should depend on
-    // the `container` input.
-    data_container_mojo->dialog_subtitle =
-        l10n_util::GetStringUTF8(IDS_BATCH_UPLOAD_SUBTITLE);
+
     for (const auto& data_item : container.items) {
       batch_upload::mojom::DataItemPtr data_item_mojo =
           batch_upload::mojom::DataItem::New();
@@ -49,7 +58,17 @@ std::vector<batch_upload::mojom::DataContainerPtr> ConstructMojoData(
     data_containers_mojo.push_back(std::move(data_container_mojo));
   }
 
-  return data_containers_mojo;
+  batch_upload::mojom::BatchUploadDataPtr batch_upload_mojo =
+      batch_upload::mojom::BatchUploadData::New();
+
+  batch_upload_mojo->account_info = std::move(account_info_mojo);
+  // TODO(b/365954465): This string is still not comlpete and should depend on
+  // the first `container` input.
+  batch_upload_mojo->dialog_subtitle =
+      l10n_util::GetStringUTF8(IDS_BATCH_UPLOAD_SUBTITLE);
+  batch_upload_mojo->data_containers = std::move(data_containers_mojo);
+
+  return batch_upload_mojo;
 }
 
 }  // namespace
@@ -57,6 +76,7 @@ std::vector<batch_upload::mojom::DataContainerPtr> ConstructMojoData(
 BatchUploadHandler::BatchUploadHandler(
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
+    const AccountInfo& account_info,
     const std::vector<raw_ptr<const BatchUploadDataProvider>>&
         data_providers_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
@@ -66,7 +86,8 @@ BatchUploadHandler::BatchUploadHandler(
       completion_callback_(std::move(completion_callback)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  page_->SendDataItems(ConstructMojoData(data_providers_list));
+  page_->SendBatchUploadData(
+      ConstructMojoBatchUploadData(account_info, data_providers_list));
 }
 
 BatchUploadHandler::~BatchUploadHandler() = default;

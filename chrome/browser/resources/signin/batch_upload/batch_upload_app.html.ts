@@ -12,14 +12,12 @@ export function getHtml(this: BatchUploadAppElement) {
 <div id="batchUploadDialog">
   <div id="header">
     <div id="title">${this.i18n('batchUploadTitle')}</div>
-    <div id="subtitle">
-      ${this.getDialogSubtitle_()}
-    </div>
+    <div id="subtitle">${this.dialogSubtitle_}</div>
 
     <div id="account-info-row">
       <img id="account-icon" alt="Account icon"
-        src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
-      <div id="email">elisa.g.beckett@gmail.com</div>
+        src="${this.accountInfo_.dataPictureUrl}">
+      <div id="email">${this.accountInfo_.email}</div>
     </div>
   </div>
 

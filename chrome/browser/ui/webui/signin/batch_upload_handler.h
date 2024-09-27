@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+struct AccountInfo;
+
 // WebUI message handler for the Batch Upload dialog bubble.
 class BatchUploadHandler : public batch_upload::mojom::PageHandler {
  public:
@@ -21,6 +23,7 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   BatchUploadHandler(
       mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
       mojo::PendingRemote<batch_upload::mojom::Page> page,
+      const AccountInfo& account_info,
       const std::vector<raw_ptr<const BatchUploadDataProvider>>&
           data_providers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,

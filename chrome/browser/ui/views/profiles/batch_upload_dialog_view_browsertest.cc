@@ -9,11 +9,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -81,6 +84,22 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
     return dialog_view;
   }
 
+  void SigninWithFullInfo() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(account_info.IsEmpty());
+
+    account_info.full_name = "Joe Testing";
+    account_info.given_name = "Joe";
+    account_info.picture_url = "SOME_FAKE_URL";
+    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info.locale = "en";
+    ASSERT_TRUE(account_info.IsValid());
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+
  private:
   // Needed to make sure the mojo binders are set.
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -89,6 +108,8 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
                        OpenBatchUploadDialogViewWithCloseAction) {
+  SigninWithFullInfo();
+
   base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
 
   BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
@@ -102,6 +123,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
                        OpenBatchUploadDialogViewWithDestroyed) {
+  SigninWithFullInfo();
+
   base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
 
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);

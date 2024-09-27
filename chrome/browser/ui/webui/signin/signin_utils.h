@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 
+struct AccountInfo;
 class Browser;
 class Profile;
 
@@ -93,6 +94,10 @@ void SetInitializedModalHeight(Browser* browser,
 // adapted.
 void ClearProfileWithManagedAccounts(Profile* profile);
 #endif
+
+// Gets the account picture in the `account_info` as a data:// URL or the
+// default placeholder if it doesn't exist.
+std::string GetAccountPictureUrl(const AccountInfo& account_info);
 
 }  // namespace signin
 
