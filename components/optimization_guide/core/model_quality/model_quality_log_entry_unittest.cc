@@ -148,6 +148,10 @@ TEST_F(ModelQualityLogEntryTest, Upload_WithEmptyLog_DoesNotScheduleAnUpload) {
   EXPECT_EQ(0, NumPendingUploads());
 }
 
+TEST_F(ModelQualityLogEntryTest, Upload_WithNullEntry_DoesNotCrash) {
+  ModelQualityLogEntry::Upload(nullptr);
+}
+
 TEST_F(ModelQualityLogEntryTest, Drop_WithNonEmptyLog_DoesNotScheduleAnUpload) {
   auto data = BuildComposeLogAiDataRequest();
   auto log =
@@ -156,6 +160,10 @@ TEST_F(ModelQualityLogEntryTest, Drop_WithNonEmptyLog_DoesNotScheduleAnUpload) {
   ModelQualityLogEntry::Drop(std::move(log));
 
   EXPECT_EQ(0, NumPendingUploads());
+}
+
+TEST_F(ModelQualityLogEntryTest, Drop_WithNullEntry_DoesNotCrash) {
+  ModelQualityLogEntry::Drop(nullptr);
 }
 
 }  // namespace optimization_guide
