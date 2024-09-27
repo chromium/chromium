@@ -12,6 +12,7 @@
 #import <vector>
 
 #import "base/functional/callback.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "chrome/browser/platform_util.h"
@@ -39,8 +40,6 @@
 }
 
 - (void)dealloc {
-  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] Destroying "
-                                    "SSOServiceAuthControllerDelegate";
   // This is here for debugging purposes and will be removed once this code is
   // no longer experimental.
   if (_callback) {
@@ -65,9 +64,6 @@
           authorizationProviderWithIdentityProviderURL:net::NSURLWithGURL(url)];
 
   if (!auth_provider.canPerformAuthorization) {
-    VLOG_POLICY(2, EXTENSIBLE_SSO)
-        << "[ExtensibleEnterpriseSSO] Fetching headers for " << url
-        << " NOT SUPPORTED.";
     std::move(_callback).Run(net::HttpRequestHeaders());
     return;
   }
@@ -94,24 +90,12 @@
       << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
   NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
-  net::HttpRequestHeaders request_headers;
-
-  VLOG_POLICY(2, EXTENSIBLE_SSO)
-      << "[ExtensibleEnterpriseSSO] Identity Token" << credential.identityToken;
-
-  VLOG_POLICY(2, EXTENSIBLE_SSO)
-      << "[ExtensibleEnterpriseSSO] Access Token" << credential.accessToken;
-
-  VLOG_POLICY(2, EXTENSIBLE_SSO)
-      << "[ExtensibleEnterpriseSSO] State" << credential.state;
-
-  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] AuthorizedScopes"
-                                 << credential.authorizedScopes;
-
+  static constexpr std::string_view kHeaderPrefix("x-ms-");
+  static constexpr std::string_view kSetCookieHeaderKey("Set-Cookie");
+  net::HttpRequestHeaders auth_headers;
+  std::string unused_headers;
   for (NSString* key in headers) {
     const std::string header_name = base::SysNSStringToUTF8(key);
-    VLOG_POLICY(2, EXTENSIBLE_SSO)
-        << "[ExtensibleEnterpriseSSO] Received header: " << header_name;
     if (!net::HttpUtil::IsValidHeaderName(header_name)) {
       VLOG_POLICY(2, EXTENSIBLE_SSO)
           << "[ExtensibleEnterpriseSSO] Invalid header name " << header_name;
@@ -125,13 +109,34 @@
           << "[ExtensibleEnterpriseSSO] Invalid header value " << header_value;
       continue;
     }
-    VLOG_POLICY(2, EXTENSIBLE_SSO)
-        << "[ExtensibleEnterpriseSSO] Adding Header to request { "
-        << header_name << " : " << header_value << " }";
 
-    request_headers.SetHeader(header_name, header_value);
+    // If the header name begins with 'x-ms-', attach the it as a new header.
+    if (base::StartsWith(header_name, kHeaderPrefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      auth_headers.SetHeader(header_name, header_value);
+      continue;
+    }
+
+    // If the header is 'Set-Cookie', add it to the list of cookies.
+    if (header_name == kSetCookieHeaderKey) {
+      net::cookie_util::ParsedRequestCookies parsed_cookies;
+      net::cookie_util::ParseRequestCookieLine(header_value, &parsed_cookies);
+      auth_headers.SetHeader(
+          net::HttpRequestHeaders::kCookie,
+          net::cookie_util::SerializeRequestCookieLine(parsed_cookies));
+      continue;
+    }
+
+    // Keep track of unused headers
+    unused_headers = base::StrCat(
+        {unused_headers, "{ ", header_name, " : ", header_value, " }, "});
   }
-  std::move(_callback).Run(std::move(request_headers));
+
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO - Unused Headers] : " << unused_headers;
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO - Headers] " << auth_headers.ToString();
+  std::move(_callback).Run(std::move(auth_headers));
 }
 
 // Called when the authentication failed and creates a
