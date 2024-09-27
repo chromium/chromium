@@ -1846,25 +1846,6 @@
             ]
         }
     ],
-    "AutofillEnableManualFallbackIPH": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableManualFallbackIPH"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableMerchantDomainInUnmaskCardRequest": [
         {
             "platforms": [
@@ -2060,8 +2041,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_AutofillForUnclassifiedFieldsAndManualFallbackIPH",
                     "enable_features": [
+                        "AutofillEnableManualFallbackIPH",
                         "AutofillForUnclassifiedFieldsAvailable"
                     ]
                 }
