@@ -1194,13 +1194,15 @@ bool HttpUtil::HeadersContainMultipleCopiesOfField(
     const HttpResponseHeaders& headers,
     const std::string& field_name) {
   size_t it = 0;
-  std::string field_value;
-  if (!headers.EnumerateHeader(&it, field_name, &field_value))
+  std::optional<std::string_view> field_value =
+      headers.EnumerateHeader(&it, field_name);
+  if (!field_value) {
     return false;
+  }
   // There's at least one `field_name` header.  Check if there are any more
   // such headers, and if so, return true if they have different values.
-  std::string field_value2;
-  while (headers.EnumerateHeader(&it, field_name, &field_value2)) {
+  std::optional<std::string_view> field_value2;
+  while ((field_value2 = headers.EnumerateHeader(&it, field_name))) {
     if (field_value != field_value2)
       return true;
   }

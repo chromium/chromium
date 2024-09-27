@@ -762,9 +762,9 @@ bool HttpResponseHeaders::EnumerateHeaderLines(size_t* iter,
   return true;
 }
 
-bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
-                                          std::string_view name,
-                                          std::string* value) const {
+std::optional<std::string_view> HttpResponseHeaders::EnumerateHeader(
+    size_t* iter,
+    std::string_view name) const {
   size_t i;
   if (!iter || !*iter) {
     i = FindHeader(0, name);
@@ -778,13 +778,23 @@ bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
   }
 
   if (i == std::string::npos) {
-    value->clear();
-    return false;
+    return std::nullopt;
   }
 
   if (iter)
     *iter = i + 1;
-  value->assign(parsed_[i].value_begin, parsed_[i].value_end);
+  return std::string_view(parsed_[i].value_begin, parsed_[i].value_end);
+}
+
+bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
+                                          std::string_view name,
+                                          std::string* value) const {
+  std::optional<std::string_view> result = EnumerateHeader(iter, name);
+  if (!result) {
+    value->clear();
+    return false;
+  }
+  value->assign(*result);
   return true;
 }
 
@@ -793,10 +803,11 @@ bool HttpResponseHeaders::HasHeaderValue(std::string_view name,
   // The value has to be an exact match.  This is important since
   // 'cache-control: no-cache' != 'cache-control: no-cache="foo"'
   size_t iter = 0;
-  std::string temp;
-  while (EnumerateHeader(&iter, name, &temp)) {
-    if (base::EqualsCaseInsensitiveASCII(value, temp))
+  std::optional<std::string_view> temp;
+  while ((temp = EnumerateHeader(&iter, name))) {
+    if (base::EqualsCaseInsensitiveASCII(value, *temp)) {
       return true;
+    }
   }
   return false;
 }
@@ -912,22 +923,23 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
 std::optional<base::TimeDelta> HttpResponseHeaders::GetCacheControlDirective(
     std::string_view directive) const {
   static constexpr std::string_view name("cache-control");
-  std::string value;
+  std::optional<std::string_view> value;
 
   size_t directive_size = directive.size();
 
   size_t iter = 0;
-  while (EnumerateHeader(&iter, name, &value)) {
-    if (!base::StartsWith(value, directive,
+  while ((value = EnumerateHeader(&iter, name))) {
+    if (!base::StartsWith(*value, directive,
                           base::CompareCase::INSENSITIVE_ASCII)) {
       continue;
     }
-    if (value.size() == directive_size || value[directive_size] != '=')
+    if (value->size() == directive_size || (*value)[directive_size] != '=') {
       continue;
+    }
     // 1*DIGIT with leading and trailing spaces, as described at
     // https://datatracker.ietf.org/doc/html/rfc7234#section-1.2.1.
-    auto start = value.cbegin() + directive_size + 1;
-    auto end = value.cend();
+    auto start = value->cbegin() + directive_size + 1;
+    auto end = value->cend();
     while (start < end && *start == ' ') {
       // leading spaces
       ++start;
@@ -1122,10 +1134,11 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 bool HttpResponseHeaders::HasStorageAccessRetryHeader(
     const std::string* expected_origin) const {
   size_t iter = 0;
-  std::string header_value;
-  while (EnumerateHeader(&iter, kActivateStorageAccessHeader, &header_value)) {
+  std::optional<std::string_view> header_value;
+  while (
+      (header_value = EnumerateHeader(&iter, kActivateStorageAccessHeader))) {
     const std::optional<structured_headers::ParameterizedItem> item =
-        structured_headers::ParseItem(header_value);
+        structured_headers::ParseItem(*header_value);
     if (!item || !item->item.is_token() || item->item.GetString() != "retry") {
       continue;
     }
@@ -1387,14 +1400,15 @@ std::optional<base::TimeDelta> HttpResponseHeaders::GetMaxAgeValue() const {
 }
 
 std::optional<base::TimeDelta> HttpResponseHeaders::GetAgeValue() const {
-  std::string value;
-  if (!EnumerateHeader(nullptr, "Age", &value))
+  std::optional<std::string> value;
+  if (!(value = EnumerateHeader(nullptr, "Age"))) {
     return std::nullopt;
+  }
 
   // Parse the delta-seconds as 1*DIGIT.
   uint32_t seconds;
   ParseIntError error;
-  if (!ParseUint32(value, ParseIntFormat::NON_NEGATIVE, &seconds, &error)) {
+  if (!ParseUint32(*value, ParseIntFormat::NON_NEGATIVE, &seconds, &error)) {
     if (error == ParseIntError::FAILED_OVERFLOW) {
       // If the Age value cannot fit in a uint32_t, saturate it to a maximum
       // value. This is similar to what RFC 2616 says in section 14.6 for how
@@ -1427,9 +1441,10 @@ HttpResponseHeaders::GetStaleWhileRevalidateValue() const {
 
 std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(
     const std::string& name) const {
-  std::string value;
-  if (!EnumerateHeader(nullptr, name, &value))
+  std::optional<std::string_view> value;
+  if (!(value = EnumerateHeader(nullptr, name))) {
     return std::nullopt;
+  }
 
   // In case of parsing the Expires header value, an invalid string 0 should be
   // treated as expired according to the RFC 9111 section 5.3 as below:
@@ -1438,7 +1453,7 @@ std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(
   // > value "0", as representing a time in the past (i.e., "already expired").
   if (base::FeatureList::IsEnabled(
           features::kTreatHTTPExpiresHeaderValueZeroAsExpired) &&
-      name == "Expires" && value == "0") {
+      name == "Expires" && *value == "0") {
     return Time::Min();
   }
 
@@ -1454,7 +1469,7 @@ std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(
   // based on an incorrect time.  This would require modifying the time
   // library or duplicating the code. (http://crbug.com/158327)
   Time result;
-  return Time::FromUTCString(value.c_str(), &result)
+  return Time::FromUTCString(std::string(*value).c_str(), &result)
              ? std::make_optional(result)
              : std::nullopt;
 }
@@ -1485,11 +1500,12 @@ bool HttpResponseHeaders::IsKeepAlive() const {
 
   for (const char* header : kConnectionHeaders) {
     size_t iterator = 0;
-    std::string token;
-    while (EnumerateHeader(&iterator, header, &token)) {
+    std::optional<std::string_view> token;
+    while ((token = EnumerateHeader(&iterator, header))) {
       for (const KeepAliveToken& keep_alive_token : kKeepAliveTokens) {
-        if (base::EqualsCaseInsensitiveASCII(token, keep_alive_token.token))
+        if (base::EqualsCaseInsensitiveASCII(*token, keep_alive_token.token)) {
           return keep_alive_token.keep_alive;
+        }
       }
     }
   }

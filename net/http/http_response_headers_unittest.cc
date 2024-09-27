@@ -576,6 +576,18 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("private", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("no-cache=\"set-cookie,server\"",
+            parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("no-store", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_FALSE(parsed->EnumerateHeader(&iter, "cache-control"));
+
+  // Test the deprecated overload that returns values as std::strings.
+  iter = 0;
   std::string value;
   ASSERT_TRUE(parsed->EnumerateHeader(&iter, "cache-control", &value));
   EXPECT_EQ("", value);
@@ -605,6 +617,14 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Challenge) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
+  EXPECT_EQ("Digest realm=foobar, nonce=x, domain=y",
+            parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+  EXPECT_EQ("Basic realm=quatar",
+            parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+  EXPECT_FALSE(parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+
+  // Test the deprecated overload that returns values as std::strings.
+  iter = 0;
   std::string value;
   EXPECT_TRUE(parsed->EnumerateHeader(&iter, "WWW-Authenticate", &value));
   EXPECT_EQ("Digest realm=foobar, nonce=x, domain=y", value);
@@ -623,6 +643,12 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_DateValued) {
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
+  EXPECT_EQ("Tue, 07 Aug 2007 23:10:55 GMT",
+            parsed->EnumerateHeader(nullptr, "date"));
+  EXPECT_EQ("Wed, 01 Aug 2007 23:23:45 GMT",
+            parsed->EnumerateHeader(nullptr, "last-modified"));
+
+  // Test the deprecated overload that returns values as std::strings.
   std::string value;
   EXPECT_TRUE(parsed->EnumerateHeader(nullptr, "date", &value));
   EXPECT_EQ("Tue, 07 Aug 2007 23:10:55 GMT", value);
