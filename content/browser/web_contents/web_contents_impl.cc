@@ -4780,6 +4780,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   bool renderer_started_hidden =
       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
+  // While some guest types do not have a guest SiteInstance, the ones that
+  // don't all override WebContents creation above.
+  CHECK_EQ(source_site_instance->IsGuest(), IsGuest());
   bool is_guest = IsGuest();
 
   // We usually create the new window in the same BrowsingInstance (group of

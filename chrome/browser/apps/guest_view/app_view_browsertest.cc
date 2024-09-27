@@ -296,3 +296,23 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, FocusWebViewInAppView) {
   EXPECT_TRUE(
       content::ExecJs(webview_guest->GetGuestMainFrame(), "waitForInput();"));
 }
+
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewCannotOpenNewWindow) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
+             NO_TEST_SERVER);
+
+  auto* guest_rfh =
+      test_guest_view_manager()->WaitForSingleGuestRenderFrameHostCreated();
+  // Try to open new windows. Since it's inside an appview, nothing should
+  // happen.
+  EXPECT_TRUE(content::ExecJs(guest_rfh, "window.open('', 'attempt1');"));
+  // Also test with noopener, since the browser side code paths have substantial
+  // differences between the opener and noopener cases.
+  EXPECT_TRUE(
+      content::ExecJs(guest_rfh, "window.open('', 'attempt2', 'noopener');"));
+
+  // Verify that the window open attempts didn't create additional guests.
+  EXPECT_EQ(1u, test_guest_view_manager()->num_guests_created());
+}
