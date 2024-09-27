@@ -1799,25 +1799,6 @@ void CookieMonster::SetCanonicalCookie(
     if (!already_expired) {
       HistogramExpirationDuration(*cc, creation_date);
 
-      // Histogram the type of scheme used on URLs that set cookies. This
-      // intentionally includes cookies that are set or overwritten by
-      // http:// URLs, but not cookies that are cleared by http:// URLs, to
-      // understand if the former behavior can be deprecated for Secure
-      // cookies.
-      // TODO(crbug.com/40640080): Consider removing this histogram. The
-      // decision it was added to evaluate has been implemented and
-      // standardized.
-      CookieSource cookie_source_sample =
-          (source_url.SchemeIsCryptographic()
-               ? (cc->SecureAttribute()
-                      ? CookieSource::kSecureCookieCryptographicScheme
-                      : CookieSource::kNonsecureCookieCryptographicScheme)
-               : (cc->SecureAttribute()
-                      ? CookieSource::kSecureCookieNoncryptographicScheme
-                      : CookieSource::kNonsecureCookieNoncryptographicScheme));
-      UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceScheme",
-                                cookie_source_sample);
-
       UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
 
       if (!creation_date_to_inherit.is_null()) {

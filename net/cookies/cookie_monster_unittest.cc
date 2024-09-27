@@ -3654,68 +3654,6 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
                        CookiePartitionKeyCollection(cookie_partition_key)));
 }
 
-// Test that cookie source schemes are histogrammed correctly.
-TEST_F(CookieMonsterTest, CookieSourceHistogram) {
-  base::HistogramTester histograms;
-  const std::string cookie_source_histogram = "Cookie.CookieSourceScheme";
-
-  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
-  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
-
-  histograms.ExpectTotalCount(cookie_source_histogram, 0);
-
-  // Set a secure cookie on a cryptographic scheme.
-  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), "A=B; path=/; Secure"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 1);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kSecureCookieCryptographicScheme, 1);
-
-  // Set a non-secure cookie on a cryptographic scheme.
-  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), "C=D; path=/;"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 2);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kNonsecureCookieCryptographicScheme, 1);
-
-  // Set a secure cookie on a non-cryptographic scheme.
-  EXPECT_FALSE(SetCookie(cm.get(), http_www_foo_.url(), "D=E; path=/; Secure"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 2);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kSecureCookieNoncryptographicScheme, 0);
-
-  // Overwrite a secure cookie (set by a cryptographic scheme) on a
-  // non-cryptographic scheme.
-  EXPECT_FALSE(SetCookie(cm.get(), http_www_foo_.url(), "A=B; path=/; Secure"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 2);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kSecureCookieCryptographicScheme, 1);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kSecureCookieNoncryptographicScheme, 0);
-
-  // Test that attempting to clear a secure cookie on a http:// URL does
-  // nothing.
-  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), "F=G; path=/; Secure"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 3);
-  std::string cookies1 = GetCookies(cm.get(), https_www_foo_.url());
-  EXPECT_NE(std::string::npos, cookies1.find("F=G"));
-  EXPECT_FALSE(SetCookie(cm.get(), http_www_foo_.url(),
-                         "F=G; path=/; Expires=Thu, 01-Jan-1970 00:00:01 GMT"));
-  std::string cookies2 = GetCookies(cm.get(), https_www_foo_.url());
-  EXPECT_NE(std::string::npos, cookies2.find("F=G"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 3);
-
-  // Set a non-secure cookie on a non-cryptographic scheme.
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "H=I; path=/"));
-  histograms.ExpectTotalCount(cookie_source_histogram, 4);
-  histograms.ExpectBucketCount(
-      cookie_source_histogram,
-      CookieMonster::CookieSource::kNonsecureCookieNoncryptographicScheme, 1);
-}
-
 // Test that inserting the first cookie for a key and deleting the last cookie
 // for a key correctly reflected in the Cookie.NumKeys histogram.
 TEST_F(CookieMonsterTest, NumKeysHistogram) {
