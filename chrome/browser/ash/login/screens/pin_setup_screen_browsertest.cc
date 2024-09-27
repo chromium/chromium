@@ -221,6 +221,10 @@ class PinSetupScreenTest : public OobeBaseTest {
         ElementsAre(base::Bucket(static_cast<int>(user_action), /*count=*/1)));
   }
 
+  void ExpectSetupMode(PinSetupScreen::PinSetupMode screen_mode) {
+    EXPECT_EQ(GetScreen()->get_setup_mode_for_testing(), screen_mode);
+  }
+
   void ExpectExitResultAndMetric(PinSetupScreen::Result result) {
     EXPECT_EQ(screen_result_.value(), result);
 
@@ -408,6 +412,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
   ShowPinSetupScreen();
   WaitForScreenShown();
 
+  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsSecondaryFactor);
   WaitForSetupTitleAndSubtitle(IDS_DISCOVER_PIN_SETUP_TITLE1,
                                IDS_DISCOVER_PIN_SETUP_SUBTITLE1);
   test::OobeJS().ExpectElementText(
@@ -480,6 +485,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   ShowPinSetupScreen();
   WaitForScreenShown();
 
+  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsPrimaryFactor);
   WaitForSetupTitleAndSubtitle(
       IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE,
       IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,

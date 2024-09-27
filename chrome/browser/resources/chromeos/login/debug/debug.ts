@@ -1551,22 +1551,29 @@ const KNOWN_SCREENS: ScreenDefType[] = [
       },
       {
         id: 'pin-as-main-factor',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(true);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: true,
         },
       },
       {
         id: 'pin-for-unlock-only',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(false);
-          screen.setHasLoginSupport(false);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: false,
+          usingPinAsMainSignInFactor: false,
         },
       },
       {
         id: 'pin-default',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(false);
-          screen.setHasLoginSupport(true);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
         },
       },
     ],

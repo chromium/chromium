@@ -93,10 +93,6 @@ void PinSetupScreenHandler::Show(const std::string& token,
                   .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor));
 }
 
-void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
-  CallExternalAPI("setHasLoginSupport", available);
-}
-
 base::WeakPtr<PinSetupScreenView> PinSetupScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

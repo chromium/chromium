@@ -52,6 +52,20 @@ class PinSetupScreen : public BaseScreen {
     kMaxValue = kSkipButtonClickedInFlow
   };
 
+  // Depending on hardware capability, the PIN setup screen may be shown to set
+  // the PIN as a main factor, or as an auxiliary factor. In the future, it will
+  // also support resetting the PIN while going through recovery.
+  enum class PinSetupMode {
+    kSetupAsPrimaryFactor,
+    kSetupAsSecondaryFactor,
+    // TODO(b/365059362) : Add support for recovery.
+    // kRecovery
+  };
+
+  // Whether the current platform has support for PIN login, or just unlock.
+  // Initially undetermined until PinBackend informs us of the actual state.
+  enum class HardwareSupport { kLoginCompatible, kUnlockOnly };
+
   static std::string GetResultString(Result result);
 
   static std::unique_ptr<base::AutoReset<bool>>
@@ -66,12 +80,17 @@ class PinSetupScreen : public BaseScreen {
 
   ~PinSetupScreen() override;
 
+  // Test methods below
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
   }
 
   const ScreenExitCallback& get_exit_callback_for_testing() {
     return exit_callback_;
+  }
+
+  PinSetupMode get_setup_mode_for_testing() const {
+    return setup_mode_.value();
   }
 
  protected:
@@ -86,13 +105,14 @@ class PinSetupScreen : public BaseScreen {
   std::optional<PinSetupScreen::SkipReason> GetSkipReason(
       WizardContext& context);
 
-  // Inticates whether the device supports usage of PIN for login.
-  // This information is retrived in an async way and will not be available
-  // immediately.
-  std::optional<bool> has_login_support_;
+  // Determines whether the screen will be used for setting PIN as a main
+  // factor, or as an auxiliary one.
+  void DetermineSetupMode();
 
-  // Whether PIN is being offered as the main sign-in factor (PIN-only OOBE).
-  std::optional<bool> using_pin_as_main_factor_;
+  // Hardware support and screen mode. The main logic bits driving how the
+  // screen is surfaced to the user. See enum definition for details.
+  std::optional<HardwareSupport> hardware_support_;
+  std::optional<PinSetupMode> setup_mode_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;

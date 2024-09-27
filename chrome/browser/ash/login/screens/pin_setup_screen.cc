@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -105,7 +106,7 @@ PinSetupScreen::~PinSetupScreen() = default;
 
 std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
     WizardContext& context) {
-  CHECK(has_login_support_.has_value());
+  CHECK(hardware_support_.has_value());
 
   if (context.skip_post_login_screens_for_tests) {
     return SkipReason::kSkippedForTests;
@@ -136,7 +137,9 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
   const bool is_device_a_tablet =
       display::Screen::GetScreen()->InTabletMode() ||
       switches::ShouldOobeUseTabletModeFirstRun();
-  if (!(is_device_a_tablet || has_login_support_.value())) {
+  const bool has_login_support =
+      hardware_support_.value() == HardwareSupport::kLoginCompatible;
+  if (!(is_device_a_tablet || has_login_support)) {
     return SkipReason::kUsupportedHardware;
   }
 
@@ -145,18 +148,13 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
-  // If cryptohome takes very long to respond, `has_login_support_` may be null
-  // here, but this is very unusual. In that case, assume that there is no
-  // support for login.
-  if (!has_login_support_.has_value()) {
-    LOG(WARNING) << "Could not determine hardware support support for login";
-    has_login_support_ = false;
-  }
+  // The screen is about to be shown/skipped. Determine the mode for the screen.
+  DetermineSetupMode();
 
   const auto skip_reason = GetSkipReason(context);
   if (skip_reason.has_value()) {
     ClearAuthData(context);
-    // TODO(b/365059362) : Create new metric to track the detailed skip reason.
+    // TODO(b/365059362): Create new metric to track the detailed skip reason.
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
@@ -165,6 +163,13 @@ bool PinSetupScreen::MaybeSkip(WizardContext& context) {
 }
 
 void PinSetupScreen::ShowImpl() {
+  // The following are considered invariants when the screen is shown. These
+  // values must have either been set at this point, or the screen should have
+  // been skipped.
+  CHECK(setup_mode_.has_value());
+  CHECK(hardware_support_.has_value());
+  CHECK(context()->extra_factors_token);
+
   token_lifetime_timeout_.Start(FROM_HERE,
                                 quick_unlock::AuthToken::kTokenExpiration,
                                 base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
@@ -173,15 +178,18 @@ void PinSetupScreen::ShowImpl() {
       quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   quick_unlock_storage->MarkStrongAuth();
-  std::string token;
-  CHECK(context()->extra_factors_token);
-  token = *context()->extra_factors_token;
+  const std::string token = *context()->extra_factors_token;
   bool is_child_account =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
+  const bool using_pin_as_main_factor =
+      setup_mode_.value() == PinSetupMode::kSetupAsPrimaryFactor;
+  const bool has_login_support =
+      hardware_support_.value() == HardwareSupport::kLoginCompatible;
   if (view_) {
-    view_->Show(token, is_child_account, has_login_support_.value_or(false),
-                using_pin_as_main_factor_.value_or(false));
+    // TODO(b/365059362): Wrap arguments in a struct.
+    view_->Show(token, is_child_account, has_login_support,
+                using_pin_as_main_factor);
   }
 }
 
@@ -208,6 +216,30 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
+void PinSetupScreen::DetermineSetupMode() {
+  // The initial setup mode is only determined once, when the screen is shown
+  // for the first time.
+  if (setup_mode_.has_value()) {
+    return;
+  }
+
+  // If cryptohome takes very long to respond, the hardware support status may
+  // still be undetermined. (This is very unusual and is being tracked in
+  // b/369749485). In that case, assume that there is no support for login.
+  if (!hardware_support_.has_value()) {
+    LOG(WARNING) << "Could not determine hardware support support for login";
+    hardware_support_ = HardwareSupport::kUnlockOnly;
+  }
+
+  // When hardware support is available, PIN will be offered as a main factor.
+  if (hardware_support_.value() == HardwareSupport::kLoginCompatible &&
+      ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    setup_mode_ = PinSetupMode::kSetupAsPrimaryFactor;
+  } else {
+    setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+  }
+}
+
 void PinSetupScreen::ClearAuthData(WizardContext& context) {
   if (context.extra_factors_token.has_value()) {
     ash::AuthSessionStorage::Get()->Invalidate(
@@ -217,19 +249,17 @@ void PinSetupScreen::ClearAuthData(WizardContext& context) {
 }
 
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
-  has_login_support_ = login_available;
-  if (!is_hidden() && view_) {
-    view_->SetLoginSupportAvailable(has_login_support_.value());
+  if (hardware_support_.has_value()) {
+    LOG(WARNING) << "Hardware support for login determined too late.";
+    // Generate a crash report to investigate this edge case. This is unlikely
+    // to happen nowadays.
+    // TODO(b/369749485): Remove once no longer necessary.
+    base::debug::DumpWithoutCrashing();
+    return;
   }
 
-  // When hardware support is available, PIN will be offered as a main factor.
-  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
-    // The first value is only set once, based on hardware capability.
-    if (using_pin_as_main_factor_.has_value()) {
-      return;
-    }
-    using_pin_as_main_factor_ = login_available;
-  }
+  hardware_support_ = login_available ? HardwareSupport::kLoginCompatible
+                                      : HardwareSupport::kUnlockOnly;
 }
 
 void PinSetupScreen::OnTokenTimedOut() {

@@ -111,10 +111,6 @@ class PinSetup extends PinSetupBase {
   private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
 
-  override get EXTERNAL_API(): string[] {
-    return ['setHasLoginSupport'];
-  }
-
   override get UI_STEPS() {
     return PinSetupState;
   }
@@ -148,22 +144,6 @@ class PinSetup extends PinSetupBase {
     this.isChildAccount = data.isChildAccount;
     this.hasLoginSupport = data.hasLoginSupport;
     this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
-  }
-
-  /**
-   * Configures message on the final page depending on whether the PIN can
-   *  be used to log in.
-   */
-  setHasLoginSupport(hasLoginSupport: boolean): void {
-    this.hasLoginSupport = hasLoginSupport;
-  }
-
-  /**
-   * Configures the screen to show strings letting the user know that PIN is
-   * being set up as a main factor for signing in.
-   */
-  setUsingPinAsMainFactor(usingPinAsMainFactor: boolean): void {
-    this.usingPinAsMainSignInFactor = usingPinAsMainFactor;
   }
 
   private onIsConfirmStepChanged(): void {
