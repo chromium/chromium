@@ -64,7 +64,7 @@ class ContentNegotiationAlgorithm {
                                          /*delimiter=*/',');
     while (values.GetNext()) {
       net::HttpUtil::NameValuePairsIterator name_value_pairs(
-          values.value_begin(), values.value_end(), ';',
+          values.value_piece(), /*delimiter=*/';',
           net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
           net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
       if (!name_value_pairs.GetNext())
@@ -75,8 +75,9 @@ class ContentNegotiationAlgorithm {
       while (name_value_pairs.GetNext()) {
         if (base::EqualsCaseInsensitiveASCII(name_value_pairs.name_piece(),
                                              "q")) {
-          if (auto value = GetQValue(name_value_pairs.value()))
+          if (auto value = GetQValue(name_value_pairs.value_piece())) {
             item.weight = *value;
+          }
         } else {
           // Parameters except for "q" are included in the output.
           item.value +=
@@ -91,7 +92,7 @@ class ContentNegotiationAlgorithm {
   }
 
  private:
-  std::optional<double> GetQValue(const std::string& str) {
+  std::optional<double> GetQValue(std::string_view str) {
     // TODO(ksakamoto): Validate the syntax per Section 5.3.1 of [RFC7231],
     // by factoring out the logic in HttpUtil::ParseAcceptEncoding().
     double val;

@@ -77,8 +77,7 @@ bool ParseHSTSHeader(const std::string& value,
   bool include_subdomains_value = false;
 
   HttpUtil::NameValuePairsIterator hsts_iterator(
-      value.begin(), value.end(), ';',
-      HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
+      value, ';', HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (hsts_iterator.GetNext()) {
     // Process `max-age`:

@@ -25,7 +25,8 @@ HttpAuthChallengeTokenizer::~HttpAuthChallengeTokenizer() = default;
 
 HttpUtil::NameValuePairsIterator HttpAuthChallengeTokenizer::param_pairs()
     const {
-  return HttpUtil::NameValuePairsIterator(params_begin_, params_end_, ',');
+  return HttpUtil::NameValuePairsIterator(
+      base::MakeStringPiece(params_begin_, params_end_), ',');
 }
 
 std::string HttpAuthChallengeTokenizer::base64_param() const {

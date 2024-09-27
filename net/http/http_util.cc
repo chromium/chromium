@@ -971,29 +971,13 @@ bool HttpUtil::ValuesIterator::GetNext() {
   return false;
 }
 
-HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
-    std::string::const_iterator begin,
-    std::string::const_iterator end,
-    char delimiter,
-    Values optional_values,
-    Quotes strict_quotes)
-    : props_(std::string_view(begin, end), delimiter),
-      name_begin_(props_.value_end()),
-      name_end_(props_.value_end()),
-      value_begin_(props_.value_end()),
-      value_end_(props_.value_end()),
+HttpUtil::NameValuePairsIterator::NameValuePairsIterator(std::string_view value,
+                                                         char delimiter,
+                                                         Values optional_values,
+                                                         Quotes strict_quotes)
+    : props_(value, delimiter),
       values_optional_(optional_values == Values::NOT_REQUIRED),
       strict_quotes_(strict_quotes == Quotes::STRICT_QUOTES) {}
-
-HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
-    std::string::const_iterator begin,
-    std::string::const_iterator end,
-    char delimiter)
-    : NameValuePairsIterator(begin,
-                             end,
-                             delimiter,
-                             Values::REQUIRED,
-                             Quotes::NOT_STRICT) {}
 
 HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
     const NameValuePairsIterator& other) = default;
@@ -1015,70 +999,67 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     return false;
 
   // Set the value as everything. Next we will split out the name.
-  value_begin_ = props_.value_begin();
-  value_end_ = props_.value_end();
-  name_begin_ = name_end_ = value_end_;
+  value_ = props_.value_piece();
+  name_ = std::string_view();
 
   // Scan for the equals sign.
-  std::string_view::iterator equals = std::find(value_begin_, value_end_, '=');
-  if (equals == value_begin_)
+  std::string_view::iterator equals =
+      std::find(value_.begin(), value_.end(), '=');
+  if (equals == value_.begin()) {
     return valid_ = false;  // Malformed, no name
-  if (equals == value_end_ && !values_optional_)
+  }
+  bool has_value = (equals != value_.end());
+  if (!has_value && !values_optional_) {
     return valid_ = false;  // Malformed, no equals sign and values are required
+  }
 
   // If an equals sign was found, verify that it wasn't inside of quote marks.
-  if (equals != value_end_) {
-    for (std::string_view::iterator it = value_begin_; it != equals; ++it) {
+  if (has_value) {
+    for (std::string_view::iterator it = value_.begin(); it != equals; ++it) {
       if (IsQuote(*it))
         return valid_ = false;  // Malformed, quote appears before equals sign
     }
   }
 
-  name_begin_ = value_begin_;
-  name_end_ = equals;
-  value_begin_ = (equals == value_end_) ? value_end_ : equals + 1;
-
-  // TODO(crbug.com/41375521): Switch from using begin/end pairs to using
-  // std::string_views.
-  std::string_view name = TrimLWS(std::string_view(name_begin_, name_end_));
-  name_begin_ = name.begin();
-  name_end_ = name.end();
-  std::string_view value = TrimLWS(std::string_view(value_begin_, value_end_));
-  value_begin_ = value.begin();
-  value_end_ = value.end();
+  // Make `name_` everything up until the equals sign, and `value_` everything
+  // after it, if there is a value.
+  name_ = TrimLWS(std::string_view(value_.begin(), equals));
+  value_ = (equals == value_.end())
+               ? std::string_view()
+               : TrimLWS(std::string_view(equals + 1, value_.end()));
+  // `equals` is now an iterator to a no-longer-existant `value_`, so it's not a
+  // good idea to use it below this point.
 
   value_is_quoted_ = false;
   unquoted_value_.clear();
 
-  if (equals != value_end_ && value_begin_ == value_end_) {
+  if (has_value && value_.empty()) {
     // Malformed; value is empty
     return valid_ = false;
   }
 
-  if (value_begin_ != value_end_ && IsQuote(*value_begin_)) {
+  if (has_value && IsQuote(value_.front())) {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(
-              base::MakeStringPiece(value_begin_, value_end_),
-              &unquoted_value_))
+      if (!HttpUtil::StrictUnquote(value_, &unquoted_value_)) {
         return valid_ = false;
+      }
       return true;
     }
 
     // Trim surrounding quotemarks off the value
-    if (*value_begin_ != *(value_end_ - 1) || value_begin_ + 1 == value_end_) {
+    if (value_.front() != value_.back() || value_.size() == 1) {
       // NOTE: This is not as graceful as it sounds:
       // * quoted-pairs will no longer be unquoted
       //   (["\"hello] should give ["hello]).
       // * Does not detect when the final quote is escaped
       //   (["value\"] should give [value"])
       value_is_quoted_ = false;
-      ++value_begin_;  // Gracefully recover from mismatching quotes.
+      value_ = value_.substr(1);  // Gracefully recover from mismatching quotes.
     } else {
-      // Do not store iterators into this. See declaration of unquoted_value_.
-      unquoted_value_ =
-          HttpUtil::Unquote(base::MakeStringPiece(value_begin_, value_end_));
+      // Do not store iterators into this. See declaration of `unquoted_value_`.
+      unquoted_value_ = HttpUtil::Unquote(value_);
     }
   }
 

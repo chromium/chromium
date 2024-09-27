@@ -97,7 +97,9 @@ std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
   std::map<std::string, std::string> params;
   if (semicolon != std::string_view::npos) {
     net::HttpUtil::NameValuePairsIterator parser(
-        content_type.begin() + semicolon + 1, content_type.end(), ';');
+        std::string_view(content_type.begin() + semicolon + 1,
+                         content_type.end()),
+        ';');
     while (parser.GetNext()) {
       const std::string_view name = parser.name_piece();
       params[base::ToLowerASCII(name)] = parser.value();

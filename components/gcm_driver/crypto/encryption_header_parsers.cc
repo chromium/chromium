@@ -72,7 +72,7 @@ bool EncryptionHeaderIterator::GetNext() {
     return false;
 
   net::HttpUtil::NameValuePairsIterator name_value_pairs(
-      iterator_.value_begin(), iterator_.value_end(), ';',
+      iterator_.value_piece(), /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
 
@@ -122,7 +122,7 @@ bool CryptoKeyHeaderIterator::GetNext() {
     return false;
 
   net::HttpUtil::NameValuePairsIterator name_value_pairs(
-      iterator_.value_begin(), iterator_.value_end(), ';',
+      iterator_.value_piece(), /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
 

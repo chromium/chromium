@@ -170,13 +170,14 @@ bool ParseLinkHeaderValue(
 
   // Trim any remaining whitespace, and make sure there is a ';' separating
   // parameters from the URL.
-  net::HttpUtil::TrimLWS(&begin, &end);
-  if (begin != end && *begin != ';')
+  std::string_view value = net::HttpUtil::TrimLWS(std::string_view(begin, end));
+  if (!value.empty() && value.front() != ';') {
     return false;
+  }
 
   // Parse all the parameters.
   net::HttpUtil::NameValuePairsIterator params_iterator(
-      begin, end, ';',
+      value, /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (params_iterator.GetNext()) {

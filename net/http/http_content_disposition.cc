@@ -218,7 +218,7 @@ bool DecodeWord(std::string_view encoded_word,
 //
 // However we currently also allow RFC 2047 encoding and non-ASCII
 // strings. Non-ASCII strings are interpreted based on |referrer_charset|.
-bool DecodeFilenameValue(const std::string& input,
+bool DecodeFilenameValue(std::string_view input,
                          const std::string& referrer_charset,
                          std::string* output,
                          int* parse_result_flags) {
@@ -227,8 +227,8 @@ bool DecodeFilenameValue(const std::string& input,
   bool is_previous_token_rfc2047 = true;
 
   // Tokenize with whitespace characters.
-  base::StringTokenizer t(input, " \t\n\r");
-  t.set_options(base::StringTokenizer::RETURN_DELIMS);
+  base::StringViewTokenizer t(input, " \t\n\r");
+  t.set_options(base::StringViewTokenizer::RETURN_DELIMS);
   while (t.GetNext()) {
     if (t.token_is_delim()) {
       // If the previous non-delimeter token is not RFC2047-encoded,
@@ -406,11 +406,11 @@ void HttpContentDisposition::Parse(const std::string& header,
   std::string filename;
   std::string ext_filename;
 
-  HttpUtil::NameValuePairsIterator iter(pos, end, ';');
+  HttpUtil::NameValuePairsIterator iter(base::MakeStringPiece(pos, end), ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
         base::EqualsCaseInsensitiveASCII(iter.name_piece(), "filename")) {
-      DecodeFilenameValue(iter.value(), referrer_charset, &filename,
+      DecodeFilenameValue(iter.value_piece(), referrer_charset, &filename,
                           &parse_result_flags_);
       if (!filename.empty()) {
         parse_result_flags_ |= HAS_FILENAME;

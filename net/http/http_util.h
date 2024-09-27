@@ -404,17 +404,10 @@ class NET_EXPORT HttpUtil {
     // mismatched or otherwise invalid quotes is considered a parse error.
     enum class Quotes { STRICT_QUOTES, NOT_STRICT };
 
-    NameValuePairsIterator(std::string::const_iterator begin,
-                           std::string::const_iterator end,
+    NameValuePairsIterator(std::string_view value,
                            char delimiter,
-                           Values optional_values,
-                           Quotes strict_quotes);
-
-    // Treats values as not optional by default (Values::REQUIRED) and
-    // treats quotes as not strict.
-    NameValuePairsIterator(std::string::const_iterator begin,
-                           std::string::const_iterator end,
-                           char delimiter);
+                           Values optional_values = Values::REQUIRED,
+                           Quotes strict_quotes = Quotes::NOT_STRICT);
 
     NameValuePairsIterator(const NameValuePairsIterator& other);
 
@@ -429,36 +422,28 @@ class NET_EXPORT HttpUtil {
     bool valid() const { return valid_; }
 
     // The name of the current name-value pair.
-    std::string name() const { return std::string(name_begin_, name_end_); }
-    std::string_view name_piece() const {
-      return base::MakeStringPiece(name_begin_, name_end_);
-    }
+    std::string name() const { return std::string(name_); }
+    std::string_view name_piece() const { return name_; }
 
     // The value of the current name-value pair.
     std::string value() const {
-      return value_is_quoted_ ? unquoted_value_ : std::string(value_begin_,
-                                                              value_end_);
+      return value_is_quoted_ ? unquoted_value_ : std::string(value_);
     }
     std::string_view value_piece() const {
-      return value_is_quoted_ ? unquoted_value_
-                              : base::MakeStringPiece(value_begin_, value_end_);
+      return value_is_quoted_ ? unquoted_value_ : value_;
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }
 
     // The value before unquoting (if any).
-    std::string raw_value() const { return std::string(value_begin_,
-                                                       value_end_); }
+    std::string raw_value() const { return std::string(value_); }
 
    private:
     HttpUtil::ValuesIterator props_;
     bool valid_ = true;
 
-    std::string_view::iterator name_begin_;
-    std::string_view::iterator name_end_;
-
-    std::string_view::iterator value_begin_;
-    std::string_view::iterator value_end_;
+    std::string_view name_;
+    std::string_view value_;
 
     // Do not store iterators into this string. The NameValuePairsIterator
     // is copyable/assignable, and if copied the copy's iterators would point

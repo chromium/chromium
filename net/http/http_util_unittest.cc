@@ -1247,12 +1247,9 @@ void CheckInvalidNameValuePair(std::string valid_part,
                                std::string invalid_part) {
   std::string whole_string = valid_part + invalid_part;
 
-  HttpUtil::NameValuePairsIterator valid_parser(valid_part.begin(),
-                                                valid_part.end(),
-                                                ';');
-  HttpUtil::NameValuePairsIterator invalid_parser(whole_string.begin(),
-                                                  whole_string.end(),
-                                                  ';');
+  HttpUtil::NameValuePairsIterator valid_parser(valid_part, /*delimiter=*/';');
+  HttpUtil::NameValuePairsIterator invalid_parser(whole_string,
+                                                  /*delimiter=*/';');
 
   ASSERT_TRUE(valid_parser.valid());
   ASSERT_TRUE(invalid_parser.valid());
@@ -1281,7 +1278,7 @@ void CheckInvalidNameValuePair(std::string valid_part,
 TEST(HttpUtilTest, NameValuePairsIteratorCopyAndAssign) {
   std::string data =
       "alpha=\"\\\"a\\\"\"; beta=\" b \"; cappa=\"c;\"; delta=\"d\"";
-  HttpUtil::NameValuePairsIterator parser_a(data.begin(), data.end(), ';');
+  HttpUtil::NameValuePairsIterator parser_a(data, /*delimiter=*/';');
 
   EXPECT_TRUE(parser_a.valid());
   ASSERT_NO_FATAL_FAILURE(
@@ -1316,7 +1313,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorCopyAndAssign) {
 
 TEST(HttpUtilTest, NameValuePairsIteratorEmptyInput) {
   std::string data;
-  HttpUtil::NameValuePairsIterator parser(data.begin(), data.end(), ';');
+  HttpUtil::NameValuePairsIterator parser(data, /*delimiter=*/';');
 
   EXPECT_TRUE(parser.valid());
   ASSERT_NO_FATAL_FAILURE(CheckNextNameValuePair(
@@ -1331,7 +1328,7 @@ TEST(HttpUtilTest, NameValuePairsIterator) {
       "delta= \" \\\"4\\\" \"; e= \" '5'\"; e=6;"
       "f=\"\\\"\\h\\e\\l\\l\\o\\ \\w\\o\\r\\l\\d\\\"\";"
       "g=\"\"; h=\"hello\"";
-  HttpUtil::NameValuePairsIterator parser(data.begin(), data.end(), ';');
+  HttpUtil::NameValuePairsIterator parser(data, /*delimiter=*/';');
   EXPECT_TRUE(parser.valid());
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1368,8 +1365,7 @@ TEST(HttpUtilTest, NameValuePairsIterator) {
 TEST(HttpUtilTest, NameValuePairsIteratorOptionalValues) {
   std::string data = "alpha=1; beta;cappa ;  delta; e    ; f=1";
   // Test that the default parser requires values.
-  HttpUtil::NameValuePairsIterator default_parser(data.begin(), data.end(),
-                                                  ';');
+  HttpUtil::NameValuePairsIterator default_parser(data, /*delimiter=*/';');
   EXPECT_TRUE(default_parser.valid());
   ASSERT_NO_FATAL_FAILURE(
       CheckNextNameValuePair(&default_parser, true, true, "alpha", "1"));
@@ -1377,7 +1373,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorOptionalValues) {
                                                  std::string(), std::string()));
 
   HttpUtil::NameValuePairsIterator values_required_parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
   EXPECT_TRUE(values_required_parser.valid());
@@ -1387,7 +1383,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorOptionalValues) {
       &values_required_parser, false, false, std::string(), std::string()));
 
   HttpUtil::NameValuePairsIterator parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
   EXPECT_TRUE(parser.valid());
@@ -1430,7 +1426,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorIllegalInputs) {
 // sure they work rationally.
 TEST(HttpUtilTest, NameValuePairsIteratorExtraSeparators) {
   std::string data = " ; ;;alpha=1; ;; ; beta= 2;cappa=3;;; ; ";
-  HttpUtil::NameValuePairsIterator parser(data.begin(), data.end(), ';');
+  HttpUtil::NameValuePairsIterator parser(data, /*delimiter=*/';');
   EXPECT_TRUE(parser.valid());
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1447,7 +1443,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorExtraSeparators) {
 // regarding this derogation from the spec.
 TEST(HttpUtilTest, NameValuePairsIteratorMissingEndQuote) {
   std::string data = "name=\"value";
-  HttpUtil::NameValuePairsIterator parser(data.begin(), data.end(), ';');
+  HttpUtil::NameValuePairsIterator parser(data, /*delimiter=*/';');
   EXPECT_TRUE(parser.valid());
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1459,7 +1455,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorMissingEndQuote) {
 TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesEscapedEndQuote) {
   std::string data = "foo=bar; name=\"value\\\"";
   HttpUtil::NameValuePairsIterator parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   EXPECT_TRUE(parser.valid());
@@ -1473,7 +1469,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesEscapedEndQuote) {
 TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesQuoteInValue) {
   std::string data = "foo=\"bar\"; name=\"va\"lue\"";
   HttpUtil::NameValuePairsIterator parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   EXPECT_TRUE(parser.valid());
@@ -1487,7 +1483,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesQuoteInValue) {
 TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesMissingEndQuote) {
   std::string data = "foo=\"bar\"; name=\"value";
   HttpUtil::NameValuePairsIterator parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   EXPECT_TRUE(parser.valid());
@@ -1501,7 +1497,7 @@ TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesMissingEndQuote) {
 TEST(HttpUtilTest, NameValuePairsIteratorStrictQuotesSingleQuotes) {
   std::string data = "foo=\"bar\"; name='value; ok=it'";
   HttpUtil::NameValuePairsIterator parser(
-      data.begin(), data.end(), ';',
+      data, /*delimiter=*/';',
       HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   EXPECT_TRUE(parser.valid());
