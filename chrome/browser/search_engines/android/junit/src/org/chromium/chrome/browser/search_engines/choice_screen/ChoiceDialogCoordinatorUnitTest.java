@@ -109,6 +109,27 @@ public class ChoiceDialogCoordinatorUnitTest {
     }
 
     @Test
+    public void testMaybeShow_doesNotShowInDarkLaunchMode() {
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING, "is_dark_launch", "true");
+        FeatureList.setTestValues(testFeatures);
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertFalse(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+    }
+
+    @Test
     public void testMaybeShow_showsAndBlocksAfterDelayedApproval() {
         var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
         doReturn(pendingSupplier)

@@ -110,7 +110,9 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
         coordinatorFactory.apply(searchEngineChoiceService);
 
-        return true;
+        // In dark launch mode, we won't show the UI regardless of the backend response, so we can
+        // let other promos get triggered after this one.
+        return !SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch();
     }
 
     @VisibleForTesting
