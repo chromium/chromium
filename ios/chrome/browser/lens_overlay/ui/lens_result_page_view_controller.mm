@@ -49,8 +49,8 @@ const CGFloat kProgressBarHeight = 2.0f;
 /// Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
 
-/// The duration for the cancel button appear & disappear animations.
-const CGFloat kCancelButtonAnimationDuration = 0.2f;
+/// The duration for buttons appear & disappear animations.
+const CGFloat kButtonAnimationDuration = 0.2f;
 
 }  // namespace
 
@@ -284,7 +284,7 @@ const CGFloat kCancelButtonAnimationDuration = 0.2f;
   }
 
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kCancelButtonAnimationDuration
+  [UIView animateWithDuration:kButtonAnimationDuration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
@@ -381,7 +381,7 @@ const CGFloat kCancelButtonAnimationDuration = 0.2f;
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
   _omniboxFocused = isFocused;
-  [self updateBackButtonVisibility];
+  [self updateBackButtonVisibilityAnimated:YES];
 
   // Visible when omnibox is focused.
   [self setCancelButtonHidden:!isFocused animated:YES];
@@ -394,7 +394,7 @@ const CGFloat kCancelButtonAnimationDuration = 0.2f;
 
 - (void)setCanGoBack:(BOOL)canGoBack {
   _canGoBack = canGoBack;
-  [self updateBackButtonVisibility];
+  [self updateBackButtonVisibilityAnimated:YES];
 }
 
 #pragma mark - Private
@@ -414,8 +414,32 @@ const CGFloat kCancelButtonAnimationDuration = 0.2f;
   [self.toolbarMutator defocusOmnibox];
 }
 
-- (void)updateBackButtonVisibility {
-  _backButton.hidden = self.omniboxFocused || !self.canGoBack;
+- (void)updateBackButtonVisibilityAnimated:(BOOL)animated {
+  BOOL hidden = self.omniboxFocused || !self.canGoBack;
+
+  if (_backButton.hidden == hidden) {
+    return;
+  }
+
+  if (!animated) {
+    _backButton.hidden = hidden;
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kButtonAnimationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
+                     __typeof(self) strongSelf = weakSelf;
+                     if (!strongSelf) {
+                       return;
+                     }
+
+                     strongSelf->_backButton.hidden = hidden;
+                     [strongSelf->_horizontalStackView layoutIfNeeded];
+                   }
+                   completion:nil];
 }
 
 /// Updates the user interface style in the mutator.
