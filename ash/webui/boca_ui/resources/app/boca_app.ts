@@ -31,6 +31,7 @@ export declare interface Identity {
   id: string;
   name: string;
   email: string;
+  photoUrl?: string;
 }
 
 /**

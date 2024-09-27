@@ -234,8 +234,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   auto session_duration = base::Minutes(2);
 
   std::vector<mojom::IdentityPtr> students;
-  students.push_back(mojom::Identity::New("1", "a", "a@gmail.com"));
-  students.push_back(mojom::Identity::New("2", "b", "b@gmail.com"));
+  students.push_back(
+      mojom::Identity::New("1", "a", "a@gmail.com", GURL("cdn://s1")));
+  students.push_back(
+      mojom::Identity::New("2", "b", "b@gmail.com", GURL("cdn://s2")));
 
   const auto config = mojom::Config::New(
       session_duration, nullptr, std::move(students),
@@ -278,6 +280,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
             EXPECT_EQ(
                 "a@gmail.com",
                 request->roster()->student_groups()[0].students()[0].email());
+            EXPECT_EQ("cdn://s1", request->roster()
+                                      ->student_groups()[0]
+                                      .students()[0]
+                                      .photo_url());
 
             EXPECT_EQ(
                 "2",
@@ -289,7 +295,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
             EXPECT_EQ(
                 "b@gmail.com",
                 request->roster()->student_groups()[0].students()[1].email());
-
+            EXPECT_EQ("cdn://s2", request->roster()
+                                      ->student_groups()[0]
+                                      .students()[1]
+                                      .photo_url());
             ASSERT_TRUE(request->on_task_config());
             EXPECT_TRUE(request->on_task_config()->active_bundle().locked());
             ASSERT_EQ(2, request->on_task_config()
@@ -422,6 +431,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   teacher->set_email("teacher@email.com");
   teacher->set_full_name("teacher");
   teacher->set_gaia_id("000");
+  teacher->set_photo_url("cdn://s");
 
   auto* student_groups_1 =
       session->mutable_roster()->mutable_student_groups()->Add();
@@ -430,6 +440,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   student->set_email("dog@email.com");
   student->set_full_name("dog");
   student->set_gaia_id("123");
+  student->set_photo_url("cdn://s1");
 
   ::boca::SessionConfig session_config;
   auto* caption_config_1 = session_config.mutable_captions_config();
@@ -462,6 +473,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("teacher", result->teacher->name);
   EXPECT_EQ("teacher@email.com", result->teacher->email);
   EXPECT_EQ("000", result->teacher->id);
+  EXPECT_EQ("cdn://s", result->teacher->photo_url->spec());
 
   EXPECT_EQ(true, result->caption_config->caption_enabled);
   EXPECT_EQ(true, result->caption_config->transcription_enabled);
@@ -471,6 +483,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("dog", result->students[0]->name);
   EXPECT_EQ("123", result->students[0]->id);
   EXPECT_EQ("dog@email.com", result->students[0]->email);
+  EXPECT_EQ("cdn://s1", result->students[0]->photo_url->spec());
 
   ASSERT_EQ(1u, result->on_task_config->tabs.size());
   ASSERT_TRUE(result->on_task_config->is_locked);

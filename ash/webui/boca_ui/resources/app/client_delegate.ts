@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Config, ControlledTab as ControlledTabMojom, Course, Identity, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Config, ControlledTab as ControlledTabMojom, Course, Identity as IdentityMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {CaptionConfig, ClientApiDelegate, ControlledTab, OnTaskConfig, SessionConfig} from './boca_app.js';
+import {CaptionConfig, ClientApiDelegate, ControlledTab, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
@@ -44,11 +44,12 @@ export class ClientDelegateFactory {
       },
       getStudentList: async (id: string) => {
         const result = await pageHandler.listStudents(id);
-        return result.students.map((student: Identity) => {
+        return result.students.map((student: IdentityMojom) => {
           return {
             id: student.id,
             name: student.name,
             email: student.email,
+            photoUrl: student.photoUrl ? student.photoUrl.url : undefined,
           };
         });
       },
@@ -58,7 +59,14 @@ export class ClientDelegateFactory {
             microseconds: BigInt(sessionConfig.sessionDurationInMinutes) *
                 MICRO_SECS_IN_MINUTES,
           },
-          students: sessionConfig.students,
+          students: sessionConfig.students?.map((item: Identity) => {
+            return {
+              id: item.id,
+              name: item.name,
+              email: item.email,
+              photoUrl: item.photoUrl ? {url: item.photoUrl} : null,
+            };
+          }),
           onTaskConfig: {
             isLocked: sessionConfig.onTaskConfig?.isLocked,
             tabs:
@@ -87,8 +95,23 @@ export class ClientDelegateFactory {
           sessionConfig: {
             sessionDurationInMinutes: Number(
                 session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
-            teacher: session.teacher ? session.teacher : undefined,
-            students: session.students,
+            teacher: session.teacher ? {
+              id: session.teacher.id,
+              name: session.teacher.name,
+              email: session.teacher.email,
+              photoUrl: session.teacher.photoUrl ?
+                  session.teacher.photoUrl.url :
+                  undefined,
+            } :
+                                       undefined,
+            students: session.students?.map((item: IdentityMojom) => {
+              return {
+                id: item.id,
+                name: item.name,
+                email: item.email,
+                photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
+              };
+            }),
             onTaskConfig: {
               isLocked: session.onTaskConfig?.isLocked,
               tabs:

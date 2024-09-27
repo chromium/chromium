@@ -30,6 +30,8 @@ struct Identity {
   string name;
   // User email address.
   string email;
+  // User photo url
+  url.mojom.Url? photo_url;
 };
 
 // Represents a course.

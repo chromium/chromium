@@ -129,8 +129,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
       student->set_gaia_id(item->id);
       student->set_email(item->email);
       student->set_full_name(item->name);
-      // TODO(b/359045874): Set photo url.
-      student->set_photo_url("");
+      student->set_photo_url(item->photo_url.value_or(GURL()).spec());
     }
     request->set_roster(std::move(roster));
   }
@@ -162,8 +161,9 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
   }
   std::vector<mojom::IdentityPtr> students;
   for (auto student : GetStudentGroupsSafe(session)) {
-    students.push_back(mojom::Identity::New(
-        student.gaia_id(), student.full_name(), student.email()));
+    students.push_back(
+        mojom::Identity::New(student.gaia_id(), student.full_name(),
+                             student.email(), GURL(student.photo_url())));
   }
 
   auto caption_config = mojom::CaptionConfig::New();
@@ -191,9 +191,9 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
   }
   mojom::IdentityPtr teacher;
   if (session->has_teacher()) {
-    teacher = mojom::Identity::New(session->teacher().gaia_id(),
-                                   session->teacher().full_name(),
-                                   session->teacher().email());
+    teacher = mojom::Identity::New(
+        session->teacher().gaia_id(), session->teacher().full_name(),
+        session->teacher().email(), GURL(session->teacher().photo_url()));
   }
   auto config = mojom::Config::New(
       // Nanos are not used throughout session lifecycle so it's

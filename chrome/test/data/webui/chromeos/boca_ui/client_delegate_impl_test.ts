@@ -37,8 +37,8 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({
       students: [
-        {id: '1', name: 'cat', email: 'email1'},
-        {id: '2', name: 'dog', email: 'email2'},
+        {id: '1', name: 'cat', email: 'email1', photoUrl: {url: 'cdn1'}},
+        {id: '2', name: 'dog', email: 'email2', photoUrl: {url: 'cdn2'}},
       ],
     });
   }
@@ -51,8 +51,18 @@ class MockRemoteHandler extends PageHandlerRemote {
             microseconds: 7200000000n,
           },
           students: [
-            {id: '1', name: 'cat', email: 'cat@gmail.com'},
-            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+            {
+              id: '1',
+              name: 'cat',
+              email: 'cat@gmail.com',
+              photoUrl: {url: 'cdn1'},
+            },
+            {
+              id: '2',
+              name: 'dog',
+              email: 'dog@gmail.com',
+              photoUrl: {url: 'cdn2'},
+            },
           ],
           onTaskConfig: {
             isLocked: true,
@@ -92,10 +102,25 @@ class MockRemoteHandler extends PageHandlerRemote {
           sessionDuration: {
             microseconds: 120000000n,
           },
-          teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
+          teacher: {
+            id: '0',
+            name: 'teacher',
+            email: 'teacher@gmail.com',
+            photoUrl: {url: 'cdn0'},
+          },
           students: [
-            {id: '1', name: 'cat', email: 'cat@gmail.com'},
-            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+            {
+              id: '1',
+              name: 'cat',
+              email: 'cat@gmail.com',
+              photoUrl: {url: 'cdn1'},
+            },
+            {
+              id: '2',
+              name: 'dog',
+              email: 'dog@gmail.com',
+              photoUrl: {url: 'cdn2'},
+            },
           ],
           onTaskConfig: {
             isLocked: true,
@@ -229,8 +254,8 @@ suite('ClientDelegateTest', function() {
 
         assertDeepEquals(
             [
-              {id: '1', name: 'cat', email: 'email1'},
-              {id: '2', name: 'dog', email: 'email2'},
+              {id: '1', name: 'cat', email: 'email1', photoUrl: 'cdn1'},
+              {id: '2', name: 'dog', email: 'email2', photoUrl: 'cdn2'},
             ],
             result);
       });
@@ -241,8 +266,8 @@ suite('ClientDelegateTest', function() {
         const result = await clientDelegateImpl.getInstance().createSession({
           sessionDurationInMinutes: 120,
           students: [
-            {id: '1', name: 'cat', email: 'cat@gmail.com'},
-            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+            {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
+            {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
           ],
           onTaskConfig: {
             isLocked: true,
@@ -280,10 +305,15 @@ suite('ClientDelegateTest', function() {
         {
           sessionConfig: {
             sessionDurationInMinutes: 2,
-            teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
+            teacher: {
+              id: '0',
+              name: 'teacher',
+              email: 'teacher@gmail.com',
+              photoUrl: 'cdn0',
+            },
             students: [
-              {id: '1', name: 'cat', email: 'cat@gmail.com'},
-              {id: '2', name: 'dog', email: 'dog@gmail.com'},
+              {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
+              {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
             ],
             onTaskConfig: {
               isLocked: true,

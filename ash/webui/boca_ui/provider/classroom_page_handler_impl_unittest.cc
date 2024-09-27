@@ -261,7 +261,8 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
                     "name":{
                       "fullName":"Student1 full"
                     },
-                    "emailAddress":"student1@foo.com"
+                    "emailAddress":"student1@foo.com",
+                    "photoUrl":"//student1"
                 }
               },
               {
@@ -270,7 +271,8 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
                     "name":{
                       "fullName":"Student2 full"
                     },
-                    "emailAddress":"student2@foo.com"
+                    "emailAddress":"student2@foo.com",
+                    "photoUrl":"//student2"
                 }
               }
           ]
@@ -294,9 +296,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
   EXPECT_EQ(response.at(0)->id, "student-1");
   EXPECT_EQ(response.at(0)->name, "Student1 full");
   EXPECT_EQ(response.at(0)->email, "student1@foo.com");
+  EXPECT_EQ(response.at(0)->photo_url.value().spec(), "https://student1/");
   EXPECT_EQ(response.at(1)->id, "student-2");
   EXPECT_EQ(response.at(1)->name, "Student2 full");
   EXPECT_EQ(response.at(1)->email, "student2@foo.com");
+  EXPECT_EQ(response.at(1)->photo_url.value().spec(), "https://student2/");
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
@@ -388,7 +392,8 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
                     "name":{
                        "fullName":"Student1 full"
                     },
-                    "emailAddress":"student1@foo.com"
+                    "emailAddress":"student1@foo.com",
+                    "photoUrl":"//student1"
                  }
               }
            ],
@@ -408,7 +413,8 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
                     "name":{
                        "fullName":"Student2 full"
                     },
-                    "emailAddress":"student2@foo.com"
+                    "emailAddress":"student2@foo.com",
+                    "photoUrl":"//student2"
                  }
               }
            ],
@@ -428,7 +434,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
                       "name":{
                         "fullName":"Student1 full"
                       },
-                      "emailAddress":"student1@foo.com"
+                      "emailAddress":"student1@foo.com",
+                                          "photoUrl":"https://student3"
+
                   }
                 }
             ]
