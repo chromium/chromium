@@ -125,6 +125,7 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
   BaseAutofillPredictionImprovementsManagerTest() {
     ON_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
         .WillByDefault(Return(true));
+    ON_CALL(client_, IsUserEligible).WillByDefault(Return(true));
   }
 
  protected:
@@ -150,6 +151,7 @@ class AutofillPredictionImprovementsManagerTest
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(Return(&user_annotations_service_));
+    ON_CALL(client_, IsUserEligible).WillByDefault(Return(true));
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_, &strike_database_);
   }
@@ -789,6 +791,17 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                                                 &strike_database_};
 
   EXPECT_TRUE(manager.IsFormEligible(form));
+}
+
+TEST_F(ShouldProvideAutofillPredictionImprovementsTest, NotEligibleUser) {
+  feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
+                                              {{"skip_allowlist", "true"}});
+
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
+
+  ON_CALL(client_, IsUserEligible).WillByDefault(Return(false));
+  EXPECT_FALSE(manager.ShouldProvidePredictionImprovements(url_));
 }
 }  // namespace
 }  // namespace autofill_prediction_improvements

@@ -388,6 +388,9 @@ void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) {
+  if (!IsUserEligible()) {
+    return false;
+  }
   if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     return false;
   }
