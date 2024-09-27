@@ -103,13 +103,36 @@ public class AppModalPresenterUnitTest {
         // Setup window.
         setupWindow(WINDOW_WIDTH, WINDOW_HEIGHT, left, top, right, bottom);
         // Add dialog view.
-        mAppModalPresenter.addDialogView(mModel, null);
-        // This method will be invoked when the dialog is added.
-        mAppModalPresenter
-                .getWindowInsetsListenerForTesting()
-                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        addDialogView();
         // Verify dialog margins.
         verifyDialogMargins(expectedHorizontalMargin, expectedVerticalMargin);
+    }
+
+    @Test
+    public void addDialogView_MultipleDialogs() {
+        // Setup initial window.
+        setupWindow(
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT,
+                /* leftInset= */ 25,
+                /* topInset= */ 40,
+                /* rightInset= */ 20,
+                /* bottomInset= */ 32);
+
+        // Add dialog view.
+        addDialogView();
+
+        // Verify dialog margins.
+        verifyDialogMargins(25, 40);
+
+        // Dismiss current dialog.
+        mAppModalPresenter.removeDialogView(mModel);
+
+        // Add a new dialog view while insets remain the same.
+        addDialogView();
+
+        // Verify dialog margins.
+        verifyDialogMargins(25, 40);
     }
 
     @Test
@@ -124,11 +147,7 @@ public class AppModalPresenterUnitTest {
                 /* bottomInset= */ 32);
 
         // Add dialog view.
-        mAppModalPresenter.addDialogView(mModel, null);
-        // This method will be invoked when the dialog is added.
-        mAppModalPresenter
-                .getWindowInsetsListenerForTesting()
-                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        addDialogView();
 
         // Verify dialog margins.
         verifyDialogMargins(25, 40);
@@ -164,11 +183,7 @@ public class AppModalPresenterUnitTest {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.DIALOG_STYLES, DialogStyles.FULLSCREEN_DIALOG)
                         .build();
-        mAppModalPresenter.addDialogView(mModel, null);
-        // This method will be invoked when the dialog is added.
-        mAppModalPresenter
-                .getWindowInsetsListenerForTesting()
-                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        addDialogView();
 
         // Verify that dialog margins are not set.
         verifyDialogMargins(ModalDialogView.NOT_SPECIFIED, ModalDialogView.NOT_SPECIFIED);
@@ -191,11 +206,7 @@ public class AppModalPresenterUnitTest {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.DIALOG_STYLES, DialogStyles.DIALOG_WHEN_LARGE)
                         .build();
-        mAppModalPresenter.addDialogView(mModel, null);
-        // This method will be invoked when the dialog is added.
-        mAppModalPresenter
-                .getWindowInsetsListenerForTesting()
-                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        addDialogView();
 
         // Verify that dialog margins are not set.
         verifyDialogMargins(ModalDialogView.NOT_SPECIFIED, ModalDialogView.NOT_SPECIFIED);
@@ -218,11 +229,7 @@ public class AppModalPresenterUnitTest {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.DIALOG_STYLES, DialogStyles.DIALOG_WHEN_LARGE)
                         .build();
-        mAppModalPresenter.addDialogView(mModel, null);
-        // This method will be invoked when the dialog is added.
-        mAppModalPresenter
-                .getWindowInsetsListenerForTesting()
-                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        addDialogView();
 
         // Verify dialog margins.
         verifyDialogMargins(25, 40);
@@ -247,6 +254,14 @@ public class AppModalPresenterUnitTest {
                                 Insets.of(leftInset, topInset, rightInset, bottomInset))
                         .build();
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(windowInsets);
+    }
+
+    private void addDialogView() {
+        mAppModalPresenter.addDialogView(mModel, null);
+        // This method will be invoked when the dialog is added.
+        mAppModalPresenter
+                .getWindowInsetsListenerForTesting()
+                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
     }
 
     private void verifyDialogMargins(int expectedHorizontalMargin, int expectedVerticalMargin) {

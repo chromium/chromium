@@ -34,7 +34,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ModalDialogViewUnitTest {
     private static final int MIN_DIALOG_WIDTH = 280;
     private static final int MIN_DIALOG_HEIGHT = 500;
-    private static final int MAX_DIALOG_WIDTH = 600;
+    private static final int MAX_DIALOG_WIDTH_TABLET = 600;
+    private static final float MAX_DIALOG_WIDTH_PERCENT_PHONE = 0.65f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -60,7 +61,7 @@ public class ModalDialogViewUnitTest {
         mDisplayMetrics.density = 1;
     }
 
-    /** Tests that dialog uses specified size if it does not draw into insets' regions. */
+    /** Tests that dialog uses specified size if it does not draw into regions beyond margins. */
     @Test
     public void measure_SmallDimensions_LessThanMaxWidth() {
         // Set window size.
@@ -87,11 +88,12 @@ public class ModalDialogViewUnitTest {
     }
 
     /**
-     * Tests that dialog uses a max width of 600dp even if it does not draw into insets' regions
-     * with the specified width.
+     * Tests that dialog uses a max width of 600dp even if it does not draw into regions beyond
+     * margins with the specified width (tablet-only).
      */
     @Test
-    public void measure_SmallDimensions_GreaterThanMaxWidth() {
+    @Config(qualifiers = "sw600dp")
+    public void measure_SmallDimensions_GreaterThanMaxWidth_Tablet() {
         // Set window size.
         var windowWidth = 800;
         var windowHeight = 800;
@@ -103,25 +105,79 @@ public class ModalDialogViewUnitTest {
                 mModelBuilder
                         .with(ModalDialogProperties.HORIZONTAL_MARGIN, 10)
                         .with(ModalDialogProperties.VERTICAL_MARGIN, 40),
-                MAX_DIALOG_WIDTH + 100,
+                MAX_DIALOG_WIDTH_TABLET + 100,
                 MIN_DIALOG_HEIGHT);
 
         // Measure view.
         var widthMeasureSpec =
-                MeasureSpec.makeMeasureSpec(MAX_DIALOG_WIDTH + 100, MeasureSpec.AT_MOST);
+                MeasureSpec.makeMeasureSpec(MAX_DIALOG_WIDTH_TABLET + 100, MeasureSpec.AT_MOST);
         var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
         mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
 
-        assertEquals("Width is incorrect.", MAX_DIALOG_WIDTH, mDialogView.getMeasuredWidth());
+        assertEquals(
+                "Width is incorrect.", MAX_DIALOG_WIDTH_TABLET, mDialogView.getMeasuredWidth());
+        assertEquals("Height is incorrect.", MIN_DIALOG_HEIGHT, mDialogView.getMeasuredHeight());
+    }
+
+    /** Tests that dialog uses a max width of (65% * window width) in landscape on phones. */
+    @Test
+    @Config(qualifiers = "sw320dp-land")
+    public void measure_SmallDimensions_GreaterThanMaxWidth_Phone() {
+        // Set window size.
+        var windowWidth = 100;
+        var windowHeight = 100;
+        mDisplayMetrics.widthPixels = windowWidth;
+        mDisplayMetrics.heightPixels = windowHeight;
+
+        int maxDialogWidthPhone = (int) (MAX_DIALOG_WIDTH_PERCENT_PHONE * windowWidth);
+
+        // Create model.
+        createModel(mModelBuilder, maxDialogWidthPhone + 20, MIN_DIALOG_HEIGHT);
+
+        // Measure view.
+        var widthMeasureSpec =
+                MeasureSpec.makeMeasureSpec(maxDialogWidthPhone + 20, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+
+        assertEquals("Width is incorrect.", maxDialogWidthPhone, mDialogView.getMeasuredWidth());
+        assertEquals("Height is incorrect.", MIN_DIALOG_HEIGHT, mDialogView.getMeasuredHeight());
+    }
+
+    /** Tests that dialog uses a min width of 280dp on tablets. */
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void measure_SmallDimensions_LessThanMinWidth() {
+        // Set window size.
+        var windowWidth = 800;
+        var windowHeight = 800;
+        mDisplayMetrics.widthPixels = windowWidth;
+        mDisplayMetrics.heightPixels = windowHeight;
+
+        // Create model with margins set.
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.HORIZONTAL_MARGIN, 10)
+                        .with(ModalDialogProperties.VERTICAL_MARGIN, 40),
+                MIN_DIALOG_WIDTH - 10,
+                MIN_DIALOG_HEIGHT);
+
+        // Measure view.
+        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_WIDTH, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+
+        assertEquals("Width is incorrect.", MIN_DIALOG_WIDTH, mDialogView.getMeasuredWidth());
         assertEquals("Height is incorrect.", MIN_DIALOG_HEIGHT, mDialogView.getMeasuredHeight());
     }
 
     /**
-     * Tests that dialog uses max size permitted for it to not draw into insets' regions when
-     * margins are set.
+     * Tests that dialog uses max size permitted for it to not draw into regions beyond margins on
+     * tablets.
      */
     @Test
-    public void measure_LargeDimensions_MarginsSet() {
+    @Config(qualifiers = "sw600dp")
+    public void measure_LargeDimensions_MarginsSet_Tablet() {
         // Set window size.
         var windowWidth = 600;
         var windowHeight = 600;
@@ -145,6 +201,35 @@ public class ModalDialogViewUnitTest {
         int expectedWidth = 568;
         // windowHeight - 2 * verticalMargin = 600 - 2 * 40.
         int expectedHeight = 520;
+        assertEquals("Width is incorrect.", expectedWidth, mDialogView.getMeasuredWidth());
+        assertEquals("Height is incorrect.", expectedHeight, mDialogView.getMeasuredHeight());
+    }
+
+    /** Tests that dialog maintains horizontal margin from the edges on phones. */
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void measure_LargeDimensions_MarginsSet_Phone() {
+        // Set window size.
+        var windowWidth = 80;
+        var windowHeight = 80;
+        mDisplayMetrics.widthPixels = windowWidth;
+        mDisplayMetrics.heightPixels = windowHeight;
+
+        // Create model with margins set.
+        createModel(
+                mModelBuilder.with(ModalDialogProperties.HORIZONTAL_MARGIN, 16),
+                windowWidth,
+                windowHeight);
+
+        // Measure view.
+        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(windowWidth, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(windowHeight, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+
+        // windowWidth - 2 * horizontalMargin = 80 - 2 * 16.
+        int expectedWidth = 48;
+        // windowHeight - 2 * verticalMargin = 80 - 2 * 0.
+        int expectedHeight = 80;
         assertEquals("Width is incorrect.", expectedWidth, mDialogView.getMeasuredWidth());
         assertEquals("Height is incorrect.", expectedHeight, mDialogView.getMeasuredHeight());
     }

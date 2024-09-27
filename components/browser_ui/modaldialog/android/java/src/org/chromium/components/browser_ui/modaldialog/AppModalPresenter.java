@@ -47,6 +47,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     private Insets mSystemInsets;
     private OnApplyWindowInsetsListener mWindowInsetsListener;
 
+    private int mHorizontalMargin;
+    private int mVerticalMargin;
+
     private class ViewBinder extends ModalDialogViewBinder {
         @Override
         public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
@@ -194,21 +197,26 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         if (windowInsets == null) return;
 
         var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-        if (systemInsets.equals(mSystemInsets)) return;
+        // We will continue to set model properties and request relayout if needed even if system
+        // insets don't change so that every dialog that is added / resized can take these margins
+        // (even if unchanged) into account when the view is measured.
+        if (!systemInsets.equals(mSystemInsets)) {
+            // Calculate margins only if insets have changed.
+            int fixedMargin =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
+            mHorizontalMargin =
+                    Math.max(Math.max(systemInsets.left, systemInsets.right), fixedMargin);
+            mVerticalMargin =
+                    Math.max(Math.max(systemInsets.top, systemInsets.bottom), fixedMargin);
+        }
         mSystemInsets = systemInsets;
 
-        int fixedMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
-        int horizontalMargin =
-                Math.max(Math.max(systemInsets.left, systemInsets.right), fixedMargin);
-        int verticalMargin = Math.max(Math.max(systemInsets.top, systemInsets.bottom), fixedMargin);
+        mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, mHorizontalMargin);
+        mModel.set(ModalDialogProperties.VERTICAL_MARGIN, mVerticalMargin);
 
-        mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, horizontalMargin);
-        mModel.set(ModalDialogProperties.VERTICAL_MARGIN, verticalMargin);
-
-        // If the dialog is already showing when the insets change, request a layout for the updated
-        // margins to take effect.
+        // If the dialog is already showing when the insets are applied, request a layout for the
+        // margins to take effect immediately.
         if (mDialog.isShowing()) {
             ViewUtils.requestLayout(mDialogView, "AppModalPresenter.updateMargins");
         }

@@ -8,13 +8,15 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- The dim amount should match the alpha of modal_dialog_scrim_color. -->
-    <style name="ThemeOverlay.BrowserUI.ModalDialog" parent="ThemeOverlay.BrowserUI.AlertDialog">
+    <style name="Base.ThemeOverlay.BrowserUI.ModalDialog" parent="ThemeOverlay.BrowserUI.AlertDialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimAmount">0.65</item>
         <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
+
+    <style name="ThemeOverlay.BrowserUI.ModalDialog" parent="Base.ThemeOverlay.BrowserUI.ModalDialog" />
 
     <style name="FilledButton.Tonal">
       <item name="buttonColor">?attr/colorPrimaryContainer</item>

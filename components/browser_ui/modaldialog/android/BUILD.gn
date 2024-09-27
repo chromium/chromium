@@ -59,6 +59,8 @@ android_resources("java_resources") {
     "java/res/layout/modal_dialog_title.xml",
     "java/res/layout/modal_dialog_view.xml",
     "java/res/values-large/themes.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values-sw600dp/styles.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
