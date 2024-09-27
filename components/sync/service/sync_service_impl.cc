@@ -1746,88 +1746,17 @@ BackendMigrator* SyncServiceImpl::GetBackendMigratorForTest() {
   return migrator_.get();
 }
 
-base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
+TypeStatusMapForDebugging SyncServiceImpl::GetTypeStatusMapForDebugging()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::List result;
 
   if (!engine_ || !engine_->IsInitialized()) {
-    return result;
+    return TypeStatusMapForDebugging();
   }
 
   const SyncStatus& detailed_status = engine_->GetDetailedStatus();
-  const DataTypeSet& throttled_types(detailed_status.throttled_types);
-  const DataTypeSet& backed_off_types(detailed_status.backed_off_types);
-
-  auto type_status_header = base::Value::Dict()
-                                .Set("status", "header")
-                                .Set("name", "Data Type")
-                                .Set("num_entries", "Total Entries")
-                                .Set("num_live", "Live Entries")
-                                .Set("message", "Message")
-                                .Set("state", "State");
-  result.Append(std::move(type_status_header));
-
-  for (const auto& [type, controller] :
-       data_type_manager_->GetControllerMap()) {
-    base::Value::Dict type_status;
-    type_status.Set("name", DataTypeToDebugString(type));
-
-    if (data_type_error_map_.find(type) != data_type_error_map_.end()) {
-      const SyncError& error = data_type_error_map_.find(type)->second;
-      DCHECK(error.IsSet());
-      switch (error.GetSeverity()) {
-        case SyncError::SYNC_ERROR_SEVERITY_ERROR:
-          type_status.Set("status", "severity_error");
-          type_status.Set("message", "Error: " + error.location().ToString() +
-                                         ", " + error.GetMessagePrefix() +
-                                         error.message());
-          break;
-        case SyncError::SYNC_ERROR_SEVERITY_INFO:
-          type_status.Set("status", "severity_info");
-          type_status.Set("message", error.message());
-          break;
-      }
-    } else if (throttled_types.Has(type)) {
-      type_status.Set("status", "severity_warning");
-      type_status.Set("message", " Throttled");
-    } else if (backed_off_types.Has(type)) {
-      type_status.Set("status", "severity_warning");
-      type_status.Set("message", "Backed off");
-    } else {
-      type_status.Set("message", "");
-
-      // Determine the row color based on the controller's state.
-      switch (controller->state()) {
-        case DataTypeController::NOT_RUNNING:
-          // One common case is that the sync was just disabled by the user,
-          // which is not very different to certain SYNC_ERROR_SEVERITY_INFO
-          // cases like preconditions not having been met due to user
-          // configuration.
-          type_status.Set("status", "severity_info");
-          break;
-        case DataTypeController::MODEL_STARTING:
-        case DataTypeController::MODEL_LOADED:
-        case DataTypeController::STOPPING:
-          // These are all transitional states that should be rare to observe.
-          type_status.Set("status", "transitioning");
-          break;
-        case DataTypeController::RUNNING:
-          type_status.Set("status", "ok");
-          break;
-        case DataTypeController::FAILED:
-          // Note that most of the errors (possibly all) should have been
-          // handled earlier via |data_type_error_map_|.
-          type_status.Set("status", "severity_error");
-          break;
-      }
-    }
-
-    type_status.Set("state",
-                    DataTypeController::StateToString(controller->state()));
-
-    result.Append(std::move(type_status));
-  }
-  return result;
+  return data_type_manager_->GetTypeStatusMapForDebugging(
+      detailed_status.throttled_types, detailed_status.backed_off_types);
 }
 
 void SyncServiceImpl::GetEntityCountsForDebugging(

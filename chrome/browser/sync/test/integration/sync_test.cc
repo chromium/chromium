@@ -1083,13 +1083,9 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
   syncer::DataTypeSet types_to_check = service->GetRegisteredDataTypesForTest();
   types_to_check.RemoveAll(excluded_types_from_check_for_data_type_failures_);
 
-  if (service->HasAnyDatatypeErrorForTest(types_to_check)) {
-    ADD_FAILURE() << "Data types failed during tests: "
-                  << GetClient(client_index)
-                         ->service()
-                         ->GetTypeStatusMapForDebugging()
-                         .DebugString();
-  }
+  ASSERT_FALSE(service->HasAnyDatatypeErrorForTest(types_to_check))
+      << " for client " << client_index << " and types "
+      << syncer::DataTypeSetToDebugString(types_to_check);
 }
 
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(

@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "components/sync/service/type_status_map_for_debugging.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -519,19 +520,8 @@ class SyncService : public KeyedService {
   // Returns some statistics on the most-recently completed sync cycle.
   virtual SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const = 0;
 
-  // Returns a Value indicating the status of all registered types.
-  //
-  // The format is:
-  // [ {"name": <name>, "value": <value>, "status": <status> }, ... ]
-  // where <name> is a type's name, <value> is a string providing details for
-  // the type's status, and <status> is one of "error", "warning" or "ok"
-  // depending on the type's current status.
-  //
-  // This function is used by sync_internals_util.cc to help populate the
-  // chrome://sync-internals page.  It returns a Value::List rather than a
-  // Value::Dict in part to make it easier to iterate over its elements when
-  // constructing that page.
-  virtual base::Value::List GetTypeStatusMapForDebugging() const = 0;
+  // Returns a map indicating the status of all registered types.
+  virtual TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const = 0;
 
   // Retrieves the TypeEntitiesCount for all registered data types. The
   // `callback` will be invoked for every data type, as soon as it has

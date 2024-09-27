@@ -83,6 +83,7 @@ static_library("service") {
     "trusted_vault_histograms.h",
     "trusted_vault_synthetic_field_trial.cc",
     "trusted_vault_synthetic_field_trial.h",
+    "type_status_map_for_debugging.h",
   ]
 
   public_deps = [

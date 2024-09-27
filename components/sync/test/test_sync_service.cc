@@ -340,8 +340,9 @@ SyncCycleSnapshot TestSyncService::GetLastCycleSnapshotForDebugging() const {
   return last_cycle_snapshot_;
 }
 
-base::Value::List TestSyncService::GetTypeStatusMapForDebugging() const {
-  return base::Value::List();
+TypeStatusMapForDebugging TestSyncService::GetTypeStatusMapForDebugging()
+    const {
+  return TypeStatusMapForDebugging();
 }
 
 void TestSyncService::GetEntityCountsForDebugging(

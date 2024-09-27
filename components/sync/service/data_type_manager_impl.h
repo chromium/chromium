@@ -55,6 +55,9 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
   State state() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
+      DataTypeSet throttled_types,
+      DataTypeSet backed_off_types) const override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) const override;
   void GetEntityCountsForDebugging(

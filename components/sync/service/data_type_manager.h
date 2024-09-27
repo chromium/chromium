@@ -15,6 +15,7 @@
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/type_status_map_for_debugging.h"
 
 namespace syncer {
 
@@ -127,6 +128,9 @@ class DataTypeManager {
   virtual State state() const = 0;
 
   // Used for debugging only (e.g. chrome://sync-internals).
+  virtual TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
+      DataTypeSet throttled_types,
+      DataTypeSet backed_off_types) const = 0;
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) const = 0;
   virtual void GetEntityCountsForDebugging(

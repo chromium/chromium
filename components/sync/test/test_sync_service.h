@@ -152,7 +152,7 @@ class TestSyncService : public SyncService {
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  base::Value::List GetTypeStatusMapForDebugging() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;

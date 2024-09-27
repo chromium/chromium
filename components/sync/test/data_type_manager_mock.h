@@ -46,6 +46,10 @@ class DataTypeManagerMock : public DataTypeManager {
               (),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
+  MOCK_METHOD(TypeStatusMapForDebugging,
+              GetTypeStatusMapForDebugging,
+              (DataTypeSet, DataTypeSet),
+              (const override));
   MOCK_METHOD(void,
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)>),

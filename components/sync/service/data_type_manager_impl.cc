@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -346,6 +347,71 @@ void DataTypeManagerImpl::ConnectDataTypes() {
 
     configurer_->ConnectDataType(type, std::move(activation_response));
   }
+}
+
+TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
+    DataTypeSet throttled_types,
+    DataTypeSet backed_off_types) const {
+  const DataTypeStatusTable::TypeErrorMap data_type_error_map =
+      data_type_status_table_.GetAllErrors();
+
+  TypeStatusMapForDebugging result;
+  for (const auto& [type, controller] : controllers_) {
+    TypeStatusForDebugging& type_status = result[type];
+    type_status.state = DataTypeController::StateToString(controller->state());
+
+    if (base::Contains(data_type_error_map, type)) {
+      const SyncError& error = data_type_error_map.at(type);
+      DCHECK(error.IsSet());
+      switch (error.GetSeverity()) {
+        case SyncError::SYNC_ERROR_SEVERITY_ERROR:
+          type_status.severity = TypeStatusForDebugging::Severity::kError;
+          type_status.message =
+              base::StrCat({"Error: ", error.location().ToString(), ", ",
+                            error.GetMessagePrefix(), error.message()});
+          break;
+        case SyncError::SYNC_ERROR_SEVERITY_INFO:
+          type_status.severity = TypeStatusForDebugging::Severity::kInfo;
+          type_status.message = error.message();
+          break;
+      }
+    } else if (throttled_types.Has(type)) {
+      type_status.severity = TypeStatusForDebugging::Severity::kWarning;
+      type_status.message = " Throttled";
+    } else if (backed_off_types.Has(type)) {
+      type_status.severity = TypeStatusForDebugging::Severity::kWarning;
+      type_status.message = "Backed off";
+    } else {
+      type_status.message = "";
+
+      // Determine the row color based on the controller's state.
+      switch (controller->state()) {
+        case DataTypeController::NOT_RUNNING:
+          // One common case is that the sync was just disabled by the user,
+          // which is not very different to certain SYNC_ERROR_SEVERITY_INFO
+          // cases like preconditions not having been met due to user
+          // configuration.
+          type_status.severity = TypeStatusForDebugging::Severity::kInfo;
+          break;
+        case DataTypeController::MODEL_STARTING:
+        case DataTypeController::MODEL_LOADED:
+        case DataTypeController::STOPPING:
+          // These are all transitional states that should be rare to observe.
+          type_status.severity =
+              TypeStatusForDebugging::Severity::kTransitioning;
+          break;
+        case DataTypeController::RUNNING:
+          type_status.severity = TypeStatusForDebugging::Severity::kOk;
+          break;
+        case DataTypeController::FAILED:
+          // Note that most of the errors (possibly all) should have been
+          // handled earlier via `data_type_status_table_`.
+          type_status.severity = TypeStatusForDebugging::Severity::kError;
+          break;
+      }
+    }
+  }
+  return result;
 }
 
 void DataTypeManagerImpl::GetAllNodesForDebugging(

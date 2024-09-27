@@ -33,7 +33,6 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
-#include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -140,7 +139,7 @@ class SyncServiceImpl : public SyncService,
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  base::Value::List GetTypeStatusMapForDebugging() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
