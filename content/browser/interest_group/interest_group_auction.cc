@@ -5234,7 +5234,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),
-      SellerTimeout(), bid_trace_id, std::move(score_ad_remote));
+      SellerTimeout(), bid_trace_id, bid_raw->bid_state->bidder->joining_origin,
+      std::move(score_ad_remote));
 }
 
 bool InterestGroupAuction::ValidateScoreBidCompleteResult(

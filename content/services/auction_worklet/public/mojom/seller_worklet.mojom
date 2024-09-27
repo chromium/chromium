@@ -279,6 +279,7 @@ interface SellerWorklet {
           bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
           mojo_base.mojom.TimeDelta? seller_timeout,
           uint64 trace_id,
+          url.mojom.Origin bidder_joining_origin,
           pending_remote<ScoreAdClient> score_ad_client);
 
   // Hint to the worklet to send a network request for any needed trusted

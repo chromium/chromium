@@ -146,6 +146,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
+      const url::Origin& bidder_joining_origin,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
           score_ad_client) override;
   void SendPendingSignalsRequests() override;

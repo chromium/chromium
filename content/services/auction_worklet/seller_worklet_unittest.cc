@@ -54,6 +54,7 @@
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::HasSubstr;
 using testing::StartsWith;
@@ -275,6 +276,7 @@ class SellerWorkletTest : public testing::Test {
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_desireability_ = 1;
     seller_timeout_ = std::nullopt;
+    bidder_joining_origin_ = url::Origin::Create(GURL("https://joining.test/"));
     browser_signal_highest_scoring_other_bid_ = 0;
     browser_signal_highest_scoring_other_bid_currency_ = std::nullopt;
   }
@@ -416,7 +418,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindOnce(
             [](double expected_score,
                mojom::RejectReason expected_reject_reason,
@@ -517,7 +519,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(
             TestScoreAdClient::ScoreAdNeverInvokedCallback()));
   }
@@ -883,6 +885,7 @@ class SellerWorkletTest : public testing::Test {
       browser_signals_component_auction_report_result_params_;
   std::optional<uint32_t> browser_signal_data_version_;
   std::optional<base::TimeDelta> seller_timeout_;
+  url::Origin bidder_joining_origin_;
 
   // Reuseable run loop for disconnection errors.
   std::unique_ptr<base::RunLoop> disconnect_run_loop_;
@@ -1822,7 +1825,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
   // well.
   auto& component_auctions =
       auction_ad_config_non_shared_params_.component_auctions;
-  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions.emplace_back();
   component_auctions[0].seller =
       url::Origin::Create(GURL("https://component1.test"));
   component_auctions[0].decision_logic_url =
@@ -2178,7 +2181,7 @@ TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
-      /*trace_id=*/1,
+      /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(base::BindLambdaForTesting(
           [&run_loop](double score, mojom::RejectReason reject_reason,
                       mojom::ComponentAuctionModifiedBidParamsPtr
@@ -4090,7 +4093,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
           browser_signal_render_size_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
           seller_timeout_,
-          /*trace_id=*/1,
+          /*trace_id=*/1, bidder_joining_origin_,
           TestScoreAdClient::Create(base::BindLambdaForTesting(
               [&run_loop](
                   double score, mojom::RejectReason reject_reason,
@@ -4192,7 +4195,7 @@ TEST_F(SellerWorkletTest,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
                 double score, mojom::RejectReason reject_reason,
@@ -4297,7 +4300,7 @@ TEST_F(
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
                 double score, mojom::RejectReason reject_reason,
@@ -4410,7 +4413,7 @@ TEST_F(
             browser_signal_bidding_duration_msecs_, browser_signal_render_size_,
             browser_signal_for_debugging_only_in_cooldown_or_lockout_,
             seller_timeout_,
-            /*trace_id=*/1,
+            /*trace_id=*/1, bidder_joining_origin_,
             TestScoreAdClient::Create(base::BindLambdaForTesting(
                 [&run_loop, &expected_score](
                     double score, mojom::RejectReason reject_reason,
@@ -4527,7 +4530,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
                 double score, mojom::RejectReason reject_reason,
@@ -4589,7 +4592,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
                 double score, mojom::RejectReason reject_reason,
@@ -4635,7 +4638,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
-      /*trace_id=*/1,
+      /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(
           // Callback should not be invoked since worklet deleted
           TestScoreAdClient::ScoreAdNeverInvokedCallback()));
@@ -5663,7 +5666,8 @@ TEST_F(SellerWorkletTest, Cancelation) {
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
-      /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
+      /*trace_id=*/1, bidder_joining_origin_,
+      client_receiver.BindNewPipeAndPassRemote());
 
   // Cancel and then unwedge.
   client_receiver.reset();
@@ -5728,7 +5732,8 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
-      /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
+      /*trace_id=*/1, bidder_joining_origin_,
+      client_receiver.BindNewPipeAndPassRemote());
   task_environment_.RunUntilIdle();
   // Cancel and then make the script available.
   client_receiver.reset();
@@ -6621,7 +6626,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
-        /*trace_id=*/1,
+        /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop](double score, mojom::RejectReason reject_reason,
                         mojom::ComponentAuctionModifiedBidParamsPtr
