@@ -28,12 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
+
+#include <array>
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
@@ -96,10 +93,10 @@ unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
   if (button == WebMouseEvent::Button::kNoButton)
     return 0;
 
-  unsigned web_mouse_button_to_platform_modifier[] = {
-      WebInputEvent::kLeftButtonDown, WebInputEvent::kMiddleButtonDown,
-      WebInputEvent::kRightButtonDown, WebInputEvent::kBackButtonDown,
-      WebInputEvent::kForwardButtonDown};
+  constexpr auto web_mouse_button_to_platform_modifier = std::to_array<unsigned>(
+      {WebInputEvent::kLeftButtonDown, WebInputEvent::kMiddleButtonDown,
+       WebInputEvent::kRightButtonDown, WebInputEvent::kBackButtonDown,
+       WebInputEvent::kForwardButtonDown});
 
   return web_mouse_button_to_platform_modifier[static_cast<int>(button)];
 }

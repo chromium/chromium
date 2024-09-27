@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/events/input_event.h"
 
 #include <algorithm>
+#include <array>
+#include <type_traits>
 
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -20,52 +17,64 @@ namespace blink {
 
 namespace {
 
-const struct {
+struct InputTypeStringNameMapEntry {
   InputEvent::InputType input_type;
   const char* string_name;
-} kInputTypeStringNameMap[] = {
-    {InputEvent::InputType::kNone, ""},
-    {InputEvent::InputType::kInsertText, "insertText"},
-    {InputEvent::InputType::kInsertLineBreak, "insertLineBreak"},
-    {InputEvent::InputType::kInsertParagraph, "insertParagraph"},
-    {InputEvent::InputType::kInsertOrderedList, "insertOrderedList"},
-    {InputEvent::InputType::kInsertUnorderedList, "insertUnorderedList"},
-    {InputEvent::InputType::kInsertHorizontalRule, "insertHorizontalRule"},
-    {InputEvent::InputType::kInsertFromPaste, "insertFromPaste"},
-    {InputEvent::InputType::kInsertFromDrop, "insertFromDrop"},
-    {InputEvent::InputType::kInsertFromYank, "insertFromYank"},
-    {InputEvent::InputType::kInsertTranspose, "insertTranspose"},
-    {InputEvent::InputType::kInsertReplacementText, "insertReplacementText"},
-    {InputEvent::InputType::kInsertCompositionText, "insertCompositionText"},
-    {InputEvent::InputType::kInsertLink, "insertLink"},
-    {InputEvent::InputType::kDeleteWordBackward, "deleteWordBackward"},
-    {InputEvent::InputType::kDeleteWordForward, "deleteWordForward"},
-    {InputEvent::InputType::kDeleteSoftLineBackward, "deleteSoftLineBackward"},
-    {InputEvent::InputType::kDeleteSoftLineForward, "deleteSoftLineForward"},
-    {InputEvent::InputType::kDeleteHardLineBackward, "deleteHardLineBackward"},
-    {InputEvent::InputType::kDeleteHardLineForward, "deleteHardLineForward"},
-    {InputEvent::InputType::kDeleteContentBackward, "deleteContentBackward"},
-    {InputEvent::InputType::kDeleteContentForward, "deleteContentForward"},
-    {InputEvent::InputType::kDeleteByCut, "deleteByCut"},
-    {InputEvent::InputType::kDeleteByDrag, "deleteByDrag"},
-    {InputEvent::InputType::kHistoryUndo, "historyUndo"},
-    {InputEvent::InputType::kHistoryRedo, "historyRedo"},
-    {InputEvent::InputType::kFormatBold, "formatBold"},
-    {InputEvent::InputType::kFormatItalic, "formatItalic"},
-    {InputEvent::InputType::kFormatUnderline, "formatUnderline"},
-    {InputEvent::InputType::kFormatStrikeThrough, "formatStrikeThrough"},
-    {InputEvent::InputType::kFormatSuperscript, "formatSuperscript"},
-    {InputEvent::InputType::kFormatSubscript, "formatSubscript"},
-    {InputEvent::InputType::kFormatJustifyCenter, "formatJustifyCenter"},
-    {InputEvent::InputType::kFormatJustifyFull, "formatJustifyFull"},
-    {InputEvent::InputType::kFormatJustifyRight, "formatJustifyRight"},
-    {InputEvent::InputType::kFormatJustifyLeft, "formatJustifyLeft"},
-    {InputEvent::InputType::kFormatIndent, "formatIndent"},
-    {InputEvent::InputType::kFormatOutdent, "formatOutdent"},
-    {InputEvent::InputType::kFormatRemove, "formatRemove"},
-    {InputEvent::InputType::kFormatSetBlockTextDirection,
-     "formatSetBlockTextDirection"},
 };
+
+const std::array<InputTypeStringNameMapEntry,
+                 static_cast<size_t>(
+                     InputEvent::InputType::kNumberOfInputTypes)>
+    kInputTypeStringNameMap{{
+        {InputEvent::InputType::kNone, ""},
+        {InputEvent::InputType::kInsertText, "insertText"},
+        {InputEvent::InputType::kInsertLineBreak, "insertLineBreak"},
+        {InputEvent::InputType::kInsertParagraph, "insertParagraph"},
+        {InputEvent::InputType::kInsertOrderedList, "insertOrderedList"},
+        {InputEvent::InputType::kInsertUnorderedList, "insertUnorderedList"},
+        {InputEvent::InputType::kInsertHorizontalRule, "insertHorizontalRule"},
+        {InputEvent::InputType::kInsertFromPaste, "insertFromPaste"},
+        {InputEvent::InputType::kInsertFromDrop, "insertFromDrop"},
+        {InputEvent::InputType::kInsertFromYank, "insertFromYank"},
+        {InputEvent::InputType::kInsertTranspose, "insertTranspose"},
+        {InputEvent::InputType::kInsertReplacementText,
+         "insertReplacementText"},
+        {InputEvent::InputType::kInsertCompositionText,
+         "insertCompositionText"},
+        {InputEvent::InputType::kInsertLink, "insertLink"},
+        {InputEvent::InputType::kDeleteWordBackward, "deleteWordBackward"},
+        {InputEvent::InputType::kDeleteWordForward, "deleteWordForward"},
+        {InputEvent::InputType::kDeleteSoftLineBackward,
+         "deleteSoftLineBackward"},
+        {InputEvent::InputType::kDeleteSoftLineForward,
+         "deleteSoftLineForward"},
+        {InputEvent::InputType::kDeleteHardLineBackward,
+         "deleteHardLineBackward"},
+        {InputEvent::InputType::kDeleteHardLineForward,
+         "deleteHardLineForward"},
+        {InputEvent::InputType::kDeleteContentBackward,
+         "deleteContentBackward"},
+        {InputEvent::InputType::kDeleteContentForward, "deleteContentForward"},
+        {InputEvent::InputType::kDeleteByCut, "deleteByCut"},
+        {InputEvent::InputType::kDeleteByDrag, "deleteByDrag"},
+        {InputEvent::InputType::kHistoryUndo, "historyUndo"},
+        {InputEvent::InputType::kHistoryRedo, "historyRedo"},
+        {InputEvent::InputType::kFormatBold, "formatBold"},
+        {InputEvent::InputType::kFormatItalic, "formatItalic"},
+        {InputEvent::InputType::kFormatUnderline, "formatUnderline"},
+        {InputEvent::InputType::kFormatStrikeThrough, "formatStrikeThrough"},
+        {InputEvent::InputType::kFormatSuperscript, "formatSuperscript"},
+        {InputEvent::InputType::kFormatSubscript, "formatSubscript"},
+        {InputEvent::InputType::kFormatJustifyCenter, "formatJustifyCenter"},
+        {InputEvent::InputType::kFormatJustifyFull, "formatJustifyFull"},
+        {InputEvent::InputType::kFormatJustifyRight, "formatJustifyRight"},
+        {InputEvent::InputType::kFormatJustifyLeft, "formatJustifyLeft"},
+        {InputEvent::InputType::kFormatIndent, "formatIndent"},
+        {InputEvent::InputType::kFormatOutdent, "formatOutdent"},
+        {InputEvent::InputType::kFormatRemove, "formatRemove"},
+        {InputEvent::InputType::kFormatSetBlockTextDirection,
+         "formatSetBlockTextDirection"},
+    }};
 
 static_assert(
     std::size(kInputTypeStringNameMap) ==
@@ -73,11 +82,14 @@ static_assert(
     "must handle all InputEvent::InputType");
 
 String ConvertInputTypeToString(InputEvent::InputType input_type) {
-  auto* const it =
-      std::begin(kInputTypeStringNameMap) + static_cast<size_t>(input_type);
-  if (it >= std::begin(kInputTypeStringNameMap) &&
-      it < std::end(kInputTypeStringNameMap))
-    return AtomicString(it->string_name);
+  using IntegerInputType = std::underlying_type_t<InputEvent::InputType>;
+  const auto numeric_input_type = static_cast<IntegerInputType>(input_type);
+  if (numeric_input_type >= 0 &&
+      numeric_input_type <
+          static_cast<IntegerInputType>(kInputTypeStringNameMap.size())) {
+    return AtomicString(
+        kInputTypeStringNameMap[numeric_input_type].string_name);
+  }
   return g_empty_string;
 }
 
