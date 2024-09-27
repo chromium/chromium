@@ -29,6 +29,9 @@
 // steady view UI.
 - (void)updateAfterNavigatingToNTP;
 
+// Attempts to show the lens overlay IPH.
+- (void)attemptShowingLensOverlayIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_STEADY_VIEW_CONSUMER_H_

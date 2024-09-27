@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -132,10 +131,6 @@
                            (self.badgeView && !self.badgeView.hidden);
 
   _placeholderView.hidden = placeholderHidden;
-  if (!_placeholderView.hidden && IsLensOverlayAvailable()) {
-    [self.helpCommandsHandler
-        presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
-  }
 }
 
 @end

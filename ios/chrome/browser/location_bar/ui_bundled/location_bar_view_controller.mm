@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -210,8 +211,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 - (void)setHelpCommandsHandler:(id<HelpCommands>)helpCommandsHandler {
   _helpCommandsHandler = helpCommandsHandler;
-  self.locationBarSteadyView.badgesContainerView.helpCommandsHandler =
-      helpCommandsHandler;
 }
 
 #pragma mark - UIViewController
@@ -371,6 +370,14 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
   [self.locationBarSteadyView
       setLocationBarLabelCenteredBetweenContent:centered];
+}
+
+- (void)attemptShowingLensOverlayIPH {
+  if (IsLensOverlayAvailable() &&
+      !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
+    [self.helpCommandsHandler
+        presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
+  }
 }
 
 #pragma mark - LocationBarAnimatee

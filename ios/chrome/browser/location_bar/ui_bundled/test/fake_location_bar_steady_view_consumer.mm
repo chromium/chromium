@@ -24,4 +24,7 @@
 - (void)updateAfterNavigatingToNTP {
 }
 
+- (void)attemptShowingLensOverlayIPH {
+}
+
 @end

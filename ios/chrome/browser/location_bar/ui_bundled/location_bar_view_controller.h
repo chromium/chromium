@@ -98,6 +98,9 @@ class Tracker;
 // and adds the voice search button to the empty textfield.
 @property(nonatomic, assign) BOOL voiceSearchEnabled;
 
+// The help command handler.
+@property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
+
 // Sets the edit view to use in the editing state. This must be set before the
 // view of this view controller is initialized. This must only be called once.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
@@ -147,8 +150,8 @@ class Tracker;
 // Returns the badge view visibility delegate.
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
 
-// The help command handler.
-@property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
+// Attempts to show the lens overlay IPH.
+- (void)attemptShowingLensOverlayIPH;
 
 @end
 

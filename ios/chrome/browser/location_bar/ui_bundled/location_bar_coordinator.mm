@@ -281,6 +281,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       OverlayPresenter::FromBrowser(self.browser,
                                     OverlayModality::kWebContentArea);
   self.steadyViewMediator.consumer = self;
+  self.steadyViewMediator.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
@@ -539,6 +542,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)updateLocationShareable:(BOOL)shareable {
   [self.viewController setShareButtonEnabled:shareable];
+}
+
+- (void)attemptShowingLensOverlayIPH {
+  [self.viewController attemptShowingLensOverlayIPH];
 }
 
 #pragma mark - URLDragDataSource
