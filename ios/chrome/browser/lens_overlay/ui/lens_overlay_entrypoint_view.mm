@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -41,23 +42,38 @@ const CGFloat kLensCameraSymbolPointSize = 18.0;
         activateConstraints:@[ [self.widthAnchor
                                 constraintEqualToAnchor:self.heightAnchor] ]];
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self
-               selector:@selector(deviceOrientationDidChange)
-                   name:UIDeviceOrientationDidChangeNotification
-                 object:nil];
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self ]);
+
+      [self registerForTraitChanges:traits
+                        withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                      UITraitCollection* previousCollection) {
+                          [weakSelf setEnabledOnTraitChange:previousCollection];
+                        }];
+    }
   }
 
   return self;
 }
 
-// Handles device rotation.
-- (void)deviceOrientationDidChange {
-  const UIDeviceOrientation deviceOrientation =
-      [[UIDevice currentDevice] orientation];
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self setEnabledOnTraitChange:previousTraitCollection];
+}
+#endif
 
-  // The entrypoint button must be enabled only on landscape mode.
-  self.enabled = deviceOrientation == UIDeviceOrientationPortrait;
+#pragma mark - private
+
+- (void)setEnabledOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (self.traitCollection.verticalSizeClass !=
+          previousTraitCollection.verticalSizeClass ||
+      self.traitCollection.horizontalSizeClass !=
+          previousTraitCollection.horizontalSizeClass) {
+    self.enabled = !IsCompactHeight(self.traitCollection);
+  }
 }
 
 @end
