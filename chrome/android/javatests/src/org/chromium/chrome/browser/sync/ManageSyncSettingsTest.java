@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,6 +77,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1014,7 +1016,8 @@ public class ManageSyncSettingsTest {
     })
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -1058,7 +1061,8 @@ public class ManageSyncSettingsTest {
     })
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -1102,7 +1106,8 @@ public class ManageSyncSettingsTest {
     })
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -1135,6 +1140,28 @@ public class ManageSyncSettingsTest {
                             return fragment.getActivity().findViewById(R.id.signin_settings_card);
                         });
         mRenderTestRule.render(view, "batch_upload_entry_description_password_and_other");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
+    })
+    public void
+            testSigninSettingsBatchUploadEntryDescriptionForPasswordsNotRequestedWhenAuthUnavailable()
+                    throws Exception {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.UNAVAILABLE);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        startManageSyncPreferences();
+        verify(mSyncService, atLeast(1))
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.READING_LIST)), any(Callback.class));
     }
 
     @Test

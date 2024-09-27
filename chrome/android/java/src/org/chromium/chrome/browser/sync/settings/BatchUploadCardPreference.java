@@ -17,6 +17,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -154,9 +155,10 @@ public class BatchUploadCardPreference extends Preference
         }
 
         mSyncService.getLocalDataDescriptions(
-                mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
-                        ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS)
-                        : Set.of(DataType.BOOKMARKS, DataType.READING_LIST),
+                mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                                == BiometricStatus.UNAVAILABLE
+                        ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST)
+                        : Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS),
                 localDataDescriptionsMap -> {
                     mLocalDataDescriptionsMap = localDataDescriptionsMap;
                     int sum =
