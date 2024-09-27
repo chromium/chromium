@@ -57,7 +57,7 @@
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
-#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
@@ -321,7 +321,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcWallpaperService::GetForBrowserContext(profile);
   ArcWifiHostImpl::GetForBrowserContext(profile);
   GpuArcVideoKeyedService::GetForBrowserContext(profile);
-  CertStoreService::GetForBrowserContext(profile);
+  CertStoreServiceFactory::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   ash::ApkWebAppService::Get(profile);
   ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
@@ -499,7 +499,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcWakeLockBridge::EnsureFactoryBuilt();
   ArcWallpaperService::EnsureFactoryBuilt();
   ArcWifiHostImpl::EnsureFactoryBuilt();
-  CertStoreService::EnsureFactoryBuilt();
+  CertStoreServiceFactory::GetInstance();
   GpuArcVideoKeyedService::EnsureFactoryBuilt();
   input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
   ArcChromeFeatureFlagsBridge::EnsureFactoryBuilt();

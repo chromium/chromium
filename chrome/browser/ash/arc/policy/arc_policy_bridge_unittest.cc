@@ -28,6 +28,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -324,7 +325,7 @@ class ArcPolicyBridgeTestBase {
   // Override if the test wants to use a real cert store service.
   virtual CertStoreService* GetCertStoreService() {
     return static_cast<CertStoreService*>(
-        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
+        CertStoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating(
                 [](content::BrowserContext* profile)
@@ -402,7 +403,7 @@ class ArcPolicyBridgeCertStoreTest : public ArcPolicyBridgeTest {
  protected:
   CertStoreService* GetCertStoreService() override {
     return static_cast<CertStoreService*>(
-        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
+        CertStoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating([](content::BrowserContext* profile)
                                     -> std::unique_ptr<KeyedService> {

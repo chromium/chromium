@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -748,7 +749,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const CertStoreService* cert_store_service =
-      CertStoreService::GetForBrowserContext(context_);
+      CertStoreServiceFactory::GetForBrowserContext(context_);
 
   return GetFilteredJSONPolicies(policy_service_, instance_guid_,
                                  user->IsAffiliated(), cert_store_service,

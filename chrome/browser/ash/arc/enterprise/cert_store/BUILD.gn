@@ -14,6 +14,8 @@ static_library("cert_store") {
     "arc_cert_installer_utils.h",
     "cert_store_service.cc",
     "cert_store_service.h",
+    "cert_store_service_factory.cc",
+    "cert_store_service_factory.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

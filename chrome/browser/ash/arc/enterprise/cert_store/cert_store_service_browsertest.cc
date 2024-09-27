@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+
 #include <stdint.h>
 
 #include <map>
@@ -27,7 +29,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -478,7 +480,7 @@ void CertStoreServiceTest::SetUpOnMainThread() {
   }
 
   // Use fake ArcCertInstaller in CertStoreService.
-  CertStoreService::GetFactory()->SetTestingSubclassFactoryAndUse(
+  CertStoreServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
       profile(),
       base::BindOnce(
           [](raw_ptr<FakeArcCertInstaller, DanglingUntriaged>* out_installer,
@@ -713,7 +715,8 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest, PRE_HandlesCorporateUsageCerts) {
 }
 
 IN_PROC_BROWSER_TEST_P(CertStoreServiceTest, HandlesCorporateUsageCerts) {
-  CertStoreService* service = CertStoreService::GetForBrowserContext(profile());
+  CertStoreService* service =
+      CertStoreServiceFactory::GetForBrowserContext(profile());
   ASSERT_TRUE(service);
 
   // Install all certs from parameter at once.
@@ -730,7 +733,8 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
 
 IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
                        InstallsAndDeletesCorporateUsageCerts) {
-  CertStoreService* service = CertStoreService::GetForBrowserContext(profile());
+  CertStoreService* service =
+      CertStoreServiceFactory::GetForBrowserContext(profile());
   ASSERT_TRUE(service);
 
   // Install certs from parameter one by one.
