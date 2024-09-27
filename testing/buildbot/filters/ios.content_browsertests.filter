@@ -722,3 +722,16 @@
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+
+# TODO(crbug.com/368335261): These tests have been failing since
+# https://crrev.com/c/5464569.
+-SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
+-SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
+-SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
+-SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
