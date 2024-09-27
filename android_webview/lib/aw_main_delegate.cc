@@ -27,6 +27,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/rtl.h"
@@ -330,6 +331,11 @@ std::optional<int> AwMainDelegate::PostEarlyInitialization(
     InitIcuAndResourceBundleBrowserSide();
     aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
     content::InitializeMojoCore();
+
+    // Initialize //base features that depend on the `FeatureList`. Don't force
+    // emitting profiler metadata since the profiler doesn't run on Webview.
+    base::features::Init(base::features::EmitThreadControllerProfilerMetadata::
+                             kFeatureDependent);
 
     // WebView apps can override WebView#computeScroll to achieve custom
     // scroll/fling. As a result, fling animations may not be ticked,
