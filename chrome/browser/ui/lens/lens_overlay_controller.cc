@@ -357,7 +357,7 @@ void LensOverlayController::ShowUI(
       permission_bubble_controller_ =
           std::make_unique<lens::LensPermissionBubbleController>(
               tab_->GetBrowserWindowInterface(), pref_service_,
-              GetInvocationSourceString());
+              invocation_source);
     }
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),
@@ -2372,21 +2372,14 @@ void LensOverlayController::RecordTimeToFirstInteraction() {
 void LensOverlayController::RecordEndOfSessionMetrics(
     lens::LensOverlayDismissalSource dismissal_source) {
   // UMA invocation source.
-  base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source_);
+  lens::RecordInvocation(invocation_source_);
 
   // UMA unsliced Dismissed.
-  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+  lens::RecordDismissal(dismissal_source);
 
-  // UMA unsliced InvocationResultedInSearch.
-  base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
-                            search_performed_in_session_);
-
-  // UMA InvocationResultedInSearch sliced by entry point.
-  const auto sliced_search_performed_histogram_name =
-      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
-      ".InvocationResultedInSearch";
-  base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
-                            search_performed_in_session_);
+  // UMA InvocationResultedInSearch.
+  lens::RecordInvocationResultedInSearch(invocation_source_,
+                                         search_performed_in_session_);
 
   // UMA session duration.
   DCHECK(!invocation_time_.is_null());

@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Esc key pressed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
+<!-- LINT.ThenChange(//components/lens/lens_permission_user_action.h:LensPermissionUserAction) -->
 
 </enums>
 

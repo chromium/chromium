@@ -29,6 +29,50 @@ std::string InvocationSourceToString(
   }
 }
 
+void RecordPermissionRequestedToBeShown(
+    bool shown,
+    LensOverlayInvocationSource invocation_source) {
+  base::UmaHistogramBoolean("Lens.Overlay.PermissionBubble.Shown", shown);
+  const auto histogram_name =
+      "Lens.Overlay.PermissionBubble.ByInvocationSource." +
+      InvocationSourceToString(invocation_source) + ".Shown";
+  base::UmaHistogramBoolean(histogram_name, shown);
+}
+
+void RecordPermissionUserAction(LensPermissionUserAction user_action,
+                                LensOverlayInvocationSource invocation_source) {
+  base::UmaHistogramEnumeration("Lens.Overlay.PermissionBubble.UserAction",
+                                user_action);
+  const auto histogram_name =
+      "Lens.Overlay.PermissionBubble.ByInvocationSource." +
+      InvocationSourceToString(invocation_source) + ".UserAction";
+  base::UmaHistogramEnumeration(histogram_name, user_action);
+}
+
+void RecordInvocation(LensOverlayInvocationSource invocation_source) {
+  base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
+}
+
+void RecordDismissal(LensOverlayDismissalSource dismissal_source) {
+  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+}
+
+void RecordInvocationResultedInSearch(
+    LensOverlayInvocationSource invocation_source,
+    bool search_performed_in_session) {
+  // UMA unsliced InvocationResultedInSearch.
+  base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
+                            search_performed_in_session);
+
+  // UMA InvocationResultedInSearch sliced by entry point.
+  const auto sliced_search_performed_histogram_name =
+      "Lens.Overlay.ByInvocationSource." +
+      InvocationSourceToString(invocation_source) +
+      ".InvocationResultedInSearch";
+  base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
+                            search_performed_in_session);
+}
+
 void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                            base::TimeDelta duration) {
   // UMA unsliced session duration.

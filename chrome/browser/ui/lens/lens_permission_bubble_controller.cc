@@ -14,7 +14,9 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_permission_user_action.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
@@ -32,32 +34,11 @@
 #include "ui/views/widget/widget.h"
 
 namespace lens {
-namespace {
-
-void LogShown(bool shown, std::string invocation_source) {
-  base::UmaHistogramBoolean("Lens.Overlay.PermissionBubble.Shown", shown);
-  const auto histogram_name =
-      "Lens.Overlay.PermissionBubble.ByInvocationSource." + invocation_source +
-      ".Shown";
-  base::UmaHistogramBoolean(histogram_name, shown);
-}
-
-void LogUserAction(LensPermissionBubbleController::UserAction user_action,
-                   std::string invocation_source) {
-  base::UmaHistogramEnumeration("Lens.Overlay.PermissionBubble.UserAction",
-                                user_action);
-  const auto histogram_name =
-      "Lens.Overlay.PermissionBubble.ByInvocationSource." + invocation_source +
-      ".UserAction";
-  base::UmaHistogramEnumeration(histogram_name, user_action);
-}
-
-}  // namespace
 
 LensPermissionBubbleController::LensPermissionBubbleController(
     BrowserWindowInterface* browser_window_interface,
     PrefService* pref_service,
-    std::string invocation_source)
+    LensOverlayInvocationSource invocation_source)
     : invocation_source_(invocation_source),
       browser_window_interface_(browser_window_interface),
       pref_service_(pref_service) {}
@@ -77,10 +58,10 @@ void LensPermissionBubbleController::RequestPermission(
     if (!dialog_widget_->IsVisible()) {
       dialog_widget_->Show();
     }
-    LogShown(false, invocation_source_);
+    RecordPermissionRequestedToBeShown(false, invocation_source_);
     return;
   }
-  LogShown(true, invocation_source_);
+  RecordPermissionRequestedToBeShown(true, invocation_source_);
 
   // Observe pref changes. Reset the pref observer in case this method called
   // several times in succession.
@@ -152,7 +133,8 @@ bool LensPermissionBubbleController::HasOpenDialogWidget() {
 
 void LensPermissionBubbleController::OnHelpCenterLinkClicked(
     const ui::Event& event) {
-  LogUserAction(UserAction::kLinkOpened, invocation_source_);
+  RecordPermissionUserAction(LensPermissionUserAction::kLinkOpened,
+                             invocation_source_);
   browser_window_interface_->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event.flags(),
@@ -160,20 +142,23 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept() {
-  LogUserAction(UserAction::kAcceptButtonPressed, invocation_source_);
+  RecordPermissionUserAction(LensPermissionUserAction::kAcceptButtonPressed,
+                             invocation_source_);
   pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
   dialog_widget_ = nullptr;
 }
 
 void LensPermissionBubbleController::OnPermissionDialogCancel() {
-  LogUserAction(UserAction::kCancelButtonPressed, invocation_source_);
+  RecordPermissionUserAction(LensPermissionUserAction::kCancelButtonPressed,
+                             invocation_source_);
   dialog_widget_ = nullptr;
 }
 
 void LensPermissionBubbleController::OnPermissionDialogClose() {
   if (dialog_widget_->closed_reason() ==
       views::Widget::ClosedReason::kEscKeyPressed) {
-    LogUserAction(UserAction::kEscKeyPressed, invocation_source_);
+    RecordPermissionUserAction(LensPermissionUserAction::kEscKeyPressed,
+                               invocation_source_);
   }
   dialog_widget_ = nullptr;
 }

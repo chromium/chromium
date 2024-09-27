@@ -27,6 +27,7 @@ static_library("lens") {
     "lens_overlay_invocation_source.h",
     "lens_overlay_metrics.cc",
     "lens_overlay_metrics.h",
+    "lens_permission_user_action.h",
     "lens_rendering_environment.h",
     "lens_testing_utils.cc",
     "lens_testing_utils.h",
