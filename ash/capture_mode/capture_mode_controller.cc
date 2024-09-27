@@ -26,8 +26,10 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -45,6 +47,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -1689,8 +1692,17 @@ void CaptureModeController::OnImageCapturedForSearch(
     return;
   }
   MaybeUnlockCursor(was_cursor_originally_blocked);
-  // TODO(b/356878705): Send the image data to the backend. This currently shows
-  // the results panel immediately for debugging purposes.
+
+  if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
+    scanner_controller->FetchActionsForImage(
+        jpeg_bytes,
+        base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // TODO(b/356878705): This currently shows the results panel immediately for
+  // debugging purposes. After the backend interface is implemented, we might
+  // want to wait for the backend response before showing the results panel.
   const std::unique_ptr<SkBitmap> bitmap =
       gfx::JPEGCodec::Decode(jpeg_bytes->data(), jpeg_bytes->size());
   const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
@@ -1699,6 +1711,11 @@ void CaptureModeController::OnImageCapturedForSearch(
   if (on_image_captured_for_search_callback_for_test_) {
     std::move(on_image_captured_for_search_callback_for_test_).Run();
   }
+}
+
+void CaptureModeController::OnScannerActionsFetched(
+    std::vector<ScannerAction> scanner_actions) {
+  // TODO(b/369470078): Show action chips based on fetched actions.
 }
 
 void CaptureModeController::OnImageFileSaved(

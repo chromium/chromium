@@ -16,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -480,6 +481,10 @@ class ASH_EXPORT CaptureModeController
   void OnImageCapturedForSearch(
       bool was_cursor_originally_blocked,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
+
+  // Called back when the Scanner feature has processed a captured image to
+  // suggest available Scanner actions.
+  void OnScannerActionsFetched(std::vector<ScannerAction> scanner_actions);
 
   // Called back when an attempt to save the image file has been completed, with
   // `file_saved_path` indicating whether the attempt succeeded or failed. If
