@@ -470,21 +470,23 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &compose::features::kHappinessTrackingSurveysForComposeAcceptance,
       kHatsSurveyTriggerComposeAcceptance,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"User modified a response in this session",
-                               "A filtered response appeared in this session",
-                               "Any error appeared in this session",
-                               "This session started with nudge"},
-      std::vector<std::string>{"Execution id", "Url", "Locale"});
+      std::vector<std::string>{
+          "Session used a modifier, like elaborate or formal",
+          "A safety filter edited a response in this session",
+          "Any error appeared in this session",
+          "This session started with nudge"},
+      std::vector<std::string>{"Prompt and page context ID", "Url", "Locale"});
 
   survey_configs.emplace_back(
       &compose::features::kHappinessTrackingSurveysForComposeClose,
       kHatsSurveyTriggerComposeClose,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"User modified a response in this session",
-                               "A filtered response appeared in this session",
-                               "Any error appeared in this session",
-                               "This session started with nudge"},
-      std::vector<std::string>{"Execution id", "Url", "Locale"});
+      std::vector<std::string>{
+          "Session used a modifier, like elaborate or formal",
+          "A safety filter edited a response in this session",
+          "Any error appeared in this session",
+          "This session started with nudge"},
+      std::vector<std::string>{"Prompt and page context ID", "Url", "Locale"});
 
   survey_configs.emplace_back(
       &compose::features::kHappinessTrackingSurveysForComposeNudgeClose,
