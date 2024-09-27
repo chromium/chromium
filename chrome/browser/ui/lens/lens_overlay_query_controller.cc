@@ -605,7 +605,6 @@ void LensOverlayQueryController::FullImageRequestDataReady(
     return;
   }
 
-  access_token_fetcher_.reset();
   latest_full_image_request_data_->request_ =
       std::make_unique<lens::LensOverlayServerRequest>(request);
   FullImageRequestDataHelper(sequence_id);
@@ -619,6 +618,7 @@ void LensOverlayQueryController::FullImageRequestDataReady(
     return;
   }
 
+  access_token_fetcher_.reset();
   latest_full_image_request_data_->request_headers_ =
       std::make_unique<std::vector<std::string>>(headers);
   FullImageRequestDataHelper(sequence_id);
