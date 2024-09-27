@@ -1364,42 +1364,6 @@ TEST_F(AccessCodeCastSinkServiceTest, InitializePrefUpdater) {
   access_code_cast_sink_service_->ResetPrefUpdaterForTesting();
   access_code_cast_sink_service_->InitializePrefUpdaterForTesting();
   task_environment_.RunUntilIdle();
-
-  // There's no Ash instance when running unit_tests on Lacros and the Prefs
-  // crosapi is not available. So it is expected that Lacros's user prefs is
-  // used.
-  EXPECT_FALSE(access_code_cast_sink_service_
-                   ->IsAccessCodeCastLacrosSyncEnabledForTesting());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(AccessCodeCastSinkServiceTest, OnDevicesPrefChange) {
-  auto cast_sink = CreateCastSink(1);
-  base::Value::Dict devices_dict;
-  devices_dict.Set(cast_sink.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink));
-  static_cast<MockAccessCodeCastPrefUpdater*>(pref_updater())
-      ->set_devices_dict(std::move(devices_dict));
-
-  ExpectOpenChannels({cast_sink}, 1);
-  ExpectHasSink({cast_sink}, 1);
-
-  // We don't need to actually store the devices in the pref service
-  // since we are using MockAccessCodeCastPrefUpdater, which does not use the
-  // pref service. We only need to modify the pref service so that
-  // AccessCodeCastSinkService is notified.
-  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
-                             base::Value::Dict());
-  task_environment_.RunUntilIdle();
-
-  // if there's no new device in the pref service, the access code cast sink
-  // service shouldn't attempt to open channels to existing sinks.
-  ExpectOpenChannels({cast_sink}, 0);
-  ExpectHasSink({cast_sink}, 0);
-  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
-                             base::Value::Dict());
-  task_environment_.RunUntilIdle();
-}
-#endif
 
 }  // namespace media_router

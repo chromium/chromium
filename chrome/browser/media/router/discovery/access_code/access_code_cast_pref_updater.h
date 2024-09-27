@@ -12,8 +12,7 @@
 
 namespace media_router {
 
-// An interface used by both LaCros and other desktop platforms for pref
-// updating in AccessCodeCasting.
+// An interface used for pref updating in AccessCodeCasting.
 class AccessCodeCastPrefUpdater {
  public:
   AccessCodeCastPrefUpdater() = default;

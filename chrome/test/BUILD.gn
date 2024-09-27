@@ -5493,8 +5493,6 @@ if (is_chromeos_lacros) {
       "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/lacros/window_lacros_browsertest.cc",
-      "../browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros_browsertest.cc",
-      "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
       "../browser/media/webrtc/capture_policy_utils_browsertest.cc",
       "../browser/media/webrtc/get_all_screens_media_browsertest.cc",

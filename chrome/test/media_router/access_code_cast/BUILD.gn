@@ -10,6 +10,7 @@ static_library("access_code_cast_integration_base") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "../../../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
     "access_code_cast_integration_browsertest.cc",
     "access_code_cast_integration_browsertest.h",
   ]

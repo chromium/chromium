@@ -293,6 +293,7 @@ source_set("unittests") {
       # In-browser discovery is not used by Android for now.
       "discovery/access_code/access_code_cast_discovery_interface_unittest.cc",
       "discovery/access_code/access_code_cast_feature_unittest.cc",
+      "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
       "discovery/access_code/access_code_cast_pref_updater_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_factory_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_unittest.cc",
@@ -363,17 +364,6 @@ source_set("unittests") {
       "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]
-
-    if (is_chromeos_lacros) {
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    } else {
-      sources += [
-        "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
-      ]
-    }
   }
 
   if (enable_openscreen_protocol) {

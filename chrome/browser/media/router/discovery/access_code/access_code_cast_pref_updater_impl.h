@@ -12,7 +12,7 @@ class PrefService;
 
 namespace media_router {
 
-// Pref updater for AccessCodeCasting for Win, Mac, Linux and ChromeOS Ash.
+// Pref updater for AccessCodeCasting for Chrome desktop.
 class AccessCodeCastPrefUpdaterImpl : public AccessCodeCastPrefUpdater {
  public:
   explicit AccessCodeCastPrefUpdaterImpl(PrefService* service);
