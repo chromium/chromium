@@ -224,8 +224,6 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
   serialize_invoked_ = true;
 #endif
   DCHECK(serialized_script_value_);
-  base::AutoReset<const ExceptionState*> reset(&exception_state_,
-                                               &exception_state);
 
   // Prepare to transfer the provided transferables.
   PrepareTransfer(exception_state);
@@ -886,11 +884,8 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
 
 void V8ScriptValueSerializer::ThrowDataCloneError(
     v8::Local<v8::String> v8_message) {
-  DCHECK(exception_state_);
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 exception_state_->GetContext());
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kDataCloneError,
+  V8ThrowDOMException::Throw(
+      script_state_->GetIsolate(), DOMExceptionCode::kDataCloneError,
       ToBlinkString<String>(script_state_->GetIsolate(), v8_message,
                             kDoNotExternalize));
 }
@@ -906,9 +901,8 @@ v8::Maybe<bool> V8ScriptValueSerializer::IsHostObject(
 v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> object) {
-  DCHECK(exception_state_);
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, exception_state_->GetContext());
+  ExceptionState exception_state(isolate);
 
   if (!V8DOMWrapper::IsWrapper(isolate, object)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
@@ -967,10 +961,9 @@ DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
 v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
     v8::Isolate* isolate,
     v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer) {
-  DCHECK(exception_state_);
   DCHECK_EQ(isolate, script_state_->GetIsolate());
 
-  ExceptionState exception_state(isolate, exception_state_->GetContext());
+  ExceptionState exception_state(isolate);
 
   if (for_storage_) {
     exception_state.ThrowDOMException(
@@ -1007,11 +1000,8 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
     v8::Isolate* isolate,
     v8::Local<v8::WasmModuleObject> module) {
   if (for_storage_) {
-    DCHECK(exception_state_);
-    DCHECK_EQ(isolate, script_state_->GetIsolate());
-    ExceptionState exception_state(isolate, exception_state_->GetContext());
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataCloneError,
+    V8ThrowDOMException::Throw(
+        isolate, DOMExceptionCode::kDataCloneError,
         "A WebAssembly.Module can not be serialized for storage.");
     return v8::Nothing<uint32_t>();
   }
@@ -1023,10 +1013,9 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
     case Options::kBlockedInNonSecureContext: {
       // This happens, currently, when we try to serialize to IndexedDB
       // in an non-secure context.
-      ExceptionState exception_state(isolate, exception_state_->GetContext());
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "Serializing WebAssembly modules in "
-                                        "non-secure contexts is not allowed.");
+      V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kDataCloneError,
+                                 "Serializing WebAssembly modules in "
+                                 "non-secure contexts is not allowed.");
       return v8::Nothing<uint32_t>();
     }
 
@@ -1065,11 +1054,8 @@ bool V8ScriptValueSerializer::AdoptSharedValueConveyor(
     v8::SharedValueConveyor&& conveyor) {
   auto* execution_context = ExecutionContext::From(script_state_);
   if (for_storage_ || !execution_context->SharedArrayBufferTransferAllowed()) {
-    DCHECK(exception_state_);
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   exception_state_->GetContext());
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataCloneError,
+    V8ThrowDOMException::Throw(
+        isolate, DOMExceptionCode::kDataCloneError,
         for_storage_
             ? "A shared JS value cannot be serialized for storage."
             : "Shared JS value conveyance requires self.crossOriginIsolated.");

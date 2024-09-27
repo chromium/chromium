@@ -144,7 +144,6 @@ class CORE_EXPORT V8ScriptValueSerializer
   v8::ValueSerializer serializer_;
   TrailerWriter trailer_writer_;
   const Transferables* transferables_ = nullptr;
-  const ExceptionState* exception_state_ = nullptr;
   WebBlobInfoArray* blob_info_array_ = nullptr;
   SharedArrayBufferArray shared_array_buffers_;
   Options::WasmSerializationPolicy wasm_policy_;
