@@ -81,6 +81,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
@@ -188,6 +189,23 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
       userVerification: 'discouraged',
       requireResidentKey: true,
     },
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kMakeCredentialSecurePaymentConfirmation[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "www.example.com" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      userVerification: 'required',
+      residentKey: 'preferred',
+      authenticatorAttachment: 'platform',
+    },
+    extensions: {payment: {isPayment: true}},
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
@@ -1109,6 +1127,33 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       NonWebauthnRequest) {
+  if (!base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation)) {
+    // SPC is not enabled in this configuration and so the `payment` extension
+    // in the Javascript will be ignored.
+    return;
+  }
+
+  CheckRegistrationStateNotRequested();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents,
+                              kMakeCredentialSecurePaymentConfirmation);
+  delegate_observer()->WaitForUI();
+
+  // Non-WebAuthn requests (e.g. Secure Payment Confirmation and credit-card
+  // confirmation) must not use the enclave. In some cases, they will disable
+  // the UI, which is not simulated here.
+  EXPECT_TRUE(
+      dialog_model()->step() ==
+          AuthenticatorRequestDialogModel::Step::kCreatePasskey ||
+      dialog_model()->step() ==
+          AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
 }
 
 #if BUILDFLAG(IS_MAC)

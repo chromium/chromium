@@ -1121,7 +1121,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     return;
   }
 
-  if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled()) {
+  if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled() &&
+      request_source == RequestSource::kWebAuthentication) {
     // Creating credentials in GPM can be disabled by policy, but get() is
     // always allowed.
     if (request_type == device::FidoRequestType::kGetAssertion ||
