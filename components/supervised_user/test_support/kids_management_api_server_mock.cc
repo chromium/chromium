@@ -19,6 +19,14 @@
 
 namespace supervised_user {
 
+const std::map<kidsmanagement::FamilyRole, std::string> kSimpsonFamily = {
+    {kidsmanagement::HEAD_OF_HOUSEHOLD, "marge@gmail.com"},
+    {kidsmanagement::PARENT, "homer@gmail.com"},
+    {kidsmanagement::MEMBER, "abraham@gmail.com"},
+    {kidsmanagement::CHILD, "lisa@gmail.com"},
+    {kidsmanagement::CHILD, "bart@gmail.com"},
+};
+
 namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> FromProtoData(
@@ -90,17 +98,11 @@ KidsManagementApiServerMock::ListFamilyMembers(
   }
 
   kidsmanagement::ListMembersResponse response;
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::HEAD_OF_HOUSEHOLD,
-      "marge@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::PARENT, "homer@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::MEMBER, "abraham@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::CHILD, "lisa@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::CHILD, "bart@gmail.com");
+  for (const auto& [role, email] : kSimpsonFamily) {
+    supervised_user::SetFamilyMemberAttributesForTesting(response.add_members(),
+                                                         role, email);
+  }
+
   return FromProtoData(response.SerializeAsString());
 }
 

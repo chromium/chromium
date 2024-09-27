@@ -11,11 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
@@ -28,69 +30,40 @@ namespace {
 constexpr std::string_view kKidsManagementServiceEndpoint{
     "kidsmanagement.googleapis.com"};
 
-// Self-consistent conditional RAII lock on list family members load.
-//
-// Registers to observe a preference and blocks until it is loaded for
-// *supervised users* (see ~FamilyFetchedLock() and IsSupervisedProfile()).
-// Effectivelly, halts the main testing thread until the first fetch of list
-// family members has finished, which is typically invoked by the browser after
-// startup of the SupervisedUserService.
-//
-// For non-supervised users, this is no-op (it just registers and unregisters a
-// preference observer).
-class FamilyFetchedLock {
- public:
-  FamilyFetchedLock() = delete;
-  FamilyFetchedLock(raw_ptr<InProcessBrowserTest> test_base,
-                    std::string_view custodian_pref)
-      : test_base_(test_base) {
+// Waits until the browser is in intended state. Specifically, for supervised
+// user, either waits for the family member to be loaded (by inspecting if a
+// preference holding its email has required value), otherwise is an no-op.
+void WaitUntilReady(InProcessBrowserTest* test_base,
+                    std::string_view preference,
+                    std::string_view value) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    Profile* profile = ProfileManager::GetActiveUserProfile();
+  PrefService* pref_service =
+      ProfileManager::GetActiveUserProfile()->GetPrefs();
 #else
-    Profile* profile = test_base_->browser()->profile();
+  PrefService* pref_service = test_base->browser()->profile()->GetPrefs();
 #endif
-    CHECK(profile) << "Must be acquitted and initialized after the profile was "
-                      "initialized too.";
-    pref_change_registrar_.Init(GetPrefService());
-    pref_change_registrar_.Add(
-        std::string(custodian_pref),
-        base::BindRepeating(&FamilyFetchedLock::OnPreferenceRegistered,
-                            base::Unretained(this)));
-  }
-  ~FamilyFetchedLock() {
-    if (IsSupervisedProfile()) {
-      base::RunLoop run_loop;
-      done_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
-    pref_change_registrar_.RemoveAll();
+
+  if (pref_service->GetString(prefs::kSupervisedUserId) !=
+      supervised_user::kChildAccountSUID) {
+    return;
   }
 
-  FamilyFetchedLock(const FamilyFetchedLock&) = delete;
-  FamilyFetchedLock& operator=(const FamilyFetchedLock&) = delete;
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service);
 
- private:
-  void OnPreferenceRegistered() { std::move(done_).Run(); }
+  base::RunLoop run_loop;
+  registrar.Add(std::string(preference), base::BindLambdaForTesting([&]() {
+                  CHECK_EQ(pref_service->GetString(preference), value)
+                      << "Unexpected family member preference value.";
+                  run_loop.Quit();
+                }));
 
-  // Profile::AsTestingProfile won't return TestingProfile at this stage of
-  // setup, so TestingProfile::IsChild is not available yet.
-  bool IsSupervisedProfile() const {
-    return GetPrefService()->GetString(prefs::kSupervisedUserId) ==
-           supervised_user::kChildAccountSUID;
+  if (pref_service->GetString(preference) == value) {
+    return;
   }
 
-  PrefService* GetPrefService() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    return ProfileManager::GetActiveUserProfile()->GetPrefs();
-#else
-    return test_base_->browser()->profile()->GetPrefs();
-#endif
-  }
-
-  raw_ptr<InProcessBrowserTest> test_base_;
-  base::OnceClosure done_;
-  PrefChangeRegistrar pref_change_registrar_;
-};
+  run_loop.Run();
+}
 }  // namespace
 
 KidsManagementApiMockSetupMixin::KidsManagementApiMockSetupMixin(
@@ -136,29 +109,9 @@ void KidsManagementApiMockSetupMixin::SetUpCommandLine(
 }
 
 void KidsManagementApiMockSetupMixin::SetUpOnMainThread() {
-  // If expected, halts test until initial fetch is completed.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-#else
-  Profile* profile = test_base_->browser()->profile();
-#endif
-  CHECK(profile);
-  // Waits for families to load until the requested preference
-  // (kSupervisedUserCustodianName) has been fetched, if it's
-  // not already present.
-  // Guarantees that when `SetUpOnMainThread` terminates all
-  // all preconditions have been fetched.
-  std::unique_ptr<FamilyFetchedLock> optional_conditional_lock;
-
-  if (test_base_->browser()
-          ->profile()
-          ->GetPrefs()
-          ->GetString(prefs::kSupervisedUserCustodianName)
-          .empty()) {
-    optional_conditional_lock = std::make_unique<FamilyFetchedLock>(
-        test_base_, prefs::kSupervisedUserCustodianName);
-  }
   embedded_test_server_.StartAcceptingConnections();
+  WaitUntilReady(test_base_, prefs::kSupervisedUserCustodianName,
+                 kSimpsonFamily.at(kidsmanagement::HEAD_OF_HOUSEHOLD));
 }
 
 void KidsManagementApiMockSetupMixin::TearDownOnMainThread() {

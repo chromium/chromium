@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/callback_list.h"
@@ -20,6 +22,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace supervised_user {
+
+extern const std::map<kidsmanagement::FamilyRole, std::string> kSimpsonFamily;
 
 // Configures the scoped feature list so that the related feature is initialized
 // with right parameters to divert kids management api traffic to an http
