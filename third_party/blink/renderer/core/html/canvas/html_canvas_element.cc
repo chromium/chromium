@@ -1013,8 +1013,11 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
             : SkBlendMode::kSrc;
     gfx::RectF src_rect((gfx::SizeF(Size())));
     scoped_refptr<StaticBitmapImage> snapshot =
+        // TODO(crbug.com/40280152): Port this check away from checking
+        // `canvas2d_bridge_` directly as part of eliminating
+        // Canvas2DLayerBridge.
         canvas2d_bridge_
-            ? canvas2d_bridge_->NewImageSnapshot(FlushReason::kPaint)
+            ? context_->GetImage(FlushReason::kPaint)
             : (ResourceProvider()
                    ? ResourceProvider()->Snapshot(FlushReason::kPaint)
                    : nullptr);
@@ -1821,9 +1824,11 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
 
   scoped_refptr<StaticBitmapImage> image;
   std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge;
+  // TODO(crbug.com/40280152): Port this check away from checking
+  // `canvas2d_bridge_` directly as part of eliminating
+  // Canvas2DLayerBridge.
   if (canvas2d_bridge_) {
-    image =
-        canvas2d_bridge_->NewImageSnapshot(FlushReason::kReplaceLayerBridge);
+    image = context_->GetImage(FlushReason::kReplaceLayerBridge);
     // image can be null if allocation failed in which case we should just
     // abort the surface switch to retain the old surface which is still
     // functional.
