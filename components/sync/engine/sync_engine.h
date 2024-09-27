@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
@@ -39,8 +38,6 @@ struct SyncStatus;
 // Lives on the UI thread.
 class SyncEngine : public DataTypeConfigurer {
  public:
-  using AllNodesCallback =
-      base::OnceCallback<void(DataType, base::Value::List)>;
   using HttpPostProviderFactoryGetter =
       base::OnceCallback<std::unique_ptr<HttpPostProviderFactory>()>;
 
@@ -180,12 +177,6 @@ class SyncEngine : public DataTypeConfigurer {
   // diverge from a real scheduled poll time because this method uses base::Time
   // while scheduler uses base::TimeTicks (which may be paused in sleep mode).
   virtual bool IsNextPollTimeInThePast() const = 0;
-
-  // Returns a Value::List representing Nigori node.
-  virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
-  // Record histograms related to Nigori type.
-  virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;
 };
 
 }  // namespace syncer

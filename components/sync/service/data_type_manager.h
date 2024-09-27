@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
@@ -124,6 +125,13 @@ class DataTypeManager {
 
   // The current state of the data type manager.
   virtual State state() const = 0;
+
+  // Used for debugging only (e.g. chrome://sync-internals).
+  virtual void GetAllNodesForDebugging(
+      base::OnceCallback<void(base::Value::List)> callback) const = 0;
+  virtual void GetEntityCountsForDebugging(
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
+      const = 0;
 
   // Exposes direct access to underlying controllers. Avoid using if possible,
   // as DataTypeManager usually offers higher-level APIs.

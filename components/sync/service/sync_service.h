@@ -550,10 +550,6 @@ class SyncService : public KeyedService {
 
   // Asynchronously fetches base::Value representations of all sync nodes and
   // returns them to the specified callback on this thread.
-  //
-  // These requests can live a long time and return when you least expect it.
-  // For safety, the callback should be bound to some sort of WeakPtr<> or
-  // scoped_refptr<>.
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) = 0;
 };

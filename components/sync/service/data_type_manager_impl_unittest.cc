@@ -119,6 +119,14 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
     connected_types_.Remove(type);
   }
 
+  void RecordNigoriMemoryUsageAndCountsHistograms() override {
+    // Not implemented but also not needed for these tests.
+  }
+
+  void GetNigoriNodeForDebugging(AllNodesCallback callback) override {
+    // Not implemented but also not needed for these tests.
+  }
+
   // Completes any ongoing download request and returns the set of types that
   // was successfully configured, which is all requested except
   // `failed_download_types`.

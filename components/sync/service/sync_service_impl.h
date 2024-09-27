@@ -347,10 +347,6 @@ class SyncServiceImpl : public SyncService,
   // Tell the sync server that this client has disabled sync.
   void RemoveClientFromServer() const;
 
-  // Records per type histograms for estimated memory usage and number of
-  // entities.
-  void RecordMemoryUsageAndCountsHistograms();
-
   // True if setup has been completed at least once and is not in progress.
   bool CanConfigureDataTypes(bool bypass_setup_in_progress_check) const;
 

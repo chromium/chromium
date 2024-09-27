@@ -46,7 +46,6 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
-#include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
@@ -1295,8 +1294,6 @@ void SyncServiceImpl::OnConfigureDone(
     return;
   }
 
-  RecordMemoryUsageAndCountsHistograms();
-
   StartSyncingWithServer();
 }
 
@@ -1835,10 +1832,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
 
 void SyncServiceImpl::GetEntityCountsForDebugging(
     base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {
-  for (const auto& [type, controller] :
-       data_type_manager_->GetControllerMap()) {
-    controller->GetTypeEntitiesCount(callback);
-  }
+  return data_type_manager_->GetEntityCountsForDebugging(std::move(callback));
 }
 
 void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
@@ -1957,104 +1951,11 @@ void SyncServiceImpl::RemoveProtocolEventObserver(
   }
 }
 
-namespace {
-
-class GetAllNodesRequestHelper
-    : public base::RefCountedThreadSafe<GetAllNodesRequestHelper> {
- public:
-  GetAllNodesRequestHelper(
-      DataTypeSet requested_types,
-      base::OnceCallback<void(base::Value::List)> callback);
-
-  GetAllNodesRequestHelper(const GetAllNodesRequestHelper&) = delete;
-  GetAllNodesRequestHelper& operator=(const GetAllNodesRequestHelper&) = delete;
-
-  void OnReceivedNodesForType(const DataType type, base::Value::List node_list);
-
- private:
-  friend class base::RefCountedThreadSafe<GetAllNodesRequestHelper>;
-  virtual ~GetAllNodesRequestHelper();
-
-  base::Value::List result_accumulator_;
-  DataTypeSet awaiting_types_;
-  base::OnceCallback<void(base::Value::List)> callback_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-GetAllNodesRequestHelper::GetAllNodesRequestHelper(
-    DataTypeSet requested_types,
-    base::OnceCallback<void(base::Value::List)> callback)
-    : awaiting_types_(requested_types), callback_(std::move(callback)) {}
-
-GetAllNodesRequestHelper::~GetAllNodesRequestHelper() {
-  if (!awaiting_types_.empty()) {
-    DLOG(WARNING)
-        << "GetAllNodesRequest deleted before request was fulfilled.  "
-        << "Missing types are: " << DataTypeSetToDebugString(awaiting_types_);
-  }
-}
-
-// Called when the set of nodes for a type has been returned.
-// Only return one type of nodes each time.
-void GetAllNodesRequestHelper::OnReceivedNodesForType(
-    const DataType type,
-    base::Value::List node_list) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Add these results to our list.
-  auto type_dict = base::Value::Dict()
-                       .Set("type", DataTypeToDebugString(type))
-                       .Set("nodes", std::move(node_list));
-  result_accumulator_.Append(std::move(type_dict));
-
-  // Remember that this part of the request is satisfied.
-  awaiting_types_.Remove(type);
-
-  if (awaiting_types_.empty()) {
-    std::move(callback_).Run(std::move(result_accumulator_));
-  }
-}
-
-}  // namespace
-
 void SyncServiceImpl::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If the engine isn't initialized yet, then there are no nodes to return.
-  if (!engine_ || !engine_->IsInitialized()) {
-    std::move(callback).Run(base::Value::List());
-    return;
-  }
-
-  DataTypeSet all_types = GetActiveDataTypes();
-  all_types.PutAll(ControlTypes());
-  scoped_refptr<GetAllNodesRequestHelper> helper =
-      new GetAllNodesRequestHelper(all_types, std::move(callback));
-
-  for (DataType type : all_types) {
-    const auto dtc_iter = data_type_manager_->GetControllerMap().find(type);
-    if (dtc_iter == data_type_manager_->GetControllerMap().end()) {
-      // We should have no data type controller only for Nigori.
-      DCHECK_EQ(type, NIGORI);
-      engine_->GetNigoriNodeForDebugging(base::BindOnce(
-          &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
-      continue;
-    }
-
-    DataTypeController* controller = dtc_iter->second.get();
-    if (controller->state() == DataTypeController::NOT_RUNNING) {
-      // In the NOT_RUNNING state it's not allowed to call GetAllNodes on the
-      // DataTypeController, so just return an empty result.
-      // This can happen e.g. if we're waiting for a custom passphrase to be
-      // entered - the data types are already considered active in this case,
-      // but their DataTypeControllers are still NOT_RUNNING.
-      helper->OnReceivedNodesForType(type, base::Value::List());
-    } else {
-      controller->GetAllNodes(base::BindOnce(
-          &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
-    }
-  }
+  data_type_manager_->GetAllNodesForDebugging(std::move(callback));
 }
 
 SyncService::DataTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
@@ -2356,20 +2257,6 @@ void SyncServiceImpl::RemoveClientFromServer() const {
   if (report_sync_stopped) {
     sync_stopped_reporter_->ReportSyncStopped(access_token, cache_guid,
                                               birthday);
-  }
-}
-
-void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
-  CHECK(engine_);
-  DataTypeSet active_types = GetActiveDataTypes();
-  for (DataType type : active_types) {
-    auto dtc_it = data_type_manager_->GetControllerMap().find(type);
-    if (dtc_it != data_type_manager_->GetControllerMap().end()) {
-      dtc_it->second->RecordMemoryUsageAndCountsHistograms();
-    } else if (type == NIGORI) {
-      // DTC for NIGORI is stored in the engine on sync thread.
-      engine_->RecordNigoriMemoryUsageAndCountsHistograms();
-    }
   }
 }
 

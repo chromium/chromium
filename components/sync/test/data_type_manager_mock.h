@@ -46,6 +46,14 @@ class DataTypeManagerMock : public DataTypeManager {
               (),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
+  MOCK_METHOD(void,
+              GetAllNodesForDebugging,
+              (base::OnceCallback<void(base::Value::List)>),
+              (const override));
+  MOCK_METHOD(void,
+              GetEntityCountsForDebugging,
+              (base::RepeatingCallback<void(const TypeEntitiesCount&)>),
+              (const override));
   MOCK_METHOD(const DataTypeController::TypeMap&,
               GetControllerMap,
               (),

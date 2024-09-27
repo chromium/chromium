@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -18,11 +19,13 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/get_all_nodes_request_barrier.h"
 
 namespace syncer {
 
@@ -342,6 +345,51 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     }
 
     configurer_->ConnectDataType(type, std::move(activation_response));
+  }
+}
+
+void DataTypeManagerImpl::GetAllNodesForDebugging(
+    base::OnceCallback<void(base::Value::List)> callback) const {
+  // If the configurer isn't initialized yet, then there are no nodes to return.
+  if (!configurer_) {
+    std::move(callback).Run(base::Value::List());
+    return;
+  }
+
+  const DataTypeSet active_types = GetActiveDataTypes();
+  auto barrier = base::MakeRefCounted<GetAllNodesRequestBarrier>(
+      active_types, std::move(callback));
+
+  for (DataType type : active_types) {
+    if (type == NIGORI) {
+      // The controller for NIGORI is stored in the engine on sync thread.
+      configurer_->GetNigoriNodeForDebugging(base::BindOnce(
+          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier));
+      continue;
+    }
+
+    CHECK(base::Contains(controllers_, type));
+    const std::unique_ptr<DataTypeController>& controller =
+        controllers_.at(type);
+
+    if (controller->state() == DataTypeController::NOT_RUNNING) {
+      // In the NOT_RUNNING state it's not allowed to call GetAllNodes on the
+      // DataTypeController, so just return an empty result.
+      // This can happen e.g. if we're waiting for a custom passphrase to be
+      // entered - the data types are already considered active in this case,
+      // but their DataTypeControllers are still NOT_RUNNING.
+      barrier->OnReceivedNodesForType(type, base::Value::List());
+    } else {
+      controller->GetAllNodes(base::BindOnce(
+          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier));
+    }
+  }
+}
+
+void DataTypeManagerImpl::GetEntityCountsForDebugging(
+    base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {
+  for (const auto& [type, controller] : controllers_) {
+    controller->GetTypeEntitiesCount(callback);
   }
 }
 
@@ -771,12 +819,14 @@ void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
     case DataTypeManager::OK:
       DVLOG(1) << "NotifyDone called with result: OK";
       base::UmaHistogramLongTimes(prefix_uma + ".OK", configure_time);
+      RecordMemoryUsageAndCountsHistograms();
       break;
     case DataTypeManager::ABORTED:
       DVLOG(1) << "NotifyDone called with result: ABORTED";
       base::UmaHistogramLongTimes(prefix_uma + ".ABORTED", configure_time);
       break;
   }
+
   observer_->OnConfigureDone(result);
 }
 
@@ -853,6 +903,20 @@ const DataTypeController::TypeMap& DataTypeManagerImpl::GetControllerMap()
 
 DataTypeSet DataTypeManagerImpl::GetEnabledTypes() const {
   return Difference(preferred_types_, data_type_status_table_.GetFailedTypes());
+}
+
+void DataTypeManagerImpl::RecordMemoryUsageAndCountsHistograms() {
+  CHECK(configurer_);
+  for (DataType type : GetActiveDataTypes()) {
+    if (type == NIGORI) {
+      // The controller for NIGORI is stored in the engine on sync thread.
+      configurer_->RecordNigoriMemoryUsageAndCountsHistograms();
+      continue;
+    }
+
+    CHECK(base::Contains(controllers_, type));
+    controllers_.at(type)->RecordMemoryUsageAndCountsHistograms();
+  }
 }
 
 }  // namespace syncer

@@ -54,8 +54,12 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetActiveProxyDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
-
   State state() const override;
+  void GetAllNodesForDebugging(
+      base::OnceCallback<void(base::Value::List)> callback) const override;
+  void GetEntityCountsForDebugging(
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
+      const override;
   const DataTypeController::TypeMap& GetControllerMap() const override;
 
   // `ModelLoadManagerDelegate` implementation.
@@ -127,6 +131,10 @@ class DataTypeManagerImpl : public DataTypeManager,
                               DataTypeSet failed_configuration_types);
 
   DataTypeSet GetEnabledTypes() const;
+
+  // Records per type histograms for estimated memory usage and number of
+  // entities.
+  void RecordMemoryUsageAndCountsHistograms();
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
