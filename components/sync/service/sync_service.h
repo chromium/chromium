@@ -145,6 +145,7 @@ class SyncService : public KeyedService {
   // The overall state of Sync-the-transport, in ascending order of
   // "activeness". Note that this refers to the transport layer, which may be
   // active even if Sync-the-feature is turned off.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
   enum class TransportState {
     // Sync is inactive, e.g. due to enterprise policy, or simply because there
     // is no authenticated user.

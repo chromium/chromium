@@ -81,13 +81,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean isTransportStateActive() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().isTransportStateActive(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public boolean isSyncFeatureEnabled() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -325,6 +318,13 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public @TransportState int getTransportState() {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        return SyncServiceImplJni.get().getTransportState(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean isUsingExplicitPassphrase() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -544,8 +544,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
 
-        boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
-
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
 
         boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
@@ -596,6 +594,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         boolean isUsingExplicitPassphrase(long nativeSyncServiceAndroidBridge);
 
         int getPassphraseType(long nativeSyncServiceAndroidBridge);
+
+        int getTransportState(long nativeSyncServiceAndroidBridge);
 
         void setEncryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
 

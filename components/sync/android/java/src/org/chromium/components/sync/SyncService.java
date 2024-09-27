@@ -29,22 +29,13 @@ public interface SyncService {
     }
 
     /**
-     * Checks if the sync engine is initialized. Note that this refers to
-     * Sync-the-transport, i.e. it can be true even if the user has *not*
-     * enabled Sync-the-feature.
-     * This mostly needs to be checked as a precondition for the various
-     * encryption-related methods (see below).
+     * Checks if the sync engine is initialized. Note that this refers to Sync-the-transport, i.e.
+     * it can be true even if the user has *not* enabled Sync-the-feature. This mostly needs to be
+     * checked as a precondition for the various encryption-related methods (see below).
      *
      * @return true if the sync engine is initialized.
      */
     public boolean isEngineInitialized();
-
-    /**
-     * Checks whether sync machinery is active.
-     *
-     * @return true if the transport state is active.
-     */
-    public boolean isTransportStateActive();
 
     /**
      * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
@@ -192,6 +183,12 @@ public interface SyncService {
      * should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
     public @PassphraseType int getPassphraseType();
+
+    /**
+     * The overall state of Sync-the-transport, in ascending order of "activeness". Note that this
+     * refers to the transport layer, which may be active even if Sync-the-feature is turned off.
+     */
+    public @TransportState int getTransportState();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
