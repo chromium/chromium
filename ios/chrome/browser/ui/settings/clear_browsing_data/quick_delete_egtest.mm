@@ -1129,6 +1129,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1162,6 +1164,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1189,6 +1193,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCache];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1222,6 +1228,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCache];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 

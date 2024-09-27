@@ -119,6 +119,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web/model",

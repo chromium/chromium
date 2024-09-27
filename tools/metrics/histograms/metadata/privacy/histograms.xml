@@ -369,6 +369,24 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DeleteBrowsingData.MigratedToNewDefaults"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>fsenra@chromium.org</owner>
+  <owner>alimariam@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Whether a user's pref values for Delete Browsing Data selection in iOS have
+    been migrated to the new defaults. Only users who have never changed their
+    pref values, i.e. never changed their selection in DBD, are eligible to be
+    migrated to the new defaults.
+
+    For the new version of Delete Browsing Data in iOS, each user will go
+    through the migration of pref values that represent the selection in Delete
+    Browsing Data once. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-03-23">
   <owner>rtarpine@chromium.org</owner>
