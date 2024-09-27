@@ -1,6 +1,16 @@
 #data
 <!DOCTYPE html><body><a href='#1'><nobr>1<nobr></a><br><a href='#2'><nobr>2<nobr></a><br><a href='#3'><nobr>3<nobr></a>
 #errors
+(1,47): unexpected-start-tag-implies-end-tag
+(1,51): adoption-agency-1.3
+(1,74): unexpected-start-tag-implies-end-tag
+(1,74): adoption-agency-1.3
+(1,81): unexpected-start-tag-implies-end-tag
+(1,85): adoption-agency-1.3
+(1,108): unexpected-start-tag-implies-end-tag
+(1,108): adoption-agency-1.3
+(1,115): unexpected-start-tag-implies-end-tag
+(1,119): adoption-agency-1.3
 #document
 | <!DOCTYPE html>
 | <html>
@@ -33,6 +43,13 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<nobr></b><i><nobr>2<nobr></i>3
 #errors
+(1,37): unexpected-start-tag-implies-end-tag
+(1,41): adoption-agency-1.3
+(1,50): unexpected-start-tag-implies-end-tag
+(1,50): adoption-agency-1.3
+(1,57): unexpected-start-tag-implies-end-tag
+(1,61): adoption-agency-1.3
+(1,62): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -54,6 +71,20 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<table><nobr></b><i><nobr>2<nobr></i>3
 #errors
+(1,44): foster-parenting-start-tag
+(1,48): foster-parenting-end-tag
+(1,48): adoption-agency-1.3
+(1,51): foster-parenting-start-tag
+(1,57): foster-parenting-start-tag
+(1,57): nobr-already-in-scope
+(1,57): adoption-agency-1.2
+(1,58): foster-parenting-character
+(1,64): foster-parenting-start-tag
+(1,64): nobr-already-in-scope
+(1,68): foster-parenting-end-tag
+(1,68): adoption-agency-1.2
+(1,69): foster-parenting-character
+(1,69): eof-in-table
 #document
 | <!DOCTYPE html>
 | <html>
@@ -75,6 +106,12 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<table><tr><td><nobr></b><i><nobr>2<nobr></i>3
 #errors
+(1,56): unexpected-end-tag
+(1,65): unexpected-start-tag-implies-end-tag
+(1,65): adoption-agency-1.3
+(1,72): unexpected-start-tag-implies-end-tag
+(1,76): adoption-agency-1.3
+(1,77): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -99,6 +136,15 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<div><nobr></b><i><nobr>2<nobr></i>3
 #errors
+(1,42): unexpected-start-tag-implies-end-tag
+(1,42): adoption-agency-1.3
+(1,46): adoption-agency-1.3
+(1,46): adoption-agency-1.3
+(1,55): unexpected-start-tag-implies-end-tag
+(1,55): adoption-agency-1.3
+(1,62): unexpected-start-tag-implies-end-tag
+(1,66): adoption-agency-1.3
+(1,67): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -123,6 +169,13 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<nobr></b><div><i><nobr>2<nobr></i>3
 #errors
+(1,37): unexpected-start-tag-implies-end-tag
+(1,41): adoption-agency-1.3
+(1,55): unexpected-start-tag-implies-end-tag
+(1,55): adoption-agency-1.3
+(1,62): unexpected-start-tag-implies-end-tag
+(1,66): adoption-agency-1.3
+(1,67): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -145,6 +198,11 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<nobr><ins></b><i><nobr>
 #errors
+(1,37): unexpected-start-tag-implies-end-tag
+(1,46): adoption-agency-1.3
+(1,55): unexpected-start-tag-implies-end-tag
+(1,55): adoption-agency-1.3
+(1,55): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -163,6 +221,10 @@
 #data
 <!DOCTYPE html><body><b><nobr>1<ins><nobr></b><i>2
 #errors
+(1,42): unexpected-start-tag-implies-end-tag
+(1,42): adoption-agency-1.3
+(1,46): adoption-agency-1.3
+(1,50): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -180,6 +242,10 @@
 #data
 <!DOCTYPE html><body><b>1<nobr></b><i><nobr>2</i>
 #errors
+(1,35): adoption-agency-1.3
+(1,44): unexpected-start-tag-implies-end-tag
+(1,44): adoption-agency-1.3
+(1,49): adoption-agency-1.3
 #document
 | <!DOCTYPE html>
 | <html>
@@ -198,6 +264,14 @@
 <p><code x</code></p>
 
 #errors
+(1,3): expected-doctype-but-got-start-tag
+(1,11): invalid-character-in-attribute-name
+(1,12): unexpected-character-after-solidus-in-tag
+(1,21): unexpected-end-tag
+(2,0): expected-closing-tag-but-got-eof
+#new-errors
+(1:11) unexpected-character-in-attribute-name
+(1:13) unexpected-solidus-in-tag
 #document
 | <html>
 |   <head>
@@ -215,11 +289,8 @@
 #data
 <!DOCTYPE html><svg><foreignObject><p><i></p>a
 #errors
-45: End tag “p” seen, but there were open elements.
-41: Unclosed element “i”.
-46: End of file seen and there were open elements.
-35: Unclosed element “foreignObject”.
-20: Unclosed element “svg”.
+(1,45): unexpected-end-tag
+(1,46): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -235,12 +306,8 @@
 #data
 <!DOCTYPE html><table><tr><td><svg><foreignObject><p><i></p>a
 #errors
-56: End tag “p” seen, but there were open elements.
-52: Unclosed element “i”.
-57: End of file seen and there were open elements.
-46: Unclosed element “foreignObject”.
-31: Unclosed element “svg”.
-22: Unclosed element “table”.
+(1,60): unexpected-end-tag
+(1,61): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -260,9 +327,8 @@
 #data
 <!DOCTYPE html><math><mtext><p><i></p>a
 #errors
-38: End tag “p” seen, but there were open elements.
-34: Unclosed element “i”.
-39: End of file in a foreign namespace context.
+(1,38): unexpected-end-tag
+(1,39): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -278,9 +344,8 @@
 #data
 <!DOCTYPE html><table><tr><td><math><mtext><p><i></p>a
 #errors
-53: End tag “p” seen, but there were open elements.
-49: Unclosed element “i”.
-54: End of file in a foreign namespace context.
+(1,53): unexpected-end-tag
+(1,54): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -300,9 +365,10 @@
 #data
 <!DOCTYPE html><body><div><!/div>a
 #errors
-29: Bogus comment.
-34: End of file seen and there were open elements.
-26: Unclosed element “div”.
+(1,28): expected-dashes-or-doctype
+(1,34): expected-closing-tag-but-got-eof
+#new-errors
+(1:29) incorrectly-opened-comment
 #document
 | <!DOCTYPE html>
 | <html>
@@ -311,3 +377,77 @@
 |     <div>
 |       <!-- /div -->
 |       "a"
+
+#data
+<button><p><button>
+#errors
+Line 1 Col 8 Unexpected start tag (button). Expected DOCTYPE.
+Line 1 Col 19 Unexpected start tag (button) implies end tag (button).
+Line 1 Col 19 Expected closing tag. Unexpected end of file.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <button>
+|       <p>
+|     <button>
+
+#data
+<svg></p><foo>
+#errors
+(1:1) Missing doctype
+9: HTML end tag “p” in a foreign namespace context.
+(1:6) Unexpected </p> from in body insertion mode
+(1:16) Unexpected EOF
+#document
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <p>
+|     <foo>
+
+#data
+<svg></br><foo>
+#errors
+(1:1) Missing doctype
+10: HTML end tag “br” in a foreign namespace context.
+(1:6) Unexpected </br> from in body insertion mode
+(1:16) Unexpected EOF
+#document
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|     <br>
+|     <foo>
+
+#data
+<math></p><foo>
+#errors
+(1:1) Missing doctype
+10: HTML end tag “p” in a foreign namespace context.
+(1:7) Unexpected </p> from in body insertion mode
+(1:16) Unexpected EOF
+#document
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|     <p>
+|     <foo>
+
+#data
+<math></br><foo>
+#errors
+(1:1) Missing doctype
+11: HTML end tag “br” in a foreign namespace context.
+(1:7) Unexpected </br> from in body insertion mode
+(1:17) Unexpected EOF
+#document
+| <html>
+|   <head>
+|   <body>
+|     <math math>
+|     <br>
+|     <foo>

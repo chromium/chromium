@@ -1,57 +1,22 @@
 ../resources/adoption01.dat:
-14
+18
 
-Test 14 of 17 in ../resources/adoption01.dat failed. Input:
-<div><a><b><div><div><div><div><div><div><div><div><div><div></a>
+Test 18 of 18 in ../resources/adoption01.dat failed. Input:
+<b><em><foo><foob><fooc><aside></b></em>
 Got:
-| <html>
-|   <head>
-|   <body>
-|     <div>
-|       <a>
-|         <b>
-|       <b>
-|         <div>
-|           <a>
-|           <div>
-|             <a>
-|             <div>
-|               <a>
-|               <div>
-|                 <a>
-|                 <div>
-|                   <a>
-|                   <div>
-|                     <a>
-|                     <div>
-|                       <a>
-|                       <div>
-|                         <a>
-|                           <div>
-|                             <div>
+| <b>
+|   <em>
+|     <foo>
+|       <foob>
+|         <fooc>
+| <aside>
+|   <em>
+|     <b>
 Expected:
-| <html>
-|   <head>
-|   <body>
-|     <div>
-|       <a>
-|         <b>
-|       <b>
-|         <div>
-|           <a>
-|           <div>
-|             <a>
-|             <div>
-|               <a>
-|               <div>
-|                 <a>
-|                 <div>
-|                   <a>
-|                   <div>
-|                     <a>
-|                     <div>
-|                       <a>
-|                       <div>
-|                         <a>
-|                         <div>
-|                           <div>
+| <b>
+|   <em>
+|     <foo>
+|       <foob>
+|         <fooc>
+| <aside>
+|   <b>

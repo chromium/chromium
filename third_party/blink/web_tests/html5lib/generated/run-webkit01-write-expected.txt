@@ -8,9 +8,9 @@ CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was c
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 ../resources/webkit01.dat:
-31
+32
 
-Test 31 of 51 in ../resources/webkit01.dat failed. Input:
+Test 32 of 52 in ../resources/webkit01.dat failed. Input:
 <select><option>A<select><option>B<select><option>C<select><option>D<select><option>E<select><option>F<select><option>G<select>
 Got:
 | <html>

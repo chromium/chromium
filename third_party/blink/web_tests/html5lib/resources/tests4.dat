@@ -41,7 +41,6 @@ plaintext
 #data
 setting html's innerHTML
 #errors
-Line: 1 Col: 24 Unexpected EOF in inner html mode.
 #document-fragment
 html
 #document
@@ -57,3 +56,19 @@ head
 #document
 | <title>
 |   "setting head's innerHTML"
+
+#data
+direct <title> content
+#errors
+#document-fragment
+title
+#document
+| "direct <title> content"
+
+#data
+<!-- inside </script> -->
+#errors
+#document-fragment
+script
+#document
+| "<!-- inside </script> -->"

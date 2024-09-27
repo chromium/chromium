@@ -2217,3 +2217,7 @@ external/wpt/infrastructure/* [ Skip ]
 crbug.com/342191615 [ Android ] inspector-protocol/bluetooth/* [ Skip ]
 crbug.com/342191615 [ Fuchsia ] inspector-protocol/bluetooth/* [ Skip ]
 crbug.com/342191615 [ iOS17-simulator ] inspector-protocol/bluetooth/* [ Skip ]
+
+# These html5lib parser tests always time out.
+html5lib/generated/run-foreign-fragment-data.html [ Skip ]
+html5lib/generated/run-foreign-fragment-write.html [ Skip ]
