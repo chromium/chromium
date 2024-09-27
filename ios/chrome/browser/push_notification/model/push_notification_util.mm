@@ -67,6 +67,11 @@ const char kNotificationAutorizationStatusChangedToAuthorized[] =
 const char kNotificationAutorizationStatusChangedToDenied[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
 
+// The histogram used to record users changes to a provisional push notification
+// permission status.
+const char kNotificationAutorizationStatusChangedToProvisional[] =
+    "IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional";
+
 // Key for the pre-rendered payload from Chime.
 NSString* const kPrerenderedPayloadKey = @"$";
 
@@ -269,7 +274,7 @@ NSString* const kClientIdFieldKey = @"n";
 // on the application's permission status.
 + (void)requestPushNotificationPermission:(PermissionResponseHandler)completion
                        permissionSettings:(UNNotificationSettings*)settings {
-  if (settings.authorizationStatus != UNAuthorizationStatusNotDetermined) {
+  if (![self canPromptForAuthorization:settings]) {
     if (completion) {
       completion(
           settings.authorizationStatus == UNAuthorizationStatusAuthorized, NO,
@@ -395,7 +400,28 @@ NSString* const kClientIdFieldKey = @"n";
     return YES;
   }
 
+  if (status == SettingsAuthorizationStatus::PROVISIONAL) {
+    base::UmaHistogramEnumeration(
+        kNotificationAutorizationStatusChangedToProvisional, previousStatus);
+    return YES;
+  }
+
   return NO;
+}
+
+// Returns YES if the user can be prompted for notification authorization.
++ (BOOL)canPromptForAuthorization:(UNNotificationSettings*)settings {
+  switch (settings.authorizationStatus) {
+    case UNAuthorizationStatusNotDetermined:
+    case UNAuthorizationStatusProvisional:
+      return YES;
+    case UNAuthorizationStatusDenied:
+    case UNAuthorizationStatusAuthorized:
+      return NO;
+    case UNAuthorizationStatusEphemeral:
+      // This authorization status only applies to app clips.
+      return NO;
+  }
 }
 
 @end

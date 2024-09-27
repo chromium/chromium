@@ -3528,6 +3528,20 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional"
+    enum="PushNotificationSettingsAuthorizationStatus"
+    expires_after="2025-03-05">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs the push notification iOS settings permission status the user's device
+    was previously in before their push notifications permission status changed
+    to provisional. This histogram is logged only when push notification
+    permission status has changed and Chrome makes an APNS device token request.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.NotificationSettingsAuthorizationStatus"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-02-16">
