@@ -220,10 +220,9 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
       CloseErrorHandling error_handling);
 
   // Returns the last error that occurred, if there is any.
-  leveldb::Status AbortAllTransactionsAndIgnoreErrors(
-      const DatabaseError& error);
+  Status AbortAllTransactionsAndIgnoreErrors(const DatabaseError& error);
 
-  leveldb::Status AbortAllTransactions(const DatabaseError& error);
+  Status AbortAllTransactions(const DatabaseError& error);
 
   BucketContext* bucket_context() {
     return bucket_context_handle_.bucket_context();

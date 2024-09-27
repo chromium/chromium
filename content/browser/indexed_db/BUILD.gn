@@ -72,6 +72,8 @@ source_set("indexed_db") {
     "list_set.h",
     "mock_browsertest_indexed_db_class_factory.cc",
     "mock_browsertest_indexed_db_class_factory.h",
+    "status.cc",
+    "status.h",
   ]
 
   deps = [

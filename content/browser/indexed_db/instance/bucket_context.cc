@@ -259,15 +259,13 @@ DatabaseError CreateDefaultError() {
 }
 
 // Creates the leveldb and blob storage directories for IndexedDB.
-std::tuple<base::FilePath /*leveldb_path*/,
-           base::FilePath /*blob_path*/,
-           leveldb::Status>
-CreateDatabaseDirectories(const base::FilePath& path_base,
-                          const storage::BucketLocator& bucket_locator) {
-  leveldb::Status status;
+std::
+    tuple<base::FilePath /*leveldb_path*/, base::FilePath /*blob_path*/, Status>
+    CreateDatabaseDirectories(const base::FilePath& path_base,
+                              const storage::BucketLocator& bucket_locator) {
+  Status status;
   if (!base::CreateDirectory(path_base)) {
-    status =
-        leveldb::Status::IOError("Unable to create IndexedDB database path");
+    status = Status::IOError("Unable to create IndexedDB database path");
     LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
                << "\"";
     ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
@@ -282,7 +280,7 @@ CreateDatabaseDirectories(const base::FilePath& path_base,
   if (IsPathTooLong(leveldb_path)) {
     ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
                      bucket_locator);
-    status = leveldb::Status::IOError("File path too long");
+    status = Status::IOError("File path too long");
     return {base::FilePath(), base::FilePath(), status};
   }
   return {leveldb_path, blob_path, status};
@@ -689,7 +687,7 @@ void BucketContext::QueueRunTasks() {
 void BucketContext::RunTasks() {
   task_run_queued_ = false;
 
-  leveldb::Status status;
+  Status status;
   for (auto db_it = databases_.begin(); db_it != databases_.end();) {
     Database& db = *db_it->second;
 
@@ -734,7 +732,7 @@ void BucketContext::AddReceiver(
 }
 
 void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
-  leveldb::Status s;
+  Status s;
   DatabaseError error;
   std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   std::tie(s, error, std::ignore) =
@@ -775,7 +773,7 @@ void BucketContext::Open(
   // created) if this origin is already over quota.
 
   bool was_cold_open = !backing_store_;
-  leveldb::Status s;
+  Status s;
   DatabaseError error;
   IndexedDBDataLossInfo data_loss_info;
   std::tie(s, error, data_loss_info) =
@@ -835,7 +833,7 @@ void BucketContext::DeleteDatabase(
   TRACE_EVENT0("IndexedDB", "BucketContext::DeleteDatabase");
 
   {
-    leveldb::Status s;
+    Status s;
     DatabaseError error;
     // Note: Any data loss information here is not piped up to the renderer, and
     // will be lost.
@@ -867,7 +865,7 @@ void BucketContext::DeleteDatabase(
         std::make_unique<FactoryClient>(std::move(factory_client)),
         std::move(on_deletion_complete));
     if (force_close) {
-      leveldb::Status status = database->ForceCloseAndRunTasks();
+      Status status = database->ForceCloseAndRunTasks();
       if (!status.ok()) {
         OnDatabaseError(status, "Error aborting transactions.");
       }
@@ -878,7 +876,7 @@ void BucketContext::DeleteDatabase(
   // Otherwise, verify that a database with the given name exists in the backing
   // store. If not, report success.
   std::vector<std::u16string> names;
-  leveldb::Status s = backing_store()->GetDatabaseNames(&names);
+  Status s = backing_store()->GetDatabaseNames(&names);
   if (!s.ok()) {
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
                         "Internal error opening backing store for "
@@ -904,7 +902,7 @@ void BucketContext::DeleteDatabase(
       std::make_unique<FactoryClient>(std::move(factory_client)),
       std::move(on_deletion_complete));
   if (force_close) {
-    leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
+    Status status = database_ptr->ForceCloseAndRunTasks();
     if (!status.ok()) {
       OnDatabaseError(status, "Error aborting transactions.");
     }
@@ -957,7 +955,7 @@ void BucketContext::WriteToIndexedDBForTesting(const std::string& key,
                                                const std::string& value) {
   TransactionalLevelDBDatabase* db = backing_store_->db();
   std::string value_copy = value;
-  leveldb::Status s = db->Put(key, &value_copy);
+  Status s(db->Put(key, &value_copy));
   CHECK(s.ok()) << s.ToString();
   ForceClose(true);
 }
@@ -1111,8 +1109,7 @@ bool BucketContext::ShouldRunTombstoneSweeper() {
   }
 
   base::Time bucket_earliest_sweep;
-  leveldb::Status s =
-      GetEarliestSweepTime(backing_store_->db(), &bucket_earliest_sweep);
+  Status s = GetEarliestSweepTime(backing_store_->db(), &bucket_earliest_sweep);
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok() && !s.IsNotFound()) {
     return false;
@@ -1158,8 +1155,8 @@ bool BucketContext::ShouldRunCompaction() {
   }
 
   base::Time bucket_earliest_compaction;
-  leveldb::Status s = GetEarliestCompactionTime(backing_store_->db(),
-                                                &bucket_earliest_compaction);
+  Status s = GetEarliestCompactionTime(backing_store_->db(),
+                                       &bucket_earliest_compaction);
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok() && !s.IsNotFound()) {
     return false;
@@ -1245,12 +1242,11 @@ void BucketContext::HandleBackingStoreCorruption(const DatabaseError& error) {
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
-  leveldb::Status s = BackingStore::DestroyDatabase(file_path);
+  Status s = BackingStore::DestroyDatabase(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
-void BucketContext::OnDatabaseError(leveldb::Status status,
-                                    const std::string& message) {
+void BucketContext::OnDatabaseError(Status status, const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!status.ok());
   if (status.IsCorruption()) {
@@ -1294,7 +1290,7 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   return true;
 }
 
-std::tuple<leveldb::Status, DatabaseError, IndexedDBDataLossInfo>
+std::tuple<Status, DatabaseError, IndexedDBDataLossInfo>
 BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   if (backing_store_) {
     return {};
@@ -1303,7 +1299,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   const bool in_memory = data_path_.empty();
   base::FilePath blob_path;
   base::FilePath database_path;
-  leveldb::Status status = leveldb::Status::OK();
+  Status status = Status::OK();
   if (!in_memory) {
     std::tie(database_path, blob_path, status) =
         CreateDatabaseDirectories(data_path_, bucket_locator());
@@ -1322,7 +1318,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   std::unique_ptr<BackingStore> backing_store;
   bool disk_full = false;
   base::ElapsedTimer open_timer;
-  leveldb::Status first_try_status;
+  Status first_try_status;
   constexpr static const int kNumOpenTries = 2;
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
@@ -1345,7 +1341,8 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
       break;
     }
     if (status.IsCorruption()) {
-      std::string sanitized_message = leveldb_env::GetCorruptionMessage(status);
+      std::string sanitized_message =
+          leveldb_env::GetCorruptionMessage(status.leveldb_status());
       base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                          data_path_.AsUTF8Unsafe(), "...");
       LOG(ERROR) << "Got corruption for "
@@ -1363,7 +1360,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
 
   UMA_HISTOGRAM_ENUMERATION(
       "WebCore.IndexedDB.BackingStore.OpenFirstTryResult",
-      leveldb_env::GetLevelDBStatusUMAValue(first_try_status),
+      leveldb_env::GetLevelDBStatusUMAValue(first_try_status.leveldb_status()),
       leveldb_env::LEVELDB_STATUS_MAX);
 
   if (first_try_status.ok()) [[likely]] {
@@ -1402,7 +1399,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   backing_store_ = std::move(backing_store);
   backing_store_->set_bucket_context(this);
   delegate().on_files_written.Run(/*flushed=*/true);
-  return {leveldb::Status::OK(), DatabaseError(), data_loss_info};
+  return {Status::OK(), DatabaseError(), data_loss_info};
 }
 
 void BucketContext::ResetBackingStore() {

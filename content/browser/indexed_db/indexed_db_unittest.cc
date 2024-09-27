@@ -1520,9 +1520,8 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
           [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
             context->GetBucketContextForTesting(bucket_info->id)
                 ->AsyncCall(&BucketContext::OnDatabaseError)
-                .WithArgs(
-                    leveldb::Status::NotSupported("operation not supported"),
-                    std::string());
+                .WithArgs(Status::NotSupported("operation not supported"),
+                          std::string());
           },
           context(), &bucket_info),
       &bucket_info);
@@ -1948,7 +1947,7 @@ TEST_P(IndexedDBTest, TooLongOrigin) {
 
   BucketContextHandle bucket_context_handle(GetOrCreateBucketContext(
       ToBucketInfo(bucket_locator), context()->GetDataPath(bucket_locator)));
-  leveldb::Status s;
+  Status s;
   std::tie(s, std::ignore, std::ignore) =
       bucket_context_handle->InitBackingStoreIfNeeded(
           /*create_if_missing=*/true);

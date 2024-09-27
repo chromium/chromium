@@ -69,16 +69,14 @@ class Cursor : public blink::mojom::IDBCursor {
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
 
-  leveldb::Status ContinueOperation(
-      std::unique_ptr<blink::IndexedDBKey> key,
-      std::unique_ptr<blink::IndexedDBKey> primary_key,
-      blink::mojom::IDBCursor::ContinueCallback callback,
-      Transaction* transaction);
-  leveldb::Status AdvanceOperation(
-      uint32_t count,
-      blink::mojom::IDBCursor::AdvanceCallback callback,
-      Transaction* transaction);
-  leveldb::Status PrefetchIterationOperation(
+  Status ContinueOperation(std::unique_ptr<blink::IndexedDBKey> key,
+                           std::unique_ptr<blink::IndexedDBKey> primary_key,
+                           blink::mojom::IDBCursor::ContinueCallback callback,
+                           Transaction* transaction);
+  Status AdvanceOperation(uint32_t count,
+                          blink::mojom::IDBCursor::AdvanceCallback callback,
+                          Transaction* transaction);
+  Status PrefetchIterationOperation(
       int number_to_fetch,
       blink::mojom::IDBCursor::PrefetchCallback callback,
       Transaction* transaction);

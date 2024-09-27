@@ -657,7 +657,7 @@ BlobWriteCallback CreateBlobWriteCallback(
         if (!on_done.is_null()) {
           std::move(on_done).Run();
         }
-        return leveldb::Status::OK();
+        return Status::OK();
       },
       succeeded, std::move(on_done));
 }
@@ -673,7 +673,7 @@ TEST_F(BackingStoreTest, PutGetConsistency) {
         blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1.Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
-    leveldb::Status s =
+    Status s =
         backing_store()->PutRecord(&transaction1, 1, 1, key, &value, &record);
     EXPECT_TRUE(s.ok());
     bool succeeded = false;
@@ -1213,9 +1213,9 @@ TEST_F(BackingStoreTest, HighIds) {
         blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1.Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
-    leveldb::Status s = backing_store()->PutRecord(
-        &transaction1, high_database_id, high_object_store_id, key1, &value1,
-        &record);
+    Status s = backing_store()->PutRecord(&transaction1, high_database_id,
+                                          high_object_store_id, key1, &value1,
+                                          &record);
     EXPECT_TRUE(s.ok());
 
     s = backing_store()->PutIndexDataForRecord(
@@ -1242,7 +1242,7 @@ TEST_F(BackingStoreTest, HighIds) {
         blink::mojom::IDBTransactionMode::ReadWrite);
     transaction2.Begin(CreateDummyLock());
     IndexedDBValue result_value;
-    leveldb::Status s =
+    Status s =
         backing_store()->GetRecord(&transaction2, high_database_id,
                                    high_object_store_id, key1, &result_value);
     EXPECT_TRUE(s.ok());
@@ -1288,7 +1288,7 @@ TEST_F(BackingStoreTest, InvalidIds) {
   transaction1.Begin(CreateDummyLock());
 
   BackingStore::RecordIdentifier record;
-  leveldb::Status s = backing_store()->PutRecord(
+  Status s = backing_store()->PutRecord(
       &transaction1, database_id, KeyPrefix::kInvalidId, key, &value, &record);
   EXPECT_FALSE(s.ok());
   s = backing_store()->PutRecord(&transaction1, database_id, 0, key, &value,
@@ -1357,7 +1357,7 @@ TEST_F(BackingStoreTest, CreateDatabase) {
     IndexedDBDatabaseMetadata database;
     database.name = database_name;
     database.version = version;
-    leveldb::Status s = backing_store()->CreateDatabase(database);
+    Status s = backing_store()->CreateDatabase(database);
     EXPECT_TRUE(s.ok());
     EXPECT_GT(database.id, 0);
     database_id = database.id;
@@ -1390,8 +1390,8 @@ TEST_F(BackingStoreTest, CreateDatabase) {
   {
     IndexedDBDatabaseMetadata database;
     bool found;
-    leveldb::Status s = backing_store()->ReadMetadataForDatabaseName(
-        database_name, &database, &found);
+    Status s = backing_store()->ReadMetadataForDatabaseName(database_name,
+                                                            &database, &found);
     EXPECT_TRUE(s.ok());
     EXPECT_TRUE(found);
 
@@ -1427,7 +1427,7 @@ TEST_F(BackingStoreTest, GetDatabaseNames) {
   IndexedDBDatabaseMetadata db1;
   db1.name = db1_name;
   db1.version = db1_version;
-  leveldb::Status s = backing_store()->CreateDatabase(db1);
+  Status s = backing_store()->CreateDatabase(db1);
 
   EXPECT_TRUE(s.ok());
   EXPECT_GT(db1.id, 0LL);
@@ -1657,7 +1657,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     IndexedDBDatabaseMetadata database;
     database.name = database_name;
     database.version = version;
-    leveldb::Status s = backing_store()->CreateDatabase(database);
+    Status s = backing_store()->CreateDatabase(database);
     EXPECT_TRUE(s.ok());
     EXPECT_GT(database.id, 0);
     database_id = database.id;
@@ -1808,7 +1808,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     IndexedDBDatabaseMetadata database;
     database.name = database_name;
     database.version = version;
-    leveldb::Status s = backing_store()->CreateDatabase(database);
+    Status s = backing_store()->CreateDatabase(database);
     EXPECT_TRUE(s.ok());
     EXPECT_GT(database.id, 0);
     database_id = database.id;

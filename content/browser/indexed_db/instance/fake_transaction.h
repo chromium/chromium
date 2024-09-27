@@ -13,22 +13,22 @@ namespace content::indexed_db {
 
 class FakeTransaction : public BackingStore::Transaction {
  public:
-  FakeTransaction(leveldb::Status phase_two_result,
+  FakeTransaction(Status phase_two_result,
                   blink::mojom::IDBTransactionMode mode,
                   base::WeakPtr<BackingStore> backing_store);
-  explicit FakeTransaction(leveldb::Status phase_two_result);
+  explicit FakeTransaction(Status phase_two_result);
 
   FakeTransaction(const FakeTransaction&) = delete;
   FakeTransaction& operator=(const FakeTransaction&) = delete;
 
   void Begin(std::vector<PartitionedLock> locks) override;
-  leveldb::Status CommitPhaseOne(BlobWriteCallback) override;
-  leveldb::Status CommitPhaseTwo() override;
+  Status CommitPhaseOne(BlobWriteCallback) override;
+  Status CommitPhaseTwo() override;
   uint64_t GetTransactionSize() override;
   void Rollback() override;
 
  private:
-  leveldb::Status result_;
+  Status result_;
 };
 
 }  // namespace content::indexed_db

@@ -55,9 +55,9 @@ void SetBoolValue(bool* pointer, bool value_to_set) {
   *pointer = value_to_set;
 }
 
-leveldb::Status MetadataFetcher(
+Status MetadataFetcher(
     bool* called,
-    leveldb::Status return_status,
+    Status return_status,
     std::vector<IndexedDBDatabaseMetadata>* metadata,
     std::vector<IndexedDBDatabaseMetadata>* output_metadata) {
   *called = true;
@@ -86,8 +86,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, NoTasks) {
       base::BindOnce(&SetBoolValue, &done_called, true), kTestMaxRunTime,
       std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   EXPECT_FALSE(metadata_called);
   EXPECT_TRUE(done_called);
@@ -111,8 +111,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TaskOneRound) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   // Expect calls are posted as tasks.
   EXPECT_CALL(task_ref, RunRound()).WillOnce(testing::Return(true));
@@ -141,8 +141,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TaskTwoRounds) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   EXPECT_FALSE(queue.done());
 
@@ -187,8 +187,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, TwoTasks) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   EXPECT_FALSE(queue.done());
 
@@ -232,8 +232,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   queue.Stop();
 
@@ -261,8 +261,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   {
     base::RunLoop loop;
@@ -302,8 +302,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest,
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   {
     base::RunLoop loop;
@@ -345,8 +345,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, StopForTimout) {
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::move(fake_timer));
 
-  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::OK(), &metadata_));
+  queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called, Status::OK(),
+                             &metadata_));
 
   EXPECT_FALSE(queue.done());
 
@@ -384,7 +384,7 @@ TEST_F(BackingStorePreCloseTaskQueueTest, MetadataError) {
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
-                             leveldb::Status::IOError(""), &metadata_));
+                             Status::IOError(""), &metadata_));
 
   task_environment_.RunUntilIdle();
 

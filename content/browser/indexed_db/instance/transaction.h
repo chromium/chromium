@@ -39,7 +39,7 @@ class DatabaseCallbacks;
 // relationship with IDBTransaction in Blink.
 class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
  public:
-  using Operation = base::OnceCallback<leveldb::Status(Transaction*)>;
+  using Operation = base::OnceCallback<Status(Transaction*)>;
   using AbortOperation = base::OnceClosure;
 
   enum State {
@@ -85,7 +85,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
   // single-sequence mode) can fail. This returns the result of that rollback,
   // if applicable.
-  leveldb::Status Abort(const DatabaseError& error);
+  Status Abort(const DatabaseError& error);
 
   // Called by the scopes lock manager when this transaction is unblocked.
   void Start();
@@ -127,7 +127,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   }
 
   enum class RunTasksResult { kError, kNotFinished, kCommitted, kAborted };
-  std::tuple<RunTasksResult, leveldb::Status> RunTasks();
+  std::tuple<RunTasksResult, Status> RunTasks();
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;
@@ -208,21 +208,20 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
       blink::mojom::IDBValuePtr& value,
       std::vector<IndexedDBExternalObject>* external_objects);
 
-  leveldb::Status DoPendingCommit();
+  Status DoPendingCommit();
 
   // Helper for posting a task to call Transaction::CommitPhaseTwo when
   // we know the transaction had no requests and therefore the commit must
   // succeed.
-  static leveldb::Status CommitPhaseTwoProxy(Transaction* transaction);
+  static Status CommitPhaseTwoProxy(Transaction* transaction);
 
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  leveldb::Status BlobWriteComplete(
-      BlobWriteResult result,
-      storage::mojom::WriteBlobToFileResult error);
+  Status BlobWriteComplete(BlobWriteResult result,
+                           storage::mojom::WriteBlobToFileResult error);
   void CloseOpenCursors();
-  leveldb::Status CommitPhaseTwo();
+  Status CommitPhaseTwo();
   void TimeoutFired();
   void ResetTimeoutTimer();
   void SetState(State state);

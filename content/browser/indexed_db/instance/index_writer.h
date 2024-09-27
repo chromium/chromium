@@ -40,11 +40,11 @@ class IndexWriter {
                                      const blink::IndexedDBKey& primary_key,
                                      std::string* error_message) const;
 
-  leveldb::Status WriteIndexKeys(const BackingStore::RecordIdentifier& record,
-                                 BackingStore* store,
-                                 BackingStore::Transaction* transaction,
-                                 int64_t database_id,
-                                 int64_t object_store_id) const;
+  Status WriteIndexKeys(const BackingStore::RecordIdentifier& record,
+                        BackingStore* store,
+                        BackingStore::Transaction* transaction,
+                        int64_t database_id,
+                        int64_t object_store_id) const;
 
   IndexWriter(const IndexWriter&) = delete;
   IndexWriter& operator=(const IndexWriter&) = delete;

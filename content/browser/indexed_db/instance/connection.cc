@@ -139,7 +139,7 @@ void Connection::AbortTransactionAndTearDownOnError(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "txn.id",
                transaction->id());
-  leveldb::Status status = transaction->Abort(error);
+  Status status = transaction->Abort(error);
   if (!status.ok()) {
     bucket_context_handle_->OnDatabaseError(status, {});
   }
@@ -785,7 +785,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
                       "Connection is closing.");
-  leveldb::Status status;
+  Status status;
   switch (error_handling) {
     case CloseErrorHandling::kReturnOnFirstError:
       status = AbortAllTransactions(error);
@@ -807,16 +807,16 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   return callbacks;
 }
 
-leveldb::Status Connection::AbortAllTransactionsAndIgnoreErrors(
+Status Connection::AbortAllTransactionsAndIgnoreErrors(
     const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  leveldb::Status last_error;
+  Status last_error;
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
                    transaction->id());
-      leveldb::Status status = transaction->Abort(error);
+      Status status = transaction->Abort(error);
       if (!status.ok()) {
         last_error = status;
       }
@@ -825,20 +825,20 @@ leveldb::Status Connection::AbortAllTransactionsAndIgnoreErrors(
   return last_error;
 }
 
-leveldb::Status Connection::AbortAllTransactions(const DatabaseError& error) {
+Status Connection::AbortAllTransactions(const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
                    transaction->id());
-      leveldb::Status status = transaction->Abort(error);
+      Status status = transaction->Abort(error);
       if (!status.ok()) {
         return status;
       }
     }
   }
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 // static

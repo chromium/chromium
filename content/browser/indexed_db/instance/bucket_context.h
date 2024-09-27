@@ -35,6 +35,7 @@
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -326,7 +327,7 @@ class CONTENT_EXPORT BucketContext
   // Called when a fatal error has occurred that should result in tearing down
   // the backing store. `BucketContext` *may* be synchronously destroyed after
   // this is invoked. The string, if non-empty, is used as an error message.
-  void OnDatabaseError(leveldb::Status status, const std::string& message);
+  void OnDatabaseError(Status status, const std::string& message);
 
   // Called when the backing store has been corrupted.
   void HandleBackingStoreCorruption(const DatabaseError& error);
@@ -419,7 +420,7 @@ class CONTENT_EXPORT BucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
-  std::tuple<leveldb::Status, DatabaseError, IndexedDBDataLossInfo>
+  std::tuple<Status, DatabaseError, IndexedDBDataLossInfo>
   InitBackingStoreIfNeeded(bool create_if_missing);
 
   // Destroys `backing_store_` and all associated state. If there are no

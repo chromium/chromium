@@ -106,15 +106,13 @@ class TransactionTest : public testing::Test {
 
   void RunPostedTasks() { base::RunLoop().RunUntilIdle(); }
 
-  leveldb::Status DummyOperation(leveldb::Status result,
-                                 Transaction* transaction) {
+  Status DummyOperation(Status result, Transaction* transaction) {
     return result;
   }
-  leveldb::Status AbortableOperation(AbortObserver* observer,
-                                     Transaction* transaction) {
+  Status AbortableOperation(AbortObserver* observer, Transaction* transaction) {
     transaction->ScheduleAbortTask(
         base::BindOnce(&AbortObserver::AbortTask, base::Unretained(observer)));
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   std::unique_ptr<Connection> CreateConnection(int priority = 0) {
@@ -153,7 +151,7 @@ class TransactionTest : public testing::Test {
       const int64_t id,
       const std::set<int64_t>& object_store_ids,
       blink::mojom::IDBTransactionMode mode,
-      leveldb::Status commit_phase_two_error_status) {
+      Status commit_phase_two_error_status) {
     // Use fake transactions to simulate errors only.
     CHECK(!commit_phase_two_error_status.ok());
 
@@ -206,9 +204,8 @@ TEST_F(TransactionTest, Timeout) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   // Schedule a task - timer won't be started until it's processed.
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
-                                           base::Unretained(this),
-                                           leveldb::Status::OK()));
+  transaction->ScheduleTask(base::BindOnce(
+      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -243,9 +240,8 @@ TEST_F(TransactionTest, Timeout) {
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
 
   // This task will be ignored.
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
-                                           base::Unretained(this),
-                                           leveldb::Status::OK()));
+  transaction->ScheduleTask(base::BindOnce(
+      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -268,7 +264,7 @@ TEST_F(TransactionTest, TimeoutPreemptive) {
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     leveldb::Status::OK()));
+                     Status::OK()));
   transaction->AddPreemptiveEvent();
 
   EXPECT_TRUE(transaction->HasPendingTasks());
@@ -285,9 +281,8 @@ TEST_F(TransactionTest, TimeoutPreemptive) {
   EXPECT_TRUE(transaction->preemptive_task_queue_.empty());
 
   // Schedule a task - timer won't be started until preemptive tasks are done.
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
-                                           base::Unretained(this),
-                                           leveldb::Status::OK()));
+  transaction->ScheduleTask(base::BindOnce(
+      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -335,7 +330,7 @@ TEST_F(TransactionTest, TimeoutWithPriorities) {
     // Schedule a task - timer won't be started until it's processed.
     transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
                                              base::Unretained(this),
-                                             leveldb::Status::OK()));
+                                             Status::OK()));
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return transaction->IsTimeoutTimerRunning(); }));
 
@@ -474,7 +469,7 @@ TEST_P(TransactionTestMode, ScheduleNormalTask) {
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Normal,
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     leveldb::Status::OK()));
+                     Status::OK()));
 
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -517,7 +512,7 @@ TEST_P(TransactionTestMode, TaskFails) {
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Normal,
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     leveldb::Status::IOError("error")));
+                     Status::IOError("error")));
 
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -548,8 +543,7 @@ TEST_F(TransactionTest, SchedulePreemptiveTask) {
   std::unique_ptr<Connection> connection = CreateConnection();
   Transaction* transaction = CreateFakeTransactionWithCommitPhaseTwoError(
       connection.get(), /*id=*/0, /*object_store_ids=*/{},
-      blink::mojom::IDBTransactionMode::ReadWrite,
-      leveldb::Status::Corruption("Ouch."));
+      blink::mojom::IDBTransactionMode::ReadWrite, Status::Corruption("Ouch."));
   db_ = nullptr;
 
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -562,7 +556,7 @@ TEST_F(TransactionTest, SchedulePreemptiveTask) {
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     leveldb::Status::OK()));
+                     Status::OK()));
   transaction->AddPreemptiveEvent();
 
   EXPECT_TRUE(transaction->HasPendingTasks());
@@ -593,7 +587,7 @@ TEST_P(TransactionTestMode, AbortTasks) {
   std::unique_ptr<Connection> connection = CreateConnection();
   Transaction* transaction = CreateFakeTransactionWithCommitPhaseTwoError(
       connection.get(), /*id=*/0, /*object_store_ids=*/{},
-      /*mode=*/GetParam(), leveldb::Status::Corruption("Ouch."));
+      /*mode=*/GetParam(), Status::Corruption("Ouch."));
   db_ = nullptr;
 
   AbortObserver observer;
@@ -627,7 +621,7 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     leveldb::Status::OK()));
+                     Status::OK()));
   EXPECT_EQ(0, transaction->pending_preemptive_events_);
   transaction->AddPreemptiveEvent();
   EXPECT_EQ(1, transaction->pending_preemptive_events_);
@@ -649,9 +643,8 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
   EXPECT_FALSE(transaction->is_commit_pending_);
 
   // This task will be ignored.
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
-                                           base::Unretained(this),
-                                           leveldb::Status::OK()));
+  transaction->ScheduleTask(base::BindOnce(
+      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_FALSE(transaction->HasPendingTasks());

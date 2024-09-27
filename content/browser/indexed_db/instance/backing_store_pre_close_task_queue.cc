@@ -90,15 +90,14 @@ void BackingStorePreCloseTaskQueue::StopForTimout() {
   OnComplete();
 }
 
-void BackingStorePreCloseTaskQueue::StopForMetadataError(
-    const leveldb::Status& status) {
+void BackingStorePreCloseTaskQueue::StopForMetadataError(const Status& status) {
   if (done_) {
     return;
   }
 
   LOCAL_HISTOGRAM_ENUMERATION(
       "WebCore.IndexedDB.BackingStorePreCloseTaskList.MetadataError",
-      leveldb_env::GetLevelDBStatusUMAValue(status),
+      leveldb_env::GetLevelDBStatusUMAValue(status.leveldb_status()),
       leveldb_env::LEVELDB_STATUS_MAX);
   while (!tasks_.empty()) {
     tasks_.pop_front();
@@ -119,7 +118,7 @@ void BackingStorePreCloseTaskQueue::RunLoop() {
   PreCloseTask* task = tasks_.front().get();
   if (task->RequiresMetadata() && !task->set_metadata_was_called_) {
     if (!has_metadata_) {
-      leveldb::Status status = std::move(metadata_fetcher_).Run(&metadata_);
+      Status status = std::move(metadata_fetcher_).Run(&metadata_);
       has_metadata_ = true;
       if (!status.ok()) {
         StopForMetadataError(status);

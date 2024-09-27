@@ -60,7 +60,7 @@ bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
   return true;
 }
 
-leveldb::Status IndexWriter::WriteIndexKeys(
+Status IndexWriter::WriteIndexKeys(
     const BackingStore::RecordIdentifier& record_identifier,
     BackingStore* backing_store,
     BackingStore::Transaction* transaction,
@@ -68,14 +68,14 @@ leveldb::Status IndexWriter::WriteIndexKeys(
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
   for (const auto& key : keys_) {
-    leveldb::Status s = backing_store->PutIndexDataForRecord(
-        transaction, database_id, object_store_id, index_id, key,
-        record_identifier);
+    Status s = backing_store->PutIndexDataForRecord(transaction, database_id,
+                                                    object_store_id, index_id,
+                                                    key, record_identifier);
     if (!s.ok()) {
       return s;
     }
   }
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 bool IndexWriter::AddingKeyAllowed(BackingStore* backing_store,
@@ -94,7 +94,7 @@ bool IndexWriter::AddingKeyAllowed(BackingStore* backing_store,
 
   std::unique_ptr<IndexedDBKey> found_primary_key;
   bool found = false;
-  leveldb::Status s = backing_store->KeyExistsInIndex(
+  Status s = backing_store->KeyExistsInIndex(
       transaction, database_id, object_store_id, index_id, index_key,
       &found_primary_key, &found);
   if (!s.ok()) {

@@ -106,12 +106,12 @@ void Cursor::Advance(uint32_t count,
                                             std::move(aborting_callback)));
 }
 
-leveldb::Status Cursor::AdvanceOperation(
+Status Cursor::AdvanceOperation(
     uint32_t count,
     blink::mojom::IDBCursor::AdvanceCallback callback,
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::AdvanceOperation");
-  leveldb::Status s = leveldb::Status::OK();
+  Status s = Status::OK();
   if (!cursor_ || !cursor_->Advance(count, &s)) {
     cursor_.reset();
 
@@ -182,13 +182,13 @@ void Cursor::Continue(const IndexedDBKey& key,
           std::move(aborting_callback)));
 }
 
-leveldb::Status Cursor::ContinueOperation(
+Status Cursor::ContinueOperation(
     std::unique_ptr<IndexedDBKey> key,
     std::unique_ptr<IndexedDBKey> primary_key,
     blink::mojom::IDBCursor::ContinueCallback callback,
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
-  leveldb::Status s = leveldb::Status::OK();
+  Status s = Status::OK();
   if (!cursor_ || !cursor_->Continue(key.get(), primary_key.get(),
                                      BackingStore::Cursor::SEEK, &s)) {
     cursor_.reset();
@@ -256,13 +256,13 @@ void Cursor::Prefetch(int number_to_fetch,
                                 std::move(aborting_callback)));
 }
 
-leveldb::Status Cursor::PrefetchIterationOperation(
+Status Cursor::PrefetchIterationOperation(
     int number_to_fetch,
     blink::mojom::IDBCursor::PrefetchCallback callback,
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::PrefetchIterationOperation");
 
-  leveldb::Status s = leveldb::Status::OK();
+  Status s = Status::OK();
   std::vector<IndexedDBKey> found_keys;
   std::vector<IndexedDBKey> found_primary_keys;
   std::vector<IndexedDBValue> found_values;
@@ -360,7 +360,7 @@ void Cursor::PrefetchReset(int used_prefetches) {
   if (cursor_) {
     DCHECK_GT(used_prefetches, 0);
     for (int i = 0; i < used_prefetches - 1; ++i) {
-      leveldb::Status unused;
+      Status unused;
       bool ok = cursor_->Continue(&unused);
       DCHECK(ok);
     }

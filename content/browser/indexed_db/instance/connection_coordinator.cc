@@ -51,7 +51,6 @@
 
 using base::NumberToString16;
 using blink::IndexedDBDatabaseMetadata;
-using leveldb::Status;
 
 namespace content::indexed_db {
 namespace {
@@ -120,7 +119,7 @@ class ConnectionCoordinator::ConnectionRequest {
   RequestState state() const { return state_; }
 
   // Relevant if state() is kError.
-  leveldb::Status status() const { return saved_leveldb_status_; }
+  Status status() const { return saved_status_; }
 
  protected:
   void ContinueAfterAcquiringLocks(base::OnceClosure next_step) {
@@ -151,7 +150,7 @@ class ConnectionCoordinator::ConnectionRequest {
 
   base::RepeatingClosure tasks_available_callback_;
 
-  leveldb::Status saved_leveldb_status_;
+  Status saved_status_;
 
   PartitionedLockHolder lock_receiver_;
 };
@@ -210,8 +209,8 @@ class ConnectionCoordinator::OpenRequest
   }
 
   void InitDatabase(bool has_connections) {
-    saved_leveldb_status_ = db_->OpenInternal();
-    if (!saved_leveldb_status_.ok()) {
+    saved_status_ = db_->OpenInternal();
+    if (!saved_status_.ok()) {
       // TODO(jsbell): Consider including sanitized leveldb status message.
       std::u16string message;
       if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {
@@ -476,8 +475,8 @@ class ConnectionCoordinator::DeleteRequest
 
   void InitDatabase(bool has_connections) {
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
-    saved_leveldb_status_ = db_->OpenInternal();
-    if (!saved_leveldb_status_.ok()) {
+    saved_status_ = db_->OpenInternal();
+    if (!saved_status_.ok()) {
       DatabaseError error(blink::mojom::IDBException::kUnknownError,
                           u"Internal error creating database backend "
                           u"for indexedDB.deleteDatabase.");
@@ -526,12 +525,12 @@ class ConnectionCoordinator::DeleteRequest
     // down if the disk is really bad.
     base::WeakPtr<DeleteRequest> weak_ptr = weak_factory_.GetWeakPtr();
     if (db_->backing_store()) {
-      saved_leveldb_status_ = db_->backing_store()->DeleteDatabase(
+      saved_status_ = db_->backing_store()->DeleteDatabase(
           db_->metadata_.name, std::move(lock_receiver_.locks),
           std::move(on_database_deleted_));
       base::UmaHistogramEnumeration(
           "WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus",
-          leveldb_env::GetLevelDBStatusUMAValue(saved_leveldb_status_),
+          leveldb_env::GetLevelDBStatusUMAValue(saved_status_.leveldb_status()),
           leveldb_env::LEVELDB_STATUS_MAX);
     }
 
@@ -540,7 +539,7 @@ class ConnectionCoordinator::DeleteRequest
     }
 
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
-    if (!saved_leveldb_status_.ok()) {
+    if (!saved_status_.ok()) {
       // TODO(jsbell): Consider including sanitized leveldb status message.
       DatabaseError error(blink::mojom::IDBException::kUnknownError,
                           "Internal error deleting database.");
@@ -605,16 +604,16 @@ void ConnectionCoordinator::ScheduleDeleteDatabase(
   bucket_context_->QueueRunTasks();
 }
 
-leveldb::Status ConnectionCoordinator::PruneTasksForForceClose() {
+Status ConnectionCoordinator::PruneTasksForForceClose() {
   // Remove all pending requests that don't want to execute during force close
   // (open requests).
   base::queue<std::unique_ptr<ConnectionRequest>> requests_to_still_run;
-  leveldb::Status last_error;
+  Status last_error;
   while (!request_queue_.empty()) {
     std::unique_ptr<ConnectionRequest> request =
         std::move(request_queue_.front());
     request_queue_.pop();
-    leveldb::Status old_error = request->status();
+    Status old_error = request->status();
 
     if (request->ShouldPruneForForceClose()) {
       if (!old_error.ok()) {
@@ -680,10 +679,10 @@ void ConnectionCoordinator::OnUpgradeTransactionFinished(bool committed) {
   request_queue_.front()->UpgradeTransactionFinished(committed);
 }
 
-std::tuple<ConnectionCoordinator::ExecuteTaskResult, leveldb::Status>
+std::tuple<ConnectionCoordinator::ExecuteTaskResult, Status>
 ConnectionCoordinator::ExecuteTask(bool has_connections) {
   if (request_queue_.empty()) {
-    return {ExecuteTaskResult::kDone, leveldb::Status()};
+    return {ExecuteTaskResult::kDone, Status()};
   }
 
   auto& request = request_queue_.front();
@@ -695,11 +694,11 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
   switch (request->state()) {
     case RequestState::kNotStarted:
       NOTREACHED_IN_MIGRATION();
-      return {ExecuteTaskResult::kError, leveldb::Status::OK()};
+      return {ExecuteTaskResult::kError, Status::OK()};
     case RequestState::kPendingNoConnections:
     case RequestState::kPendingLocks:
     case RequestState::kPendingTransactionComplete:
-      return {ExecuteTaskResult::kPendingAsyncWork, leveldb::Status()};
+      return {ExecuteTaskResult::kPendingAsyncWork, Status()};
     case RequestState::kDone: {
       // Move `request_to_discard` out of `request_queue_` then
       // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
@@ -711,10 +710,10 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
       request_to_discard.reset();
       return {request_queue_.empty() ? ExecuteTaskResult::kDone
                                      : ExecuteTaskResult::kMoreTasks,
-              leveldb::Status::OK()};
+              Status::OK()};
     }
     case RequestState::kError: {
-      leveldb::Status status = request->status();
+      Status status = request->status();
       // Move `request_to_discard` out of `request_queue_` then
       // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
       // calls OnConnectionClosed and OnNoConnections, which interact with

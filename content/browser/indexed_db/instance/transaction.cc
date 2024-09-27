@@ -217,9 +217,9 @@ void Transaction::ScheduleAbortTask(AbortOperation abort_task) {
   abort_task_stack_.push(std::move(abort_task));
 }
 
-leveldb::Status Transaction::Abort(const DatabaseError& error) {
+Status Transaction::Abort(const DatabaseError& error) {
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   base::UmaHistogramEnumeration("WebCore.IndexedDB.TransactionAbortReason",
@@ -263,11 +263,11 @@ leveldb::Status Transaction::Abort(const DatabaseError& error) {
 
   bucket_context_->QueueRunTasks();
   bucket_context_.Release();
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 // static
-leveldb::Status Transaction::CommitPhaseTwoProxy(Transaction* transaction) {
+Status Transaction::CommitPhaseTwoProxy(Transaction* transaction) {
   return transaction->CommitPhaseTwo();
 }
 
@@ -525,18 +525,18 @@ uint64_t Transaction::CreateExternalObjects(
   return total_blob_size.ValueOrDie();
 }
 
-leveldb::Status Transaction::BlobWriteComplete(
+Status Transaction::BlobWriteComplete(
     BlobWriteResult result,
     storage::mojom::WriteBlobToFileResult error) {
   TRACE_EVENT0("IndexedDB", "Transaction::BlobWriteComplete");
   if (state_ == FINISHED) {  // aborted
-    return leveldb::Status::OK();
+    return Status::OK();
   }
   DCHECK_EQ(state_, COMMITTING);
 
   switch (result) {
     case BlobWriteResult::kFailure: {
-      leveldb::Status status = Abort(
+      Status status = Abort(
           DatabaseError(blink::mojom::IDBException::kDataError,
                         base::ASCIIToUTF16(base::StringPrintf(
                             "Failed to write blobs (%s)",
@@ -545,12 +545,12 @@ leveldb::Status Transaction::BlobWriteComplete(
         bucket_context_->OnDatabaseError(status, {});
       }
       // The result is ignored.
-      return leveldb::Status::OK();
+      return Status::OK();
     }
     case BlobWriteResult::kRunPhaseTwoAsync:
       ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
       bucket_context_->QueueRunTasks();
-      return leveldb::Status::OK();
+      return Status::OK();
     case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
       return CommitPhaseTwo();
     }
@@ -558,7 +558,7 @@ leveldb::Status Transaction::BlobWriteComplete(
   NOTREACHED_IN_MIGRATION();
 }
 
-leveldb::Status Transaction::DoPendingCommit() {
+Status Transaction::DoPendingCommit() {
   TRACE_EVENT1("IndexedDB", "Transaction::DoPendingCommit", "txn.id", id());
 
   ResetTimeoutTimer();
@@ -567,7 +567,7 @@ leveldb::Status Transaction::DoPendingCommit() {
   // an abort has already been initiated asynchronously by the
   // back-end.
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
   DCHECK_NE(state_, COMMITTING);
 
@@ -577,14 +577,14 @@ leveldb::Status Transaction::DoPendingCommit() {
   // other transactions. The commit will be initiated when the transaction
   // coordinator unblocks this transaction.
   if (state_ != STARTED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   // Front-end has requested a commit, but there may be tasks like
   // create_index which are considered synchronous by the front-end
   // but are processed asynchronously.
   if (HasPendingTasks()) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   // If a transaction is being committed but it has sent more errors to the
@@ -598,7 +598,7 @@ leveldb::Status Transaction::DoPendingCommit() {
 
   SetState(COMMITTING);
 
-  leveldb::Status s;
+  Status s;
   if (!used_) {
     s = CommitPhaseTwo();
   } else {
@@ -608,7 +608,7 @@ leveldb::Status Transaction::DoPendingCommit() {
         [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
            storage::mojom::WriteBlobToFileResult error) {
           if (!transaction) {
-            return leveldb::Status::OK();
+            return Status::OK();
           }
           return transaction->BlobWriteComplete(result, error);
         },
@@ -618,17 +618,17 @@ leveldb::Status Transaction::DoPendingCommit() {
   return s;
 }
 
-leveldb::Status Transaction::CommitPhaseTwo() {
+Status Transaction::CommitPhaseTwo() {
   // Abort may have been called just as the blob write completed.
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   DCHECK_EQ(state_, COMMITTING);
 
   SetState(FINISHED);
 
-  leveldb::Status s;
+  Status s;
   bool committed;
   if (!used_) {
     committed = true;
@@ -710,7 +710,7 @@ leveldb::Status Transaction::CommitPhaseTwo() {
   }
 
   DatabaseError error;
-  if (leveldb_env::IndicatesDiskFull(s)) {
+  if (leveldb_env::IndicatesDiskFull(s.leveldb_status())) {
     error =
         DatabaseError(blink::mojom::IDBException::kQuotaError,
                       "Encountered disk full while committing transaction.");
@@ -722,18 +722,17 @@ leveldb::Status Transaction::CommitPhaseTwo() {
   return s;
 }
 
-std::tuple<Transaction::RunTasksResult, leveldb::Status>
-Transaction::RunTasks() {
+std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
   TRACE_EVENT1("IndexedDB", "Transaction::RunTasks", "txn.id", id());
 
   DCHECK(!processing_event_queue_);
 
   // May have been aborted.
   if (aborted_) {
-    return {RunTasksResult::kAborted, leveldb::Status::OK()};
+    return {RunTasksResult::kAborted, Status::OK()};
   }
   if (IsTaskQueueEmpty() && !is_commit_pending_) {
-    return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
+    return {RunTasksResult::kNotFinished, Status::OK()};
   }
 
   processing_event_queue_ = true;
@@ -750,7 +749,7 @@ Transaction::RunTasks() {
   while (!task_queue->empty() && state_ != FINISHED) {
     DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
     Operation task(task_queue->pop());
-    leveldb::Status result = std::move(task).Run(this);
+    Status result = std::move(task).Run(this);
     if (!run_preemptive_queue) {
       DCHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
@@ -775,7 +774,7 @@ Transaction::RunTasks() {
   if (!HasPendingTasks() && state_ == STARTED && is_commit_pending_) {
     processing_event_queue_ = false;
     // This can delete |this|.
-    leveldb::Status result = DoPendingCommit();
+    Status result = DoPendingCommit();
     if (!result.ok()) {
       return {RunTasksResult::kError, result};
     }
@@ -785,7 +784,7 @@ Transaction::RunTasks() {
   if (state_ == FINISHED) {
     processing_event_queue_ = false;
     return {aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted,
-            leveldb::Status::OK()};
+            Status::OK()};
   }
 
   DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
@@ -798,7 +797,7 @@ Transaction::RunTasks() {
                                              ptr_factory_.GetWeakPtr()));
   }
   processing_event_queue_ = false;
-  return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
+  return {RunTasksResult::kNotFinished, Status::OK()};
 }
 
 storage::mojom::IdbTransactionMetadataPtr Transaction::GetIdbInternalsMetadata()
@@ -857,7 +856,7 @@ void Transaction::TimeoutFired() {
   }
 
   if (++timeout_strikes_ >= kMaxTimeoutStrikes) {
-    leveldb::Status result =
+    Status result =
         Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
                             u"Transaction timed out due to inactivity."));
     if (!result.ok()) {

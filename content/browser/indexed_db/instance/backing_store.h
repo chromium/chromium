@@ -31,12 +31,12 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -135,23 +135,20 @@ class CONTENT_EXPORT BackingStore {
     // files should be cleaned up.
     // The callback will be called eventually on success or failure, or
     // immediately if phase one is complete due to lack of any blobs to write.
-    virtual leveldb::Status CommitPhaseOne(BlobWriteCallback callback);
+    virtual Status CommitPhaseOne(BlobWriteCallback callback);
 
     // CommitPhaseTwo is called once the blob files (if any) have been written
     // to disk, and commits the actual transaction to the backing store,
     // including blob journal updates, then deletes any blob files deleted
     // by the transaction and not referenced by running scripts.
-    virtual leveldb::Status CommitPhaseTwo();
+    virtual Status CommitPhaseTwo();
 
-    // When LevelDBScopes is in single-sequence mode then this will return the
-    // result of the rollback. Otherwise leveldb::Status::OK() is returned.
     virtual void Rollback();
 
     void Reset();
-    leveldb::Status PutExternalObjectsIfNeeded(
-        int64_t database_id,
-        const std::string& object_store_data_key,
-        std::vector<IndexedDBExternalObject>*);
+    Status PutExternalObjectsIfNeeded(int64_t database_id,
+                                      const std::string& object_store_data_key,
+                                      std::vector<IndexedDBExternalObject>*);
     void PutExternalObjects(int64_t database_id,
                             const std::string& object_store_data_key,
                             std::vector<IndexedDBExternalObject>*);
@@ -163,10 +160,9 @@ class CONTENT_EXPORT BackingStore {
 
     virtual uint64_t GetTransactionSize();
 
-    leveldb::Status GetExternalObjectsForRecord(
-        int64_t database_id,
-        const std::string& object_store_data_key,
-        IndexedDBValue* value);
+    Status GetExternalObjectsForRecord(int64_t database_id,
+                                       const std::string& object_store_data_key,
+                                       IndexedDBValue* value);
 
     base::WeakPtr<Transaction> AsWeakPtr();
 
@@ -184,7 +180,7 @@ class CONTENT_EXPORT BackingStore {
     // Called by CommitPhaseOne: Identifies the blob entries to write and adds
     // them to the recovery blob journal directly (i.e. not as part of the
     // transaction). Populates blobs_to_write_.
-    leveldb::Status HandleBlobPreTransaction();
+    Status HandleBlobPreTransaction();
 
     // Called by CommitPhaseOne: Populates blob_files_to_remove_ by
     // determining which blobs are deleted as part of the transaction, and
@@ -195,7 +191,7 @@ class CONTENT_EXPORT BackingStore {
     // Called by CommitPhaseOne: Kicks off the asynchronous writes of blobs
     // identified in HandleBlobPreTransaction. The callback will be called
     // eventually on success or failure.
-    leveldb::Status WriteNewBlobs(BlobWriteCallback callback);
+    Status WriteNewBlobs(BlobWriteCallback callback);
 
     // Called by CommitPhaseTwo: Partition blob references in blobs_to_remove_
     // into live (active references) and dead (no references).
@@ -286,27 +282,25 @@ class CONTENT_EXPORT BackingStore {
       return *current_key_;
     }
 
-    bool Continue(leveldb::Status* s) {
-      return Continue(nullptr, nullptr, SEEK, s);
-    }
+    bool Continue(Status* s) { return Continue(nullptr, nullptr, SEEK, s); }
     bool Continue(const blink::IndexedDBKey* key,
                   IteratorState state,
-                  leveldb::Status* s) {
+                  Status* s) {
       return Continue(key, nullptr, state, s);
     }
     bool Continue(const blink::IndexedDBKey* key,
                   const blink::IndexedDBKey* primary_key,
                   IteratorState state,
-                  leveldb::Status*);
-    bool Advance(uint32_t count, leveldb::Status*);
-    bool FirstSeek(leveldb::Status*);
+                  Status*);
+    bool Advance(uint32_t count, Status*);
+    bool FirstSeek(Status*);
 
     // Clone may return a nullptr if cloning fails for any reason.
     virtual std::unique_ptr<Cursor> Clone() const = 0;
     virtual const blink::IndexedDBKey& primary_key() const;
     virtual IndexedDBValue* value() = 0;
     virtual const RecordIdentifier& record_identifier() const;
-    virtual bool LoadCurrentRow(leveldb::Status* s) = 0;
+    virtual bool LoadCurrentRow(Status* s) = 0;
 
    protected:
     Cursor(base::WeakPtr<Transaction> transaction,
@@ -349,14 +343,14 @@ class CONTENT_EXPORT BackingStore {
     ContinueResult ContinueNext(const blink::IndexedDBKey* key,
                                 const blink::IndexedDBKey* primary_key,
                                 IteratorState state,
-                                leveldb::Status*);
+                                Status*);
     // For cursors with direction Prev or PrevNoDuplicate. The PrevNoDuplicate
     // case has additional complexity of not being symmetric with
     // NextNoDuplicate.
     ContinueResult ContinuePrevious(const blink::IndexedDBKey* key,
                                     const blink::IndexedDBKey* primary_key,
                                     IteratorState state,
-                                    leveldb::Status*);
+                                    Status*);
 
     base::WeakPtrFactory<Cursor> weak_factory_
         GUARDED_BY_CONTEXT(sequence_checker_){this};
@@ -395,7 +389,7 @@ class CONTENT_EXPORT BackingStore {
 
   // Initializes the backing store. This must be called before doing any
   // operations or method calls on this object.
-  leveldb::Status Initialize(bool clean_active_blob_journal);
+  Status Initialize(bool clean_active_blob_journal);
 
   virtual void TearDown(base::WaitableEvent* signal_on_destruction);
 
@@ -418,13 +412,12 @@ class CONTENT_EXPORT BackingStore {
   // Creates a new database in the backing store. `metadata` is an in-out param.
   // The `name` and `version` fields are inputs, while the `id` and
   // `max_object_store_id` fields are outputs.
-  virtual leveldb::Status CreateDatabase(
-      blink::IndexedDBDatabaseMetadata& metadata);
-  virtual leveldb::Status DeleteDatabase(const std::u16string& name,
-                                         std::vector<PartitionedLock> locks,
-                                         base::OnceClosure on_complete);
+  virtual Status CreateDatabase(blink::IndexedDBDatabaseMetadata& metadata);
+  virtual Status DeleteDatabase(const std::u16string& name,
+                                std::vector<PartitionedLock> locks,
+                                base::OnceClosure on_complete);
   // Changes the database version to |version|.
-  [[nodiscard]] virtual leveldb::Status SetDatabaseVersion(
+  [[nodiscard]] virtual Status SetDatabaseVersion(
       Transaction* transaction,
       int64_t row_id,
       int64_t version,
@@ -434,7 +427,7 @@ class CONTENT_EXPORT BackingStore {
                                    const storage::BucketLocator& bucket_locator,
                                    const std::string& message);
 
-  [[nodiscard]] virtual leveldb::Status CreateObjectStore(
+  [[nodiscard]] virtual Status CreateObjectStore(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
@@ -442,11 +435,11 @@ class CONTENT_EXPORT BackingStore {
       blink::IndexedDBKeyPath key_path,
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata);
-  [[nodiscard]] virtual leveldb::Status DeleteObjectStore(
+  [[nodiscard]] virtual Status DeleteObjectStore(
       Transaction* transaction,
       int64_t database_id,
       const blink::IndexedDBObjectStoreMetadata& object_store);
-  [[nodiscard]] virtual leveldb::Status RenameObjectStore(
+  [[nodiscard]] virtual Status RenameObjectStore(
       Transaction* transaction,
       int64_t database_id,
       std::u16string new_name,
@@ -454,7 +447,7 @@ class CONTENT_EXPORT BackingStore {
       blink::IndexedDBObjectStoreMetadata* metadata);
 
   // Creates a new index metadata and writes it to the transaction.
-  [[nodiscard]] virtual leveldb::Status CreateIndex(
+  [[nodiscard]] virtual Status CreateIndex(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
@@ -465,13 +458,13 @@ class CONTENT_EXPORT BackingStore {
       bool is_multi_entry,
       blink::IndexedDBIndexMetadata* metadata);
   // Deletes the index metadata on the transaction (but not any index entries).
-  [[nodiscard]] virtual leveldb::Status DeleteIndex(
+  [[nodiscard]] virtual Status DeleteIndex(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBIndexMetadata& metadata);
   // Renames the given index and writes it to the transaction.
-  [[nodiscard]] virtual leveldb::Status RenameIndex(
+  [[nodiscard]] virtual Status RenameIndex(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
@@ -479,45 +472,40 @@ class CONTENT_EXPORT BackingStore {
       std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata);
 
-  [[nodiscard]] virtual leveldb::Status GetRecord(
-      Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const blink::IndexedDBKey& key,
-      IndexedDBValue* record);
-  [[nodiscard]] virtual leveldb::Status PutRecord(
-      Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const blink::IndexedDBKey& key,
-      IndexedDBValue* value,
-      RecordIdentifier* record);
-  [[nodiscard]] virtual leveldb::Status ClearObjectStore(
-      Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id);
-  [[nodiscard]] virtual leveldb::Status DeleteRecord(
-      Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const RecordIdentifier& record);
-  [[nodiscard]] virtual leveldb::Status DeleteRange(
-      Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const blink::IndexedDBKeyRange&);
-  [[nodiscard]] virtual leveldb::Status GetKeyGeneratorCurrentNumber(
+  [[nodiscard]] virtual Status GetRecord(Transaction* transaction,
+                                         int64_t database_id,
+                                         int64_t object_store_id,
+                                         const blink::IndexedDBKey& key,
+                                         IndexedDBValue* record);
+  [[nodiscard]] virtual Status PutRecord(Transaction* transaction,
+                                         int64_t database_id,
+                                         int64_t object_store_id,
+                                         const blink::IndexedDBKey& key,
+                                         IndexedDBValue* value,
+                                         RecordIdentifier* record);
+  [[nodiscard]] virtual Status ClearObjectStore(Transaction* transaction,
+                                                int64_t database_id,
+                                                int64_t object_store_id);
+  [[nodiscard]] virtual Status DeleteRecord(Transaction* transaction,
+                                            int64_t database_id,
+                                            int64_t object_store_id,
+                                            const RecordIdentifier& record);
+  [[nodiscard]] virtual Status DeleteRange(Transaction* transaction,
+                                           int64_t database_id,
+                                           int64_t object_store_id,
+                                           const blink::IndexedDBKeyRange&);
+  [[nodiscard]] virtual Status GetKeyGeneratorCurrentNumber(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t* current_number);
-  [[nodiscard]] virtual leveldb::Status MaybeUpdateKeyGeneratorCurrentNumber(
+  [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t new_state,
       bool check_current);
-  [[nodiscard]] virtual leveldb::Status KeyExistsInObjectStore(
+  [[nodiscard]] virtual Status KeyExistsInObjectStore(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
@@ -525,25 +513,25 @@ class CONTENT_EXPORT BackingStore {
       RecordIdentifier* found_record_identifier,
       bool* found);
 
-  [[nodiscard]] virtual leveldb::Status ClearIndex(Transaction* transaction,
-                                                   int64_t database_id,
-                                                   int64_t object_store_id,
-                                                   int64_t index_id);
-  [[nodiscard]] virtual leveldb::Status PutIndexDataForRecord(
+  [[nodiscard]] virtual Status ClearIndex(Transaction* transaction,
+                                          int64_t database_id,
+                                          int64_t object_store_id,
+                                          int64_t index_id);
+  [[nodiscard]] virtual Status PutIndexDataForRecord(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       const RecordIdentifier& record);
-  [[nodiscard]] virtual leveldb::Status GetPrimaryKeyViaIndex(
+  [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* primary_key);
-  [[nodiscard]] virtual leveldb::Status KeyExistsInIndex(
+  [[nodiscard]] virtual Status KeyExistsInIndex(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
@@ -553,15 +541,14 @@ class CONTENT_EXPORT BackingStore {
       bool* exists);
 
   // Fill in the provided list with existing database names.
-  [[nodiscard]] leveldb::Status GetDatabaseNames(
-      std::vector<std::u16string>* names);
+  [[nodiscard]] Status GetDatabaseNames(std::vector<std::u16string>* names);
   // Fill in the provided list with existing database names and versions.
-  [[nodiscard]] leveldb::Status GetDatabaseNamesAndVersions(
+  [[nodiscard]] Status GetDatabaseNamesAndVersions(
       std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions);
   // Reads in metadata for the database and all object stores & indices.
   // Note: the database name is not populated in |metadata|. Virtual for
   // testing.
-  [[nodiscard]] virtual leveldb::Status ReadMetadataForDatabaseName(
+  [[nodiscard]] virtual Status ReadMetadataForDatabaseName(
       const std::u16string& name,
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found);
@@ -574,14 +561,14 @@ class CONTENT_EXPORT BackingStore {
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
-      leveldb::Status*);
+      Status*);
   virtual std::unique_ptr<Cursor> OpenObjectStoreCursor(
       Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
-      leveldb::Status*);
+      Status*);
   virtual std::unique_ptr<Cursor> OpenIndexKeyCursor(
       Transaction* transaction,
       int64_t database_id,
@@ -589,7 +576,7 @@ class CONTENT_EXPORT BackingStore {
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
-      leveldb::Status*);
+      Status*);
   virtual std::unique_ptr<Cursor> OpenIndexCursor(
       Transaction* transaction,
       int64_t database_id,
@@ -597,7 +584,7 @@ class CONTENT_EXPORT BackingStore {
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
-      leveldb::Status*);
+      Status*);
 
   TransactionalLevelDBDatabase* db() { return db_.get(); }
 
@@ -643,7 +630,7 @@ class CONTENT_EXPORT BackingStore {
 
   // Create and initialize a BackingStore; verify and report its status.
   static std::tuple<std::unique_ptr<BackingStore>,
-                    leveldb::Status,
+                    Status,
                     IndexedDBDataLossInfo,
                     bool /* is_disk_full */>
   OpenAndVerify(BucketContext& bucket_context,
@@ -655,7 +642,7 @@ class CONTENT_EXPORT BackingStore {
                 bool create_if_missing);
 
   // Delete LevelDB files; used to handle corruptions.
-  static leveldb::Status DestroyDatabase(const base::FilePath file_path);
+  static Status DestroyDatabase(const base::FilePath file_path);
 
  protected:
   friend class BucketContext;
@@ -664,22 +651,22 @@ class CONTENT_EXPORT BackingStore {
     bucket_context_ = bucket_context;
   }
 
-  leveldb::Status AnyDatabaseContainsBlobs(bool* blobs_exist);
+  Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 
   // A helper function for V4 schema migration.
   // It iterates through all blob files.  It will add to the db entry both the
   // size and modified date for the blob based on the written file.  If any blob
   // file in the db is missing on disk, it will return an inconsistency status.
-  leveldb::Status UpgradeBlobEntriesToV4(
+  Status UpgradeBlobEntriesToV4(
       LevelDBWriteBatch* write_batch,
       std::vector<base::FilePath>* empty_blobs_to_delete);
   // A helper function for V5 schema miration.
   // Iterates through all blob files on disk and validates they exist,
   // returning an internal inconsistency corruption error if any are missing.
-  leveldb::Status ValidateBlobFiles();
+  Status ValidateBlobFiles();
 
   // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
-  leveldb::Status GetCompleteMetadata(
+  Status GetCompleteMetadata(
       std::vector<blink::IndexedDBDatabaseMetadata>* output);
 
   // Remove the referenced file on disk.
@@ -702,16 +689,16 @@ class CONTENT_EXPORT BackingStore {
 
   friend class AutoDidCommitTransaction;
 
-  leveldb::Status MigrateToV4(LevelDBWriteBatch* write_batch);
-  leveldb::Status MigrateToV5(LevelDBWriteBatch* write_batch);
+  Status MigrateToV4(LevelDBWriteBatch* write_batch);
+  Status MigrateToV5(LevelDBWriteBatch* write_batch);
 
-  leveldb::Status FindKeyInIndex(Transaction* transaction,
-                                 int64_t database_id,
-                                 int64_t object_store_id,
-                                 int64_t index_id,
-                                 const blink::IndexedDBKey& key,
-                                 std::string* found_encoded_primary_key,
-                                 bool* found);
+  Status FindKeyInIndex(Transaction* transaction,
+                        int64_t database_id,
+                        int64_t object_store_id,
+                        int64_t index_id,
+                        const blink::IndexedDBKey& key,
+                        std::string* found_encoded_primary_key,
+                        bool* found);
 
   // Used by ActiveBlobRegistry::MarkBlobInactive.
   void ReportBlobUnused(int64_t database_id, int64_t blob_number);
@@ -724,12 +711,11 @@ class CONTENT_EXPORT BackingStore {
   // store, delete all referenced blob files, and erase the journal entry.
   // This must not be used while temporary entries are present e.g. during
   // a two-stage transaction commit with blobs.
-  leveldb::Status CleanUpBlobJournal(const std::string& level_db_key) const;
+  Status CleanUpBlobJournal(const std::string& level_db_key) const;
 
   // Synchronously delete the files and/or directories on disk referenced by
   // the blob journal.
-  leveldb::Status CleanUpBlobJournalEntries(
-      const BlobJournalType& journal) const;
+  Status CleanUpBlobJournalEntries(const BlobJournalType& journal) const;
 
   void WillCommitTransaction();
   // Can run a journal cleaning job if one is pending.
