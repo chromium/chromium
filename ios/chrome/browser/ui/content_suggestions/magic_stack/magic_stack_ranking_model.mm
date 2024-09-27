@@ -63,6 +63,7 @@
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
   raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<AuthenticationService> _authService;
   raw_ptr<PrefService> _prefService;
   raw_ptr<PrefService> _localState;
   // The latest module ranking returned from the SegmentationService.
@@ -89,6 +90,7 @@
     initWithSegmentationService:
         (segmentation_platform::SegmentationPlatformService*)segmentationService
                 shoppingService:(commerce::ShoppingService*)shoppingService
+                    authService:(AuthenticationService*)authenticationService
                     prefService:(PrefService*)prefService
                      localState:(PrefService*)localState
                 moduleMediators:(NSArray*)moduleMediators {
@@ -96,6 +98,7 @@
   if (self) {
     _segmentationService = segmentationService;
     _shoppingService = shoppingService;
+    _authService = authenticationService;
     _prefService = prefService;
     _localState = localState;
     _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
@@ -345,7 +348,7 @@
   MagicStackModule* card;
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
-      if (IsPriceTrackingPromoCardEnabled(_shoppingService)) {
+      if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService)) {
         _ephemeralCardToShow =
             ContentSuggestionsModuleType::kPriceTrackingPromo;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
