@@ -24,15 +24,14 @@ MultipartImageResourceParser::MultipartImageResourceParser(
     boundary_.push_front("--", 2);
 }
 
-void MultipartImageResourceParser::AppendData(const char* bytes,
-                                              wtf_size_t size) {
+void MultipartImageResourceParser::AppendData(base::span<const char> bytes) {
   DCHECK(!IsCancelled());
   // m_sawLastBoundary means that we've already received the final boundary
   // token. The server should stop sending us data at this point, but if it
   // does, we just throw it away.
   if (saw_last_boundary_)
     return;
-  data_.Append(bytes, size);
+  data_.AppendSpan(bytes);
 
   if (is_parsing_top_) {
     // Eat leading \r\n
@@ -48,7 +47,7 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
 
     // Some servers don't send a boundary token before the first chunk of
     // data.  We handle this case anyway (Gecko does too).
-    if (0 != memcmp(data_.data(), boundary_.data(), boundary_.size())) {
+    if (base::span(data_).first(boundary_.size()) != base::span(boundary_)) {
       data_.push_front("\n", 1);
       data_.PrependVector(boundary_);
     }

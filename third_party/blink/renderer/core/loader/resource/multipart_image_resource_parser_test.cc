@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
 #include <stddef.h>
@@ -24,7 +19,7 @@ namespace multipart_image_resource_parser_test {
 String ToString(const Vector<char>& data) {
   if (data.empty())
     return String("");
-  return String(data.data(), data.size());
+  return String(base::as_byte_span(data));
 }
 
 class MockClient final : public GarbageCollected<MockClient>,
@@ -43,46 +38,55 @@ class MockClient final : public GarbageCollected<MockClient>,
 };
 
 TEST(MultipartResponseTest, SkippableLength) {
-  struct {
-    const char* input;
+  struct TestData {
+    const std::string_view input;
     const wtf_size_t position;
     const wtf_size_t expected;
-  } line_tests[] = {
-      {"Line", 0, 0},         {"Line", 2, 0},         {"Line", 10, 0},
-      {"\r\nLine", 0, 2},     {"\nLine", 0, 1},       {"\n\nLine", 0, 1},
-      {"\rLine", 0, 0},       {"Line\r\nLine", 4, 2}, {"Line\nLine", 4, 1},
-      {"Line\n\nLine", 4, 1}, {"Line\rLine", 4, 0},   {"Line\r\rLine", 4, 0},
   };
-  for (size_t i = 0; i < std::size(line_tests); ++i) {
+  const auto line_tests = std::to_array<TestData>({
+      {"Line", 0, 0},
+      {"Line", 2, 0},
+      {"Line", 10, 0},
+      {"\r\nLine", 0, 2},
+      {"\nLine", 0, 1},
+      {"\n\nLine", 0, 1},
+      {"\rLine", 0, 0},
+      {"Line\r\nLine", 4, 2},
+      {"Line\nLine", 4, 1},
+      {"Line\n\nLine", 4, 1},
+      {"Line\rLine", 4, 0},
+      {"Line\r\rLine", 4, 0},
+  });
+  for (const auto& test : line_tests) {
     Vector<char> input;
-    input.Append(line_tests[i].input,
-                 static_cast<wtf_size_t>(strlen(line_tests[i].input)));
-    EXPECT_EQ(line_tests[i].expected,
+    input.AppendSpan(base::span(test.input));
+    EXPECT_EQ(test.expected,
               MultipartImageResourceParser::SkippableLengthForTest(
-                  input, line_tests[i].position));
+                  input, test.position));
   }
 }
 
 TEST(MultipartResponseTest, FindBoundary) {
-  struct {
-    const char* boundary;
-    const char* data;
+  struct TestData {
+    const std::string_view boundary;
+    const std::string_view data;
     const size_t position;
-  } boundary_tests[] = {
-      {"bound", "bound", 0},       {"bound", "--bound", 0},
-      {"bound", "junkbound", 4},   {"bound", "junk--bound", 4},
-      {"foo", "bound", kNotFound}, {"bound", "--boundbound", 0},
   };
+  const auto boundary_tests = std::to_array<TestData>({
+      {"bound", "bound", 0},
+      {"bound", "--bound", 0},
+      {"bound", "junkbound", 4},
+      {"bound", "junk--bound", 4},
+      {"foo", "bound", kNotFound},
+      {"bound", "--boundbound", 0},
+  });
 
-  for (size_t i = 0; i < std::size(boundary_tests); ++i) {
+  for (const auto& test : boundary_tests) {
     Vector<char> boundary, data;
-    boundary.Append(boundary_tests[i].boundary,
-                    static_cast<uint32_t>(strlen(boundary_tests[i].boundary)));
-    data.Append(boundary_tests[i].data,
-                static_cast<uint32_t>(strlen(boundary_tests[i].data)));
-    EXPECT_EQ(
-        boundary_tests[i].position,
-        MultipartImageResourceParser::FindBoundaryForTest(data, &boundary));
+    boundary.AppendSpan(base::span(test.boundary));
+    data.AppendSpan(base::span(test.data));
+    EXPECT_EQ(test.position, MultipartImageResourceParser::FindBoundaryForTest(
+                                 data, &boundary));
   }
 }
 
@@ -104,7 +108,7 @@ TEST(MultipartResponseTest, NoStartBoundary) {
       "This is a sample response\n"
       "--bound--"
       "ignore junk after end token --bound\n\nTest2\n";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample response", ToString(client->data_[0]));
@@ -131,7 +135,7 @@ TEST(MultipartResponseTest, NoEndBoundary) {
   const char kData[] =
       "bound\nContent-type: text/plain\n\n"
       "This is a sample response\n";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample ", ToString(client->data_[0]));
@@ -158,7 +162,7 @@ TEST(MultipartResponseTest, NoStartAndEndBoundary) {
   const char kData[] =
       "Content-type: text/plain\n\n"
       "This is a sample response\n";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample ", ToString(client->data_[0]));
@@ -189,7 +193,7 @@ TEST(MultipartResponseTest, MalformedBoundary) {
       "This is a sample response\n"
       "--bound--"
       "ignore junk after end token --bound\n\nTest2\n";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample response", ToString(client->data_[0]));
@@ -205,11 +209,10 @@ struct TestChunk {
   const int start_position;  // offset in data
   const int end_position;    // end offset in data
   const size_t expected_responses;
-  const char* expected_data;
+  const std::string_view expected_data;
 };
 
-void VariousChunkSizesTest(const TestChunk chunks[],
-                           int chunks_size,
+void VariousChunkSizesTest(base::span<const TestChunk> chunks,
                            size_t responses,
                            int received_data,
                            const char* completed_data) {
@@ -221,6 +224,7 @@ void VariousChunkSizesTest(const TestChunk chunks[],
       "Content-type: image/jpg\n\n"  // 61-85
       "foofoofoofoofoo"              // 86-100
       "--bound--";                   // 101-109
+  const auto data = base::span_from_cstring(kData);
 
   ResourceResponse response(NullURL());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
@@ -228,31 +232,22 @@ void VariousChunkSizesTest(const TestChunk chunks[],
   Vector<char> boundary;
   boundary.Append("bound", 5);
 
-  MultipartImageResourceParser* parser =
-      MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
-                                                         client);
+  auto* parser = MakeGarbageCollected<MultipartImageResourceParser>(
+      response, boundary, client);
 
-  for (int i = 0; i < chunks_size; ++i) {
-    ASSERT_LT(chunks[i].start_position, chunks[i].end_position);
-    parser->AppendData(kData + chunks[i].start_position,
-                       chunks[i].end_position - chunks[i].start_position);
-    EXPECT_EQ(chunks[i].expected_responses, client->responses_.size());
+  for (const auto& chunk : chunks) {
+    ASSERT_LT(chunk.start_position, chunk.end_position);
+    parser->AppendData(data.subspan(chunk.start_position,
+                                    chunk.end_position - chunk.start_position));
+    EXPECT_EQ(chunk.expected_responses, client->responses_.size());
     EXPECT_EQ(
-        String(chunks[i].expected_data),
+        String(base::as_byte_span(chunk.expected_data)),
         client->data_.size() > 0 ? ToString(client->data_.back()) : String(""));
   }
   // Check final state
   parser->Finish();
   EXPECT_EQ(responses, client->responses_.size());
   EXPECT_EQ(completed_data, ToString(client->data_.back()));
-}
-
-template <size_t N>
-void VariousChunkSizesTest(const TestChunk (&chunks)[N],
-                           size_t responses,
-                           int received_data,
-                           const char* completed_data) {
-  VariousChunkSizesTest(chunks, N, responses, received_data, completed_data);
 }
 
 TEST(MultipartResponseTest, BreakInBoundary) {
@@ -345,7 +340,7 @@ TEST(MultipartResponseTest, SmallChunk) {
       "\n\n--boundContent-type: text/plain\n\n"
       "--boundContent-type: text/plain\n\n"
       "end--bound--";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(4u, client->responses_.size());
   ASSERT_EQ(4u, client->data_.size());
   EXPECT_EQ("", ToString(client->data_[0]));
@@ -375,7 +370,7 @@ TEST(MultipartResponseTest, MultipleBoundaries) {
                                                          client);
 
   const char kData[] = "--bound\r\n\r\n--bound\r\n\r\nfoofoo--bound--";
-  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
+  parser->AppendData(base::span_from_cstring(kData));
   ASSERT_EQ(2u, client->responses_.size());
   ASSERT_EQ(2u, client->data_.size());
   EXPECT_EQ("", ToString(client->data_[0]));
@@ -393,12 +388,14 @@ TEST(MultipartResponseTest, EatLeadingLF) {
       "\n\n\n--bound\n\n\ncontent-type: 1\n\n"
       "\n\n\n--bound\n\ncontent-type: 2\n\n"
       "\n\n\n--bound\ncontent-type: 3\n\n";
+  const auto data = base::span_from_cstring(kData);
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
                                                          client);
 
-  for (size_t i = 0; i < strlen(kData); ++i)
-    parser->AppendData(&kData[i], 1);
+  for (size_t i = 0; i < data.size(); ++i) {
+    parser->AppendData(data.subspan(i, 1));
+  }
   parser->Finish();
 
   ASSERT_EQ(4u, client->responses_.size());
@@ -428,12 +425,14 @@ TEST(MultipartResponseTest, EatLeadingCRLF) {
       "\r\n\r\n\r\n--bound\r\n\r\n\r\ncontent-type: 1\r\n\r\n"
       "\r\n\r\n\r\n--bound\r\n\r\ncontent-type: 2\r\n\r\n"
       "\r\n\r\n\r\n--bound\r\ncontent-type: 3\r\n\r\n";
+  const auto data = base::span_from_cstring(kData);
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
                                                          client);
 
-  for (size_t i = 0; i < strlen(kData); ++i)
-    parser->AppendData(&kData[i], 1);
+  for (size_t i = 0; i < data.size(); ++i) {
+    parser->AppendData(data.subspan(i, 1));
+  }
   parser->Finish();
 
   ASSERT_EQ(4u, client->responses_.size());

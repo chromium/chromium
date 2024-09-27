@@ -451,8 +451,7 @@ void ImageResource::AppendData(
   base::span<const char> span = absl::get<base::span<const char>>(data);
   external_memory_accounter_.Increase(v8::Isolate::GetCurrent(), span.size());
   if (multipart_parser_) {
-    multipart_parser_->AppendData(span.data(),
-                                  base::checked_cast<wtf_size_t>(span.size()));
+    multipart_parser_->AppendData(span);
   } else {
     Resource::AppendData(span);
 
