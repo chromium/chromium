@@ -137,14 +137,14 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   GURL result_url = GURL("https://www.google.com");
 
   // Expect that the light mode query param is added to the URL.
-  mediator_.isDarkMode = NO;
+  [mediator_ setIsDarkMode:NO];
   [mediator_ loadResultsURL:result_url];
   GURL light_mode_url = GURL("https://www.google.com?cs=0");
   EXPECT_EQ(browser_web_state_delegate_.last_open_url_request()->params.url,
             light_mode_url);
 
   // Expect that the dark mode query param is added to the URL.
-  mediator_.isDarkMode = YES;
+  [mediator_ setIsDarkMode:YES];
   [mediator_ loadResultsURL:result_url];
   GURL dark_mode_url = GURL("https://www.google.com?cs=1");
   EXPECT_EQ(browser_web_state_delegate_.last_open_url_request()->params.url,

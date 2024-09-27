@@ -98,10 +98,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
-
-/// Whether the interface is in dark mode.
-@property(nonatomic, assign) BOOL isDarkMode;
-
 @end
 
 @implementation LensResultPageMediator {
@@ -121,6 +117,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   BOOL _isInflightRequestLensInitiated;
   /// WebStateList of the presenting browser.
   base::WeakPtr<WebStateList> _webStateList;
+  /// Whether the interface is in dark mode.
+  BOOL _isDarkMode;
 }
 
 - (instancetype)
@@ -169,16 +167,33 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _webStateDelegateBridge.reset();
 }
 
+#pragma mark - LensResultPageMutator
+
+- (void)setIsDarkMode:(BOOL)isDarkMode {
+  BOOL darkModeChanged = _isDarkMode != isDarkMode;
+
+  _isDarkMode = isDarkMode;
+
+  if (!_webState) {
+    return;
+  }
+
+  GURL latestLoadedURL = _webState->GetLastCommittedURL();
+  BOOL latestURLValid = latestLoadedURL.is_valid();
+  if (darkModeChanged && latestURLValid) {
+    [self loadResultsURL:latestLoadedURL];
+  }
+}
+
 #pragma mark - LensOverlayResultConsumer
 
 - (void)loadResultsURL:(GURL)URL {
   CHECK(_webState, kLensOverlayNotFatalUntil);
 
   // Add light/dark mode query parameter.
-  URL = net::AppendOrReplaceQueryParameter(URL, kDarkModeParameterKey,
-                                           self.isDarkMode
-                                               ? kDarkModeParameterDarkValue
-                                               : kDarkModeParameterLightValue);
+  URL = net::AppendOrReplaceQueryParameter(
+      URL, kDarkModeParameterKey,
+      _isDarkMode ? kDarkModeParameterDarkValue : kDarkModeParameterLightValue);
 
   _isInflightRequestLensInitiated = YES;
   [_consumer setLoadingProgress:kProgressBarLensResponseReceived];
