@@ -41,6 +41,7 @@ namespace {
 // decoder.
 using Instruction = uint8_t;
 
+#if defined(OFFICIAL_BUILD)
 // https://software.intel.com/en-us/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4
 // Look for RET opcode (0xc3). Note that 0xC3 is a substring of several
 // other opcodes (VMRESUME, MOVNTI), and can also be encoded as part of an
@@ -48,22 +49,28 @@ using Instruction = uint8_t;
 // present, so a simple byte scan should be Good Enough™.
 constexpr Instruction kRet = 0xc3;
 // INT3 ; UD2
+
 constexpr Instruction kRequiredBody[] = {0xcc, 0x0f, 0x0b};
 constexpr Instruction kOptionalFooter[] = {};
+#endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARMEL)
 using Instruction = uint16_t;
 
+#if defined(OFFICIAL_BUILD)
 // T32 opcode reference: https://developer.arm.com/docs/ddi0487/latest
 // Actually BX LR, canonical encoding:
 constexpr Instruction kRet = 0x4770;
+
 // BKPT #0; UDF #0
 constexpr Instruction kRequiredBody[] = {0xbe00, 0xde00};
 constexpr Instruction kOptionalFooter[] = {};
+#endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARM64)
 using Instruction = uint32_t;
 
+#if defined(OFFICIAL_BUILD)
 // A64 opcode reference: https://developer.arm.com/docs/ddi0487/latest
 // Use an enum here rather than separate constexpr vars because otherwise some
 // of the vars will end up unused on each platform, upsetting
@@ -96,6 +103,8 @@ constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
 constexpr Instruction kOptionalFooter[] = {};
 
 #endif
+
+#endif  // defined(OFFICIAL_BUILD)
 
 #endif
 
@@ -145,6 +154,8 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
     body->push_back(instruction);
 }
 
+#if defined(OFFICIAL_BUILD)
+
 std::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
@@ -185,6 +196,7 @@ std::vector<Instruction> DropUntilMatch(
     haystack.erase(haystack.begin());
   return haystack;
 }
+
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 
 std::vector<Instruction> MaybeSkipCoverageHook(
@@ -200,6 +212,8 @@ std::vector<Instruction> MaybeSkipCoverageHook(
   return instructions;
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 }
+
+#endif  // defined(OFFICIAL_BUILD)
 
 }  // namespace
 
@@ -222,6 +236,10 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   ASSERT_NO_FATAL_FAILURE(GetTestFunctionInstructions(&body));
   SCOPED_TRACE(HexEncode(body.data(), body.size() * sizeof(Instruction)));
 
+  // In non-official builds, we std::abort instead, so the result will be
+  // false - but let's still go through the motions above so we spot any
+  // problems in this _test code_ in as many build permutations as possible.
+#if defined(OFFICIAL_BUILD)
   auto it = ranges::find(body, kRet);
   ASSERT_NE(body.end(), it) << "Failed to find return opcode";
   it++;
@@ -233,6 +251,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   result = MaybeSkipCoverageHook(result.value());
   result = ExpectImmediateCrashInvocation(result.value());
   ASSERT_TRUE(result);
+#endif  // defined(OFFICIAL_BUILD)
 }
 
 }  // namespace base
