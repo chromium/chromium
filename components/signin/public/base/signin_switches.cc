@@ -33,6 +33,10 @@ BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
 BASE_FEATURE(kDontFallbackToDefaultImplementationInAccountManagerFacade,
              "DontFallbackToDefaultImplementationInAccountManagerFacade",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCctSignInPrompt,
+             "CctSignInPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
