@@ -95,19 +95,9 @@ class PLATFORM_EXPORT ExceptionContext final {
     }
     return property_name_string_;
   }
-  int16_t GetArgumentIndex() const { return argument_index_; }
-
-  // This is used for a performance hack to reduce the number of construction
-  // and destruction times of ExceptionContext when iterating over properties.
-  // Only the generated bindings code is allowed to use this hack.
-  void ChangePropertyNameAsOptimizationHack(const char* property_name) {
-    DCHECK(property_name_string_.IsNull());
-    property_name_ = property_name;
-  }
 
  private:
   v8::ExceptionContext type_;
-  int16_t argument_index_ = 0;
   const char* class_name_ = nullptr;
   const char* property_name_ = nullptr;
   String property_name_string_;
