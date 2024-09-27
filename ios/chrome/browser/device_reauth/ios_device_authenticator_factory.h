@@ -24,9 +24,6 @@ class DeviceAuthParams;
 // profiles.
 class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static DeviceAuthenticatorProxy* GetForBrowserState(ProfileIOS* profile);
-
   static DeviceAuthenticatorProxy* GetForProfile(ProfileIOS* profile);
   static DeviceAuthenticatorProxyFactory* GetInstance();
 
@@ -35,7 +32,7 @@ class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
 
   friend std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
       id<ReauthenticationProtocol> reauth_module,
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       const device_reauth::DeviceAuthParams& params);
 
   DeviceAuthenticatorProxyFactory();
@@ -50,12 +47,12 @@ class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
 
 // Creates an IOSDeviceAuthenticator. It is built on top of a
 // DeviceAuthenticatorProxy. `reauth_module` is the component that provides the
-// device reauth functionalities. `browser_state` is the ChromeBrowserState the
+// device reauth functionalities. `profile` is the ProfileIOS the
 // underlying DeviceAuthenticatorProxy is attached to. `params` contains configs
 // for the authentication.
 std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     const device_reauth::DeviceAuthParams& params);
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_REAUTH_IOS_DEVICE_AUTHENTICATOR_FACTORY_H_

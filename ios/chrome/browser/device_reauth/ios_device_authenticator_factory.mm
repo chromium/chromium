@@ -17,12 +17,6 @@ DeviceAuthenticatorProxyFactory::GetInstance() {
 }
 
 // static
-DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<DeviceAuthenticatorProxy*>(
@@ -49,11 +43,10 @@ web::BrowserState* DeviceAuthenticatorProxyFactory::GetBrowserStateToUse(
 
 std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     const device_reauth::DeviceAuthParams& params) {
   DeviceAuthenticatorProxy* proxy =
-      DeviceAuthenticatorProxyFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      DeviceAuthenticatorProxyFactory::GetInstance()->GetForProfile(profile);
   CHECK(proxy);
   return std::make_unique<IOSDeviceAuthenticator>(reauth_module, proxy, params);
 }
