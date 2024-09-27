@@ -3686,7 +3686,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.RestoreNavigationTime" units="ms"
-    expires_after="2024-09-12">
+    expires_after="2025-09-12">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -4515,7 +4515,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToBookmarks" units="Tabs"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4525,7 +4525,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToReadingList" units="Tabs"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4535,7 +4535,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -4545,7 +4545,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.ShareTabs" units="Tabs"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
