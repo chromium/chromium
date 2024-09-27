@@ -45,6 +45,8 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -57,6 +59,27 @@ namespace {
 
 constexpr char kDictationLanguageUpgradedNudgeId[] =
     "dictation_language_upgraded.nudge_id";
+
+const int kUsbMouseDeviceId = 20;
+const int kInternalTrackpadDeviceId = 30;
+
+ui::InputDevice GetSampleMouseUsb() {
+  return {kUsbMouseDeviceId, ui::INPUT_DEVICE_USB, "SampleMouseUsb"};
+}
+
+ui::TouchpadDevice GetSampleTrackpadInternal() {
+  return {kInternalTrackpadDeviceId, ui::INPUT_DEVICE_INTERNAL, "touchpad"};
+}
+
+void SimulateOnlyInternalTrackpadConnected() {
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
+      {GetSampleTrackpadInternal()});
+}
+
+void SimulateExternalMouseConnected() {
+  ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseUsb()});
+  SimulateOnlyInternalTrackpadConnected();
+}
 
 }  // namespace
 
@@ -2346,7 +2369,26 @@ class AccessibilityControllerDisableTrackpadTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityDisableTrackpad);
+
     AshTestBase::SetUp();
+
+    EventRewriterController::Get()->Initialize(nullptr, nullptr);
+    ASSERT_NE(disable_trackpad_event_rewriter(), nullptr);
+    ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+  }
+
+  AccessibilityController* controller() {
+    return Shell::Get()->accessibility_controller();
+  }
+
+  PrefService* prefs() {
+    return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  }
+
+  DisableTrackpadEventRewriter* disable_trackpad_event_rewriter() {
+    return Shell::Get()
+        ->accessibility_controller()
+        ->GetDisableTrackpadEventRewriterForTest();
   }
 
  private:
@@ -2355,37 +2397,106 @@ class AccessibilityControllerDisableTrackpadTest : public AshTestBase {
 
 TEST_F(AccessibilityControllerDisableTrackpadTest,
        PrefChangesEventRewriterEnabledState) {
-  // Initialize the EventRewriterController manually so that all EventRewriters
-  // get initialized.
-  EventRewriterController::Get()->Initialize(nullptr, nullptr);
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
-
   // Verify that the disable trackpad feature is off by default.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityDisableTrackpadEnabled));
-  ASSERT_FALSE(controller->disable_trackpad().enabled());
-  ASSERT_EQ(prefs->GetInteger(prefs::kAccessibilityDisableTrackpadMode),
+  ASSERT_FALSE(
+      prefs()->GetBoolean(prefs::kAccessibilityDisableTrackpadEnabled));
+  ASSERT_FALSE(controller()->disable_trackpad().enabled());
+  ASSERT_EQ(prefs()->GetInteger(prefs::kAccessibilityDisableTrackpadMode),
             static_cast<int>(DisableTrackpadMode::kNever));
 
   // AccessibilityController should have a reference to the
   // DisableTrackpadEventRewriter and it should also be off by default.
-  auto* disable_trackpad_event_rewriter =
-      controller->GetDisableTrackpadEventRewriterForTest();
-  ASSERT_NE(disable_trackpad_event_rewriter, nullptr);
-  ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
+  ASSERT_NE(disable_trackpad_event_rewriter(), nullptr);
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
 
   // Enabling the disable trackpad feature should enable the
   // DisableTrackpadEventRewriter.
-  prefs->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, true);
-  ASSERT_TRUE(controller->disable_trackpad().enabled());
-  ASSERT_TRUE(disable_trackpad_event_rewriter->IsEnabled());
+  prefs()->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, true);
+  ASSERT_TRUE(controller()->disable_trackpad().enabled());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
 
   // Disabling the feature should disable the event rewriter.
-  prefs->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, false);
-  ASSERT_FALSE(controller->disable_trackpad().enabled());
-  ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
+  prefs()->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, false);
+  ASSERT_FALSE(controller()->disable_trackpad().enabled());
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest, NoDialogOnNeverMode) {
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kNever));
+
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       DialogShowsWhenSetToAlwaysMode) {
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       EventRewriterDisabledWhenDialogDismissed) {
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  controller()->DismissDisableTrackpadDialogForTesting();
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       EventRewriterEnabledWhenDialogAccepted) {
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  controller()->AcceptDisableTrackpadDialogForTesting();
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       DialogShowsWhenExternalMouseAlreadyConnected) {
+  SimulateExternalMouseConnected();
+  prefs()->SetInteger(
+      prefs::kAccessibilityDisableTrackpadMode,
+      static_cast<int>(DisableTrackpadMode::kOnExternalMouseConnected));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       NoDialogWithNoExternalMouseConnected) {
+  SimulateOnlyInternalTrackpadConnected();
+  prefs()->SetInteger(
+      prefs::kAccessibilityDisableTrackpadMode,
+      static_cast<int>(DisableTrackpadMode::kOnExternalMouseConnected));
+
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       DialogShowsWhenExternalMouseLaterConnected) {
+  SimulateOnlyInternalTrackpadConnected();
+  prefs()->SetInteger(
+      prefs::kAccessibilityDisableTrackpadMode,
+      static_cast<int>(DisableTrackpadMode::kOnExternalMouseConnected));
+
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  SimulateExternalMouseConnected();
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
 }
 
 }  // namespace ash

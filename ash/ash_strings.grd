@@ -7940,6 +7940,21 @@ New install
         Update and shut down
       </message>
 
+      <!-- Disable trackpad feature -->
+      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_TITLE" desc="Title of the dialog for disabling the internal trackpad.">
+        Confirm that you want to disable the built-in touchpad
+      </message>
+      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_DESCRIPTION" desc="Content of the dialog for disabling the internal trackpad.">
+        The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
+
+Otherwise the built-in touchpad will be re-enabled in 30 seconds.
+      </message>
+      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION" desc="Sign out button.">
+        The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
+
+Otherwise the built-in touchpad will be re-enabled in 30 seconds.
+      </message>
+
       <!-- Guest session confirmation dialog -->
       <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog for switching to device guest mode.">
         Sign out now?

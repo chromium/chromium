@@ -827,6 +827,11 @@ Shell::~Shell() {
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   AccessibilityController::Get()->SetDisableTrackpadEventRewriter(nullptr);
   AccessibilityController::Get()->SetFilterKeysEventRewriter(nullptr);
+  // AccessibilityController observes
+  // input_device_settings_controller_; it also outlives
+  // input_device_settings_controller_, so we need to explicitly stop observing
+  // to ensure proper teardown.
+  AccessibilityController::Get()->StopObservingInputDeviceSettings();
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   touchscreen_metrics_recorder_.reset();
@@ -1423,6 +1428,7 @@ void Shell::Init(
   //  - `InputDeviceSettingsDispatcher`
   input_device_settings_controller_ =
       std::make_unique<InputDeviceSettingsControllerImpl>(local_state_);
+  accessibility_controller_->ObserveInputDeviceSettings();
   input_device_tracker_ = std::make_unique<InputDeviceTracker>();
   input_device_settings_dispatcher_ =
       std::make_unique<InputDeviceSettingsDispatcher>(

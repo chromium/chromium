@@ -61,6 +61,7 @@
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
@@ -2903,10 +2904,92 @@ void AccessibilityController::UpdateDisableTrackpadFromPrefs() {
     return;
   }
 
-  disable_trackpad_event_rewriter_->SetEnabled(
-      active_user_prefs_->GetInteger(
-          prefs::kAccessibilityDisableTrackpadMode) !=
-      static_cast<int>(DisableTrackpadMode::kNever));
+  DisableTrackpadWithDialog();
+}
+
+void AccessibilityController::DisableTrackpadWithDialog() {
+  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+
+  switch (trackpad_mode) {
+    case DisableTrackpadMode::kAlways:
+      ShowDisableTrackpadDialog();
+      break;
+
+    case DisableTrackpadMode::kOnExternalMouseConnected:
+      if (Shell::Get()
+              ->input_device_settings_controller()
+              ->GetConnectedMice()
+              .size() > 0) {
+        ShowDisableTrackpadDialog();
+      }
+      break;
+
+    case DisableTrackpadMode::kNever:
+      disable_trackpad_event_rewriter_->SetEnabled(false);
+      break;
+  }
+}
+
+void AccessibilityController::OnMouseConnected(const mojom::Mouse& mouse) {
+  ExternalDeviceConnected();
+}
+
+void AccessibilityController::OnTouchpadConnected(
+    const mojom::Touchpad& touchpad) {
+  ExternalDeviceConnected();
+}
+
+void AccessibilityController::ExternalDeviceConnected() {
+  if (!disable_trackpad_event_rewriter_) {
+    return;
+  }
+
+  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+
+  const bool trackpad_disabled = disable_trackpad_event_rewriter_->IsEnabled();
+  if (trackpad_mode == DisableTrackpadMode::kOnExternalMouseConnected &&
+      !trackpad_disabled) {
+    DisableTrackpadWithDialog();
+  }
+}
+
+void AccessibilityController::ShowDisableTrackpadDialog() {
+  // The internal trackpad should be disabled before the user clicks "Accept",
+  // This is done to ensure the user can navigate with their keyboard.
+  disable_trackpad_event_rewriter_->SetEnabled(true);
+  const DisableTrackpadMode disable_trackpad_mode =
+      static_cast<DisableTrackpadMode>(active_user_prefs_->GetInteger(
+          prefs::kAccessibilityDisableTrackpadMode));
+  const std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_DISABLE_TRACKPAD_DIALOG_TITLE);
+  const std::u16string description =
+      disable_trackpad_mode == DisableTrackpadMode::kAlways
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_DISABLE_TRACKPAD_DIALOG_DESCRIPTION)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_DISABLE_TRACKPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION);
+
+  ShowConfirmationDialog(
+      title, description, l10n_util::GetStringUTF16(IDS_ASH_CONFIRM_BUTTON),
+      l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogAccepted,
+                     GetWeakPtr()),
+      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogDismissed,
+                     GetWeakPtr()),
+      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogDismissed,
+                     GetWeakPtr()));
+}
+
+void AccessibilityController::OnDisableTrackpadDialogAccepted() {
+  confirmation_dialog_.reset();
+}
+
+void AccessibilityController::OnDisableTrackpadDialogDismissed() {
+  confirmation_dialog_.reset();
+  active_user_prefs_->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                                 static_cast<int>(DisableTrackpadMode::kNever));
 }
 
 DisableTrackpadMode AccessibilityController::GetDisableTrackpadMode() {
@@ -3680,4 +3763,11 @@ AccessibilityController::GetFaceGazeBubbleControllerForTest() {
   return facegaze_bubble_controller_.get();
 }
 
+void AccessibilityController::ObserveInputDeviceSettings() {
+  if (!input_device_settings_observer_.IsObservingSource(
+          Shell::Get()->input_device_settings_controller())) {
+    input_device_settings_observer_.Observe(
+        Shell::Get()->input_device_settings_controller());
+  }
+}
 }  // namespace ash
