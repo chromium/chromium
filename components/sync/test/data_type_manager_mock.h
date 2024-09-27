@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_DATA_TYPE_MANAGER_MOCK_H_
 #define COMPONENTS_SYNC_TEST_DATA_TYPE_MANAGER_MOCK_H_
 
+#include "base/functional/callback_forward.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,10 @@ class DataTypeManagerMock : public DataTypeManager {
   MOCK_METHOD(DataTypeSet,
               GetDataTypesWithPermanentErrors,
               (),
+              (const override));
+  MOCK_METHOD(void,
+              GetTypesWithUnsyncedData,
+              (DataTypeSet, base::OnceCallback<void(DataTypeSet)>),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
   MOCK_METHOD(TypeStatusMapForDebugging,

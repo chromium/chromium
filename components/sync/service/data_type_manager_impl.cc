@@ -27,6 +27,7 @@
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/get_all_nodes_request_barrier.h"
+#include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
 
 namespace syncer {
 
@@ -956,6 +957,37 @@ DataTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {
     return DataTypeSet();
   }
   return configured_proxy_types_;
+}
+
+void DataTypeManagerImpl::GetTypesWithUnsyncedData(
+    DataTypeSet requested_types,
+    base::OnceCallback<void(DataTypeSet)> callback) const {
+  // NIGORI currently isn't supported, because its controller isn't managed by
+  // DataTypeManager. If needed, support could be added via SyncEngine.
+  CHECK(!requested_types.Has(NIGORI));
+
+  if (requested_types.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), DataTypeSet()));
+    return;
+  }
+
+  auto helper = base::MakeRefCounted<GetTypesWithUnsyncedDataRequestBarrier>(
+      requested_types, std::move(callback));
+
+  for (DataType type : requested_types) {
+    auto it = controllers_.find(type);
+    if (it == controllers_.end()) {
+      // This should be rare, but can happen e.g. if a requested type is
+      // disabled via feature flag.
+      helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
+      continue;
+    }
+    DataTypeController* controller = it->second.get();
+    controller->HasUnsyncedData(base::BindOnce(
+        &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
+        helper, type));
+  }
 }
 
 DataTypeManager::State DataTypeManagerImpl::state() const {

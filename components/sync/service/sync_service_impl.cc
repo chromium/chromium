@@ -49,7 +49,6 @@
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
-#include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_engine_factory.h"
@@ -2224,32 +2223,12 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 void SyncServiceImpl::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
     base::OnceCallback<void(DataTypeSet)> callback) const {
-  // NIGORI currently isn't supported, because its controller isn't managed by
-  // DataTypeManager. If needed, support could be added via SyncEngine.
-  CHECK(!requested_types.Has(NIGORI));
-
-  if (requested_types.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), DataTypeSet()));
-    return;
-  }
-
-  auto helper = base::MakeRefCounted<GetTypesWithUnsyncedDataRequestBarrier>(
-      requested_types, std::move(callback));
-
-  for (DataType type : requested_types) {
-    auto it = data_type_manager_->GetControllerMap().find(type);
-    if (it == data_type_manager_->GetControllerMap().end()) {
-      // This should be rare, but can happen e.g. if a requested type is
-      // disabled via feature flag.
-      helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
-      continue;
-    }
-    DataTypeController* controller = it->second.get();
-    controller->HasUnsyncedData(base::BindOnce(
-        &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
-        helper, type));
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/40901755): Consider changing this to always guarantee an
+  // asynchronous behavior, rather than invoking the callback synchronously in
+  // rare cases.
+  return data_type_manager_->GetTypesWithUnsyncedData(requested_types,
+                                                      std::move(callback));
 }
 
 void SyncServiceImpl::GetLocalDataDescriptions(

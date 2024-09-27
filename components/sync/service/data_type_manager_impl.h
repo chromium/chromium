@@ -54,6 +54,9 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetActiveProxyDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
+  void GetTypesWithUnsyncedData(
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> callback) const override;
   State state() const override;
   TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
       DataTypeSet throttled_types,
