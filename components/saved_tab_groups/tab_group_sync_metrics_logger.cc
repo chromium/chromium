@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -361,6 +362,52 @@ void TabGroupSyncMetricsLogger::RecordTabGroupDeletionsOnStartup(
     size_t group_count) {
   base::UmaHistogramCounts10000("TabGroups.Sync.NumberOfGroupsDeletedOnStartup",
                                 group_count);
+}
+
+void TabGroupSyncMetricsLogger::RecordMetricsOnSignin(
+    const std::vector<SavedTabGroup>& saved_tab_groups,
+    signin::ConsentLevel consent_level) {
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+
+  size_t total_group_count = saved_tab_groups.size();
+  int open_group_count = 0;
+  int closed_group_count = 0;
+  size_t total_tabs_count = 0;
+  int open_tabs_count = 0;
+  int closed_tabs_count = 0;
+  for (const SavedTabGroup& group : saved_tab_groups) {
+    total_tabs_count += group.saved_tabs().size();
+
+    if (group.local_group_id().has_value()) {
+      open_group_count++;
+      open_tabs_count += group.saved_tabs().size();
+    } else {
+      closed_group_count++;
+      closed_tabs_count += group.saved_tabs().size();
+    }
+  }
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"TabGroups", consent_level_token, ".TotalTabGroupCount"}),
+      total_group_count);
+  base::UmaHistogramCounts10000(base::StrCat({"TabGroups", consent_level_token,
+                                              ".TotalTabGroupTabsCount"}),
+                                total_tabs_count);
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"TabGroups", consent_level_token, ".OpenTabGroupCount"}),
+      open_group_count);
+  base::UmaHistogramCounts10000(base::StrCat({"TabGroups", consent_level_token,
+                                              ".OpenTabGroupTabsCount"}),
+                                open_tabs_count);
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"TabGroups", consent_level_token, ".ClosedTabGroupCount"}),
+      closed_group_count);
+  base::UmaHistogramCounts10000(base::StrCat({"TabGroups", consent_level_token,
+                                              ".ClosedTabGroupTabsCount"}),
+                                closed_tabs_count);
 }
 
 }  // namespace tab_groups

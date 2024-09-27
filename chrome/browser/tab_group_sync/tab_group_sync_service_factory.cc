@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
@@ -90,6 +91,9 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  // The dependency on IdentityManager is only for the purpose of recording "on
+  // signin" metrics.
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -117,7 +121,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   auto service = std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       pref_service, std::move(metrics_logger),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

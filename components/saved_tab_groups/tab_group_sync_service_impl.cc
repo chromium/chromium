@@ -30,8 +30,7 @@
 #include "components/saved_tab_groups/types.h"
 #include "components/saved_tab_groups/utils.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/data_type.h"
-#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/account_pref_utils.h"
 
@@ -66,7 +65,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
     PrefService* pref_service,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    signin::IdentityManager* identity_manager)
     : model_(std::move(model)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model_.get(),
@@ -80,6 +80,9 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
   if (opt_guide_) {
     opt_guide_->RegisterOptimizationTypes(
         {optimization_guide::proto::SAVED_TAB_GROUP});
+  }
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
   }
 }
 
@@ -132,12 +135,31 @@ void TabGroupSyncServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  for (signin::ConsentLevel consent_level :
+       {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+    // Only record metrics when setting the primary account.
+    switch (event_details.GetEventTypeFor(consent_level)) {
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        if (metrics_logger_) {
+          metrics_logger_->RecordMetricsOnSignin(model_->saved_tab_groups(),
+                                                 consent_level);
+        }
+    }
+  }
+}
+
 void TabGroupSyncServiceImpl::SetIsInitializedForTesting(bool initialized) {
   is_initialized_ = initialized;
 }
 
 void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
+  identity_manager_observation_.Reset();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>

@@ -21,6 +21,7 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -37,8 +38,10 @@
 using testing::_;
 using testing::An;
 using testing::ByRef;
+using testing::ContainerEq;
 using testing::Eq;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::Matcher;
 using testing::Return;
 
@@ -156,7 +159,8 @@ class TabGroupSyncServiceTest : public testing::Test {
             processor_.CreateForwardingProcessor(),
             syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
-        nullptr, &pref_service_, std::move(metrics_logger), decider_.get());
+        nullptr, &pref_service_, std::move(metrics_logger), decider_.get(),
+        identity_test_environment_.identity_manager());
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, TrackedCacheGuid())
@@ -251,6 +255,7 @@ class TabGroupSyncServiceTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
@@ -1105,6 +1110,56 @@ TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
   EXPECT_EQ(0, get_index(group_id_1));
   EXPECT_EQ(1, get_index(group_id_3));
   EXPECT_EQ(2, get_index(group_id_2));
+}
+
+TEST_F(TabGroupSyncServiceTest, MetricsOnSignin) {
+  base::HistogramTester histograms;
+
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "account@gmail.com", signin::ConsentLevel::kSignin);
+
+  base::HistogramTester::CountsMap expected_counts{
+      {"TabGroups.OnSignin.TotalTabGroupCount", 1},
+      {"TabGroups.OnSignin.OpenTabGroupCount", 1},
+      {"TabGroups.OnSignin.ClosedTabGroupCount", 1},
+      {"TabGroups.OnSignin.TotalTabGroupTabsCount", 1},
+      {"TabGroups.OnSignin.OpenTabGroupTabsCount", 1},
+      {"TabGroups.OnSignin.ClosedTabGroupTabsCount", 1}};
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSignin."),
+              ContainerEq(expected_counts));
+
+  // Sync wasn't enabled, so no "OnSync" metrics should be recorded.
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
+              IsEmpty());
+}
+
+TEST_F(TabGroupSyncServiceTest, MetricsOnSync) {
+  base::HistogramTester histograms;
+
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "account@gmail.com", signin::ConsentLevel::kSync);
+
+  // Turning on sync includes signing in, so both "OnSignin" and "OnSync"
+  // metrics should be recorded.
+  base::HistogramTester::CountsMap expected_signin_counts{
+      {"TabGroups.OnSignin.TotalTabGroupCount", 1},
+      {"TabGroups.OnSignin.OpenTabGroupCount", 1},
+      {"TabGroups.OnSignin.ClosedTabGroupCount", 1},
+      {"TabGroups.OnSignin.TotalTabGroupTabsCount", 1},
+      {"TabGroups.OnSignin.OpenTabGroupTabsCount", 1},
+      {"TabGroups.OnSignin.ClosedTabGroupTabsCount", 1}};
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSignin."),
+              ContainerEq(expected_signin_counts));
+
+  base::HistogramTester::CountsMap expected_sync_counts{
+      {"TabGroups.OnSync.TotalTabGroupCount", 1},
+      {"TabGroups.OnSync.OpenTabGroupCount", 1},
+      {"TabGroups.OnSync.ClosedTabGroupCount", 1},
+      {"TabGroups.OnSync.TotalTabGroupTabsCount", 1},
+      {"TabGroups.OnSync.OpenTabGroupTabsCount", 1},
+      {"TabGroups.OnSync.ClosedTabGroupTabsCount", 1}};
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
+              ContainerEq(expected_sync_counts));
 }
 
 }  // namespace tab_groups

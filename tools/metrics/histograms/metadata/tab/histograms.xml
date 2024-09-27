@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
     tab removal or a tab navigation inside the group.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
   <token key="NumberOfDays">
     <variant name="1" summary="1 day"/>
@@ -887,7 +887,7 @@ chromium-metrics-reviews@google.com.
     Tracks the number of closed tab groups on startup.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
@@ -934,7 +934,7 @@ chromium-metrics-reviews@google.com.
     Tracks the number of open tab groups on startup.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
@@ -949,7 +949,7 @@ chromium-metrics-reviews@google.com.
     defined as a tab addition, tab removal or a tab navigation inside the group.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
   <token key="NumberOfDays">
     <variant name="1" summary="1 day"/>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
     created.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
@@ -977,8 +977,8 @@ chromium-metrics-reviews@google.com.
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Tracks the age of a SavedTabGroup (since creation). Recorded once per group
-    on startup 10 seconds after TabGroupSyncService initialization. Android
-    only.
+    on startup 10 seconds after TabGroupSyncService initialization. Android and
+    iOS only.
   </summary>
 </histogram>
 
@@ -990,7 +990,7 @@ chromium-metrics-reviews@google.com.
     Tracks the number of tabs in a SavedTabGroup.
 
     Recorded once per group on startup 10 seconds after TabGroupSyncService
-    initialization. Android only.
+    initialization. Android and iOS only.
   </summary>
 </histogram>
 
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
     Tracks the duration since a saved tab's last modification.
 
     Recorded once per tab on startup 10 seconds after TabGroupSyncService
-    initialization. Android only.
+    initialization. Android and iOS only.
   </summary>
 </histogram>
 
@@ -1185,7 +1185,7 @@ chromium-metrics-reviews@google.com.
     typically defined as tab addition, tab removal or tab navigation.
 
     Recorded once per group on startup 10 seconds after TabGroupSyncService
-    initialization. Android only.
+    initialization. Android and iOS only.
   </summary>
 </histogram>
 
@@ -1198,7 +1198,7 @@ chromium-metrics-reviews@google.com.
     and closed tab groups.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
@@ -1314,6 +1314,33 @@ chromium-metrics-reviews@google.com.
     would not have affected the recorded value. It would only duplicate a
     previous recording.
   </summary>
+</histogram>
+
+<histogram name="TabGroups.{ConsentLevel}.{GroupsOrTabs}" units="count"
+    expires_after="2025-03-29">
+  <owner>treib@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of {GroupsOrTabs}, at the moment when the user is
+    {ConsentLevel} Chrome. Android and iOS only.
+  </summary>
+  <token key="GroupsOrTabs">
+    <variant name="ClosedTabGroupCount" summary="closed tab groups"/>
+    <variant name="ClosedTabGroupTabsCount"
+        summary="tabs that are part of a closed tab group"/>
+    <variant name="OpenTabGroupCount" summary="open tab groups"/>
+    <variant name="OpenTabGroupTabsCount"
+        summary="tabs that are part of an open tab group"/>
+    <variant name="TotalTabGroupCount"
+        summary="all tab groups (open or closed)"/>
+    <variant name="TotalTabGroupTabsCount"
+        summary="all tabs that are part of a tab group (open or closed)"/>
+  </token>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
 </histogram>
 
 <histogram name="TabManager.BackgroundTabOpening.TabCount" units="tabs"

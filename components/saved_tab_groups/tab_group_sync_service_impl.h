@@ -25,9 +25,7 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/model/data_type_store.h"
-#include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/sync_data.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
 
@@ -37,7 +35,8 @@ struct SyncDataTypeConfiguration;
 
 // The internal implementation of the TabGroupSyncService.
 class TabGroupSyncServiceImpl : public TabGroupSyncService,
-                                public SavedTabGroupModelObserver {
+                                public SavedTabGroupModelObserver,
+                                public signin::IdentityManager::Observer {
  public:
   // `saved_tab_group_configuration` must not be `nullptr`.
   // `shared_tab_group_configuration` should be provided if feature is enabled.
@@ -47,7 +46,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
       PrefService* pref_service,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      signin::IdentityManager* identity_manager);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -128,6 +128,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // For testing only.
   void SetIsInitializedForTesting(bool initialized) override;
@@ -237,6 +241,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // A handle to optimization guide for information about synced URLs.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_ = nullptr;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };

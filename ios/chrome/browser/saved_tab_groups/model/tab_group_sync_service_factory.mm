@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -91,6 +92,9 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SessionRestorationServiceFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
+  // The dependency on IdentityManager is only for the purpose of recording "on
+  // signin" metrics.
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -121,10 +125,12 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
   }
 
   auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupSyncServiceImpl> sync_service =
       std::make_unique<TabGroupSyncServiceImpl>(
           std::move(model), std::move(saved_config), std::move(shared_config),
-          profile->GetPrefs(), std::move(metrics_logger), opt_guide);
+          profile->GetPrefs(), std::move(metrics_logger), opt_guide,
+          identity_manager);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =
