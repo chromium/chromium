@@ -353,7 +353,10 @@ component("gl") {
 
     libs = [ "android" ]
 
-    deps += [ ":gl_jni_headers" ]
+    deps += [
+      ":gl_jni_headers",
+      "//third_party/angle:angle_gpu_info_util",
+    ]
   }
 
   if (is_android || is_chromeos || is_linux) {
