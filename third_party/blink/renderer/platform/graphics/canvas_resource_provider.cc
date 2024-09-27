@@ -756,6 +756,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
  private:
+  bool IsResourceUsable(CanvasResource* resource) final {
+    // The only resources that should be coming in here are
+    // CanvasResourceSharedImage instances, since that is the only type of
+    // resource that this class creates.
+    CHECK(resource->UsesClientSharedImage());
+    return resource->GetClientSharedImage()->usage().HasAll(
+        shared_image_usage_flags_);
+  }
+
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override {
     std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                           reinterpret_cast<uintptr_t>(this));
@@ -1838,9 +1847,11 @@ void CanvasResourceProvider::RecycleResource(
   }
 
   // Need to check HasOneRef() because if there are outstanding references to
-  // the resource, it cannot be safely recycled.
+  // the resource, it cannot be safely recycled. In addition, we must check
+  // whether the state of the resource provider has changed such that the
+  // resource has become unusable in the interim.
   if (resource->HasOneRef() && resource_recycling_enabled_ &&
-      !is_single_buffered_) {
+      !is_single_buffered_ && IsResourceUsable(resource.get())) {
     RegisterUnusedResource(std::move(resource));
     MaybePostUnusedResourcesReclaimTask();
   }
@@ -1862,6 +1873,7 @@ void CanvasResourceProvider::OnDestroyResource() {
 
 void CanvasResourceProvider::RegisterUnusedResource(
     scoped_refptr<CanvasResource>&& resource) {
+  CHECK(IsResourceUsable(resource.get()));
   canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
 }
 

@@ -401,6 +401,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   CanvasResourceHost* resource_host() { return resource_host_; }
 
+  // Returns whether `resource` is usable. Returns true by default, but
+  // subclasses may override this to do implementation-specific checks.
+  // Unusable resources will be dropped when returned rather than put back into
+  // the cache.
+  virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
@@ -425,6 +431,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
 
+  // IsResourceUsable() must be true for `resource`.
   void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
