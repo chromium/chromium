@@ -132,7 +132,6 @@ bool CreateThreadInternal(size_t stack_size,
       case ERROR_COMMITMENT_LIMIT:
       case ERROR_COMMITMENT_MINIMUM:
         TerminateBecauseOutOfMemory(stack_size);
-        break;
 
       default:
         break;

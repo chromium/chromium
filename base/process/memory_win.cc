@@ -27,7 +27,6 @@ int ReleaseReservationOrTerminate(size_t size) {
   if (internal::ReleaseAddressSpaceReservation())
     return kRetryAllocation;
   TerminateBecauseOutOfMemory(size);
-  return 0;
 }
 
 }  // namespace
