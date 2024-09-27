@@ -61,8 +61,8 @@ class OffTheRecordProfileIOSImpl final : public ProfileIOS {
  private:
   friend class ProfileIOSImpl;
 
-  // `original_chrome_browser_state_` is the non-incognito
-  // ProfileIOS instance that owns this instance.
+  // `original_profile` is the non-incognito ProfileIOS instance that
+  // owns this instance.
   OffTheRecordProfileIOSImpl(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       ProfileIOS* original_profile,
