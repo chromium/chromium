@@ -19,7 +19,6 @@ static_library("default_pinned_apps") {
     "//ash/constants",
     "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/web_applications",
-    "//chrome/common/extensions",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/constants",
     "//extensions/common:common_constants",

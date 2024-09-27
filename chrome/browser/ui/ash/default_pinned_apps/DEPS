@@ -12,5 +12,4 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/web_applications",
-  "+chrome/common",
 ]
