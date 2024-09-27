@@ -109,7 +109,7 @@ enum class TrustedVaultFileReadStatusForUMA {
   kDataProtoDeserializationFailed = 5,
   kMaxValue = kDataProtoDeserializationFailed
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultFileReadStatus)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
@@ -147,7 +147,8 @@ void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
     bool also_log_with_v1_suffix);
 
-void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
+void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
+                                      TrustedVaultFileReadStatusForUMA status);
 
 enum class IsOffTheRecord { kNo, kYes };
 

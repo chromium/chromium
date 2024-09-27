@@ -202,12 +202,13 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
           std::make_unique<testing::NiceMock<MockRecoveryKeyStoreConnection>>();
       recovery_key_store_connection_ = recovery_key_store_connection.get();
       backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-          file_path_, std::move(delegate), std::move(connection),
-          std::move(recovery_key_provider_holder_),
+          security_domain_id(), file_path_, std::move(delegate),
+          std::move(connection), std::move(recovery_key_provider_holder_),
           std::move(recovery_key_store_connection));
     } else {
       backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-          file_path_, std::move(delegate), std::move(connection));
+          security_domain_id(), file_path_, std::move(delegate),
+          std::move(connection));
     }
     backend_->SetClockForTesting(&clock_);
     backend_->ReadDataFromDisk();
@@ -230,6 +231,14 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   base::SimpleTestClock* clock() { return &clock_; }
 
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
+
+  SecurityDomainId security_domain_id() const {
+    return SecurityDomainId::kChromeSync;
+  }
+
+  std::string security_domain_name_for_uma() const {
+    return GetSecurityDomainNameForUma(security_domain_id());
+  }
 
   const base::FilePath& file_path() { return file_path_; }
 
@@ -433,7 +442,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordNotFoundWhenReadingFile) {
   base::HistogramTester histogram_tester;
   backend()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultFileReadStatus",
+      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultFileReadStatusForUMA::kNotFound,
       /*expected_bucket_count=*/1);
 }
@@ -447,7 +456,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   backend()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultFileReadStatus",
+      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch,
       /*expected_bucket_count=*/1);
 }
@@ -459,7 +468,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   backend()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultFileReadStatus",
+      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed,
       /*expected_bucket_count=*/1);
@@ -477,7 +486,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   backend()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultFileReadStatus",
+      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed,
       /*expected_bucket_count=*/1);
@@ -506,7 +515,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   base::HistogramTester histogram_tester;
   backend()->ReadDataFromDisk();
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultFileReadStatus",
+      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultFileReadStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
 
@@ -554,9 +563,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
   // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
   backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
-  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultFileWriteSuccess",
-                                      /*sample=*/true,
-                                      /*expected_bucket_count=*/3);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileWriteSuccess." + security_domain_name_for_uma(),
+      /*sample=*/true,
+      /*expected_bucket_count=*/3);
 
   // Read the file from disk.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -661,7 +671,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
 
   // Instantiate a second backend to read the file.
   auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(), std::make_unique<testing::NiceMock<MockDelegate>>(),
+      security_domain_id(), file_path(),
+      std::make_unique<testing::NiceMock<MockDelegate>>(),
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
   other_backend->ReadDataFromDisk();
 
@@ -754,7 +765,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic browser restart and reset primary account.
   auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(),
+      security_domain_id(), file_path(),
       /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
       /*connection=*/nullptr);
   new_backend->ReadDataFromDisk();

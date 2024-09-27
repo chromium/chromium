@@ -44,6 +44,22 @@ chromium-metrics-reviews@google.com.
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
+<histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
+    enum="TrustedVaultFileReadStatus" expires_after="2025-05-03">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>Recorded when reading local trusted vault file.</summary>
+</histogram>
+
+<histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
+    enum="Boolean" expires_after="2025-05-03">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records whether writing local trusted vault file upon each write.
+  </summary>
+</histogram>
+
 <histogram
     name="TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain"
     enum="SecurityDomainId" expires_after="2025-01-31">

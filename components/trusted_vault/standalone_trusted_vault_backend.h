@@ -23,6 +23,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace base {
@@ -76,6 +77,7 @@ class StandaloneTrustedVaultBackend
   // |recovery_key_provider| and |recovery_key_store_connection| may be null, in
   // which case |SetRecoveryKeyStoreUploadEnabled()| must not be called.
   StandaloneTrustedVaultBackend(
+      SecurityDomainId security_domain_id,
       const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection,
@@ -84,6 +86,7 @@ class StandaloneTrustedVaultBackend
       std::unique_ptr<RecoveryKeyStoreConnection>
           recovery_key_store_connection);
   StandaloneTrustedVaultBackend(
+      SecurityDomainId security_domain_id,
       const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection);
@@ -258,6 +261,8 @@ class StandaloneTrustedVaultBackend
       RecoveryKeyRegistrationCallback callback,
       TrustedVaultRegistrationStatus status,
       int key_version_unused);
+
+  const SecurityDomainId security_domain_id_;
 
   const base::FilePath file_path_;
 

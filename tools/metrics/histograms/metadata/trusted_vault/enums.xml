@@ -33,6 +33,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Irrecoverable"/>
 </enum>
 
+<!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
+
+<enum name="TrustedVaultFileReadStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="File not found"/>
+  <int value="2" label="File read failed"/>
+  <int value="3" label="MD5 digest mismatch"/>
+  <int value="4" label="File proto deserialization failed"/>
+  <int value="5" label="Data proto deserialization failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
+
 </enums>
 
 </histogram-configuration>

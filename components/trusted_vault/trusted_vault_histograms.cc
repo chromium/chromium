@@ -161,8 +161,12 @@ void RecordTrustedVaultDownloadKeysStatus(
   }
 }
 
-void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultFileReadStatus", status);
+void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
+                                      TrustedVaultFileReadStatusForUMA status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.FileReadStatus." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      status);
 }
 
 void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(

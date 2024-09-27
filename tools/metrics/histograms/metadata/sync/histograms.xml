@@ -2001,22 +2001,6 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when fetching trusted vault keys is attempted.</summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultFileReadStatus"
-    enum="TrustedVaultFileReadStatus" expires_after="2024-11-03">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>Recorded when reading local trusted vault file.</summary>
-</histogram>
-
-<histogram name="Sync.TrustedVaultFileWriteSuccess" enum="Boolean"
-    expires_after="2024-11-03">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records whether writing local trusted vault file upon each write.
-  </summary>
-</histogram>
-
 <histogram name="Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2"
     enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
     expires_after="2024-11-17">
