@@ -16,7 +16,7 @@ namespace drive {
 class DriveService;
 
 // Singleton that owns all instances of DriveService and associates them with
-// instances of ChromeBrowserState.
+// instances of ProfileIOS.
 class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
  public:
   static DriveService* GetForProfile(ProfileIOS* profile);

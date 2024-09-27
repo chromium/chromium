@@ -28,9 +28,9 @@ class DriveTabHelperTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(browser_state_.get());
+    web_state_->SetBrowserState(profile_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     download_task_->SetWebState(web_state_.get());
@@ -39,7 +39,7 @@ class DriveTabHelperTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   raw_ptr<DriveTabHelper> helper_;
