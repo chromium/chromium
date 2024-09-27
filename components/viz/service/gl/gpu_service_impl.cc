@@ -337,7 +337,9 @@ GpuServiceImpl::GpuServiceImpl(
 #if BUILDFLAG(ENABLE_VULKAN)
       vulkan_implementation_(init_params.vulkan_implementation),
 #endif
-      exit_callback_(std::move(init_params.exit_callback)) {
+      exit_callback_(std::move(init_params.exit_callback)),
+      clear_shader_cache_(base::FeatureList::IsEnabled(
+          features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
   DCHECK(exit_callback_);
 
@@ -1107,9 +1109,6 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
   }
 
   std::string no_prefix_key = key;
-  const bool clear_shader_cache = base::FeatureList::IsEnabled(
-      features::kClearGrShaderDiskCacheOnInvalidPrefix);
-
   if (GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
     std::string prefix = GetShaderPrefixKey();
     bool prefix_ok = !key.compare(0, prefix.length(), prefix);
@@ -1122,7 +1121,7 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
       // cache will have prefix that does not matches. Clear the whole disk
       // cache in that case to remove all stale entries and make room for newer
       // entries.
-      if (clear_shader_cache) {
+      if (clear_shader_cache_) {
         gpu_host_->ClearGrShaderDiskCache();
       }
       return;

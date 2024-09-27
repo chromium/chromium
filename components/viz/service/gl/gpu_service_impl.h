@@ -667,6 +667,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   std::string shader_prefix_key_;
 
+  // This is flag is controlled by the finch experiment
+  // ClearGrShaderDiskCacheOnInvalidPrefix. Earlier this flag was assigned in
+  // ::LoadedBlob() instead of the constructor which was causing users to fall
+  // out of the finch experiment as ::LoadedBlob() is not called in the next
+  // browser start after the disk cache is cleared.
+  const bool clear_shader_cache_;
+
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};
 };
