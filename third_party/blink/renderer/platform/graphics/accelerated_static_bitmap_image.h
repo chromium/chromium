@@ -175,21 +175,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   static void ReleaseTexture(void* ctx);
 
   AcceleratedStaticBitmapImage(
-      const gpu::Mailbox&,
-      const gpu::SyncToken&,
-      GLuint shared_image_texture_id,
-      const SkImageInfo& sk_image_info,
-      GLenum texture_target,
-      bool is_origin_top_left,
-      bool supports_display_compositing,
-      bool is_overlay_candidate,
-      const ImageOrientation& orientation,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::PlatformThreadRef context_thread_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback);
-
-  AcceleratedStaticBitmapImage(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
@@ -208,7 +193,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;
   const bool is_origin_top_left_ : 1;
