@@ -182,45 +182,75 @@ FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
   return {{std::move(functors)...}};
 }
 
-std::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
-    std::string label,
-    const FakeAuthFactor& factor) {
+// Helper that returns a AuthFactorWithStatus with default field values.
+user_data_auth::AuthFactorWithStatus BuildDefaultAuthFactorWithStatus() {
+  user_data_auth::AuthFactorWithStatus factor_with_status;
+  // Add all possible intents for conveniences.
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_WEBAUTHN);
+  factor_with_status.mutable_status_info()->set_time_available_in(0);
+  factor_with_status.mutable_status_info()->set_time_expiring_in(
+      std::numeric_limits<uint64_t>::max());
+  return factor_with_status;
+}
+
+std::optional<user_data_auth::AuthFactorWithStatus>
+FakeAuthFactorToAuthFactorWithStatus(std::string label,
+                                     const FakeAuthFactor& factor) {
   return absl::visit(
-      Overload<std::optional<user_data_auth::AuthFactor>>(
+      Overload<std::optional<user_data_auth::AuthFactorWithStatus>>(
           [&](const PasswordFactor& password) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
-            result.mutable_password_metadata();
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+            factor->mutable_password_metadata();
             return result;
           },
           [&](const PinFactor& pin) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
-            result.mutable_pin_metadata()->set_auth_locked(pin.locked);
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            if (pin.locked) {
+              result.mutable_status_info()->set_time_available_in(
+                  std::numeric_limits<uint64_t>::max());
+            }
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+            factor->mutable_pin_metadata();
             return result;
           },
           [&](const RecoveryFactor&) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(
                 user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
-            result.mutable_cryptohome_recovery_metadata();
+            factor->mutable_cryptohome_recovery_metadata();
             return result;
           },
           [&](const KioskFactor& kiosk) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
-            result.mutable_kiosk_metadata();
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
+            factor->mutable_kiosk_metadata();
             return result;
           },
           [&](const SmartCardFactor& smart_card) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD);
-            result.mutable_smart_card_metadata()->set_public_key_spki_der(
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD);
+            factor->mutable_smart_card_metadata()->set_public_key_spki_der(
                 smart_card.public_key_spki_der);
             return result;
           }),
@@ -342,29 +372,6 @@ bool AuthInputMatchesFakeFactorType(
             return auth_input.has_smart_card_input();
           }),
       fake_factor);
-}
-
-// Helper that fills AuthFactorWithStatus' field with an auth factor.
-void BuildAuthFactorWithStatus(
-    const std::optional<user_data_auth::AuthFactor>& auth_factor,
-    user_data_auth::AuthFactorWithStatus* factor_with_status) {
-  *factor_with_status->mutable_auth_factor() = *auth_factor;
-  // Add all possible intents for conveniences.
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_DECRYPT);
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_WEBAUTHN);
-  factor_with_status->mutable_status_info()->set_time_available_in(0);
-  if (auth_factor->type() == user_data_auth::AUTH_FACTOR_TYPE_PIN) {
-    if (auth_factor->pin_metadata().auth_locked()) {
-      factor_with_status->mutable_status_info()->set_time_available_in(
-          std::numeric_limits<uint64_t>::max());
-      factor_with_status->mutable_status_info()->set_time_expiring_in(
-          std::numeric_limits<uint64_t>::max());
-    }
-  }
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -922,13 +929,13 @@ void FakeUserDataAuthClient::StartAuthSession(
     }
 
     for (const auto& [label, factor] : user_state.auth_factors) {
-      std::optional<user_data_auth::AuthFactor> auth_factor =
-          FakeAuthFactorToAuthFactor(label, factor);
-      DCHECK(auth_factor);
-      *reply.add_auth_factors() = *auth_factor;
-      auto* factor_with_status =
-          reply.add_configured_auth_factors_with_status();
-      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
+      std::optional<user_data_auth::AuthFactorWithStatus>
+          auth_factor_with_status =
+              FakeAuthFactorToAuthFactorWithStatus(label, factor);
+      DCHECK(auth_factor_with_status);
+      *reply.add_auth_factors() = auth_factor_with_status->auth_factor();
+      *reply.add_configured_auth_factors_with_status() =
+          *auth_factor_with_status;
     }
   }
 }
@@ -957,13 +964,14 @@ void FakeUserDataAuthClient::ListAuthFactors(
 
   const UserCryptohomeState& user_state = user_it->second;
   for (const auto& [label, factor] : user_state.auth_factors) {
-    std::optional<user_data_auth::AuthFactor> auth_factor =
-        FakeAuthFactorToAuthFactor(label, factor);
-    if (auth_factor) {
-      *reply.add_configured_auth_factors() = *auth_factor;
-      auto* factor_with_status =
-          reply.add_configured_auth_factors_with_status();
-      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
+    std::optional<user_data_auth::AuthFactorWithStatus>
+        auth_factor_with_status =
+            FakeAuthFactorToAuthFactorWithStatus(label, factor);
+    if (auth_factor_with_status) {
+      *reply.add_configured_auth_factors() =
+          auth_factor_with_status->auth_factor();
+      *reply.add_configured_auth_factors_with_status() =
+          *auth_factor_with_status;
     } else {
       LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
                    << label;
