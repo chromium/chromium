@@ -906,13 +906,6 @@
       'Win11 Tests x64',
     ],
   },
-  'browser_tests_require_lacros': {
-    'modifications': {
-      'linux-chromeos-rel': {
-        'retry_only_failed_tests': True
-      }
-    }
-  },
   'capture_unittests': {
     'modifications': {
       'WebRTC Chromium Linux Tester': {

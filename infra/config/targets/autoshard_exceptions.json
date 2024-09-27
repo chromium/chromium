@@ -172,21 +172,6 @@
                 },
                 "shards": 96
             },
-            "browser_tests_require_lacros": {
-                "debug": {
-                    "avg_num_builds_per_peak_hour": 89,
-                    "estimated_bot_hour_delta": -1.83,
-                    "prev_avg_pending_time_sec": 33.4,
-                    "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 126.0,
-                    "prev_percentile_duration_minutes": 12.29,
-                    "prev_shard_count": 12,
-                    "simulated_max_shard_duration": 14.62,
-                    "test_overhead_min": 0.6166666666666667,
-                    "try_builder": "linux-chromeos-rel"
-                },
-                "shards": 10
-            },
             "components_unittests": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": 85,

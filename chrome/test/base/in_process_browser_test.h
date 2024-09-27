@@ -185,9 +185,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If no browser is created in BrowserMain(), this will return nullptr unless
   // another browser instance is created at a later time and
   // SelectFirstBrowser() is called.
-  // In Lacros only mode, ash web browser is disabled, therefore, browser()
-  // is not created and should not be accessed from the tests in
-  // browser_tests_require_lacros test suite.
   Browser* browser() const { return browser_; }
 
   // Set |browser_| to the first browser on the browser list.

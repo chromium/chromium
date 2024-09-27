@@ -139,8 +139,6 @@ class DataSource {
                           const std::string& mime_type,
                           const std::vector<uint8_t>& data);
 
-  // This can be a dangling pointer with AutoclickBrowserTest.ClickAndDrag
-  // when run in browser_tests_require_lacros.
   const raw_ptr<DataSourceDelegate, DanglingUntriaged> delegate_;
   base::ObserverList<DataSourceObserver> observers_;
 
