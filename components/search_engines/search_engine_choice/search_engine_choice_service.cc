@@ -407,7 +407,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
                      : "no")
               : "no value");
 
-      NOTREACHED(base::NotFatalUntil::M131);
+      NOTREACHED(base::NotFatalUntil::M132);
       caller_trace_key.Clear();
     }
   }
@@ -581,6 +581,10 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState(
 
   MaybeRecordChoiceScreenDisplayState(display_state.value(),
                                       /*is_from_cached_state=*/true);
+}
+
+void SearchEngineChoiceService::ResetState() {
+  display_state_record_caller_.reset();
 }
 
 // static

@@ -31,8 +31,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/search_engines/search_engines_pref_names.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -514,19 +512,6 @@ double Profile::GetDefaultZoomLevelForProfile() {
 }
 
 void Profile::Wipe() {
-  // Clear the search engine choice prefs.
-  // TODO(b/312180262): Consider clearing other preferences as well.
-  search_engines::WipeSearchEngineChoicePrefs(
-      // For Guest profiles, the OTR is the one that gets wiped, but the choice
-      // prefs get set on the parent profile.
-      // For other OTR profiles, we don't want to automatically forward to the
-      // original profile, the choice made is still relevant there.
-      // This method is also called for regular profiles, when they are
-      // deleted. We don't really care about resetting the pref in that case,
-      // because the full directory will be deleted anyway.
-      CHECK_DEREF((IsGuestSession() ? GetOriginalProfile() : this)->GetPrefs()),
-      search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
-
   GetBrowsingDataRemover()->Remove(
       base::Time(), base::Time::Max(),
       chrome_browsing_data_remover::WIPE_PROFILE,

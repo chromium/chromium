@@ -87,6 +87,9 @@ class SearchEngineChoiceService : public KeyedService {
       const ChoiceScreenDisplayState& display_state,
       bool is_from_cached_state = false);
 
+  // Clear state e.g. when a guest session is closed.
+  void ResetState();
+
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
   void ClearCountryIdCacheForTesting();

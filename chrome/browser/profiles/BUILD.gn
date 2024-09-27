@@ -72,7 +72,6 @@ source_set("profile") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",
-    "//components/search_engines",
     "//components/sync/service",
     "//components/variations",
     "//content/public/browser",

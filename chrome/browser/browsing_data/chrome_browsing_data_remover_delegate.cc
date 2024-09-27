@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -74,6 +75,7 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/share/share_ranking.h"
@@ -131,6 +133,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -1479,6 +1482,28 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                        });
           });
     }
+  }
+
+  if (remove_mask & constants::DATA_TYPE_SEARCH_ENGINE_CHOICE) {
+    // Clear the search engine choice prefs.
+    // TODO(b/312180262): Consider clearing other Guest preferences as well.
+    // TODO(crbug.com/369959287): Delete the Guest OTR profile object instead of
+    // wiping it.
+
+    search_engines::WipeSearchEngineChoicePrefs(
+        // For Guest profiles, the OTR is the one that gets wiped, but the
+        // choice prefs get set on the parent profile. For other OTR profiles,
+        // we don't want to automatically forward to the original profile, the
+        // choice made is still relevant there. This method is also called for
+        // regular profiles, when they are deleted. We don't really care about
+        // resetting the pref in that case, because the full directory will be
+        // deleted anyway.
+        CHECK_DEREF((profile_->IsGuestSession() ? profile_->GetOriginalProfile()
+                                                : profile_.get())
+                        ->GetPrefs()),
+        search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
+    search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_)
+        ->ResetState();
   }
 }
 

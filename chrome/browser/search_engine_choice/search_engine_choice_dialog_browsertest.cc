@@ -699,6 +699,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // The second guest profile still needs to choose again
   EXPECT_TRUE(second_service->IsShowingDialog(*second_guest_session));
+  second_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/false,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(second_service->IsShowingDialog(*second_guest_session));
 }
 #endif
 
