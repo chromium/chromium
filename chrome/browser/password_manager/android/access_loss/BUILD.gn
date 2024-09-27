@@ -7,6 +7,16 @@ android_library("enums_java") {
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
+android_library("utils_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/access_loss/AccessLossWarningMetricsRecorder.java" ]
+
+  deps = [
+    ":enums_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("helper_java") {
   resources_package = "org.chromium.chrome.browser.access_loss"
 
@@ -19,6 +29,7 @@ android_library("helper_java") {
 
   deps = [
     ":enums_java",
+    ":utils_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/feedback/android:factory_java",
@@ -51,6 +62,7 @@ android_library("settings_dialog_java") {
     ":enums_java",
     ":helper_java",
     ":settings_dialog_java_resources",
+    ":utils_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/feedback/android:java",

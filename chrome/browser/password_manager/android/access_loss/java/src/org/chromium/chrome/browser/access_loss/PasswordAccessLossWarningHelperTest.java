@@ -14,6 +14,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.DISMISS;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.HELP_CENTER;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.MAIN_ACTION;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getUserActionHistogramName;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
@@ -45,7 +49,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper.PasswordAccessLossWarningUserAction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -192,9 +195,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.NO_GMS_CORE),
-                                PasswordAccessLossWarningUserAction.MAIN_ACTION)
+                                MAIN_ACTION)
                         .build();
 
         PropertyModel model =
@@ -209,9 +212,8 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
-                                        PasswordAccessLossWarningType.NO_UPM),
-                                PasswordAccessLossWarningUserAction.MAIN_ACTION)
+                                getUserActionHistogramName(PasswordAccessLossWarningType.NO_UPM),
+                                MAIN_ACTION)
                         .build();
 
         PropertyModel model = mHelper.getModelForWarningType(PasswordAccessLossWarningType.NO_UPM);
@@ -225,9 +227,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM),
-                                PasswordAccessLossWarningUserAction.MAIN_ACTION)
+                                MAIN_ACTION)
                         .build();
 
         PropertyModel model =
@@ -242,10 +244,10 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType
                                                 .NEW_GMS_CORE_MIGRATION_FAILED),
-                                PasswordAccessLossWarningUserAction.MAIN_ACTION)
+                                MAIN_ACTION)
                         .build();
 
         PropertyModel model =
@@ -261,9 +263,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.NO_GMS_CORE),
-                                PasswordAccessLossWarningUserAction.HELP_CENTER)
+                                HELP_CENTER)
                         .build();
 
         PropertyModel model =
@@ -279,9 +281,8 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
-                                        PasswordAccessLossWarningType.NO_UPM),
-                                PasswordAccessLossWarningUserAction.HELP_CENTER)
+                                getUserActionHistogramName(PasswordAccessLossWarningType.NO_UPM),
+                                HELP_CENTER)
                         .build();
 
         PropertyModel model = mHelper.getModelForWarningType(PasswordAccessLossWarningType.NO_UPM);
@@ -296,9 +297,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM),
-                                PasswordAccessLossWarningUserAction.HELP_CENTER)
+                                HELP_CENTER)
                         .build();
 
         PropertyModel model =
@@ -314,10 +315,10 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType
                                                 .NEW_GMS_CORE_MIGRATION_FAILED),
-                                PasswordAccessLossWarningUserAction.DISMISS)
+                                DISMISS)
                         .build();
 
         mHelper.show(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
@@ -336,9 +337,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.NO_GMS_CORE),
-                                PasswordAccessLossWarningUserAction.DISMISS)
+                                DISMISS)
                         .build();
 
         mHelper.show(PasswordAccessLossWarningType.NO_GMS_CORE);
@@ -357,9 +358,8 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
-                                        PasswordAccessLossWarningType.NO_UPM),
-                                PasswordAccessLossWarningUserAction.DISMISS)
+                                getUserActionHistogramName(PasswordAccessLossWarningType.NO_UPM),
+                                DISMISS)
                         .build();
 
         mHelper.show(PasswordAccessLossWarningType.NO_UPM);
@@ -378,9 +378,9 @@ public class PasswordAccessLossWarningHelperTest {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                PasswordAccessLossWarningHelper.getUserActionHistogramName(
+                                getUserActionHistogramName(
                                         PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM),
-                                PasswordAccessLossWarningUserAction.DISMISS)
+                                DISMISS)
                         .build();
 
         mHelper.show(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);

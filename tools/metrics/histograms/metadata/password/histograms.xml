@@ -2239,9 +2239,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordAccessLossWarningDialog.Shown"
+    enum="PasswordAccessLossWarningType" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histogram is recorded when the access loss warning dialog was shown to
+    the user. It logs the type of dialog shown. Android only.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordAccessLossWarningDialog.{AccessLossWarningType}.UserAction"
+    enum="PasswordAccessLossWarningUserActions" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histogram logs the action that the user {AccessLossWarningType}
+    performed in the password access loss warning dialog. Recorded exactly when
+    the action takes place. Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.Trigger"
-    enum="PasswordMigrationWarningTriggers" expires_after="2025-03-01">
+    enum="PasswordAccessLossWarningTriggers" expires_after="2025-03-01">
   <owner>izuzic@google.com</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
@@ -2253,7 +2275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.UserAction"
-    enum="PasswordMigrationWarningUserActions" expires_after="2025-03-01">
+    enum="PasswordAccessLossWarningUserActions" expires_after="2025-03-01">
   <owner>izuzic@google.com</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>

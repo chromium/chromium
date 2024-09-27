@@ -20,13 +20,20 @@ class SyncService;
 
 namespace password_manager_android_util {
 
+// Represents different types of password access loss warning.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.access_loss
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningTriggers in enums.xml.
 enum class PasswordAccessLossWarningType {
   kNone = 0,       // No warning.
   kNoGmsCore = 1,  // A warning that the password manager will stop working.
   kNoUpm = 2,      // A warning that GMS Core is outdated; updated suggested.
   kOnlyAccountUpm = 3,  // A warning that GMSCore is outdated; update suggested.
   kNewGmsCoreMigrationFailed = 4,  // A warning for fixing the migration error.
+  kMaxValue = kNewGmsCoreMigrationFailed,
 };
 
 // Represents different causes for showing the password access loss warning.

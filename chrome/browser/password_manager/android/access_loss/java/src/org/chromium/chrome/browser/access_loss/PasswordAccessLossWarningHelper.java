@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.DISMISS;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.HELP_CENTER;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.MAIN_ACTION;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logAccessLossWarningSheetUserAction;
 import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
 import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.ALL_KEYS;
@@ -16,12 +20,9 @@ import android.app.Activity;
 import android.text.SpannableString;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
@@ -35,31 +36,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Entry-point to the access loss warning UI surface. */
 public class PasswordAccessLossWarningHelper {
     final Activity mActivity;
     final BottomSheetController mBottomSheetController;
     final Profile mProfile;
     final HelpUrlLauncher mHelpUrlLauncher;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        PasswordAccessLossWarningUserAction.MAIN_ACTION,
-        PasswordAccessLossWarningUserAction.HELP_CENTER,
-        PasswordAccessLossWarningUserAction.DISMISS,
-        PasswordAccessLossWarningUserAction.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PasswordAccessLossWarningUserAction {
-        int MAIN_ACTION = 0;
-        int HELP_CENTER = 1;
-        int DISMISS = 2;
-        int COUNT = 3;
-    }
 
     public static final String PASSWORD_ACCESS_LOSS_WARNING_USER_ACTION_PREFIX =
             "PasswordManager.PasswordAccessLossWarningSheet.";
@@ -120,8 +102,7 @@ public class PasswordAccessLossWarningHelper {
                                     mHelpUrlLauncher.showHelpArticle(
                                             mActivity, GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);
                                     logAccessLossWarningSheetUserAction(
-                                            PasswordAccessLossWarningType.NO_GMS_CORE,
-                                            PasswordAccessLossWarningUserAction.HELP_CENTER);
+                                            PasswordAccessLossWarningType.NO_GMS_CORE, HELP_CENTER);
                                 }))
                 .with(
                         BUTTON_TITLE,
@@ -132,8 +113,7 @@ public class PasswordAccessLossWarningHelper {
                         () -> {
                             PasswordExportLauncher.showMainSettingsAndStartExport(mActivity);
                             logAccessLossWarningSheetUserAction(
-                                    PasswordAccessLossWarningType.NO_GMS_CORE,
-                                    PasswordAccessLossWarningUserAction.MAIN_ACTION);
+                                    PasswordAccessLossWarningType.NO_GMS_CORE, MAIN_ACTION);
                         })
                 .build();
     }
@@ -159,9 +139,7 @@ public class PasswordAccessLossWarningHelper {
                                     mHelpUrlLauncher.showHelpArticle(
                                             mActivity,
                                             KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL);
-                                    logAccessLossWarningSheetUserAction(
-                                            warningType,
-                                            PasswordAccessLossWarningUserAction.HELP_CENTER);
+                                    logAccessLossWarningSheetUserAction(warningType, HELP_CENTER);
                                 }))
                 .with(
                         BUTTON_TITLE,
@@ -171,8 +149,7 @@ public class PasswordAccessLossWarningHelper {
                         BUTTON_ACTION,
                         () -> {
                             GmsUpdateLauncher.launch(mActivity);
-                            logAccessLossWarningSheetUserAction(
-                                    warningType, PasswordAccessLossWarningUserAction.MAIN_ACTION);
+                            logAccessLossWarningSheetUserAction(warningType, MAIN_ACTION);
                         })
                 .build();
     }
@@ -202,7 +179,7 @@ public class PasswordAccessLossWarningHelper {
                             PasswordExportLauncher.showMainSettingsAndStartExport(mActivity);
                             logAccessLossWarningSheetUserAction(
                                     PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
-                                    PasswordAccessLossWarningUserAction.MAIN_ACTION);
+                                    MAIN_ACTION);
                         })
                 .build();
     }
@@ -212,38 +189,6 @@ public class PasswordAccessLossWarningHelper {
                 sheetText,
                 new SpanApplier.SpanInfo(
                         "<link>", "</link>", new NoUnderlineClickableSpan(mActivity, callback)));
-    }
-
-    private static void logAccessLossWarningSheetUserAction(
-            @PasswordAccessLossWarningType int warningType,
-            @PasswordAccessLossWarningUserAction int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                getUserActionHistogramName(warningType),
-                action,
-                PasswordAccessLossWarningUserAction.COUNT);
-    }
-
-    @VisibleForTesting
-    static String getUserActionHistogramName(@PasswordAccessLossWarningType int warningType) {
-        return PASSWORD_ACCESS_LOSS_WARNING_USER_ACTION_PREFIX
-                + getAccessLossWarningTypeName(warningType)
-                + PASSWORD_ACCESS_LOSS_WARNING_USER_ACTION_SUFFIX;
-    }
-
-    private static String getAccessLossWarningTypeName(
-            @PasswordAccessLossWarningType int warningType) {
-        switch (warningType) {
-            case PasswordAccessLossWarningType.NO_GMS_CORE:
-                return "NoGmsCore";
-            case PasswordAccessLossWarningType.NO_UPM:
-                return "NoUPM";
-            case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
-                return "OnlyAccountUpm";
-            case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
-                return "NewGmsCoreMigrationFailed";
-        }
-        assert false : "Unhandled warning type: " + warningType;
-        return null;
     }
 
     private BottomSheetObserver createBottomSheetObserver(
@@ -256,8 +201,7 @@ public class PasswordAccessLossWarningHelper {
                         || reason == StateChangeReason.BACK_PRESS
                         || reason == StateChangeReason.TAP_SCRIM
                         || reason == StateChangeReason.OMNIBOX_FOCUS) {
-                    logAccessLossWarningSheetUserAction(
-                            warningType, PasswordAccessLossWarningUserAction.DISMISS);
+                    logAccessLossWarningSheetUserAction(warningType, DISMISS);
                 }
                 bottomSheetController.removeObserver(this);
             }

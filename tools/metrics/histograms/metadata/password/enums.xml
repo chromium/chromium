@@ -524,6 +524,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Rejected"/>
 </enum>
 
+<enum name="PasswordAccessLossWarningType">
+  <int value="0" label="No warning"/>
+  <int value="1" label="No GMS Core"/>
+  <int value="2" label="No UPM"/>
+  <int value="3" label="Only Account UPM"/>
+  <int value="4" label="New GMS Core, migration failed"/>
+</enum>
+
 <enum name="PasswordAddLoginSyncError">
   <int value="0" label="None"/>
   <int value="1" label="DB Not Available"/>
