@@ -23,15 +23,25 @@
   .col {
     display: grid;
     grid-template-rows: subgrid;
-    padding: var(--column-padding);
+    margin: var(--column-padding) 0; /* Include space for hover border. */
+    position: relative;
     width: var(--column-width);
   }
 
   .col[is-dragging] {
+    z-index: 2;
+  }
+
+  .col[is-dragging]::before {
     background-color: var(
         --color-product-specifications-summary-background-dragging);
     border-radius: 10px;
-    z-index: 2;
+    bottom: calc(-1 * var(--column-padding));
+    content: '';
+    left: calc(-1 * var(--column-padding));
+    position: absolute;
+    right: calc(-1 * var(--column-padding));
+    top: calc(-1 * var(--column-padding));
   }
 
   product-selector {

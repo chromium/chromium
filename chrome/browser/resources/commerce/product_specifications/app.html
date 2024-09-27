@@ -31,7 +31,8 @@
   }
 
   #summaryContainer:has(horizontal-carousel:not([hidden])) {
-    padding: calc(var(--summary-container-padding) - var(--column-padding));
+    padding: calc(var(--summary-container-padding) - var(
+        --column-padding)) var(--summary-container-padding);
   }
 
   #summaryContainer:has(horizontal-carousel[can-scroll_]:not([hidden])) {
