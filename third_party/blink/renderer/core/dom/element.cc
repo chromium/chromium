@@ -7375,6 +7375,10 @@ Node* Element::InsertAdjacent(const String& where,
 }
 
 void Element::HideNonce() {
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    return;
+  }
+
   const AtomicString& nonce_value = FastGetAttribute(html_names::kNonceAttr);
   if (nonce_value.empty()) {
     return;
