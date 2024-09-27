@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -146,7 +147,14 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
             showDeletePaymentMethodConfirmationDialog();
             return true;
         }
-        // TODO(b/332954304): Add help button to IBAN editor.
+        if (item.getItemId() == R.id.help_menu_id) {
+            HelpAndFeedbackLauncherFactory.getForProfile(getProfile())
+                    .show(
+                            getActivity(),
+                            getActivity().getString(R.string.help_context_autofill),
+                            null);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

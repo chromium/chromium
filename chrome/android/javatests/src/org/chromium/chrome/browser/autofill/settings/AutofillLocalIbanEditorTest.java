@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.mock;
@@ -264,5 +269,14 @@ public class AutofillLocalIbanEditorTest {
         Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
         // Verify the IBAN entry is deleted.
         verify(mPersonalDataManagerMock, times(1)).deleteIban(guid);
+    }
+
+    @Test
+    @MediumTest
+    public void testHelpButtonShown() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(VALID_BELGIUM_IBAN.getGuid()));
+
+        onView(withId(R.id.help_menu_id)).check(matches(isDisplayed()));
     }
 }
