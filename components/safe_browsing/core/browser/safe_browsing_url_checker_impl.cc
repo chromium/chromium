@@ -529,9 +529,9 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
     // HPRT lookups based on the configurable percentage. Otherwise, perform URL
     // real-time lookup only.
     bool should_run_background_hprt_check =
+        base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
         url_checker_delegate_->AreBackgroundHashRealTimeSampleLookupsAllowed(
             web_contents_getter_) &&
-        base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
         base::RandDouble() * 100 < kHashPrefixRealTimeLookupsSampleRate.Get() &&
         (can_use_hash_real_time_service || can_use_hash_real_time_db_manager);
     lookup_mechanism = std::make_unique<UrlRealTimeMechanism>(
