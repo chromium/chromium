@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
@@ -626,9 +621,9 @@ const CSSValue* Border::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   const CSSValue* value = GetCSSPropertyBorderTop().CSSValueFromComputedStyle(
       style, layout_object, allow_visited_style, value_phase);
-  static const CSSProperty* kProperties[3] = {&GetCSSPropertyBorderRight(),
-                                              &GetCSSPropertyBorderBottom(),
-                                              &GetCSSPropertyBorderLeft()};
+  static const std::array<const CSSProperty*, 3> kProperties = {
+      &GetCSSPropertyBorderRight(), &GetCSSPropertyBorderBottom(),
+      &GetCSSPropertyBorderLeft()};
   for (size_t i = 0; i < std::size(kProperties); ++i) {
     const CSSValue* value_for_side = kProperties[i]->CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase);
