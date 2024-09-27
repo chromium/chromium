@@ -11,6 +11,7 @@ namespace ash::graduation_prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kGraduationEnablementStatus);
+  registry->RegisterBooleanPref(prefs::kGraduationNudgeShown, false);
 }
 
 }  // namespace ash::graduation_prefs

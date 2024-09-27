@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_ASH_GRADUATION_GRADUATION_MANAGER_H_
 #define CHROME_BROWSER_UI_ASH_GRADUATION_GRADUATION_MANAGER_H_
 
+#include <memory>
+
+#include "ash/system/graduation/graduation_nudge_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -39,6 +43,9 @@ class GraduationManager : public session_manager::SessionManagerObserver {
 
   // Profile object will be nullptr until the user session begins.
   raw_ptr<Profile> profile_ = nullptr;
+
+  // The GraduationNudgeController is created during `OnUserSessionStarted`.
+  std::unique_ptr<GraduationNudgeController> nudge_controller_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

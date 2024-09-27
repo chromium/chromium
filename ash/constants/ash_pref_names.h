@@ -2505,6 +2505,9 @@ inline constexpr char kDnsOverHttpsIncludedDomains[] =
 inline constexpr char kGraduationEnablementStatus[] =
     "ash.graduation.enablement_status";
 
+// Boolean pref representing if the nudge for the Graduation app has been shown.
+inline constexpr char kGraduationNudgeShown[] = "ash.graduation.nudge_shown";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

@@ -53,6 +53,9 @@ void GraduationManager::OnUserSessionStarted(bool is_primary) {
     return;
   }
 
+  nudge_controller_ =
+      std::make_unique<GraduationNudgeController>(profile_->GetPrefs());
+
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
   CHECK(swa_manager);
   swa_manager->on_apps_synchronized().Post(
@@ -93,8 +96,8 @@ void GraduationManager::UpdateAppPinnedState() {
 
   bool is_policy_enabled = IsEligibleForGraduation(profile_->GetPrefs());
   if (is_policy_enabled) {
-    // TODO(b:358163549): Show Graduation app nudge here.
     PinAppWithIDToShelf(web_app::kGraduationAppId);
+    nudge_controller_->MaybeShowNudge(ash::ShelfID(web_app::kGraduationAppId));
     return;
   }
 

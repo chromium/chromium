@@ -8801,6 +8801,11 @@ To shut down the device, press and hold the power button on the device again.
         Send feedback
       </message>
 
+      <!-- Graduation app strings -->
+      <message name="IDS_ASH_GRADUATION_NUDGE_TEXT" desc="Text shown in nudge that is displayed after the Content Transfer app becomes available.">
+        Use the Content Transfer app to move your school account data to your personal account
+      </message>
+
       <!-- Ash style -->
       <message name="IDS_ASH_ERROR_MESSAGE_TOAST_DISMISS" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to dismiss it.">
         Dismiss
