@@ -1064,6 +1064,23 @@ TEST_P(PDFiumEngineTest, DrawTextSelectionsHelloWorld) {
       *engine, kPageIndex, "hello_world_selection_3.png");
 }
 
+TEST_P(PDFiumEngineTest, DrawTextSelectionsBigtableMicro) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("bigtable_micro.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  engine->SelectAll();
+  EXPECT_EQ("{fay,jeff,sanjay,wilsonh,kerr,m3b,tushar,k es,gruber}@google.com",
+            engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "bigtable_micro_selection.png");
+}
+
 TEST_P(PDFiumEngineTest, LinkNavigates) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
