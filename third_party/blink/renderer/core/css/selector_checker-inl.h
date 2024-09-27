@@ -54,15 +54,6 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
       case CSSSelector::kClass:
         break;
       case CSSSelector::kAttributeExact:
-        if (selector->AttributeMatch() ==
-                CSSSelector::AttributeMatchType::kCaseInsensitive ||
-            selector->LegacyCaseInsensitiveMatch()) {
-          // We don't bother with case-insensitive attribute checks,
-          // for simplicity and avoiding the extra tests. (We probably
-          // could revisit this in the future if needed.)
-          return false;
-        }
-        [[fallthrough]];
       case CSSSelector::kAttributeSet:
         if (selector->Attribute().Prefix() == g_star_atom) {
           // We don't support attribute matches with wildcard namespaces
@@ -186,9 +177,15 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
              element->IdForStyleResolution() == selector->Value();
     case CSSSelector::kAttributeSet:
       return AttributeIsSet(*element, selector->Attribute());
-    case CSSSelector::kAttributeExact:
+    case CSSSelector::kAttributeExact: {
+      bool case_insensitive =
+          selector->AttributeMatch() ==
+              CSSSelector::AttributeMatchType::kCaseInsensitive ||
+          (selector->LegacyCaseInsensitiveMatch() &&
+           IsA<HTMLDocument>(element->GetDocument()));
       return AttributeMatches(*element, selector->Attribute(),
-                              selector->Value());
+                              selector->Value(), case_insensitive);
+    }
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -209,12 +206,15 @@ bool EasySelectorChecker::AttributeIsSet(const Element& element,
 
 bool EasySelectorChecker::AttributeMatches(const Element& element,
                                            const QualifiedName& attr,
-                                           const AtomicString& value) {
+                                           const AtomicString& value,
+                                           bool case_insensitive) {
   element.SynchronizeAttribute(attr.LocalName());
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     if (AttributeItemHasName(attribute_item, element, attr)) {
-      return attribute_item.Value() == value;
+      return attribute_item.Value() == value ||
+             (case_insensitive &&
+              EqualIgnoringASCIICase(attribute_item.Value(), value));
     }
   }
   return false;

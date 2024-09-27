@@ -445,7 +445,8 @@ class CORE_EXPORT EasySelectorChecker {
                                            const QualifiedName& attr);
   ALWAYS_INLINE static bool AttributeMatches(const Element& element,
                                              const QualifiedName& attr,
-                                             const AtomicString& value);
+                                             const AtomicString& value,
+                                             bool insensitive_match);
   ALWAYS_INLINE static bool AttributeItemHasName(
       const Attribute& attribute_item,
       const Element& element,
