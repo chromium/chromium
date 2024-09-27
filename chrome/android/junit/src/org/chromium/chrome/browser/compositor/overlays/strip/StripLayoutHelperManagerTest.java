@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -129,6 +130,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private StatusBarColorController mStatusBarColorController;
     @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
@@ -198,7 +200,8 @@ public class StripLayoutHelperManagerTest {
                         mWindowAndroid,
                         mToolbarManager,
                         mDesktopWindowStateProvider,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        mDataSharingTabManager);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.disableAnimationsForTesting();
     }

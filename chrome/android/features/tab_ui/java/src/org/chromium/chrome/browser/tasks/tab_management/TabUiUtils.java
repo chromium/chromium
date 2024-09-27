@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,6 +36,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -286,6 +289,32 @@ public class TabUiUtils {
                                 bindOnLeaveOrDeleteGroup(context, modalDialogManager));
                     }
                 });
+    }
+
+    /**
+     * Create share flows to initiate tab group share.
+     *
+     * @param activity that contains the current tab group.
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     *     UI and DataSharing services.
+     * @param tabId The local id of the tab.
+     * @param tabGroupDisplayName The display name of the current group title.
+     * @param onGroupSharedCallback The callback to execute after the create share flow is
+     *     completed.
+     */
+    public static void startShareTabGroupFlow(
+            Activity activity,
+            TabGroupModelFilter filter,
+            DataSharingTabManager dataSharingTabManager,
+            int tabId,
+            String tabGroupDisplayName,
+            Callback<Boolean> onGroupSharedCallback) {
+        Tab tab = filter.getTabModel().getTabById(tabId);
+        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+
+        dataSharingTabManager.createGroupFlow(
+                activity, tabGroupDisplayName, localTabGroupId, onGroupSharedCallback);
     }
 
     /**

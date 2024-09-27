@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,23 +33,26 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -77,44 +82,59 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private OnItemClickedCallback mOnItemClickedCallback;
     private int mTabId;
+    private MockTabModel mTabModel;
     @Mock private View mMenuView;
-    @Mock private Supplier<TabModel> mTabModelSupplier;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private TabCreator mTabCreator;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
-    @Mock private TabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private Callback<Boolean> mCallback;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
+        when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
+        when(mWeakReferenceActivity.get()).thenReturn(mActivity);
+        mTabModel = spy(new MockTabModel(mProfile, null));
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
         mTabId = 1;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
+                        mActivity,
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
                         mTabCreator,
+                        mDataSharingTabManager,
+                        mCallback,
                         /* isTabGroupSyncEnabled= */ true);
         mTabGroupContextMenuCoordinator =
-                new TabGroupContextMenuCoordinator(
-                        mTabModelSupplier,
+                TabGroupContextMenuCoordinator.createContextMenuCoordinator(
+                        mTabModel,
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
                         mTabCreator,
                         mWindowAndroid,
-                        /* shouldShowDeleteGroup= */ true);
+                        mDataSharingTabManager,
+                        mCallback);
 
         // Set groupRootId to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupRootIdForTesting(mTabId);
-        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems() {
         // Build custom view first to setup menu view.
@@ -128,13 +148,19 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 /* hasCollaborationData= */ false);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
-        // Assert: verify item type or id.
-        verifyNormalListItems(modelList);
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(4).type);
+        // Assert: verify divider and normal menu items.
+        verifyNormalListItems(modelList, true);
+
+        // Assert: verify share group menu item.
         assertEquals(
-                R.id.delete_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.share_group, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // Assert: verify divider and delete group menu item.
+        assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
+        assertEquals(
+                R.id.delete_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -153,8 +179,35 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
-        // Assert: verify divider or menu item id.
-        verifyNormalListItems(modelList);
+        // Assert: verify normal menu items.
+        verifyNormalListItems(modelList, false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @Feature("Tab Strip Group Context Menu")
+    public void testListMenuItems_DataShareDisabled() {
+        // Build custom view first to setup menu view.
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+
+        ModelList modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ false);
+
+        // Assert: verify number of items in the model list.
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+
+        // Assert: verify share group option does not show.
+        for (int i = 0; i < modelList.size(); i++) {
+            if (modelList.get(i).model.containsKey(ListMenuItemProperties.MENU_ITEM_ID)) {
+                assertNotEquals(
+                        R.id.share_group,
+                        modelList.get(i).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+            }
+        }
     }
 
     @Test
@@ -244,7 +297,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Initialize
         setUpTabGroupModelFilter();
         mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         // Verify default group title.
         EditText groupTitleEditText =
@@ -272,10 +324,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     private List<Tab> setUpTabGroupModelFilter() {
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
-        tabModel.addTab(mTabId);
-        Tab tab = tabModel.getTabById(mTabId);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(tabModel);
+        mTabModel.addTab(mTabId);
+        Tab tab = mTabModel.getTabById(mTabId);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(mTabId))).thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
@@ -284,14 +335,23 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         return tabsInGroup;
     }
 
-    private void verifyNormalListItems(ModelList modelList) {
+    private void verifyNormalListItems(ModelList modelList, boolean shareEnabled) {
         assertEquals(ListMenuItemType.DIVIDER, modelList.get(0).type);
         assertEquals(
                 R.id.open_new_tab_in_group,
                 modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 R.id.ungroup_tab, modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // Verify "Share group" appears above the "Close group" option when data share is enabled.
+        if (shareEnabled) {
+            assertEquals(
+                    R.id.close_tab,
+                    modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        } else {
+            assertEquals(
+                    R.id.close_tab,
+                    modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        }
     }
 }

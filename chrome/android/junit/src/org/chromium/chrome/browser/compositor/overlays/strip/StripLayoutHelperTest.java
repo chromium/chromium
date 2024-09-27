@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -135,10 +136,14 @@ public class StripLayoutHelperTest {
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private PrefService mPrefService;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
 
     private Activity mActivity;
     private Context mContext;
+
+    // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
+    // `TestTabModel` for tab model.
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
@@ -1802,6 +1807,7 @@ public class StripLayoutHelperTest {
         // Set up tabModel and menu coordinator.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
                 mTabGroupContextMenuCoordinator);
@@ -3596,6 +3602,7 @@ public class StripLayoutHelperTest {
                         mToolbarContainerView,
                         mWindowAndroid,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         0,
                         () -> true);
         // Initialize StackScroller

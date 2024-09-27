@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEven
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -435,7 +436,8 @@ public class StripLayoutHelperManager
             // implement an interface to manage strip transition states.
             @NonNull ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
-            ActionConfirmationManager actionConfirmationManager) {
+            ActionConfirmationManager actionConfirmationManager,
+            DataSharingTabManager dataSharingTabManager) {
         Resources res = context.getResources();
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -510,6 +512,7 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
+                        dataSharingTabManager,
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured
@@ -527,6 +530,7 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
+                        dataSharingTabManager,
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
                                 !mTabStripObscured

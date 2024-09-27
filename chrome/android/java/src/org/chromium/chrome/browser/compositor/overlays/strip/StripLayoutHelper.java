@@ -42,6 +42,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -69,7 +71,6 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -113,6 +114,8 @@ import java.util.Set;
  */
 public class StripLayoutHelper
         implements StripLayoutGroupTitleDelegate, StripLayoutViewOnClickHandler {
+    private static final String TAG = "StripLayoutHelper";
+
     // Drag Constants
     private static final int REORDER_SCROLL_NONE = 0;
     private static final int REORDER_SCROLL_LEFT = 1;
@@ -472,6 +475,9 @@ public class StripLayoutHelper
     // Tab group context menu.
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
+    // Tab group share.
+    private DataSharingTabManager mDataSharingTabManager;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      *
@@ -502,6 +508,7 @@ public class StripLayoutHelper
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
+            DataSharingTabManager dataSharingTabManager,
             int tabStripHeight,
             Supplier<Boolean> tabStripVisibleSupplier) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_LARGE_DP;
@@ -516,6 +523,7 @@ public class StripLayoutHelper
         mLastHoverCardExitTime = INVALID_TIME;
         mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
+        mDataSharingTabManager = dataSharingTabManager;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1901,19 +1909,24 @@ public class StripLayoutHelper
     private void showTabGroupContextMenu(StripLayoutGroupTitle groupTitle) {
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
-                    new TabGroupContextMenuCoordinator(
-                            () -> mModel,
+                    TabGroupContextMenuCoordinator.createContextMenuCoordinator(
+                            mModel,
                             mTabGroupModelFilter,
                             mActionConfirmationManager,
                             mTabCreator,
                             mWindowAndroid,
-                            TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
+                            mDataSharingTabManager,
+                            this::onGroupSharedCallback);
         }
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(groupTitle, anchorRectProvider);
         performHapticFeedback();
         mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getRootId());
+    }
+
+    private void onGroupSharedCallback(boolean groupShared) {
+        Log.d(TAG, "Group share created " + groupShared);
     }
 
     private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {

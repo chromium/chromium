@@ -994,10 +994,12 @@ public class TabGridDialogMediator
         Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
-        mDataSharingTabManager.createGroupFlow(
+        TabUiUtils.startShareTabGroupFlow(
                 mActivity,
+                filter,
+                mDataSharingTabManager,
+                mCurrentTabId,
                 tabGroupDisplayName,
-                localTabGroupId,
                 (groupCreated) -> {
                     mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
                 });

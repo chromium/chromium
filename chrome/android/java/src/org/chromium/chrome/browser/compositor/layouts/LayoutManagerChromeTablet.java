@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -91,7 +92,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
-            ActionConfirmationManager actionConfirmationManager) {
+            ActionConfirmationManager actionConfirmationManager,
+            DataSharingTabManager dataSharingTabManager) {
         super(
                 host,
                 contentContainer,
@@ -118,7 +120,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         windowAndroid,
                         toolbarManager,
                         desktopWindowStateProvider,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        dataSharingTabManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateProvider = desktopWindowStateProvider;
