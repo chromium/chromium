@@ -149,8 +149,9 @@ enum class ColorParseResult {
   // The string identified the current color.
   kCurrentColor,
 
-  // The string contains a color-mix function, which may contain current color.
-  kColorMix,
+  // The string contains a color-mix or relative color function, which may
+  // contain currentcolor.
+  kColorFunction,
 
   // Parsing failed.
   kParseFailed

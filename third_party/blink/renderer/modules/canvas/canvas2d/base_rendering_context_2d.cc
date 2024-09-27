@@ -859,7 +859,7 @@ bool BaseRenderingContext2D::ExtractColorFromV8StringAndUpdateCache(
         case ColorParseResult::kCurrentColor:
           color = GetCurrentColor();
           return true;
-        case ColorParseResult::kColorMix:
+        case ColorParseResult::kColorFunction:
           // ParseColorOrCurrentColor() never returns kColorMix.
           NOTREACHED();
         case ColorParseResult::kParseFailed:
@@ -962,7 +962,7 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     color = GetCurrentColor();
   }
 
-  if (parse_result == ColorParseResult::kColorMix) {
+  if (parse_result == ColorParseResult::kColorFunction) {
     const CSSValue* color_mix_value = CSSParser::ParseSingleValue(
         CSSPropertyID::kColor, color_string,
         StrictCSSParserContext(SecureContextMode::kInsecureContext));
