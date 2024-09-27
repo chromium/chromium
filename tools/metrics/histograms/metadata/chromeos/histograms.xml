@@ -3067,6 +3067,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Regmon.ReportViolationTime" units="ms"
+    expires_after="2025-09-19">
+  <owner>chiav@chromium.org</owner>
+  <owner>crmullins@chromium.org</owner>
+  <summary>
+    Records the amount of time (milliseconds) it takes to run the Report
+    function for network annotation monitoring when a violation is found.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
     enum="RgbKeyboardCapabilityType" expires_after="2025-01-26">
   <owner>michaelcheco@google.com</owner>
