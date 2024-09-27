@@ -34,10 +34,10 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
         "ip_protection_service_get_proxy_config",
         R"(
     semantics {
-      sender: "Chrome IP Protection Service Client"
+      sender: "IP Protection Service Client"
       description:
         "Request to a Google auth server to obtain proxy server hostnames "
-        "for Chrome's IP Protection privacy proxies."
+        "for IP Protection privacy proxies."
       trigger:
         "On startup, periodically, and on failure to connect to a proxy."
       data:
@@ -51,7 +51,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
       user_data {
         type: NONE
       }
-      last_reviewed: "2023-08-30"
+      last_reviewed: "2024-09-26"
     }
     policy {
       cookies_allowed: NO
