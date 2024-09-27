@@ -56,6 +56,10 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   STACK_ALLOCATED();
 
  public:
+  // NOTE: Both `FontSizes` and `LineHeightSize` have a pointer to a `Font`.
+  // Typically these classes are just on the stack. However if they are heap
+  // allocated (as part of another object), you need to ensure that *something*
+  // (typically a `ComputedStyle`) is keeping the `Font` object alive.
   class CORE_EXPORT FontSizes {
     DISALLOW_NEW();
 

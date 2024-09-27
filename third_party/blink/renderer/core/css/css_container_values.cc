@@ -32,6 +32,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
       line_height_size_(CSSToLengthConversionData::LineHeightSize(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
+      font_style_(container.GetComputedStyle()),
+      root_font_style_(document.documentElement()->GetComputedStyle()),
       container_sizes_(
           ContainerQueryEvaluator::ParentContainerCandidateElement(container)) {
 }
@@ -39,6 +41,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
 void CSSContainerValues::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(container_sizes_);
+  visitor->Trace(font_style_);
+  visitor->Trace(root_font_style_);
   MediaValuesDynamic::Trace(visitor);
 }
 
