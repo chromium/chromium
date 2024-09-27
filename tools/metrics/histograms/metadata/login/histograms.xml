@@ -78,8 +78,8 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: monitors 'black screen on login' user experience. -->
 
-  <owner>alemate@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     A set of chrome flags that triggered browser restart on Chrome OS after user
     sign in. Chrome needs to be restarted if the device owner set of flags is
@@ -101,7 +101,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
     expires_after="2025-04-24">
-  <owner>achuith@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>Chrome OS login failure reason.</summary>
@@ -154,14 +153,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.NewUserPriorityPrefsSyncResult"
-    enum="NewUserPriorityPrefsSyncResult" expires_after="M85">
-  <owner>alemate@chromium.org</owner>
+    enum="NewUserPriorityPrefsSyncResult" expires_after="2025-10-01">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
   <summary>Records whether a new user's priority prefs sync timed out.</summary>
 </histogram>
 
 <histogram name="Login.NewUserPriorityPrefsSyncTime" units="ms"
-    expires_after="M85">
-  <owner>alemate@chromium.org</owner>
+    expires_after="2025-10-01">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Time spent waiting for priority preferences to sync after new user sign in.
     The operation will time out after 10s.
