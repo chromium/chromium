@@ -944,6 +944,12 @@ const char kRichBubbleWithoutImageDescription[] =
     "When enabled, the rich bubble IPH type will not feature an image, instead "
     "will only have a title and body text.";
 
+const char kSafeBrowsingAsyncRealTimeCheckName[] =
+    "Safe Browsing Async Real Time Check";
+const char kSafeBrowsingAsyncRealTimeCheckDescription[] =
+    "Safe Browsing real-time checks are conducted asynchronously. They no "
+    "longer delay page load.";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "

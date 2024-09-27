@@ -841,6 +841,10 @@ extern const char kRevampPageInfoIosDescription[];
 extern const char kRichBubbleWithoutImageName[];
 extern const char kRichBubbleWithoutImageDescription[];
 
+// Title and description for the flag to enable async real time checks.
+extern const char kSafeBrowsingAsyncRealTimeCheckName[];
+extern const char kSafeBrowsingAsyncRealTimeCheckDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
