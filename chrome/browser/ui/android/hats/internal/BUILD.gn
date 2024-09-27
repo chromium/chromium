@@ -88,6 +88,7 @@ robolectric_library("junit") {
 android_library("controller_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyController.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerFactory.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerProvider.java",
   ]
 
