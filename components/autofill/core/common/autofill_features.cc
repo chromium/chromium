@@ -39,7 +39,7 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
 // TODO(crbug.com/339156167): Remove when launched.
 BASE_FEATURE(kAutofillCaretExtraction,
              "AutofillCaretExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillAgent's left-click handler tries to treat
 // contenteditables appropriately.

@@ -4881,17 +4881,11 @@ extern const char kComposeTextSelectionDescription[];
 extern const char kComposeProactiveNudgeName[];
 extern const char kComposeProactiveNudgeDescription[];
 
-extern const char kComposeNudgeAtCursorName[];
-extern const char kComposeNudgeAtCursorDescription[];
-
 extern const char kComposePoliteNudgeName[];
 extern const char kComposePoliteNudgeDescription[];
 
 extern const char kComposeSelectionNudgeName[];
 extern const char kComposeSelectionNudgeDescription[];
-
-extern const char kAutofillCaretExtractionName[];
-extern const char kAutofillCaretExtractionDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

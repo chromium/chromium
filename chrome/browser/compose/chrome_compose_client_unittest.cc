@@ -4429,20 +4429,6 @@ TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {
       compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived, 1);
 }
 
-TEST_F(ChromeComposeClientTest, TestShowNudgeAtCursorFeatureFlag) {
-  // Showing nudge at cursor is disabled by default
-  EXPECT_FALSE(compose::GetMutableConfigForTesting().is_nudge_shown_at_cursor);
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{compose::features::kEnableComposeNudgeAtCursor},
-      /*disabled_features=*/{});
-  // Needed for feature params to apply.
-  compose::ResetConfigForTesting();
-
-  EXPECT_TRUE(compose::GetMutableConfigForTesting().is_nudge_shown_at_cursor);
-}
-
 TEST_F(ChromeComposeClientTest, LaunchHatsSurveyDisabled) {
   // Add something for the test to wait on after the close event is finished
   // so we dont tear down too early.

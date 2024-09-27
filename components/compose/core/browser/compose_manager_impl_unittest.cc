@@ -197,9 +197,7 @@ TEST_F(
               Optional(EqualsSuggestion(
                   SuggestionType::kComposeSavedStateNotification,
                   l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
-                  Suggestion::Icon::kPenSpark,
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}})));
+                  Suggestion::Icon::kPenSpark)));
 }
 
 TEST_F(
@@ -244,13 +242,13 @@ TEST_F(
               Optional(EqualsSuggestion(
                   SuggestionType::kComposeResumeNudge,
                   l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
-                  Suggestion::Icon::kPenSpark,
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}})));
+                  Suggestion::Icon::kPenSpark)));
 }
 
 TEST_F(ComposeManagerImplTest,
        SuggestionGeneration_NoSession_ExpectedTextAndLabel) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_compact_ui = false;
   std::optional<Suggestion> suggestion = GetSuggestion(
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*has_session=*/false);

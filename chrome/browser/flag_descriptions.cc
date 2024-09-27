@@ -8378,21 +8378,14 @@ const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
 const char kComposeProactiveNudgeDescription[] =
     "Enables proactive nudging for Compose";
 
-const char kComposeNudgeAtCursorName[] = "Compose Nudge At Cursor";
-const char kComposeNudgeAtCursorDescription[] =
-    "Shows the Compose proactive nudge at the cursor location";
-
 const char kComposePoliteNudgeName[] = "Compose Polite a11y announcement";
 const char kComposePoliteNudgeDescription[] =
     "Uses polite announcements to alert the user that a compose popup is "
     "available to interact with.";
+
 const char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
 const char kComposeSelectionNudgeDescription[] =
     "Enables nudge on selection for Compose";
-
-const char kAutofillCaretExtractionName[] = "Autofill Caret Extraction";
-const char kAutofillCaretExtractionDescription[] =
-    "Enables passing caret position via Autofill";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
