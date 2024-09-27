@@ -4,6 +4,7 @@
 
 /** @fileoverview Common utilities for extension ui tests. */
 import type {ItemDelegate} from 'chrome://extensions/extensions.js';
+import {createDummyExtensionInfo} from 'chrome://extensions/extensions.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -189,58 +190,32 @@ export function createExtensionInfo(
   const id = properties && properties.hasOwnProperty('id') ? properties['id']! :
                                                              'a'.repeat(32);
   const baseUrl = 'chrome-extension://' + id + '/';
-  return Object.assign(
-      {
-        commands: [],
-        errorCollection: {
-          isEnabled: false,
-          isActive: false,
-        },
-        dependentExtensions: [],
-        description: 'This is an extension',
-        disableReasons: {
-          suspiciousInstall: false,
-          corruptInstall: false,
-          updateRequired: false,
-          publishedInStoreRequired: false,
-          blockedByPolicy: false,
-          custodianApprovalRequired: false,
-          parentDisabledPermissions: false,
-          reloading: false,
-          unsupportedManifestVersion: false,
-        },
-        fileAccess: {
-          isEnabled: false,
-          isActive: false,
-        },
-        homePage: {specified: false, url: ''},
-        iconUrl: 'chrome://extension-icon/' + id + '/24/0',
-        id: id,
-        incognitoAccess: {isEnabled: true, isActive: false},
-        installWarnings: [],
-        location: 'FROM_STORE',
-        manifestErrors: [],
-        manifestHomePageUrl: '',
-        mustRemainInstalled: false,
-        name: 'Wonderful Extension',
-        offlineEnabled: false,
-        runtimeErrors: [],
-        runtimeWarnings: [],
-        permissions: {simplePermissions: [], canAccessSiteData: false},
-        state: 'ENABLED',
-        type: 'EXTENSION',
-        updateUrl: '',
-        userMayModify: true,
-        version: '2.0',
-        views: [{url: baseUrl + 'foo.html'}, {url: baseUrl + 'bar.html'}],
-        webStoreUrl: '',
-        showSafeBrowsingAllowlistWarning: false,
-        showAccessRequestsInToolbar: false,
-        isAffectedByMV2Deprecation: false,
-        didAcknowledgeMV2DeprecationNotice: false,
-        safetyCheckWarningReason: 'UNPUBLISHED',
-      },
-      properties || {});
+  const dummy = createDummyExtensionInfo();
+
+  // Modify some dummy properties for testing.
+  dummy.description = 'This is an extension';
+  dummy.iconUrl = 'chrome://extension-icon/' + id + '/24/0';
+  dummy.id = id;
+  dummy.incognitoAccess = {isEnabled: true, isActive: false};
+  dummy.name = 'Wonderful Extension';
+  dummy.location = chrome.developerPrivate.Location.FROM_STORE;
+  dummy.userMayModify = true;
+
+  function createDummyView(url: string): chrome.developerPrivate.ExtensionView {
+    return {
+      url: url,
+      renderProcessId: 0,
+      renderViewId: 0,
+      incognito: false,
+      isIframe: false,
+      type: chrome.developerPrivate.ViewType.APP_WINDOW,
+    };
+  }
+  dummy.views = [
+    createDummyView(baseUrl + 'foo.html'),
+    createDummyView(baseUrl + 'bar.html'),
+  ];
+  return Object.assign(dummy, properties || {});
 }
 
 /**

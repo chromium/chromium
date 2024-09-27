@@ -6,6 +6,7 @@ import type {ExtensionsToolbarElement} from 'chrome://extensions/extensions.js';
 import {getToastManager} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
@@ -118,14 +119,15 @@ suite('ExtensionToolbarTest', function() {
   test(
       'FailedUpdateFiresLoadError', async function() {
         const item = document.createElement('extensions-item');
-        item.data = createExtensionInfo();
+        item.data = createExtensionInfo(
+            {location: chrome.developerPrivate.Location.UNPACKED});
         item.delegate = mockDelegate;
         document.body.appendChild(item);
-        item.set('inDevMode', true);
-        item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+        item.inDevMode = true;
 
         toolbar.set('inDevMode', true);
         flush();
+        await microtasksFinished();
 
         const proxyDelegate = new TestService();
         toolbar.delegate = proxyDelegate;

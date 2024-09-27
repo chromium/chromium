@@ -20,7 +20,7 @@ export {ErrorPageDelegate, ExtensionsErrorPageElement} from './error_page.js';
 export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_toggle_list.js';
 export {ExtensionsItemElement, ItemDelegate} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';
-export {UserAction} from './item_util.js';
+export {createDummyExtensionInfo, UserAction} from './item_util.js';
 export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
 export {LoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';

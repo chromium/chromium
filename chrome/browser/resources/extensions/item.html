@@ -1,244 +1,59 @@
-<style include="iron-flex cr-shared-style cr-hidden-style cr-icons action-link
-    shared-style">
-  .bounded-text,
-  .multiline-clippable-text,
-  .clippable-flex-text {
-    /** Ensure that the text does not overflow its container. */
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .bounded-text,
-  .clippable-flex-text {
-    white-space: nowrap;
-  }
-
-  .clippable-flex-text {
-    /**
-     * These labels can be arbitrarily long. We want to ensure that these
-     * shrink, rather than the neighboring content.
-     */
-    flex-shrink: 1;
-  }
-
-  cr-tooltip-icon {
-    margin-inline-end: 8px;
-  }
-
-  #icon-wrapper {
-    align-self: flex-start;
-    display: flex;
-    padding: 6px;
-    position: relative;
-  }
-
-  #icon {
-    height: 36px;
-    width: 36px;
-  }
-
-  #card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-    display: flex;
-    flex-direction: column;
-    height: var(--extensions-card-height);
-    /* Duration matches --drawer-transition from toolbar.html. */
-    transition: height 300ms cubic-bezier(.25, .1, .25, 1);
-  }
-
-  #card.dev-mode {
-    height: 208px;
-  }
-
-  #main {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    padding: 16px 20px;
-  }
-
-  #content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    margin-inline-start: 24px;
-    overflow: hidden;
-  }
-
-  #name-and-version {
-    color: var(--cr-primary-text-color);
-    margin-bottom: 4px;
-  }
-
-  #name {
-    margin-inline-end: 8px;
-  }
-
-  #description {
-    flex: 1;
-  }
-
-  #warnings {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    margin-bottom: 8px;
-  }
-
-  #allowlist-warning {
-    flex: 1;
-    margin-bottom: 8px;
-  }
-
-  .message-icon {
-    color: var(--error-color);
-    height: 18px;
-    margin-inline-end: 4px;
-    vertical-align: top;
-    width: 18px;
-    flex-shrink: 0
-  }
-
-
-  #allowlist-warning .message-icon {
-    --iron-icon-fill-color: var(--warning-color);
-  }
-
-  #extension-id {
-    flex-shrink: 0;
-  }
-
-  #inspect-views {
-    display: flex;
-    white-space: nowrap;
-  }
-
-  #inspect-views > span {
-    margin-inline-end: 4px;
-  }
-
-  #button-strip {
-    box-sizing: border-box;
-    flex-shrink: 0;
-    height: var(--cr-section-min-height);
-    padding-bottom: 8px;
-    padding-inline-end: 20px;
-    padding-top: 8px;
-  }
-
-  #button-strip cr-button {
-    margin-inline-start: 8px;
-  }
-
-  #source-indicator {
-    margin-inline-start: 24px;
-    margin-top: 24px;
-    position: absolute;
-  }
-
-  .source-icon-wrapper {
-    align-items: center;
-    background: rgb(241, 89, 43);  /* Same in light & dark modes. */
-    border-radius: 50%;  /* 50% border radius === a circle */
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.22),
-                0 2px 2px 0 rgba(0, 0, 0, 0.12);
-    display: flex;
-    height: 22px;
-    justify-content: center;
-    width: 22px;
-  }
-
-  #source-indicator cr-icon {
-    color: white;
-    height: 16px;
-    width: 16px;
-  }
-
-  cr-tooltip {
-    --paper-tooltip-min-width: 0;
-  }
-
-  #errors-button {
-    color: var(--error-color);
-  }
-
-  #dev-reload-button {
-    margin-inline-end: 12px;
-  }
-
-  #blocklisted-warning:empty {
-    display: none;
-  }
-
-  #a11yAssociation {
-    height: 0;
-    overflow: hidden;
-  }
-</style>
 <!-- Invisible instead of hidden because VoiceOver refuses to read text of
   element that's hidden when referenced by an aria label.  Unfortunately,
   this text can be found by Ctrl + F because it isn't hidden. -->
 <div id="a11yAssociation" aria-hidden="true">
-  [[a11yAssociation(data.name)]]
+  ${this.a11yAssociation(this.data.name)}
 </div>
-<div id="card" class$="[[computeClasses_(data.state, inDevMode)]]">
+<div id="card" class="${this.computeClasses_()}">
   <div id="main">
     <div id="icon-wrapper">
-      <img id="icon" src="[[data.iconUrl]]"
+      <img id="icon" src="${this.data.iconUrl}"
           aria-describedby="a11yAssociation" alt="">
-      <template is="dom-if"
-          if="[[computeSourceIndicatorIcon_(data.*)]]">
+      ${this.computeSourceIndicatorIcon_() ? html`
         <div id="source-indicator">
           <div class="source-icon-wrapper" role="img"
               aria-describedby="a11yAssociation"
-              aria-label$="[[computeSourceIndicatorText_(data.*)]]">
-            <cr-icon icon="[[computeSourceIndicatorIcon_(data.*)]]">
+              aria-label="${this.computeSourceIndicatorText_()}">
+            <cr-icon .icon="${this.computeSourceIndicatorIcon_()}">
             </cr-icon>
           </div>
-        </div>
-      </template>
+        </div>` : ''}
     </div>
     <!-- This needs to be separate from the source-indicator since it can't
          be contained inside of a position:relative parent element. -->
-    <template is="dom-if"
-        if="[[computeSourceIndicatorIcon_(data.*)]]">
+    ${this.computeSourceIndicatorIcon_() ? html`
       <cr-tooltip id="source-indicator-text" for="source-indicator"
           position="top" fit-to-visible-bounds aria-hidden="true">
-        [[computeSourceIndicatorText_(data.*)]]
-      </cr-tooltip>
-    </template>
+        ${this.computeSourceIndicatorText_()}
+      </cr-tooltip>` : ''}
     <div id="content">
       <!--Note: We wrap inspect-views in a div so that the outer div
           doesn't shrink (because it's not display: flex).-->
       <div>
-        <div id="name-and-version" class="layout horizontal center">
+        <div id="name-and-version" class="layout-horizontal-center">
           <div id="name" role="heading" aria-level="3"
-              class="clippable-flex-text">[[data.name]]</div>
-          <span id="version" class="cr-secondary-text" hidden$="[[!inDevMode]]">
-            [[data.version]]
+              class="clippable-flex-text">${this.data.name}</div>
+          <span id="version" class="cr-secondary-text"
+              ?hidden="${!this.inDevMode}">
+            ${this.data.version}
           </span>
         </div>
       </div>
       <div id="description" class="cr-secondary-text multiline-clippable-text"
-          hidden$="[[!showDescription_(data.disableReasons.*, data.*)]]">
-        [[data.description]]
+          ?hidden="${!this.showDescription_()}">
+        ${this.data.description}
       </div>
-      <template is="dom-if"
-          if="[[showSevereWarnings(data.disableReasons.*, data.*)]]">
+      ${this.showSevereWarnings() ? html`
         <div id="warnings">
           <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
           <span id="runtime-warnings" class="cr-secondary-text"
               aria-describedby="a11yAssociation"
-              hidden$="[[!data.runtimeWarnings.length]]">
-            <template is="dom-repeat" items="[[data.runtimeWarnings]]">
-              [[item]]
-            </template>
+              ?hidden="${!this.data.runtimeWarnings.length}">
+            ${this.data.runtimeWarnings.map(item => html`${item}`)}
           </span>
           <span id="suspicious-warning" class="cr-secondary-text"
               aria-describedby="a11yAssociation"
-              hidden$="[[!data.disableReasons.suspiciousInstall]]">
+              ?hidden="${!this.data.disableReasons.suspiciousInstall}">
             $i18n{itemSuspiciousInstall}
             <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
                 aria-label="$i18n{itemSuspiciousInstallLearnMore}">
@@ -247,27 +62,23 @@
           </span>
           <span id="corrupted-warning" class="cr-secondary-text"
               aria-describedby="a11yAssociation"
-              hidden$="[[!data.disableReasons.corruptInstall]]">
+              ?hidden="${!this.data.disableReasons.corruptInstall}">
             $i18n{itemCorruptInstall}
           </span>
           <span id="blocklisted-warning"
               class="cr-secondary-text"><!-- No whitespace
-            -->[[data.blocklistText]]<!-- so we can use :empty in css.
+            -->${this.data.blocklistText}<!-- so we can use :empty in css.
          --></span>
-        </div>
-      </template>
-      <template is="dom-if"
-          if="[[showMv2DeprecationWarning_(data.disableReasons.*, data.*)]]">
-          <div id="warnings">
-            <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
-            <span id="mv2-deprecation-warning" class="cr-secondary-text"
-                aria-describedby="a11yAssociation">
-              $i18n{mv2DeprecationUnsupportedExtensionOffText}
-            </span>
-          </div>
-      </template>
-      <template is="dom-if"
-          if="[[showAllowlistWarning_(data.disableReasons.*, data.*)]]">
+        </div>` : ''}
+      ${this.showMv2DeprecationWarning_() ? html`
+        <div id="warnings">
+          <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
+          <span id="mv2-deprecation-warning" class="cr-secondary-text"
+              aria-describedby="a11yAssociation">
+            $i18n{mv2DeprecationUnsupportedExtensionOffText}
+          </span>
+        </div>` : ''}
+      ${this.showAllowlistWarning_() ? html`
         <div id="allowlist-warning">
           <cr-icon class="message-icon"
               icon="extensions-icons:safebrowsing_warning">
@@ -279,14 +90,12 @@
               $i18n{learnMore}
             </a>
           </span>
-        </div>
-      </template>
-      <template is="dom-if" if="[[inDevMode]]">
+        </div>` : ''}
+      ${this.inDevMode ? html`
         <div id="extension-id" class="bounded-text cr-secondary-text">
-          [[data.id]]
+          ${this.getIdElementText_()}
         </div>
-        <template is="dom-if"
-            if="[[!computeInspectViewsHidden_(data.views)]]">
+        ${!this.computeInspectViewsHidden_() ? html`
           <!--Note: We wrap inspect-views in a div so that the outer div
               doesn't shrink (because it's not display: flex).-->
           <div>
@@ -295,75 +104,68 @@
                 $i18n{itemInspectViews}
               </span>
               <a class="clippable-flex-text" is="action-link"
-                  title="[[computeFirstInspectTitle_(firstInspectView_)]]"
-                  on-click="onInspectClick_">
-                [[computeFirstInspectLabel_(firstInspectView_)]]
+                  title="${this.computeFirstInspectTitle_()}"
+                  @click="${this.onInspectClick_}">
+                ${this.computeFirstInspectLabel_()}
               </a>
               <a is="action-link"
-                  hidden$="[[computeExtraViewsHidden_(data.views)]]"
-                  on-click="onExtraInspectClick_">
-                &nbsp;[[computeExtraInspectLabel_(data.views)]]
+                  ?hidden="${this.computeExtraViewsHidden_()}"
+                  @click="${this.onExtraInspectClick_}">
+                &nbsp;${this.computeExtraInspectLabel_()}
               </a>
             </div>
-          </div>
-        </template>
-      </template>
+          </div>` : ''}` : ''}
     </div>
   </div>
-  <div id="button-strip" class="layout horizontal center cr-secondary-text">
-    <div class="layout flex horizontal center">
-      <cr-button id="detailsButton" on-click="onDetailsClick_"
+  <div id="button-strip" class="layout-horizontal-center cr-secondary-text">
+    <div class="layout-horizontal-center flex">
+      <cr-button id="detailsButton" @click="${this.onDetailsClick_}"
           aria-describedby="a11yAssociation">
         $i18n{itemDetails}
       </cr-button>
-      <cr-button id="removeButton" on-click="onRemoveClick_"
+      <cr-button id="removeButton" @click="${this.onRemoveClick_}"
           aria-describedby="a11yAssociation"
-          hidden="[[data.mustRemainInstalled]]">
+          ?hidden="${this.data.mustRemainInstalled}">
         $i18n{remove}
       </cr-button>
-      <template is="dom-if" if="[[shouldShowErrorsButton_(data.*)]]">
-        <cr-button id="errors-button" on-click="onErrorsClick_"
+      ${this.shouldShowErrorsButton_() ? html`
+        <cr-button id="errors-button" @click="${this.onErrorsClick_}"
             aria-describedby="a11yAssociation">
           $i18n{itemErrors}
-        </cr-button>
-      </template>
+        </cr-button>` : ''}
     </div>
-    <template is="dom-if" if="[[!computeDevReloadButtonHidden_(data.*)]]">
+    ${!this.computeDevReloadButtonHidden_() ? html`
       <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
           title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
-          aria-describedby="a11yAssociation" on-click="onReloadClick_">
-      </cr-icon-button>
-    </template>
-    <template is="dom-if"
-        if="[[showRepairButton_(data.disableReasons.corruptInstall)]]">
+          aria-describedby="a11yAssociation" @click="${this.onReloadClick_}">
+      </cr-icon-button>` : ''}
+    ${this.showRepairButton_() ? html`
       <cr-button id="repair-button" class="action-button"
-          aria-describedby="a11yAssociation" on-click="onRepairClick_">
+          aria-describedby="a11yAssociation" @click="${this.onRepairClick_}">
         $i18n{itemRepair}
-      </cr-button>
-    </template>
-    <template is="dom-if" if="[[showReloadButton_(data.state)]]">
-      <cr-button id="terminated-reload-button" on-click="onReloadClick_"
+      </cr-button>` : ''}
+    ${this.showReloadButton_() ? html`
+      <cr-button id="terminated-reload-button" @click="${this.onReloadClick_}"
           aria-describedby="a11yAssociation" class="action-button">
         $i18n{itemReload}
-      </cr-button>
-    </template>
+      </cr-button>` : ''}
     <cr-tooltip-icon id="parentDisabledPermissionsToolTip"
-        hidden$="[[!data.disableReasons.parentDisabledPermissions]]"
+        ?hidden="${!this.data.disableReasons.parentDisabledPermissions}"
         tooltip-text="$i18n{parentDisabledPermissions}"
         icon-class="cr20:kite"
         icon-aria-label="$i18n{parentDisabledPermissions}">
     </cr-tooltip-icon>
     <cr-tooltip id="enable-toggle-tooltip" for="enableToggle" position="left"
         aria-hidden="true" animation-delay="0" fit-to-visible-bounds>
-      [[getEnableToggleTooltipText_(data.*)]]
+      ${this.getEnableToggleTooltipText_()}
     </cr-tooltip>
     <cr-toggle id="enableToggle"
-        aria-label$="[[getEnableToggleAriaLabel_(data.*)]]"
+        aria-label="${this.getEnableToggleAriaLabel_()}"
         aria-describedby="a11yAssociation enable-toggle-tooltip"
-        checked="[[isEnabled_(data.state)]]"
-        on-change="onEnableToggleChange_"
-        disabled$="[[!isEnableToggleEnabled_(data.*, mv2ExperimentStage)]]"
-        hidden$="[[!showEnableToggle_(data.*)]]">
+        ?checked="${this.isEnabled_()}"
+        @change="${this.onEnableToggleChange_}"
+        ?disabled="${!this.isEnableToggleEnabled_()}"
+        ?hidden="${!this.showEnableToggle_()}">
     </cr-toggle>
   </div>
 </div>

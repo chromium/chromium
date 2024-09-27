@@ -297,3 +297,52 @@ export function getEnableToggleTooltipText(
           'enableToggleTooltipEnabledWithSiteAccess' :
           'enableToggleTooltipEnabled');
 }
+
+export function createDummyExtensionInfo():
+    chrome.developerPrivate.ExtensionInfo {
+  return {
+    commands: [],
+    dependentExtensions: [],
+    description: '',
+    disableReasons: {
+      suspiciousInstall: false,
+      corruptInstall: false,
+      updateRequired: false,
+      publishedInStoreRequired: false,
+      blockedByPolicy: false,
+      reloading: false,
+      custodianApprovalRequired: false,
+      parentDisabledPermissions: false,
+      unsupportedManifestVersion: false,
+    },
+    errorCollection: {isEnabled: false, isActive: false},
+    fileAccess: {isEnabled: false, isActive: false},
+    homePage: {url: '', specified: false},
+    iconUrl: '',
+    id: '',
+    incognitoAccess: {isEnabled: false, isActive: false},
+    installWarnings: [],
+    location: chrome.developerPrivate.Location.UNKNOWN,
+    manifestErrors: [],
+    manifestHomePageUrl: '',
+    mustRemainInstalled: false,
+    name: '',
+    offlineEnabled: false,
+    permissions: {simplePermissions: [], canAccessSiteData: false},
+    runtimeErrors: [],
+    runtimeWarnings: [],
+    state: chrome.developerPrivate.ExtensionState.ENABLED,
+    type: chrome.developerPrivate.ExtensionType.EXTENSION,
+    updateUrl: '',
+    userMayModify: false,
+    version: '2.0',
+    views: [],
+    webStoreUrl: '',
+    showSafeBrowsingAllowlistWarning: false,
+    showAccessRequestsInToolbar: false,
+    safetyCheckWarningReason:
+        chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
+    isAffectedByMV2Deprecation: false,
+    didAcknowledgeMV2DeprecationNotice: false,
+  };
+}

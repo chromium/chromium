@@ -1,0 +1,201 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #import=./shared_style_lit.css.js
+ * #import=./shared_vars.css.js
+ * #include=cr-icons-lit cr-hidden-style-lit cr-shared-style-lit action-link-lit shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.layout-horizontal-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex {
+  flex: 1;
+}
+
+.bounded-text,
+.multiline-clippable-text,
+.clippable-flex-text {
+  /** Ensure that the text does not overflow its container. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bounded-text,
+.clippable-flex-text {
+  white-space: nowrap;
+}
+
+.clippable-flex-text {
+  /**
+   * These labels can be arbitrarily long. We want to ensure that these
+   * shrink, rather than the neighboring content.
+   */
+  flex-shrink: 1;
+}
+
+cr-tooltip-icon {
+  margin-inline-end: 8px;
+}
+
+#icon-wrapper {
+  align-self: flex-start;
+  display: flex;
+  padding: 6px;
+  position: relative;
+}
+
+#icon {
+  height: 36px;
+  width: 36px;
+}
+
+#card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  display: flex;
+  flex-direction: column;
+  height: var(--extensions-card-height);
+  /* Duration matches --drawer-transition from toolbar.html. */
+  transition: height 300ms cubic-bezier(.25, .1, .25, 1);
+}
+
+#card.dev-mode {
+  height: 208px;
+}
+
+#main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 16px 20px;
+}
+
+#content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-inline-start: 24px;
+  overflow: hidden;
+}
+
+#name-and-version {
+  color: var(--cr-primary-text-color);
+  margin-bottom: 4px;
+}
+
+#name {
+  margin-inline-end: 8px;
+}
+
+#description {
+  flex: 1;
+}
+
+#warnings {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+
+#allowlist-warning {
+  flex: 1;
+  margin-bottom: 8px;
+}
+
+.message-icon {
+  color: var(--error-color);
+  height: 18px;
+  margin-inline-end: 4px;
+  vertical-align: top;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+#allowlist-warning .message-icon {
+  --iron-icon-fill-color: var(--warning-color);
+}
+
+#extension-id {
+  flex-shrink: 0;
+}
+
+#inspect-views {
+  display: flex;
+  white-space: nowrap;
+}
+
+#inspect-views > span {
+  margin-inline-end: 4px;
+}
+
+#button-strip {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: var(--cr-section-min-height);
+  padding-bottom: 8px;
+  padding-inline-end: 20px;
+  padding-top: 8px;
+}
+
+#button-strip cr-button {
+  margin-inline-start: 8px;
+}
+
+#source-indicator {
+  margin-inline-start: 24px;
+  margin-top: 24px;
+  position: absolute;
+}
+
+.source-icon-wrapper {
+  align-items: center;
+  background: rgb(241, 89, 43);  /* Same in light & dark modes. */
+  border-radius: 50%;  /* 50% border radius === a circle */
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.22),
+              0 2px 2px 0 rgba(0, 0, 0, 0.12);
+  display: flex;
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+#source-indicator cr-icon {
+  color: white;
+  height: 16px;
+  width: 16px;
+}
+
+cr-tooltip {
+  --paper-tooltip-min-width: 0;
+}
+
+#errors-button {
+  color: var(--error-color);
+}
+
+#dev-reload-button {
+  margin-inline-end: 12px;
+}
+
+#blocklisted-warning:empty {
+  display: none;
+}
+
+#a11yAssociation {
+  height: 0;
+  overflow: hidden;
+}

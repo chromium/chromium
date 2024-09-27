@@ -76,9 +76,11 @@ build_webui("build") {
     "drop_overlay.css",
     "error_page.css",
     "install_warnings_dialog.css",
+    "item.css",
     "load_error.css",
     "options_dialog.css",
     "shared_style.css",
+    "shared_style_lit.css",
     "shared_vars.css",
   ]
 
