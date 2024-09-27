@@ -306,7 +306,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                    l10n_util::GetNSString(
-                                       IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
+                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
       performAction:grey_tap()];
 
   // Wait for the summary to be loaded.
@@ -323,8 +323,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // negativity visibility computation. Therefore, using the function below
   // solves that issue.
   chrome_test_util::TapAtOffsetOf(
-      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowIndex,
-      CGVectorMake(0.0, 0.0));
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA),
+      windowIndex, CGVectorMake(0.0, 0.0));
 
   // Wait for the summary to be loaded.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:

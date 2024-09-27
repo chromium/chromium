@@ -827,7 +827,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (OverflowMenuAction*)newRequestDesktopAction {
   __weak __typeof(self) weakSelf = self;
   NSString* hideItemText =
-      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE);
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_DESKTOP_SITE);
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE
                               actionType:overflow_menu::ActionType::DesktopSite

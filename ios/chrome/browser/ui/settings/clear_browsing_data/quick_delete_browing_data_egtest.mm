@@ -146,7 +146,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                    l10n_util::GetNSString(
-                                       IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
+                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
@@ -164,8 +164,8 @@ void NoDeleteBrowsingDataDialogHistogram(
   // negativity visibility computation. Therefore, using the function below
   // solves that issue.
   chrome_test_util::TapAtOffsetOf(
-      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowNumber,
-      CGVectorMake(0.0, 0.0));
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA),
+      windowNumber, CGVectorMake(0.0, 0.0));
 
   [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
       performAction:grey_tap()];
