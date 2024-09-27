@@ -8150,3 +8150,6 @@ crbug.com/345248263 http/tests/devtools/console/viewport-testing/console-key-lin
 crbug.com/345248263 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
 crbug.com/345248263 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
 crbug.com/345248263 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
+
+# Temporarily disable for landing crrev.com/c/5876445
+crbug.com/365737493 http/tests/devtools/security/main-origin-assigned-despite-request-missing.js [ Failure Pass ]
