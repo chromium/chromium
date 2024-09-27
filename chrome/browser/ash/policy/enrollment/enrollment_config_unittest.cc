@@ -86,7 +86,7 @@ TEST_F(
   EXPECT_TRUE(config.is_mode_with_manual_fallback());
   EXPECT_TRUE(config.is_automatic_enrollment());
   EXPECT_FALSE(config.is_mode_oauth());
-  EXPECT_EQ(EnrollmentConfig::GetManualFallbackMode(config.mode),
+  EXPECT_EQ(config.GetManualFallbackConfig().mode,
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
 
@@ -157,6 +157,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_TRUE(config.management_domain.empty());
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Pref: advertised enrollment. The resulting |config| is indistinguishable
@@ -171,6 +172,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_TRUE(config.management_domain.empty());
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: advertised enrollment.
@@ -185,6 +187,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // OEM manifest: forced enrollment.
@@ -198,6 +201,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_TRUE(config.management_domain.empty());
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Pref: forced enrollment. The resulting |config| is indistinguishable from
@@ -212,6 +216,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_TRUE(config.management_domain.empty());
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: forced initial attestation-based enrollment.
@@ -227,6 +232,13 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
               config.auth_mechanism);
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
+              manual_fallback_config.auth_mechanism);
   }
 
   // Server-backed state: forced attestation-based re-enrollment.
@@ -241,6 +253,13 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
               config.auth_mechanism);
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
+              manual_fallback_config.auth_mechanism);
   }
 
   // Server-backed state: forced initial enrollment.
@@ -255,6 +274,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: forced re-enrollment.
@@ -269,6 +289,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // OOBE config: rollback re-enrollment.
@@ -280,6 +301,13 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_TRUE(config.management_domain.empty());
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
               config.auth_mechanism);
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
+              manual_fallback_config.auth_mechanism);
   }
 }
 
@@ -327,6 +355,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     EXPECT_EQ(kTestDomain, config.management_domain);
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 }
 
@@ -337,6 +366,7 @@ TEST_F(EnrollmentConfigTest, GetDemoModeEnrollmentConfig) {
   EXPECT_EQ(policy::kDemoModeDomain, config.management_domain);
   EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION,
             config.auth_mechanism);
+  EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
 }
 
 TEST_F(EnrollmentConfigTest, GetEffectivePrescribedEnrollmentConfig) {
@@ -364,6 +394,7 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               manual_config.auth_mechanism);
     EXPECT_EQ(LicenseType::kNone, manual_config.license_type);
+    EXPECT_CHECK_DEATH(manual_config.GetManualFallbackConfig());
   }
 
   local_state_.SetDict(
@@ -383,6 +414,7 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               manual_config.auth_mechanism);
     EXPECT_EQ(LicenseType::kEducation, manual_config.license_type);
+    EXPECT_CHECK_DEATH(manual_config.GetManualFallbackConfig());
   }
 }
 

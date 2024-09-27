@@ -180,6 +180,37 @@ OOBEConfigSource ConvertToOOBEConfigSource(
   return OOBEConfigSource::kUnknown;
 }
 
+EnrollmentConfig::Mode GetManualFallbackMode(
+    EnrollmentConfig::Mode attestation_mode) {
+  switch (attestation_mode) {
+    case EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
+      return EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED:
+      return EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
+      return EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
+      return EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_NONE:
+    case EnrollmentConfig::MODE_MANUAL:
+    case EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
+    case EnrollmentConfig::MODE_LOCAL_FORCED:
+    case EnrollmentConfig::MODE_LOCAL_ADVERTISED:
+    case EnrollmentConfig::MODE_SERVER_FORCED:
+    case EnrollmentConfig::MODE_SERVER_ADVERTISED:
+    case EnrollmentConfig::MODE_RECOVERY:
+    case EnrollmentConfig::MODE_ATTESTATION:
+    case EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED:
+    case EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK:
+    case EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
+    case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
+    case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
+      NOTREACHED_NORETURN()
+          << "Mode does not have manual fallback: " << attestation_mode;
+  }
+}
+
 }  // namespace
 
 struct EnrollmentConfig::PrescribedConfig {
@@ -420,38 +451,6 @@ EnrollmentConfig EnrollmentConfig::GetDemoModeEnrollmentConfig() {
   return config;
 }
 
-// static
-EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
-    EnrollmentConfig::Mode attestation_mode) {
-  switch (attestation_mode) {
-    case EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
-      return EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED:
-      return EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
-      return EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
-      return EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_NONE:
-    case EnrollmentConfig::MODE_MANUAL:
-    case EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
-    case EnrollmentConfig::MODE_LOCAL_FORCED:
-    case EnrollmentConfig::MODE_LOCAL_ADVERTISED:
-    case EnrollmentConfig::MODE_SERVER_FORCED:
-    case EnrollmentConfig::MODE_SERVER_ADVERTISED:
-    case EnrollmentConfig::MODE_RECOVERY:
-    case EnrollmentConfig::MODE_ATTESTATION:
-    case EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED:
-    case EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK:
-    case EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
-    case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
-    case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
-    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
-      NOTREACHED_IN_MIGRATION();
-  }
-  return EnrollmentConfig::MODE_NONE;
-}
-
 EnrollmentConfig EnrollmentConfig::GetEffectiveConfig() const {
   if (should_enroll()) {
     return *this;
@@ -465,6 +464,20 @@ EnrollmentConfig EnrollmentConfig::GetEffectiveConfig() const {
       management_domain.empty() ? MODE_MANUAL : MODE_MANUAL_REENROLLMENT;
   manual_config.auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
   return manual_config;
+}
+
+EnrollmentConfig EnrollmentConfig::GetManualFallbackConfig() const {
+  CHECK(is_mode_with_manual_fallback())
+      << "Only automatic enrollment config can produce manual fallback config. "
+         "Got "
+      << *this;
+
+  EnrollmentConfig manual_fallback_config = *this;
+  manual_fallback_config.mode = GetManualFallbackMode(mode);
+  manual_fallback_config.auth_mechanism =
+      EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  return manual_fallback_config;
 }
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode) {

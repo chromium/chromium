@@ -816,14 +816,7 @@ class EnrollmentScreenAttestationFlowWithManualFallbackTest
     : public EnrollmentScreenAttestationFlowTest {
  protected:
   policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
-    policy::EnrollmentConfig config;
-    config.mode = policy::EnrollmentConfig::GetManualFallbackMode(GetParam());
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
-    DCHECK(config.is_manual_fallback())
-        << "Config must be manual fallback: " << config;
-
-    return config;
+    return GetEnrollmentConfig().GetManualFallbackConfig();
   }
 };
 
@@ -923,13 +916,7 @@ class EnrollmentScreenTokenBasedEnrollmentTest
   }
 
   policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
-    policy::EnrollmentConfig config;
-    config.mode =
-        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
-    config.enrollment_token = policy::test::kEnrollmentToken;
-    return config;
+    return GetEnrollmentConfig().GetManualFallbackConfig();
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;

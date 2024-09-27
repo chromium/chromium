@@ -161,10 +161,6 @@ struct EnrollmentConfig {
 
   static EnrollmentConfig GetDemoModeEnrollmentConfig();
 
-  // Returns the respective manual fallback enrollment mode when given an
-  // attestation mode.
-  static Mode GetManualFallbackMode(Mode attestation_mode);
-
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);
   ~EnrollmentConfig();
@@ -244,6 +240,10 @@ struct EnrollmentConfig {
   // * Returns manual enrollment config, if the current one does not prescribe
   // enrollment.
   EnrollmentConfig GetEffectiveConfig() const;
+
+  // Returns a manual fallback config corresponding to the given automatic
+  // enrollment config.
+  EnrollmentConfig GetManualFallbackConfig() const;
 
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
