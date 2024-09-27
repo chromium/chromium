@@ -329,12 +329,23 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
-      gpu::SyncToken* internal_access_sync_token) override {
+      gpu::SyncToken* internal_access_sync_token,
+      gpu::SharedImageUsageSet required_shared_image_usages) override {
+    // This may cause the current resource and all cached resources to become
+    // unusable. WillDrawInternal() will detect this case, drop all cached
+    // resources, and copy the current resource to a newly-created resource
+    // which will by definition be usable.
+    shared_image_usage_flags_.PutAll(required_shared_image_usages);
+
     DCHECK(is_accelerated_);
 
     if (IsGpuContextLost())
       return nullptr;
 
+    // End the internal write access before calling WillDrawInternal(), which
+    // has a precondition that there should be no current write access on the
+    // resource.
+    EndWriteAccess();
     WillDrawInternal(false);
 
     // NOTE: The above invocation of WillDrawInternal() ensures that this
@@ -511,10 +522,18 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // token for these writes.
     cached_snapshot_.reset();
 
-    // Determine if copy-on-write is needed for accelerated resources (note that
-    // for unaccelerated resources, writes to the SharedImage are deferred to
-    // ProduceCanvasResource and hence copy-on-write is never needed here).
-    if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
+    // Determine if a copy is needed for accelerated resources. This could be
+    // for one of two reasons: (1) copy-on-write is required, or (2) the
+    // SharedImage usages with which this provider should create resources has
+    // changed since this resource was created (this can occur, for example,
+    // when a client requests the backing ClientSharedImage with a specific
+    // required set of usages for an external write). Note that for
+    // unaccelerated resources, neither of these apply: writes to the
+    // SharedImage are deferred to ProduceCanvasResource and hence
+    // copy-on-write is never needed here, and the set of SharedImage usages
+    // doesn't change over the lifetime of the provider.
+    if (is_accelerated_ && (ShouldReplaceTargetBuffer(cached_content_id_) ||
+                            !IsResourceUsable(resource_.get()))) {
       cached_content_id_ = PaintImage::kInvalidContentId;
       DCHECK(!current_resource_has_write_access_)
           << "Write access must be released before sharing the resource";
@@ -522,8 +541,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       auto old_resource = std::move(resource_);
       auto* old_resource_shared_image =
           static_cast<CanvasResourceSharedImage*>(old_resource.get());
+
+      if (!IsResourceUsable(old_resource.get())) {
+        // If this resource has become unusable, all cached resources have also
+        // become unusable. Drop them to ensure that a new usable resource gets
+        // created in the below call to NewOrRecycledResource().
+        ClearRecycledResources();
+      }
       resource_ = NewOrRecycledResource();
-      DCHECK(resource_);
+      DCHECK(IsResourceUsable(resource_.get()));
 
       auto* raster_interface = RasterInterface();
       if (raster_interface) {
@@ -786,7 +812,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
   const bool is_accelerated_;
-  const gpu::SharedImageUsageSet shared_image_usage_flags_;
+  gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
   const bool use_oop_rasterization_;
   bool is_cleared_ = false;

@@ -229,9 +229,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // before writing the contents unless the caller's usage model makes such a
   // wait unnecessary (in which case the client should pass `nullptr` for the
   // token together with an explanation at the callsite).
+  // `required_shared_image_usages` is a set of usages that the passed-back
+  // ClientSharedImage must support. The provider will copy its current
+  // resource to one that is created with the required usages if its current
+  // resource does not have those usages.
   virtual scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
-      gpu::SyncToken* internal_access_sync_token) {
+      gpu::SyncToken* internal_access_sync_token,
+      gpu::SharedImageUsageSet required_shared_image_usages) {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
@@ -254,7 +259,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForOverwrite() {
     return GetBackingClientSharedImageForExternalWrite(
-        /*internal_access_sync_token=*/nullptr);
+        /*internal_access_sync_token=*/nullptr, gpu::SharedImageUsageSet());
   }
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED_IN_MIGRATION();
