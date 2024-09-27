@@ -8,15 +8,21 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
@@ -43,6 +49,7 @@ class SyncPassphraseDialogBrowserTest : public InteractiveBrowserTest {
 
  protected:
   const std::string kTextFieldName = "Texfield";
+  const std::string kFooterLabelName = "FooterLabel";
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -95,4 +102,38 @@ IN_PROC_BROWSER_TEST_F(SyncPassphraseDialogBrowserTest, PixelTest) {
       // Submit correct passphrase, the dialog closes.
       SetPassordText(kPassphrase), PressButton(kSyncPassphraseOkButtonFieldId),
       WaitForHide(kSyncPassphraseOkButtonFieldId));
+}
+
+IN_PROC_BROWSER_TEST_F(SyncPassphraseDialogBrowserTest, FooterLink) {
+  Browser* browser_ptr = browser();
+  RunTestSequence(
+      // Show the dialog.
+      Do([browser_ptr] {
+        ShowSyncPassphraseDialog(
+            *browser_ptr,
+            base::BindRepeating([](const std::u16string&) { return false; }));
+      }),
+      WaitForShow(kSyncPassphraseOkButtonFieldId),
+      // Find the footer link.
+      NameViewRelative(kSyncPassphraseOkButtonFieldId, kFooterLabelName,
+                       [](views::View* ok_button) {
+                         return ok_button->GetWidget()
+                             ->widget_delegate()
+                             ->AsDialogDelegate()
+                             ->GetFootnoteViewForTesting();
+                       }),
+      // Click the link.
+      WithView(kFooterLabelName,
+               [](views::StyledLabel* footnote) {
+                 footnote->ClickFirstLinkForTesting();
+               }),
+      // Dialog closes.
+      WaitForHide(kFooterLabelName));
+
+  // The sync settings page is open and active.
+  GURL active_url =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+  EXPECT_TRUE(
+      base::StartsWith(active_url.spec(), chrome::kSyncGoogleDashboardURL))
+      << "active_url: " << active_url;
 }

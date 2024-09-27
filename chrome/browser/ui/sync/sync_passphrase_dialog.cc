@@ -38,7 +38,7 @@ void OpenSyncDashboardAndCloseDialog(BrowserWindowInterface& browser,
       GURL(chrome::kSyncGoogleDashboardURL),
       g_browser_process->GetApplicationLocale());
   browser.OpenGURL(sync_dashboard_url,
-                   WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
   model->host()->Close();
 }
 
