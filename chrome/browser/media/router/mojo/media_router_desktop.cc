@@ -29,6 +29,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/branded_strings.h"
@@ -134,6 +135,9 @@ void MediaRouterDesktop::Initialize() {
   media_sink_service_ = ShouldInitializeMediaRouteProviders()
                             ? DualMediaSinkService::GetInstance()
                             : nullptr;
+
+  desktop_picker_ = std::make_unique<DesktopMediaPickerController>();
+
   // Because observer calls virtual methods on MediaRouter, it must be created
   // outside of the constructor.
   internal_routes_observer_ =
@@ -200,7 +204,7 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
                                     provider_id, std::move(callback), false);
 
   if (source.IsDesktopMirroringSource()) {
-    desktop_picker_.Show(
+    desktop_picker_->Show(
         MakeDesktopPickerParams(web_contents),
         {DesktopMediaList::Type::kScreen},
         base::BindRepeating([](content::WebContents* wc) { return true; }),

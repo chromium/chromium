@@ -24,7 +24,6 @@
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider.h"
-#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_base.h"
@@ -42,8 +41,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
+class DesktopMediaPickerController;
+
 namespace content {
 class BrowserContext;
+struct DesktopMediaID;
 }
 
 namespace media {
@@ -469,7 +471,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
 
   const raw_ptr<content::BrowserContext> context_;
 
-  DesktopMediaPickerController desktop_picker_;
+  std::unique_ptr<DesktopMediaPickerController> desktop_picker_;
 
   // Collects logs from the Media Router and the native Media Route Providers.
   // TODO(crbug.com/40129011): Limit logging before Media Router usage.
