@@ -31,6 +31,18 @@ constexpr char kUnsupportedObject[] =
     "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 
 // static
+AXElementWrapper::AXType AXElementWrapper::TypeOf(const id node) {
+  DCHECK(IsValidElement(node));
+  if (IsNSAccessibilityElement(node)) {
+    return AXType::kNSAccessibilityElement;
+  }
+  if (IsAXUIElement(node)) {
+    return AXType::kAXUIElement;
+  }
+  NOTREACHED() << "Unknown accessibility object type";
+}
+
+// static
 bool AXElementWrapper::IsValidElement(const id node) {
   return AXElementWrapper(node).IsValidElement();
 }

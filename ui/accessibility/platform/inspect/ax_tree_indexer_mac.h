@@ -24,13 +24,24 @@ struct AXNodeComparator {
   }
 };
 
+using AXTreeIndexerMacBase = AXTreeIndexer<const gfx::NativeViewAccessible,
+                                           AXElementWrapper::DOMIdOf,
+                                           NSArray*,
+                                           AXElementWrapper::ChildrenOf,
+                                           AXNodeComparator>;
+
 //
 // NSAccessibility tree indexer.
-using AXTreeIndexerMac = AXTreeIndexer<const gfx::NativeViewAccessible,
-                                       AXElementWrapper::DOMIdOf,
-                                       NSArray*,
-                                       AXElementWrapper::ChildrenOf,
-                                       AXNodeComparator>;
+class AXTreeIndexerMac : public AXTreeIndexerMacBase {
+ public:
+  explicit AXTreeIndexerMac(const gfx::NativeViewAccessible node)
+      : AXTreeIndexer(node), type_(AXElementWrapper::TypeOf(node)) {}
+
+  std::string IndexBy(const gfx::NativeViewAccessible node) const override;
+
+ private:
+  AXElementWrapper::AXType type_;
+};
 
 }  // namespace ui
 

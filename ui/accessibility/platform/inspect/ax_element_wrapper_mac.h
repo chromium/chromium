@@ -22,6 +22,11 @@ using AXOptionalNSObject = AXOptional<id>;
 // A wrapper around either AXUIElement or NSAccessibilityElement object.
 class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
  public:
+  enum class AXType { kNSAccessibilityElement = 0, kAXUIElement };
+
+  // Returns type of the node.
+  static AXType TypeOf(const id node);
+
   // Returns true if the object is either NSAccessibilityElement or
   // AXUIElement.
   static bool IsValidElement(const id node);

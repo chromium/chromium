@@ -273,6 +273,7 @@ component("platform") {
         "inspect/ax_tree_formatter_mac.h",
         "inspect/ax_tree_formatter_mac.mm",
         "inspect/ax_tree_indexer_mac.h",
+        "inspect/ax_tree_indexer_mac.mm",
       ]
 
       deps += [ "//ui/accelerated_widget_mac" ]

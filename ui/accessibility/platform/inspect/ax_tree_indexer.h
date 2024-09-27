@@ -27,7 +27,7 @@ template <typename AccessibilityObject,
           typename ChildrenContainer,
           ChildrenContainer (*GetChildren)(const AccessibilityObject),
           typename Compare = std::less<AccessibilityObject>>
-class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer {
  public:
   explicit AXTreeIndexer(const AccessibilityObject node) {
     int counter = 0;
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
   virtual ~AXTreeIndexer() {}
 
   // Returns a line index in the formatted tree the node is placed at.
-  std::string IndexBy(const AccessibilityObject node) const {
+  virtual std::string IndexBy(const AccessibilityObject node) const {
     std::string line_index = ":unknown";
     auto iter = node_to_identifier_.find(node);
     if (iter != node_to_identifier_.end()) {
