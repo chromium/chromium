@@ -46,6 +46,15 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 // Height and width of the buttons.
 constexpr CGFloat kButtonSize = 30.;
 
+// The height of the footer of sections, except for last section.
+constexpr CGFloat kFooterHeight = 16.;
+
+// The left separator inset between two secondary accounts.
+constexpr CGFloat kSecondaryAccountsLeftSeparatorInset = 16.;
+
+// The left separator inset between the last secondary account and Add Account.
+constexpr CGFloat kLastSecondaryAccountLeftSeparatorInset = 60.;
+
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
 // Move navigation buttons towards the "out side" by this much, so they visually
@@ -245,7 +254,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                                       numberOfRowsInSection:indexPath.section] -
                               2);
     cell.separatorInset = UIEdgeInsetsMake(
-        0., /*left=*/(lastSecondaryIdentity) ? 16. : 60., 0., 0.);
+        0., /*left=*/
+        (lastSecondaryIdentity) ? kSecondaryAccountsLeftSeparatorInset
+                                : kLastSecondaryAccountLeftSeparatorInset,
+        0., 0.);
     return cell;
   }
 
@@ -439,7 +451,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     //  No footer space for last section.
     return 0;
   }
-  return 16;
+  return kFooterHeight;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
