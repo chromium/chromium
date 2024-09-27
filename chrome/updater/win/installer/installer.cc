@@ -40,7 +40,6 @@
 #include "base/win/atl.h"
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
@@ -52,13 +51,9 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
-#include "chrome/updater/win/installer/installer_resource.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
-#include "chrome/updater/win/ui/owner_draw_controls.h"
-#include "chrome/updater/win/ui/ui.h"
-#include "chrome/updater/win/ui/ui_constants.h"
-#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/wtl/include/atlapp.h"
 
@@ -79,70 +74,6 @@ std::string ExtractTag() {
              : std::string();
 }
 
-// TODO(crbug.com/40234383): Move `SplashWnd` into a separate compilation unit.
-class SplashWnd : public CDialogImpl<SplashWnd>,
-                  public ui::OwnerDrawTitleBar,
-                  public ui::CustomDlgColors {
- public:
-  static constexpr int IDD = IDD_SPLASH;
-
-  BEGIN_MSG_MAP(SplashWnd)
-    MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-    MESSAGE_HANDLER(WM_CLOSE, OnClose)
-    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-    CHAIN_MSG_MAP(ui::OwnerDrawTitleBar)
-    CHAIN_MSG_MAP(ui::CustomDlgColors)
-  END_MSG_MAP()
-
-  LRESULT OnInitDialog(UINT /*msg*/,
-                       WPARAM /*wparam*/,
-                       LPARAM /*lparam*/,
-                       BOOL& handled) {
-    SetWindowText(ui::GetInstallerDisplayName({}).c_str());
-    SetDlgItemText(IDC_SPLASH_TEXT, GetLocalizedSplashScreenString().c_str());
-
-    CenterWindow();
-    ui::SetWindowIcon(
-        m_hWnd, IDI_MINI_INSTALLER,
-        base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
-
-    default_font_.CreatePointFont(150, ui::kDialogFont);
-    SendMessageToDescendants(
-        WM_SETFONT, reinterpret_cast<WPARAM>(static_cast<HFONT>(default_font_)),
-        0);
-
-    CreateOwnerDrawTitleBar(m_hWnd, GetDlgItem(IDC_SPLASH_TITLE_BAR_SPACER),
-                            ui::kBkColor);
-    SetCustomDlgColors(ui::kTextColor, ui::kBkColor);
-
-    ui::EnableFlatButtons(m_hWnd);
-
-    handled = true;
-    return 0;
-  }
-
-  LRESULT OnClose(UINT /*msg*/,
-                  WPARAM /*wparam*/,
-                  LPARAM /*lparam*/,
-                  BOOL& handled) {
-    DestroyWindow();
-    handled = true;
-    return 0;
-  }
-
-  LRESULT OnDestroy(UINT /*msg*/,
-                    WPARAM /*wparam*/,
-                    LPARAM /*lparam*/,
-                    BOOL& /*handled*/) {
-    ::PostQuitMessage(0);
-    return 0;
-  }
-
- private:
-  base::win::ScopedGDIObject<HICON> hicon_;
-  WTL::CFont default_font_;
-};
-
 // Shows a splash screen "Initializing...".
 base::ScopedClosureRunner CreateSplashScreen() {
   HWND splash_hwnd = nullptr;
@@ -159,7 +90,7 @@ base::ScopedClosureRunner CreateSplashScreen() {
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      [](base::WaitableEvent& event, HWND& splash_hwnd) {
-                       SplashWnd splash;
+                       ui::SplashWnd splash;
                        splash.Create(nullptr);
                        splash.ShowWindow(SW_SHOW);
                        splash_hwnd = splash.m_hWnd;

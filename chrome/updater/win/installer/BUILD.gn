@@ -54,6 +54,8 @@ source_set("lib") {
     "installer_resource.h",
     "pe_resource.cc",
     "pe_resource.h",
+    "splash_wnd.cc",
+    "splash_wnd.h",
     "string.cc",
     "string.h",
   ]
