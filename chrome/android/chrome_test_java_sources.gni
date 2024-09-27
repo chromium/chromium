@@ -411,6 +411,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/privacy/settings/HttpsFirstModeSettingTest.java",
   "javatests/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplNativeTest.java",
   "javatests/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsFragmentTest.java",
+  "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyControllerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/profiles/OTRProfileIDTest.java",
   "javatests/src/org/chromium/chrome/browser/profiles/ProfileResolverTest.java",
   "javatests/src/org/chromium/chrome/browser/profiles/ProfileTest.java",

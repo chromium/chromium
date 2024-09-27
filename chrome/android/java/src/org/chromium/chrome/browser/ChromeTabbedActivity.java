@@ -166,6 +166,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -2595,6 +2596,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getLifecycleDispatcher(),
                 ChromeTabbedActivity.this,
                 MessageDispatcherProvider.from(getWindowAndroid()),
+                mTabModelProfileSupplier.get());
+
+        PrivacySandboxSurveyController.initialize(
+                mTabModelSelector,
+                getLifecycleDispatcher(),
+                ChromeTabbedActivity.this,
+                MessageDispatcherProvider.from(getWindowAndroid()),
+                getActivityTabProvider(),
                 mTabModelProfileSupplier.get());
     }
 
