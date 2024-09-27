@@ -39,8 +39,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     // from pull1Algorithm.
     // 17. Let pull1Algorithm be the following steps:
     //   a. If reading is true,
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    ExceptionState exception_state(script_state->GetIsolate());
     if (engine_->reading_) {
       //     i. Set readAgainForBranch1 to true.
       engine_->read_again_for_branch_[branch_] = true;
@@ -135,14 +134,13 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
 
   void ChunkSteps(ScriptState* script_state,
                   v8::Local<v8::Value> chunk,
-                  ExceptionState& exception_state) const override {
+                  ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
     event_loop->EnqueueMicrotask(
         WTF::BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                      WrapPersistent(script_state), std::move(value),
-                      exception_state.GetContext()));
+                      WrapPersistent(script_state), std::move(value)));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -210,8 +208,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      v8::Global<v8::Value> value,
-                      const ExceptionContext& exception_context) const {
+                      v8::Global<v8::Value> value) const {
     ScriptState::Scope scope(script_state);
     v8::Isolate* isolate = script_state->GetIsolate();
     // 1. Set readAgainForBranch1 to false.
@@ -219,7 +216,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 2. Set readAgainForBranch2 to false.
     engine_->read_again_for_branch_[1] = false;
 
-    ExceptionState exception_state(isolate, exception_context);
+    ExceptionState exception_state(isolate);
 
     // 3. Let chunk1 and chunk2 be chunk.
     NotShared<DOMUint8Array> buffer_view =
@@ -302,13 +299,12 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
 
   void ChunkSteps(ScriptState* script_state,
                   DOMArrayBufferView* chunk,
-                  ExceptionState& exception_state) const override {
+                  ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
-    event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody,
-                      WrapPersistent(this), WrapPersistent(script_state),
-                      WrapPersistent(chunk), exception_state.GetContext()));
+    event_loop->EnqueueMicrotask(WTF::BindOnce(
+        &ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
+        WrapPersistent(script_state), WrapPersistent(chunk)));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -325,8 +321,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 4. If byobCanceled is false, perform !
     //    ReadableByteStreamControllerClose(byobBranch.[[controller]]).
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    ExceptionState exception_state(script_state->GetIsolate());
     if (!byob_canceled) {
       ReadableStreamController* controller =
           byob_branch_->readable_stream_controller_;
@@ -397,8 +392,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      DOMArrayBufferView* chunk,
-                      const ExceptionContext& exception_context) const {
+                      DOMArrayBufferView* chunk) const {
     // This is called in a microtask, the ScriptState needs to be put back
     // in scope.
     ScriptState::Scope scope(script_state);
@@ -415,8 +409,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     auto other_canceled =
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 5. If otherCanceled is false,
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(script_state->GetIsolate());
     if (!other_canceled) {
       //   a. Let cloneResult be CloneAsUint8Array(chunk).
       auto* clone_result = engine_->CloneAsUint8Array(chunk);
