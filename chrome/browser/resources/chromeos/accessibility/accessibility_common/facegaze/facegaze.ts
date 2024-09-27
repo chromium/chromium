@@ -38,7 +38,12 @@ export class FaceGaze {
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
     this.metricsUtils_ = new MetricsUtils();
-    this.bubbleController_ = new BubbleController();
+    this.bubbleController_ = new BubbleController(() => {
+      return {
+        paused: this.gestureHandler_.isPaused(),
+        scrollModeActive: this.mouseController_.isScrollModeActive(),
+      };
+    });
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
   }

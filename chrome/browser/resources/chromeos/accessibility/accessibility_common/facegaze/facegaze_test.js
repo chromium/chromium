@@ -1469,6 +1469,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
   assertEquals(
       'Left-click the mouse (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
@@ -1497,6 +1500,9 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
       'Right-click the mouse (Raise eyebrows), ' +
           'Left-click the mouse (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
@@ -1543,4 +1549,83 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
       this.getFaceGaze().gestureHandler_.gestureLastRecognized_.get(
           MediapipeFacialGesture.JAW_OPEN));
   assertFalse(this.getFaceGaze().gestureHandler_.paused_);
+});
+
+AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.TOGGLE_SCROLL_MODE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.6)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  const result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'Toggle scroll mode (Raise eyebrows), ' +
+          'Pause or resume face control (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'FaceGaze paused, Scroll mode active',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.TOGGLE_FACEGAZE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.6)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  let result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'Pause or resume face control (Raise eyebrows), ' +
+          'Left-click the mouse (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'FaceGaze paused', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Send another result. Note that since FaceGaze is paused, no action
+  // will be taken.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'FaceGaze paused', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });

@@ -10,24 +10,44 @@ import {FacialGesture} from './facial_gestures.js';
 
 /** Handles setting the text content of the FaceGaze bubble UI. */
 export class BubbleController {
-  private clearBubbleTimeoutId_: number|undefined;
+  private resetBubbleTimeoutId_: number|undefined;
+  private baseText_: string[] = [];
+  private getState_: () => BubbleController.GetStateResult;
+
+  constructor(getState: () => BubbleController.GetStateResult) {
+    this.getState_ = getState;
+  }
 
   updateBubble(text: string): void {
     chrome.accessibilityPrivate.updateFaceGazeBubble(text);
-    this.setClearBubbleTimeout_();
+    this.setResetBubbleTimeout_();
   }
 
-  private setClearBubbleTimeout_(): void {
+  private setResetBubbleTimeout_(): void {
     this.clearTimeout_();
-    this.clearBubbleTimeoutId_ = setTimeout(
-        () => this.updateBubble(''), BubbleController.CLEAR_BUBBLE_TIMEOUT_MS);
+    this.resetBubbleTimeoutId_ = setTimeout(
+        () => this.resetBubble_(), BubbleController.RESET_BUBBLE_TIMEOUT_MS);
   }
 
   private clearTimeout_(): void {
-    if (this.clearBubbleTimeoutId_ !== undefined) {
-      clearTimeout(this.clearBubbleTimeoutId_);
-      this.clearBubbleTimeoutId_ = undefined;
+    if (this.resetBubbleTimeoutId_ !== undefined) {
+      clearTimeout(this.resetBubbleTimeoutId_);
+      this.resetBubbleTimeoutId_ = undefined;
     }
+  }
+
+  private resetBubble_(): void {
+    this.baseText_ = [];
+    const {paused, scrollModeActive} = this.getState_();
+    // TODO(b/341770655): Localize these strings.
+    if (paused) {
+      this.baseText_.push('FaceGaze paused');
+    }
+    if (scrollModeActive) {
+      this.baseText_.push('Scroll mode active');
+    }
+
+    chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
   }
 
   static getDisplayText(gesture: FacialGesture, macro: Macro): string {
@@ -128,7 +148,12 @@ export class BubbleController {
 }
 
 export namespace BubbleController {
-  export const CLEAR_BUBBLE_TIMEOUT_MS = 5000;
+  export const RESET_BUBBLE_TIMEOUT_MS = 5000;
+
+  export interface GetStateResult {
+    paused: boolean;
+    scrollModeActive: boolean;
+  }
 }
 
 TestImportManager.exportForTesting(BubbleController);

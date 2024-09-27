@@ -123,6 +123,10 @@ export class MouseController {
     this.desktop_ = desktop;
   }
 
+  isScrollModeActive(): boolean {
+    return this.scrollModeController_.active();
+  }
+
   async start(): Promise<void> {
     this.paused_ = false;
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));

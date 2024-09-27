@@ -78,6 +78,10 @@ export class GestureHandler {
     this.macrosToCompleteLater_.clear();
   }
 
+  isPaused(): boolean {
+    return this.paused_;
+  }
+
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {

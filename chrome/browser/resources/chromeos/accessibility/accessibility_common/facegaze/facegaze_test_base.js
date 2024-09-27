@@ -185,16 +185,28 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     if (this.overrideIntervalFunctions_) {
       this.intervalCallbacks_ = {};
-      this.nextCallbackId_ = 1;
+      this.nextIntervalId_ = 1;
+      this.timeoutCallbacks_ = {};
+      this.nextTimeoutId_ = 1;
 
       // Save the original set and clear interval functions so they can be used
       // in this file.
       window.setIntervalOriginal = window.setInterval;
       window.clearIntervalOriginal = window.clearInterval;
 
+      window.setTimeout = (callback, timeout) => {
+        const id = this.nextTimeoutId_;
+        ++this.nextTimeoutId_;
+        this.timeoutCallbacks_[id] = callback;
+        return id;
+      };
+      window.clearTimeout = (id) => {
+        delete this.timeoutCallbacks_[id];
+      };
+
       window.setInterval = (callback, timeout) => {
-        const id = this.nextCallbackId_;
-        this.nextCallbackId_++;
+        const id = this.nextIntervalId_;
+        this.nextIntervalId_++;
         this.intervalCallbacks_[id] = callback;
         return id;
       };
@@ -362,6 +374,12 @@ FaceGazeTestBase = class extends E2ETestBase {
       // No work to do.
       assertEquals(-1, intervalId);
     }
+  }
+
+  triggerBubbleControllerTimeout() {
+    const intervalId =
+        this.getFaceGaze().bubbleController_.resetBubbleTimeoutId_;
+    this.timeoutCallbacks_[intervalId]();
   }
 
   /**
