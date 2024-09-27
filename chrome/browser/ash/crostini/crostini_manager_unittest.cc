@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -1857,7 +1858,7 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 
   TestFuture<CrostiniResult> restart_result;
   RestartCrostini(container_id(), restart_result.GetCallback());
@@ -1884,7 +1885,7 @@ TEST_F(CrostiniManagerRestartTest,
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
   vm_tools::cicerone::DeleteLxdContainerResponse response;
   response.set_status(
       vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
@@ -1915,7 +1916,7 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 
   TestFuture<CrostiniResult> restart_result;
   RestartCrostini(container_id(), restart_result.GetCallback());

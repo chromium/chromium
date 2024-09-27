@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_impl.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_engagement_metrics_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -630,7 +632,7 @@ void PluginVmManagerImpl::OnDefaultSharedDirExists(const base::FilePath& dir,
                                                    bool exists) {
   LOG_FUNCTION_CALL();
   if (exists) {
-    guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+    guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
         kPluginVmName, seneschal_server_handle_, dir,
         base::BindOnce([](const base::FilePath& dir, bool success,
                           const std::string& failure_reason) {
@@ -801,7 +803,7 @@ void PluginVmManagerImpl::UninstallFailed(
 void PluginVmManagerImpl::OnAvailabilityChanged(bool is_allowed,
                                                 bool is_configured) {
   bool is_enabled = is_allowed && is_configured;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile_);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile_);
   guest_os::GuestId id{guest_os::VmType::PLUGIN_VM, kPluginVmName, ""};
   if (is_enabled) {
     share_path->RegisterGuest(id);

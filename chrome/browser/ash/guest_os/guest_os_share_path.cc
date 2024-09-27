@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
-#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -162,10 +161,6 @@ GuestOsSharePath::PathsToShare::PathsToShare() = default;
 GuestOsSharePath::PathsToShare::PathsToShare(GuestOsSharePath::PathsToShare&) =
     default;
 GuestOsSharePath::PathsToShare::~PathsToShare() = default;
-
-GuestOsSharePath* GuestOsSharePath::GetForProfile(Profile* profile) {
-  return GuestOsSharePathFactory::GetForProfile(profile);
-}
 
 GuestOsSharePath::GuestOsSharePath(Profile* profile)
     : profile_(profile),

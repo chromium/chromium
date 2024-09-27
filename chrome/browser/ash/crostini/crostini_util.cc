@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -143,7 +144,7 @@ void LaunchApplication(
 
   // Share any paths not in crostini.  The user will see the spinner while this
   // is happening.
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   auto paths_or_error = share_path->ConvertArgsToPathsToShare(
       registration, args, crostini::ContainerChromeOSBaseDirectory(),
       /*map_crostini_home=*/true);

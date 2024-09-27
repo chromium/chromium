@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +85,7 @@ bool IsPathShared(Profile* profile,
                   std::string vm_name,
                   bool is_crostini,
                   base::FilePath path) {
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   if (share_path->IsPathShared(vm_name, path)) {
     return true;
   }
@@ -173,7 +174,8 @@ void ShareAndTranslateHostToVM(
   const std::string vm_prefix =
       base::StrCat({kVmFileScheme, ":", vm_name, ":"});
   std::vector<std::string> file_urls;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(primary_profile);
+  auto* share_path =
+      guest_os::GuestOsSharePathFactory::GetForProfile(primary_profile);
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : file_infos) {

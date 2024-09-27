@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
     ASSERT_TRUE(base::CreateDirectory(shared2));
   }
   guest_os::GuestOsSharePath* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(browser()->profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(browser()->profile());
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,
                                               {shared1});
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,

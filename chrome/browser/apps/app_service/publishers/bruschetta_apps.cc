@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -111,7 +112,7 @@ void LaunchApplication(
   }
 
   const guest_os::GuestId container_id(registration.ToGuestId());
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   auto paths_or_error = share_path->ConvertArgsToPathsToShare(
       registration, args, bruschetta::BruschettaChromeOSBaseDirectory(),
       /*map_crostini_home=*/false);

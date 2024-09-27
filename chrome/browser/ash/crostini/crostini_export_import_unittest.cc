@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
@@ -188,7 +189,7 @@ class CrostiniExportImportTest : public testing::Test {
     // If the file has been created (by an export), then delete it, but first
     // shutdown GuestOsSharePath to ensure watchers are destroyed, otherwise
     // they can trigger and execute against a destroyed service.
-    guest_os::GuestOsSharePath::GetForProfile(profile())->Shutdown();
+    guest_os::GuestOsSharePathFactory::GetForProfile(profile())->Shutdown();
     task_environment_.RunUntilIdle();
     base::DeleteFile(tarball_);
     test_helper_.reset();

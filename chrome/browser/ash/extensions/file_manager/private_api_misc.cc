@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -767,7 +768,8 @@ FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
   auto vm_info =
       guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
           params->vm_name);
-  auto* share_service = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_service =
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile);
 
   share_service->RegisterPersistedPaths(params->vm_name, paths);
   if (vm_info) {
@@ -802,7 +804,7 @@ FileManagerPrivateInternalUnsharePathWithCrostiniFunction::Run() {
           profile, render_frame_host());
   storage::FileSystemURL cracked =
       file_system_context->CrackURLInFirstPartyContext(GURL(params->url));
-  guest_os::GuestOsSharePath::GetForProfile(profile)->UnsharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile)->UnsharePath(
       params->vm_name, cracked.path(), /*unpersist=*/true,
       base::BindOnce(
           &FileManagerPrivateInternalUnsharePathWithCrostiniFunction::
@@ -827,7 +829,7 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   auto* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(profile);
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   bool first_for_session =
       params->observe_first_for_session &&
       guest_os_share_path->GetAndSetFirstForSession(params->vm_name);

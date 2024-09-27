@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -848,7 +849,7 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   // Share any non-persisted paths for the VM.
   // TODO(timloh): This should probably share paths from all requests. Requests
   // added too late will also miss this.
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePaths(
       container_id_.vm_name, vm_info->info.seneschal_server_handle(),
       requests_[0].options.share_paths,
       base::BindOnce(&CrostiniRestarter::SharePathsFinished,
@@ -2721,7 +2722,7 @@ void CrostiniManager::OnStartTremplin(std::string vm_name,
   // up. For fonts, this could be done directly in concierge (b/231252066).
 
   // Share fonts directory with the VM but don't persist as a shared path.
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
       vm_name, seneschal_server_handle,
       base::FilePath(file_manager::util::kSystemFontsPath), base::DoNothing());
 
@@ -4179,7 +4180,7 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
     }
   }
 
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->RegisterGuest(
       container_id);
 }
 
@@ -4201,7 +4202,7 @@ void CrostiniManager::UnregisterContainer(
     mount_provider_ids_.erase(it);
   }
 
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnregisterGuest(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->UnregisterGuest(
       container_id);
 
   if (container_id == DefaultContainerId()) {
@@ -4227,7 +4228,8 @@ void CrostiniManager::UnregisterAllContainers() {
   }
   mount_provider_ids_.clear();
 
-  auto* share_service = guest_os::GuestOsSharePath::GetForProfile(profile_);
+  auto* share_service =
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_);
   // Copy the list since we're going to iterate+mutate.
   auto guests = base::flat_set<guest_os::GuestId>(share_service->ListGuests());
   for (const auto& guest : guests) {

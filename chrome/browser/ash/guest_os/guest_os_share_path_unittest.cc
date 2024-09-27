@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -257,7 +258,7 @@ class GuestOsSharePathTest : public testing::Test {
 
     run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
-    guest_os_share_path_ = GuestOsSharePath::GetForProfile(profile());
+    guest_os_share_path_ = GuestOsSharePathFactory::GetForProfile(profile());
 
     // Setup for DriveFS.
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

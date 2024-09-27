@@ -495,7 +495,7 @@ void CrostiniExportImport::SharePath(
                                                static_cast<int>(result)));
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
       vm_name, vm_info->info.seneschal_server_handle(), path,
       std::move(callback));
 }

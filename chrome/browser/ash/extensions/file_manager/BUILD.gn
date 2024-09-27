@@ -222,6 +222,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",

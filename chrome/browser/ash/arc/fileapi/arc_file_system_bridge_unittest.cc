@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -323,8 +324,10 @@ TEST_F(ArcFileSystemBridgeTest, CreateAndDestroyMoniker) {
   fusebox::Server fusebox_server(/*delegate=*/nullptr);
   fusebox::Moniker moniker;
   EXPECT_TRUE(CreateMoniker(&moniker));
-  EXPECT_TRUE(guest_os::GuestOsSharePath::GetForProfile(profile_)->IsPathShared(
-      kArcVmName, base::FilePath(fusebox::MonikerMap::GetFilename(moniker))));
+  EXPECT_TRUE(
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->IsPathShared(
+          kArcVmName,
+          base::FilePath(fusebox::MonikerMap::GetFilename(moniker))));
   EXPECT_TRUE(DestroyMoniker(moniker));
 }
 

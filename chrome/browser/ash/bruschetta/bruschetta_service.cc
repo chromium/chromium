@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -248,7 +249,8 @@ void BruschettaService::RegisterWithTerminal(
           ->TerminalProviderRegistry()
           ->Register(
               std::make_unique<BruschettaTerminalProvider>(profile_, guest_id));
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(guest_id);
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->RegisterGuest(
+      guest_id);
 }
 
 void BruschettaService::RegisterVmLaunch(std::string vm_name,

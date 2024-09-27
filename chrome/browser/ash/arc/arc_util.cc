@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -322,8 +323,8 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
   Profile* const profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
   for (const auto& path : paths_to_share) {
-    if (!guest_os::GuestOsSharePath::GetForProfile(profile)->IsPathShared(
-            kArcVmName, path)) {
+    if (!guest_os::GuestOsSharePathFactory::GetForProfile(profile)
+             ->IsPathShared(kArcVmName, path)) {
       path_list.push_back(path);
     }
   }
@@ -340,7 +341,7 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
     std::move(callback).Run(std::vector<GURL>());
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile)->SharePaths(
       kArcVmName, vm_info->seneschal_server_handle(), path_list,
       base::BindOnce(
           [](ConvertToContentUrlsAndShareCallback callback,

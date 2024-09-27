@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -164,7 +165,7 @@ TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
   ChromeSecurityDelegate security_delegate;
   base::FilePath shared_path = myfiles_dir_.Append("shared");
   auto* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
   guest_os_share_path->RegisterSharedPath(plugin_vm::kPluginVmName,
@@ -303,7 +304,7 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoConvertPaths) {
   ui::FileInfo file1(myfiles_dir_.Append("file1"), base::FilePath());
   ui::FileInfo file2(myfiles_dir_.Append("file2"), base::FilePath());
   auto* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(plugin_vm::kPluginVmName,
                                           myfiles_dir_);
 
@@ -409,7 +410,7 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoSharePathsCrostini) {
   // A path which is already shared should not be shared again.
   base::FilePath shared_path = myfiles_dir_.Append("shared");
   auto* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
   ui::FileInfo file(shared_path, base::FilePath());

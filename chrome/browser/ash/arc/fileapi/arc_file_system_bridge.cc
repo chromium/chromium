@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
@@ -498,7 +499,7 @@ void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
   moniker_indices_.insert({index, moniker});
   CHECK_EQ(shared_monikers_.size(), moniker_indices_.size());
 
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
       kArcVmName, vm_info->seneschal_server_handle(),
       base::FilePath(fusebox::MonikerMap::GetFilename(moniker)),
       base::BindOnce(&ArcFileSystemBridge::OnShareMonikerPath,
