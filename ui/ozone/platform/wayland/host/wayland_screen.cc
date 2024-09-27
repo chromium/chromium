@@ -586,9 +586,8 @@ void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
       tablet_state == display::TabletState::kInTabletMode ||
       tablet_state == display::TabletState::kEnteringTabletMode);
 
-  auto* observer_list = display_list_.observers();
-  for (auto& observer : *observer_list)
-    observer.OnDisplayTabletStateChanged(tablet_state);
+  display_list_.observers()->Notify(
+      &display::DisplayObserver::OnDisplayTabletStateChanged, tablet_state);
 }
 
 display::TabletState WaylandScreen::GetTabletState() const {

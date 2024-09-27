@@ -27,13 +27,11 @@ void WaylandWindowManager::RemoveObserver(WaylandWindowObserver* observer) {
 }
 
 void WaylandWindowManager::NotifyWindowConfigured(WaylandWindow* window) {
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnWindowConfigured(window);
+  observers_.Notify(&WaylandWindowObserver::OnWindowConfigured, window);
 }
 
 void WaylandWindowManager::NotifyWindowRoleAssigned(WaylandWindow* window) {
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnWindowRoleAssigned(window);
+  observers_.Notify(&WaylandWindowObserver::OnWindowRoleAssigned, window);
 }
 
 void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
@@ -185,16 +183,14 @@ void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
   if (window == old_focused_window)
     return;
   keyboard_focused_window_ = window;
-  for (auto& observer : observers_)
-    observer.OnKeyboardFocusedWindowChanged();
+  observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
 }
 
 void WaylandWindowManager::AddWindow(gfx::AcceleratedWidget widget,
                                      WaylandWindow* window) {
   window_map_[widget] = window;
 
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnWindowAdded(window);
+  observers_.Notify(&WaylandWindowObserver::OnWindowAdded, window);
 }
 
 void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
@@ -215,14 +211,10 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
   }
   if (window == keyboard_focused_window_) {
     keyboard_focused_window_ = nullptr;
-    for (auto& observer : observers_) {
-      observer.OnKeyboardFocusedWindowChanged();
-    }
+    observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
   }
 
-  for (WaylandWindowObserver& observer : observers_) {
-    observer.OnWindowRemoved(window);
-  }
+  observers_.Notify(&WaylandWindowObserver::OnWindowRemoved, window);
 }
 
 void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
@@ -230,8 +222,8 @@ void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
   auto* window = window_map_[widget];
   DCHECK(window);
 
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnSubsurfaceAdded(window, subsurface);
+  observers_.Notify(&WaylandWindowObserver::OnSubsurfaceAdded, window,
+                    subsurface);
 }
 
 void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
@@ -239,8 +231,8 @@ void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
   auto* window = window_map_[widget];
   DCHECK(window);
 
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnSubsurfaceRemoved(window, subsurface);
+  observers_.Notify(&WaylandWindowObserver::OnSubsurfaceRemoved, window,
+                    subsurface);
 }
 
 void WaylandWindowManager::RecycleSubsurface(
