@@ -1166,22 +1166,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="1+ from Android"/>
 </enum>
 
-<!-- TODO(crbug.com/342519805): Add missing enum values. -->
-
-<enum name="PasswordManagerPasswordLossPotentialReason">
-  <int value="0" label="The reason is unknown"/>
-  <int value="8" label="Undecryptable passwords"/>
-  <int value="9" label="Undecryptable passwords, settings"/>
-  <int value="10" label="Undecryptable passwords, clear browsing data"/>
-  <int value="11"
-      label="Undecryptable passwords, clear browsing data, settings"/>
-  <int value="12" label="Undecryptable passwords, sync"/>
-  <int value="13" label="Undecryptable passwords, sync, settings"/>
-  <int value="14" label="Undecryptable passwords, sync, clear browsing data"/>
-  <int value="15"
-      label="Undecryptable passwords, sync, clear browsing data, settings"/>
-</enum>
-
 <enum name="PasswordManagerPromoCard">
   <int value="0" label="Checkup promo"/>
   <int value="1" label="Web password manager promo"/>

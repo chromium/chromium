@@ -1023,6 +1023,18 @@ void PasswordsPrivateDelegateImpl::OnDeleteAllDataAuthResult(
   }
 
   saved_passwords_presenter_.DeleteAllData(std::move(success_callback));
+
+  // Record password removal from both stores. "Delete all" requires UI
+  // confirmation and re-authentication, indicating strong user intent to
+  // remove all password data.
+  AddPasswordRemovalReason(
+      profile_->GetPrefs(), password_manager::IsAccountStore(true),
+      password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+          kDeleteAllPasswordManagerData);
+  AddPasswordRemovalReason(
+      profile_->GetPrefs(), password_manager::IsAccountStore(false),
+      password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+          kDeleteAllPasswordManagerData);
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>

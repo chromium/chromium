@@ -407,7 +407,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForAccount) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.PasswordLoss", 10, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.PasswordLossPotentialReason.WIP", 0, 1);
+      "PasswordManager.AccountStore.PasswordLossPotentialReasonBitmask", 0, 1);
   histogram_tester.ExpectTotalCount("PasswordManager.ProfileStore.PasswordLoss",
                                     0);
 
@@ -448,7 +448,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForProfile) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.PasswordLoss", 10, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ProfileStore.PasswordLossPotentialReason.WIP", 0, 1);
+      "PasswordManager.ProfileStore.PasswordLossPotentialReasonBitmask", 0, 1);
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);

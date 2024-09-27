@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -2343,6 +2344,31 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
   EXPECT_THAT(profile_store_->stored_passwords(), testing::IsEmpty());
   EXPECT_THAT(account_store_->stored_passwords(), testing::IsEmpty());
   EXPECT_THAT(passkey_model->GetAllPasskeys(), testing::IsEmpty());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       DeleteAllDataRecordsPasswordRemovalReason) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncWebauthnCredentials};
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto delegate = CreateDelegate();
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+  base::test::TestFuture<bool> completion_future;
+  delegate->DeleteAllPasswordManagerData(web_contents.get(),
+                                         completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Take());
+
+  int expected_reason =
+      1 << static_cast<int>(password_manager::metrics_util::
+                                PasswordManagerCredentialRemovalReason::
+                                    kDeleteAllPasswordManagerData);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForAccount),
+            expected_reason);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForProfile),
+            expected_reason);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

@@ -4288,9 +4288,8 @@ chromium-metrics-reviews@google.com.
   <token key="Store" variants="Store"/>
 </histogram>
 
-<histogram name="PasswordManager.{Store}PasswordLossPotentialReason.WIP"
-    enum="PasswordManagerPasswordLossPotentialReason"
-    expires_after="2025-02-02">
+<histogram name="PasswordManager.{Store}PasswordLossPotentialReasonBitmask"
+    units="bitmask" expires_after="2025-05-02">
   <owner>izuzic@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>battre@chromium.org</owner>

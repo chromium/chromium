@@ -63,7 +63,7 @@ constexpr char kPasswordLossSuffix[] = ".PasswordLoss";
 // Suffix for the histogram that tracks the reasons why passwords were recently
 // removed.
 constexpr char kPasswordLossPotentialReasonSuffix[] =
-    ".PasswordLossPotentialReason.WIP";
+    ".PasswordLossPotentialReasonBitmask";
 
 bool IsCustomPassphraseEnabled(
     password_manager::sync_util::SyncState sync_state) {
