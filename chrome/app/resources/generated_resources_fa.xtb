@@ -334,7 +334,7 @@
 <translation id="1230417814058465809">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از محافظت پیشرفته استفاده کنید.</translation>
 <translation id="1231426483209637778">دفعه بعدی که از <ph name="DEVICE_TYPE" /> استفاده کنید، شبکه‌تان را به‌خاطر می‌آوریم</translation>
 <translation id="1231572247662419826">سایت‌ها می‌توانند برای ضبط کردن و استفاده از ورودی موشواره درخواست کنند</translation>
-<translation id="1232569758102978740">بدون عنوان</translation>
+<translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1233497634904001272">برای تکمیل درخواست، دوباره کلید ایمنی را لمس کنید.</translation>
 <translation id="1233721473400465416">زبان و کشور</translation>
 <translation id="1234736487471201993">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
@@ -726,7 +726,7 @@
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1525740877599838384">‏فقط از Wi-Fi برای تعیین مکان استفاده شود</translation>
 <translation id="152629053603783244">‏بازراه‌اندازی Linux</translation>
-<translation id="1526560967942511387">سند بدون عنوان</translation>
+<translation id="1526560967942511387">سند بی‌عنوان</translation>
 <translation id="1527336312600375509">نرخ بازآوری نمایشگر</translation>
 <translation id="152913213824448541">مخاطبین «هم‌رسانی با اطراف»</translation>
 <translation id="1529769834253316556">ارتفاع خط</translation>
@@ -1481,7 +1481,7 @@
 <translation id="2037486735086318591">برای تبادل فایل با افرادی که در اطرافتان هستند، <ph name="FEATURE_NAME" /> را راه‌اندازی کنید</translation>
 <translation id="2039464276165755892">وقتی فرد دیگری شناسایی می‌شود، محتوای اعلان پنهان شود</translation>
 <translation id="2040460856718599782">وای! هنگام اصالت‌سنجی شما مشکلی پیش آمد. لطفاً اطلاعات کاربری ورود به سیستمتان را دوباره بررسی کرده و دوباره امتحان نمایید.</translation>
-<translation id="2040822390690632244">به‌روزرسانی‌ها، راهنما، گزینه‌های توسعه‌دهنده</translation>
+<translation id="2040822390690632244">به‌روزرسانی‌ها، راهنما، گزینه‌های توسعه‌دهندگان</translation>
 <translation id="2040894699575719559">مکان مسدود شد</translation>
 <translation id="2041246176170574368">‏به‌روزرسانی‌های امنیتی به‌زودی به‌اتمام می‌رسد. هنگام خرید Chromebook جدید ۵۰ دلار یا بیشتر تخفیف بگیرید.</translation>
 <translation id="2042279886444479655">نمایه‌های فعال</translation>
@@ -10220,7 +10220,7 @@
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> دیگر از سیستم خارج می‌شوید</translation>
 <translation id="8429928917752180743">گزینه‌های بیشتر برای <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">نمایش ضربه‌ها</translation>
+<translation id="8431190899827883166">نمایش تک‌ضرب‌ها</translation>
 <translation id="843173223122814223">ایجاد پس‌زمینه با هوش مصنوعی</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8434109185104929038">محل مطالعه</translation>
