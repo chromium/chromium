@@ -3679,6 +3679,18 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
+  return dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
+                                              url, storage_key);
+}
+
+// TODO: crbug.com/369813097 - Move this implementation into
+// ChromeContentBrowserClient::IsFullCookieAccessAllowed() after DIPS migrates
+// to //content.
+namespace dips_move {
+bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
+                               content::WebContents* web_contents,
+                               const GURL& url,
+                               const blink::StorageKey& storage_key) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile);
@@ -3690,6 +3702,7 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
       url::Origin::Create(storage_key.top_level_site().GetURL()),
       cookie_settings->SettingOverridesForStorage());
 }
+}  // namespace dips_move
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(

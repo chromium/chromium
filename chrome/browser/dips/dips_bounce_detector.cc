@@ -567,15 +567,15 @@ void Populate3PcExceptions(content::BrowserContext* browser_context,
   const blink::StorageKey final_url_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url));
   // TODO: crbug.com/40883201 - When we move to //content, we will call
-  // content::GetContentClientForTesting()->browser() instead of instantiating
-  // ChromeContentBrowserClient ourselves.
-  ChromeContentBrowserClient cbc;
+  // IsFullCookieAccessAllowed() via ContentBrowserClient instead of as a
+  // standalone function.
   for (DIPSRedirectInfoPtr& redirect : redirects) {
     redirect->has_3pc_exception =
-        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
-                                      redirect->url.url, initial_url_key) ||
-        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
-                                      redirect->url.url, final_url_key);
+        dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
+                                             redirect->url.url,
+                                             initial_url_key) ||
+        dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
+                                             redirect->url.url, final_url_key);
   }
 }
 }  // namespace dips
