@@ -1208,6 +1208,7 @@ crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
 # CSS Inline `text-box-trim` and `text-box-edge` properties.
+crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-005.html [ Failure ]
 
@@ -2634,7 +2635,6 @@ crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 crbug.com/368060001 [ Mac15-arm64 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
 crbug.com/368060001 [ Mac15 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
-crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
 crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
