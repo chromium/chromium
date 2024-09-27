@@ -27,8 +27,6 @@ public class CastBrowserHelper {
      * already started, immediately returns true without performing any more initialization.
      * This may only be called on the UI thread.
      *
-     * @return whether or not the process started successfully
-     * 
      * TODO(sanfin): Remove this overload.
      */    
     public static void initializeBrowser(Context context) {

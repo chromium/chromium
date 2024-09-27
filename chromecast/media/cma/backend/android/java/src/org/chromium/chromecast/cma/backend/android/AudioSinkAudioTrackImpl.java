@@ -241,8 +241,12 @@ class AudioSinkAudioTrackImpl {
     public static long getMinimumBufferedTime(int channelCount, int sampleRateInHz) {
         int sizeBytes = AudioTrack.getMinBufferSize(
                 sampleRateInHz, getChannelConfig(channelCount), AUDIO_FORMAT);
-        long sizeUs = SEC_IN_USEC * (long) sizeBytes
-                / (getSampleSize(AUDIO_FORMAT) * channelCount * (long) sampleRateInHz);
+        long sizeUs =
+                SEC_IN_USEC
+                        * (long) sizeBytes
+                        / (getSampleSize(AUDIO_FORMAT)
+                                * (long) channelCount
+                                * (long) sampleRateInHz);
         return sizeUs + MIN_BUFFERED_TIME_PADDING_US;
     }
 
@@ -300,7 +304,7 @@ class AudioSinkAudioTrackImpl {
      */
     private void init(@AudioContentType int castContentType, int channelCount, int sampleRateInHz,
             int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
-        mTag = TAG + "(" + castContentType + ":" + (sInstanceCounter++) + ")";
+        mTag = TAG + "(" + castContentType + ":" + sInstanceCounter++ + ")";
 
         // Setup throttled logs: pass the first 5, then every 1sec, reset after 5.
         mBufferLevelWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
