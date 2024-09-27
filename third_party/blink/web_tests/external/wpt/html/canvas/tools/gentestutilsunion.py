@@ -482,8 +482,6 @@ class _Variant():
         if expected == 'clear':
             self._params['expected_img'] = '/images/clear-100x50.png'
             return
-        if ';' in expected:
-            print(f'Found semicolon in {name}')
         expected = re.sub(
             r'^size (\d+) (\d+)',
             r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
