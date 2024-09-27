@@ -31,14 +31,6 @@ class ConnectorsManagerBaseTest : public testing::Test {
 
   PrefService* pref_service() { return &prefs_; }
 
-  void ValidateSettings(const ReportingSettings& settings) {
-    // For now, the URL is the same for both legacy and new policies, so
-    // checking the specific URL here.  When service providers become
-    // configurable this will change.
-    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-              settings.reporting_url);
-  }
-
   class ScopedConnectorPref {
    public:
     ScopedConnectorPref(PrefService* pref_service,
@@ -105,7 +97,6 @@ TEST_P(ConnectorsManagerBaseReportingTest, DynamicPolicies) {
     auto settings =
         cached_settings.at(connector()).at(0).GetReportingSettings();
     ASSERT_TRUE(settings.has_value());
-    ValidateSettings(settings.value());
   }
 
   // The cache should be empty again after the pref is reset.

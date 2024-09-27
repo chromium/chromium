@@ -36,10 +36,9 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
 }  // namespace
 
 ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url,
-                                     const std::string& dm_token,
+ReportingSettings::ReportingSettings(const std::string& dm_token,
                                      bool per_profile)
-    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
+    : dm_token(dm_token), per_profile(per_profile) {}
 ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
 ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;

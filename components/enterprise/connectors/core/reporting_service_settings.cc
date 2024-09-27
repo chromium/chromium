@@ -82,9 +82,6 @@ ReportingServiceSettings::GetReportingSettings() const {
 
   ReportingSettings settings;
 
-  settings.reporting_url = GURL(reporting_config_->url);
-  DCHECK(settings.reporting_url.is_valid());
-
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
                                       enabled_event_names_.end());
 

@@ -182,14 +182,6 @@ class ConnectorsServiceBaseReportingSettingsTest
   bool reporting_enabled() const {
     return pref_value() == kNormalReportingSettingsPref;
   }
-
-  void ValidateSettings(const ReportingSettings& settings) {
-    // For now, the URL is the same for both legacy and new policies, so
-    // checking the specific URL here.  When service providers become
-    // configurable this will change.
-    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-              settings.reporting_url);
-  }
 };
 
 TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
@@ -208,10 +200,6 @@ TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
   auto settings =
       service.GetConnectorsManagerBase()->GetReportingSettings(connector());
   EXPECT_EQ(reporting_enabled(), settings.has_value());
-  if (settings.has_value()) {
-    ValidateSettings(settings.value());
-  }
-
   EXPECT_EQ(pref_value() == kNormalReportingSettingsPref,
             !service.GetConnectorsManagerBase()
                  ->GetReportingConnectorsSettingsForTesting()

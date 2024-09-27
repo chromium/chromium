@@ -120,14 +120,6 @@ class ConnectorsManagerTest : public testing::Test {
     }
   }
 
-  void ValidateSettings(const ReportingSettings& settings) {
-    // For now, the URL is the same for both legacy and new policies, so
-    // checking the specific URL here.  When service providers become
-    // configurable this will change.
-    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-              settings.reporting_url);
-  }
-
   class ScopedConnectorPref {
    public:
     ScopedConnectorPref(PrefService* pref_service,

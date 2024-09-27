@@ -133,13 +133,12 @@ inline constexpr auto kEventNameToUmaEnumMap =
 // Connector.
 struct ReportingSettings {
   ReportingSettings();
-  ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
+  ReportingSettings(const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings(const ReportingSettings&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
-  GURL reporting_url;
   std::set<std::string> enabled_event_names;
   std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
   std::string dm_token;
