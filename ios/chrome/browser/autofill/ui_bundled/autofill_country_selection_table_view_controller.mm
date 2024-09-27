@@ -158,13 +158,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16.0, *)) {
-    return;
-  }
-
-  CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
-      [self.tableViewModel itemAtIndexPath:indexPath]);
-  [_delegate didSelectCountry:item];
+  return;
 }
 
 - (void)tableView:(UITableView*)tableView

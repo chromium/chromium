@@ -86,10 +86,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16.0, *)) {
-    return;
-  }
-  [self performPrimaryActionForRowAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView*)tableView

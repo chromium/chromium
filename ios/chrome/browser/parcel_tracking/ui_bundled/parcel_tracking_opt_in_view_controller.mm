@@ -186,14 +186,8 @@ CGFloat const kRadioButtonSize = 20;
   _selection = indexPath.row == 0 ? IOSParcelTrackingOptInStatus::kAlwaysTrack
                                   : IOSParcelTrackingOptInStatus::kAskToTrack;
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-  UIImage* icon;
-  if (@available(iOS 16.0, *)) {
-    icon = DefaultSymbolWithPointSize(kButtonProgrammableSymbol,
-                                      kSymbolAccessoryPointSize);
-  } else {
-    icon = DefaultSymbolWithPointSize(kCircleCircleFillSymbol,
-                                      kSymbolAccessoryPointSize);
-  }
+  UIImage* icon = DefaultSymbolWithPointSize(kButtonProgrammableSymbol,
+                                             kSymbolAccessoryPointSize);
   cell.accessoryView = [[UIImageView alloc] initWithImage:icon];
   cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
   self.primaryActionButton.enabled = YES;

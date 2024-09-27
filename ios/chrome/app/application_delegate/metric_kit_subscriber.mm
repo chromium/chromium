@@ -163,19 +163,15 @@ std::string HistogramPrefix(bool include_mismatch) {
 
 + (void)createExtendedLaunchTask {
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  if (@available(iOS 16.0, *)) {
-    [MXMetricManager extendLaunchMeasurementForTaskID:kMainLaunchTaskId
-                                                error:nil];
-  }
+  [MXMetricManager extendLaunchMeasurementForTaskID:kMainLaunchTaskId
+                                              error:nil];
 #endif
 }
 
 + (void)endExtendedLaunchTask {
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  if (@available(iOS 16.0, *)) {
-    [MXMetricManager finishExtendedLaunchMeasurementForTaskID:kMainLaunchTaskId
-                                                        error:nil];
-  }
+  [MXMetricManager finishExtendedLaunchMeasurementForTaskID:kMainLaunchTaskId
+                                                      error:nil];
 #endif
 }
 
@@ -314,17 +310,15 @@ std::string HistogramPrefix(bool include_mismatch) {
                        toUMAHistogram:prefix + "TimeToFirstDraw"];
 
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  if (@available(iOS 16.0, *)) {
-    MXHistogram* histogrammedOptimizedTimeToFirstDraw =
-        payload.applicationLaunchMetrics.histogrammedOptimizedTimeToFirstDraw;
-    [self logStartupDurationMXHistogram:histogrammedOptimizedTimeToFirstDraw
-                         toUMAHistogram:prefix + "OptimizedTimeToFirstDraw"];
+  MXHistogram* histogrammedOptimizedTimeToFirstDraw =
+      payload.applicationLaunchMetrics.histogrammedOptimizedTimeToFirstDraw;
+  [self logStartupDurationMXHistogram:histogrammedOptimizedTimeToFirstDraw
+                       toUMAHistogram:prefix + "OptimizedTimeToFirstDraw"];
 
-    MXHistogram* histogrammedExtendedLaunch =
-        payload.applicationLaunchMetrics.histogrammedExtendedLaunch;
-    [self logStartupDurationMXHistogram:histogrammedExtendedLaunch
-                         toUMAHistogram:prefix + "ExtendedLaunch"];
-  }
+  MXHistogram* histogrammedExtendedLaunch =
+      payload.applicationLaunchMetrics.histogrammedExtendedLaunch;
+  [self logStartupDurationMXHistogram:histogrammedExtendedLaunch
+                       toUMAHistogram:prefix + "ExtendedLaunch"];
 #endif
 
   MXHistogram* histogrammedApplicationHangTime =

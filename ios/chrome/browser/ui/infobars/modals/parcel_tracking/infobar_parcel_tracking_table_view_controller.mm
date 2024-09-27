@@ -97,10 +97,8 @@ NSString* const kCarrierKey = @"carrier";
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  if (@available(iOS 16.0, *)) {
-    self.editMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-    [self.tableView addInteraction:self.editMenu];
-  }
+  self.editMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+  [self.tableView addInteraction:self.editMenu];
 
   [self loadModel];
 }
@@ -149,18 +147,15 @@ NSString* const kCarrierKey = @"carrier";
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
   switch (itemType) {
-    case kTrackingNumber:
+    case kTrackingNumber: {
       // Present an edit menu.
-      if (@available(iOS 16.0, *)) {
-        CGRect row = [self.tableView rectForRowAtIndexPath:indexPath];
-        CGPoint editMenuLocation =
-            CGPointMake(CGRectGetMidX(row), row.origin.y);
-        UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
-            configurationWithIdentifier:[NSNumber numberWithInt:itemType]
-                            sourcePoint:editMenuLocation];
-        [self.editMenu presentEditMenuWithConfiguration:configuration];
-      }
-      break;
+      CGRect row = [self.tableView rectForRowAtIndexPath:indexPath];
+      CGPoint editMenuLocation = CGPointMake(CGRectGetMidX(row), row.origin.y);
+      UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+          configurationWithIdentifier:[NSNumber numberWithInt:itemType]
+                          sourcePoint:editMenuLocation];
+      [self.editMenu presentEditMenuWithConfiguration:configuration];
+    } break;
     default:
       break;
   }

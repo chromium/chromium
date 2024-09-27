@@ -65,11 +65,7 @@ NSDictionary* ExtractMenuElements(UIView* view,
 }
 
 + (id<GREYMatcher>)editMenuButtonMatcher {
-  if (@available(iOS 16.0, *)) {
-    return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
-  } else {
-    return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
-  }
+  return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
 }
 
 + (id<GREYMatcher>)editMenuNextButtonMatcher {
