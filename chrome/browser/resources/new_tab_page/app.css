@@ -233,7 +233,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 }
 
 :host([show-background-image_]) #customizeButton,
-:host([wallpaper-search-button-enabled_]) #customizeButton,
+:host([show-wallpaper-search-button_]) #customizeButton,
 :host([show-wallpaper-search_]) #wallpaperSearchButton {
   box-shadow: none;
   padding-inline-end: 0;

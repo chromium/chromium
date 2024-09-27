@@ -495,6 +495,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
           base::FeatureList::IsEnabled(
               ntp_features::kNtpWallpaperSearchButtonAnimation) &&
           should_animate_wallpaper_search_button);
+  source->AddInteger("wallpaperSearchButtonHideCondition",
+                     ntp_features::GetWallpaperSearchButtonHideCondition());
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

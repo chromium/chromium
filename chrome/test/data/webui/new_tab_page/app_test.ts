@@ -1339,5 +1339,78 @@ suite('NewTabPageAppTest', () => {
         assertButtonNotAnimated();
       });
     });
+
+    suite('ConditionalVisibility', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+        });
+      });
+
+      test(
+          'wallpaper search button shows when there is no condition',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchButtonHideCondition: /*NONE*/ 0,
+            });
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+            const theme = createTheme();
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            await callbackRouterRemote.$.flushForTesting();
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+          });
+
+      test(
+          'wallpaper search button conditionally hides when background is set',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchButtonHideCondition: /*BACKGROUND_IMAGE_SET*/ 1,
+            });
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+            // Set theme with a background image.
+            const theme = createTheme();
+            theme.backgroundImage = createBackgroundImage('https://img.png');
+            callbackRouterRemote.setTheme(theme);
+            await backgroundManager.whenCalled('setShowBackgroundImage');
+            await microtasksFinished();
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertFalse(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+          });
+
+      test(
+          'wallpaper search button conditionally hides when theme is set',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchButtonHideCondition: /*THEME_SET*/ 2,
+            });
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+
+            // Set theme with a color but no background image.
+            callbackRouterRemote.setTheme(createTheme());
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertFalse(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+          });
+    });
   });
 });

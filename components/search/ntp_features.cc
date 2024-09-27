@@ -280,6 +280,12 @@ BASE_FEATURE(kNtpWallpaperSearchButtonAnimation,
              "NtpWallpaperSearchButtonAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set param "NtpWallpaperSearchButtonHideCondition".
+// This is used for an emergency Finch param. Keep indefinitely.
+BASE_FEATURE(kNtpWallpaperSearchButtonHideCondition,
+             "NtpWallpaperSearchButtonHideCondition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Dummy feature to set param "NtpWallpaperSearchButtonAnimationShownThreshold".
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold,
@@ -344,6 +350,8 @@ const char kNtpTabResumptionModuleTimeLimitParam[] =
     "NtpTabResumptionModuleTimeLimitParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
+const char kNtpWallpaperSearchButtonHideConditionParam[] =
+    "NtpWallpaperSearchButtonHideConditionParam";
 const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[] =
     "NtpWallpaperSearchButtonAnimationShownThresholdParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
@@ -409,5 +417,11 @@ int GetWallpaperSearchButtonAnimationShownThreshold() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kNtpWallpaperSearchButtonAnimationShownThreshold,
       kNtpWallpaperSearchButtonAnimationShownThresholdParam, 15);
+}
+
+int GetWallpaperSearchButtonHideCondition() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kNtpWallpaperSearchButtonHideCondition,
+      kNtpWallpaperSearchButtonHideConditionParam, 0);
 }
 }  // namespace ntp_features

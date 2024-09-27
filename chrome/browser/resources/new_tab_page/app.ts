@@ -82,6 +82,17 @@ export enum NtpCustomizeChromeEntryPoint {
   MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
 }
 
+/**
+ * Defines the conditions that hide the wallpaper search button on the New Tab
+ * Page.
+ */
+enum NtpWallpaperSearchButtonHideCondition {
+  NONE = 0,
+  BACKGROUND_IMAGE_SET = 1,
+  THEME_SET = 2,
+  MAX_VALUE = THEME_SET,
+}
+
 const CUSTOMIZE_URL_PARAM: string = 'customize';
 const OGB_IFRAME_ORIGIN = 'chrome-untrusted://new-tab-page';
 
@@ -244,7 +255,7 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      wallpaperSearchButtonEnabled_: {
+      showWallpaperSearchButton_: {
         type: Boolean,
         reflect: true,
       },
@@ -300,6 +311,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
   protected wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
+  protected showWallpaperSearchButton_: boolean;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -404,6 +416,8 @@ export class AppElement extends AppElementBase {
               // Chrome doesn't have the wallpaper search element yet.
               if (!visible) {
                 this.wallpaperSearchButtonEnabled_ = visible;
+                this.showWallpaperSearchButton_ =
+                    this.computeShowWallpaperSearchButton_();
               }
             });
 
@@ -503,7 +517,10 @@ export class AppElement extends AppElementBase {
     // middleSlotPromoLoaded_, modulesLoaded_
     this.promoAndModulesLoaded_ = this.computePromoAndModulesLoaded_();
 
-    // wallpaperSearchButtonEnabled_, showBackgroundImage_
+    // wallpaperSearchButtonEnabled_, showBackgroundImage_, backgroundColor_
+    this.showWallpaperSearchButton_ = this.computeShowWallpaperSearchButton_();
+
+    // showWallpaperSearchButton_, showBackgroundImage_
     this.showCustomizeChromeText_ = this.computeShowCustomizeChromeText_();
   }
 
@@ -554,7 +571,7 @@ export class AppElement extends AppElementBase {
   }
 
   private computeShowCustomizeChromeText_(): boolean {
-    if (this.wallpaperSearchButtonEnabled_) {
+    if (this.showWallpaperSearchButton_) {
       return false;
     }
     return !this.showBackgroundImage_;
@@ -596,7 +613,7 @@ export class AppElement extends AppElementBase {
     this.registerHelpBubble(
         CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, '#customizeButton', {fixed: true});
     this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
-    if (this.wallpaperSearchButtonEnabled_) {
+    if (this.showWallpaperSearchButton_) {
       this.pageHandler_.incrementWallpaperSearchButtonShownCount();
     }
   }
@@ -622,6 +639,22 @@ export class AppElement extends AppElementBase {
       this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
       recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
     }
+  }
+
+  protected computeShowWallpaperSearchButton_() {
+    if (!this.wallpaperSearchButtonEnabled_) {
+      return false;
+    }
+
+    switch (loadTimeData.getInteger('wallpaperSearchButtonHideCondition')) {
+      case NtpWallpaperSearchButtonHideCondition.NONE:
+        return true;
+      case NtpWallpaperSearchButtonHideCondition.BACKGROUND_IMAGE_SET:
+        return !this.showBackgroundImage_;
+      case NtpWallpaperSearchButtonHideCondition.THEME_SET:
+        return !this.showBackgroundImage_ && !this.backgroundColor_;
+    }
+    return false;
   }
 
   protected onWallpaperSearchClick_() {

@@ -158,6 +158,9 @@ extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
 // Parameter determining the number of times to animate the NTP Wallpaper Search
 // button.
 extern const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[];
+// Parameter determining what condition to use to hide the wallpaper search
+// button.
+extern const char kNtpWallpaperSearchButtonHideConditionParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
 extern const char kWallpaperSearchHatsDelayParam[];
 
@@ -198,6 +201,9 @@ std::vector<std::string> GetModulesOrder();
 // Returns the maximum number of times to show animation for NTP wallpaper
 // search button.
 int GetWallpaperSearchButtonAnimationShownThreshold();
+
+// Returns the condition to use to hide the wallpaper search button.
+int GetWallpaperSearchButtonHideCondition();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_
