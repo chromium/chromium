@@ -15,13 +15,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths_win.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +36,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
+#include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -41,14 +46,20 @@
 #include "chrome/browser/notifications/win/notification_template_builder.h"
 #include "chrome/browser/notifications/win/notification_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -278,7 +289,7 @@ class NotificationPlatformBridgeWinImpl
     // of the Tag value to produce uniqueness that fits within the specified
     // limits. Although Group is hard-coded, uniqueness is guaranteed through
     // features providing a sufficiently distinct notification id, profile id,
-    // app user model id, and incognito status combinations.
+    // App User Model Id, and incognito status combinations.
     ScopedHString group = ScopedHString::Create(kGroup);
     ScopedHString tag = ScopedHString::Create(
         GetTag(notification.id(), profile_id, app_user_model_id, incognito));
@@ -344,8 +355,72 @@ class NotificationPlatformBridgeWinImpl
     return toast_notification;
   }
 
+  // Returns either the Chrome App User Model Id (AUMI) or a web app's AUMI,
+  // depending on whether Chrome or a web app created the notification. If there
+  // is not an icon with the expected name, location, and AUMI in
+  // the start menu, the browser's AUMI will be returned, because Windows won't
+  // display a notification unless there is an icon with the same AUMI as the
+  // notification in the start menu.
+  static std::wstring GetAppIdForNotification(
+      const message_center::Notification* notification,
+      const std::string& profile_id,
+      const base::FilePath& profile_path,
+      const std::string& app_name) {
+    // Check that experiment to use PWA icons in notifications is enabled. If
+    // not, just return GetBrowserAppId().
+    if (!base::FeatureList::IsEnabled(features::kAppSpecificNotifications)) {
+      return GetBrowserAppId();
+    }
+    webapps::AppId web_app_id =
+        notification->notifier_id().web_app_id.value_or("");
+    if (web_app_id.empty() || app_name.empty()) {
+      return GetBrowserAppId();
+    }
+    // Look for the shortcut based on its expected name and path. Technically,
+    // the shortcut could have any name and location under the start menu, as
+    // long as it has the correct App User Model Id, but the added complication
+    // and performance hit of examining each shortcut is probably not worth
+    // handling the case of the user renaming or moving shortcuts in the start
+    // menu.
+    std::wstring file_name = base::AsWString(base::UTF8ToUTF16(app_name));
+    base::i18n::ReplaceIllegalCharactersInPath(&file_name, ' ');
+
+    base::FilePath chrome_apps_dir;
+    if (!ShellUtil::GetShortcutPath(
+            ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
+            ShellUtil::CURRENT_USER, &chrome_apps_dir)) {
+      return GetBrowserAppId();
+    }
+    base::FilePath start_menu_shortcut_path =
+        chrome_apps_dir.Append(file_name).AddExtension(installer::kLnkExt);
+
+    if (!PathExists(start_menu_shortcut_path)) {
+      return GetBrowserAppId();
+    }
+    // Get the the App User Model Id from the app name and profile path.
+    const auto app_user_model_id =
+        shell_integration::win::GetAppUserModelIdForApp(
+            base::UTF8ToWide(
+                web_app::GenerateApplicationNameFromAppId(web_app_id)),
+            profile_path);
+
+    // Verify that shortcut has the expected App User Model Id. If it doesn't,
+    // return the browser's App User Model Id.
+    base::win::ShortcutProperties shortcut_properties;
+    if (!base::win::ResolveShortcutProperties(
+            start_menu_shortcut_path,
+            base::win::ShortcutProperties::PROPERTIES_APP_ID,
+            &shortcut_properties) ||
+        shortcut_properties.app_id != app_user_model_id) {
+      return GetBrowserAppId();
+    }
+    return app_user_model_id;
+  }
+
   void Display(NotificationHandler::Type notification_type,
                const std::string& profile_id,
+               const base::FilePath& profile_path,
+               const std::string& app_name,
                bool incognito,
                std::unique_ptr<message_center::Notification> notification,
                std::unique_ptr<NotificationCommon::Metadata> metadata) {
@@ -353,13 +428,20 @@ class NotificationPlatformBridgeWinImpl
     // crbug.com/761039.
     DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
 
-    std::wstring app_user_model_id = GetAppId();
+    const std::wstring app_user_model_id = GetAppIdForNotification(
+        notification.get(), profile_id, profile_path, app_name);
+
+    if (notifier_app_user_model_id_ != app_user_model_id) {
+      notifier_.Reset();
+      notifier_app_user_model_id_.clear();
+    }
     if (!notifier_for_testing_ && !notifier_.Get() &&
         FAILED(InitializeToastNotifier(app_user_model_id))) {
       // A histogram should have already been logged for this failure.
       DLOG(ERROR) << "Unable to initialize toast notifier";
       return;
     }
+    notifier_app_user_model_id_ = app_user_model_id;
 
     winui::Notifications::IToastNotifier* notifier =
         notifier_for_testing_ ? notifier_for_testing_ : notifier_.Get();
@@ -429,7 +511,29 @@ class NotificationPlatformBridgeWinImpl
       DLOG(ERROR) << "Failed to get IToastNotificationHistory";
       return;
     }
-    std::wstring app_user_model_id = GetAppId();
+
+    // Find the displayed notification with `notification_id` and extract its
+    // App User Model Id.
+    std::wstring app_user_model_id;
+    bool notification_found = false;
+    for (const auto& displayed_notification : displayed_notifications_) {
+      if (displayed_notification.first.notification_id == notification_id) {
+        app_user_model_id = displayed_notification.first.app_user_model_id;
+        notification_found = true;
+        break;
+      }
+    }
+    if (!notification_found) {
+      DLOG(ERROR) << "Failed to find notification " << notification_id;
+      LogCloseHistogram(CloseStatus::kNotificationNotFound);
+      return;
+    }
+    if (app_user_model_id.empty()) {
+      DLOG(ERROR) << "App User Model Id empty for notification "
+                  << notification_id;
+      LogCloseHistogram(CloseStatus::kEmptyAumi);
+      return;
+    }
     ScopedHString application_id = ScopedHString::Create(app_user_model_id);
     ScopedHString group = ScopedHString::Create(kGroup);
     ScopedHString tag = ScopedHString::Create(
@@ -509,42 +613,50 @@ class NotificationPlatformBridgeWinImpl
       return {};
     }
 
-    ScopedHString application_id = ScopedHString::Create(GetAppId());
-
-    mswr::ComPtr<winfoundtn::Collections::IVectorView<
-        winui::Notifications::ToastNotification*>>
-        list;
-    hr = history2->GetHistoryWithId(application_id.get(), &list);
-    if (FAILED(hr)) {
-      LogGetDisplayedStatus(GetDisplayedStatus::kGetHistoryWithIdFailed);
-      DLOG(ERROR) << "GetHistoryWithId failed " << std::hex << hr;
-      return {};
+    // Build up the set of App User Model Id's in `displayed_notifications_`
+    // and loop through them to find which ones are still displayed.
+    std::set<std::wstring> app_user_model_ids;
+    for (const auto& notification : displayed_notifications_) {
+      // Make sure app_user_model_id gets set.
+      DCHECK(!notification.first.app_user_model_id.empty());
+      app_user_model_ids.insert(notification.first.app_user_model_id);
     }
-
-    uint32_t size;
-    hr = list->get_Size(&size);
-    if (FAILED(hr)) {
-      LogGetDisplayedStatus(GetDisplayedStatus::kGetSizeFailed);
-      DLOG(ERROR) << "History get_Size call failed " << std::hex << hr;
-      return {};
-    }
-
     GetDisplayedStatus status = GetDisplayedStatus::kSuccess;
-
     std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>
         notifications;
-    for (uint32_t index = 0; index < size; ++index) {
-      mswr::ComPtr<winui::Notifications::IToastNotification> tn;
-      hr = list->GetAt(index, &tn);
-      if (FAILED(hr)) {
-        status = GetDisplayedStatus::kSuccessWithGetAtFailure;
-        DLOG(ERROR) << "Failed to get notification " << index << " of " << size
-                    << " " << std::hex << hr;
-        continue;
-      }
-      notifications.push_back(std::move(tn));
-    }
+    for (const auto& app_user_model_id : app_user_model_ids) {
+      ScopedHString application_id = ScopedHString::Create(app_user_model_id);
 
+      mswr::ComPtr<winfoundtn::Collections::IVectorView<
+          winui::Notifications::ToastNotification*>>
+          list;
+      hr = history2->GetHistoryWithId(application_id.get(), &list);
+      if (FAILED(hr)) {
+        LogGetDisplayedStatus(GetDisplayedStatus::kGetHistoryWithIdFailed);
+        DLOG(ERROR) << "GetHistoryWithId failed " << std::hex << hr;
+        return {};
+      }
+
+      uint32_t size;
+      hr = list->get_Size(&size);
+      if (FAILED(hr)) {
+        LogGetDisplayedStatus(GetDisplayedStatus::kGetSizeFailed);
+        DLOG(ERROR) << "History get_Size call failed " << std::hex << hr;
+        return {};
+      }
+
+      for (uint32_t index = 0; index < size; ++index) {
+        mswr::ComPtr<winui::Notifications::IToastNotification> tn;
+        hr = list->GetAt(index, &tn);
+        if (FAILED(hr)) {
+          status = GetDisplayedStatus::kSuccessWithGetAtFailure;
+          DLOG(ERROR) << "Failed to get notification " << index << " of "
+                      << size << " " << std::hex << hr;
+          continue;
+        }
+        notifications.push_back(std::move(tn));
+      }
+    }
     LogGetDisplayedStatus(status);
     return notifications;
   }
@@ -666,7 +778,8 @@ class NotificationPlatformBridgeWinImpl
       }
 
       displayed_notifications_[{launch_id.profile_id(),
-                                launch_id.notification_id()}] = launch_id;
+                                launch_id.notification_id(),
+                                launch_id.app_user_model_id()}] = launch_id;
     }
 
     if (!displayed_notifications_.empty())
@@ -677,7 +790,7 @@ class NotificationPlatformBridgeWinImpl
     DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
 
     if (!notifier_for_testing_ && !notifier_.Get() &&
-        FAILED(InitializeToastNotifier(GetAppId()))) {
+        FAILED(InitializeToastNotifier(GetBrowserAppId()))) {
       // A histogram should have already been logged for this failure.
       DLOG(ERROR) << "Unable to initialize toast notifier";
       return;
@@ -789,7 +902,7 @@ class NotificationPlatformBridgeWinImpl
     notification_task_runner_->DeleteSoon(FROM_HERE, image_retainer_.release());
   }
 
-  std::wstring GetAppId() const {
+  static std::wstring GetBrowserAppId() {
     return ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall());
   }
 
@@ -898,7 +1011,16 @@ class NotificationPlatformBridgeWinImpl
   // An object that keeps temp files alive long enough for Windows to pick up.
   std::unique_ptr<NotificationImageRetainer> image_retainer_;
 
-  // The ToastNotifier to use to communicate with the Action Center.
+  // The App User Model Id for the IToastNotifier `notifier_`. This will be
+  // either Chrome's App User Model Id, or the App User Model Id for a web app,
+  // or empty, if `notifier_` is NULL.
+  std::wstring notifier_app_user_model_id_;
+
+  // The ToastNotifier to use to communicate with the Action Center. It is
+  // specific to an App User Model Id, which is stored in
+  // `notifier_app_user_model_id_`. When a notification is displayed for an app
+  // user model id different from `notifier_app_user_model_id_', a new notifier
+  // is created for the new App User Model Id.
   mswr::ComPtr<winui::Notifications::IToastNotifier> notifier_;
 };
 
@@ -937,12 +1059,24 @@ void NotificationPlatformBridgeWin::Display(
       /*include_body_image=*/true, /*include_small_image=*/true,
       /*include_icon_images=*/true);
 
+  // This will be set if a web app puts up the notification and its
+  // name can be determined.
+  std::string app_name;
+  webapps::AppId web_app_id =
+      notification.notifier_id().web_app_id.value_or("");
+  if (!web_app_id.empty()) {
+    auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+    if (provider) {
+      app_name = provider->registrar_unsafe().GetAppShortName(web_app_id);
+    }
+  }
+
   notification_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NotificationPlatformBridgeWinImpl::Display, impl_,
                      notification_type, GetProfileId(profile),
-                     profile->IsOffTheRecord(), std::move(notification_copy),
-                     std::move(metadata)));
+                     profile->GetPath(), app_name, profile->IsOffTheRecord(),
+                     std::move(notification_copy), std::move(metadata)));
 }
 
 void NotificationPlatformBridgeWin::Close(Profile* profile,

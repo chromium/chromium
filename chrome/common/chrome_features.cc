@@ -45,6 +45,14 @@ BASE_FEATURE(kAppPreloadService,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN)
+// When enabled, notifications from PWA's will use the PWA icon and name,
+// as long as the PWA is on the start menu.  b/40285965.
+BASE_FEATURE(kAppSpecificNotifications,
+             "AppSpecificNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
 // Can be used to disable RemoteCocoa (hosting NSWindows for apps in the app
 // process). For debugging purposes only.

@@ -951,18 +951,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationCloseStatus" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of Close requests in NotificationPlatformBridgeWin (Windows
     only). Logged whenever a notification is closed. Note: Not logged after M98
-    until end of August 2022, and also not at the beginning of Sept 2023.
+    until end of August 2022, and also not at the beginning of Sept 2023 and
+    Sept 2024.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CreateToastManagerErrorCode"
-    enum="Hresult" expires_after="2024-09-01">
+    enum="Hresult" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -970,7 +971,7 @@ chromium-metrics-reviews@google.com.
     toast manager fails. This provides a more detailed error in the cases the
     histogram Notifications.Windows.DisplayStatus reported
     CREATE_TOAST_NOTIFIER_WITH_ID_FAILED. Note: Not logged after M89 until end
-    of August 2022, and also not at the beginning of Sept 2023.
+    of August 2022, and also not at the beginning of Sept 2023 and Sept 2024.
   </summary>
 </histogram>
 
