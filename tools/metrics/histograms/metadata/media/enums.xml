@@ -258,6 +258,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Destructed Before Timeout"/>
 </enum>
 
+<enum name="CameraCaptureCapability">
+  <int value="0" label="Incapable of HD (1280x720) and FullHD (1980x1080)"/>
+  <int value="1" label="HD or FullHD, without 640x360 and 640x480"/>
+  <int value="2" label="HD or FullHD, with 640x360"/>
+  <int value="3" label="HD or FullHD, with 640x480"/>
+  <int value="4" label="HD or FullHD, with 640x360 and 640x480"/>
+</enum>
+
 <enum name="CastStreamingFrameDropReason">
   <int value="0" label="Frame was not dropped"/>
   <int value="1" label="Too many frames in flight"/>

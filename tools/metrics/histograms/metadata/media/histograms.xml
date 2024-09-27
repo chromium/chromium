@@ -4099,6 +4099,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.GetUserMedia.CameraCaptureCapability"
+    enum="CameraCaptureCapability" expires_after="2025-09-26">
+  <owner>hbos@chromium.org</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    When getUserMedia() is called for video, the capture resolution capabilities
+    of the devices (webcams) are logged, including if HD/FullHD devices support
+    360p, 480p, neither or both.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetUserMedia.Latency" units="ms"
     expires_after="2025-01-26">
   <owner>toprice@chromium.org</owner>

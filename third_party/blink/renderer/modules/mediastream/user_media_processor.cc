@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -78,6 +79,11 @@ using EchoCancellationType =
 using AudioSourceErrorCode = media::AudioCapturerSource::ErrorCode;
 
 namespace {
+
+void LogCameraCaptureCapability(CameraCaptureCapability capability) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaDevices.GetUserMedia.CameraCaptureCapability", capability);
+}
 
 const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
   switch (value) {
@@ -998,6 +1004,51 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   capabilities.noise_reduction_capabilities = {std::optional<bool>(),
                                                std::optional<bool>(true),
                                                std::optional<bool>(false)};
+
+  // Determine and log one CameraCaptureCapability per device.
+  if (user_media_request->MediaRequestType() ==
+          UserMediaRequestType::kUserMedia &&
+      user_media_request->VideoMediaStreamType() ==
+          MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+    for (auto& device : capabilities.device_capabilities) {
+      bool has_360p = false;
+      bool has_480p = false;
+      bool has_720p_or_1080p = false;
+      for (const auto& format : device.formats) {
+        if (format.frame_size.width() == 640) {
+          has_360p |= format.frame_size.height() == 360;
+          has_480p |= format.frame_size.height() == 480;
+        }
+        has_720p_or_1080p |= format.frame_size.width() == 1280 &&
+                             format.frame_size.height() == 720;
+        has_720p_or_1080p |= format.frame_size.width() == 1920 &&
+                             format.frame_size.height() == 1080;
+      }
+      if (has_720p_or_1080p) {
+        if (has_360p) {
+          if (has_480p) {
+            LogCameraCaptureCapability(
+                CameraCaptureCapability::kHdOrFullHd_360p_480p);
+          } else {
+            LogCameraCaptureCapability(
+                CameraCaptureCapability::kHdOrFullHd_360p);
+          }
+        } else {
+          if (has_480p) {
+            LogCameraCaptureCapability(
+                CameraCaptureCapability::kHdOrFullHd_480p);
+          } else {
+            LogCameraCaptureCapability(CameraCaptureCapability::kHdOrFullHd);
+          }
+        }
+      } else {
+        LogCameraCaptureCapability(
+            CameraCaptureCapability::kHdAndFullHdMissing);
+      }
+    }
+  }
+
+  // Do constraints processing.
   if (ShouldDeferDeviceSettingsSelection(
           user_media_request->MediaRequestType(),
           user_media_request->VideoMediaStreamType())) {

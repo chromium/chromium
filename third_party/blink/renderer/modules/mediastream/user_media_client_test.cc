@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
@@ -200,6 +201,7 @@ class FakeDeviceIds {
   const String audio_input_2 = MakeValidDeviceId("fakeaudioinput2");
   const String video_input_1 = MakeValidDeviceId("fakevideoinput1");
   const String video_input_2 = MakeValidDeviceId("fakevideoinput2");
+  const String video_input_3 = MakeValidDeviceId("fakevideoinput3");
 };
 
 class MediaDevicesDispatcherHostMock
@@ -281,8 +283,23 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED_IN_MIGRATION();
   }
 
+  void SetVideoInputCapabilities(
+      Vector<blink::mojom::blink::VideoInputDeviceCapabilitiesPtr>
+          capabilities) {
+    video_input_capabilities_ = std::move(capabilities);
+  }
+
   void GetVideoInputCapabilities(
       GetVideoInputCapabilitiesCallback client_callback) override {
+    if (!video_input_capabilities_.empty()) {
+      // blink::mojom::blink::VideoInputDeviceCapabilitiesPtr disallows copy so
+      // we move our capabilities.
+      std::move(client_callback).Run(std::move(video_input_capabilities_));
+      // Clear moved `video_input_capabilities_`.
+      video_input_capabilities_ =
+          Vector<blink::mojom::blink::VideoInputDeviceCapabilitiesPtr>();
+      return;
+    }
     blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device =
         blink::mojom::blink::VideoInputDeviceCapabilities::New();
     device->device_id = FakeDeviceIds::GetInstance()->video_input_1;
@@ -405,6 +422,10 @@ class MockMediaDevicesDispatcherHost
       media::AudioParameters::UnavailableDeviceParams();
   raw_ptr<blink::MediaStreamVideoSource, DanglingUntriaged> video_source_ =
       nullptr;
+  // If set, overrides the default ones otherwise returned by
+  // GetVideoInputCapabilities()
+  Vector<blink::mojom::blink::VideoInputDeviceCapabilitiesPtr>
+      video_input_capabilities_;
 };
 
 enum RequestState {
@@ -1385,6 +1406,119 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
   // does not have any mode that can produce 2000x2000.
   ApplyConstraintsVideoMode(track, 2000, 2000);
   CheckVideoSourceAndTrack(source, 800, 600, 30.0, component, 800, 600, 30.0);
+}
+
+TEST_F(UserMediaClientTest, CameraCaptureCapabilityHistograms) {
+  // With two HD/FullHD capable devices.
+  {
+    base::HistogramTester histogram_tester;
+
+    Vector<blink::mojom::blink::VideoInputDeviceCapabilitiesPtr> capabilities;
+    // The first device supports 360p and 720p.
+    blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device1 =
+        blink::mojom::blink::VideoInputDeviceCapabilities::New();
+    device1->device_id = FakeDeviceIds::GetInstance()->video_input_1;
+    device1->group_id = String("dummy1");
+    device1->facing_mode = mojom::blink::FacingMode::kUser;
+    device1->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 360), 30.0f, media::PIXEL_FORMAT_NV12));
+    device1->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(1280, 720), 30.0f, media::PIXEL_FORMAT_NV12));
+    capabilities.push_back(std::move(device1));
+    // The second device supports 480p and 1080p.
+    blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device2 =
+        blink::mojom::blink::VideoInputDeviceCapabilities::New();
+    device2->device_id = FakeDeviceIds::GetInstance()->video_input_2;
+    device2->group_id = String("dummy2");
+    device2->facing_mode = mojom::blink::FacingMode::kUser;
+    device2->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0f, media::PIXEL_FORMAT_NV12));
+    device2->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(1920, 1080), 30.0f, media::PIXEL_FORMAT_NV12));
+    capabilities.push_back(std::move(device2));
+    media_devices_dispatcher_.SetVideoInputCapabilities(
+        std::move(capabilities));
+
+    // Perform getUserMedia() and verify one camera capability value per device.
+    RequestLocalVideoTrack();
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd, 0);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_360p, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_480p, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_360p_480p, 0);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdAndFullHdMissing, 0);
+  }
+
+  // With three devices: No HD, HD with both 360p and 480p, and HD with neither.
+  {
+    base::HistogramTester histogram_tester;
+
+    Vector<blink::mojom::blink::VideoInputDeviceCapabilitiesPtr> capabilities;
+    // The first device supports 360p and 480p.
+    blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device1 =
+        blink::mojom::blink::VideoInputDeviceCapabilities::New();
+    device1->device_id = FakeDeviceIds::GetInstance()->video_input_1;
+    device1->group_id = String("dummy1");
+    device1->facing_mode = mojom::blink::FacingMode::kUser;
+    device1->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 360), 30.0f, media::PIXEL_FORMAT_NV12));
+    device1->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0f, media::PIXEL_FORMAT_NV12));
+    capabilities.push_back(std::move(device1));
+    // The second device supports 360p, 480p and 720p.
+    blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device2 =
+        blink::mojom::blink::VideoInputDeviceCapabilities::New();
+    device2->device_id = FakeDeviceIds::GetInstance()->video_input_2;
+    device2->group_id = String("dummy2");
+    device2->facing_mode = mojom::blink::FacingMode::kUser;
+    device2->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 360), 30.0f, media::PIXEL_FORMAT_NV12));
+    device2->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0f, media::PIXEL_FORMAT_NV12));
+    device2->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(1280, 720), 30.0f, media::PIXEL_FORMAT_NV12));
+    capabilities.push_back(std::move(device2));
+    // The third device supports 720p and 1080p.
+    blink::mojom::blink::VideoInputDeviceCapabilitiesPtr device3 =
+        blink::mojom::blink::VideoInputDeviceCapabilities::New();
+    device3->device_id = FakeDeviceIds::GetInstance()->video_input_3;
+    device3->group_id = String("dummy3");
+    device3->facing_mode = mojom::blink::FacingMode::kUser;
+    device3->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(1280, 720), 30.0f, media::PIXEL_FORMAT_NV12));
+    device3->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(1920, 1080), 30.0f, media::PIXEL_FORMAT_NV12));
+    capabilities.push_back(std::move(device3));
+    media_devices_dispatcher_.SetVideoInputCapabilities(
+        std::move(capabilities));
+
+    // Perform getUserMedia() and verify one camera capability value per device.
+    RequestLocalVideoTrack();
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_360p, 0);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_480p, 0);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdOrFullHd_360p_480p, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.MediaDevices.GetUserMedia.CameraCaptureCapability",
+        CameraCaptureCapability::kHdAndFullHdMissing, 1);
+  }
 }
 
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
