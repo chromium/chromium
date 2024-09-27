@@ -15,6 +15,7 @@ android_library("java") {
 android_library("delegate_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegateFactory.java",
     "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegateImpl.java",
   ]
 
