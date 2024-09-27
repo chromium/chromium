@@ -19,11 +19,10 @@ void DataSharingTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
   data_sharing::DataSharingService* data_sharing_service =
-      data_sharing::DataSharingServiceFactory::GetForBrowserState(
-          chrome_browser_state);
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 
   GURL url = net::GURLWithNSURL(request.URL);
   if (data_sharing_service &&

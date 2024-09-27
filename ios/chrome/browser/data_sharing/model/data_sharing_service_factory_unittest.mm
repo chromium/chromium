@@ -30,43 +30,43 @@ class DataSharingServiceFactoryTest : public PlatformTest {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {}, {{data_sharing::features::kDataSharingFeature}});
     }
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(DataSharingServiceFactory::GetInstance(),
                               DataSharingServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
   }
 
   void TearDown() override { web_task_env_.RunUntilIdle(); }
 
   web::WebTaskEnvironment web_task_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(DataSharingServiceFactoryTest, FeatureEnabledUsesRealService) {
   InitService(/*enable_feature=*/true);
   DataSharingService* service =
-      DataSharingServiceFactory::GetForBrowserState(browser_state_.get());
+      DataSharingServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service->IsEmptyService());
 }
 
 TEST_F(DataSharingServiceFactoryTest, FeatureDisabledUsesEmptyService) {
   InitService(/*enable_feature=*/false);
   DataSharingService* service =
-      DataSharingServiceFactory::GetForBrowserState(browser_state_.get());
+      DataSharingServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(service->IsEmptyService());
 }
 
 TEST_F(DataSharingServiceFactoryTest,
        FeatureEnabledUsesEmptyServiceInIncognito) {
   InitService(/*enable_feature=*/true);
-  raw_ptr<ChromeBrowserState> otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-          {TestChromeBrowserState::TestingFactory{
+  raw_ptr<ProfileIOS> otr_profile =
+      profile_->CreateOffTheRecordProfileWithTestingFactories(
+          {TestProfileIOS::TestingFactory{
               DataSharingServiceFactory::GetInstance(),
               DataSharingServiceFactory::GetDefaultFactory()}});
   DataSharingService* service =
-      DataSharingServiceFactory::GetForBrowserState(otr_browser_state);
+      DataSharingServiceFactory::GetForProfile(otr_profile);
   EXPECT_TRUE(service->IsEmptyService());
 }
 
