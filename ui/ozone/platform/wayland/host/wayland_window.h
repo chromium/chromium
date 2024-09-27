@@ -292,11 +292,12 @@ class WaylandWindow : public PlatformWindow,
   virtual void HandleToplevelConfigure(int32_t width,
                                        int32_t height,
                                        const WindowStates& window_states);
-  virtual void HandleAuraToplevelConfigure(int32_t x,
-                                           int32_t y,
-                                           int32_t width,
-                                           int32_t height,
-                                           const WindowStates& window_states);
+  virtual void HandleToplevelConfigureWithOrigin(
+      int32_t x,
+      int32_t y,
+      int32_t width,
+      int32_t height,
+      const WindowStates& window_states);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
 
   // Call when we get a new frame produced from viz with |seq| sequence ID.

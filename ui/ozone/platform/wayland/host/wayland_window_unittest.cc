@@ -1009,7 +1009,7 @@ TEST_P(WaylandWindowTest, ClientInitiatedMinimize) {
   {
     WaylandWindow::WindowStates window_states;
     window_states.is_minimized = true;
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+    window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
   }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
@@ -1035,7 +1035,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedMinimize) {
   {
     WaylandWindow::WindowStates window_states;
     window_states.is_minimized = true;
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+    window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
   }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
@@ -1106,7 +1106,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
   {
     WaylandWindow::WindowStates window_states;
     window_states.is_minimized = true;
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+    window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
   }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
@@ -1116,7 +1116,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
     // minimized a restore event from the server should return the window to the
     // normal state.
     EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {});
+    window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, {});
     window_->HandleSurfaceConfigure(4);
     EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   } else {
@@ -1124,7 +1124,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
     // event with no window activation should not restore the window. It should
     // instead leave the window in the minimized state.
     EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {});
+    window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, {});
     window_->HandleSurfaceConfigure(4);
     EXPECT_EQ(PlatformWindowState::kMinimized,
               window_->GetPlatformWindowState());
@@ -2160,16 +2160,16 @@ TEST_P(WaylandWindowTest,
   // Configure window and expect the state to be applied. Use a hidden
   // occlusion state.
   window_->SetPendingOcclusionState(PlatformWindowOcclusionState::kHidden);
-  window_->HandleAuraToplevelConfigure(0, 0, size.width(), size.height(),
-                                       window_states);
+  window_->HandleToplevelConfigureWithOrigin(0, 0, size.width(), size.height(),
+                                             window_states);
   window_->HandleSurfaceConfigure(serial);
   EXPECT_EQ(size, window_->applied_state().bounds_dip.size());
 
   // Send enough configures without any frame occurring to cause throttling.
   for (int i = 1; i < 10; ++i) {
     size.Enlarge(1, 1);
-    window_->HandleAuraToplevelConfigure(0, 0, size.width(), size.height(),
-                                         window_states);
+    window_->HandleToplevelConfigureWithOrigin(0, 0, size.width(),
+                                               size.height(), window_states);
     window_->HandleSurfaceConfigure(++serial);
   }
   // Confirm throttling has occurred - we expect `applied_state()` to have
@@ -2211,9 +2211,9 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
   {
     WaylandWindow::WindowStates window_states;
     window_states.is_activated = true;
-    window_->HandleAuraToplevelConfigure(kSecondBounds.x(), kSecondBounds.y(),
-                                         kSecondBounds.width(),
-                                         kSecondBounds.height(), window_states);
+    window_->HandleToplevelConfigureWithOrigin(
+        kSecondBounds.x(), kSecondBounds.y(), kSecondBounds.width(),
+        kSecondBounds.height(), window_states);
   }
   window_->HandleSurfaceConfigure(kConfigureSerial);
 
@@ -4464,7 +4464,7 @@ TEST_P(WaylandWindowTest, InitialBounds) {
     window_states.is_maximized = false;
     window_states.is_fullscreen = false;
     window_states.is_activated = true;
-    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+    toplevel->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
   }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), toplevel->GetBoundsInDIP());
@@ -4480,7 +4480,7 @@ TEST_P(WaylandWindowTest, PrimarySnappedState) {
     window_states.is_fullscreen = false;
     window_states.is_activated = true;
     window_states.is_snapped_primary = true;
-    toplevel->HandleAuraToplevelConfigure(0, 0, 100, 200, window_states);
+    toplevel->HandleToplevelConfigureWithOrigin(0, 0, 100, 200, window_states);
   }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(0, 0, 100, 200), toplevel->GetBoundsInDIP());
@@ -4496,7 +4496,8 @@ TEST_P(WaylandWindowTest, SecondarySnappedState) {
     window_states.is_fullscreen = false;
     window_states.is_activated = true;
     window_states.is_snapped_secondary = true;
-    toplevel->HandleAuraToplevelConfigure(100, 0, 100, 200, window_states);
+    toplevel->HandleToplevelConfigureWithOrigin(100, 0, 100, 200,
+                                                window_states);
   }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(100, 0, 100, 200), toplevel->GetBoundsInDIP());
@@ -4921,7 +4922,7 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
     {
       WaylandWindow::WindowStates window_states;
       window_states.is_minimized = true;
-      window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+      window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
     }
     window_->HandleSurfaceConfigure(3);
     EXPECT_EQ(window_->GetPlatformWindowState(),

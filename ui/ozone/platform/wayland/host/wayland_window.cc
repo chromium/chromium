@@ -847,7 +847,7 @@ void WaylandWindow::HandleToplevelConfigure(int32_t widht,
       << "Only shell toplevels must receive HandleToplevelConfigure calls.";
 }
 
-void WaylandWindow::HandleAuraToplevelConfigure(
+void WaylandWindow::HandleToplevelConfigureWithOrigin(
     int32_t x,
     int32_t y,
     int32_t width,

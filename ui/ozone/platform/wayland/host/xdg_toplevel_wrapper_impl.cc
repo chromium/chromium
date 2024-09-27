@@ -410,8 +410,8 @@ void XDGToplevelWrapperImpl::OnAuraToplevelConfigure(
   window_states.is_pip =
       CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_PIP);
 
-  self->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height,
-                                                     window_states);
+  self->wayland_window_->HandleToplevelConfigureWithOrigin(x, y, width, height,
+                                                           window_states);
 }
 
 // static

@@ -79,11 +79,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   void HandleToplevelConfigure(int32_t width,
                                int32_t height,
                                const WindowStates& window_states) override;
-  void HandleAuraToplevelConfigure(int32_t x,
-                                   int32_t y,
-                                   int32_t width,
-                                   int32_t height,
-                                   const WindowStates& window_states) override;
+  void HandleToplevelConfigureWithOrigin(
+      int32_t x,
+      int32_t y,
+      int32_t width,
+      int32_t height,
+      const WindowStates& window_states) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
   void OnSequencePoint(int64_t seq) override;
   bool IsSurfaceConfigured() override;

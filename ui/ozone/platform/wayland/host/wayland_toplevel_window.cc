@@ -569,10 +569,10 @@ void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,
     const WindowStates& window_states) {
-  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip, window_states);
+  HandleToplevelConfigureWithOrigin(0, 0, width_dip, height_dip, window_states);
 }
 
-void WaylandToplevelWindow::HandleAuraToplevelConfigure(
+void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     int32_t x,
     int32_t y,
     int32_t width_dip,
