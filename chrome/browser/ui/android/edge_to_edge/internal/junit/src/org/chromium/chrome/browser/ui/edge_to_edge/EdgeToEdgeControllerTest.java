@@ -39,12 +39,14 @@ import androidx.core.view.WindowInsetsCompat;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -112,9 +114,13 @@ public class EdgeToEdgeControllerTest {
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
 
-    private ObservableSupplierImpl<Tab> mTabProvider;
+    private final ObservableSupplierImpl<Tab> mTabProvider = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier =
+            new ObservableSupplierImpl<>();
 
     private UserDataHost mTabDataHost = new UserDataHost();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private InsetObserver mInsetObserver;
@@ -149,12 +155,11 @@ public class EdgeToEdgeControllerTest {
         ChromeFeatureList.sEdgeToEdgeWebOptIn.setForTesting(true);
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
 
-        MockitoAnnotations.openMocks(this);
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WINDOW_INSETS);
 
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
-        mTabProvider = new ObservableSupplierImpl<>();
+        mLayoutManagerSupplier.set(mLayoutManager);
 
         doNothing().when(mTab).addObserver(any());
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
@@ -179,7 +184,7 @@ public class EdgeToEdgeControllerTest {
                         mTabProvider,
                         mOsWrapper,
                         mBrowserControlsStateProvider,
-                        mLayoutManager,
+                        mLayoutManagerSupplier,
                         mFullscreenManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
         verify(mOsWrapper, times(1)).setDecorFitsSystemWindows(any(), eq(false));
@@ -198,7 +203,6 @@ public class EdgeToEdgeControllerTest {
     public void tearDown() {
         mEdgeToEdgeControllerImpl.destroy();
         mEdgeToEdgeControllerImpl = null;
-        mTabProvider = null;
     }
 
     @Test
@@ -361,7 +365,7 @@ public class EdgeToEdgeControllerTest {
                                 mWindowAndroid,
                                 liveSupplier,
                                 mBrowserControlsStateProvider,
-                                mLayoutManager,
+                                mLayoutManagerSupplier,
                                 mFullscreenManager);
         assertNotNull(liveController);
         liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
@@ -468,6 +472,21 @@ public class EdgeToEdgeControllerTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
         assertToEdgeExpectations();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testLayoutManagerChanged() {
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(false);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
+        assertToEdgeExpectations();
+
+        mLayoutManagerSupplier.set(null);
+        assertToNormalExpectations();
     }
 
     @Test

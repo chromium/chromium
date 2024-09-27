@@ -229,6 +229,9 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+            return true;
+        }
         if (!isEdgeToEdgeWebOptInEnabled()) {
             return false;
         }

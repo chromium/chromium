@@ -24,10 +24,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -69,6 +71,8 @@ public class BottomControlsMediatorTest {
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
                     .build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
@@ -91,7 +95,6 @@ public class BottomControlsMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
         doReturn(SYSTEM_BARS_WINDOW_INSETS).when(mInsetObserver).getLastRawWindowInsets();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
@@ -168,7 +171,7 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager,
+                        new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
@@ -199,7 +202,7 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager,
+                        new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,

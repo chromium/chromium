@@ -46,7 +46,8 @@ public class EdgeToEdgeControllerFactory {
      *     changes.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
      *     if the Toolbar is changing.
-     * @param layoutManager The {@link LayoutManager} for checking the active layout type.
+     * @param layoutManagerSupplier The supplier of {@link LayoutManager} for checking the active
+     *     layout type.
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
@@ -55,7 +56,7 @@ public class EdgeToEdgeControllerFactory {
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            LayoutManager layoutManager,
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert isSupportedConfiguration(activity);
@@ -65,7 +66,7 @@ public class EdgeToEdgeControllerFactory {
                 tabObservableSupplier,
                 null,
                 browserControlsStateProvider,
-                layoutManager,
+                layoutManagerSupplier,
                 fullscreenManager);
     }
 

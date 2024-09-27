@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -894,12 +893,7 @@ public class RootUiCoordinator
         initScrollCapture();
 
         // TODO(crbug.com/350610430) Potentially create the E2EController earlier during startup
-        initializeEdgeToEdgeController(
-                mActivity,
-                mActivityTabProvider,
-                mEdgeToEdgeControllerSupplier,
-                mBrowserControlsManager,
-                mLayoutManager);
+        initializeEdgeToEdgeController();
         initBoardingPassDetector();
 
         if (EphemeralTabCoordinator.isSupported()) {
@@ -1954,13 +1948,9 @@ public class RootUiCoordinator
     }
 
     /** Setup drawing using Android Edge-to-Edge. */
-    protected void initializeEdgeToEdgeController(
-            Activity activity,
-            ActivityTabProvider activityTabProvider,
-            ObservableSupplierImpl<EdgeToEdgeController> supplier,
-            BrowserControlsManager browserControlsManager,
-            LayoutManager layoutManager) {
-        boolean eligible = EdgeToEdgeUtils.recordEligibility(activity);
+    @CallSuper
+    protected void initializeEdgeToEdgeController() {
+        boolean eligible = EdgeToEdgeUtils.recordEligibility(mActivity);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
@@ -1968,13 +1958,13 @@ public class RootUiCoordinator
         if (supportsEdgeToEdge()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
-                            activity,
+                            mActivity,
                             mWindowAndroid,
-                            activityTabProvider,
-                            browserControlsManager,
-                            layoutManager,
+                            mActivityTabProvider,
+                            mBrowserControlsManager,
+                            mLayoutManagerSupplier,
                             mFullscreenManager);
-            supplier.set(mEdgeToEdgeController);
+            mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
                 mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
