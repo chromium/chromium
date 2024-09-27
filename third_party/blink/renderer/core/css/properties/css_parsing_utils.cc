@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 #include <cmath>
@@ -519,8 +514,8 @@ bool ConsumeBorderRadiusCommon(CSSParserTokenStream& args,
                                const CSSParserContext& context,
                                U* shape) {
   if (ConsumeIdent<CSSValueID::kRound>(args)) {
-    CSSValue* horizontal_radii[4] = {nullptr};
-    CSSValue* vertical_radii[4] = {nullptr};
+    std::array<CSSValue*, 4> horizontal_radii = {nullptr};
+    std::array<CSSValue*, 4> vertical_radii = {nullptr};
     if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false)) {
       return false;
     }
@@ -611,7 +606,7 @@ cssvalue::CSSBasicShapeRectValue* ConsumeBasicShapeRect(
 cssvalue::CSSBasicShapeXYWHValue* ConsumeBasicShapeXYWH(
     CSSParserTokenStream& args,
     const CSSParserContext& context) {
-  CSSPrimitiveValue* lengths[4];
+  std::array<CSSPrimitiveValue*, 4> lengths;
   for (size_t i = 0; i < 4; i++) {
     // The last 2 values are width/height which must be positive.
     auto value_range = i > 1 ? CSSPrimitiveValue::ValueRange::kNonNegative
@@ -896,7 +891,7 @@ bool IsImageSet(const CSSValueID id) {
 
 }  // namespace
 
-void Complete4Sides(CSSValue* side[4]) {
+void Complete4Sides(std::array<CSSValue*, 4>& side) {
   if (side[3]) {
     return;
   }
@@ -2267,9 +2262,10 @@ static void PositionFromTwoValues(CSSValue* value1,
   }
 }
 
-static void PositionFromThreeOrFourValues(CSSValue** values,
-                                          CSSValue*& result_x,
-                                          CSSValue*& result_y) {
+static void PositionFromThreeOrFourValues(
+    const std::array<CSSValue*, 5>& values,
+    CSSValue*& result_x,
+    CSSValue*& result_y) {
   CSSIdentifierValue* center = nullptr;
   for (int i = 0; values[i]; i++) {
     auto* current_value = To<CSSIdentifierValue>(values[i]);
@@ -2386,12 +2382,7 @@ bool ConsumePosition(CSSParserTokenStream& stream,
     context.Count(*three_value_position);
   }
 
-  CSSValue* values[5];
-  values[0] = value1;
-  values[1] = value2;
-  values[2] = value3;
-  values[3] = value4;
-  values[4] = nullptr;
+  std::array<CSSValue*, 5> values = {value1, value2, value3, value4, nullptr};
   PositionFromThreeOrFourValues(values, result_x, result_y);
   return true;
 }
@@ -3797,8 +3788,7 @@ bool ConsumeShorthandGreedilyViaLonghands(
     bool use_initial_value_function) {
   // Existing shorthands have at most 6 longhands.
   DCHECK_LE(shorthand.length(), 6u);
-  const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
-                                  nullptr, nullptr, nullptr};
+  std::array<const CSSValue*, 6> longhands = {nullptr};
   const StylePropertyShorthand::Properties& shorthand_properties =
       shorthand.properties();
   bool found_any = false;
@@ -4262,7 +4252,7 @@ bool ConsumeAnimationShorthand(
   }
 
   do {
-    bool parsed_longhand[kMaxNumAnimationLonghands] = {false};
+    std::array<bool, kMaxNumAnimationLonghands> parsed_longhand = {false};
     bool found_any = false;
     do {
       bool found_property = false;
@@ -4642,13 +4632,13 @@ bool ParseBackgroundOrMask(bool important,
                                                  : maskShorthand();
 
   const unsigned longhand_count = shorthand.length();
-  HeapVector<Member<const CSSValue>, 4> longhands[10];
+  std::array<HeapVector<Member<const CSSValue>, 4>, 10> longhands;
   CHECK_LE(longhand_count, 10u);
 
   bool implicit = false;
   bool previous_layer_had_background_color = false;
   do {
-    bool parsed_longhand[10] = {false};
+    std::array<bool, 10> parsed_longhand = {false};
     CSSValue* origin_value = nullptr;
     bool found_property;
     bool found_any = false;
@@ -4884,7 +4874,7 @@ CSSValue* ConsumeBorderImageSlice(CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   DefaultFill default_fill) {
   bool fill = ConsumeIdent<CSSValueID::kFill>(stream);
-  CSSValue* slices[4] = {nullptr};
+  std::array<CSSValue*, 4> slices = {nullptr};
 
   for (size_t index = 0; index < 4; ++index) {
     CSSPrimitiveValue* value = ConsumePercent(
@@ -4920,7 +4910,7 @@ CSSValue* ConsumeBorderImageSlice(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeBorderImageWidth(CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
-  CSSValue* widths[4] = {nullptr};
+  std::array<CSSValue*, 4> widths = {nullptr};
 
   CSSValue* value = nullptr;
   for (size_t index = 0; index < 4; ++index) {
@@ -4952,7 +4942,7 @@ CSSValue* ConsumeBorderImageWidth(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeBorderImageOutset(CSSParserTokenStream& stream,
                                    const CSSParserContext& context) {
-  CSSValue* outsets[4] = {nullptr};
+  std::array<CSSValue*, 4> outsets = {nullptr};
 
   CSSValue* value = nullptr;
   for (size_t index = 0; index < 4; ++index) {
@@ -6850,8 +6840,8 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
   return nullptr;
 }
 
-bool ConsumeRadii(CSSValue* horizontal_radii[4],
-                  CSSValue* vertical_radii[4],
+bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
+                  std::array<CSSValue*, 4>& vertical_radii,
                   CSSParserTokenStream& stream,
                   const CSSParserContext& context,
                   bool use_legacy_parsing) {
@@ -7529,7 +7519,8 @@ namespace {
 // Returns true if anything was set in `flip`.
 //
 // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
-bool ConsumeFlipsInto(CSSParserTokenStream& stream, CSSValue* (&flips)[3]) {
+bool ConsumeFlipsInto(CSSParserTokenStream& stream,
+                      std::array<CSSValue*, 3>& flips) {
   bool seen_flip_block = false;
   bool seen_flip_inline = false;
   bool seen_flip_start = false;
@@ -7565,7 +7556,7 @@ bool ConsumeFlipsInto(CSSParserTokenStream& stream, CSSValue* (&flips)[3]) {
 CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   CSSValue* dashed_ident = nullptr;
-  CSSValue* flips[3] = {nullptr};
+  std::array<CSSValue*, 3> flips = {nullptr};
   while (!stream.AtEnd()) {
     if (!dashed_ident && (dashed_ident = ConsumeDashedIdent(stream, context))) {
       continue;
