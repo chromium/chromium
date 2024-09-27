@@ -209,9 +209,11 @@ class TabSearchPageHandler
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
-  tab_search::mojom::TabPtr GetTab(const TabStripModel* tab_strip_model,
-                                   content::WebContents* contents,
-                                   int index) const;
+  tab_search::mojom::TabPtr GetTab(
+      const TabStripModel* tab_strip_model,
+      content::WebContents* contents,
+      int index,
+      std::string custom_last_active_text = "") const;
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
       sessions::tab_restore::Tab* tab,
       const base::Time& close_time);

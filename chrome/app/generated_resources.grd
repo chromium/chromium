@@ -9693,6 +9693,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for tab declutter -->
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+        {NUM_TABS, plural,
+          =0 {No unused tabs}
+          =1 {Close 1 unused tab}
+          other {Close # unused tabs}}
+      </message>
+      <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
+        Review and decide
+      </message>
+      <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
+        Close unused tabs
+      </message>
+      <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
+        These tabs have been unused for <ph name="COUNT">$1<ex>7</ex></ph> or more days.
+      </message>
       <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
         Close unused tabs?
       </message>
@@ -9701,6 +9716,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Close unused tabs
+      </message>
+      <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
+        {NUM_DAYS, plural,
+          =0 {Visited 0 days ago}
+          =1 {Visited 1 day ago}
+          other {Visited # days ago}}
       </message>
 
       <!-- Strings for tab organization -->
@@ -11540,21 +11561,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING" desc="Subheading for the auto tab groups button in the tab organization selector.">
         Check for suggestions
-      </message>
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
-        {NUM_TABS, plural,
-          =0 {No unused tabs}
-          =1 {Close 1 unused tab}
-          other {Close # unused tabs}}
-      </message>
-      <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
-        Review and decide
-      </message>
-      <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
-        Close unused tabs
-      </message>
-      <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
-        These tabs have been unused for <ph name="COUNT">$1<ex>7</ex></ph> or more days.
       </message>
 
       <!-- Strings for Window Titles in Menus -->

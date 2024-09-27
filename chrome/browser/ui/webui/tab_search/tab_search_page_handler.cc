@@ -88,6 +88,13 @@ std::string GetLastActiveElapsedText(const base::Time& last_active_time) {
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
 }
 
+std::string GetLastActiveElapsedTextForDeclutter(
+    const base::Time& last_active_time) {
+  const base::TimeDelta elapsed = base::Time::Now() - last_active_time;
+  return l10n_util::GetPluralStringFUTF8(IDS_DECLUTTER_TIMESTAMP,
+                                         elapsed.InDays());
+}
+
 // If Tab Group has no timestamp, we find the tab in the tab group with
 // the most recent navigation last active time.
 base::Time GetTabGroupTimeStamp(
@@ -868,7 +875,10 @@ std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
   for (tabs::TabModel* tab_model : stale_tabs) {
     const int tab_index =
         tab_strip_model->GetIndexOfWebContents(tab_model->contents());
-    tabs.push_back(GetTab(tab_strip_model, tab_model->contents(), tab_index));
+    const std::string last_active_text = GetLastActiveElapsedTextForDeclutter(
+        tab_model->contents()->GetLastActiveTime());
+    tabs.push_back(GetTab(tab_strip_model, tab_model->contents(), tab_index,
+                          last_active_text));
   }
 
   return tabs;
@@ -1036,7 +1046,8 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     const TabStripModel* tab_strip_model,
     content::WebContents* contents,
-    int index) const {
+    int index,
+    std::string custom_last_active_text) const {
   auto tab_data = tab_search::mojom::Tab::New();
 
   tab_data->active = tab_strip_model->active_index() == index;
@@ -1090,8 +1101,9 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   // view pops up. To make it consistent, override the string to something
   // constant.
   tab_data->last_active_elapsed_text =
-      disable_last_active_time_for_testing_
-          ? "0"
+      disable_last_active_time_for_testing_ ? "0"
+      : custom_last_active_text.length() > 0
+          ? custom_last_active_text
           : GetLastActiveElapsedText(last_active_time_ticks);
 
   std::vector<TabAlertState> alert_states =
