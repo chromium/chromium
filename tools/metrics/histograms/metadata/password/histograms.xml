@@ -920,6 +920,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BiometricAvailabilityChromeOS"
+    enum="BiometricsStatusChromeOS" expires_after="2025-02-10">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Recorded any time a client of AuthenticatorChromeOS requests to check
+    biometric availability.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BiometricAvailabilityWin"
     enum="BiometricAuthenticationStatusWin" expires_after="2025-02-10">
   <owner>vasilii@chromium.org</owner>

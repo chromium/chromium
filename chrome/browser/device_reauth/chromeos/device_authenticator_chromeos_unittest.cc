@@ -199,6 +199,7 @@ struct TestCase {
   const char* description;
   BiometricsStatusChromeOS availability;
   bool expected_result;
+  int expected_bucket;
 };
 
 class DeviceAuthenticatorChromeOSTestAvailability
@@ -216,6 +217,9 @@ TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
   EXPECT_EQ(test_case.expected_result,
             local_state().Get()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.BiometricAvailabilityChromeOS",
+      test_case.expected_bucket, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -226,21 +230,20 @@ INSTANTIATE_TEST_SUITE_P(
             .description = "kAvailable",
             .availability = BiometricsStatusChromeOS::kAvailable,
             .expected_result = true,
+            .expected_bucket = 1,
         },
         TestCase{
             .description = "kUnavailable",
             .availability = BiometricsStatusChromeOS::kUnavailable,
             .expected_result = false,
+            .expected_bucket = 2,
+
         },
         TestCase{
             .description = "kNotConfiguredForUser",
             .availability = BiometricsStatusChromeOS::kNotConfiguredForUser,
             .expected_result = false,
-        },
-        TestCase{
-            .description = "Feature not enabled",
-            .availability = BiometricsStatusChromeOS::kUnavailable,
-            .expected_result = false,
+            .expected_bucket = 3,
         }));
 #endif
 }  // namespace
