@@ -604,9 +604,19 @@ def _RunCompiler(changes,
           # As a build speed optimization (crbug.com/1170778), re-compile only
           # java files which have changed. Re-use old jar .info file.
           java_files = list(changes.IterChangedPaths())
+
+          # Disable srcjar extraction, since we know the srcjar didn't show as
+          # changed (only .java files).
           java_srcjars = None
 
-          build_utils.ExtractAll(jar_path, classes_dir, pattern='*.class')
+          # @ServiceImpl has class retention, so will alter header jars when
+          # modified (and hence not reach this block).
+          # Likewise, nothing in .info files can change if header jar did not
+          # change.
+          parse_java_files = False
+
+          # Extracts .class as well as META-INF/services.
+          build_utils.ExtractAll(jar_path, classes_dir)
 
     if intermediates_out_dir is None:
       intermediates_out_dir = temp_dir
