@@ -41,6 +41,11 @@ void RecordPaintCanvas::DisableLineDrawingAsPaths() {
   draw_path_count_ = draw_line_count_ = 0;
 }
 
+PaintRecord RecordPaintCanvas::CopyAsRecord() {
+  needs_flush_ = false;
+  return buffer_.DeepCopyAsRecord();
+}
+
 template <typename T, typename... Args>
 void RecordPaintCanvas::push(Args&&... args) {
 #if DCHECK_IS_ON()

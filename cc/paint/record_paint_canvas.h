@@ -36,7 +36,12 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
 
+  // Returns the set of paint ops recorded so far and clears it from the
+  // internal buffer maintained by the canvas.
   virtual PaintRecord ReleaseAsRecord();
+  // Returns the set of paint ops recorded so far without clearing it from the
+  // internal buffer.
+  virtual PaintRecord CopyAsRecord();
 
   // See comments around `maybe_draw_lines_as_paths_` for details.
   void DisableLineDrawingAsPaths();
