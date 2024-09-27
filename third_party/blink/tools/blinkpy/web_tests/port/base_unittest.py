@@ -1915,6 +1915,31 @@ class PortTest(LoggingTestCase):
         self.assertTrue("virtual/v2/test/test.html" in port.tests())
         self.assertTrue("virtual/v3/test/test.html" in port.tests())
 
+    def test_virtual_test_disabled(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-a"], "disabled": false},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-b"], "disabled": true},'
+            '{"prefix": "v3", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-c"]}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'test', 'test.html'), '')
+
+        self.assertFalse(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v1/test/test.html"))
+        self.assertTrue(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v2/test/test.html"))
+        self.assertFalse(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v3/test/test.html"))
+
     def test_virtual_exclusive_tests(self):
         port = self.make_port()
         fs = port.host.filesystem

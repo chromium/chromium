@@ -1663,6 +1663,7 @@ class Port(object):
         return (self.skipped_due_to_smoke_tests(test)
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test)
+                or self.virtual_test_skipped_due_to_disabled(test)
                 or self.skipped_due_to_exclusive_virtual_tests(test)
                 or self.skipped_due_to_skip_base_tests(test))
 
@@ -1763,6 +1764,17 @@ class Port(object):
         suite = self._lookup_virtual_suite(test)
         if suite is not None:
             return self.operating_system() not in suite.platforms
+        return False
+
+    def virtual_test_skipped_due_to_disabled(self, test):
+        """Checks if the virtual test is skipped based on the 'disabled' config.
+
+        Returns True if the virtual test is marked as disabled, due to config in
+        VirtualTestSuites; returns False otherwise.
+        """
+        suite = self._lookup_virtual_suite(test)
+        if suite is not None:
+            return suite.disabled
         return False
 
     @memoized
@@ -2689,8 +2701,6 @@ class Port(object):
                 # Strings are treated as comments.
                 if isinstance(json_config, str):
                     continue
-                # expired VTSs are loaded and continue to run. We will have a separate
-                # process to delete expired VTSs.
                 vts = VirtualTestSuite(**json_config)
                 if any(vts.full_prefix == s.full_prefix
                        for s in virtual_test_suites):
@@ -3008,7 +3018,8 @@ class VirtualTestSuite(object):
                  skip_base_tests=None,
                  args=None,
                  owners=None,
-                 expires=None):
+                 expires=None,
+                 disabled=False):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
         assert isinstance(platforms, list)
@@ -3034,6 +3045,7 @@ class VirtualTestSuite(object):
         self.exclusive_tests = exclusive_tests
         self.skip_base_tests = skip_base_tests
         self.expires = expires
+        self.disabled = disabled
         self.args = sorted(args)
         self.owners = owners
         # always put --enable-threaded-compositing at the end of list, so that after appending
