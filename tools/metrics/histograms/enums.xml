@@ -10977,6 +10977,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5107" label="V8AIAssistant_CountPromptTokens_Method"/>
   <int value="5108" label="HTMLSearchElement"/>
   <int value="5109" label="HTMLUnsafeMethods"/>
+  <int value="5110"
+      label="V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter"/>
+  <int value="5111" label="MaxInterStageShaderComponentsRequiredLimit"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

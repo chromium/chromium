@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 
+#include <algorithm>
+
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-
-#include <algorithm>
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 #define SUPPORTED_LIMITS(X)                    \
   X(maxTextureDimension1D)                     \
@@ -96,6 +99,11 @@ bool GPUSupportedLimits::Populate(wgpu::RequiredLimits* out,
   // passes all of the limits. It could be O(n) with a mapping of
   // String -> wgpu::Limits::*member.
   for (const auto& [limitName, limitRawValue] : in) {
+    if (limitName == "maxInterStageShaderComponents") {
+      UseCounter::Count(
+          resolver->GetExecutionContext(),
+          WebFeature::kMaxInterStageShaderComponentsRequiredLimit);
+    }
 #define X(name)                                                               \
   if (limitName == #name) {                                                   \
     using T = decltype(wgpu::Limits::name);                                   \
