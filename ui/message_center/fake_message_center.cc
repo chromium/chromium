@@ -110,9 +110,7 @@ void FakeMessageCenter::AddNotification(
   std::string id = notification->id();
   notifications_.AddNotification(std::move(notification));
   visible_notifications_ = notifications_.GetVisibleNotifications(blockers_);
-  for (auto& observer : observers_) {
-    observer.OnNotificationAdded(id);
-  }
+  observers_.Notify(&MessageCenterObserver::OnNotificationAdded, id);
 }
 
 void FakeMessageCenter::UpdateNotification(
@@ -135,9 +133,7 @@ void FakeMessageCenter::RemoveNotification(const std::string& id,
                                            bool by_user) {
   notifications_.RemoveNotification(id);
   visible_notifications_ = notifications_.GetVisibleNotifications(blockers_);
-  for (auto& observer : observers_) {
-    observer.OnNotificationRemoved(id, by_user);
-  }
+  observers_.Notify(&MessageCenterObserver::OnNotificationRemoved, id, by_user);
 }
 
 void FakeMessageCenter::RemoveNotificationsForNotifierId(

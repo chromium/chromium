@@ -351,9 +351,7 @@ ui::Layer* MessageView::GetSlideOutLayer() {
 }
 
 void MessageView::OnSlideStarted() {
-  for (auto& observer : observers_) {
-    observer.OnSlideStarted(notification_id_);
-  }
+  observers_.Notify(&Observer::OnSlideStarted, notification_id_);
 }
 
 void MessageView::OnSlideChanged(bool in_progress) {
@@ -372,11 +370,10 @@ void MessageView::OnSlideChanged(bool in_progress) {
         views::ScrollView::ScrollBarMode::kEnabled);
   }
 
-  for (auto& observer : observers_) {
-    if (in_progress)
-      observer.OnSlideChanged(notification_id_);
-    else
-      observer.OnSlideEnded(notification_id_);
+  if (in_progress) {
+    observers_.Notify(&Observer::OnSlideChanged, notification_id_);
+  } else {
+    observers_.Notify(&Observer::OnSlideEnded, notification_id_);
   }
 }
 
@@ -394,18 +391,14 @@ void MessageView::OnSlideOut() {
 
   // The notification may be deleted after slide out, so give observers a
   // chance to handle the notification before fulling sliding out.
-  for (auto& observer : observers_) {
-    observer.OnPreSlideOut(notification_id_);
-  }
+  observers_.Notify(&Observer::OnPreSlideOut, notification_id_);
 
   // Copy the |notification_id| here as calling OnSlideOut() might destroy
   // |this| but we still want to call RemoveNotification(). Note that the
   // iteration over |observers_| is still safe and will simply stop.
   std::string notification_id_copy = notification_id_;
 
-  for (auto& observer : observers_) {
-    observer.OnSlideOut(notification_id_);
-  }
+  observers_.Notify(&Observer::OnSlideOut, notification_id_);
 
   auto* message_center = MessageCenter::Get();
   if (message_center->FindPopupNotificationById(notification_id_copy)) {
@@ -496,15 +489,13 @@ void MessageView::SetCornerRadius(int top_radius, int bottom_radius) {
 }
 
 void MessageView::OnCloseButtonPressed() {
-  for (auto& observer : observers_)
-    observer.OnCloseButtonPressed(notification_id_);
+  observers_.Notify(&Observer::OnCloseButtonPressed, notification_id_);
   MessageCenter::Get()->RemoveNotification(notification_id_,
                                            true /* by_user */);
 }
 
 void MessageView::OnSettingsButtonPressed(const ui::Event& event) {
-  for (auto& observer : observers_)
-    observer.OnSettingsButtonPressed(notification_id_);
+  observers_.Notify(&Observer::OnSettingsButtonPressed, notification_id_);
 
   if (inline_settings_enabled_) {
     ToggleInlineSettings(event);
@@ -514,8 +505,7 @@ void MessageView::OnSettingsButtonPressed(const ui::Event& event) {
 }
 
 void MessageView::OnSnoozeButtonPressed(const ui::Event& event) {
-  for (auto& observer : observers_)
-    observer.OnSnoozeButtonPressed(notification_id_);
+  observers_.Notify(&Observer::OnSnoozeButtonPressed, notification_id_);
 
   if (snooze_settings_enabled_) {
     ToggleSnoozeSettings(event);

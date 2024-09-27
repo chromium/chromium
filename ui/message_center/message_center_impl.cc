@@ -141,13 +141,11 @@ void MessageCenterImpl::OnBlockingStateChanged(NotificationBlocker* blocker) {
       notification_list_->GetVisibleNotifications(blockers_);
 
   for (const std::string& notification_id : blocked) {
-    for (MessageCenterObserver& observer : observer_list_) {
-      observer.OnNotificationUpdated(notification_id);
-    }
+    observer_list_.Notify(&MessageCenterObserver::OnNotificationUpdated,
+                          notification_id);
   }
-  for (MessageCenterObserver& observer : observer_list_) {
-    observer.OnBlockingStateChanged(blocker);
-  }
+  observer_list_.Notify(&MessageCenterObserver::OnBlockingStateChanged,
+                        blocker);
 }
 
 void MessageCenterImpl::SetVisibility(Visibility visibility) {
@@ -159,9 +157,7 @@ void MessageCenterImpl::SetVisibility(Visibility visibility) {
     notification_list_->SetNotificationsShown(blockers_, &updated_ids);
 
     for (const auto& id : updated_ids) {
-      for (MessageCenterObserver& observer : observer_list_) {
-        observer.OnNotificationUpdated(id);
-      }
+      observer_list_.Notify(&MessageCenterObserver::OnNotificationUpdated, id);
     }
 
     for (Notification* notification : GetPopupNotifications()) {
@@ -169,9 +165,8 @@ void MessageCenterImpl::SetVisibility(Visibility visibility) {
     }
   }
 
-  for (MessageCenterObserver& observer : observer_list_) {
-    observer.OnCenterVisibilityChanged(visibility);
-  }
+  observer_list_.Notify(&MessageCenterObserver::OnCenterVisibilityChanged,
+                        visibility);
 }
 
 bool MessageCenterImpl::IsMessageCenterVisible() const {
@@ -398,9 +393,7 @@ void MessageCenterImpl::AddNotification(
 
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (MessageCenterObserver& observer : observer_list_) {
-    observer.OnNotificationAdded(id);
-  }
+  observer_list_.Notify(&MessageCenterObserver::OnNotificationAdded, id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ScheduleCleaningTaskIfCountOverLimit();
