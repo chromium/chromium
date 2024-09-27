@@ -21,12 +21,16 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /** Controller for the dialog shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
+    private static LoadUrlParams sThinWebViewLoadUrlParams;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
         assert profile != null;
@@ -58,7 +62,11 @@ public class PrivacySandboxDialogController {
                 contentView,
                 activityWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
-        webContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+        sThinWebViewLoadUrlParams = new LoadUrlParams(url);
+        Map<String, String> extraHeaders = new HashMap<>();
+        extraHeaders.put("Accept-Language", Locale.getDefault().toLanguageTag());
+        sThinWebViewLoadUrlParams.setExtraHeaders(extraHeaders);
+        webContents.getNavigationController().loadUrl(sThinWebViewLoadUrlParams);
         ThinWebView thinWebView =
                 ThinWebViewFactory.create(
                         activityWindowAndroid.getContext().get(),
@@ -149,5 +157,9 @@ public class PrivacySandboxDialogController {
 
     static void disableEEANoticeForTesting(boolean disable) {
         sDisableEEANoticeForTesting = disable;
+    }
+
+    static LoadUrlParams getThinWebViewLoadUrlParamsForTesting() {
+        return sThinWebViewLoadUrlParams;
     }
 }

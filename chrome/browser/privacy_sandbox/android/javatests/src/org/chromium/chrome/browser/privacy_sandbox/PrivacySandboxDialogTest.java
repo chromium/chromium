@@ -16,6 +16,8 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -65,6 +67,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 
 /** Tests {@link PrivacySandboxDialog}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -256,6 +260,33 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_policy_view))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
+    }
+
+    // TODO(crbug.com/370024801): Improve test coverage for Accept-Language request header rather
+    // than testing internal state of the LoadUrlParams.
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    public void testRenderEEAConsentPrivacyPolicyPageUrlParams() throws IOException {
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("fr", "FR"));
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        // Open dropdown
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        // Click "Privacy Policy" link
+        onView(withId(R.id.privacy_sandbox_learn_more_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
+        Map<String, String> extraHeaders =
+                PrivacySandboxDialogController.getThinWebViewLoadUrlParamsForTesting()
+                        .getExtraHeaders();
+        assertNotNull(extraHeaders);
+        assertTrue(extraHeaders.containsKey("Accept-Language"));
+        assertEquals(extraHeaders.get("Accept-Language"), "fr-FR");
+        Locale.setDefault(defaultLocale);
     }
 
     @Test
