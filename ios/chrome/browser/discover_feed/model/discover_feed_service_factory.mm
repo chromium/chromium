@@ -56,11 +56,12 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
 
   DiscoverFeedConfiguration* configuration =
       [[DiscoverFeedConfiguration alloc] init];
+  configuration.browserStatePrefService = profile->GetPrefs();
   configuration.profilePrefService = profile->GetPrefs();
   configuration.localStatePrefService =
       GetApplicationContext()->GetLocalState();
   configuration.authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForBrowserState(profile);
   configuration.identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   configuration.metricsRecorder =
@@ -68,8 +69,8 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
   configuration.templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(profile);
-  configuration.syncService = SyncServiceFactory::GetForProfile(profile);
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+  configuration.syncService = SyncServiceFactory::GetForBrowserState(profile);
 
   return ios::provider::CreateDiscoverFeedService(configuration);
 }
