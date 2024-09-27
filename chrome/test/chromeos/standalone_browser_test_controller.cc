@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
-#include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_lacros.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"

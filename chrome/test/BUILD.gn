@@ -5287,10 +5287,6 @@ if (!is_android) {
         sources +=
             [ "../browser/printing/system_access_process_print_browsertest.cc" ]
       }
-
-      if (is_chromeos_lacros) {
-        sources += [ "../browser/ui/webui/print_preview/extension_printer_service_provider_lacros_browsertest.cc" ]
-      }
     }
     if (enable_paint_preview) {
       sources += [
@@ -5471,7 +5467,6 @@ if (is_chromeos_lacros) {
       "../browser/lacros/policy_ui_lacros_browsertest.cc",
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/power_api_lacros_browsertest.cc",
-      "../browser/lacros/print_preview_lacros_browsertest.cc",
       "../browser/lacros/remote_apps/remote_apps_proxy_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/smart_reader_lacros_browsertest.cc",

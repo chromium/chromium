@@ -5770,23 +5770,6 @@ static_library("ui") {
         "//chromeos/printing",
       ]
     }
-
-    if (is_chromeos_lacros) {
-      sources += [
-        "webui/print_preview/extension_printer_service_provider_factory_lacros.cc",
-        "webui/print_preview/extension_printer_service_provider_factory_lacros.h",
-        "webui/print_preview/extension_printer_service_provider_lacros.cc",
-        "webui/print_preview/extension_printer_service_provider_lacros.h",
-        "webui/print_preview/extension_printer_service_setup_lacros.cc",
-        "webui/print_preview/extension_printer_service_setup_lacros.h",
-      ]
-      deps += [
-        "//chromeos/crosapi/cpp",
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-        "//chromeos/printing",
-      ]
-    }
   }
 
   if (safe_browsing_mode > 0) {
