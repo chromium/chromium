@@ -161,6 +161,8 @@ ClassroomPageHandlerImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {
       GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
       GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+      GaiaConstants::kClassroomProfileEmailOauth2Scope,
+      GaiaConstants::kClassroomProfilePhotoUrlScope,
   };
   auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
   auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
