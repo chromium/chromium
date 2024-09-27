@@ -176,6 +176,16 @@ void TokenHandleUtil::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+
+  if (!user) {
+    DUMP_WILL_BE_NOTREACHED() << "Invalid user";
+    std::move(callback).Run(account_id, std::string(),
+                            /*reauth_required=*/false);
+    return;
+  }
+
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
