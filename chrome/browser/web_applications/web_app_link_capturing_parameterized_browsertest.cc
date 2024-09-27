@@ -1033,7 +1033,8 @@ INSTANTIATE_TEST_SUITE_P(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A  // Navigate in-scope A.
+        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
+                        Destination::kScopeA2B   // Navigate A -> B
                         ),
         testing::Values(RedirectType::kNone),
         testing::Values(

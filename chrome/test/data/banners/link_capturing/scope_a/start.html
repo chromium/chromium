@@ -37,12 +37,14 @@
       let meta = event.metaKey;
       let left = event.button == 0;
       let middle = event.button == 1;
+      let right = event.button == 2;
 
       if ((ctrl && left) || (meta && left)) {
         middle = true;
         left = false;
         ctrl = false;
         meta = false;
+        right = false;
       }
 
       let modifier = 'click=';
@@ -51,7 +53,20 @@
       if (shift) modifier += 'Shift ';
       if (left) modifier += 'Left ';
       if (middle) modifier += 'Middle ';
+      if (right) modifier += 'Right ';
       return modifier;
+    }
+
+  // Sets href for links programmatically which replaces the <a href> below.
+   function eventListener(link, event) {
+      // Pass the ID as a query param, so we can show it on the destination
+      // page.
+      let param = '?' + link.id + '&' + getModifierString(event);
+      let destination = link.classList.contains('linkA') ? aDestinationUrl :
+      link.classList.contains('linkB') ? bDestinationUrl : xDestinationUrl;
+      destination += param;
+      link.setAttribute('href', destination);
+      console.log('link ' + link.id + ' clicked, dest ' + destination);
     }
 
     window.addEventListener("load", async () => {
@@ -60,17 +75,12 @@
       console.assert(serviceWorkerRegistration);
 
       var links = document.querySelectorAll('.linkA, .linkB, .linkX');
+      // Add event listeners to each link to listen to left and right clicks.
+      // Middle clicks are simulated via a Ctrl+Left or Meta+Left click for
+      // testing purposes, so the auxclick event is not implemented.
       for (let link of links) {
-        link.addEventListener("click", (event) => {
-          // Pass the ID as a query param, so we can show it on the destination
-          // page.
-          let param = '?' + link.id + '&' + getModifierString(event);
-          let destination = link.classList.contains('linkA') ? aDestinationUrl :
-          link.classList.contains('linkB') ? bDestinationUrl : xDestinationUrl;
-          destination += param;
-          link.setAttribute('href', destination);
-          console.log('link ' + link.id + ' clicked, dest ' + destination);
-        });
+        link.addEventListener("click", (event) => {eventListener(link, event)});
+        link.addEventListener("contextmenu", (event) => {eventListener(link, event)});
       }
       var buttons = document.querySelectorAll('.btnA, .btnB, .btnX');
       for (let button of buttons) {
@@ -128,7 +138,7 @@
 </td>
 
 <td>
-<!-- Links to scope B -->
+<!-- Links to scope B (href is updated programmatically for all clicks, see load event above)-->
 <a href="scope_b.html" target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="linkB">target="_self" rel=opener</a><br>
 <a href="scope_b.html" target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="linkB">target="_self" rel=noopener</a><br>
 <a href="scope_b.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_B-FRAME-OPENER" class="linkB">target="iframe" rel=opener</a><br>
