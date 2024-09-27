@@ -23,6 +23,9 @@
 // URL of the preview.
 @property(nonatomic, assign) GURL URL;
 
+// YES if the restoration of the webState is finished.
+@property(nonatomic, assign) BOOL restorationHasFinished;
+
 // The referrer for the preview.
 @property(nonatomic, assign) web::Referrer referrer;
 
@@ -42,6 +45,7 @@
     _referrer = referrer;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
+    _restorationHasFinished = NO;
   }
   return self;
 }
@@ -58,7 +62,9 @@
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   DCHECK_EQ(_webState, webState);
-  if (success) {
+  if (success && !self.restorationHasFinished) {
+    self.restorationHasFinished = YES;
+
     // Load the preview page using the copied web state.
     web::NavigationManager::WebLoadParams loadParams(self.URL);
     loadParams.referrer = self.referrer;
@@ -107,6 +113,10 @@
 
 // Updates the consumer to match the current loading state.
 - (void)updateLoadingState {
+  if (!self.restorationHasFinished) {
+    return;
+  }
+
   if (!self.consumer) {
     return;
   }
