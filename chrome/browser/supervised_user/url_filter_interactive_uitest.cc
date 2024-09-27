@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       DoChildSignInFromUI(kChildSignInElementId),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
       Log("The child is shown the blocked url interstitial"),
-      // TODO(b/362420913): Test closure of sign-in tab.
+      EnsureNotPresent(kChildSignInElementId), Log("The sign-in tab is closed"),
       Log("Test sequence finished"));
 }
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

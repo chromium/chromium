@@ -101,6 +101,7 @@ class SupervisedUserVerificationPage
   void RecordYouTubeReauthStatusUkm(Status status);
   void RecordBlockedUrlReauthStatusUma(Status status);
   int GetBlockMessageReasonId();
+  bool is_reauth_complete_ = false;
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;

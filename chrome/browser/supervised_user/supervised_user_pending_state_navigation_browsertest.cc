@@ -49,12 +49,19 @@
 
 namespace {
 
+static constexpr std::string_view kUmaReauthenticationHistogramName =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
+
 class SupervisedUserPendingStateNavigationTest
     : public MixinBasedInProcessBrowserTest {
  public:
   SupervisedUserPendingStateNavigationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kForceSupervisedUserReauthenticationForBlockedSites);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
+         supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
+         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers},
+        /*disabled_features=*/{});
   }
 
  protected:
@@ -83,17 +90,15 @@ class SupervisedUserPendingStateNavigationTest
         [&]() { return page_title == contents()->GetTitle(); }));
   }
 
-  void SignInSupervisedUserAndWaitForInterstitialReload() {
-    ASSERT_TRUE(
-        identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-            identity_manager()->GetPrimaryAccountId(
-                signin::ConsentLevel::kSignin)));
-    signin::AccountsInCookieJarInfo cookie_jar =
-        identity_manager()->GetAccountsInCookieJar();
-    ASSERT_FALSE(
-        identity_manager()->GetAccountsInCookieJar().accounts_are_fresh);
+  void SignInSupervisedUserAndWaitForInterstitialReload(
+      content::WebContents* content) {
+    Profile* profile =
+        Profile::FromBrowserContext(contents()->GetBrowserContext());
+    ASSERT_TRUE(ChildAccountServiceFactory::GetForProfile(profile)
+                    ->GetGoogleAuthState() !=
+                supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
 
-    content::TestNavigationObserver observer(contents(), 1);
+    content::TestNavigationObserver observer(content, 1);
     kids_management_api_mock().AllowSubsequentClassifyUrl();
     supervision_mixin_.SignIn(
         supervised_user::SupervisionMixin::SignInMode::kSupervised);
@@ -118,6 +123,38 @@ class SupervisedUserPendingStateNavigationTest
     observer.WaitForNavigationFinished();
   }
 
+  bool StartSignInFlowFromContent(content::WebContents* interstitial_content) {
+    return content::ExecJs(
+        interstitial_content,
+        "window.certificateErrorPageController.openLogin();");
+  }
+
+  void WaitForReauthenticationInterstitial() {
+    WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
+    // The "Next" button should be present and visible.
+    EXPECT_FALSE(
+        content::ExecJs(contents(),
+                        "document.querySelector(\".supervised-user-verified\")."
+                        "querySelector(\"#primary-button\").hidden;"));
+    EXPECT_EQ(
+        ui_test_utils::FindInPage(
+            contents(),
+            l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER),
+            /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+            /*selection_rect=*/nullptr),
+        1);
+
+    // The following string is found only on the the re-authentication interstitial.
+    EXPECT_EQ(
+        ui_test_utils::FindInPage(
+            contents(),
+            l10n_util::GetStringUTF16(
+                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN),
+            /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+            /*selection_rect=*/nullptr),
+        1);
+  }
+
   supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
     return supervision_mixin_.api_mock_setup_mixin().api_mock();
   }
@@ -126,7 +163,10 @@ class SupervisedUserPendingStateNavigationTest
       mixin_host_,
       this,
       embedded_test_server(),
-      {.consent_level = signin::ConsentLevel::kSync,
+      { // Syncing is a requirement for getting into pending mode pre-Uno.
+        // Once the Uno feature `ExplicitBrowserSigninUIOnDesktop` is fully released
+        // this can be set to Sign-in.
+       .consent_level = signin::ConsentLevel::kSync,
        .sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSupervised,
        .embedded_test_server_options = {.resolver_rules_map_host_list =
@@ -158,23 +198,75 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
   // Verify that the blocked site interstitial is displayed.
-  WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-  EXPECT_EQ(ui_test_utils::FindInPage(
-                contents(),
-                l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER),
-                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
-                /*selection_rect=*/nullptr),
-            1);
+  WaitForReauthenticationInterstitial();
 
   // Interact with the "Next" button, starting re-authentication.
   ASSERT_TRUE(content::ExecJs(
       contents(), "window.certificateErrorPageController.openLogin();"));
 
   // Sign in a supervised user, which completes re-authentication.
-  SignInSupervisedUserAndWaitForInterstitialReload();
+  SignInSupervisedUserAndWaitForInterstitialReload(contents());
 
   // UKM should not be recorded for the blocked site interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
+}
+
+// Tests that the sign-in tabs opened through the re-auth interstitial
+// are closed on re-authentication.
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+                       TestReauthInterstitialClosesSignInTabsAndReloads) {
+  base::HistogramTester histogram_tester;
+
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+  // Navigate to the requested URL and wait for the interstitial.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+
+  // Wait for the re-authentication interstitial. It should be the only tab.
+  WaitForReauthenticationInterstitial();
+  histogram_tester.ExpectBucketCount(
+      kUmaReauthenticationHistogramName,
+      static_cast<int>(SupervisedUserVerificationPage::Status::SHOWN), 1);
+  auto* interstitial_contents = contents();
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Interact with the "Next" button, starting re-authentication in a new tab.
+  ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
+  histogram_tester.ExpectBucketCount(
+      kUmaReauthenticationHistogramName,
+      static_cast<int>(SupervisedUserVerificationPage::Status::REAUTH_STARTED),
+      1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // Repeat to open another tab.
+  ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
+  histogram_tester.ExpectBucketCount(
+      kUmaReauthenticationHistogramName,
+      static_cast<int>(SupervisedUserVerificationPage::Status::REAUTH_STARTED),
+      2);
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  // TODO(b/362420913): Once url-pattern matching is added on tab closure,
+  // ensure we are closing only sign-in related urls.
+
+  // Sign in a supervised user, which completes re-authentication.
+  // This results in closing the sign-in tabs.
+  SignInSupervisedUserAndWaitForInterstitialReload(interstitial_contents);
+  histogram_tester.ExpectBucketCount(
+      kUmaReauthenticationHistogramName,
+      static_cast<int>(
+          SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
+      1);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Check the blocked url interstitial is displayed.
+  EXPECT_EQ(
+      ui_test_utils::FindInPage(
+          interstitial_contents,
+          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2),
+          /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+          /*selection_rect=*/nullptr),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
@@ -189,22 +281,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), exampleURL));
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
-  WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-
-  EXPECT_EQ(ui_test_utils::FindInPage(
-                contents(),
-                l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER),
-                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
-                /*selection_rect=*/nullptr),
-            1);
-
-  EXPECT_EQ(ui_test_utils::FindInPage(
-                contents(),
-                l10n_util::GetStringUTF16(
-                    IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN),
-                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
-                /*selection_rect=*/nullptr),
-            1);
+  WaitForReauthenticationInterstitial();
 }
 
 }  // namespace
