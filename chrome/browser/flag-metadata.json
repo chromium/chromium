@@ -692,6 +692,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-enable-card-benefits-iph",
+    "owners": [ "viplavkadam@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-card-benefits-sync",
     "owners": [ "alexandertekle@google.com", "yishuil@google.com" ],
     "expiry_milestone": 135

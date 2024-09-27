@@ -352,6 +352,9 @@ extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 extern const char kAutofillEnableCardBenefitsForCapitalOneName[];
 extern const char kAutofillEnableCardBenefitsForCapitalOneDescription[];
 
+extern const char kAutofillEnableCardBenefitsIphName[];
+extern const char kAutofillEnableCardBenefitsIphDescription[];
+
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 

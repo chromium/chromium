@@ -63,6 +63,11 @@ BASE_FEATURE(kAutofillEnableCardBenefitsForCapitalOne,
              "AutofillEnableCardBenefitsForCapitalOne",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card benefits IPH will be shown in Payments Autofill UI.
+BASE_FEATURE(kAutofillEnableCardBenefitsIph,
+             "AutofillEnableCardBenefitsIph",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableCardBenefitsSync,

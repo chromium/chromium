@@ -11933,6 +11933,11 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kMallUrl, "")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"autofill-enable-card-benefits-iph",
+     flag_descriptions::kAutofillEnableCardBenefitsIphName,
+     flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
