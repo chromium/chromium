@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/mac/code_signature.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
@@ -116,9 +117,9 @@ bool ValidateParentProcess(std::string_view info_plist_xml) {
 
   // Perform dynamic validation only as Chrome.app's dynamic signature may not
   // match its on-disk signature if there is an update pending.
-  OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
+  OSStatus status = base::mac::ProcessIdIsSignedAndFulfillsRequirement_DoNotUse(
       getppid(), parent_app_requirement.value().get(),
-      apps::SignatureValidationType::DynamicOnly, info_plist_xml);
+      base::mac::SignatureValidationType::DynamicOnly, info_plist_xml);
   return status == errSecSuccess;
 }
 

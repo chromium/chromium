@@ -2035,6 +2035,8 @@ component("base") {
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
+      "mac/code_signature.cc",
+      "mac/code_signature.h",
       "mac/info_plist_data.h",
       "mac/info_plist_data.mm",
       "mac/launch_application.h",

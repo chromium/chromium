@@ -30,6 +30,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/mac/code_signature.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -168,7 +169,7 @@ bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
     }
   }
 
-  OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
+  OSStatus status = base::mac::ProcessIsSignedAndFulfillsRequirement(
       app_shim_audit_token, app_shim_requirement->value().get());
   if (status != errSecSuccess) {
     if (status == errSecCSReqFailed &&
