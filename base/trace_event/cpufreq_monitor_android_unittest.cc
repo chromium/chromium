@@ -48,7 +48,7 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   }
 
  private:
-  ~TestTaskRunner() override {}
+  ~TestTaskRunner() override = default;
 
   std::list<std::pair<base::TimeDelta, OnceClosure>> delayed_tasks_;
 };

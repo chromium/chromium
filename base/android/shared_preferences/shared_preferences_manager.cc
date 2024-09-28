@@ -21,7 +21,7 @@ SharedPreferencesManager::SharedPreferencesManager(
     const SharedPreferencesManager& other)
     : java_obj_(other.java_obj_), env_(other.env_) {}
 
-SharedPreferencesManager::~SharedPreferencesManager() {}
+SharedPreferencesManager::~SharedPreferencesManager() = default;
 
 void SharedPreferencesManager::RemoveKey(
     const std::string& shared_preference_key) {

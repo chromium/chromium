@@ -45,8 +45,8 @@ class MadvFreeDiscardableMemoryPosixTester
 
 class MadvFreeDiscardableMemoryTest : public ::testing::Test {
  protected:
-  MadvFreeDiscardableMemoryTest() {}
-  ~MadvFreeDiscardableMemoryTest() override {}
+  MadvFreeDiscardableMemoryTest() = default;
+  ~MadvFreeDiscardableMemoryTest() override = default;
 
   const size_t kPageSize = base::GetPageSize();
 

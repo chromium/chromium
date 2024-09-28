@@ -69,7 +69,7 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
   raw_ptr<const OPTIONAL_HEADER_TYPE> optional_header_;
 };
 
-PeImageReader::PeImageReader() {}
+PeImageReader::PeImageReader() = default;
 
 PeImageReader::~PeImageReader() {
   Clear();

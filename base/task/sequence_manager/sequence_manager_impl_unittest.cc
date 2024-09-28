@@ -5034,7 +5034,7 @@ namespace {
 
 class CancelableTaskWithDestructionObserver {
  public:
-  CancelableTaskWithDestructionObserver() {}
+  CancelableTaskWithDestructionObserver() = default;
 
   void Task(std::unique_ptr<ScopedClosureRunner> destruction_observer) {
     destruction_observer_ = std::move(destruction_observer);

@@ -86,8 +86,8 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
 
 class MockMessagePump : public MessagePump {
  public:
-  MockMessagePump() {}
-  ~MockMessagePump() override {}
+  MockMessagePump() = default;
+  ~MockMessagePump() override = default;
 
   MOCK_METHOD1(Run, void(MessagePump::Delegate*));
   MOCK_METHOD0(Quit, void());

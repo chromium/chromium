@@ -54,7 +54,7 @@ namespace {
 // nothing useful.
 class StupidWatcher : public MessagePumpIOSForIO::FdWatcher {
  public:
-  ~StupidWatcher() override {}
+  ~StupidWatcher() override = default;
 
   // base:MessagePumpIOSForIO::FdWatcher interface
   void OnFileCanReadWithoutBlocking(int fd) override {}
@@ -67,7 +67,7 @@ class BaseWatcher : public MessagePumpIOSForIO::FdWatcher {
       : controller_(controller) {
     DCHECK(controller_);
   }
-  ~BaseWatcher() override {}
+  ~BaseWatcher() override = default;
 
   // MessagePumpIOSForIO::FdWatcher interface
   void OnFileCanReadWithoutBlocking(int /* fd */) override { NOTREACHED(); }
@@ -113,7 +113,7 @@ class StopWatcher : public BaseWatcher {
         pump_(pump),
         fd_to_start_watching_(fd_to_start_watching) {}
 
-  ~StopWatcher() override {}
+  ~StopWatcher() override = default;
 
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {
     controller_->StopWatchingFileDescriptor();

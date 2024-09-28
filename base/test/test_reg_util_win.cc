@@ -109,7 +109,7 @@ RegistryOverrideManager::RegistryOverrideManager(
   DeleteStaleTestKeys(timestamp_, test_key_root_);
 }
 
-RegistryOverrideManager::~RegistryOverrideManager() {}
+RegistryOverrideManager::~RegistryOverrideManager() = default;
 
 void RegistryOverrideManager::OverrideRegistry(HKEY override) {
   OverrideRegistry(override, nullptr);

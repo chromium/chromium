@@ -139,7 +139,7 @@ void AsanService::ErrorReportCallback(const char* reason) {
   AsanService::GetInstance()->RunErrorCallbacks(reason);
 }
 
-AsanService::AsanService() {}
+AsanService::AsanService() = default;
 
 }  // namespace debug
 }  // namespace base

@@ -55,7 +55,7 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
   friend class NoDestructor<DummyHistogram>;
 
   DummyHistogram() : HistogramBase("dummy_histogram") {}
-  ~DummyHistogram() override {}
+  ~DummyHistogram() override = default;
 };
 
 }  // namespace base

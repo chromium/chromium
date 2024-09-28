@@ -34,7 +34,7 @@ class MockObserver : public WorkQueueSets::Observer {
 void NopTask() {}
 
 struct Cancelable {
-  Cancelable() {}
+  Cancelable() = default;
 
   void NopTask() {}
 

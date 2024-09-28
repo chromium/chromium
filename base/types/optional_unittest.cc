@@ -156,7 +156,7 @@ class NonTriviallyDestructibleDeletedCopyConstructor {
   NonTriviallyDestructibleDeletedCopyConstructor(
       NonTriviallyDestructibleDeletedCopyConstructor&&) = default;
 
-  ~NonTriviallyDestructibleDeletedCopyConstructor() {}
+  ~NonTriviallyDestructibleDeletedCopyConstructor() = default;
 
   int foo() const { return foo_; }
 

@@ -468,7 +468,7 @@ class Value : public InternalHeapHandleStorage {
     if (h.IsValid())
       SetHeapHandle(h);
   }
-  ~Value() override {}
+  ~Value() override = default;
 
   Value& operator=(Value&& other) noexcept {
     InternalHeapHandleStorage::operator=(std::move(other));

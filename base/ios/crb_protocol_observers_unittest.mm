@@ -44,7 +44,7 @@ namespace {
 
 class CRBProtocolObserversTest : public PlatformTest {
  public:
-  CRBProtocolObserversTest() {}
+  CRBProtocolObserversTest() = default;
 
  protected:
   void SetUp() override {

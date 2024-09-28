@@ -102,7 +102,7 @@ TlmFieldDebugAnnotation::TlmFieldDebugAnnotation(
   }
 }
 
-TlmFieldDebugAnnotation::~TlmFieldDebugAnnotation() {}
+TlmFieldDebugAnnotation::~TlmFieldDebugAnnotation() = default;
 
 TlmFieldDebugAnnotation::TlmFieldDebugAnnotation(
     TlmFieldDebugAnnotation&&) noexcept = default;

@@ -75,7 +75,7 @@ class PosterThread : public base::SimpleThread {
         weak_ptr_(weak_ptr),
         n_(n),
         sequence_number_(sequence_number) {}
-  ~PosterThread() override {}
+  ~PosterThread() override = default;
 
   // base::SimpleThread overrides.
   void BeforeStart() override {}

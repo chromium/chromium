@@ -155,7 +155,7 @@ MessagePumpKqueue::MessagePumpKqueue()
   PCHECK(rv == 0) << "kevent64";
 }
 
-MessagePumpKqueue::~MessagePumpKqueue() {}
+MessagePumpKqueue::~MessagePumpKqueue() = default;
 
 void MessagePumpKqueue::InitializeFeatures() {
   g_use_batched_version.store(
