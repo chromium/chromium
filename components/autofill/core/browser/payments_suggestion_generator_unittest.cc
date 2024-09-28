@@ -320,7 +320,8 @@ class AutofillCreditCardBenefitsLabelTest
         {features::kAutofillEnableCardBenefitsForAmericanExpress,
          features::kAutofillEnableCardBenefitsForCapitalOne,
          features::kAutofillEnableVirtualCardMetadata,
-         features::kAutofillEnableCardProductName},
+         features::kAutofillEnableCardProductName,
+         features::kAutofillEnableCardBenefitsIph},
         /*disabled_features=*/{});
 
     std::u16string benefit_description;
@@ -451,6 +452,21 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 /*card_linked_offer_available=*/false)
                 .feature_for_iph,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+}
+
+// Checks that `feature_for_iph` is set to null when the flag is off.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionFeatureForIph_IsNullWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList disable_benefits_iph;
+  disable_benefits_iph.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableCardBenefitsIph});
+  EXPECT_EQ(CreateCreditCardSuggestionForTest(
+                card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                /*virtual_card_option=*/false,
+                /*card_linked_offer_available=*/false)
+                .feature_for_iph,
+            nullptr);
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown

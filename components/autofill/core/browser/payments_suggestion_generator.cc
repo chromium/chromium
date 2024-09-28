@@ -494,8 +494,11 @@ void SetSuggestionLabelsForCard(
               .IsCardEligibleForBenefits(credit_card)) {
         labels.push_back({*benefit_label});
       }
-      suggestion.feature_for_iph =
-          &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsIph)) {
+        suggestion.feature_for_iph =
+            &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
+      }
     }
     labels.push_back({Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
