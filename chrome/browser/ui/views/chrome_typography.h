@@ -83,6 +83,9 @@ enum ChromeTextContext {
 
   // Title label in the browser side panel. Usually 13pt.
   CONTEXT_SIDE_PANEL_TITLE,
+
+  // Body label in the toast. Usually 13pt.
+  CONTEXT_TOAST_BODY_TEXT,
 };
 
 enum ChromeTextStyle {

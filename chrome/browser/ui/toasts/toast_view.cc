@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -84,9 +85,13 @@ void ToastView::Init() {
           lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING));
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_view_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, lp->GetDistanceMetric(
+                             DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS)));
 
-  label_ = AddChildView(std::make_unique<views::Label>(
-      toast_text_, views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY));
+  label_ = AddChildView(
+      std::make_unique<views::Label>(toast_text_, CONTEXT_TOAST_BODY_TEXT));
   label_->SetEnabledColorId(ui::kColorToastForeground);
   label_->SetMultiLine(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
