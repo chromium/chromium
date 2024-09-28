@@ -16,6 +16,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -39,11 +40,24 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
+    private static GroupedWebsitesSettings sPausedInstance;
+
     private WebsiteGroup mSiteGroup;
 
     private Dialog mConfirmationDialog;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
+    /**
+     * Returns a paused instance of GroupedWebsitesSettings, if any.
+     *
+     * <p>This is used by {@link SingleWebsiteSettings} to go to the 'All Sites' level when clearing
+     * data.
+     */
+    public static GroupedWebsitesSettings getPausedInstance() {
+        ThreadUtils.assertOnUiThread();
+        return sPausedInstance;
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -87,11 +101,26 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        sPausedInstance = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sPausedInstance = this;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sPausedInstance = null;
+    }
+
+    @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         if (preference instanceof WebsiteRowPreference) {
-            // Handle a click on one of the sites in this group.
-            // Save the current activity, so it's accessible from the SingleWebsiteSettings.
-            GroupedWebsitesActivityHolder.getInstance().setActivity(getActivity());
             ((WebsiteRowPreference) preference)
                     .handleClick(getArguments(), /* fromGrouped= */ true);
         }
@@ -158,17 +187,13 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private final Runnable mDataClearedCallback =
             () -> {
-                Activity activity = getActivity();
-                if (activity == null || activity.isFinishing()) {
-                    return;
-                }
                 // TODO(crbug.com/40231223): This always navigates the user back to the "All sites"
                 // page regardless of whether there are any non-resettable permissions left in the
                 // sites within the group. Consider calculating those and refreshing the screen in
                 // place for a slightly smoother user experience. However, due to the complexity
                 // involved in refreshing the already fetched data and a very marginal benefit, it
                 // may not be worth it.
-                getActivity().finish();
+                getSettingsLauncher().finishCurrentFragment(this);
             };
 
     @VisibleForTesting

@@ -1287,10 +1287,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private void popBackIfNoSettings() {
         if (!hasPermissionsPreferences() && !hasUsagePreferences() && getActivity() != null) {
-            getActivity().finish();
-            if (mFromGrouped) {
-                Activity groupActivity = GroupedWebsitesActivityHolder.getInstance().getActivity();
-                if (groupActivity != null) groupActivity.finish();
+            // Save the paused fragment before finishing the current fragment as it may cause the
+            // paused fragment to resume.
+            GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
+            getSettingsLauncher().finishCurrentFragment(this);
+            if (mFromGrouped && groupFragment != null) {
+                getSettingsLauncher().finishCurrentFragment(groupFragment);
             }
         }
     }
@@ -1374,10 +1376,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
                 DeleteBrowsingDataAction.MAX_VALUE);
         if (finishActivityImmediately) {
-            getActivity().finish();
-            if (mFromGrouped) {
-                Activity groupActivity = GroupedWebsitesActivityHolder.getInstance().getActivity();
-                if (groupActivity != null) groupActivity.finish();
+            // Save the paused fragment before finishing the current fragment as it may cause the
+            // paused fragment to resume.
+            GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
+            getSettingsLauncher().finishCurrentFragment(this);
+            if (mFromGrouped && groupFragment != null) {
+                getSettingsLauncher().finishCurrentFragment(groupFragment);
             }
         }
     }
