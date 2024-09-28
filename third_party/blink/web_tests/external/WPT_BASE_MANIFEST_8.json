@@ -16560,7 +16560,7 @@
      ]
     ],
     "local_FileSystemFileHandle-create-sync-access-handle-manual.https.tentative.html": [
-     "0a67f5b26d2b4280f6cf8253d8367fa7e0defef8",
+     "13720aa5077d8234a313bd12e0a0d5d76eb789e9",
      [
       null,
       {}
@@ -368534,7 +368534,7 @@
       []
      ],
      "test-helpers.js": [
-      "f1130f7a0d05af9044145e00ac74abbc4220f59d",
+      "2fd6349a3d6fec05afd34876644ecfdd0dfb0702",
       []
      ]
     },
@@ -375437,7 +375437,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "96a0ec862efe48e0cc764d36dc2d3efe9a824e42",
+       "ae323a128739ebadd7f5bc26bf454cab75e3f897",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -480747,6 +480747,13 @@
      ],
      "bounding-box-computation-3.html": [
       "188257af443a235e8ad5d5804058cbf0bcc07a94",
+      [
+       null,
+       {}
+      ]
+     ],
+     "caption-cyclic-percentage.html": [
+      "3ba59491fa47496ac4f6562ad94bfde385a47e57",
       [
        null,
        {}
