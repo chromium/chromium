@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
@@ -151,7 +152,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = super.onCreateView(inflater, container, savedInstanceState);
         if (mCard == null) {
-            getActivity().finish();
+            SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
             return v;
         }
 

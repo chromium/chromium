@@ -179,7 +179,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         if (mSignedInCoreAccountInfo == null || coreAccountInfos.isEmpty()) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
-            getActivity().finish();
+            SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
             return;
         }
 
@@ -422,7 +422,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
                                 // Return to the last opened tab if triggered from the content area.
                                 if (mGaiaServiceType != GAIAServiceType.GAIA_SERVICE_TYPE_NONE) {
-                                    if (isAdded()) getActivity().finish();
+                                    SettingsLauncherFactory.createSettingsLauncher()
+                                            .finishCurrentFragment(this);
                                 }
                             });
                     return true;
