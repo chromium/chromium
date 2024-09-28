@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -141,13 +142,13 @@ public class DataSharingTabManager {
     /**
      * Initiate the join flow. If successful, the associated tab group view will be opened.
      *
-     * @param dataSharingURL The URL associated with the join invitation.
+     * @param dataSharingUrl The URL associated with the join invitation.
      */
-    public void initiateJoinFlow(GURL dataSharingURL) {
+    public void initiateJoinFlow(GURL dataSharingUrl) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.JOIN_TRIGGERED);
         if (mProfileSupplier.hasValue() && mProfileSupplier.get().getOriginalProfile() != null) {
-            initiateJoinFlowWithProfile(dataSharingURL);
+            initiateJoinFlowWithProfile(dataSharingUrl);
             return;
         }
 
@@ -155,13 +156,13 @@ public class DataSharingTabManager {
         mProfileObserver =
                 profile -> {
                     mProfileSupplier.removeObserver(mProfileObserver);
-                    initiateJoinFlowWithProfile(dataSharingURL);
+                    initiateJoinFlowWithProfile(dataSharingUrl);
                 };
 
         mProfileSupplier.addObserver(mProfileObserver);
     }
 
-    private void initiateJoinFlowWithProfile(GURL dataSharingURL) {
+    private void initiateJoinFlowWithProfile(GURL dataSharingUrl) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
         Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
@@ -173,7 +174,7 @@ public class DataSharingTabManager {
         assert dataSharingService != null;
 
         DataSharingService.ParseURLResult parseResult =
-                dataSharingService.parseDataSharingURL(dataSharingURL);
+                dataSharingService.parseDataSharingURL(dataSharingUrl);
         if (parseResult.status != ParseURLStatus.SUCCESS) {
             showInvitationFailureDialog();
             DataSharingMetrics.recordJoinActionFlowState(
@@ -192,6 +193,7 @@ public class DataSharingTabManager {
             return;
         }
 
+        long startTime = SystemClock.uptimeMillis();
         // TODO(b/354003616): Show loading dialog while waiting for tab.
         if (!mSyncObserversList.containsKey(groupId)) {
             SyncObserver syncObserver =
@@ -199,6 +201,8 @@ public class DataSharingTabManager {
                             groupId,
                             tabGroupSyncService,
                             (group) -> {
+                                DataSharingMetrics.recordJoinFlowLatency(
+                                        "SyncRequest", SystemClock.uptimeMillis() - startTime);
                                 onSavedTabGroupAvailable(group);
                                 mSyncObserversList.remove(group.collaborationId);
                             });

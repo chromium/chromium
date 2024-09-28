@@ -81,4 +81,9 @@ class DataSharingMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "DataSharing.Android.ShareActionFlowState", state, ShareActionStateAndroid.COUNT);
     }
+
+    public static void recordJoinFlowLatency(String stepName, long durationMs) {
+        RecordHistogram.recordTimesHistogram(
+                "DataSharing.Android.JoinFlow." + stepName, durationMs);
+    }
 }

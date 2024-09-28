@@ -23,6 +23,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="FlowName">
+  <variant name="JoinFlow"/>
+  <variant name="ShareFlow"/>
+</variants>
+
+<variants name="FlowStep">
+  <variant name="SyncRequest"/>
+</variants>
+
 <histogram name="DataSharing.Android.JoinActionFlowState"
     enum="JoinActionStateAndroid" expires_after="2025-09-03">
   <owner>ssid@chromium.org</owner>
@@ -43,6 +52,18 @@ chromium-metrics-reviews@google.com.
     each step of the flow. This histogram is used to understand the drop off
     rates at each step, and to estimate the frequency of errors.
   </summary>
+</histogram>
+
+<histogram name="DataSharing.Android.{FlowName}.{FlowStep}.Latency" units="ms"
+    expires_after="2025-09-03">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the duration of {FlowStep} during {FlowName}. This histogram is used
+    to measure the latency of each step of the Data Sharing process.
+  </summary>
+  <token key="FlowName" variants="FlowName"/>
+  <token key="FlowStep" variants="FlowStep"/>
 </histogram>
 
 </histograms>
