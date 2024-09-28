@@ -81,6 +81,10 @@ class ChunkGraphBuilder {
       // <ruby>. We don't record Text nodes until first_visible_text_node.
       node = ruby_container;
     }
+    // Used for checking if we reached a new block.
+    const Node* last_added_text_node = nullptr;
+    const Node* next_start = nullptr;
+
     parent_chunk_ = MakeGarbageCollected<CorpusChunk>();
     corpus_chunk_list_.push_back(parent_chunk_);
 
@@ -98,39 +102,61 @@ class ChunkGraphBuilder {
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         continue;
       }
+      const auto* style = node->GetComputedStyle();
+      if (!style) {
+        if (end_node && (end_node == node ||
+                         FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
+          did_see_range_end_node = true;
+        }
+        node = FlatTreeTraversal::NextSkippingChildren(*node);
+        continue;
+      }
+
+      EDisplay display = style->Display();
       if (IsA<Element>(*node)) {
-        EDisplay display = EDisplay::kNone;
-        if (const auto* style = node->GetComputedStyle()) {
-          display = style->Display();
-        }
-        if (display == EDisplay::kNone) {
-          if (end_node &&
-              (end_node == node ||
-               FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
-            did_see_range_end_node = true;
-          }
-          node = FlatTreeTraversal::NextSkippingChildren(*node);
-          continue;
-        }
-        if (FlatTreeTraversal::FirstChild(*node)) {
-          if (display == EDisplay::kRubyText) {
+        if (const Node* child = FlatTreeTraversal::FirstChild(*node)) {
+          if (display == EDisplay::kContents) {
+            node = child;
+            continue;
+          } else if (display == EDisplay::kRubyText) {
             HandleAnnotationStart(*node);
+            node = child;
+            continue;
           } else if (display == EDisplay::kRuby ||
                      display == EDisplay::kBlockRuby) {
             HandleRubyContainerStart();
+            node = child;
+            continue;
           }
-          node = FlatTreeTraversal::FirstChild(*node);
-          continue;
         }
-      } else if (const auto* text = DynamicTo<Text>(*node)) {
-        if (!did_see_range_start_node && first_visible_text_node == text) {
-          did_see_range_start_node = true;
+      }
+      if (style->UsedVisibility() == EVisibility::kVisible &&
+          node->GetLayoutObject()) {
+        // `node` is in its own sub-block separate from our starting position.
+        if (last_added_text_node && !FindBuffer::IsInSameUninterruptedBlock(
+                                        *last_added_text_node, *node)) {
+          did_see_range_end_node = true;
+          if (depth_context_.empty() && ruby_depth_ == 0) {
+            break;
+          }
+          next_start = node;
         }
-        if (did_see_range_start_node && !did_see_range_end_node &&
-            text->GetComputedStyle() &&
-            text->GetComputedStyle()->UsedVisibility() ==
-                EVisibility::kVisible) {
-          chunk_text_list_.push_back(TextOrChar(text, 0));
+
+        if (IsA<Element>(*node)) {
+          if (const Node* child = FlatTreeTraversal::FirstChild(*node)) {
+            node = child;
+            continue;
+          }
+        }
+
+        if (const auto* text = DynamicTo<Text>(*node)) {
+          if (!did_see_range_start_node && first_visible_text_node == text) {
+            did_see_range_start_node = true;
+          }
+          if (did_see_range_start_node && !did_see_range_end_node) {
+            chunk_text_list_.push_back(TextOrChar(text, 0));
+            last_added_text_node = node;
+          }
         }
       }
 
@@ -147,8 +173,8 @@ class ChunkGraphBuilder {
       while (!FlatTreeTraversal::NextSibling(*node) &&
              node != &block_ancestor) {
         node = FlatTreeTraversal::ParentElement(*node);
-        EDisplay display = EDisplay::kNone;
-        if (const auto* style = node->GetComputedStyle()) {
+        display = EDisplay::kNone;
+        if ((style = node->GetComputedStyle())) {
           display = style->Display();
         }
         if (display == EDisplay::kRubyText) {
@@ -171,7 +197,7 @@ class ChunkGraphBuilder {
     if (chunk_text_list_.size() > 0) {
       parent_chunk_->Link(PushChunk(String(kAnyLevel)));
     }
-    return node;
+    return next_start ? next_start : node;
   }
 
   const HeapVector<Member<CorpusChunk>>& ChunkList() const {

@@ -437,9 +437,8 @@ INSTANTIATE_TEST_SUITE_P(
                                      "grid",
                                      "flex",
                                      "list-item"),
-                     // TODO(crbug.com/40755728): Add `RubySupport::
-                     // kEnabledForcefully`.
-                     testing::Values(RubySupport::kDisabled)),
+                     testing::Values(RubySupport::kDisabled,
+                                     RubySupport::kEnabledForcefully)),
     GenerateSuffix);
 
 TEST_P(FindBufferBlockTest, FindBlock) {
@@ -741,11 +740,12 @@ TEST_P(FindBufferParamTest, WBRTest) {
 }
 
 TEST_P(FindBufferParamTest, InputTest) {
-  SetBodyContent("fi<input type='text'>nd and fin<input type='text'>d");
-  // TODO(crbug.com/40755728): Pass GetParam().
-  FindBuffer buffer(WholeDocumentRange());
+  SetBodyContent("fi<input type='text' id=i1>nd and fin<input type='text'>d");
+  FindBuffer buffer(WholeDocumentRange(), GetParam());
   const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
+  EXPECT_EQ(buffer.PositionAfterBlock(),
+            PositionInFlatTree::FirstPositionInNode(*GetElementById("i1")));
 }
 
 TEST_P(FindBufferParamTest, SelectMultipleTest) {
@@ -1058,6 +1058,21 @@ TEST_F(FindBufferTest, RubyBuffersDisplayContents) {
   ASSERT_EQ(2u, buffer_list.size());
   EXPECT_EQ("before base ____ after", ReplaceZero(buffer_list[0]));
   EXPECT_EQ("before _____anno after", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersVisibility) {
+  SetBodyContent(
+      "<p>before "
+      "<ruby style='visibility:hidden'>base1<rt>anno1</ruby> "
+      "<ruby>base2<rt style='visibility:hidden'>anno2</ruby> "
+      "<ruby style='visibility:hidden'>base3"
+      "<rt style='visibility:visible'>anno3</ruby> "
+      "after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("before  base2 _____ after", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("before  _____ anno3 after", ReplaceZero(buffer_list[1]));
 }
 
 TEST_F(FindBufferTest, RubyBuffersBlockRuby) {
