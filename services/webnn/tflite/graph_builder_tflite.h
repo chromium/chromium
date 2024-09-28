@@ -548,6 +548,8 @@ class GraphBuilderTflite final {
                               const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeTanh(
       const mojom::Tanh& tanh);
+  base::expected<OperatorOffset, std::string> SerializeTile(
+      const mojom::Tile& tile);
   base::expected<OperatorOffset, std::string> SerializeTriangular(
       const mojom::Triangular& triangular);
   base::expected<OperatorOffset, std::string> SerializeTranspose(

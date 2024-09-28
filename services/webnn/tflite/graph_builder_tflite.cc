@@ -441,8 +441,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*softsign_input=*/DataTypeConstraint::kFloat16To32,
        /*split_input=*/kFloat16To32AndInt8To64AndUint8,
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
-       // Tile is not implemented.
-       /*tile_input=*/{},
+       /*tile_input=*/kFloat16To32AndInt32To64AndUint8,
        /*transpose_input=*/kFloat16To32AndInt8To64AndUint8,
        /*triangular_input=*/kFloat16To32AndInt32To64AndUint32,
        /*where_condition=*/DataTypeConstraint::kUint8,
@@ -812,8 +811,10 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeTanh(*op.get_tanh()));
       break;
     }
-    case mojom::Operation::Tag::kTile:
-      NOTREACHED();
+    case mojom::Operation::Tag::kTile: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeTile(*op.get_tile()));
+      break;
+    }
     case mojom::Operation::Tag::kTranspose: {
       ASSIGN_OR_RETURN(operator_offset,
                        SerializeTranspose(*op.get_transpose()));
@@ -4226,6 +4227,32 @@ auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
   return SerializeUnaryOperation(::tflite::BuiltinOperator_TANH,
                                  input_tensor_info.index,
                                  output_tensor_info.index);
+}
+
+auto GraphBuilderTflite::SerializeTile(const mojom::Tile& tile)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.tile_input.Has(
+      GetOperand(tile.input_operand_id).descriptor.data_type()));
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(tile.input_operand_id));
+  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                   SerializeOutputTensorInfo(tile.output_operand_id));
+
+  ASSIGN_OR_RETURN(const std::vector<int32_t> signed_repetitions,
+                   ToSignedDimensions(tile.repetitions));
+  const std::array<int32_t, 1> repetitions_tensor_shape = {
+      base::checked_cast<int32_t>(signed_repetitions.size())};
+  const int32_t repetitions_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      signed_repetitions, repetitions_tensor_shape);
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_TILE);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_info.index,
+                                            repetitions_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilderTflite::SerializeTriangular(
