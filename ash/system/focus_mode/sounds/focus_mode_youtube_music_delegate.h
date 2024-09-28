@@ -13,6 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_retry_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_api_error.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
@@ -50,6 +51,17 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
 
   void SetNoPremiumCallback(base::RepeatingClosure callback);
+
+  // `callback` is run whenever the API encounters an error resulting in a
+  // request failure.
+  void SetErrorCallback(ApiErrorCallback callback);
+
+  // Returns the most recent error received from the API. If an error is fatal,
+  // requests will stop so the same error will be returned. For non-fatal
+  // errors, the error will be cleared by a successful request.
+  const std::optional<FocusModeApiError>& last_api_error() const {
+    return last_error_;
+  }
 
   // Reports music playback.
   void ReportPlayback(const youtube_music::PlaybackData& playback_data);
@@ -169,6 +181,12 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       base::expected<const std::string, google_apis::youtube_music::ApiError>
           new_playback_reporting_token);
 
+  bool ContainsFatalError() const;
+  void RequestSuccessful();
+  void ApiErrorEncountered(FocusModeApiError error);
+
+  std::optional<FocusModeApiError> last_error_;
+
   // Playlists request state for `GetPlaylists`.
   GetPlaylistsRequestState get_playlists_state_;
 
@@ -181,6 +199,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Callback to run when the request fails with HTTP 403.
   base::RepeatingClosure no_premium_callback_;
+
+  ApiErrorCallback error_callback_ = base::NullCallback();
 
   // Controller for YouTube Music API integration.
   std::unique_ptr<youtube_music::YouTubeMusicController>

@@ -1811,6 +1811,7 @@ component("ash") {
     "system/focus_mode/focus_mode_tray.h",
     "system/focus_mode/focus_mode_util.cc",
     "system/focus_mode/focus_mode_util.h",
+    "system/focus_mode/sounds/focus_mode_api_error.h",
     "system/focus_mode/sounds/focus_mode_sounds_controller.cc",
     "system/focus_mode/sounds/focus_mode_sounds_controller.h",
     "system/focus_mode/sounds/focus_mode_sounds_delegate.cc",

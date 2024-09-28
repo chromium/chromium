@@ -600,6 +600,19 @@ void FocusModeSoundsController::SetYouTubeMusicNoPremiumCallback(
   youtube_music_delegate_->SetNoPremiumCallback(std::move(callback));
 }
 
+void FocusModeSoundsController::SetErrorCallback(bool is_soundscape,
+                                                 ApiErrorCallback callback) {
+  CHECK(callback);
+  CHECK(!is_soundscape) << "Soundscapes errors are unsupported";
+
+  youtube_music_delegate_->SetErrorCallback(std::move(callback));
+}
+
+const std::optional<FocusModeApiError>&
+FocusModeSoundsController::last_youtube_music_error() const {
+  return youtube_music_delegate_->last_api_error();
+}
+
 void FocusModeSoundsController::ReportYouTubeMusicPlayback(
     const youtube_music::PlaybackData& playback_data) {
   youtube_music_delegate_->ReportPlayback(playback_data);

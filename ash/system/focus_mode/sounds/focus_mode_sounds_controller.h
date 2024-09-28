@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_api_error.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -150,6 +151,13 @@ class ASH_EXPORT FocusModeSoundsController
   // account premium status.
   void SetYouTubeMusicNoPremiumCallback(base::RepeatingClosure callback);
 
+  // Sets a callback to receive errors from the chosen API backend. If
+  // `is_soundscape` is false, connects to YouTube Music. True is currently
+  // unimplemented.
+  void SetErrorCallback(bool is_soundscape, ApiErrorCallback error_callback);
+
+  const std::optional<FocusModeApiError>& last_youtube_music_error() const;
+
   // Reports playback to the media server. It's only used for YouTube Music at
   // the moment.
   void ReportYouTubeMusicPlayback(
@@ -193,7 +201,6 @@ class ASH_EXPORT FocusModeSoundsController
 
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
   std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
-
 
   focus_mode_util::SelectedPlaylist selected_playlist_;
   focus_mode_util::SoundType sound_type_ =
