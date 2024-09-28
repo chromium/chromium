@@ -626,7 +626,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 // users have been migrated.
                 || eventDetails.getEventTypeFor(ConsentLevel.SYNC)
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
-            if (getActivity() != null) getActivity().finish();
+            finishCurrentFragment();
         }
     }
 
@@ -653,7 +653,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                                 : ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
-            if (getActivity() != null) getActivity().finish();
+            finishCurrentFragment();
             return;
         }
 
@@ -1065,7 +1065,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
                 .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
-        getActivity().finish();
+        finishCurrentFragment();
     }
 
     @Override
@@ -1153,7 +1153,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 profile, mUrlKeyedAnonymizedData.isChecked());
         UnifiedConsentServiceBridge.recordSyncSetupDataTypesHistogram(profile);
         // Settings will be applied when mSyncSetupInProgressHandle is released in onDestroy.
-        getActivity().finish();
+        finishCurrentFragment();
     }
 
     private void cancelSync() {
@@ -1169,12 +1169,21 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         } else {
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
-        getActivity().finish();
+        finishCurrentFragment();
     }
 
     private boolean isEeaChoiceCountry() {
         TemplateUrlService templateUrlService =
                 TemplateUrlServiceFactory.getForProfile(getProfile());
         return templateUrlService.isEeaChoiceCountry();
+    }
+
+    /**
+     * Finishes the current page.
+     *
+     * <p>This method is idempotent, i.e. it does nothing if it was called before.
+     */
+    private void finishCurrentFragment() {
+        SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
     }
 }
