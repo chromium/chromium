@@ -621,6 +621,7 @@
 <translation id="2111166930115883695">დასაკრავად დააჭირეთ შორისს</translation>
 <translation id="2113977810652731515">ბიზნეს ბარათი დიზაინი</translation>
 <translation id="2114841414352855701">იგნორირებულია, რადგან იგი ჩანაცვლებულია <ph name="POLICY_NAME" />-ის მიერ.</translation>
+<translation id="2115549780565563931">ფასდაკლებები</translation>
 <translation id="2118132148597630479">კონვერტი C5</translation>
 <translation id="2119505898009119320">გაცემულია შემდეგის სახელზე: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ქვედა მარჯვენა ნაწილის გახვრეტა</translation>
@@ -3408,6 +3409,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ბიზნეს-ოპერაციები</translation>
 <translation id="7244061187185055290">რამდენიმე სიტყვით აღწერეთ, რას ეძებთ</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> ბარათის უპირატესობების მიხედვით</translation>
 <translation id="7251437084390964440">ქსელის კონფიგურაცია არ შეესაბამება ONC სტანდარტს. კონფიგურაციის ნაწილის იმპორტი შეიძლება ვერ მოხერხდეს.
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>
@@ -3477,6 +3479,7 @@
 <translation id="7390545607259442187">დაადასტურეთ ბარათი</translation>
 <translation id="7392089738299859607">მისამართის განახლება</translation>
 <translation id="7393161616326137353">სათავგადასავლო თამაშები</translation>
+<translation id="7393475648162498734">აჩვენეთ, რომელი ჯილდოები და უპირატესობებია ხელმისაწვდომი თქვენი ბარათებისთვის შეკვეთის გაფორმების დროს</translation>
 <translation id="739728382607845710">გადახდის დამმუშავებლის ხატულა</translation>
 <translation id="7399616692258236448">მდებარეობის მოთხოვნები ავტომატურად დაბლოკილია ყველა საიტისთვის, გარდა თქვენ მიერ დაშვებულისა</translation>
 <translation id="7399802613464275309">უსაფრთხოების შემოწმება</translation>
@@ -4493,6 +4496,7 @@
 <translation id="939736085109172342">ახალი საქაღალდე</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />-ზე ფაილის ატვირთვის პროცესი <ph name="MINUTES" /> წუთში დაიწყება</translation>
 <translation id="944540589955480312">თქვენს Google ანგარიშში შენახული პაროლებისა და წვდომის გასაღებების გამოყენება</translation>
+<translation id="944578681290094302">აჩვენეთ, რომელი ჯილდოები და უპირატესობებია ხელმისაწვდომი თქვენი ბარათებისთვის შეკვეთის გაფორმების დროს. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />შეიტყვეთ მეტი ბარათის უპირატესობების შესახებ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით.</translation>
 <translation id="945855313015696284">გაეცანით ქვემოთ მოცემულ ინფორმაციას და წაშალეთ არასწორი ბარათები</translation>
 <translation id="94613679163347541">გსურთ, შეადაროთ <ph name="CATEGORY" />?</translation>

@@ -621,6 +621,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
+<translation id="2115549780565563931">Descontos</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Emitido para: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perfurar na parte inferior direita</translation>
@@ -3409,6 +3410,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operações comerciais</translation>
 <translation id="7244061187185055290">Descreva em poucas palavras aquilo que procura</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre as vantagens dos cartões</translation>
 <translation id="7251437084390964440">A configuração de rede não cumpre a norma ONC. Partes da configuração podem não ser importadas.
 Detalhes adicionais:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3480,7 @@ Detalhes adicionais:
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7392089738299859607">Atualize o endereço</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
+<translation id="7393475648162498734">Mostrar que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento</translation>
 <translation id="739728382607845710">Ícone do controlador de pagamentos</translation>
 <translation id="7399616692258236448">Os pedidos de localização são bloqueados automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
@@ -4494,6 +4497,7 @@ Detalhes adicionais:
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="940524522703752213">O carregamento dos ficheiros para o <ph name="CLOUD_PROVIDER" /> vai começar dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="944540589955480312">Usar palavras-passe e chaves de acesso guardadas na sua Conta Google</translation>
+<translation id="944578681290094302">Mostrar que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais sobre as vantagens dos cartões<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">O Chrome impede que os sites usem cookies de terceiros para acompanhar o seu perfil enquanto navega.</translation>
 <translation id="945855313015696284">Verifique as informações abaixo e elimine os cartões inválidos</translation>
 <translation id="94613679163347541">Comparar <ph name="CATEGORY" />?</translation>

@@ -329,7 +329,9 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1227660082540388410">Edite o token de acesso</translation>
 <translation id="1227993798763400520">Falha ao transmitir o conteúdo. Tente novamente.</translation>
 <translation id="1230417814058465809">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, utilize a proteção melhorada.</translation>
+<translation id="1230961867057865279">Página não disponível em <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Vamos memorizar a sua rede da próxima vez que usar o <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Página não disponível em <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Os sites podem pedir para capturar e usar a entrada de rato</translation>
 <translation id="1232569758102978740">Sem nome</translation>
 <translation id="1233497634904001272">Toque novamente na chave de segurança para concluir o pedido.</translation>
@@ -8552,6 +8554,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
 <translation id="7214047272988222011">Permitida: <ph name="PERMISSION_DETAILS" />. Ative o <ph name="LINK_BEGIN" />acesso à câmara do sistema<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importar palavras-passe</translation>
+<translation id="7217208603285112910">Seleção não disponível em <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Eliminar dados do site?</translation>
 <translation id="7219473482981809164">Encontrámos vários perfis disponíveis para transferência. Selecione os que quer transferir antes de prosseguir.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Sem palavras-passe fracas.}=1{1 palavra-passe fraca.}other{{NUM_WEAK} palavras-passe fracas.}}</translation>
@@ -10115,6 +10118,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8325413836429495820">Sem autorização para ver a sua área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
 <translation id="8327386430364625757">Tipo de letra matemático</translation>
+<translation id="8327490658947427005">Seleção não disponível em <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Definições de conteúdo e autorizações</translation>
 <translation id="8328228852664998535">Se continuar, as suas palavras-passe, chaves de acesso e outros dados vão ser eliminados permanentemente do <ph name="BRAND" />. As contas que criou para sites ou apps não são eliminadas.</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>
