@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,6 +72,29 @@ public class EdgeToEdgeUtils {
                     ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
                     PARAM_DISABLE_CCT_MEDIA_VIEWER_E2E,
                     false);
+
+    private static final String PARAM_E2E_FIELD_TRIAL_OEM_LIST = "e2e_field_trial_oem_list";
+    private static final String PARAM_E2E_FIELD_TRIAL_OEM_MIN_VERSIONS =
+            "e2e_field_trial_oem_min_versions";
+
+    /**
+     * Param for the OEMs that need an exception for min versions. Its value should be a comma
+     * separated list of manufacturer, and its index should match {@link
+     * #E2E_FIELD_TRIAL_OEM_MIN_VERSIONS}.
+     */
+    public static StringCachedFieldTrialParameter E2E_FIELD_TRIAL_OEM_LIST =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN, PARAM_E2E_FIELD_TRIAL_OEM_LIST, "");
+
+    /**
+     * Param for the OEMs that need an exception for min versions. Its value should be a comma
+     * separated list of integers, and its index should match {@link #E2E_FIELD_TRIAL_OEM_LIST}.
+     */
+    public static StringCachedFieldTrialParameter E2E_FIELD_TRIAL_OEM_MIN_VERSIONS =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+                    PARAM_E2E_FIELD_TRIAL_OEM_MIN_VERSIONS,
+                    "");
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
