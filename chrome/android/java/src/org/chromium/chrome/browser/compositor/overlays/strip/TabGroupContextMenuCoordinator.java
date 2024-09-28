@@ -477,8 +477,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     private void buildColorEditor(boolean isIncognito) {
-        // TODO(crbug.com/359941567): Refactor layout to use uniform padding in xml and remove
-        // custom padding here.
         // Set horizontal padding to custom view to match list items.
         int horizontalPadding =
                 mContext.getResources()
