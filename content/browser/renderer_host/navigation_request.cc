@@ -6320,6 +6320,10 @@ void NavigationRequest::CommitNavigation() {
         std::move(subresource_loader_params_.prefetched_signed_exchanges);
   }
 
+  // TODO(https://crbug.com/40095391): Convert to CHECK if it proves to be
+  // consistently upheld condition.
+  DUMP_WILL_BE_CHECK(commit_params->redirect_response.size() ==
+                     commit_params->redirect_infos.size());
   if (base::FeatureList::IsEnabled(kSanitizeRedirectUrlsDuringNavigation)) {
     // Before sending the commit parameters to the renderer process, sanitize
     // the redirect URLs to avoid leaking pontentially sensitive data into
