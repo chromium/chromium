@@ -16,13 +16,14 @@ namespace lens {
 // Sends gen204 pings for the Lens Overlay.
 class LensOverlayGen204Controller {
  public:
-  LensOverlayGen204Controller(
-      lens::LensOverlayInvocationSource invocation_source,
-      Profile* profile);
+  LensOverlayGen204Controller();
   ~LensOverlayGen204Controller();
 
-  // Sets the gen204 id, to be attached to subsequent gen204 requests.
-  void SetGen204Id(uint64_t gen204_id);
+  // Sets the state of the controller. Should be called once
+  // per query flow, at the start.
+  void OnQueryFlowStart(lens::LensOverlayInvocationSource invocation_source,
+                        Profile* profile,
+                        uint64_t gen204_id);
 
   // Sends a Lens objects request latency gen204 request.
   void SendLatencyGen204IfEnabled(int64_t latency_ms, bool is_translate_query);
@@ -40,27 +41,29 @@ class LensOverlayGen204Controller {
   void OnQueryFlowEnd(std::string encoded_analytics_id);
 
  private:
-  // Callback for the latency gen204 request.
-  void OnLatencyGen204Response(std::unique_ptr<std::string> response_body);
+  // Issues the gen204 network request and adds a loader to gen204_loaders_.
+  void IssueGen204NetworkRequest(GURL url);
 
-  // Callback for the task completion gen204 request.
-  void OnTaskCompletionGen204Response(
-      std::unique_ptr<std::string> response_body);
-
-  // Loader used for latency gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> latency_gen204_loader_;
-
-  // Loader used for task completion gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> task_completion_gen204_loader_;
+  // Handles the gen204 network response and removes the source from
+  // gen204_loaders_.
+  void OnGen204NetworkResponse(const network::SimpleURLLoader* source,
+                               std::unique_ptr<std::string> response_body);
 
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;
 
-  // The current gen204 id for logging, set by the query controller.
+  // The profile used to make requests.
+  raw_ptr<Profile> profile_;
+
+  // The current gen204 id for logging, set by the overlay controller.
   uint64_t gen204_id_;
 
-  // The profile used to make requests.
-  const raw_ptr<Profile> profile_;
+  // Each gen204 loader in this vector corresponds to an outstanding gen204
+  // request. Storing them ensures they do not get deleted immediately
+  // after being issued, which cancels the request.
+  std::vector<std::unique_ptr<network::SimpleURLLoader>> gen204_loaders_;
+
+  base::WeakPtrFactory<LensOverlayGen204Controller> weak_ptr_factory_{this};
 };
 
 }  // namespace lens

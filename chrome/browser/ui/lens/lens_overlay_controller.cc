@@ -232,7 +232,9 @@ LensOverlayController::LensOverlayController(
       identity_manager_(identity_manager),
       pref_service_(pref_service),
       sync_service_(sync_service),
-      theme_service_(theme_service) {
+      theme_service_(theme_service),
+      gen204_controller_(
+          std::make_unique<lens::LensOverlayGen204Controller>()) {
   LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                        this);
 
@@ -396,7 +398,8 @@ void LensOverlayController::ShowUI(
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
       variations_client_, identity_manager_, profile, invocation_source,
-      lens::LensOverlayShouldUseDarkMode(theme_service_));
+      lens::LensOverlayShouldUseDarkMode(theme_service_),
+      gen204_controller_.get());
   side_panel_coordinator_ =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   CHECK(side_panel_coordinator_);
@@ -1111,12 +1114,14 @@ LensOverlayController::CreateLensQueryController(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     lens::LensOverlayInvocationSource invocation_source,
-    bool use_dark_mode) {
+    bool use_dark_mode,
+    lens::LensOverlayGen204Controller* gen204_controller) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
       std::move(interaction_data_callback),
       std::move(thumbnail_created_callback), variations_client,
-      identity_manager, profile, invocation_source, use_dark_mode);
+      identity_manager, profile, invocation_source, use_dark_mode,
+      gen204_controller);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(

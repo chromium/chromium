@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
@@ -114,7 +115,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode)
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
@@ -123,7 +125,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    identity_manager,
                                    profile,
                                    invocation_source,
-                                   use_dark_mode) {}
+                                   use_dark_mode,
+                                   gen204_controller) {}
   ~LensOverlayQueryControllerMock() override = default;
 
   lens::LensOverlayObjectsResponse fake_objects_response_;
@@ -227,6 +230,10 @@ class LensOverlayQueryControllerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  lens::LensOverlayGen204Controller* GetGen204Controller() {
+    return gen204_controller_.get();
+  }
+
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(width, height);
@@ -287,6 +294,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -295,6 +303,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
     g_browser_process->SetApplicationLocale(kLocale);
+    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
     icu::TimeZone::adoptDefault(
         icu::TimeZone::createTimeZone(icu::UnicodeString(kTimeZone)));
     UErrorCode error_code = U_ZERO_ERROR;
@@ -313,7 +322,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
@@ -370,7 +379,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -463,7 +472,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -566,7 +575,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -665,7 +674,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
@@ -718,7 +727,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -805,7 +814,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -863,7 +872,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -919,7 +928,7 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
+      /*use_dark_mode=*/false, GetGen204Controller());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(

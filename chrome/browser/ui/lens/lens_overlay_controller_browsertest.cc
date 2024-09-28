@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
@@ -331,7 +332,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode)
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
@@ -340,7 +342,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
                                    identity_manager,
                                    profile,
                                    invocation_source,
-                                   use_dark_mode) {}
+                                   use_dark_mode,
+                                   gen204_controller) {}
 
   void StartQueryFlow(
       const SkBitmap& screenshot,
@@ -477,12 +480,13 @@ class LensOverlayControllerFake : public LensOverlayController {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode) override {
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller) override {
     auto fake_query_controller =
         std::make_unique<LensOverlayQueryControllerFake>(
             full_image_callback, url_callback, interaction_data_callback,
             thumbnail_created_callback, variations_client, identity_manager,
-            profile, invocation_source, use_dark_mode);
+            profile, invocation_source, use_dark_mode, gen204_controller);
     fake_query_controller->SetShouldReturnError(
         full_image_request_should_return_error_);
     return fake_query_controller;

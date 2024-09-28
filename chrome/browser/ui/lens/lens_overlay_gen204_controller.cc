@@ -86,13 +86,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
 
 }  // namespace
 
-LensOverlayGen204Controller::LensOverlayGen204Controller(
-    lens::LensOverlayInvocationSource invocation_source,
-    Profile* profile)
-    : invocation_source_(invocation_source), profile_(profile) {}
+LensOverlayGen204Controller::LensOverlayGen204Controller() = default;
 LensOverlayGen204Controller::~LensOverlayGen204Controller() = default;
 
-void LensOverlayGen204Controller::SetGen204Id(uint64_t gen204_id) {
+void LensOverlayGen204Controller::OnQueryFlowStart(
+    lens::LensOverlayInvocationSource invocation_source,
+    Profile* profile,
+    uint64_t gen204_id) {
+  invocation_source_ = invocation_source;
+  profile_ = profile;
   gen204_id_ = gen204_id;
 }
 
@@ -114,15 +116,7 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = fetch_url;
-    latency_gen204_loader_ = network::SimpleURLLoader::Create(
-        std::move(request), kTrafficAnnotationTag);
-    latency_gen204_loader_->DownloadToString(
-        profile_->GetURLLoaderFactory().get(),
-        base::BindOnce(&LensOverlayGen204Controller::OnLatencyGen204Response,
-                       base::Unretained(this)),
-        kMaxDownloadBytes);
+    IssueGen204NetworkRequest(fetch_url);
   }
 }
 
@@ -134,6 +128,8 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
     int task_id;
     switch (user_action) {
       case mojom::UserAction::kTextSelection:
+        [[fallthrough]];
+      case mojom::UserAction::kTranslateTextSelection:
         task_id = kSelectTextTaskCompletionID;
         break;
       case mojom::UserAction::kCopyText:
@@ -162,16 +158,7 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = fetch_url;
-    task_completion_gen204_loader_ = network::SimpleURLLoader::Create(
-        std::move(request), kTrafficAnnotationTag);
-    task_completion_gen204_loader_->DownloadToString(
-        profile_->GetURLLoaderFactory().get(),
-        base::BindOnce(
-            &LensOverlayGen204Controller::OnTaskCompletionGen204Response,
-            base::Unretained(this)),
-        kMaxDownloadBytes);
+    IssueGen204NetworkRequest(fetch_url);
   }
 }
 
@@ -180,16 +167,30 @@ void LensOverlayGen204Controller::OnQueryFlowEnd(
   // TODO(b/364291616): Log and send text gleam render gen204s. This will
   // require a check in this function to send an end event if no explicit
   // end event was received from the overlay due to it closing.
+  profile_ = nullptr;
 }
 
-void LensOverlayGen204Controller::OnLatencyGen204Response(
-    std::unique_ptr<std::string> response_body) {
-  latency_gen204_loader_.reset();
+void LensOverlayGen204Controller::IssueGen204NetworkRequest(GURL url) {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = url;
+  gen204_loaders_.push_back(network::SimpleURLLoader::Create(
+      std::move(request), kTrafficAnnotationTag));
+  gen204_loaders_.back()->DownloadToString(
+      profile_->GetURLLoaderFactory().get(),
+      base::BindOnce(&LensOverlayGen204Controller::OnGen204NetworkResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     gen204_loaders_.back().get()),
+      kMaxDownloadBytes);
 }
 
-void LensOverlayGen204Controller::OnTaskCompletionGen204Response(
+void LensOverlayGen204Controller::OnGen204NetworkResponse(
+    const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
-  task_completion_gen204_loader_.reset();
+  std::erase_if(
+      gen204_loaders_,
+      [source](const std::unique_ptr<network::SimpleURLLoader>& loader) {
+        return loader.get() == source;
+      });
 }
 
 }  // namespace lens

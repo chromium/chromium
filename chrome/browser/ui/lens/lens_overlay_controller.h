@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -509,7 +510,8 @@ class LensOverlayController : public LensSearchboxClient,
       signin::IdentityManager* identity_manager,
       Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode);
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller);
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -1007,6 +1009,11 @@ class LensOverlayController : public LensSearchboxClient,
 
   base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
       omnibox_tab_helper_observer_{this};
+
+  // The controller for sending gen204 pings. Owned by the overlay controller
+  // so that the life cycle outlasts the query controller, allowing gen204
+  // requests to be sent upon query end.
+  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   // Owns the search bubble that shows over the overlay, before the side panel
   // is showing.

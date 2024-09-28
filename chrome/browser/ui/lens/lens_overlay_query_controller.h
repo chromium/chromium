@@ -70,7 +70,8 @@ class LensOverlayQueryController {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode);
+      bool use_dark_mode,
+      lens::LensOverlayGen204Controller* gen204_controller);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -458,11 +459,12 @@ class LensOverlayQueryController {
   // per session.
   bool use_dark_mode_;
 
+  // The controller for sending gen204 pings. Owned and set by the overlay
+  // controller. Guaranteed to outlive this class.
+  const raw_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
+
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_;
-
-  // The controller for sending gen204 pings.
-  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };
