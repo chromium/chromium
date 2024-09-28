@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/version_info/version_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -2658,6 +2659,91 @@ TEST_F(CampaignsManagerTest, GetCampaignWithoutAppOnHotseat) {
             }
           })");
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, RecordEventWithQueuedEventWithFeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kGrowthCampaignsTriggerByRecordEvent);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  campaigns_manager_->RecordEvent("event_1", false);
+  campaigns_manager_->RecordEvent("event_2", true);
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_1"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_2"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_1"));
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .contains("event_2"));
+  testing::Mock::VerifyAndClearExpectations(&mock_client_);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(1);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, ""));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().empty());
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .empty());
+}
+
+TEST_F(CampaignsManagerTest, RecordEventWithQueuedEventWithoutFeatureEnabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kGrowthCampaignsTriggerByRecordEvent);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  campaigns_manager_->RecordEvent("event_1", false);
+  campaigns_manager_->RecordEvent("event_2", true);
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_1"));
+
+  // Because the feature is disabled, the `event_2` will be record only.
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_2"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_1"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_2"));
+  testing::Mock::VerifyAndClearExpectations(&mock_client_);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, ""));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().empty());
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .empty());
 }
 
 }  // namespace growth

@@ -69,8 +69,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kHotseatInvisibleAtMatching = 46,
       kShelfViewNotAvailableAtMatching = 47,
       kHotseatAppIconNotPresent = 48,
+      kRecordEventBeforeCampaignsLoaded = 49,
 
-      kMaxValue = kHotseatAppIconNotPresent,
+      kMaxValue = kRecordEventBeforeCampaignsLoaded,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.

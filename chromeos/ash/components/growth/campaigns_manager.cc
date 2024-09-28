@@ -316,17 +316,41 @@ void CampaignsManager::ClearEvent(std::string_view event) {
 
 void CampaignsManager::RecordEvent(const std::string& event,
                                    bool trigger_campaigns) {
-  // TODO: b/366053058 - Implementing the logic to wait for `campaigns_loaded_`.
+  const bool should_trigger_campaigns =
+      trigger_campaigns &&
+      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled();
+
   if (!campaigns_loaded_) {
+    // Event is recorded before campaigns are loaded and feature engagement
+    // tracker is initialized, defer recording and trigger to
+    // `OnCampaignsComponentLoaded()` where campaigns are loaded and feature
+    // engagement is ready.
+    if (should_trigger_campaigns) {
+      queued_events_record_and_trigger_.insert(event);
+    } else {
+      queued_events_record_only_.insert(event);
+    }
+
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kRecordEventBeforeCampaignsLoaded);
     return;
   }
 
-  if (trigger_campaigns &&
-      !ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled()) {
-    return;
-  }
+  client_->RecordEvent(event, should_trigger_campaigns);
+}
 
-  client_->RecordEvent(event, trigger_campaigns);
+void CampaignsManager::RecordQueuedEventsAndMaybeTrigger() {
+  CHECK(campaigns_loaded_);
+
+  for (const auto& event : queued_events_record_only_) {
+    RecordEvent(event, /*trigger_campaigns=*/false);
+  }
+  queued_events_record_only_.clear();
+
+  for (const auto& event : queued_events_record_and_trigger_) {
+    RecordEvent(event, /*trigger_campaigns=*/true);
+  }
+  queued_events_record_and_trigger_.clear();
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -377,6 +401,7 @@ void CampaignsManager::OnCampaignsLoaded(
   campaigns_loaded_ = true;
 
   std::move(load_callback).Run();
+  RecordQueuedEventsAndMaybeTrigger();
   NotifyCampaignsLoaded();
 }
 

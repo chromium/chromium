@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -120,8 +121,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
   std::optional<base::Time> GetRegisteredTimeForTesting();
+  base::flat_set<std::string> queued_events_record_only_for_testing() const {
+    return queued_events_record_only_;
+  }
+  base::flat_set<std::string> queued_events_record_and_trigger_for_testing()
+      const {
+    return queued_events_record_and_trigger_;
+  }
 
  private:
+  // Record queued events before `campaigns_loaded_` is set to true. Trigger
+  // campaigns if needed.
+  void RecordQueuedEventsAndMaybeTrigger();
+
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
       base::OnceClosure load_callback,
@@ -175,6 +187,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   bool tracker_initialized_for_test_ = false;
 
   base::ObserverList<Observer> observers_;
+
+  // Queued events to record and trigger before `campaigns_loaded_` is true.
+  // We do not keep the order when the events is received. One event could be
+  // queued in the two sets if one is record only and the other one is to
+  // trigger.
+  base::flat_set<std::string> queued_events_record_only_;
+  base::flat_set<std::string> queued_events_record_and_trigger_;
 
   base::WeakPtrFactory<CampaignsManager> weak_factory_{this};
 };
