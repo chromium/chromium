@@ -17,6 +17,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -421,4 +422,69 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
             expected_actions[3]);
   auto restored_url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(2u, restored_url_visits_mojom.size());
+}
+
+TEST_F(MostRelevantTabResumptionPageHandlerTest,
+       DecorateURLVisitWithDisabledDecorate) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {}, {{visited_url_ranking::features::kVisitedURLRankingDecorations}});
+  visited_url_ranking::MockVisitedURLRankingService*
+      mock_visited_url_ranking_service =
+          static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
+              VisitedURLRankingServiceFactory::GetForProfile(profile()));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const FetchOptions& options,
+             VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
+            std::vector<URLVisitAggregate> url_visit_aggregates = {};
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kSession}));
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now() - base::Minutes(5), {Fetcher::kHistory}));
+
+            std::move(callback).Run(ResultStatus::kSuccess,
+                                    std::move(url_visit_aggregates));
+          }));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              RankURLVisitAggregates(_, _, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::RankURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+          }));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              DecorateURLVisitAggregates(_, _, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::DecorateURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+          }));
+
+  auto url_visits_mojom = RunGetURLVisits();
+  ASSERT_EQ(2u, url_visits_mojom.size());
+  ASSERT_EQ("You just visited",
+            url_visits_mojom[0]->decoration->display_string);
+  ASSERT_EQ(
+      ntp::most_relevant_tab_resumption::mojom::DecorationType::kVisitedXAgo,
+      url_visits_mojom[0]->decoration->type);
+  ASSERT_EQ("You visited 5 mins ago",
+            url_visits_mojom[1]->decoration->display_string);
+  ASSERT_EQ(
+      ntp::most_relevant_tab_resumption::mojom::DecorationType::kVisitedXAgo,
+      url_visits_mojom[1]->decoration->type);
 }

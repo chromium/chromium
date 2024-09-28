@@ -366,6 +366,13 @@ void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+    std::move(callback).Run(ResultStatus::kSuccess,
+                            std::move(visit_aggregates));
+    return;
+  }
+
   auto& most_recent_aggregate = visit_aggregates[0];
   for (size_t i = 0; i < visit_aggregates.size(); i++) {
     auto& url_visit_aggregate = visit_aggregates[i];

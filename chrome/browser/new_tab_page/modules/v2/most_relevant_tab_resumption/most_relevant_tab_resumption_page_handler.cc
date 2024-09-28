@@ -30,6 +30,7 @@
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -391,12 +392,22 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
           url_visit_aggregate.request_id.GetUnsafeValue();
       url_visit_mojom->decoration =
           ntp::most_relevant_tab_resumption::mojom::Decoration::New();
-      auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
-      url_visit_mojom->decoration->type =
-          ntp::most_relevant_tab_resumption::mojom::DecorationType(
-              static_cast<int>(decoration.GetType()));
-      url_visit_mojom->decoration->display_string =
-          base::UTF16ToUTF8(decoration.GetDisplayString());
+      if (base::FeatureList::IsEnabled(
+              visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+        auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+        url_visit_mojom->decoration->type =
+            ntp::most_relevant_tab_resumption::mojom::DecorationType(
+                static_cast<int>(decoration.GetType()));
+        url_visit_mojom->decoration->display_string =
+            base::UTF16ToUTF8(decoration.GetDisplayString());
+      } else {
+        url_visit_mojom->decoration->type = ntp::most_relevant_tab_resumption::
+            mojom::DecorationType::kVisitedXAgo;
+        url_visit_mojom->decoration->display_string = base::UTF16ToUTF8(
+            visited_url_ranking::GetStringForRecencyDecorationWithTime(
+                url_visit_aggregate.GetLastVisitTime()));
+      }
+
       url_visit_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
       if (IsNewURL(url_visit_mojom)) {
         url_visits_mojom.push_back(std::move(url_visit_mojom));
@@ -418,12 +429,23 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
             url_visit_aggregate.request_id.GetUnsafeValue();
         history_url_visit_mojom->decoration =
             ntp::most_relevant_tab_resumption::mojom::Decoration::New();
-        auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
-        history_url_visit_mojom->decoration->type =
-            ntp::most_relevant_tab_resumption::mojom::DecorationType(
-                static_cast<int>(decoration.GetType()));
-        history_url_visit_mojom->decoration->display_string =
-            base::UTF16ToUTF8(decoration.GetDisplayString());
+        if (base::FeatureList::IsEnabled(
+                visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+          auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+          history_url_visit_mojom->decoration->type =
+              ntp::most_relevant_tab_resumption::mojom::DecorationType(
+                  static_cast<int>(decoration.GetType()));
+          history_url_visit_mojom->decoration->display_string =
+              base::UTF16ToUTF8(decoration.GetDisplayString());
+        } else {
+          history_url_visit_mojom->decoration->type = ntp::
+              most_relevant_tab_resumption::mojom::DecorationType::kVisitedXAgo;
+          history_url_visit_mojom->decoration->display_string =
+              base::UTF16ToUTF8(
+                  visited_url_ranking::GetStringForRecencyDecorationWithTime(
+                      url_visit_aggregate.GetLastVisitTime()));
+        }
+
         history_url_visit_mojom->timestamp =
             url_visit_aggregate.GetLastVisitTime();
         if (IsNewURL(history_url_visit_mojom)) {
