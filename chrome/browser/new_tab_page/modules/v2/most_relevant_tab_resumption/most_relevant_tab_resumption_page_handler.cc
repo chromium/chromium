@@ -339,11 +339,13 @@ void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
       std::move(url_visit_aggregates),
       base::BindOnce(
           &MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(url_visits_metadata)));
 }
 
 void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     GetURLVisitsCallback callback,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
     visited_url_ranking::ResultStatus status,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   base::UmaHistogramEnumeration("NewTabPage.TabResumption.ResultStatus",
@@ -371,7 +373,7 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
           profile_);
   visited_url_ranking_service->DecorateURLVisitAggregates(
       {.key = visited_url_ranking::kTabResumptionRankerKey},
-      std::move(url_visit_aggregates),
+      std::move(url_visits_metadata), std::move(url_visit_aggregates),
       base::BindOnce(&MostRelevantTabResumptionPageHandler::
                          OnGotDecoratedURLVisitAggregates,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

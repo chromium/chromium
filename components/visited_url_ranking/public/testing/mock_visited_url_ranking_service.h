@@ -27,8 +27,16 @@ class MockVisitedURLRankingService : public VisitedURLRankingService {
                     std::vector<URLVisitAggregate> visits,
                     RankURLVisitAggregatesCallback callback));
 
+  // TODO(crbug/364577990): Remove this function when callers switch to the
+  // version that uses metadata.
   MOCK_METHOD3(DecorateURLVisitAggregates,
                void(const Config& config,
+                    std::vector<URLVisitAggregate> visits,
+                    DecorateURLVisitAggregatesCallback callback));
+
+  MOCK_METHOD4(DecorateURLVisitAggregates,
+               void(const Config& config,
+                    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
                     std::vector<URLVisitAggregate> visits,
                     DecorateURLVisitAggregatesCallback callback));
 

@@ -80,6 +80,7 @@ class MostRelevantTabResumptionPageHandler
   // Invoked when the URL visit aggregates have been ranked.
   void OnGotRankedURLVisitAggregates(
       GetURLVisitsCallback callback,
+      visited_url_ranking::URLVisitsMetadata url_visits_metadata,
       visited_url_ranking::ResultStatus status,
       std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 

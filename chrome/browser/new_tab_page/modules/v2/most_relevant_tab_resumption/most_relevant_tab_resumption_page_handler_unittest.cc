@@ -193,10 +193,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits_TabURLTypesOnly) {
           }));
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
-              DecorateURLVisitAggregates(_, _, _))
+              DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](const visited_url_ranking::Config& config,
+             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
@@ -250,10 +251,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
           }));
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
-              DecorateURLVisitAggregates(_, _, _))
+              DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](const visited_url_ranking::Config& config,
+             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
@@ -314,10 +316,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {
           }));
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
-              DecorateURLVisitAggregates(_, _, _))
+              DecorateURLVisitAggregates(_, _, _, _))
       .Times(3)
       .WillRepeatedly(testing::Invoke(
           [](const visited_url_ranking::Config& config,
+             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
@@ -390,10 +393,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
           }));
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
-              DecorateURLVisitAggregates(_, _, _))
+              DecorateURLVisitAggregates(_, _, _, _))
       .Times(3)
       .WillRepeatedly(testing::Invoke(
           [](const visited_url_ranking::Config& config,
+             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
@@ -471,10 +475,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest,
           }));
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
-              DecorateURLVisitAggregates(_, _, _))
+              DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](const visited_url_ranking::Config& config,
+             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {

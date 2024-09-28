@@ -83,8 +83,15 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   void RankURLVisitAggregates(const Config& config,
                               std::vector<URLVisitAggregate> visits,
                               RankURLVisitAggregatesCallback callback) override;
+  // TODO(crbug/364577990): Remove this function when callers switch to the
+  // version that uses metadata.
   void DecorateURLVisitAggregates(
       const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      DecorateURLVisitAggregatesCallback callback) override;
+  void DecorateURLVisitAggregates(
+      const Config& config,
+      visited_url_ranking::URLVisitsMetadata url_visits_metadata,
       std::vector<URLVisitAggregate> visit_aggregates,
       DecorateURLVisitAggregatesCallback callback) override;
   void RecordAction(

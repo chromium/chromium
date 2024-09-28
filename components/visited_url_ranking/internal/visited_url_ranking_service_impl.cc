@@ -203,14 +203,9 @@ void SortScoredAggregatesAndCallback(
 }
 
 void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
-                             URLVisitAggregate* curr_most_recent_aggregate,
-                             bool last_visit) {
-  if (url_visit_aggregate.GetLastVisitTime() >
-      curr_most_recent_aggregate->GetLastVisitTime()) {
-    curr_most_recent_aggregate = &url_visit_aggregate;
-  }
-  if (last_visit) {
-    curr_most_recent_aggregate->decorations.emplace_back(
+                             base::Time most_recent_timestamp) {
+  if (url_visit_aggregate.GetLastVisitTime() == most_recent_timestamp) {
+    url_visit_aggregate.decorations.emplace_back(
         DecorationType::kMostRecent,
         GetStringForDecoration(DecorationType::kMostRecent));
   }
@@ -370,6 +365,16 @@ void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
     const Config& config,
     std::vector<URLVisitAggregate> visit_aggregates,
     DecorateURLVisitAggregatesCallback callback) {
+  URLVisitsMetadata url_visits_metadata;
+  DecorateURLVisitAggregates(config, std::move(url_visits_metadata),
+                             std::move(visit_aggregates), std::move(callback));
+}
+
+void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
+    const Config& config,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
+    std::vector<URLVisitAggregate> visit_aggregates,
+    DecorateURLVisitAggregatesCallback callback) {
   if (visit_aggregates.empty()) {
     std::move(callback).Run(ResultStatus::kSuccess, {});
     return;
@@ -382,12 +387,14 @@ void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
     return;
   }
 
-  auto& most_recent_aggregate = visit_aggregates[0];
   for (size_t i = 0; i < visit_aggregates.size(); i++) {
     auto& url_visit_aggregate = visit_aggregates[i];
 
-    AddMostRecentDecoration(url_visit_aggregate, &most_recent_aggregate,
-                            i == visit_aggregates.size() - 1);
+    if (url_visits_metadata.most_recent_timestamp.has_value()) {
+      AddMostRecentDecoration(
+          url_visit_aggregate,
+          url_visits_metadata.most_recent_timestamp.value());
+    }
 
     AddFrequentlyVisitedDecoration(url_visit_aggregate);
 
