@@ -74,11 +74,22 @@ class HttpsFirstModeSettingsTrackerTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_.get(); }
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
 
   content::BrowserTaskEnvironment task_environment_;
 
  private:
   std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest
+    : public HttpsFirstModeSettingsTrackerTest {
+ public:
+  HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest() {
+    feature_list()->InitAndEnableFeature(
+        features::kHttpsFirstModeV2ForEngagedSites);
+  }
 };
 
 void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
@@ -90,7 +101,7 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
 
 // Check that changing the HFM pref clears Site Engagement heuristic's HTTPS
 // enforcelist and effectively disables the heuristic.
-TEST_F(HttpsFirstModeSettingsTrackerTest,
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
        SiteEngagementHeuristic_ShouldNotEnableIfPrefIsSet) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
@@ -137,7 +148,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
 // Check that high site engagement scores of HTTPS URLs with non-default ports
 // do not auto-enable HTTPS-First Mode.
 TEST_F(
-    HttpsFirstModeSettingsTrackerTest,
+    HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
     SiteEngagementHeuristic_ShouldIgnoreEngagementScoreOfUrlWithNonDefaultPort) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
@@ -178,7 +189,7 @@ TEST_F(
       kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
 }
 
-TEST_F(HttpsFirstModeSettingsTrackerTest,
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
        SiteEngagementHeuristic_ShouldEnforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
@@ -412,7 +423,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
 
 // If a site was previously been HTTPS-enforced no longer is in the site
 // engagement list, it should no longer be HTTPS-enforced anymore.
-TEST_F(HttpsFirstModeSettingsTrackerTest,
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
        SiteEngagementHeuristic_NoEngagementScoreShouldUnenforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
@@ -458,7 +469,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
 // Tests the Typically Secure User heuristic to ensure that it respects the
 // finch flag. See TypicallySecureUserPref for more details.
 // Regression test for crbug.com/1475747.
-TEST_F(HttpsFirstModeSettingsTrackerTest,
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
        TypicallySecureUser_DisabledByDefault) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

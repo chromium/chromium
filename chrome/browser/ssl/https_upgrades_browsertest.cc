@@ -946,6 +946,7 @@ IN_PROC_BROWSER_TEST_P(
 
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites() ||
       IsSiteEngagementHeuristicEnabled()) {
     EXPECT_TRUE(
@@ -971,7 +972,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Check engagement heuristic metrics. These are only recorded when the
   // interstitial isn't enabled by the user pref.
-  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+  if (IsSiteEngagementHeuristicEnabled() &&
+      !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
     histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                     Event::kUpgradeAttempted, 1);
@@ -1064,15 +1066,11 @@ IN_PROC_BROWSER_TEST_P(
     }
   }
 
-  // Event histogram shouldn't change because Site Engagement heuristic didn't
-  // kick in.
-  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+  if (IsSiteEngagementHeuristicEnabled() &&
+      !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    // Shouldn't change because the interstitial wasn't due to the heuristic:
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
-  } else {
-    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
-  }
 
-  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Check host count.
     histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
                                    2);
@@ -1099,6 +1097,9 @@ IN_PROC_BROWSER_TEST_P(
         kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1),
         1);
   } else {
+    // Shouldn't change:
+    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+
     // If HFM pref was enabled, no SE metrics should be recorded because HFM
     // won't be auto-enabled.
     histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
@@ -1176,7 +1177,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Check engagement heuristic metrics. These are only recorded when the
   // interstitial isn't enabled across all sites.
-  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+  if (IsSiteEngagementHeuristicEnabled() &&
+      !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Check the heuristic state. The heuristic should enable HFM for
     // example.com
     histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);

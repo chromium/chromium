@@ -278,10 +278,7 @@ void HttpsFirstModeService::AfterStartup() {
           features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
     CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   }
-  if (base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForEngagedSites)) {
-    MaybeEnableHttpsFirstModeForEngagedSites(base::OnceClosure());
-  }
+  MaybeEnableHttpsFirstModeForEngagedSites(base::OnceClosure());
 }
 
 void HttpsFirstModeService::
@@ -448,7 +445,9 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
     base::OnceClosure done_callback) {
   // If HFM or the auto-enable prefs were previously set, do not modify HFM
   // status.
-  if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForEngagedSites) ||
+      profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
     if (!done_callback.is_null()) {
