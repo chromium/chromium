@@ -143,7 +143,10 @@ public class SettingsLauncherImpl implements SettingsLauncher {
     }
 
     @Override
-    public void finishCurrentFragment(Activity activity) {
-        ((SettingsActivity) activity).finishCurrentFragment();
+    public void finishCurrentFragment(Fragment fragment) {
+        Activity activity = fragment.getActivity();
+        if (activity != null) {
+            ((SettingsActivity) activity).finishCurrentFragment(fragment);
+        }
     }
 }

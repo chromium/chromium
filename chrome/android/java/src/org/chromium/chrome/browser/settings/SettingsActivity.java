@@ -391,7 +391,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
-            finishCurrentFragment();
+            finishCurrentFragment(mainFragment);
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -482,16 +482,27 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * <p>This method asks the activity to show the previous fragment. If the back stack is empty,
      * the activity itself is finished.
      *
+     * <p>If the given fragment is not the current one, this method does nothing.
+     *
      * <p>This method is package-private because it is used by {@link SettingsLauncherImpl}. Use
      * {@link SettingsLauncher} to call this method from fragments, instead of calling it directly.
+     *
+     * @param fragment The expected current fragment.
      */
-    void finishCurrentFragment() {
+    @SuppressLint("ReferenceEquality")
+    void finishCurrentFragment(Fragment fragment) {
+        if (getMainFragment() != fragment) {
+            return;
+        }
+
         if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 finish();
             } else {
-                fragmentManager.popBackStack();
+                // Execute the pop operation immediately to avoid popping the back stack N times
+                // when the current fragment calls this method N times in a row.
+                fragmentManager.popBackStackImmediate();
             }
         } else {
             finish();
