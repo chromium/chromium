@@ -361603,6 +361603,10 @@
      },
      "moveBefore": {
       "tentative": {
+       "nonce.html.headers": [
+        "ae36f1b0a7020df875edbcda3c627e2ee325878b",
+        []
+       ],
        "resources": {
         "moveBefore-iframe.html": [
          "7d9c498e8da29f6d23df33d49a2aab5b85e9f1e2",
@@ -375433,7 +375437,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "99ac3ae555671c6a6e66d44a0bda93179bfcc6dd",
+       "96a0ec862efe48e0cc764d36dc2d3efe9a824e42",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -393536,6 +393540,10 @@
      "a87619c024858a8f0f72086d1839e895887ea83d",
      []
     ],
+    "last-frame-dimensions-expected.txt": [
+     "db179ac40d5d78005e2486a58ff8229bab66268c",
+     []
+    ],
     "manifest.txt": [
      "3ca784f17a0850f8d8e0f56b6afad21b8ef16ba2",
      []
@@ -393553,7 +393561,7 @@
      []
     ],
     "mediasource-util.js": [
-     "6b11210052d774fb6222602a0e7cfc3f0f2eea58",
+     "0bbb6a7386393f9c72e1a353e1db83f3cce0a99e",
      []
     ],
     "mp3": {
@@ -452709,7 +452717,7 @@
      ]
     ],
     "cookieStore_event_delete.https.window.js": [
-     "a76ca26bd3c7c5cad9f0d8b3a6cf70b8f7b4e9cd",
+     "d0fee1ab1d03cd3835f3b9e5828d4aef7eb45710",
      [
       "cookie-store/cookieStore_event_delete.https.window.html",
       {}
@@ -502161,6 +502169,13 @@
        ],
        "mutation-events.html": [
         "4bba1efa8e14b986bb51144062e144366d4af19d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "nonce.html": [
+        "50bbdca2ecd510720cba09ade9f8f14a0d06c952",
         [
          null,
          {}
@@ -621111,7 +621126,7 @@
      ]
     ],
     "SourceBuffer-short-frame-endOfStream.html": [
-     "e89879d2f41af5c70b80d8c8002ecf84c7b3616c",
+     "da55af610f663b8dffd77bf3ec5bb7d4d8a8fce7",
      [
       null,
       {}
@@ -621210,6 +621225,13 @@
        ],
        "timeout": "long"
       }
+     ]
+    ],
+    "last-frame-dimensions.html": [
+     "bf3b4d758b5c15145a3feab5567eac55014a0930",
+     [
+      null,
+      {}
      ]
     ],
     "mediasource-activesourcebuffers.html": [
@@ -649475,7 +649497,7 @@
      ]
     ],
     "status-codes-create-entry.html": [
-     "cc0cd8ccb88250331186c38554b09ff8515cacee",
+     "f884365aef896b4852ac49841f42f4564b5fed82",
      [
       null,
       {}
@@ -653713,7 +653735,7 @@
        ]
       ],
       "Selection-getComposedRanges.html": [
-       "a69188a62ee9210cc53138f6c29d901b75f1bac6",
+       "b433c7e415dfde464ba4ed4a2ec7e86678263658",
        [
         null,
         {}
