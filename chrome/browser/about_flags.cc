@@ -10306,6 +10306,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kComputePressureRateObfuscationMitigation)},
 
+    {"enable-container-type-no-layout-containment",
+     flag_descriptions::kContainerTypeNoLayoutContainmentName,
+     flag_descriptions::kContainerTypeNoLayoutContainmentDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kContainerTypeNoLayoutContainment)},
+
     {"enable-compute-pressure-break-calibration-mitigation",
      flag_descriptions::kComputePressureBreakCalibrationMitigationName,
      flag_descriptions::kComputePressureBreakCalibrationMitigationDescription,

@@ -2803,6 +2803,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-container-type-no-layout-containment",
+    "owners": [ "ikilpatrick@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-controlled-frame",
     "owners": [ "cmp@chromium.org", "odejesush@chromium.org" ],
     "expiry_milestone": 140

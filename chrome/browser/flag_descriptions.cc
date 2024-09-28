@@ -201,6 +201,12 @@ const char kComputePressureBreakCalibrationMitigationDescription[] =
     "pressure is, but the Compute Pressure API can be susceptible to "
     "calibration attempts.";
 
+const char kContainerTypeNoLayoutContainmentName[] =
+    "Enables the container-type property to have no layout containment";
+const char kContainerTypeNoLayoutContainmentDescription[] =
+    "The container-type property was recently changed to not add layout "
+    "containment, this allows users to temporarily disable this change.";
+
 const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
 const char kContentSettingsPartitioningDescription[] =
     "Partition content settings by StoragePartitions";

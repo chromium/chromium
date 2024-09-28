@@ -16870,6 +16870,7 @@ from previous Chrome versions.
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
   <int value="-1411459387" label="EnterprisePolicyOnSignin:enabled"/>
   <int value="-1411003295" label="disable-encrypted-media"/>
+  <int value="-1410945555" label="ContainerTypeNoLayoutContainment:enabled"/>
   <int value="-1410394131" label="EvDetailsInPageInfo:enabled"/>
   <int value="-1410001116"
       label="EnableAmbientAuthenticationInGuestSession:disabled"/>
@@ -20589,6 +20590,7 @@ from previous Chrome versions.
   <int value="126341641" label="EnableDrDcVulkan:enabled"/>
   <int value="126485278" label="SurfacePolishForToolbarKillSwitch:enabled"/>
   <int value="127338155" label="NtpSafeBrowsingModule:disabled"/>
+  <int value="127383237" label="ContainerTypeNoLayoutContainment:disabled"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
   <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
