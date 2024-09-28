@@ -2597,7 +2597,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html [ Timeout ]
+crbug.com/370032367 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html [ Timeout ]
 crbug.com/369652659 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369652659 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369956891 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height.html [ Failure ]
