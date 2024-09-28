@@ -273,51 +273,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        // Handled in displaySitePermissions. Moving the addPreferencesFromResource call up to here
-        // causes animation jank (crbug.com/985734).
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (mPreviousNotificationPermission != null) {
-            outState.putInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY, mPreviousNotificationPermission);
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-        if (savedInstanceState == null) return;
-
-        if (savedInstanceState.containsKey(PREVIOUS_NOTIFICATION_PERMISSION_KEY)) {
-            mPreviousNotificationPermission =
-                    savedInstanceState.getInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY);
-        }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
         mPageTitle.set(getContext().getString(R.string.prefs_site_settings));
-        init();
-        super.onActivityCreated(savedInstanceState);
-    }
 
-    @Override
-    public ObservableSupplier<String> getPageTitle() {
-        return mPageTitle;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mConfirmationDialog != null) {
-            mConfirmationDialog.dismiss();
-        }
-    }
-
-    private void init() {
         // Remove this Preference if it gets restored without a valid SiteSettingsDelegate. This
         // can happen e.g. when it is included in PageInfo.
         if (!hasSiteSettingsDelegate()) {
@@ -341,9 +298,46 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
 
         mFromGrouped = getArguments().getBoolean(EXTRA_FROM_GROUPED, false);
+    }
 
-        // Disable animations of preference changes.
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         getListView().setItemAnimator(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPreviousNotificationPermission != null) {
+            outState.putInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY, mPreviousNotificationPermission);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState == null) return;
+
+        if (savedInstanceState.containsKey(PREVIOUS_NOTIFICATION_PERMISSION_KEY)) {
+            mPreviousNotificationPermission =
+                    savedInstanceState.getInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY);
+        }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+        }
     }
 
     @Override

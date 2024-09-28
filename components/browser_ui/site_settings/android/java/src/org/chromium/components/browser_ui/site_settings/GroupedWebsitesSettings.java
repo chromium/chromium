@@ -47,22 +47,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        // Handled in init. Moving the addPreferencesFromResource call up to here causes animation
-        // jank (crbug.com/985734).
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        init();
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public boolean hasDivider() {
-        return false;
-    }
-
-    private void init() {
         // Remove this Preference if it gets restored without a valid SiteSettingsDelegate. This
         // can happen e.g. when it is included in PageInfo.
         if (!hasSiteSettingsDelegate()) {
@@ -90,6 +74,11 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         setUpResetGroupPreference();
         setUpRelatedSitesPreferences();
         updateSitesInGroup();
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     @Override
