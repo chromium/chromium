@@ -68,7 +68,10 @@ export class GraduationTakeoutUi extends PolymerElement {
 
     this.webview.addEventListener('loadabort', () => {
       this.webviewLoading = false;
-      /** TODO(b/357877855) Trigger error screen. */
+      this.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR, {
+        bubbles: true,
+        composed: true,
+      }));
     });
 
     /**

@@ -19,6 +19,8 @@ build_webui("build") {
 
   web_component_files = [
     "js/graduation_app.ts",
+    "js/graduation_error.ts",
+    "js/graduation_offline.ts",
     "js/graduation_takeout_ui.ts",
     "js/graduation_welcome.ts",
   ]

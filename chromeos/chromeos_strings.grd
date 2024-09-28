@@ -705,6 +705,18 @@
         <message name="IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION" desc="An additional description shown on the welcome page when the Content Transfer app is opened.">
           Make sure to use the Content Transfer app by Google to move your school account data to your personal account before you lose access.
         </message>
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_TITLE" desc="The title of the page shown in the Content Transfer app when an error has occurred.">
+          An error occurred
+        </message>
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_DESCRIPTION" desc="The description of the page shown in the Content Transfer app when an error has occurred.">
+          Please try again later
+        </message>
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_TITLE" desc="The title of the page shown in the Content Transfer app when the network is not available.">
+          Can’t connect to the internet
+        </message>
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_DESCRIPTION" desc="The description of the page shown in the Content Transfer app when the network is not available.">
+          Check your internet connection
+        </message>
 
         <!-- Help App -->
         <message name="IDS_HELP_APP_EXPLORE" desc="Name of the Explore app in the app shelf. Explore is an app for users to find helpful information about their Chromebooks. Should be translated into other languages into a similar verb." meaning="App name.">

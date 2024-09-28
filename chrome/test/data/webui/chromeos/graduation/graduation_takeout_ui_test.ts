@@ -69,12 +69,18 @@ suite('GraduationTakeoutUiTest', function() {
     assertTrue(getDoneButton().hidden);
   });
 
-  test('HideSpinnerOnLoadAbort', function() {
+  test('TriggerErrorScreenOnLoadAbort', function() {
+    let errorPageTriggered = false;
     assertFalse(getSpinner().hidden);
     assertTrue(getWebview().hidden);
+
+    graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+      errorPageTriggered = true;
+    });
     getWebview().dispatchEvent(new CustomEvent('loadabort'));
     assertTrue(getSpinner().hidden);
     assertFalse(getWebview().hidden);
+    assertTrue(errorPageTriggered);
   });
 
   test('TriggerWelcomePageOnBackButtonClick', function() {

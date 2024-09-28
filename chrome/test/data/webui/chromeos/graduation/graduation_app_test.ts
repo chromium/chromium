@@ -29,4 +29,36 @@ suite('GraduationAppTest', function() {
         new CustomEvent(ScreenSwitchEvents.SHOW_WELCOME));
     assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
   });
+
+  test('ShowErrorScreenPermanently', function() {
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
+
+    graduationApp.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
+
+    // Error screen should permanently show even if other screens are triggered.
+    graduationApp.dispatchEvent(
+        new CustomEvent(ScreenSwitchEvents.SHOW_TAKEOUT_UI));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
+
+    graduationApp.dispatchEvent(
+        new CustomEvent(ScreenSwitchEvents.SHOW_WELCOME));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
+
+    window.dispatchEvent(new Event(ScreenSwitchEvents.OFFLINE));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
+
+    window.dispatchEvent(new Event(ScreenSwitchEvents.ONLINE));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.ERROR);
+  });
+
+  test('ShowOfflineScreenUntilBackOnline', function() {
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
+
+    window.dispatchEvent(new Event(ScreenSwitchEvents.OFFLINE));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.OFFLINE);
+
+    window.dispatchEvent(new Event(ScreenSwitchEvents.ONLINE));
+    assertEquals(graduationApp.getCurrentScreenForTest(), Screens.WELCOME);
+  });
 });

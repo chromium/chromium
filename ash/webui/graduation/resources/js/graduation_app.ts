@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './graduation_error.js';
+import './graduation_offline.js';
 import './graduation_takeout_ui.js';
 import './graduation_welcome.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
@@ -17,18 +19,28 @@ export enum Screens {
   /**
    * WELCOME: The welcome page shown on app launch.
    * TAKEOUT_UI: The screen containing the Takeout webview.
+   * ERROR: The screen shown permanently after an error event.
+   * OFFLINE: The screen shown when the device is offline.
    */
   WELCOME = 'graduation-welcome',
   TAKEOUT_UI = 'graduation-takeout-ui',
+  ERROR = 'graduation-error',
+  OFFLINE = 'graduation-offline',
 }
 
 export enum ScreenSwitchEvents {
   /**
    * SHOW_WELCOME: The event that triggers the welcome screen.
    * SHOW_TAKEOUT_UI: The event that triggers the Takeout webview screen.
+   * SHOW_ERROR: The event that triggers the error screen.
+   * ONLINE: The window event that triggers the welcome screen.
+   * OFFLINE: The window event that triggers the offline screen.
    */
   SHOW_WELCOME = 'show-welcome-screen',
   SHOW_TAKEOUT_UI = 'show-takeout-screen',
+  SHOW_ERROR = 'show-error-screen',
+  ONLINE = 'online',
+  OFFLINE = 'offline',
 }
 
 export interface GraduationApp {
@@ -51,7 +63,7 @@ export class GraduationApp extends PolymerElement {
   override ready() {
     super.ready();
     this.addEventListeners();
-    this.switchToScreen(Screens.WELCOME);
+    this.switchToScreen(navigator.onLine ? Screens.WELCOME : Screens.OFFLINE);
   }
 
   getCurrentScreenForTest(): Screens {
@@ -66,14 +78,32 @@ export class GraduationApp extends PolymerElement {
     this.addEventListener(ScreenSwitchEvents.SHOW_WELCOME, () => {
       this.switchToScreen(Screens.WELCOME);
     });
+
+    this.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+      this.switchToScreen(Screens.ERROR);
+    });
+
+    window.addEventListener(ScreenSwitchEvents.ONLINE, () => {
+      // If the app comes back online, start from the initial screen.
+      this.switchToScreen(Screens.WELCOME);
+    });
+
+    window.addEventListener(ScreenSwitchEvents.OFFLINE, () => {
+      this.switchToScreen(Screens.OFFLINE);
+    });
   }
 
   private switchToScreen(screen: Screens) {
-    if (this.currentScreen === screen) {
+    if (!this.canSwitchToScreen(screen)) {
       return;
     }
     this.currentScreen = screen;
     this.$.viewManager.switchView(this.currentScreen);
+  }
+
+  private canSwitchToScreen(screen: Screens): boolean {
+    return this.currentScreen !== screen &&
+        this.currentScreen !== Screens.ERROR;
   }
 }
 customElements.define(GraduationApp.is, GraduationApp);
