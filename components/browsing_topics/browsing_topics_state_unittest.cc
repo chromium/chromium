@@ -290,7 +290,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTime) {
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_IntroductionTime) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -298,14 +298,14 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTime) {
       kTime1, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
             base::Seconds(96673));
 
-  // Advance time to just before the epoch transition.
+  // Advance time to just before the epoch introduction.
   task_environment_->FastForwardBy(base::Seconds(96673));
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
 
-  // Advance time to the exact moment the epoch switches.
+  // Advance time to the epoch introduction time.
   task_environment_->FastForwardBy(base::Seconds(1));
   std::vector<const EpochTopics*> epochs_for_site =
       state.EpochsForSite(/*top_domain=*/"foo.com");
@@ -313,9 +313,9 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTime) {
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
 }
 
-// Together with EpochsForSite_OneEpoch_SwitchTime, this shows that the epoch
-// switch time is influenced by the specific epoch.
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTime2) {
+// Together with EpochsForSite_OneEpoch_IntroductionTime, this shows that the
+// epoch introduction time is influenced by the specific epoch.
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_IntroductionTime2) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -323,14 +323,14 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTime2) {
       kTime2, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
             base::Seconds(151685));
 
-  // Advance time to just before the epoch transition.
+  // Advance time to just before the epoch introduction.
   task_environment_->FastForwardBy(base::Seconds(151685));
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
 
-  // Advance time to the exact moment the epoch switches.
+  // Advance time to the epoch introduction time.
   task_environment_->FastForwardBy(base::Seconds(1));
   std::vector<const EpochTopics*> epochs_for_site =
       state.EpochsForSite(/*top_domain=*/"foo.com");
@@ -347,7 +347,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_ManuallyTriggered) {
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   // There shouldn't be a delay when the latest epoch is manually triggered.
-  ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
             base::Microseconds(0));
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -357,7 +357,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_ManuallyTriggered) {
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTime) {
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_IntroductionTime) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -369,10 +369,10 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTime) {
       kTime3, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
             base::Seconds(136778));
 
-  // Advance time to just before the epoch transition.
+  // Advance time to just before the epoch introduction.
   task_environment_->FastForwardBy(base::Seconds(136778));
   std::vector<const EpochTopics*> epochs_for_site =
       state.EpochsForSite(/*top_domain=*/"foo.com");
@@ -380,7 +380,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTime) {
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
 
-  // Advance time to the exact moment the epoch switches.
+  // Advance time to the epoch introduction time.
   task_environment_->FastForwardBy(base::Seconds(1));
 
   epochs_for_site = state.EpochsForSite(/*top_domain=*/"foo.com");
@@ -388,6 +388,46 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTime) {
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
   EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_PhaseOutTime) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28d"}}}},
+      /*disabled_features=*/{});
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  base::Time now = base::Time::Now();
+
+  state.AddEpoch(CreateTestEpochTopics(
+      now, /*from_manually_triggered_calculation=*/false));
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
+
+  base::TimeDelta phase_out_time_offset =
+      state.CalculateSiteStickyPhaseOutTimeOffset("foo.com", state.epochs()[0]);
+
+  ASSERT_GT(phase_out_time_offset, base::Seconds(0));
+  ASSERT_LT(phase_out_time_offset, base::Days(2));
+
+  // Advance time to just before the epoch phase out.
+  task_environment_->FastForwardBy(base::Days(28) - phase_out_time_offset -
+                                   base::Seconds(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 1u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+
+  // Advance time to the epoch phase out time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+
+  epochs_for_site = state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 0u);
 }
 
 TEST_F(BrowsingTopicsStateTest,
@@ -437,7 +477,8 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
+TEST_F(BrowsingTopicsStateTest,
+       EpochsForSite_FourEpochs_IntroductionTimeNotArrived) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -461,7 +502,8 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
   EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeArrived) {
+TEST_F(BrowsingTopicsStateTest,
+       EpochsForSite_FourEpochs_IntroductionTimeArrived) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 

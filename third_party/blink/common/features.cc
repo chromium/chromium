@@ -342,9 +342,10 @@ BASE_FEATURE_PARAM(int,
                    &kBrowsingTopicsParameters,
                    "use_random_topic_probability_percent",
                    5);
-// Maximum duration between when a epoch is calculated and when a site starts
-// using that new epoch's topics. The time chosen is a per-site per-epoch random
-// point in time between [calculation time, calculation time + max duration).
+// Maximum delay between the calculation of the latest epoch and when a site
+// starts seeing that epoch's topics. Each site transitions to the latest epoch
+// at a per-site, per-epoch random time within
+// [calculation time, calculation time + max delay).
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kBrowsingTopicsMaxEpochIntroductionDelay,
                    &kBrowsingTopicsParameters,
@@ -356,6 +357,19 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kBrowsingTopicsParameters,
                    "epoch_retention_duration",
                    base::Days(28));
+// Maximum time offset between when a site stops seeing an epoch's topics and
+// when the epoch is actually deleted. Each site transitions away from the
+// epoch at a per-site, per-epoch random time within
+// [deletion time - max offset, deletion time].
+//
+// Note: The actual phase-out time can be influenced by the
+// 'kBrowsingTopicsNumberOfEpochsToExpose' setting. If this setting enforces a
+// more restrictive phase-out, that will take precedence.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBrowsingTopicsMaxEpochPhaseOutTimeOffset,
+                   &kBrowsingTopicsParameters,
+                   "max_epoch_phase_out_time_offset",
+                   base::Days(2));
 // How many epochs (weeks) of API usage data (i.e. topics observations) will be
 // based off for the filtering of topics for a calling context.
 BASE_FEATURE_PARAM(

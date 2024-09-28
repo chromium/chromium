@@ -61,9 +61,17 @@ uint64_t HashTopDomainForTopTopicIndexDecision(
     const std::string& top_domain);
 
 // Returns a per-user, per-epoch hash of `top_domain` for the purpose of
-// deciding the epoch switch-over time. The `hmac_key` is per-user and
+// deciding the epoch introduction time. The `hmac_key` is per-user and
 // `epoch_calculation_time` represents the epoch.
-uint64_t HashTopDomainForEpochSwitchTimeDecision(
+uint64_t HashTopDomainForEpochIntroductionTimeDecision(
+    ReadOnlyHmacKey hmac_key,
+    base::Time epoch_calculation_time,
+    const std::string& top_domain);
+
+// Returns a per-user, per-epoch hash of `top_domain` for the purpose of
+// deciding the epoch phase out time. The `hmac_key` is per-user and
+// `epoch_calculation_time` represents the epoch.
+uint64_t HashTopDomainForEpochPhaseOutTimeDecision(
     ReadOnlyHmacKey hmac_key,
     base::Time epoch_calculation_time,
     const std::string& top_domain);

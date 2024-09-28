@@ -24,8 +24,10 @@ const char kRandomOrTopTopicDecisionPrefix[] =
 const char kRandomTopicIndexDecisionPrefix[] =
     "TopicsV1_RandomTopicIndexDecision|";
 const char kTopTopicIndexDecisionPrefix[] = "TopicsV1_TopTopicIndexDecision|";
-const char kEpochSwitchTimeDecisionPrefix[] =
+const char kEpochIntroductionTimeDecisionPrefix[] =
     "TopicsV1_EpochSwitchTimeDecision|";
+const char kEpochPhaseOutTimeDecisionPrefix[] =
+    "TopicsV1_EpochPhaseOutTimeDecision|";
 const char kContextDomainStoragePrefix[] = "TopicsV1_ContextDomainStorage|";
 const char kMainFrameHostStoragePrefix[] = "TopicsV1_MainFrameHostStorage|";
 
@@ -100,11 +102,19 @@ uint64_t HashTopDomainForTopTopicIndexDecision(
                   GetEpochId(epoch_calculation_time) + top_domain);
 }
 
-uint64_t HashTopDomainForEpochSwitchTimeDecision(
+uint64_t HashTopDomainForEpochIntroductionTimeDecision(
     ReadOnlyHmacKey hmac_key,
     base::Time epoch_calculation_time,
     const std::string& top_domain) {
-  return HmacHash(hmac_key, kEpochSwitchTimeDecisionPrefix,
+  return HmacHash(hmac_key, kEpochIntroductionTimeDecisionPrefix,
+                  GetEpochId(epoch_calculation_time) + top_domain);
+}
+
+uint64_t HashTopDomainForEpochPhaseOutTimeDecision(
+    ReadOnlyHmacKey hmac_key,
+    base::Time epoch_calculation_time,
+    const std::string& top_domain) {
+  return HmacHash(hmac_key, kEpochPhaseOutTimeDecisionPrefix,
                   GetEpochId(epoch_calculation_time) + top_domain);
 }
 
