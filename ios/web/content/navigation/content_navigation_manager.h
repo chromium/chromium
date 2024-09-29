@@ -5,9 +5,9 @@
 #ifndef IOS_WEB_CONTENT_NAVIGATION_CONTENT_NAVIGATION_MANAGER_H_
 #define IOS_WEB_CONTENT_NAVIGATION_CONTENT_NAVIGATION_MANAGER_H_
 
-#import "ios/web/public/navigation/navigation_manager.h"
-
+#import "base/memory/raw_ref.h"
 #import "build/blink_buildflags.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 
 #if !BUILDFLAG(USE_BLINK)
 #error File can only be included when USE_BLINK is true
@@ -61,7 +61,7 @@ class ContentNavigationManager : public NavigationManager {
  private:
   raw_ptr<ContentWebState> web_state_;
   raw_ptr<BrowserState> browser_state_;
-  content::NavigationController& controller_;
+  raw_ref<content::NavigationController> controller_;
 };
 
 }  // namespace web
