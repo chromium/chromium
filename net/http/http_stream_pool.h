@@ -187,6 +187,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Returns true when HTTP/1.1 is required for `stream_key`.
   bool RequiresHTTP11(const HttpStreamKey& stream_key);
 
+  // Returns true when QUIC is broken for `stream_key`.
+  bool IsQuicBroken(const HttpStreamKey& stream_key);
+
   // Returns true when QUIC can be used for `stream_key`.
   bool CanUseQuic(const HttpStreamKey& stream_key,
                   bool enable_ip_based_pooling,

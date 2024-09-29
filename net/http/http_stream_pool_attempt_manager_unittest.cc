@@ -3431,6 +3431,31 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkDnsAlpn) {
               Optional(IsOk()));
 }
 
+// Tests that QUIC is not attempted when marked broken.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicBroken) {
+  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  http_server_properties()->MarkAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
