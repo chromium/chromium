@@ -116,8 +116,6 @@ crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 
-# Gardener 2024-03-18
-crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 # Longstanding flaking test - page reported failure
 crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
