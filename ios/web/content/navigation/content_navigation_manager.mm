@@ -222,10 +222,4 @@ void ContentNavigationManager::Restore(
   NOTIMPLEMENTED();
 }
 
-void ContentNavigationManager::AddRestoreCompletionCallback(
-    base::OnceClosure callback) {
-  // TODO(crbug.com/40257932)
-  NOTIMPLEMENTED();
-}
-
 }  // namespace web
