@@ -4,6 +4,7 @@
 
 #include "ash/picker/views/picker_caps_lock_state_view.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
@@ -17,14 +18,22 @@ TEST_F(PickerCapsLockStateViewTest, ShowsCapsLockOn) {
   PickerCapsLockStateView* view =
       new PickerCapsLockStateView(GetContext(), true, gfx::Rect(0, 0, 120, 20));
 
-  EXPECT_EQ(view->label_for_testing()->GetText(), u"Caps Lock on");
+  EXPECT_EQ(view->icon_view_for_testing()
+                .GetImageModel()
+                .GetVectorIcon()
+                .vector_icon(),
+            &kPickerCapsLockOnIcon);
 }
 
 TEST_F(PickerCapsLockStateViewTest, ShowsCapsLockOff) {
   PickerCapsLockStateView* view = new PickerCapsLockStateView(
       GetContext(), false, gfx::Rect(0, 0, 120, 20));
 
-  EXPECT_EQ(view->label_for_testing()->GetText(), u"Caps Lock off");
+  EXPECT_EQ(view->icon_view_for_testing()
+                .GetImageModel()
+                .GetVectorIcon()
+                .vector_icon(),
+            &kPickerCapsLockOffIcon);
 }
 
 }  // namespace
