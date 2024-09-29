@@ -38,9 +38,7 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   void Update(const std::u16string& text);
 
   // views::BubbleDialogDelegateView:
-  void Init() override;
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const override;
+  void OnThemeChanged() override;
 
   const std::u16string& GetTextForTesting() const;
 

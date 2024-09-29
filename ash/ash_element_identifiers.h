@@ -64,6 +64,10 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
 // associated element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kExploreAppElementId);
 
+// Identifies the FaceGaze bubble UI that is pinned to the top of the screen
+// when the feature is running.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kFaceGazeBubbleElementId);
+
 // Uniquely identifies an element corresponding to the Files app.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kFilesAppElementId);
 

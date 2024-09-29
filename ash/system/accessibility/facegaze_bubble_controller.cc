@@ -13,6 +13,10 @@
 
 namespace ash {
 
+namespace {
+constexpr int kMarginFromTopDip = 8;
+}  // namespace
+
 FaceGazeBubbleController::FaceGazeBubbleController() = default;
 
 FaceGazeBubbleController::~FaceGazeBubbleController() {
@@ -70,7 +74,7 @@ void FaceGazeBubbleController::Update(const std::u16string& text) {
   // work area.
   int center = (work_area_size.width() / 2) - (bubble_size.width() / 2) +
                primary_work_area.x();
-  int top = primary_work_area.y();
+  int top = primary_work_area.y() + kMarginFromTopDip;
   facegaze_bubble_view_->SetAnchorRect(gfx::Rect(center, top, 0, 0));
 }
 

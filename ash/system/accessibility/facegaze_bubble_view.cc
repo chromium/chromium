@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -15,18 +16,24 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
 namespace {
 
+constexpr ui::ColorId kBackgroundColor =
+    cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kIconSizeDip = 24;
-constexpr int kSpaceBetweenIconAndTextDip = 8;
-
+constexpr int kLeftRightMarginDip = 20;
+constexpr int kRoundedCornerRadius = 24.f;
+constexpr int kSpaceBetweenIconAndTextDip = 16;
+constexpr int kTopBottomMarginDip = 12;
 const ui::ResourceBundle::FontStyle kKeyLabelFontStyle =
     ui::ResourceBundle::MediumFont;
 
@@ -59,12 +66,29 @@ std::unique_ptr<views::ImageView> CreateImageView(
 }  // namespace
 
 FaceGazeBubbleView::FaceGazeBubbleView() {
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
 
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
+  SetLayoutManager(std::move(layout));
+  set_margins(gfx::Insets()
+                  .set_top(kTopBottomMarginDip)
+                  .set_bottom(kTopBottomMarginDip)
+                  .set_left(kLeftRightMarginDip)
+                  .set_right(kLeftRightMarginDip));
+  set_corner_radius(kRoundedCornerRadius);
+  set_highlight_button_when_shown(false);
+  SetCanActivate(false);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetProperty(views::kElementIdentifierKey, kFaceGazeBubbleElementId);
+
+  AddChildView(CreateImageView(&image_, kFacegazeIcon));
+  AddChildView(
+      CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
 }
 
 FaceGazeBubbleView::~FaceGazeBubbleView() = default;
@@ -75,26 +99,9 @@ void FaceGazeBubbleView::Update(const std::u16string& text) {
   SizeToContents();
 }
 
-void FaceGazeBubbleView::Init() {
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
-  SetLayoutManager(std::move(layout));
-  set_margins(
-      gfx::Insets().set_top(8).set_bottom(8).set_left(16).set_right(16));
-  AddChildView(CreateImageView(&image_, kFacegazeIcon));
-  AddChildView(
-      CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
-}
-
-void FaceGazeBubbleView::OnBeforeBubbleWidgetInit(
-    views::Widget::InitParams* params,
-    views::Widget* widget) const {
-  params->type = views::Widget::InitParams::TYPE_BUBBLE;
-  params->opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params->activatable = views::Widget::InitParams::Activatable::kNo;
-  params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params->name = "FaceGazeBubbleView";
+void FaceGazeBubbleView::OnThemeChanged() {
+  BubbleDialogDelegateView::OnThemeChanged();
+  set_color(GetColorProvider()->GetColor(kBackgroundColor));
 }
 
 const std::u16string& FaceGazeBubbleView::GetTextForTesting() const {
