@@ -45,6 +45,7 @@
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -317,6 +318,19 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
                blink::WebPluginContainer*,
                bool),
               (override));
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  MOCK_METHOD(void,
+              PerformOcr,
+              (const SkBitmap& image,
+               base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+                   callback),
+              (override));
+
+  MOCK_METHOD(void,
+              SetOcrDisconnectedCallback,
+              (base::RepeatingClosure callback),
+              (override));
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
 class FakePdfHost : public pdf::mojom::PdfHost {

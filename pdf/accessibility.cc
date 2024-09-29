@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
@@ -30,15 +31,15 @@ AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(
 
 }  // namespace
 
-bool GetAccessibilityInfo(PDFiumEngine* engine,
+void GetAccessibilityInfo(PDFiumEngine* engine,
                           int32_t page_index,
                           AccessibilityPageInfo& page_info,
                           std::vector<AccessibilityTextRunInfo>& text_runs,
                           std::vector<AccessibilityCharInfo>& chars,
                           AccessibilityPageObjects& page_objects) {
   int page_count = engine->GetNumberOfPages();
-  if (page_index < 0 || page_index >= page_count)
-    return false;
+  CHECK_GE(page_index, 0);
+  CHECK_LT(page_index, page_count);
 
   int char_count = engine->GetCharCount(page_index);
 
@@ -115,7 +116,6 @@ bool GetAccessibilityInfo(PDFiumEngine* engine,
   page_objects.highlights = engine->GetHighlightInfo(page_index, text_runs);
   page_objects.form_fields = GetAccessibilityFormFieldInfo(
       engine, page_index, page_info.text_run_count);
-  return true;
 }
 
 }  // namespace chrome_pdf

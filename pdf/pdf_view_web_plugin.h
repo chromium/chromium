@@ -34,6 +34,7 @@
 #include "pdf/post_message_receiver.h"
 #include "pdf/preview_mode_client.h"
 #include "pdf/v8_value_converter.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -51,6 +52,10 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_module_client.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
 
 namespace blink {
@@ -241,6 +246,20 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
         PdfAccessibilityImageFetcher* image_fetcher,
         blink::WebPluginContainer* plugin_container,
         bool print_preview);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // Performs OCR on `image` and sends the recognized text to `callback`.
+    // In case OCR service gets disconnected before or during running this
+    // request, `callback` will not be called.
+    virtual void PerformOcr(
+        const SkBitmap& image,
+        base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+            callback) = 0;
+
+    // Sets a `callback` that is notified if OCR service gets disconnected.
+    virtual void SetOcrDisconnectedCallback(
+        base::RepeatingClosure callback) = 0;
+#endif
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,

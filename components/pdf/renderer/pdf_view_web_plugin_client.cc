@@ -16,6 +16,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "net/cookies/site_for_cookies.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -195,6 +197,35 @@ std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPluginClient::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
   return GetFrame()->CreateAssociatedURLLoader(options);
+}
+
+void PdfViewWebPluginClient::PerformOcr(
+    const SkBitmap& image,
+    base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback) {
+  CHECK(base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled));
+
+  if (!screen_ai_annotator_.is_bound()) {
+    render_frame_->GetBrowserInterfaceBroker().GetInterface(
+        screen_ai_annotator_.BindNewPipeAndPassReceiver());
+    screen_ai_annotator_->SetClientType(
+        screen_ai::mojom::OcrClientType::kPdfViewer);
+    screen_ai_annotator_.set_disconnect_handler(
+        base::BindOnce(&PdfViewWebPluginClient::OnOcrDisconnected,
+                       weak_factory_.GetWeakPtr()));
+  }
+  screen_ai_annotator_->PerformOcrAndReturnAnnotation(image,
+                                                      std::move(callback));
+}
+
+void PdfViewWebPluginClient::SetOcrDisconnectedCallback(
+    base::RepeatingClosure callback) {
+  ocr_disconnect_callback_ = std::move(callback);
+}
+
+void PdfViewWebPluginClient::OnOcrDisconnected() {
+  screen_ai_annotator_.reset();
+  CHECK(ocr_disconnect_callback_);
+  ocr_disconnect_callback_.Run();
 }
 
 void PdfViewWebPluginClient::UpdateTextInputState() {

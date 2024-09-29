@@ -1336,16 +1336,17 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 class PdfOcrIntegrationTest
     : public PDFExtensionAccessibilityTest,
       public screen_ai::ScreenAIInstallState::Observer,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   PdfOcrIntegrationTest() = default;
   ~PdfOcrIntegrationTest() override = default;
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
+  bool IsSearchifyEnabled() const { return std::get<2>(GetParam()); }
 
   // PDFExtensionAccessibilityTest:
-  bool UseOopif() const override { return std::get<2>(GetParam()); }
+  bool UseOopif() const override { return std::get<3>(GetParam()); }
 
   bool IsOcrAvailable() const {
     return IsOcrServiceEnabled() && IsLibraryAvailable();
@@ -1395,6 +1396,20 @@ class PdfOcrIntegrationTest
     }
   }
 
+  int GetExpectedStatus(bool has_content) {
+    // TODO(crbug.com/360803943): Update `PdfAccessibilityTree` to send the same
+    // notifications when searchify is enabled.
+    if (IsSearchifyEnabled()) {
+      return IDS_PDF_LOADED_TO_A11Y_TREE;
+    }
+
+    if (!IsOcrAvailable()) {
+      return IDS_PDF_OCR_FEATURE_ALERT;
+    }
+
+    return has_content ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_NO_RESULT;
+  }
+
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
@@ -1403,6 +1418,9 @@ class PdfOcrIntegrationTest
     enabled.push_back({::features::kScreenAITestMode, {}});
     if (IsOcrServiceEnabled()) {
       enabled.push_back({ax::mojom::features::kScreenAIOCREnabled, {}});
+    }
+    if (IsSearchifyEnabled()) {
+      enabled.push_back({chrome_pdf::features::kPdfSearchify, {}});
     }
     if (UseOopif()) {
       enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
@@ -1417,6 +1435,9 @@ class PdfOcrIntegrationTest
     std::vector<base::test::FeatureRef> disabled;
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
+    }
+    if (!IsSearchifyEnabled()) {
+      disabled.push_back(chrome_pdf::features::kPdfSearchify);
     }
     if (!UseOopif()) {
       disabled.push_back(chrome_pdf::features::kPdfOopif);
@@ -1443,6 +1464,13 @@ class PdfOcrIntegrationTest
     std::string expected_tree_dump =
         GetExpectedAXTreeDumpForPdf(test_pdf_path, IsOcrAvailable());
     ASSERT_NE("", expected_tree_dump);
+
+    // TODO(crbug.com/360803943): Update `PdfAccessibilityTree` to add header
+    // and footer to the searchify extracted text, similar to the enabled OCR
+    // case.
+    if (IsSearchifyEnabled()) {
+      return;
+    }
 
     ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
   }
@@ -1529,39 +1557,39 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
-  RunPDFAXTreeDumpTest(
-      "hello-world-in-image.pdf",
-      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
+  RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
+                       GetExpectedStatus(/*has_content=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
-  RunPDFAXTreeDumpTest(
-      "inaccessible-text-in-three-page.pdf",
-      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
+  RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf",
+                       GetExpectedStatus(/*has_content=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {
-  RunPDFAXTreeDumpTest(
-      "inaccessible-text-in-twenty-page.pdf",
-      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
+  RunPDFAXTreeDumpTest("inaccessible-text-in-twenty-page.pdf",
+                       GetExpectedStatus(/*has_content=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, NoOcrResultOnBlankImagePdf) {
-  RunPDFAXTreeDumpTest("blank_image.pdf", IsOcrAvailable()
-                                              ? IDS_PDF_OCR_NO_RESULT
-                                              : IDS_PDF_OCR_FEATURE_ALERT);
+  RunPDFAXTreeDumpTest("blank_image.pdf",
+                       GetExpectedStatus(/*has_content=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PdfOcrIntegrationTest,
-    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
+    ::testing::Combine(testing::Bool(),
+                       testing::Bool(),
+                       testing::Bool(),
+                       testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>& info) {
       return base::StringPrintf(
-          "OCR_%s_Library_%s_%s",
+          "OcrService_%s_Library_%s_Searchify_%s_%s",
           std::get<0>(info.param) ? "Enabled" : "Disabled",
           std::get<1>(info.param) ? "Available" : "Unavailable",
-          std::get<2>(info.param) ? "OOPIF" : "GuestView");
+          std::get<2>(info.param) ? "Enabled" : "Disabled",
+          std::get<3>(info.param) ? "OOPIF" : "GuestView");
     });
 
 #endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)

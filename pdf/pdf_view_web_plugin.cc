@@ -1204,6 +1204,12 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
 
+  // To avoid delaying page load for searchify, start searchify after document
+  // load is completed.
+  client_->SetOcrDisconnectedCallback(engine_->GetOcrDisconnectHandler());
+  engine_->StartSearchify(
+      base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
+
   if (!full_frame_)
     return;
 
@@ -2621,9 +2627,26 @@ AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
 }
 
 void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
-  // Outdated calls are ignored.
-  if (page_index != next_accessibility_page_index_)
+  // Ignore outdated or out of range calls.
+  if (page_index != next_accessibility_page_index_ || page_index < 0 ||
+      page_index >= engine_->GetNumberOfPages()) {
     return;
+  }
+
+  // Wait for the page to be loaded and searchified before getting accessibility
+  // page info.
+  // Ensure page is loaded so that it can schedule a searchify operation if
+  // needed.
+  engine_->GetPage(page_index)->GetPage();
+  if (engine_->PageNeedsSearchify(page_index)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
+                       weak_factory_.GetWeakPtr(), page_index),
+        kAccessibilityPageDelay * 10);
+    return;
+  }
+
   ++next_accessibility_page_index_;
 
   AccessibilityPageInfo page_info;
@@ -2631,21 +2654,21 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
   std::vector<AccessibilityCharInfo> chars;
   AccessibilityPageObjects page_objects;
 
-  if (!GetAccessibilityInfo(engine_.get(), page_index, page_info, text_runs,
-                            chars, page_objects)) {
-    return;
-  }
+  GetAccessibilityInfo(engine_.get(), page_index, page_info, text_runs, chars,
+                       page_objects);
 
   pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
       std::move(page_info), std::move(text_runs), std::move(chars),
       std::move(page_objects));
 
-  // Schedule loading the next page.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
-                     weak_factory_.GetWeakPtr(), page_index + 1),
-      kAccessibilityPageDelay);
+  // Schedule loading the next page if there's more.
+  if (page_index + 1 < engine_->GetNumberOfPages()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
+                       weak_factory_.GetWeakPtr(), page_index + 1),
+        kAccessibilityPageDelay);
+  }
 }
 
 void PdfViewWebPlugin::PrepareAndSetAccessibilityViewportInfo() {
