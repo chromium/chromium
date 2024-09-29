@@ -31,6 +31,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // remains consistent on all systems.
 IDI_MINI_INSTALLER      ICON                    "installer.ico"
 
+IDB_LOGO         BITMAP                         "logo.bmp"
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -54,12 +56,10 @@ END
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
-IDD_SPLASH DIALOGEX 0, 0, 104, 32
-STYLE DS_SETFONT | WS_DLGFRAME | WS_POPUP
+IDD_SPLASH DIALOGEX 0, 0, 55, 47
+STYLE DS_SETFONT | WS_POPUP
+EXSTYLE WS_EX_TRANSPARENT
 FONT 12, "Segoe UI", 0, 0, 0x0
 BEGIN
-    CTEXT           "",IDC_SPLASH_TITLE_BAR_SPACER,0,0,1,32
-    ICON            IDI_MINI_INSTALLER,IDC_SPLASH_ICON,47,5,10,8
-    CTEXT           "",IDC_SPLASH_TEXT,32,20,39,11
+    CONTROL         IDB_LOGO,IDC_LOGO,"Static",SS_BITMAP,1,1,0,0
 END
-
