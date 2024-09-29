@@ -8,13 +8,12 @@ import android.app.Activity;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ServiceLoaderUtil;
 
 /** Monitors changes to driving restrictions and applies required optimizations. */
 public class DrivingRestrictionsManager {
     private static DrivingRestrictionsManager sInstance;
 
-    private DrivingRestrictionsDelegate mDelegate;
+    private DrivingRestrictionsDelegateImpl mDelegate;
     private boolean mMonitoring;
 
     /** Initializes DrivingRestrictionsManager if it has not yet been initialized. */
@@ -23,12 +22,8 @@ public class DrivingRestrictionsManager {
     }
 
     DrivingRestrictionsManager() {
-        DrivingRestrictionsDelegateFactory factory =
-                ServiceLoaderUtil.maybeCreate(DrivingRestrictionsDelegateFactory.class);
-        if (factory == null) {
-            factory = FallbackDrivingRestrictionsDelegate::new;
-        }
-        mDelegate = factory.create(this::onRequiresDistractionOptimizationChanged);
+        mDelegate =
+                new DrivingRestrictionsDelegateImpl(this::onRequiresDistractionOptimizationChanged);
 
         updateMonitoring(ApplicationStatus.getStateForApplication());
         ApplicationStatus.registerApplicationStateListener(newState -> updateMonitoring(newState));
@@ -52,11 +47,11 @@ public class DrivingRestrictionsManager {
         }
     }
 
-    void setDelegateForTesting(DrivingRestrictionsDelegate delegate) {
+    void setDelegateForTesting(DrivingRestrictionsDelegateImpl delegate) {
         mDelegate = delegate;
     }
 
-    DrivingRestrictionsDelegate getDelegateForTesting() {
+    DrivingRestrictionsDelegateImpl getDelegateForTesting() {
         return mDelegate;
     }
 
