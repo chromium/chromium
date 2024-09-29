@@ -620,7 +620,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2111166930115883695">Boshlash uchun probelni bosing</translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Inkor qilindi, chunki <ph name="POLICY_NAME" /> parametri undan ustunroq.</translation>
-<translation id="2115549780565563931">Chegirmalar</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Kimga berilgan: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Quyi oʻngdan teshik ochish</translation>
@@ -4145,7 +4144,6 @@ Batafsil axborot:
 <translation id="8564466070529550495">Hozirda virtual karta mavjud emas. Keyinroq qayta urining.</translation>
 <translation id="8564985650692024650">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
 <translation id="8570895683659698018">Hobbilar va hordiq</translation>
-<translation id="8572792595597115856">Muddati: <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Sovitkich va muzlatkichlar</translation>
 <translation id="8577192028579836704">Odatiy narxdagi barcha variantlar: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtual karta mavjud emas</translation>

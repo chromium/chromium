@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
 <translation id="2161656808144014275">Testun</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
+<translation id="2173302385160625112">Gwiriwch eich cysylltiad rhyngrwyd</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
 <translation id="2189104374785738357">Golygu manylion APN</translation>
 <translation id="2195732836444333448">Capasiti yn llawn ar hyn o bryd. Dewch yn ôl yn fuan.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Math</translation>
 <translation id="2468124392950503650">Dewiswch anogwr i greu neu weld y <ph name="BEGIN_LINK_PROMPTING_GUIDE" />canllaw anogwr<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Defnyddiwch Helpu fi i ysgrifennu i greu drafft neu fireinio gwaith sy'n bodoli eisoes, wedi'i bweru gan AI Google</translation>
+<translation id="2475982808118771221">Bu gwall</translation>
 <translation id="2480572840229215612">crancod</translation>
 <translation id="248546197012830854">Mae'r ddyfais all-lein. Cysylltwch â rhwydwaith Wi-Fi i weld cynnwys cymorth.</translation>
 <translation id="2486301288428798846">coed</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Tystysgrif defnyddiwr</translation>
 <translation id="6146993107019042706">Rhowch eich cyfrinair newydd i orffen</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nid oes modd cysylltu â'r rhyngrwyd</translation>
 <translation id="6156030503438652198">marŵn a phinc</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Dyfais <ph name="INDEX" /> o <ph name="COUNT" /> o'r enw <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Dewiswch waith celf unigryw <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">rhowch yr allwedd</translation>
+<translation id="7117228822971127758">Rhowch gynnig arall arni'n nes ymlaen</translation>
 <translation id="7118522231018231199">Gwnewch yn siŵr eich bod yn dewis APNs a ddarperir gan eich darparwr ffôn symudol neu weinyddwr. Bydd dewis APN yn analluogi unrhyw APNs personol. Gall APNs annilys amharu ar eich cysylltiad symudol.</translation>
 <translation id="7119389851461848805">pŵer</translation>
 <translation id="7129287270910503851">Bydd eich defnydd data yn cael ei ailosod bob mis ar y diwrnod hwn</translation>

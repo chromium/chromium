@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
+<translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2180197493692062006">कुनै समस्या आयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
 <translation id="2189104374785738357">APN सम्बन्धी विवरणहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="2195732836444333448">अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। चाँडै फर्केर आउनुहोस्।</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2468124392950503650">सिर्जना गर्न प्रम्प्ट चयन गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्टसम्बन्धी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
 <translation id="2472215337771558851">Google AI को लेख्न मद्दत गर्ने सुविधा प्रयोग गरी ड्राफ्ट बनाउनुहोस् वा पहिले नै लेखिएको सामग्री परिष्कृत गर्नुहोस्</translation>
+<translation id="2475982808118771221">त्रुटि भयो</translation>
 <translation id="2480572840229215612">गँगटाहरू</translation>
 <translation id="248546197012830854">डिभाइस अफलाइन छ। मद्दतसम्बन्धी सामग्री हेर्न Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="2486301288428798846">काठ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">इन्टरनेटमा जोड्न सकिएन</translation>
 <translation id="6156030503438652198">मरुन र गुलाबी</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> वटामध्ये <ph name="INDEX" /> औँ डिभाइस, डिभाइसको नाम: <ph name="NAME" />।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> को विशेष कलाकृति छनौट गर्नुहोस्</translation>
 <translation id="7108668606237948702">प्रविष्टि गर्नुहोस्</translation>
+<translation id="7117228822971127758">कृपया पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7118522231018231199">आफ्नो मोबाइल सेवा प्रदायक वा एड्मिनले उपलब्ध गराएका APN चयन गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। कुनै APN चयन गर्नुभयो भने कस्टम APN अफ हुने छ। अवैध APN प्रयोग गर्दा तपाईंको मोबाइल कनेक्सनमा बाधा पुग्न सक्छ।</translation>
 <translation id="7119389851461848805">पावर</translation>
 <translation id="7129287270910503851">तपाईंले प्रयोग गर्ने डेटा हरेक महिना आजकै दिन रिसेट गरिने छ</translation>

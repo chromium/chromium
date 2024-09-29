@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">用戶字典</translation>
 <translation id="139300021892314943">限制可登入的使用者</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
-<translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
 <translation id="1396120028054416908">返去「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="1396139853388185343">設定打印機時發生錯誤</translation>
@@ -1361,7 +1360,6 @@
 <translation id="1942128823046546853">讀取及變更您在所有網站上的所有資料</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1944535645109964458">沒有密鑰</translation>
-<translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓您使用具有身分服務的帳戶來登入網站</translation>
 <translation id="1948528728718281125">已向應用程式、具有相機權限的網站及系統服務授予相機存取權</translation>
 <translation id="1949332606889020901">當機 ID</translation>
@@ -2238,7 +2236,6 @@
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
-<translation id="2549766998450508148">請按下 1 至 4 個輔助鍵 (Ctrl、Alt、Shift 或搜尋鍵) 和另外 1 個鍵，亦可選取單一按鍵。</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2550212893339833758">儲存在 Swap 空間的記憶體</translation>
 <translation id="2550596535588364872">允許「<ph name="EXTENSION_NAME" />」開啟 <ph name="FILE_NAME" /> 嗎？</translation>
@@ -2435,7 +2432,6 @@
 <translation id="2705736684557713153">捲動至螢幕底部，如果看到 [即時網絡共享]，請開啟此功能；看不到則代表您已完成設定。</translation>
 <translation id="2706304388244371417">備份至「Google 雲端硬碟」。你可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用你子女的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />進一步瞭解備份<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
-<translation id="2707024448553392710">正在下載組件</translation>
 <translation id="270921614578699633">平均取樣數：</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
@@ -2559,7 +2555,6 @@
 <translation id="2779728796406650689">這可讓「Google 助理」在你提問時提供更貼近需要的回覆。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
-<translation id="2783298271312924866">已下載</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
 <translation id="2785267875302712148">密碼安全檢查</translation>
 <translation id="2785279781154577715">分頁懸停預覽資訊卡外觀</translation>
@@ -2886,7 +2881,6 @@
 <translation id="301525898020410885">語言採用機構的設定</translation>
 <translation id="3015639418649705390">立即重新啟動</translation>
 <translation id="3016381065346027039">沒有記錄項目</translation>
-<translation id="3016641847947582299">組件已更新</translation>
 <translation id="3019023222666709803">箭咀工具</translation>
 <translation id="3019285239893817657">子頁面按鈕</translation>
 <translation id="3019595674945299805">VPN 服務</translation>
@@ -2965,6 +2959,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">只儲存在此裝置上</translation>
 <translation id="3076977359333237641">已刪除您的登入資料。</translation>
+<translation id="3077734595579995578">Shift</translation>
 <translation id="3080933187214341848">此網絡沒有同步至您的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">擴充程式</translation>
@@ -7191,7 +7186,6 @@
 <translation id="6208521041562685716">正在啟用流動數據</translation>
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">如果忘記密碼短語或想變更此設定，請<ph name="SETTINGS_LINK" />。</translation>
-<translation id="6209838773933913227">正在更新組件</translation>
 <translation id="6209908325007204267">您的裝置包含一項 Chrome Enterprise 升級，但您的使用者名稱尚未連結企業賬戶。請透過另一部裝置前往 g.co/ChromeEnterpriseAccount 建立企業帳戶。</translation>
 <translation id="6210282067670792090">請在網址列中輸入相關的鍵盤快速鍵和快捷字詞，以使用搜尋引擎和網站搜尋</translation>
 <translation id="6211067089253408231">開啟「即時熱點」</translation>
@@ -7255,7 +7249,6 @@
 <translation id="6247620186971210352">找不到應用程式</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">系統：<ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">可執行更新</translation>
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6249200942125593849">管理無障礙功能</translation>
 <translation id="6250186368828697007">分享螢幕畫面時會隱藏詳細資料</translation>
@@ -8081,7 +8074,6 @@
 <translation id="6852290167968069627">由於發生網絡問題，ChromeOS 無法恢復上一個工作階段。請連線至穩定的網絡後再試一次。</translation>
 <translation id="6852529053326738838">請向機構查詢，或使用公司電郵帳戶註冊，確認你的帳戶是否符合資格。</translation>
 <translation id="6853029310037965825">從 <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安裝的<ph name="APP_TYPE" /></translation>
-<translation id="6853388645642883916">更新程式休眠中</translation>
 <translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
 <translation id="6856348640027512653">不允許使用虛擬實境﻿裝置或資料</translation>
@@ -8891,7 +8883,6 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">組件已是最新版本</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{已開啟 # 個分頁，按下即可切換標籤列}other{已開啟 # 個分頁，按下即可切換標籤列}}</translation>
 <translation id="7465635034594602553">發生錯誤，請等候數分鐘，然後再次執行 <ph name="APP_NAME" />。</translation>
 <translation id="7465777686629334728">移除受管開發環境 (<ph name="SPECIFIC_NAME" />)</translation>

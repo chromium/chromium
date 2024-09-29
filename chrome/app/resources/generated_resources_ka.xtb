@@ -544,7 +544,6 @@
 <translation id="1392047138650695757">მომხმარებლის ლექსიკონები</translation>
 <translation id="139300021892314943">სისტემაში შესვლის შესაძლებლობის მქონე ადამიანების შეზღუდვა</translation>
 <translation id="1393283411312835250">მზე და ღრუბლები</translation>
-<translation id="1395730723686586365">განახლების პროგრამა გაშვებულია</translation>
 <translation id="1395832189806039783">ერთეულის გამოყოფა კლავიატურით ფოკუსირების მეშვეობით</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />-ზე დაბრუნება</translation>
 <translation id="1396139853388185343">პრინტერის დაყენებისას შეცდომა წარმოიქმნა</translation>
@@ -1353,7 +1352,6 @@
 <translation id="1942128823046546853">თქვენი ყველა მონაცემის წაკითხვა და შეცვლა ყველა ვებსაიტზე</translation>
 <translation id="1944528062465413897">Bluetooth-დაწყვილების კოდი:</translation>
 <translation id="1944535645109964458">წვდომის გასაღებები მიუწვდომელია</translation>
-<translation id="1944921356641260203">ნაპოვნია განახლება</translation>
 <translation id="1947136734041527201">საშუალებას გაძლევთ, შეხვიდეთ ვებსაიტებში პირადობის მონაცემების სერვისში არსებული ანგარიშით</translation>
 <translation id="1948528728718281125">კამერაზე წვდომა დაშვებულია აპებისთვის, ვებსაიტებისთვის კამერის გამოყენების ნებართვით, ასევე, სისტემის სერვისებისთვის</translation>
 <translation id="1949332606889020901">ავარიულად გათიშვის ID-ები</translation>
@@ -2227,7 +2225,6 @@
 <translation id="2546991196809436099">გაადიდეთ მასშტაბი, ეკრანზე არსებული ერთეულები რომ გაადიდოთ. ლუპის ჩასართავად ან გამოსართავად გამოიყენეთ კლავიშთა კომბინაცია Search + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> დაშვებულია</translation>
 <translation id="2548545707296594436">eSIM პროფილის ქეშის გადაყენება</translation>
-<translation id="2549766998450508148">დააჭირეთ 1-დან 4-მდე მოდიფიკატორ კლავიშს (ctrl, alt, shift ან ძიება) და კიდევ 1 კლავიშს. ერთი კლავიშის არჩევაც შეგიძლიათ.</translation>
 <translation id="2549985041256363841">ჩაწერის დაწყება</translation>
 <translation id="2550212893339833758">გადატუმბული მეხსიერება</translation>
 <translation id="2550596535588364872">გსურთ <ph name="EXTENSION_NAME" />-ისთვის <ph name="FILE_NAME" />-ის გახსნის დაშვება?</translation>
@@ -2424,7 +2421,6 @@
 <translation id="2705736684557713153">გადადით გვერდის ქვედა ნაწილში და ჩართეთ მყისიერი ტეტერინგი (თუ ეს ვარიანტი ხელმისაწვდომია). თუ ის მიუწვდომელია, ყველაფერი მზად არის.</translation>
 <translation id="2706304388244371417">სარეზერვო ასლის შექმნა Google Drive-ში. მარტივად აღადგინეთ მონაცემები ან შეცვალეთ მოწყობილობები ნებისმიერ დროს. ეს სარეზერვო ასლი მოიცავს აპების მონაცემებს. სარეზერვო ასლები აიტვირთება Google-ში და დაიშიფრება თქვენი შვილის Google ანგარიშის პაროლით. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი სარეზერვო ასლების შექმნის შესახებ<ph name="BEGIN_LINK1_END" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ზემოთ</translation>
-<translation id="2707024448553392710">კომპონენტის ჩამოტვირთვა</translation>
 <translation id="270921614578699633">საშუალო</translation>
 <translation id="2709516037105925701">ავტომატური შევსება</translation>
 <translation id="2710101514844343743">გამოყენებისა და დიაგნოსტიკის მონაცემები</translation>
@@ -2549,7 +2545,6 @@
 <translation id="2779728796406650689">ეს საშუალებას მისცემს Google ასისტენტს, უზრუნველყოს მორგებული პასუხები, როცა თქვენი ბავშვი შეკითხვებს დასვამს.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">შეცდომა Linux აპლიკაციის ინსტალაციისას</translation>
-<translation id="2783298271312924866">ჩამოტვირთული</translation>
 <translation id="2783952358106015700">უსაფრთხოების გასაღების გამოყენება <ph name="APP_NAME" />-ის მეშვეობით</translation>
 <translation id="2785267875302712148">პაროლის შემოწმება</translation>
 <translation id="2785279781154577715">გადახედვის ბარათის იერსახე ჩანართზე კურსორის გადატარებისას</translation>
@@ -2876,7 +2871,6 @@
 <translation id="301525898020410885">ენა დაყენებულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="3015639418649705390">ხელახლა გაშვება ახლავე</translation>
 <translation id="3016381065346027039">ჟურნალის ჩანაწერები არ არის</translation>
-<translation id="3016641847947582299">კომპონენტი განახლდა</translation>
 <translation id="3019023222666709803">ისრის ხელსაწყო</translation>
 <translation id="3019285239893817657">ქვეგვერდის ღილაკი</translation>
 <translation id="3019595674945299805">VPN სერვისი</translation>
@@ -2956,6 +2950,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">მხოლოდ ამ მოწყობილობაზე შენახვა</translation>
 <translation id="3076977359333237641">თქვენი სისტემაში შესვლის მონაცემები წაიშალა</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">ეს ქსელი არ არის სინქრონიზებული თქვენს ანგარიშთან. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">გაფართოებები</translation>
@@ -7196,7 +7191,6 @@
 <translation id="6208521041562685716">მიმდინარეობს მობილური ინტერნეტის გააქტიურება</translation>
 <translation id="6208725777148613371">ვერ შეინახა შემდეგში „<ph name="WEB_DRIVE" />“ — <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">თუ საიდუმლო ფრაზა დაგავიწყდათ ან ამ პარამეტრის შეცვლა გსურთ, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">კომპონენტების განახლება</translation>
 <translation id="6209908325007204267">თქვენს მოწყობილობას მოჰყვება Chrome Enterprise-ზე განახლება, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული კორპორაციულ ანგარიშთან. კორპორაციული ანგარიშის შესაქმნელად სხვა მოწყობილობიდან გადადით შემდეგ მისამართზე: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="6210282067670792090">მისამართთა ზოლში გამოიყენეთ კლავიატურის ეს მალსახმობი საძიებო სისტემებისა თუ საიტებში ძიების მალსახმობებთან ერთად</translation>
 <translation id="6211067089253408231">მყისიერი უსადენო ქსელის ჩართვა</translation>
@@ -7260,7 +7254,6 @@
 <translation id="6247620186971210352">აპები ვერ მოიძებნა</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">სისტემა: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">განახლება მზადაა</translation>
 <translation id="6248988683584659830">ძიების პარამეტრები</translation>
 <translation id="6249200942125593849">a11y-ის მართვა</translation>
 <translation id="6250186368828697007">ეკრანის გაზიარებისას დეტალები დამალულია</translation>
@@ -8086,7 +8079,6 @@
 <translation id="6852290167968069627">ChromeOS ვერ ახერხებს თქვენი წინა სესიის გაგრძელებას ქსელის პრობლემის გამო. დაუკავშირდით სტაბილურ ქსელს და ცადეთ ხელახლა.</translation>
 <translation id="6852529053326738838">ჰკითხეთ თქვენს ორგანიზაციას, ან დარეგისტრირდით თქვენი სამსახურის ელფოსტით, რომ გაიგოთ, შეესაბამება თუ არა თქვენი ანგარიში კრიტერიუმებს.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> დაინსტალირებულია <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />-დან</translation>
-<translation id="6853388645642883916">განახლების პროგრამა ძილის რეჟიმშია</translation>
 <translation id="68541483639528434">სხვა ჩანართების დახურვა</translation>
 <translation id="6855892664589459354">Crostini-ს სარეზერვო ასლის შექმნა და აღდგენა</translation>
 <translation id="6856348640027512653">ვირტუალური რეალობის მოწყობილობებისა თუ მონაცემების გამოყენება დაუშვებელია</translation>
@@ -8896,7 +8888,6 @@
 <translation id="7461924472993315131">პინი</translation>
 <translation id="746216226901520237">შემდეგში <ph name="DEVICE_TYPE" /> განიბლოკება თქვენი ტელეფონის მეშვეობით. Smart Lock-ის გამორთვა შესაძლებელია პარამეტრებიდან.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">კომპონენტი უკვე განახლებულია</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# გახსნილი ჩანართი, დააჭირეთ ჩანართების ზოლის გადასართველად}other{# გახსნილი ჩანართი, დააჭირეთ ჩანართების ზოლის გადასართველად}}</translation>
 <translation id="7465635034594602553">წარმოიქმნა შეფერხება. ცადეთ <ph name="APP_NAME" />-ის ხელახლა გაშვება რამდენიმე წუთის შემდეგ.</translation>
 <translation id="7465777686629334728">შემუშავების მართული გარემოს (<ph name="SPECIFIC_NAME" />) წაშლა</translation>

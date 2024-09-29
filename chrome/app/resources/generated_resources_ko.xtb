@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">사용자 사전</translation>
 <translation id="139300021892314943">로그인할 수 있는 사용자 제한</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
-<translation id="1395730723686586365">업데이터 시작됨</translation>
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> 폴더로 돌아가기</translation>
 <translation id="1396139853388185343">프린터를 설정하는 중에 오류가 발생했습니다.</translation>
@@ -1361,7 +1360,6 @@
 <translation id="1942128823046546853">모든 웹사이트에 있는 전체 내 데이터 읽기 및 변경</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1944535645109964458">패스키 없음</translation>
-<translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
 <translation id="1947136734041527201">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="1948528728718281125">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다</translation>
 <translation id="1949332606889020901">비정상 종료 ID</translation>
@@ -2240,7 +2238,6 @@
 <translation id="2546991196809436099">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> 권한이 허용됨</translation>
 <translation id="2548545707296594436">eSIM 프로필 캐시 재설정</translation>
-<translation id="2549766998450508148">1~4개의 특수키(Ctrl, Alt, Shift 또는 검색)와 1개의 추가 키를 누르세요. 단일 키를 선택해도 됩니다.</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="2550212893339833758">교체된 메모리</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />에서 <ph name="FILE_NAME" /> 파일을 열도록 허용하시겠습니까?</translation>
@@ -2437,7 +2434,6 @@
 <translation id="2705736684557713153">화면 하단으로 스크롤하여 인스턴트 테더링이 표시되면 사용 설정합니다. 표시되지 않으면 설정이 완료된 것입니다.</translation>
 <translation id="2706304388244371417">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />백업에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">위</translation>
-<translation id="2707024448553392710">구성요소 다운로드 중</translation>
 <translation id="270921614578699633">평균 이동</translation>
 <translation id="2709516037105925701">자동 완성</translation>
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
@@ -2562,7 +2558,6 @@
 <translation id="2779728796406650689">이를 통해 사용자가 질문할 때 Google 어시스턴트가 맞춤형 대답을 제공할 수 있습니다.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
-<translation id="2783298271312924866">다운로드됨</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> 앱에서 보안 키 사용</translation>
 <translation id="2785267875302712148">비밀번호 진단</translation>
 <translation id="2785279781154577715">탭에 마우스를 가져가면 나타나는 미리보기 카드 모양</translation>
@@ -2889,7 +2884,6 @@
 <translation id="301525898020410885">조직에서 언어를 설정함</translation>
 <translation id="3015639418649705390">지금 다시 시작</translation>
 <translation id="3016381065346027039">로그 항목 없음</translation>
-<translation id="3016641847947582299">구성요소가 업데이트됨</translation>
 <translation id="3019023222666709803">화살표 도구</translation>
 <translation id="3019285239893817657">하위 페이지 버튼</translation>
 <translation id="3019595674945299805">VPN 서비스</translation>
@@ -2968,6 +2962,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">이 기기에만 저장</translation>
 <translation id="3076977359333237641">로그인 데이터 삭제됨</translation>
+<translation id="3077734595579995578">Shift</translation>
 <translation id="3080933187214341848">계정과 동기화되어 있지 않은 네트워크입니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">확장 프로그램</translation>
@@ -7207,7 +7202,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6208521041562685716">모바일 데이터가 활성화됨</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" />에 저장할 수 없음(<ph name="INTERRUPT_REASON" />)</translation>
 <translation id="6209767197996242814">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
-<translation id="6209838773933913227">구성요소 업데이트 중</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
 <translation id="6210282067670792090">주소 표시줄에 검색엔진 및 사이트 검색의 바로가기를 입력하고 단축키를 누르세요.</translation>
 <translation id="6211067089253408231">인스턴트 핫스팟 사용 설정</translation>
@@ -7271,7 +7265,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">시스템: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">업데이트 준비 완료</translation>
 <translation id="6248988683584659830">설정 검색</translation>
 <translation id="6249200942125593849">접근성 관리</translation>
 <translation id="6250186368828697007">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
@@ -8097,7 +8090,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6852290167968069627">네트워크 문제로 인해 ChromeOS에서 이전 세션을 재개할 수 없습니다. 안정적인 네트워크에 연결하고 다시 시도해 보세요.</translation>
 <translation id="6852529053326738838">조직에 문의하거나 직장 이메일로 등록하여 계정이 자격 요건을 충족하는지 확인하세요.</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />에서 설치된 <ph name="APP_TYPE" />입니다.</translation>
-<translation id="6853388645642883916">업데이터 절전 모드</translation>
 <translation id="68541483639528434">다른 탭 닫기</translation>
 <translation id="6855892664589459354">Crostini 백업 및 복원</translation>
 <translation id="6856348640027512653">가상 현실 기기 또는 데이터 사용이 허용되지 않음</translation>
@@ -8907,7 +8899,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746216226901520237">다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">구성요소가 이미 최신 상태임</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}other{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}}</translation>
 <translation id="7465635034594602553">문제가 발생했습니다. 잠시 후 <ph name="APP_NAME" /> 앱을 다시 실행해 주세요.</translation>
 <translation id="7465777686629334728">관리형 개발 환경(<ph name="SPECIFIC_NAME" />) 삭제</translation>

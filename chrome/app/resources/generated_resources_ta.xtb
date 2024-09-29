@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">பயனர் அகராதிகள்</translation>
 <translation id="139300021892314943">உள்நுழைபவர்களை வரம்பிடு</translation>
 <translation id="1393283411312835250">சூரியனும் மேகமும்</translation>
-<translation id="1395730723686586365">புதுப்பிப்பான் தொடங்கியது</translation>
 <translation id="1395832189806039783">கீபோர்டு ஃபோகஸைப் பயன்படுத்தி ஹைலைட் செய்</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />க்கு மீண்டும் செல்லும்</translation>
 <translation id="1396139853388185343">பிரிண்டரை அமைப்பதில் பிழை</translation>
@@ -1361,7 +1360,6 @@
 <translation id="1942128823046546853">எல்லா இணையதளங்களிலும் உள்ள உங்களின் அனைத்துத் தரவையும் படிக்கலாம் திருத்தலாம்</translation>
 <translation id="1944528062465413897">புளூடூத் இணைத்தல் குறியீடு:</translation>
 <translation id="1944535645109964458">கடவுக்குறியீடுகள் எதுவுமில்லை</translation>
-<translation id="1944921356641260203">புதுப்பிப்பு உள்ளது</translation>
 <translation id="1947136734041527201">அடையாளச் சரிபார்ப்புச் சேவையில் உள்ள கணக்கைப் பயன்படுத்தி இணையதளங்களில் உள்நுழைய உங்களை அனுமதிக்கும்</translation>
 <translation id="1948528728718281125">கேமரா அனுமதியைக் கொண்டுள்ள ஆப்ஸுக்கும் இணையதளங்களுக்கும், சிஸ்டம் சேவைகளுக்கும் கேமரா அணுகல் வழங்கப்படும்</translation>
 <translation id="1949332606889020901">சிதைவு ஐடிகள்</translation>
@@ -2238,7 +2236,6 @@
 <translation id="2546991196809436099">பெரிதாக்குதல் அம்சத்தைப் பயன்படுத்தி திரையில் இருப்பவற்றைப் பெரிதாக்கலாம். பெரிதாக்கியை இயக்கவும் முடக்கவும் Search + Ctrl + M அழுத்தவும்.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> அனுமதிக்கப்பட்டது</translation>
 <translation id="2548545707296594436">eSIM சுயவிவரத்தின் தற்காலிகச் சேமிப்பை மீட்டமை</translation>
-<translation id="2549766998450508148">1-4 மாடிஃபையர் பட்டன்களையும் (ctrl, alt, shift அல்லது search) மேலும் ஒரு பட்டனையும் அழுத்தவும். ஒரேயொரு பட்டனையும் நீங்கள் தேர்ந்தெடுக்கலாம்.</translation>
 <translation id="2549985041256363841">பதிவுசெய்யத் தொடங்கு</translation>
 <translation id="2550212893339833758">ஸ்வாப்டு மெமரி</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" />ஐத் திறக்க <ph name="EXTENSION_NAME" />ஐ அனுமதிக்கவா?</translation>
@@ -2435,7 +2432,6 @@
 <translation id="2705736684557713153">திரையின் கீழ்ப் பகுதிக்குச் சென்று, "உடனடி இணைப்பு முறை" தெரிந்தால் அதை இயக்கவும். இல்லை எனில், அதை ஏற்கனவே அமைத்துவிட்டீர்கள்.</translation>
 <translation id="2706304388244371417">Google Driveவில் காப்புப் பிரதி எடுத்தல். உங்கள் தரவை எளிதாக மீட்டெடுக்கலாம் அல்லது எப்போது வேண்டுமானாலும் சாதனத்தை மாற்றலாம். காப்புப் பிரதியில் ஆப்ஸ் தரவும் உள்ளடங்கும். காப்புப் பிரதிகள் Googleளுக்குப் பதிவேற்றப்பட்டு, உங்கள் பிள்ளையின் Google கணக்கின் கடவுச்சொல்லைப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்படும். <ph name="BEGIN_LINK1" />காப்புப் பிரதி குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="BEGIN_LINK1_END" />மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Up</translation>
-<translation id="2707024448553392710">உறுப்பு பதிவிறக்கப்படுகிறது</translation>
 <translation id="270921614578699633">இதன் சராசரி</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
 <translation id="2710101514844343743">'உபயோகம் மற்றும் பிழை கண்டறிதல்' தொடர்பான தரவு</translation>
@@ -2560,7 +2556,6 @@
 <translation id="2779728796406650689">நீங்கள் கேள்விகளைக் கேட்கும்போது பொருத்தமான பதில்களை வழங்குவதற்கு இது Google Assistantடை அனுமதிக்கும்.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
-<translation id="2783298271312924866">பதிவிறக்கப்பட்டது</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> உடன் உங்கள் பாதுகாப்பு விசையைப் பயன்படுத்துதல்</translation>
 <translation id="2785267875302712148">கடவுச்சொல் சரிபார்ப்பு</translation>
 <translation id="2785279781154577715">பக்கத்திற்கான ஹோவர் கார்டு மாதிரிக்காட்சியின் தோற்றம்</translation>
@@ -2887,7 +2882,6 @@
 <translation id="301525898020410885">உங்கள் நிறுவனம் மொழியை அமைத்துள்ளது</translation>
 <translation id="3015639418649705390">இப்போதே மீண்டும் தொடங்கு</translation>
 <translation id="3016381065346027039">பதிவுகள் எதுவும் இல்லை</translation>
-<translation id="3016641847947582299">உறுப்பு மேம்படுத்தப்பட்டது</translation>
 <translation id="3019023222666709803">அம்புக்குறிக் கருவி</translation>
 <translation id="3019285239893817657">துணைப்பக்க பட்டன்</translation>
 <translation id="3019595674945299805">VPN சேவை</translation>
@@ -2966,6 +2960,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">இந்தச் சாதனத்தில் மட்டும் சேமியுங்கள்</translation>
 <translation id="3076977359333237641">உங்கள் உள்நுழைவுத் தரவு நீக்கப்பட்டது</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">உங்கள் கணக்குடன் இந்த நெட்வொர்க் ஒத்திசைக்கப்படவில்லை. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">நீட்டிப்புகள்</translation>
@@ -7207,7 +7202,6 @@
 <translation id="6208521041562685716">மொபைல் டேட்டா இயக்கப்படுகிறது</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> இல் சேமிக்க முடியவில்லை - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">உங்கள் கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">காம்பனென்ட் புதுப்பிப்பு</translation>
 <translation id="6209908325007204267">உங்கள் சாதனம் Chrome எண்டர்பிரைஸ் மேம்படுத்தலை உள்ளடக்கியதாகும், ஆனால் நிறுவனக் கணக்கு ஒன்றுடன் உங்கள் பயனர்பெயர் தொடர்புடையதாக இல்லை. வேறு சாதனத்தில் g.co/ChromeEnterpriseAccount என்பதற்குச் சென்று நிறுவனக் கணக்கு ஒன்றை உருவாக்கவும்.</translation>
 <translation id="6210282067670792090">தேடல் இன்ஜின்கள் &amp; தளத் தேடல்களுக்கான ஷார்ட்கட்களுடன் முகவரிப்பட்டியில் இந்தக் கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்</translation>
 <translation id="6211067089253408231">உடனடி ஹாட்ஸ்பாட்டை இயக்குதல்</translation>
@@ -7271,7 +7265,6 @@
 <translation id="6247620186971210352">ஆப்ஸ் எதுவும் கண்டறியப்படவில்லை</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">சிஸ்டம்: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">புதுப்பிப்பு தயார்</translation>
 <translation id="6248988683584659830">தேடல் அமைப்புகள்</translation>
 <translation id="6249200942125593849">a11y ஐ நிர்வகி</translation>
 <translation id="6250186368828697007">திரையைப் பகிரும்போது விவரங்கள் மறைக்கப்படும்</translation>
@@ -8097,7 +8090,6 @@
 <translation id="6852290167968069627">நெட்வொர்க் சிக்கல் காரணமாக ChromeOSஸால் முந்தைய அமர்வை மீண்டும் தொடங்க முடியவில்லை. நிலையான நெட்வொர்க்குடன் இணைத்து மீண்டும் முயலவும்.</translation>
 <translation id="6852529053326738838">உங்கள் கணக்கு தகுதியுடையதா என்று பார்க்க உங்கள் நிறுவனத்திடம் கேட்கவும் அல்லது உங்கள் பணி மின்னஞ்சல் கணக்கின் மூலம் பதிவுசெய்யவும்.</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> இல் இருந்து <ph name="APP_TYPE" /> நிறுவப்பட்டது</translation>
-<translation id="6853388645642883916">புதுப்பிப்பான் செயலில் இல்லை</translation>
 <translation id="68541483639528434">பிற தாவல்களை மூடுக</translation>
 <translation id="6855892664589459354">Crostini காப்புப் பிரதி மற்றும் மீட்டெடுப்பு</translation>
 <translation id="6856348640027512653">விர்ச்சுவல் ரியாலிட்டி சாதனங்களையோ தரவையோ பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
@@ -8908,7 +8900,6 @@
 <translation id="7461924472993315131">நிலையாக வை</translation>
 <translation id="746216226901520237">அடுத்த முறை, உங்கள் ஃபோன் <ph name="DEVICE_TYPE" /> சாதனத்தை அன்லாக் செய்யும். அமைப்புகளில் Smart Lockகை முடக்கலாம்.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">காம்பனென்ட் ஏற்கெனவே புதுப்பித்த நிலையில் உள்ளது</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# உலாவிப்பக்கப் பட்டியை நிலைமாற்ற தாவலைத் திறந்து, அழுத்தவும்}other{# உலாவிப்பக்கப் பட்டியை நிலைமாற்ற தாவல்களைத் திறந்து, அழுத்தவும்}}</translation>
 <translation id="7465635034594602553">ஏதோ தவறாகிவிட்டது. சில நிமிடங்கள் கழித்து <ph name="APP_NAME" /> ஆப்ஸை மீண்டும் இயக்கவும்.</translation>
 <translation id="7465777686629334728">மேனேஜ்டு டெவெலப்மெண்ட் என்விரான்மெண்ட்டை (<ph name="SPECIFIC_NAME" />) அகற்று</translation>

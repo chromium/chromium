@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
+<translation id="2173302385160625112">Proverite internet vezu</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
 <translation id="2189104374785738357">Izmenite detalje naziva pristupne tačke</translation>
 <translation id="2195732836444333448">Kapacitet je trenutno popunjen. Vratite se brzo.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tip</translation>
 <translation id="2468124392950503650">Izaberite upit za pravljenje ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Koristite Pomoć pri pisanju da biste napravili radnu verziju ili poboljšali postojeći rad koji omogućava Google veštačka inteligencija</translation>
+<translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="2480572840229215612">krabe</translation>
 <translation id="248546197012830854">Uređaj je oflajn. Povežite se na WiFi mrežu da biste videli sadržaj pomoći.</translation>
 <translation id="2486301288428798846">drveta</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Korisnički sertifikat</translation>
 <translation id="6146993107019042706">Da biste završili, unesite novu lozinku</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Ne možete da se povežete na internet</translation>
 <translation id="6156030503438652198">crvenkastobraon i roze</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Odaberite ekskluzivne ilustracije za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Probajte ponovo kasnije</translation>
 <translation id="7118522231018231199">Obavezno izaberite nazive pristupnih tačaka koje pruža mobilni operater ili administrator. Ako izaberete naziv pristupne tačke, onemogućićete sve prilagođene nazive pristupnih tačaka. Nevažeći nazivi pristupnih tačaka mogu da prekinu mobilnu vezu.</translation>
 <translation id="7119389851461848805">napajanje</translation>
 <translation id="7129287270910503851">Potrošnja podataka će se resetovati svakog meseca ovog dana</translation>

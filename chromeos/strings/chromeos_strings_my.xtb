@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2161656808144014275">စာသား</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
+<translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="2189104374785738357">APN အသေးစိတ် ပြင်ခြင်း</translation>
 <translation id="2195732836444333448">လုပ်နိုင်စွမ်း ပြည့်နေပါပြီ။ မကြာမီ ပြန်လာပါ။</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ပုံစံ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />တိုက်တွန်းချက် လမ်းညွှန်<ph name="END_LINK_PROMPTING_GUIDE" /> ကို ပြုလုပ်ရန် (သို့) ကြည့်ရန် တိုက်တွန်းချက် ရွေးပါ</translation>
 <translation id="2472215337771558851">Google AI က ပံ့ပိုးထားသော ‘ကူရေးပေးပါ’ သုံး၍ မူကြမ်းပြုလုပ်နိုင်သည် (သို့) ရှိပြီးသားအလုပ်ကို ပိုမိုတိကျအောင် ပြုလုပ်နိုင်သည်</translation>
+<translation id="2475982808118771221">အမှားတစ်ခု ဖြစ်ခဲ့သည်။</translation>
 <translation id="2480572840229215612">ကဏန်း</translation>
 <translation id="248546197012830854">စက်အော့ဖ်လိုင်းဖြစ်နေသည်။ အကူအညီ အကြောင်းအရာကြည့်ရန် Wi-Fi ကွန်ရက်သို့ ချိတ်ဆက်ပါ။</translation>
 <translation id="2486301288428798846">သစ်သား</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ</translation>
 <translation id="6156030503438652198">ကြက်သွေးနှင့် ပန်းရောင်</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">ကိရိယာသည် <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /> ခုမြောက်ဖြစ်ပြီး <ph name="NAME" /> ဟု အမည်ပေးထားသည်။</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> အထူးပိုစတာပုံ ရွေးရန်</translation>
 <translation id="7108668606237948702">ရိုက်ထည့်</translation>
+<translation id="7117228822971127758">နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="7118522231018231199">သင်၏ မိုဘိုင်းဝန်ဆောင်မှုပေးသူ (သို့) စီမံခန့်ခွဲသူ ပေးထားသည့် APN များကို ရွေးပါ။ APN ရွေးခြင်းက စိတ်ကြိုက် APN များကို ပိတ်ပါမည်။ မမှန်ကန်သော APN များသည် သင့်မိုဘိုင်းချိတ်ဆက်မှုကို အနှောင့်အယှက်ပေးနိုင်သည်။</translation>
 <translation id="7119389851461848805">ပါဝါ</translation>
 <translation id="7129287270910503851">သင့်ဒေတာသုံးစွဲမှုကို လစဉ် ဤရက်တွင် ပြင်ဆင်သတ်မှတ်ပါမည်</translation>

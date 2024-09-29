@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
+<translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2189104374785738357">APN-н дэлгэрэнгүйг засах</translation>
 <translation id="2195732836444333448">Ачаалалтай байна. Удахгүй эргэн ирээрэй.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2468124392950503650">Үүсгэх заавар сонгох эсвэл <ph name="BEGIN_LINK_PROMPTING_GUIDE" />зааврын хөтчийг<ph name="END_LINK_PROMPTING_GUIDE" /> харна уу</translation>
 <translation id="2472215337771558851">Ноорог үүсгэх эсвэл одоо байгаа ажлыг боловсронгуй болгоход Google AI-аар дэмжигдсэн Надад бичихэд тусал онцлогийг ашиглана уу</translation>
+<translation id="2475982808118771221">Алдаа гарлаа</translation>
 <translation id="2480572840229215612">хавчнууд</translation>
 <translation id="248546197012830854">Төхөөрөмж офлайн байна. Тусламжийн контент харахын тулд Wi-Fi сүлжээнд холбогдоно уу.</translation>
 <translation id="2486301288428798846">мод</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Интернэтэд холбогдож чадсангүй</translation>
 <translation id="6156030503438652198">элгэн хүрэн болон ягаан</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" />-н онцгой постерыг сонгоно уу</translation>
 <translation id="7108668606237948702">оруулах</translation>
+<translation id="7117228822971127758">Дараа дахин оролдоно уу</translation>
 <translation id="7118522231018231199">Мобайл үйлчилгээ үзүүлэгч эсвэл администраторынхаа олгосон APN-уудыг сонгохоо мартуузай. APN-уудыг сонгосноор дурын захиалгат APN-г идэвхгүй болгоно. Хүчингүй APN-ууд нь таны мобайл холболтыг тасалдуулж болзошгүй.</translation>
 <translation id="7119389851461848805">Асааж унтраах</translation>
 <translation id="7129287270910503851">Таны дата ашиглалтыг сар бүрийн энэ өдөр шинэчилнэ</translation>

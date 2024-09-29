@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Activează modul întunecat</translation>
+<translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
 <translation id="2189104374785738357">Modifică detaliile APN</translation>
 <translation id="2195732836444333448">La capacitate maximă. Revino în curând.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2468124392950503650">Selectează solicitarea pentru a crea sau a vedea <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ghidul pentru solicitări<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Folosește funcția Ajută-mă să scriu pentru a crea o schiță sau a rafina lucrările existente, pe bază de Google AI</translation>
+<translation id="2475982808118771221">A apărut o eroare</translation>
 <translation id="2480572840229215612">crabi</translation>
 <translation id="248546197012830854">Dispozitivul este offline. Conectează-te la rețeaua Wi-Fi pentru a vedea conținutul de ajutor.</translation>
 <translation id="2486301288428798846">lemn</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificat de utilizator</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nu se poate conecta la internet</translation>
 <translation id="6156030503438652198">castaniu și roz</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Dispozitivul <ph name="INDEX" /> din <ph name="COUNT" /> numit <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Alege grafica exclusivă pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Încearcă din nou mai târziu</translation>
 <translation id="7118522231018231199">Selectează doar APN-uri oferite de furnizorul de servicii de telefonie mobilă sau de administrator. Selectarea unui APN va dezactiva toate APN-urile personalizate. APN-urile nevalide pot întrerupe conexiunea mobilă.</translation>
 <translation id="7119389851461848805">pornire</translation>
 <translation id="7129287270910503851">Utilizarea datelor se va reseta în fiecare lună în această zi</translation>

@@ -621,7 +621,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
-<translation id="2115549780565563931">Descontos</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Emitido para: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perfurar na parte inferior direita</translation>
@@ -4151,7 +4150,6 @@ Detalhes adicionais:
 <translation id="8564466070529550495">O cartão virtual não está disponível neste momento. Tente mais tarde.</translation>
 <translation id="8564985650692024650">O Chromium recomenda a reposição da palavra-passe da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se a tiver reutilizado noutros sites.</translation>
 <translation id="8570895683659698018">Passatempos e lazer</translation>
-<translation id="8572792595597115856">Válido até <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Frigoríficos e arcas congeladoras</translation>
 <translation id="8577192028579836704">Preço habitual de todas as opções: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual não disponível</translation>

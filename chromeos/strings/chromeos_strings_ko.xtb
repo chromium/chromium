@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2161656808144014275">텍스트</translation>
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
+<translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
 <translation id="2189104374785738357">APN 세부정보 수정</translation>
 <translation id="2195732836444333448">현재 요청이 너무 많습니다. 나중에 다시 시도해 주세요.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">유형</translation>
 <translation id="2468124392950503650">프롬프트를 선택하여 만들거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 확인하세요.</translation>
 <translation id="2472215337771558851">작성 지원 기능을 사용하여 Google AI를 기반으로 초안을 작성하거나 기존 과제물을 다듬어 보세요.</translation>
+<translation id="2475982808118771221">오류가 발생했습니다.</translation>
 <translation id="2480572840229215612">게</translation>
 <translation id="248546197012830854">기기가 오프라인 상태입니다. 도움말 콘텐츠를 보려면 Wi-Fi 네트워크에 연결하세요.</translation>
 <translation id="2486301288428798846">나무</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">사용자 인증서</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">인터넷에 연결할 수 없음</translation>
 <translation id="6156030503438652198">적갈색 및 분홍색</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">기기 <ph name="COUNT" />대 중 <ph name="INDEX" />번째, 기기 이름은 <ph name="NAME" />입니다.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> 전용 포스터 선택</translation>
 <translation id="7108668606237948702">입력</translation>
+<translation id="7117228822971127758">나중에 다시 시도해 주세요</translation>
 <translation id="7118522231018231199">이동통신사 또는 관리자가 제공한 APN을 선택해야 합니다. APN을 선택하면 모든 맞춤 APN이 사용 중지됩니다. 잘못된 APN은 모바일 데이터 연결을 방해할 수 있습니다.</translation>
 <translation id="7119389851461848805">전원</translation>
 <translation id="7129287270910503851">매월 이 날짜에 데이터 사용량이 초기화됩니다</translation>

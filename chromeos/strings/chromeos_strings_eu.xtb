@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
 <translation id="2161656808144014275">testua</translation>
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
+<translation id="2173302385160625112">Egiaztatu Internetera konektatuta zaudela</translation>
 <translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2189104374785738357">Editatu APNaren xehetasunak</translation>
 <translation id="2195732836444333448">Zerbitzua lanpetuta dago. Itzuli hemendik gutxira.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Mota</translation>
 <translation id="2468124392950503650">Sortzeko, hautatu eskaera-mezu bat. Bestela, ikusi <ph name="BEGIN_LINK_PROMPTING_GUIDE" />eskaera-mezuen gida<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Erabili Idazteko laguntza zirriborro bat sortzeko edo jadanik daukazun testu bat hobetzeko, Google-ren AA bidez</translation>
+<translation id="2475982808118771221">Errore bat gertatu da</translation>
 <translation id="2480572840229215612">karramarroak</translation>
 <translation id="248546197012830854">Gailua deskonektatuta dago. Konektatu wifi-sarera laguntza-edukia ikusteko.</translation>
 <translation id="2486301288428798846">egurra</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Ezin da konektatu Internetera</translation>
 <translation id="6156030503438652198">granate eta arrosa</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
 <translation id="7107255225945990211">Aukeratu <ph name="PRODUCT_NAME" /> produktuko artelan esklusiboak</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
+<translation id="7117228822971127758">Saiatu berriro geroago</translation>
 <translation id="7118522231018231199">Ziurtatu zure operadoreak edo administratzaileak eskaintzen dituen APNak hautatzen dituzula. APN bat hautatzean APN pertsonalizatuak desgaituko dira. Baliteke balio ez duten APNek mugikorreko konexioan eragitea.</translation>
 <translation id="7119389851461848805">piztu</translation>
 <translation id="7129287270910503851">Datu-erabilera hilero berrezarriko da, egun honetan</translation>

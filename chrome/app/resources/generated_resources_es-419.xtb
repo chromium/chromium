@@ -542,7 +542,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1392047138650695757">Diccionarios del usuario</translation>
 <translation id="139300021892314943">Limitar quiénes pueden acceder</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
-<translation id="1395730723686586365">Actualizador iniciado</translation>
 <translation id="1395832189806039783">Destacar el elemento con el enfoque del teclado</translation>
 <translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Se produjo un error al configurar la impresora</translation>
@@ -1348,7 +1347,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1942128823046546853">Leer y cambiar todos tus datos en todos los sitios web</translation>
 <translation id="1944528062465413897">Código de vinculación Bluetooth:</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
-<translation id="1944921356641260203">Actualización encontrada</translation>
 <translation id="1947136734041527201">Te permite acceder a sitios web a través de una cuenta con servicio de identidad</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1949332606889020901">IDs de falla</translation>
@@ -2222,7 +2220,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2546991196809436099">Acerca la imagen para agrandar los elementos en pantalla. Usa Búsqueda + Ctrl + M para activar y desactivar la lupa.</translation>
 <translation id="2548347166720081527">Se permite <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Reiniciar la caché del perfil de eSIM</translation>
-<translation id="2549766998450508148">Presiona entre 1 y 4 teclas modificadoras (Ctrl, Alt, Mayúsculas o Búsqueda) y 1 tecla más. También puedes seleccionar una sola tecla.</translation>
 <translation id="2549985041256363841">Comenzar grabación</translation>
 <translation id="2550212893339833758">Memoria en el espacio de intercambio</translation>
 <translation id="2550596535588364872">¿Quieres permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -2419,7 +2416,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2705736684557713153">Desplázate hasta el final de la pantalla y, si aparece, activa la conexión instantánea mediante dispositivo portátil. Caso contrario, no debes realizar ninguna acción.</translation>
 <translation id="2706304388244371417">Crear una copia de seguridad en Google Drive. Restablece datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de las apps. Las copias de seguridad se encriptan con la contraseña de la Cuenta de Google de tu hijo o hija y se suben a Google. <ph name="BEGIN_LINK1" />Más información sobre las copias de seguridad<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
-<translation id="2707024448553392710">Descarga de componente</translation>
 <translation id="270921614578699633">Por encima del promedio</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
@@ -2544,7 +2540,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2779728796406650689">Esto permite que Asistente de Google proporcione respuestas personalizadas cuando hagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
-<translation id="2783298271312924866">Descargado</translation>
 <translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
 <translation id="2785279781154577715">Visualización de la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
@@ -2871,7 +2866,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="301525898020410885">Tu organización configuró el idioma</translation>
 <translation id="3015639418649705390">Reiniciar ahora</translation>
 <translation id="3016381065346027039">No hay entradas de registro</translation>
-<translation id="3016641847947582299">Componente actualizado</translation>
 <translation id="3019023222666709803">Herramienta de flecha</translation>
 <translation id="3019285239893817657">Botón de la subpágina</translation>
 <translation id="3019595674945299805">Servicio VPN</translation>
@@ -2950,6 +2944,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar solo en este dispositivo</translation>
 <translation id="3076977359333237641">Se borraron tus datos de acceso</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Esta red no está sincronizada con tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensiones</translation>
@@ -7190,7 +7185,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6208521041562685716">Se están activando los datos móviles</translation>
 <translation id="6208725777148613371">No se pudo guardar en <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Se está actualizando el componente</translation>
 <translation id="6209908325007204267">El dispositivo incluye una actualización de Chrome Enterprise, pero tu nombre de usuario no está asociado a una cuenta empresarial. Para crear una cuenta de este tipo, visita g.co/ChromeEnterpriseAccount en otro dispositivo.</translation>
 <translation id="6210282067670792090">En la barra de direcciones, usa esta combinación de teclas con atajos para los motores de búsqueda y las búsquedas en el sitio</translation>
 <translation id="6211067089253408231">Activar Hotspot instantáneo</translation>
@@ -7254,7 +7248,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6247620186971210352">No se encontraron apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Actualización lista</translation>
 <translation id="6248988683584659830">Buscar en configuración</translation>
 <translation id="6249200942125593849">Administrar la accesibilidad</translation>
 <translation id="6250186368828697007">Cuando compartes la pantalla, se ocultan los detalles.</translation>
@@ -8080,7 +8073,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6852290167968069627">ChromeOS no puede reanudar la sesión anterior debido a un problema de red. Conéctate a una red estable y vuelve a intentarlo.</translation>
 <translation id="6852529053326738838">Para saber si tu cuenta es apta, consulta con tu organización o inscríbete con tu correo electrónico laboral.</translation>
 <translation id="6853029310037965825">Se instaló <ph name="APP_TYPE" /> de <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Actualizador suspendido</translation>
 <translation id="68541483639528434">Cerrar las demás pestañas</translation>
 <translation id="6855892664589459354">Copia de seguridad y restablecimiento de Crostini</translation>
 <translation id="6856348640027512653">No pueden usar datos ni dispositivos de realidad virtual</translation>
@@ -8891,7 +8883,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, tu teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Componente actualizado</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestaña abierta, presiona para activar o desactivar la barra de pestañas}other{# pestañas abiertas, presiona para activar o desactivar la barra de pestañas}}</translation>
 <translation id="7465635034594602553">Se produjo un error. Espera unos minutos y vuelve a ejecutar <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Quitar el entorno de desarrollo administrado (<ph name="SPECIFIC_NAME" />)</translation>

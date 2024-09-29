@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2161656808144014275">Tekstas</translation>
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
+<translation id="2173302385160625112">Patikrinkite interneto ryšį</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
 <translation id="2189104374785738357">APN išsamios informacijos redagavimas</translation>
 <translation id="2195732836444333448">Šiuo metu esame užimti. Pabandykite vėliau.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2468124392950503650">Pasirinkite užklausą, kad būtų sukurtas vaizdas, arba peržiūrėkite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />užklausų vadovą<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Naudodami „Google“ DI pagrįstą funkciją „Padėkite man rašyti“ sukurkite juodraštį ar patobulinkite esamą darbą</translation>
+<translation id="2475982808118771221">Įvyko klaida</translation>
 <translation id="2480572840229215612">krabai</translation>
 <translation id="248546197012830854">Įrenginys neprijungtas prie interneto. Prisijunkite prie „Wi-Fi“ tinklo, kad galėtumėte peržiūrėti pagalbos turinį.</translation>
 <translation id="2486301288428798846">medienos</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Naudotojo sertifikatas</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nepavyksta prisijungti prie interneto</translation>
 <translation id="6156030503438652198">kaštoninės ir rožinės spalvų</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" /> įrenginys iš <ph name="COUNT" /> pav. „<ph name="NAME" />“.</translation>
 <translation id="7107255225945990211">Pasirinkite „<ph name="PRODUCT_NAME" />“ išskirtinius meno kūrinius</translation>
 <translation id="7108668606237948702">įvesti</translation>
+<translation id="7117228822971127758">Vėliau bandykite dar kartą</translation>
 <translation id="7118522231018231199">Būtinai pasirinkite mobiliojo ryšio teikėjo arba administratoriaus teikiamus APN. Pasirinkus APN bus išjungti visi tinkinti APN. Netinkami APN gali sutrikdyti mobilųjį ryšį.</translation>
 <translation id="7119389851461848805">maitinimas</translation>
 <translation id="7129287270910503851">Duomenų naudojimas bus nustatomas iš naujo kiekvieną mėnesį šią dieną</translation>

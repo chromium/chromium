@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
+<translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
 <translation id="2189104374785738357">Изменете ги деталите за APN</translation>
 <translation id="2195732836444333448">Нема ништо ново во моментов. Вратете се пак наскоро.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2468124392950503650">Изберете барање за да создавате или погледнете го <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водичот за барања<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користете „Помогни ми да напишам“ за да создадете нацрт или да рафинирате постојна ставка, овозможено од Google AI</translation>
+<translation id="2475982808118771221">Настана грешка</translation>
 <translation id="2480572840229215612">ракови</translation>
 <translation id="248546197012830854">Уредот е офлајн. Поврзете се на Wi-Fi мрежа за да ги видите содржините за помош.</translation>
 <translation id="2486301288428798846">дрво</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Сертификат на корисник</translation>
 <translation id="6146993107019042706">За да завршите, внесете ја новата лозинка</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Не може да се поврзе на интернет</translation>
 <translation id="6156030503438652198">темнокафеава и розова</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Името на уредот <ph name="INDEX" /> од <ph name="COUNT" /> е: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Избирање ексклузивен постер за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Обидете се повторно подоцна</translation>
 <translation id="7118522231018231199">Погрижете се да ги изберете APN што ги обезбедил вашиот мобилен оператор или администратор. Ако изберете APN, ќе се оневозможат сите приспособени APN. Неважечки APN може да ја прекинат вашата мобилна врска.</translation>
 <translation id="7119389851461848805">енергија</translation>
 <translation id="7129287270910503851">Потрошениот интернет ќе се ресетира секој месец на овој ден</translation>

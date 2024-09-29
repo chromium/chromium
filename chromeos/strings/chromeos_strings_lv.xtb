@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
 <translation id="2161656808144014275">Teksts</translation>
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
+<translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
 <translation id="2189104374785738357">APN informācijas rediģēšana</translation>
 <translation id="2195732836444333448">Šobrīd funkcija ir pārslogota. Atgriezieties pēc brīža!</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2468124392950503650">Atlasiet uzvedni, lai izveidotu vai skatītu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />norādījumus par uzvednēm<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="2472215337771558851">Lai izveidotu melnrakstu vai uzlabotu esošo darbu, izmantojiet funkciju “Palīdzība rakstīšanā”, ko nodrošina Google MI.</translation>
+<translation id="2475982808118771221">Radās kļūda</translation>
 <translation id="2480572840229215612">krabji</translation>
 <translation id="248546197012830854">Ierīce ir bezsaistē. Izveidojiet savienojumu ar Wi-Fi tīklu, lai skatītu palīdzības saturu.</translation>
 <translation id="2486301288428798846">koksne</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Lietotāja sertifikāts</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nevar izveidot savienojumu ar internetu</translation>
 <translation id="6156030503438652198">sarkanbrūna un rozā</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Izvēlieties tikai <ph name="PRODUCT_NAME" /> pieejamus mākslas darbus</translation>
 <translation id="7108668606237948702">ievadīt</translation>
+<translation id="7117228822971127758">Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7118522231018231199">Atlasiet mobilo sakaru operatora vai administratora nodrošinātos APN. Atlasot APN, tiks atspējoti visi pielāgotie APN. Nederīgi APN var pārtraukt mobilo sakaru savienojumu.</translation>
 <translation id="7119389851461848805">ieslēgšana</translation>
 <translation id="7129287270910503851">Jūsu datu lietojums tiks atiestatīts katru mēnesi šajā dienā.</translation>

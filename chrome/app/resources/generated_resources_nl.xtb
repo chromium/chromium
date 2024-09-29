@@ -542,7 +542,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1392047138650695757">Gebruikerswoordenboeken</translation>
 <translation id="139300021892314943">Beperken wie kan inloggen</translation>
 <translation id="1393283411312835250">Zon en wolken</translation>
-<translation id="1395730723686586365">Updater gestart</translation>
 <translation id="1395832189806039783">Item markeren met toetsenbordfocus</translation>
 <translation id="1396120028054416908">Terug naar <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Fout bij instellen van printer</translation>
@@ -1351,7 +1350,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1942128823046546853">Al je gegevens op alle websites lezen en wijzigen</translation>
 <translation id="1944528062465413897">Bluetooth-koppelingscode:</translation>
 <translation id="1944535645109964458">Geen toegangssleutels beschikbaar</translation>
-<translation id="1944921356641260203">Update gevonden</translation>
 <translation id="1947136734041527201">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="1948528728718281125">Cameratoegang is toegestaan voor apps, websites met camerarechten en systeemservices</translation>
 <translation id="1949332606889020901">Crash-ID's</translation>
@@ -2225,7 +2223,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2546991196809436099">Zoom in om items op het scherm groter te maken. Gebruik Zoeken + Ctrl + M om het vergrootglas aan en uit te zetten.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> toegestaan</translation>
 <translation id="2548545707296594436">Cache e-simkaartprofiel resetten</translation>
-<translation id="2549766998450508148">Druk op 1-4 functietoetsen (Ctrl, Alt, Shift of Zoeken) en nog 1 toets. Je kunt ook één toets selecteren.</translation>
 <translation id="2549985041256363841">Opname starten</translation>
 <translation id="2550212893339833758">Wisselgeheugen</translation>
 <translation id="2550596535588364872">Toestaan dat <ph name="EXTENSION_NAME" /> het bestand <ph name="FILE_NAME" /> opent?</translation>
@@ -2422,7 +2419,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2705736684557713153">Scroll naar de onderkant van het scherm en zet instant tethering aan als deze optie wordt weergegeven. Als de optie niet wordt weergegeven, ben je helemaal klaar.</translation>
 <translation id="2706304388244371417">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of wissel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind. <ph name="BEGIN_LINK1" />Meer informatie over back-ups<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Omhoog</translation>
-<translation id="2707024448553392710">Component downloaden</translation>
 <translation id="270921614578699633">Gemiddelde van</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
 <translation id="2710101514844343743">Gebruiks- en diagnostische gegevens</translation>
@@ -2547,7 +2543,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2779728796406650689">Hierdoor kan de Google Assistent aangepaste antwoorden geven als je vragen stelt.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
-<translation id="2783298271312924866">Gedownload</translation>
 <translation id="2783952358106015700">Je beveiligingssleutel gebruiken met <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Wachtwoordcheck</translation>
 <translation id="2785279781154577715">Weergave van voorbeelden voor pop-upkaarten voor tabbladen</translation>
@@ -2874,7 +2869,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="301525898020410885">Taal is ingesteld door je organisatie</translation>
 <translation id="3015639418649705390">Nu opnieuw starten</translation>
 <translation id="3016381065346027039">Geen logboekitems</translation>
-<translation id="3016641847947582299">Component bijgewerkt</translation>
 <translation id="3019023222666709803">Tool Pijl</translation>
 <translation id="3019285239893817657">Knop voor subpagina</translation>
 <translation id="3019595674945299805">VPN-service</translation>
@@ -2953,6 +2947,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Alleen opslaan op dit apparaat</translation>
 <translation id="3076977359333237641">Je inloggegevens zijn verwijderd</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Dit netwerk is niet gesynchroniseerd met je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensies</translation>
@@ -7185,7 +7180,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6208521041562685716">Mobiele data activeren</translation>
 <translation id="6208725777148613371">Kan niet opslaan in <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Component wordt geüpdatet</translation>
 <translation id="6209908325007204267">Je apparaat omvat een Chrome Enterprise Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Enterprise-account. Ga op een secundair apparaat naar g.co/ChromeEnterpriseAccount om een Enterprise-account te maken.</translation>
 <translation id="6210282067670792090">Je kunt in de adresbalk deze sneltoetsen met snelkoppelingen voor zoekmachines en het doorzoeken van sites gebruiken.</translation>
 <translation id="6211067089253408231">Instant hotspot aanzetten</translation>
@@ -7249,7 +7243,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6247620186971210352">Geen apps gevonden</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Systeem: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Update klaar</translation>
 <translation id="6248988683584659830">Zoek in de instellingen</translation>
 <translation id="6249200942125593849">A11y beheren</translation>
 <translation id="6250186368828697007">Details zijn verborgen terwijl je je scherm deelt</translation>
@@ -8075,7 +8068,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6852290167968069627">ChromeOS kan je vorige sessie niet hervatten vanwege een netwerkprobleem. Maak verbinding met een stabiel netwerk en probeer het opnieuw.</translation>
 <translation id="6852529053326738838">Vraag je organisatie of schrijf je in met je werkmail om te checken of je account in aanmerking komt.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> geïnstalleerd via <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Updater in slaapstand</translation>
 <translation id="68541483639528434">Andere tabbladen sluiten</translation>
 <translation id="6855892664589459354">Back-up en herstel voor Crostini</translation>
 <translation id="6856348640027512653">Geen toestemming om virtualreality-apparaten of -gegevens te gebruiken</translation>
@@ -8885,7 +8877,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746216226901520237">De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Component is al up-to-date</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# geopend tabblad, druk om de tabbladstrook aan of uit te zetten}other{# geopende tabbladen, druk om de tabbladstrook aan of uit te zetten}}</translation>
 <translation id="7465635034594602553">Er is iets misgegaan. Wacht enkele minuten en voer <ph name="APP_NAME" /> opnieuw uit.</translation>
 <translation id="7465777686629334728">Beheerde ontwikkelomgeving verwijderen (<ph name="SPECIFIC_NAME" />)</translation>

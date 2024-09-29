@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
+<translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
 <translation id="2189104374785738357">Muokkaa APN-tietoja</translation>
 <translation id="2195732836444333448">Kapasiteettia ei juuri nyt ole riittävästi. Tarkista tilanne pian uudelleen.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tyyppi</translation>
 <translation id="2468124392950503650">Valitse kehote luodaksesi tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Käytä Auta minua kirjoittamaan ‐ominaisuutta luonnoksen kirjoittamiseen tai aiemmin luodun tehtävän viimeistelyyn Googlen tekoälyn avulla</translation>
+<translation id="2475982808118771221">Tapahtui virhe</translation>
 <translation id="2480572840229215612">ravut</translation>
 <translation id="248546197012830854">Laite on offline-tilassa. Muodosta yhteys Wi-Fi-verkkoon, niin näet ohjesisältöä.</translation>
 <translation id="2486301288428798846">puu</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Käyttäjävarmenne</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Internetyhteyttä ei voi muodostaa</translation>
 <translation id="6156030503438652198">punaruskea ja pinkki</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Laite <ph name="INDEX" />/<ph name="COUNT" /> nimeltä <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Valitse eksklusiivisia taideteoksia: <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">kirjoita</translation>
+<translation id="7117228822971127758">Yritä myöhemmin uudelleen.</translation>
 <translation id="7118522231018231199">Muista valita mobiilioperaattorin tai järjestelmänvalvojan antamat APN:t. Jos valitset APN:n, kaikki muokatut APN:t poistetaan käytöstä. Virheelliset APN:t voivat häiritä mobiiliyhteyttä.</translation>
 <translation id="7119389851461848805">virta</translation>
 <translation id="7129287270910503851">Datan käyttösi nollataan joka kuukausi tänä päivänä</translation>

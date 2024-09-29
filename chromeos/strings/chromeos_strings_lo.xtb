@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2161656808144014275">ຂໍ້ຄວາມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
+<translation id="2173302385160625112">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2189104374785738357">ແກ້ໄຂລາຍລະອຽດ APN</translation>
 <translation id="2195732836444333448">ຕອນນີ້ຮອດຂີດຈຳກັດແລ້ວ. ກະລຸນາກັບມາໃໝ່ໃນໄວໆນີ້.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2468124392950503650">ເລືອກ prompt ເພື່ອສ້າງ ຫຼື ເບິ່ງ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ຄຳແນະນຳການໃຊ້ prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ໃຊ້ຊ່ວຍຂ້ອຍຂຽນເພື່ອສ້າງສະບັບຮ່າງ ຫຼື ປັບປ່ຽນວຽກທີ່ມີຢູ່ແລ້ວ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
+<translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="2480572840229215612">ປູ</translation>
 <translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
 <translation id="2486301288428798846">ໄມ້</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ໃບຮັບຮອງຜູ້ໃຊ້</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້</translation>
 <translation id="6156030503438652198">ນ້ຳຕານ ແລະ ບົວ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1236,6 +1239,7 @@
 <translation id="7103252855940681301">ອຸປະກອນທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /> ຊື່ <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">ເລືອກໜ້າປົກພິເສດສະເພາະສຳລັບ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">ປ້ອນເຂົ້າ</translation>
+<translation id="7117228822971127758">ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="7118522231018231199">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າໄດ້ເລືອກ APN ທີ່ມາຈາກຜູ້ໃຫ້ບໍລິການມືຖື ຫຼື ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ການເລືອກ APN ຈະປິດການນຳໃຊ້ APN ທີ່ກຳນົດເອງ. APN ທີ່ບໍ່ຖືກຕ້ອງອາດລົບກວນການເຊື່ອມຕໍ່ມືຖືຂອງທ່ານ.</translation>
 <translation id="7119389851461848805">ປຸ່ມ​ເປີດ​ປິດ</translation>
 <translation id="7129287270910503851">ການນຳໃຊ້ອິນເຕີເນັດຂອງທ່ານຈະຣີເຊັດໃນມື້ນີ້ຂອງທຸກເດືອນ</translation>

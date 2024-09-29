@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
 <translation id="2161656808144014275">Мәтін</translation>
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
+<translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
 <translation id="2189104374785738357">APN мәліметтерін өзгерту</translation>
 <translation id="2195732836444333448">Толық жүктемемен жұмыс істеп тұр. Біраз уақыттан кейін қайтып оралыңыз.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Түрі</translation>
 <translation id="2468124392950503650">Нұсқауды таңдап, <ph name="BEGIN_LINK_PROMPTING_GUIDE" />нұсқау жазу туралы анықтамалық<ph name="END_LINK_PROMPTING_GUIDE" /> жасаңыз немесе қараңыз.</translation>
 <translation id="2472215337771558851">Нобай жасау немесе бар жұмысты жақсарту үшін Google AI ұсынған "Жазуға көмек керек" функциясын пайдаланыңыз.</translation>
+<translation id="2475982808118771221">Қате орын алды</translation>
 <translation id="2480572840229215612">теңіз шаяндары</translation>
 <translation id="248546197012830854">Құрылғы офлайн режимде. Анықтамалық контентті көру үшін Wi-Fi желісіне қосылыңыз.</translation>
 <translation id="2486301288428798846">ағаш</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Пайдаланушы сертификаты</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Интернетке қосылу мүмкін емес</translation>
 <translation id="6156030503438652198">қошқыл қызыл және қызғылт</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> атты құрылғы, <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> эксклюзивті афишасын таңдаңыз.</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Әрекетті кейінірек қайталаңыз</translation>
 <translation id="7118522231018231199">Мобильдік провайдер немесе әкімші берген APN-дерді таңдаңыз. APN таңдасаңыз, барлық арнаулы APN өшіріледі. Жарамсыз APN мобильдік байланысқа кедергі келтіруі мүмкін.</translation>
 <translation id="7119389851461848805">қуат</translation>
 <translation id="7129287270910503851">Дерек трафигі ай сайын осы күні бастапқы күйге қайтарылады</translation>

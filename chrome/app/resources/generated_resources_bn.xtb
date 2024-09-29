@@ -543,7 +543,6 @@
 <translation id="1392047138650695757">ব্যবহারকারীর অভিধান</translation>
 <translation id="139300021892314943">কারা সাইন-ইন করতে পারবেন তা সীমিত করুন</translation>
 <translation id="1393283411312835250">সূর্য ও ক্লাউড</translation>
-<translation id="1395730723686586365">আপডেটার শুরু হয়েছে</translation>
 <translation id="1395832189806039783">কীবোর্ড ফোকাসের সাহায্যে আইটেম হাইলাইট করা</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />-এ ফিরে যান</translation>
 <translation id="1396139853388185343">প্রিন্টার সেট-আপ করার সময় ত্রুটি হয়েছে</translation>
@@ -1362,7 +1361,6 @@
 <translation id="1942128823046546853">সমস্ত ওয়েবসাইটে আপনার ডেটা পড়তে ও পরিবর্তন করতে পারে</translation>
 <translation id="1944528062465413897">ব্লুটুথের সাথে পেয়ার করার জন্য কোড:</translation>
 <translation id="1944535645109964458">কোনও 'পাসকী' উপলভ্য নেই</translation>
-<translation id="1944921356641260203">আপডেট পাওয়া গেছে</translation>
 <translation id="1947136734041527201">কোনও পরিচিতি পরিষেবার সাথে যুক্ত আপনারই কোনও অ্য়াকাউন্ট ব্যবহার করে আপনাকে ওয়েবসাইটগুলিতে সাইন-ইন করতে দেয়</translation>
 <translation id="1948528728718281125">সিস্টেম পরিষেবার সাথে যেসব অ্যাপ ও ওয়েবসাইটের কাছে ক্যামেরা ব্যবহারের অনুমতি আছে, সেগুলির কাছে ক্যামেরার অ্যাক্সেস আছে</translation>
 <translation id="1949332606889020901">ক্র্যাশ আইডি</translation>
@@ -2239,7 +2237,6 @@
 <translation id="2546991196809436099">স্ক্রিনে কোনও আইটেম বড় করে দেখতে জুম-ইন করুন। ম্যাগনিফায়ার চালু বা বন্ধ করতে, 'Search + Ctrl + M' কী ব্যবহার করুন।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-এর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2548545707296594436">eSIM প্রোফাইল ক্যাশে রিসেট করুন</translation>
-<translation id="2549766998450508148">১-৪টি পরিবর্তক কী (ctrl, alt, shift, অথবা search) এবং আরও ১টি কী প্রেস করুন আপনি একটি সিঙ্গল কীও বেছে নিতে পারেন।</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="2550212893339833758">অদলবদল করা মেমরি</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> খোলার জন্য <ph name="EXTENSION_NAME" />-কে অনুমতি দিন?</translation>
@@ -2436,7 +2433,6 @@
 <translation id="2705736684557713153">ইনস্ট্যান্ট টেথারিং যদি দেখায়, তাহলে চালু করার জন্য স্ক্রিনের নিচে স্ক্রল করুন। যদি না দেখায়, আপনার সব সেট করা আছে।</translation>
 <translation id="2706304388244371417">Google Drive-এ ব্যাকআপ নিন। যেকোনও সময়ে সহজেই আপনার ডেটা ফিরিয়ে আনুন বা ডিভাইস পাল্টান। আপনার ব্যাকআপে অ্যাপ ডেটা থাকে। আপনার ব্যাকআপ ডেটা Google-এ আপলোড করা হয় এবং আপনার সন্তানের Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে সেগুলি এনক্রিপ্ট করা হয়। <ph name="BEGIN_LINK1" />ব্যাকআপ সম্পর্কে আরও জানুন<ph name="BEGIN_LINK1_END" />আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">উপরের</translation>
-<translation id="2707024448553392710">কম্পোনেন্ট ডাউনলোড হচ্ছে</translation>
 <translation id="270921614578699633">এর উপর গড়</translation>
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
 <translation id="2710101514844343743">ব্যবহার এবং ডায়াগনস্টিক সংক্রান্ত ডেটা</translation>
@@ -2561,7 +2557,6 @@
 <translation id="2779728796406650689">আপনি কোনও প্রশ্ন জিজ্ঞাসা করলে এটির সাহায্যে Google Assistant আরও ভালোভাবে উত্তর দিতে পারে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
-<translation id="2783298271312924866">ডাউনলোড হয়েছে</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />-এ আপনার নিরাপত্তা কী ব্যবহার করুন</translation>
 <translation id="2785267875302712148">পাসওয়ার্ড চেক-আপ</translation>
 <translation id="2785279781154577715">ট্যাবে কার্সার নিয়ে গিয়ে প্রিভিউ দেখা যায় এমন কার্ড দেখানোর পদ্ধতি</translation>
@@ -2888,7 +2883,6 @@
 <translation id="301525898020410885">আপনার প্রতিষ্ঠান ভাষা সেট করেছে</translation>
 <translation id="3015639418649705390">এখনই রিলঞ্চ করুন</translation>
 <translation id="3016381065346027039">লগ ফাঁকা আছে</translation>
-<translation id="3016641847947582299">কম্পোনেন্ট আপডেট করা আছে</translation>
 <translation id="3019023222666709803">অ্যারো টুল</translation>
 <translation id="3019285239893817657">সাবপেজ বোতাম</translation>
 <translation id="3019595674945299805">ভিপিএন পরিষেবা</translation>
@@ -2968,6 +2962,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">শুধুমাত্র এই ডিভাইসে সেভ করুন</translation>
 <translation id="3076977359333237641">আপনার সাইন-ইন ডেটা মুছে দেওয়া হয়েছে</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">এই নেটওয়ার্কটি আপনার অ্যাকাউন্টে সিঙ্ক করা নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">এক্সটেনশন</translation>
@@ -7209,7 +7204,6 @@
 <translation id="6208521041562685716">মোবাইল ডেটা অ্যাক্টিভেট করা হচ্ছে</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" />-এ সেভ করা যায়নি - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="SETTINGS_LINK" />।</translation>
-<translation id="6209838773933913227">কম্পোনেন্ট আপডেট করা হচ্ছে</translation>
 <translation id="6209908325007204267">আপনার ডিভাইসে Chrome Enterprise আপগ্রেড অন্তর্ভুক্ত রয়েছে, কিন্তু আপনার ইউজারনেমটি কোনও এন্টারপ্রাইজ অ্যাকাউন্টের সাথে যুক্ত নয়। অন্য একটি ডিভাইস থেকে g.co/ChromeEnterpriseAccount লিঙ্কে ক্লিক করে একটি এন্টারপ্রাইজ অ্যাকাউন্ট তৈরি করুন।</translation>
 <translation id="6210282067670792090">সার্চ ইঞ্জিন এবং সাইট সার্চের জন্য অ্যাড্রেস বারে শর্টকাটের মাধ্যমে এই কীবোর্ড শর্টকাট ব্যবহার করুন</translation>
 <translation id="6211067089253408231">ইনস্ট্যান্ট হটস্পট চালু করুন</translation>
@@ -7273,7 +7267,6 @@
 <translation id="6247620186971210352">কোনও অ্যাপ পাওয়া যায়নি</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">সিস্টেম: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">আপডেট প্রস্তুত</translation>
 <translation id="6248988683584659830">সার্চ সেটিংস</translation>
 <translation id="6249200942125593849">অ্যাক্সেসিবিলিটি ফিচার ম্যানেজ করুন</translation>
 <translation id="6250186368828697007">স্ক্রিন শেয়ার করার সময় বিজ্ঞপ্তির কন্টেন্ট লুকানো থাকে</translation>
@@ -8101,7 +8094,6 @@
 <translation id="6852290167968069627">নেটওয়ার্কে সমস্যা হওয়ার কারণে ChromeOS আপনার আগের সেশন শুরু করতে পারছে না। কোনও স্থিতিশীল নেটওয়ার্কে কানেক্ট করে আবার চালু করুন।</translation>
 <translation id="6852529053326738838">আপনার সংস্থাকে বলুন অথবা আপনার অ্যাকাউন্টটি উপযুক্ত কিনা তা চেক করতে অফিসের ইমেলের মাধ্যমে এনরোল করুন।</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> থেকে <ph name="APP_TYPE" /> ইনস্টল করা হয়েছে</translation>
-<translation id="6853388645642883916">আপডেটার নিদ্রা মোডে রয়েছে</translation>
 <translation id="68541483639528434">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="6855892664589459354">Crostini-তে ব্যাক-আপ এবং রিস্টোর করা</translation>
 <translation id="6856348640027512653">ভার্চুয়াল রিয়েলিটি ডিভাইস অথবা ডেটা ব্যবহার করার অনুমতি নেই</translation>
@@ -8912,7 +8904,6 @@
 <translation id="7461924472993315131">পিন</translation>
 <translation id="746216226901520237">পরের বার, আপনার ফোন <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারবেন।</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">কম্পোনেন্ট আগে থেকেই আপ-টু-ডেট আছে</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{#টি খোলা ট্যাব, ট্যাব স্ট্রিপ টগল করতে প্রেস করুন}one{#টি খোলা ট্যাব, ট্যাব স্ট্রিপ টগল করতে প্রেস করুন}other{#টি খোলা ট্যাব, ট্যাব স্ট্রিপ টগল করতে প্রেস করুন}}</translation>
 <translation id="7465635034594602553">কিছু সমস্যা হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার <ph name="APP_NAME" /> চালু করুন।</translation>
 <translation id="7465777686629334728">ম্যানেজ করা ডেভেলপমেন্ট এনভায়রনমেন্ট (<ph name="SPECIFIC_NAME" />) সরান</translation>

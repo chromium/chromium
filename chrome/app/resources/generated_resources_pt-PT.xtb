@@ -544,7 +544,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1392047138650695757">Dicionários do utilizador</translation>
 <translation id="139300021892314943">Limitar quem pode iniciar sessão</translation>
 <translation id="1393283411312835250">Sol e nuvens</translation>
-<translation id="1395730723686586365">Atualizador iniciado</translation>
 <translation id="1395832189806039783">Realçar item com foco do teclado</translation>
 <translation id="1396120028054416908">Voltar a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Erro ao configurar a impressora</translation>
@@ -1353,7 +1352,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1942128823046546853">Ler e alterar todos os seus dados em todos os Websites</translation>
 <translation id="1944528062465413897">Código de sincronização de Bluetooth:</translation>
 <translation id="1944535645109964458">Nenhuma token de acesso disponível</translation>
-<translation id="1944921356641260203">Atualização encontrada</translation>
 <translation id="1947136734041527201">Permite-lhe iniciar sessão em Websites com a conta que tem num serviço de identidade</translation>
 <translation id="1948528728718281125">O acesso à câmara é permitido para apps, Websites com a autorização de acesso à câmara e serviços do sistema</translation>
 <translation id="1949332606889020901">IDs de falhas de sistema</translation>
@@ -2227,7 +2225,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2546991196809436099">Aumente o zoom para aumentar o tamanho dos itens no ecrã. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
 <translation id="2548347166720081527">Autorizou <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Repor cache do perfil do eSIM</translation>
-<translation id="2549766998450508148">Prima 1 a 4 teclas de modificação (Ctrl, Alt, Shift ou pesquisa) e mais 1 tecla. Também pode selecionar uma única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2550212893339833758">Memória trocada</translation>
 <translation id="2550596535588364872">Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -2424,7 +2421,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2705736684557713153">Desloque-se até à parte inferior do ecrã e ative a Ligação via telemóvel instantânea, se for apresentada. Caso contrário, está pronto para começar.</translation>
 <translation id="2706304388244371417">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança. <ph name="BEGIN_LINK1" />Saiba mais sobre a cópia de segurança<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Para cima</translation>
-<translation id="2707024448553392710">A transferir o componente</translation>
 <translation id="270921614578699633">Média superior</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2710101514844343743">Dados de utilização e diagnósticos</translation>
@@ -2549,7 +2545,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2779728796406650689">Isto permite que o Assistente Google dê respostas personalizadas quando faz perguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Ocorreu um erro ao instalar a aplicação para Linux.</translation>
-<translation id="2783298271312924866">Transferido</translation>
 <translation id="2783952358106015700">Usar a chave de segurança com a aplicação <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Verificação de Palavra-passe</translation>
 <translation id="2785279781154577715">Aspeto do cartão de pré-visualização de sobreposição de separadores</translation>
@@ -2877,7 +2872,6 @@ Quer pará-lo?</translation>
 <translation id="301525898020410885">O idioma é definido pela sua entidade</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">Sem entradas do registo</translation>
-<translation id="3016641847947582299">Componente atualizado</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão da subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
@@ -2957,6 +2951,7 @@ Quer pará-lo?</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar apenas neste dispositivo</translation>
 <translation id="3076977359333237641">Os seus dados de início de sessão foram eliminados.</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Esta rede não está sincronizada com a sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensões</translation>
@@ -7198,7 +7193,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6208521041562685716">Os dados móveis estão a ser ativados</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Caso se tenha esquecido da frase de acesso ou queira alterar esta definição, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Atualização de componentes</translation>
 <translation id="6209908325007204267">O seu dispositivo inclui uma Chrome Enterprise Upgrade, mas o seu nome de utilizador não está associado a uma conta de empresa. Crie uma conta de empresa ao visitar g.co/ChromeEnterpriseAccount num dispositivo secundário.</translation>
 <translation id="6210282067670792090">Na barra de endereço, utilize este atalho de teclado com atalhos para motores de pesquisa e pesquisa no site</translation>
 <translation id="6211067089253408231">Ativar zona Wi-Fi instantânea</translation>
@@ -7262,7 +7256,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6247620186971210352">Não foram encontradas aplicações.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Atualização pronta</translation>
 <translation id="6248988683584659830">Pesquisar definições</translation>
 <translation id="6249200942125593849">Gerir a11y</translation>
 <translation id="6250186368828697007">Os detalhes estão ocultos durante a partilha do ecrã</translation>
@@ -8088,7 +8081,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6852290167968069627">O ChromeOS não consegue retomar a sessão anterior devido a um problema de rede. Ligue-se a uma rede estável e tente novamente.</translation>
 <translation id="6852529053326738838">Peça à organização ou inscreva-se com o seu email profissional para verificar se a conta é elegível.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> instalada a partir de <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Atualizador em suspensão</translation>
 <translation id="68541483639528434">Fechar os outros separadores</translation>
 <translation id="6855892664589459354">Cópia de segurança e restauro do Crostini</translation>
 <translation id="6856348640027512653">Sem autorização para utilizar dados ou dispositivos de realidade virtual</translation>
@@ -8900,7 +8892,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Pode desativar o Smart Lock nas Definições.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">O componente já está atualizado</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# separador aberto. Prima para ativar/desativar a Faixa de separadores.}other{# separadores abertos. Prima para ativar/desativar a Faixa de separadores.}}</translation>
 <translation id="7465635034594602553">Ocorreu um erro. Aguarde alguns minutos e execute app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7465777686629334728">Remover o ambiente de programação gerido (<ph name="SPECIFIC_NAME" />)</translation>

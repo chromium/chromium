@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
+<translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
 <translation id="2189104374785738357">Edite detalhes do APN (Nome do Ponto de Acesso)</translation>
 <translation id="2195732836444333448">Está no limite da sua capacidade neste momento. Volte em breve.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2468124392950503650">Selecione o comando para criar ou veja o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Use a funcionalidade Ajuda-me a escrever para criar um rascunho ou refinar um trabalho existente com tecnologia de IA da Google</translation>
+<translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2480572840229215612">caranguejos</translation>
 <translation id="248546197012830854">O dispositivo está offline. Ligue-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
 <translation id="2486301288428798846">madeira</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Certificado do utilizador</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Não é possível ligar à Internet</translation>
 <translation id="6156030503438652198">castanho e rosa</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Escolha a peça de arte exclusiva do produto <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Tente mais tarde.</translation>
 <translation id="7118522231018231199">Certifique-se de que seleciona APNs disponibilizados pelo seu fornecedor de serviços móveis ou administrador. A seleção de um APN desativa quaisquer APNs personalizados. Os APNs inválidos podem interromper a ligação móvel.</translation>
 <translation id="7119389851461848805">alimentação</translation>
 <translation id="7129287270910503851">A sua utilização de dados vai ser reposta todos os meses neste dia</translation>

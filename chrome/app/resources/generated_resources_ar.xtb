@@ -546,7 +546,6 @@
 <translation id="1392047138650695757">قواميس المستخدم</translation>
 <translation id="139300021892314943">حصر إمكانية تسجيل الدخول على مستخدمين معيّنين</translation>
 <translation id="1393283411312835250">الشمس والسحاب</translation>
-<translation id="1395730723686586365">خدمة التحديث بدأت</translation>
 <translation id="1395832189806039783">تمييز العنصر باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="1396120028054416908">الرجوع إلى "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">حدث خطأ أثناء إعداد الطابعة</translation>
@@ -1355,7 +1354,6 @@
 <translation id="1942128823046546853">الاطّلاع على جميع بياناتك وتغييرها على جميع المواقع الإلكترونية</translation>
 <translation id="1944528062465413897">رمز إقران البلوتوث:</translation>
 <translation id="1944535645109964458">ما مِن مفاتيح مرور متوفّرة</translation>
-<translation id="1944921356641260203">تم العثور على التحديث</translation>
 <translation id="1947136734041527201">بإمكانك تسجيل الدخول إلى المواقع الإلكترونية باستخدام حسابك من خلال خدمة تقديم الهويات.</translation>
 <translation id="1948528728718281125">يتم منح إذن الوصول إلى الكاميرا للتطبيقات والمواقع الإلكترونية التي لديها أذونات وصول إليها وكذلك خدمات النظام</translation>
 <translation id="1949332606889020901">معرفات الأعطال</translation>
@@ -2230,7 +2228,6 @@
 <translation id="2546991196809436099">‏يمكنك تكبير العناصر على الشاشة. اضغط على مفتاح البحث ‏+ Ctrl ‏+ M لتفعيل ميزة "مكبّر الشاشة" أو إيقافها.</translation>
 <translation id="2548347166720081527">تم منح إذن <ph name="PERMISSION" />.</translation>
 <translation id="2548545707296594436">‏إعادة ضبط ذاكرة التخزين المؤقت الخاصة بالملف الشخصي لبطاقة eSIM</translation>
-<translation id="2549766998450508148">‏اضغط على مفاتيح التعديل من 1 إلى 4 (Ctrl أو Alt أو Shift أو مفتاح البحث) ومفتاح آخر، كما يمكنك اختيار مفتاح واحد.</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
 <translation id="2550212893339833758">ذاكرة مساحة التبديل</translation>
 <translation id="2550596535588364872">هل تريد السماح لـ <ph name="EXTENSION_NAME" /> بفتح <ph name="FILE_NAME" />؟</translation>
@@ -2427,7 +2424,6 @@
 <translation id="2705736684557713153">مرّر لأسفل الشاشة وفعّل التوصيل الفوري إذا كان ظاهرًا. وفي حال عدم ظهوره، تكون قد أنهيت الإجراءات.</translation>
 <translation id="2706304388244371417">‏الاحتفاظ بنسخة احتياطية في Google Drive: يتيح لك هذا الإجراء استعادة البيانات أو تبديل الجهاز بسهولة في أي وقت. وتتضمّن هذه النسخة الاحتياطية بيانات التطبيقات. ويتم تحميل النُسخ الاحتياطية إلى Google وترميزها باستخدام كلمة مرور حساب طفلك على Google. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول الاحتفاظ بنسخة احتياطية<ph name="BEGIN_LINK1_END" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">أعلى</translation>
-<translation id="2707024448553392710">تنزيل المُكوّن</translation>
 <translation id="270921614578699633">تم تجاوز المعدل</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
@@ -2552,7 +2548,6 @@
 <translation id="2779728796406650689">‏يتيح هذا الإجراء لخدمة "مساعد Google" تقديم ردود مخصّصة عند طرحك للأسئلة.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
-<translation id="2783298271312924866">تم التنزيل</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">التحقّق من كلمة المرور</translation>
 <translation id="2785279781154577715">مظهر بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
@@ -2879,7 +2874,6 @@
 <translation id="301525898020410885">حدّدت مؤسستك لغة تلقائية</translation>
 <translation id="3015639418649705390">إعادة التشغيل الآن</translation>
 <translation id="3016381065346027039">لا تتوفر إدخالات في السجلّ</translation>
-<translation id="3016641847947582299">تم تحديث المُكوّن</translation>
 <translation id="3019023222666709803">أداة رسم الأسهم</translation>
 <translation id="3019285239893817657">زر صفحة فرعية</translation>
 <translation id="3019595674945299805">‏خدمة شبكة VPN</translation>
@@ -2958,6 +2952,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">حفظ كلمة المرور على هذا الجهاز فقط</translation>
 <translation id="3076977359333237641">تم حذف بيانات تسجيل الدخول</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">لم تتم مزامنة هذه الشبكة مع حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">إضافات</translation>
@@ -7196,7 +7191,6 @@
 <translation id="6208521041562685716">جارٍ تفعيل بيانات الجوّال</translation>
 <translation id="6208725777148613371">تعذّر الحفظ في <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" />.</translation>
 <translation id="6209767197996242814">في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">جارٍ تعديل المكوِّن</translation>
 <translation id="6209908325007204267">‏يتضمّن جهازك "ترقية Chrome Enterprise"، ولكن اسم المستخدم الخاص بك غير مرتبط بحساب مؤسسة. يُرجى إنشاء حساب مؤسسة من خلال الانتقال إلى g.co/ChromeEnterpriseAccount على جهاز ثانوي.</translation>
 <translation id="6210282067670792090">في شريط العناوين، استخدِم اختصار لوحة المفاتيح هذا مع الاختصارات المخصّصة لمحركات البحث وميزة البحث في الموقع الإلكتروني.</translation>
 <translation id="6211067089253408231">تفعيل نقطة الاتصال الفورية</translation>
@@ -7260,7 +7254,6 @@
 <translation id="6247620186971210352">لم يتم العثور على أي تطبيقات</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">النظام: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">التحديث جاهز</translation>
 <translation id="6248988683584659830">بحث في الإعدادات</translation>
 <translation id="6249200942125593849">إدارة إمكانية الوصول</translation>
 <translation id="6250186368828697007">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
@@ -8094,7 +8087,6 @@
 <translation id="6852290167968069627">‏لا يمكن لنظام التشغيل ChromeOS استئناف الجلسة السابقة بسبب مشكلة في الشبكة. يُرجى الاتصال بشبكة مستقرة وإعادة المحاولة.</translation>
 <translation id="6852529053326738838">للتحقّق من أهليّة حسابك، اطلب المساعدة من مؤسستك أو سجِّل باستخدام عنوان البريد الإلكتروني المخصّص للعمل.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> المُثبَّت من <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">خدمة التحديث خاملة</translation>
 <translation id="68541483639528434">إغلاق علامات التبويب الأخرى</translation>
 <translation id="6855892664589459354">‏النسخ الاحتياطي واستعادة البيانات من نظام التشغيل Crostini</translation>
 <translation id="6856348640027512653">المواقع الإلكترونية التي لا يُسمح لها باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
@@ -8905,7 +8897,6 @@
 <translation id="7461924472993315131">تثبيت</translation>
 <translation id="746216226901520237">‏في المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" />. يمكنك إيقاف Smart Lock في "الإعدادات".</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">سبق أن تم تحديث المكوّن إلى آخر إصدار.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{هناك علامة تبويب واحدة مفتوحة. اضغط لعرض شريط علامات التبويب أو إخفائه.}zero{ليس هناك أي علامات تبويب مفتوحة. اضغط لعرض شريط علامات التبويب أو إخفائه.}two{هناك علامتَا تبويب مفتوحتَان. اضغط لعرض شريط علامات التبويب أو إخفائه.}few{هناك # علامات تبويب مفتوحة. اضغط لعرض شريط علامات التبويب أو إخفائه.}many{هناك # علامة تبويب مفتوحة. اضغط لعرض شريط علامات التبويب أو إخفائه.}other{هناك # علامة تبويب مفتوحة. اضغط لعرض شريط علامات التبويب أو إخفائه.}}</translation>
 <translation id="7465635034594602553">حدث خطأ. يُرجى الانتظار بضع دقائق، ثم إعادة تشغيل <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">إزالة بيئة التطوير المُدارة (<ph name="SPECIFIC_NAME" />)</translation>

@@ -45,7 +45,6 @@
 <translation id="1204075260022434100">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{{count} bokmärken har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="120431140543679678">Följ</translation>
 <translation id="1207493287814084192">15.30</translation>
-<translation id="1209206284964581585">Dölj för tillfället</translation>
 <translation id="1217294226280635614">Delad skärm</translation>
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>
 <translation id="1227113644794103810">Inaktiva flikar</translation>
@@ -78,6 +77,7 @@
 <translation id="1335767868357998043">Välj position för adressfältet</translation>
 <translation id="1347468774581902829">Hantera aktivitet</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358214951266274152">Besök den kopierade länken</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
 <translation id="1363028406613469049">Spår</translation>
 <translation id="1364367057792633742">Ny flik</translation>
@@ -98,7 +98,6 @@
 <translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
 <translation id="143681031165817424">Adressen har endast sparats på den här enheten</translation>
 <translation id="1445276840641906250">Alla flikarna i en enda webbläsare</translation>
-<translation id="1446895492767488343">Dölj Använd mobil webbplats</translation>
 <translation id="1450170672351507823">Standardskydd är aktiverat. Använd förbättrat skydd för ännu bättre säkerhet.</translation>
 <translation id="1460751212339734034">Skriv mindre och spara tid</translation>
 <translation id="1466035273550360103">Inga öppna flikar</translation>
@@ -112,7 +111,6 @@
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
 <translation id="1497590942294823549">Meny → Lösenordshantering</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontot raderas inte.</translation>
-<translation id="1501480321619201731">Ta bort grupp</translation>
 <translation id="1506063256525392513">Det här gör att du kan ta och ladda upp foton samt skanna QR-koder</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
@@ -124,6 +122,8 @@
 <translation id="1531038290222364269">Visa flikar</translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
+<translation id="1545749641540134597">Skanna QR-kod</translation>
+<translation id="1554477036522844996">Nytt fönster</translation>
 <translation id="1571780780926010134">Inkognitoflikar</translation>
 <translation id="1580715474678097352">Skydda dig mot farliga webbplatser</translation>
 <translation id="1580783302095112590">E-post skickades.</translation>
@@ -132,6 +132,7 @@
 <translation id="1598751033135758830">Öppna i appen …</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
 <translation id="1605405588277479165">Av – rekommenderas inte</translation>
+<translation id="1605658421715042784">Kopiera bild</translation>
 <translation id="1612642630650745968">Paketet spåras inte</translation>
 <translation id="1612754831519568745">Säker webbsökning är för närvarande inaktiverat. Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -149,12 +150,12 @@
 <translation id="1654232554734641711">Mikrofonåtkomst har tillåtits</translation>
 <translation id="16554782717487656">Identifiera enheter</translation>
 <translation id="1657011748321897393">Det går inte att dela. Du är inte ansluten till nätverket.</translation>
+<translation id="1668001730617725852">Öppna i en ny flikgrupp</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="169048873465870056">Vill du ta bort fliken och radera gruppen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
 <translation id="1709916727352927457">Radera nyckel</translation>
-<translation id="1713541401465507417">Stäng alla flikar och grupper</translation>
 <translation id="1713777106376424209">Levereras av</translation>
 <translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
 <translation id="1728549374069268714">Klistra in och öppna</translation>
@@ -169,6 +170,7 @@
 <translation id="1767766085187034454">Google Översätt</translation>
 <translation id="1771016937398045251">Verktygsmeny</translation>
 <translation id="1779354709911146450">Autentiseringsfel</translation>
+<translation id="1780152987505130652">Stäng grupp</translation>
 <translation id="178400879184240105">Lösenorden är unika</translation>
 <translation id="1807893857950749072">Tillåt aviseringar om prisbevakning …</translation>
 <translation id="1810976980198522421">Avbryt</translation>
@@ -179,11 +181,9 @@
 <translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Aviseringar när du tar emot flikar från dina andra enheter.</translation>
 <translation id="1827529786398596735">Tryck länge på startskärmen</translation>
-<translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{Bokmärkena har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="183878838231635348">På det här kortet visas eventuella integritets- eller säkerhetsproblem som automatiskt har identifierats av säkerhetskontrollen.</translation>
-<translation id="1853236860984942211">Lägg till i läslistan</translation>
 <translation id="1854463785401910334">Sök på öppna flikar</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} av {count} lösenord}other{{position} av {count} lösenord}}</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
@@ -238,7 +238,6 @@
 <translation id="2067852168641682340">Spara i det här kontot varje gång</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 flik}other{{count} flikar}}</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
-<translation id="2074527029802029717">Lossa flik</translation>
 <translation id="2078437078822043850">Du kan scrolla åt höger för att surfa inkognito.</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2082906935540894275">Funktionerna som är mest relevanta för dig vid olika tidpunkter.</translation>
@@ -246,12 +245,15 @@
 <translation id="2096239473850415494">Det gick inte att ladda ned</translation>
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="2104436223719117661">Populära sökningar</translation>
+<translation id="21133533946938348">Fäst flik</translation>
 <translation id="2119636449201577317">Öppna i …</translation>
 <translation id="2122754583996902531">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="2139867232736819575">Sök efter kopierad text</translation>
 <translation id="2147127444698817042">Endast tillgängligt på iPhone</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2148799636999124959">Logga snabbt in på webbplatser och i appar med dina sparade lösenord.</translation>
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
+<translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2161446265348023004">Byt till öppet fönster</translation>
 <translation id="2164946989711475905">Logga in …</translation>
 <translation id="2175927920773552910">QR-kod</translation>
@@ -274,10 +276,10 @@
 <translation id="225943865679747347">Felkod: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2265069324308685684">Raderar webbinformation …</translation>
+<translation id="2267753748892043616">Lägg till konto</translation>
 <translation id="2268044343513325586">Finjustera</translation>
 <translation id="2271452184061378400">Dina flikgrupper sparas här</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
-<translation id="227432585807186192">Öppna i flikgrupp</translation>
 <translation id="2274800392139890332">Sluta spåra den här försändelsen</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen raderas från enheten.}other{Dessa adresser raderas från enheten.}}</translation>
 <translation id="2297989278479054870">När du har loggat ut tas bokmärken, lösenord med mera i Google-kontot bort från enheten.</translation>
@@ -297,6 +299,7 @@
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359043044084662842">Översätt</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
+<translation id="2360196772093551345">Använd mobilversion</translation>
 <translation id="2362083820973145409">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
 <translation id="236977714248711277">Webbplatser får inte förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
 
@@ -329,6 +332,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> utsatta lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="2513103768503127042">Du hittar dina flikgrupper här</translation>
 <translation id="251837347827266434">Du loggas ut, flikar stängs och webbinformationen rensas</translation>
+<translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Dolt, lösenord</translation>
 <translation id="2539748786028143624">Aktivera utökat skydd …</translation>
@@ -374,7 +378,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="271033894570825754">Ny</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
 <translation id="2721190673959776287">Testa detaljerad hjälp i produkten för innehållspanelen, som bör visas flera gånger om dagen.</translation>
-<translation id="2723020285498840769">Dölj Zooma text</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755595981383829244">Du får nu innehållsaviseringar</translation>
@@ -399,25 +402,23 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2876369937070532032">Webbadresser till vissa sidor som du besöker skickas till Google när din säkerhet är utsatt för risk.</translation>
 <translation id="2883151425485251736">Se och redigera ämnen som har dolts i kontot</translation>
+<translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
 <translation id="288902476966286676">Retur till avsändaren</translation>
-<translation id="2894757982205307093">Ny flik i grupp</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> återanvända lösenord som kan innebära en säkerhetsrisk.</translation>
-<translation id="2908238736374560183">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="2920866371965792875">Följ här för att få nyheter från den här sidan</translation>
 <translation id="2922210239002704889">Öppna startsidan eller tangentbordet</translation>
 <translation id="2924940770243654951">Öppna i ny inkognitoflik</translation>
 <translation id="2931440415625410757">Visa anvisningar</translation>
+<translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2962516096219646456">Se all data för Autofyll</translation>
 <translation id="2963044753825419640">Tillåt att webbplatser och appar automatiskt uppgraderar befintliga konton till att använda nycklar när de är tillgängliga</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
-<translation id="2977480621796371840">Ta bort från gruppen</translation>
-<translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
+<translation id="2989805286512600854">Öppna i ny flik</translation>
 <translation id="2990025507101398383">Inga inkognitoflikar</translation>
 <translation id="2996291259634659425">Skapa lösenfras</translation>
-<translation id="2999340291133730">Öppna offlineversion</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Nytt paket spåras}other{Nya paket spåras}}</translation>
 <translation id="3010025794097054078">Skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="301080557829842765">Integritetsguide</translation>
@@ -450,6 +451,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
 <translation id="3143515551205905069">Avbryt synkronisering</translation>
 <translation id="314837624430314508">Håll koll på de senaste nyheterna, uppdateringarna för prisbevakningar med mera.</translation>
+<translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="315778507796115851">Historik</translation>
 <translation id="31652791196570636">Ignorera</translation>
 <translation id="3167868116600277716">Förslagsflödet</translation>
@@ -488,13 +490,11 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
 <translation id="3377063233124932127">Nu visas dina sparade bokmärken, lösenord och annat högst upp.</translation>
 <translation id="3380352560400387991">Den här webbplatsen försöker öppna en app. Du loggas ut från inkognitoläget.</translation>
-<translation id="3383954226298202851">Bevaka pris</translation>
 <translation id="3404232721752787413">Spara i Google Foto</translation>
 <translation id="3404744938087714423">Om du loggar ut inaktiveras synkronisering.</translation>
 <translation id="3406506285180498376">Dela sidan …</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 okt 2023</translation>
-<translation id="3419398945326849444">Inkognitosökning</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3443810440409579745">En flik har tagits emot.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -510,20 +510,17 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3504377992102007712">Inställningar</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
 <translation id="3511519535430890904">Lägg till surfningsskydd</translation>
-<translation id="3513276283366825110">Anpassa meny</translation>
 <translation id="3517216995152707259">Du loggas inte ut från Google-kontot när du raderar webbinformationen. Om du vill göra det ska du <ph name="BEGIN_LINK" />logga ut från Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Öppna en flik om du vill surfa på webben.</translation>
-<translation id="3519519192193787760">Dölj Redigera bokmärke</translation>
 <translation id="3519905498307021260">{count,plural, =1{Öppna fliken}other{Öppna {count} flikar}}</translation>
 <translation id="3523789730715594198">Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3529024052484145543">Inte säkert</translation>
 <translation id="3530206579861815432">Du hittar snabbt öppna och nyligen stängda flikar på alla dina synkroniserade enheter.</translation>
 <translation id="3530767473765895035">Hantera konton på den här enheten …</translation>
+<translation id="3533436815740441613">Ny flik</translation>
 <translation id="3547356470684043247">Läs kundutvärderingar av produkter, tjänster eller upplevelser som underlag för dina beslut med recensioner.</translation>
 <translation id="3549391962818677448">Leveransförsök har gjorts. Försöker igen</translation>
-<translation id="3551148497083524451">Sök på sidan …</translation>
-<translation id="3551602038921373325">Zooma text …</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
 <translation id="355765753469272474">Ångra</translation>
 <translation id="3565930036634619844">Flik. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
@@ -534,11 +531,11 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3582976576569261467">Din favoritwebbläsare finns nu på iPadOS</translation>
 <translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
+<translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="3591006724568464696">De senaste flikarna är inte tillgängliga</translation>
 <translation id="3595252146048399851">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
 <translation id="3602260545951981695">Välj Utökat skydd</translation>
-<translation id="3606746615845065096">Stäng flik</translation>
 <translation id="3622175633937495219">Sökhistorik (<ph name="COUNT" /> hittades)</translation>
 <translation id="3625008969091706597">Du kan svepa från kanten för att gå tillbaka.</translation>
 <translation id="362709345066740529">Anpassa dina kort, ditt flöde och annat här</translation>
@@ -610,7 +607,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3982893814825393515">Rapportera ett problem …</translation>
 <translation id="398604237578616937">Inloggad som <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="3986739045730058129">Öppna fliken</translation>
-<translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3994422733891749358">Välj vilka aviseringar du vill ta emot</translation>
 <translation id="3995521777587992544">Förloppsindikator för inläsning av sidor, <ph name="EMAIL" /> har lästs in.</translation>
@@ -622,12 +618,12 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4021931095789478915">Lägg till ${url} i läslistan</translation>
 <translation id="4028871427853484857">Spara i kontot …</translation>
 <translation id="4038354071007134711">Det går inte att öppna filen med någon av apparna på enheten.</translation>
+<translation id="4042870976416480368">Sök på sidan</translation>
 <translation id="4045648459118332842">Få tillgång till sparade lösenord i alla appar med ett tryck</translation>
 <translation id="4049419681095579435">Paketet spåras redan</translation>
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
 <translation id="4054572406751135230">Håll dig uppdaterad om nyheter, sport med mera.</translation>
 <translation id="4070132839822635162">Logga inte in</translation>
-<translation id="4078089558472488816">Begär webbplats för dator</translation>
 <translation id="4094361089640885693">Bevaka enkelt priser och få prisinformation.</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="4111985840824673503">Markera alla som lästa</translation>
@@ -654,7 +650,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4183350924949589798">Vill du ha bättre säkerhet?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} svagt lösenord}other{{count} svaga lösenord}}</translation>
-<translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} objekt sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {email}.}other{{count} objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}}</translation>
 <translation id="421070604241073551">När detta är aktiverat sparas data i Google-kontot. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
 <translation id="4224534474590365556">Vill du stänga över 99 inaktiva flikar?</translation>
@@ -662,7 +657,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4231395118547300571">Aviseringar från säkerhetskontroll har aktiverats</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
-<translation id="4248717096351188227">Skapa en QR-kod</translation>
 <translation id="4250432749243022864">{count,plural, =0{Öppna {count} flik}=1{Öppna {count} flik}other{Öppna {count} flikar}}</translation>
 <translation id="4251531167342733205">Få ut det bästa av din webbläsare.</translation>
 <translation id="4253168017788158739">Kommentar</translation>
@@ -672,19 +666,19 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4272631900155121838">Om du vill skanna en QR-kod aktiverar du kameran i inställningarna</translation>
 <translation id="4277990410970811858">Säker webbsökning</translation>
 <translation id="4279431713294750185">Du kan svepa från kanten för att gå framåt.</translation>
-<translation id="427987768447457592">Ny flikgrupp</translation>
 <translation id="4282944936010261425">Det finns inga säkerhetsproblem att åtgärda.</translation>
 <translation id="4286718549648564014">Adressen har flyttats till ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markera som läst</translation>
 <translation id="428768789042547925">Nyheter</translation>
+<translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4309403553630140242">Tryck snabbt två gånger för mer information</translation>
 <translation id="4320848494125124980">Senaste</translation>
+<translation id="4322394346347055525">Stäng andra flikar</translation>
 <translation id="4324735664183300693">Aktivera aviseringar</translation>
 <translation id="4328843285884395590">Min enhet</translation>
 <translation id="4331177082088332784">Du kan hantera detta i BEGIN_LINK innehållsinställningarna END_LINK</translation>
-<translation id="4333100555184633720">Radera webbinformation</translation>
 <translation id="4334428914252001502">1 oläst artikel.</translation>
 <translation id="4338258232580025606">Det går inte att logga in</translation>
 <translation id="4338650699862464074">Skickar webbadresser till sidor du besöker till Google.</translation>
@@ -719,7 +713,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4495516234578759322">Sök nästa</translation>
 <translation id="4502423230170890588">Ta bort från den här enheten</translation>
 <translation id="4508750114462689118">Stäng inloggningskampanj</translation>
-<translation id="4511669830082467224">Sök på bilden med Google</translation>
 <translation id="4520798012560649652">Läs mer om inkognitoläget</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bokmärke}other{{count} bokmärken}}</translation>
 <translation id="4525629404718770519">Visa förhandsgranskning av länkar</translation>
@@ -741,7 +734,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="461440297010471931">Söker med Google</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4619615317237390068">Flikar från andra enheter</translation>
-<translation id="4620446472171153485">Begär webbplats för mobila enheter</translation>
 <translation id="4620845369664293551">Du kan dela sidan här.</translation>
 <translation id="4624080227980645783">Nytt inkognitofönster</translation>
 <translation id="4630212057753624203">Exempelbubbla</translation>
@@ -769,9 +761,9 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4720530280568305198">Ditt val öppnades på en ny flik</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4742407542027196863">Hantera lösenord …</translation>
-<translation id="4742897645503301228">Dölj Bevaka pris</translation>
 <translation id="4744428388659507035">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter.</translation>
 <translation id="4746926359847517643">Du kan alltid få tillbaka dem via historiken.</translation>
+<translation id="4751645464639803239">Ny inkognitoflik</translation>
 <translation id="4752348350801431746">Inaktivera aviseringar från säkerhetskontroll …</translation>
 <translation id="4764612367328936189">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Förslag och följer</translation>
@@ -799,16 +791,15 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4840495572919996524">Bokmärken, historik, lösenord och annat synkroniseras inte längre med ditt Google-konto.</translation>
 <translation id="484280513275854557">Du har loggats ut och webbinformation har raderats</translation>
 <translation id="4850886885716139402">Visa</translation>
-<translation id="4852871795239756651">Dölj Lägg till i läslistan</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4869146460927742717">Adressfältets position</translation>
 <translation id="4870911314065352661">Vill du stänga alla flikar?</translation>
-<translation id="4871719318659334896">Stäng grupp</translation>
 <translation id="4872664437015695612">Öppna i Nedladdningar</translation>
 <translation id="4876305945144899064">Inget användarnamn</translation>
 <translation id="4876665338492917862">Öppnades <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Påminn mig senare</translation>
 <translation id="4881695831933465202">Öppna</translation>
+<translation id="488785315393301722">Visa information</translation>
 <translation id="4889521386764567563">Aktuell profil</translation>
 <translation id="4894963374040315706">Det här gör att du kan söka med hjälp av rösten</translation>
 <translation id="4896467949657706481">Flikar stängdes eftersom du loggades ut</translation>
@@ -820,12 +811,12 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4937410517508563815">Spara lösenord i kontot</translation>
 <translation id="4938338714234463591">Detta gör att du kan använda rösten med vissa funktioner på webbplatser.</translation>
 <translation id="4941089862236492464">Det gick inte att dela objektet.</translation>
+<translation id="4944543191714094452">Hitta på sida …</translation>
 <translation id="4945756290001680296">Åtkomst till lösenordsinställningar</translation>
 <translation id="4949302115427722371">Hantera inställningar …</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
 <translation id="496392417432935267">Har öppnats någon annanstans</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
-<translation id="497576524745133089">Använd mobil webbplats</translation>
 <translation id="4979397965658815378">Logga in med ditt Google-konto så att du kan använda bokmärken, lösenord, historik med mera på alla dina enheter</translation>
 <translation id="4989065233040279145">Välj var du vill spara <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Flikgruppens färg <ph name="COLOR" /></translation>
@@ -866,14 +857,12 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5174591196806162275">Bilden du kopierade med Lens</translation>
 <translation id="5176312250994681348">Behåll det senaste lösenordet</translation>
 <translation id="5177141896043341906">Du har <ph name="NUMBER_OF_PASSWORDS" /> svaga lösenord som kan innebära en säkerhetsrisk.</translation>
-<translation id="5179471839166060416">Dölj Radera webbinformation</translation>
 <translation id="5181140330217080051">Nedladdning</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Cookie-inställningarna tillämpas för alla flikar. Om du vill tillämpa en ny inställning på en öppen flik läser du in fliken igen.</translation>
 <translation id="518997337573684769">Skickar felrapport …</translation>
 <translation id="519530786644929958">Nedladdningen misslyckades. Det går inte att försöka igen.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5200226585829185758">Dölj Lägg till i bokmärken</translation>
 <translation id="5200894869889836319">Alternativ för att ställa in behörigheter</translation>
 <translation id="5206453674369664567">Logga ut och rensa data</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
@@ -913,6 +902,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="541276233349960923">Använd lösenorden på alla dina enheter</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5415289094036440596">Det går inte att dela nycklar</translation>
+<translation id="5416455648658732408">Flytta till flikgrupp</translation>
 <translation id="5431239785743546285">Sidor du har läst</translation>
 <translation id="5431252637281434233">Du loggas ut</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
@@ -922,7 +912,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5452354193031718372">Använd ett starkt lösenord:</translation>
 <translation id="5454211924362324495">Hindra andra från att använda ditt lösenord genom att <ph name="BEGIN_LINK" />ändra det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Lägg till i sökningen</translation>
-<translation id="5470555063139385235">Skicka till din enhet</translation>
+<translation id="5457226814769348910">Öppna offlineversion</translation>
 <translation id="5478327362747197944">Skapa kalenderhändelser direkt genom att klicka på ett datum på en webbsida.</translation>
 <translation id="5482922178977937393">Vill du få aviseringar om nyheter, sport och annat utifrån dina intressen?</translation>
 <translation id="5483838506518938965">Nu är det klart</translation>
@@ -952,7 +942,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
-<translation id="5602586420788540146">Öppna i en ny flikgrupp</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
 <translation id="5611107723541161735">Genvägar till webbplatser som du har besökt nyligen på den här enheten.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
@@ -962,7 +951,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5624120631404540903">Hantera lösenord</translation>
 <translation id="5624637933505983014">Aktivera inte synkronisering</translation>
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
-<translation id="5627356199445503927">Stäng flik</translation>
 <translation id="562753339521713441">Kör säkerhetskontroll</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} sida i läslistan}other{{count} sidor i läslistan}}</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
@@ -1023,6 +1011,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Hanteras av organisationen.</translation>
 <translation id="5888889603768021126">Inloggad med</translation>
+<translation id="5889333064153755823">Radera webbinformation</translation>
 <translation id="5896576662943111387">Gjord för iOS</translation>
 <translation id="5897749768294722429">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt.</translation>
 <translation id="5898848375214731122">Vikt</translation>
@@ -1036,7 +1025,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="594324569139756587">Blockera tredjepartscookies</translation>
 <translation id="5944869793365969636">Skanna QR-kod</translation>
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
-<translation id="5954322191260787920">Redigera bokmärke</translation>
 <translation id="5956112131836209882">Flik i flikgrupp. <ph name="TAB_INDEX_IN_GROUP" /> av <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Det gick inte att skapa en länk till markeringen.</translation>
@@ -1067,6 +1055,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6074656473835429958">Få aviseringar</translation>
 <translation id="607620096698446287">Det gick inte att ladda upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Kameraåtkomst har tillåtits</translation>
+<translation id="6084848228346514841">Välj flikar</translation>
 <translation id="6089212833343035912">Pinkod för Google Lösenordshantering</translation>
 <translation id="6090760257419195752">Ignorerade varningar</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> hittades</translation>
@@ -1102,6 +1091,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6225572914528673855">Adressfält</translation>
 <translation id="6227126502342367214">Kamerasökning med Lens</translation>
 <translation id="6231782223312638214">Förslag</translation>
+<translation id="6232329973559504466">Inkognitosökning</translation>
 <translation id="6234438496206735891">Visa nedladdningar</translation>
 <translation id="6236952928980352967">Återställ varning</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
@@ -1145,6 +1135,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6429213933892582367">Öppna Lösenordsalternativ</translation>
 <translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
 <translation id="6436318499800111867">Delades med mig <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442697326824312960">Lossa flik</translation>
 <translation id="6443118737398455446">Ogiltigt förfallodatum</translation>
 <translation id="6444435711855078002">Fler alternativ</translation>
 <translation id="6445051938772793705">Land</translation>
@@ -1161,14 +1152,11 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="647867789226964031">Ändra dina lösenord</translation>
-<translation id="6489017415570962672">Webbplatsinformation</translation>
 <translation id="6494931198667773526">Slutar</translation>
-<translation id="6496122455598515335">Markera som oläst</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Sluta spåra den här försändelsen}other{Sluta spåra alla försändelser}}</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
 <translation id="6503763061813913607">Aviseringar från säkerhetskontroll</translation>
 <translation id="6505334220040167806">Komprimera flikgruppen.</translation>
-<translation id="6505432801953153174">Sök efter bilden som du kopierade</translation>
 <translation id="6507973708545996744">Logga in om du vill ha läslistan på alla dina enheter.</translation>
 <translation id="6518133107902771759">Verifiera</translation>
 <translation id="6523575793810663688">Visa hur man gör</translation>
@@ -1188,6 +1176,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585048665672348661">Radera webbinformation …</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
+<translation id="6596481460663245319">Sök med bild på Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 lösenord}other{# lösenord}}</translation>
 <translation id="6601302169302852717">Bilden har sparats i Google Foto för <ph name="USER_EMAIL" /></translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
@@ -1201,6 +1190,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6625830436658400045">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Redigera mapp</translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
+<translation id="6638511529934826365">Zooma text …</translation>
 <translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6641465290890659327">Dela en kopia av ditt lösenord</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>
@@ -1210,7 +1200,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659660757330712663">Du kan svepa i verktygsfältet för att byta mellan flikar.</translation>
 <translation id="6663529247339810546">Bilden sparades inte</translation>
-<translation id="6671495933530132209">Kopiera bild</translation>
+<translation id="6668619169535738264">Redigera bokmärke</translation>
 <translation id="6672241253012342409">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
 
 I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
@@ -1233,15 +1223,13 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
-<translation id="6797178503433441669">Besök den kopierade länken</translation>
 <translation id="6800349425672670802">Du kommer åt alla dina öppna flikar med Flikbyte.</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
 <translation id="6831043979455480757">Översätt</translation>
-<translation id="6832861194202253171">Flytta till flikgrupp</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>
-<translation id="68541483639528434">Stäng andra flikar</translation>
+<translation id="6851516051005285358">Använd skrivbordsversion</translation>
 <translation id="6858718102216837409">Lägg till språk …</translation>
 <translation id="6858855187367714033">Skannat</translation>
 <translation id="6859944681507688231">Aktivera kameran i inställningarna om du vill skanna en QR-kod eller ett kreditkort.</translation>
@@ -1263,14 +1251,15 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6906448540340261898">Se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="6908734251759299256">Uppdatera webbläsaren</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Bara på den här enheten.</translation>
+<translation id="6914583639806229067">Sök efter kopierad bild</translation>
 <translation id="6914783257214138813">Alla med tillgång till den exporterade filen kan läsa dina lösenord.</translation>
 <translation id="6930162026494574854">Återställ översättningsinställningar</translation>
 <translation id="6930799952781667037">Tryck för att byta till det här språket.</translation>
-<translation id="693165111545149627">Skicka till dina enheter</translation>
 <translation id="693761253105515415">Ställ in ett lösenord</translation>
 <translation id="6943681254152031826">{COUNT,plural, =1{Vill du spåra det här paketet?}other{Vill du spåra {COUNT} paket?}}</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6950522403736391608">Dolda</translation>
+<translation id="6964760285928603117">Ta bort från gruppen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mappar</translation>
 <translation id="69739764870135975">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
@@ -1309,7 +1298,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="714291438898585119">Stjärnmärkta</translation>
 <translation id="7146301801400584641">Kalenderfil tillgänglig</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
-<translation id="716059570521443369">Sök efter kopierad text</translation>
 <translation id="7161230316646448869">Synkronisera bokmärken, historik med mera på alla dina enheter</translation>
 <translation id="7173114856073700355">Inställningar</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bokmärket har sparats}other{{count} bokmärken har sparats}}</translation>
@@ -1354,6 +1342,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> olästa artiklar.</translation>
 <translation id="7412027924265291969">Fortsätt</translation>
 <translation id="741204030948306876">Ja</translation>
+<translation id="7417689656810783109">Byt namn på grupp</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
 <translation id="7425053386765766120">Lägg till betalningsmetod …</translation>
 <translation id="7425346204213733349">Ändringar i bokmärken, historik, lösenord och andra inställningar synkroniseras inte längre med ditt Google-konto. Befintlig data fortsätter dock att lagras i Google-kontot.</translation>
@@ -1384,13 +1373,13 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7521117365186708026">Tips som hjälper dig att få ut mesta möjliga av Chrome.</translation>
 <translation id="7524055474074101597">Få tillgång till dina lösenord m.m. i appar.</translation>
+<translation id="75362970626182391">Ny flikgrupp</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
 <translation id="754655535278952384">Kontrollerades <ph name="TIME" /></translation>
 <translation id="755255281989213264">Anpassa meny</translation>
 <translation id="7553234618121028547">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Lösenordsalternativ.</translation>
 <translation id="7557508262441527045">Utloggad</translation>
 <translation id="7561196759112975576">Alltid</translation>
-<translation id="7561417064797856920">Lens-överlagring</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7567579665882069209">Bokmärken har dolts</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
@@ -1405,7 +1394,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
 <translation id="760667371114328991">Inaktivera aviseringar från säkerhetskontroll</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
-<translation id="7622357910031310733">Stäng fäst flik</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7640669552036055091">Flikar från Android</translation>
@@ -1439,7 +1427,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7788868432173225918">Stäng utökad vy</translation>
-<translation id="7790954908631836016">Dölj Använd webbplats för dator</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7801064017114765401">Datorer</translation>
 <translation id="7802239711290932774">Använd det föreslagna lösenordet:</translation>
@@ -1447,7 +1434,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7807060072011926525">Tillhandahålls av Google</translation>
 <translation id="7812377703891978671">Du kommer åt all webbhistorik genom att välja <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Nedladdningar</translation>
-<translation id="7818164453519941565">Ny inkognitoflik</translation>
 <translation id="7839994177130598711">Dina familjemedlemmar kan nu använda ditt användarnamn och lösenord när de loggar in på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> med Google Lösenordshantering.</translation>
 <translation id="7840771868269352570">De markerade objekten tas bort.</translation>
 <translation id="7841180087127694526">Sök efter kopierad text</translation>
@@ -1459,7 +1445,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7859988229622350291">Översätt aldrig</translation>
 <translation id="7863211248337747225">Skaffa appen</translation>
 <translation id="7865127013871431856">Översättningsalternativ</translation>
-<translation id="7865811152374876731">Nytt fönster</translation>
 <translation id="7866501058614003444">Det här paketet spåras inte längre.</translation>
 <translation id="7866872729285243843">Aktivera Läslista i inställningarna om du vill få tillgång till din läslista på alla dina enheter.</translation>
 <translation id="7874107544081154809">Autofyll formulär med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -1500,6 +1485,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8011489434346330032">Webbinspektör</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8023878949384262191">Expanderar avsnittet.</translation>
+<translation id="8027581147000338959">Öppna i nytt fönster</translation>
 <translation id="8032569120109842252">Följer</translation>
 <translation id="8035133914807600019">Ny mapp …</translation>
 <translation id="8035412398498507358">Foton</translation>
@@ -1511,17 +1497,15 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8061584726507121204">Historik</translation>
 <translation id="8069394452933076548">Välj när flikar som inte har använts nyligen ska flyttas till avsnittet för inaktiva flikar.</translation>
-<translation id="8071979093798117528">Byt namn på grupp</translation>
-<translation id="8073388330009372546">Öppna bild i ny flik</translation>
 <translation id="8073670137947914548">Nedladdningen är klar</translation>
 <translation id="8076492880354921740">Flikar</translation>
 <translation id="8079530767338315840">Upprepa</translation>
 <translation id="8079602123447022758">Den här inställningen hanteras – tryck snabbt två gånger för mer information</translation>
+<translation id="8080028325999236607">Stäng alla flikar</translation>
 <translation id="8084285576995584326">Styr data i Google-kontot</translation>
 <translation id="809543534949702122">Sök i historiken</translation>
 <translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
-<translation id="8114502941341617322">Ny flik</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
 <translation id="8123502380991596210">Dölj Nyheter</translation>
 <translation id="8123953306357309250">Vill du avbryta synkroniseringen? Du kan när som helst inaktivera synkroniseringen i inställningarna.</translation>
@@ -1530,7 +1514,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8132598642024322408">Nedsatt från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />.</translation>
 <translation id="813370552429173916">Använd ett unikt lösenord till varje webbplats eller app. Om någon får tag på ett återanvänt lösenord kan det användas till att få åtkomst till dina andra konton. Klicka här för att öppna webbplatsen och ändra dem nu.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 annan}other{# andra}}</translation>
-<translation id="8146443796605935558">Begär webbplats för dator</translation>
 <translation id="8150167929304790980">Fullständigt namn</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
@@ -1551,7 +1534,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8219424187226230983">Visa offlineversionen i en ny flik</translation>
 <translation id="8230355548492839438">Sök föregående</translation>
 <translation id="8232956427053453090">Behåll data</translation>
-<translation id="8236097722223016103">Lägg till i bokmärken</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="82619448491672958">Se andra flikar</translation>
 <translation id="8263809106706527890">Inställningarna av standardwebbläsare kan ha ändrats. Du kan kontrollera detta i inställningarna.</translation>
@@ -1562,11 +1544,14 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8278488584187265939">Anpassa startsida</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
+<translation id="8282657446819506217">Öppna i flikgrupp</translation>
+<translation id="828291969289324795">{count,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="8283172974887967105">Ange …</translation>
 <translation id="8289930144142009940">Aviseringar för <ph name="FEATURE_NAME" /> har inaktiverats</translation>
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8299613349954694191">Öppna en inkognitoflik om du vill surfa privat på webben.</translation>
 <translation id="8307481894409578819">Det gick inte att ladda upp filen</translation>
+<translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8366466717204352506">Kontrollen har aldrig körts</translation>
@@ -1587,7 +1572,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8428634594422941299">Jag förstår</translation>
 <translation id="8430694217306051839">Välj var du vill spara <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
-<translation id="8431534975995791748">Markera som läst</translation>
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
 <translation id="8453847087068411809">Identifiera aldrig paket automatiskt</translation>
@@ -1615,7 +1599,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8535368836838588657">Visa lösenord</translation>
 <translation id="8545276357312221485">Kontrollera inställningarna för standardwebbläsare</translation>
 <translation id="854938212724803178">Du har 1 utsatt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
-<translation id="855081842937141170">Fäst flik</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har ignorerat {count} varning}other{Du har ignorerat {count} varningar}}</translation>
 <translation id="8560253818350321773">Visa ofta använda objekt först.</translation>
 <translation id="8564894539416715395">Sidan Ny flik</translation>
@@ -1634,7 +1617,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="8637431369725868556">Få skydd mot farliga webbplatser.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
-<translation id="8640575194957831802">Öppnades senast</translation>
+<translation id="8643403533759285912">Radera grupp</translation>
 <translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8660600697590740984">Sök efter kopierad bild med Lens</translation>
@@ -1655,6 +1638,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8709409604518538305">Flikar har stängts</translation>
 <translation id="8712534545803964353">Sök på sidan …</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
+<translation id="8717864919010420084">Kopiera länk</translation>
 <translation id="8722229818691036192">Konton på den här enheten</translation>
 <translation id="8722649775263832315">Tryck eller markera för att söka efter något med Google Lens</translation>
 <translation id="8725066075913043281">Försök igen</translation>
@@ -1670,6 +1654,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8764015330924122850">Sluta följa <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Lösenorden för <ph name="WEBSITE" /> och <ph name="SECOND_WEBSITE" /> raderas. Dina konton raderas inte.</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>
+<translation id="8781834595282316166">Ny flik i grupp</translation>
 <translation id="8786100550345425552">Redigera behörigheter</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
@@ -1697,6 +1682,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8871974300055371298">Innehållsinställningar</translation>
 <translation id="8879604564928138696">Tryck snabbt två gånger för att testa</translation>
 <translation id="8879952635974818770">Anpassat innehåll</translation>
+<translation id="8887595428614802520">Stäng alla flikar och grupper</translation>
 <translation id="8893208530912252670">Videor</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="890565330728586731">Tillbaka</translation>
@@ -1713,9 +1699,9 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8943780400130412484">Starta ny nedladdning?</translation>
 <translation id="8944844131570002190">Öppna plats …</translation>
 <translation id="8953046091948372197">Du hittar dina lösenord här</translation>
+<translation id="895541991026785598">Rapportera ett problem</translation>
 <translation id="8960979149015305">Stäng nedladdning</translation>
 <translation id="8961092256396236619">Utökat skydd är inaktiverat</translation>
-<translation id="8967427617812342790">Lägg till i läslistan</translation>
 <translation id="8968766641738584599">Spara kortet</translation>
 <translation id="8974714402877957201">1. Öppna iPad-inställningarna</translation>
 <translation id="8975015774710126284">Webbinformationen rensades.</translation>
@@ -1734,7 +1720,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9032405509996909363">Bekräfta att du vill radera webbinformation</translation>
 <translation id="9034759925968272072">Du loggas inte ut från Google-kontot. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
-<translation id="9050743386845294615">Dölj Sök på sidan</translation>
 <translation id="9057972802061533987">Det gick inte att börja följa detta. Något gick fel.</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9070824521421603770">Du loggas ut och flikar stängs</translation>
@@ -1751,7 +1736,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9106655997975673326">Från <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Sök efter utsatta lösenord</translation>
-<translation id="9116465289595958864">Senast ändrad</translation>
 <translation id="9124387962554796433">Google kan anpassa Sök och andra Google-tjänster utifrån historiken.</translation>
 <translation id="913036870884277353">Öppna länkar enkelt i andra appar.</translation>
 <translation id="9137013805542155359">Visa original</translation>
@@ -1771,7 +1755,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9205189991633470489">Inkognitolås</translation>
 <translation id="9206887540681440657">Hastighet</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
-<translation id="926058026105978593">{count,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="929748059769569925">Markerad text</translation>
 <translation id="932305336591073205">{count,plural, =1{Stäng flik}other{Stäng flikar}}</translation>
 <translation id="939472100615258482">Nuvarande webbplats</translation>
@@ -1779,7 +1762,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="939736085109172342">Ny mapp</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Skicka feedback</translation>
-<translation id="947861518682912388">Ny sökning</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="954667170699278022">Läslista</translation>
 <translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>
@@ -1790,7 +1772,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="973493300226275298">Bevaka en produkts pris i onlinebutiker. Du får aviseringar när priset sänks.</translation>
 <translation id="976392601789283511">Öppna den senast stängda fliken igen</translation>
 <translation id="981498610235328462">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda.</translation>
-<translation id="983192555821071799">Stäng alla flikar</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="985379595344853742">Stäng alla inkognitoflikar</translation>
 <translation id="988141524645182168">Övriga enheter</translation>

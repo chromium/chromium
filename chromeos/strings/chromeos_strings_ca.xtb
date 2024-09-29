@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
+<translation id="2173302385160625112">Comprova la connexió a Internet</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
 <translation id="2189104374785738357">Edita els detalls de l'APN</translation>
 <translation id="2195732836444333448">Estic al límit de la meva capacitat. Torna aviat.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipus</translation>
 <translation id="2468124392950503650">Selecciona una indicació per crear o veure la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia d'indicacions<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilitza Ajuda'm a escriure per crear un esborrany o polir el treball existent amb la tecnologia de la IA de Google</translation>
+<translation id="2475982808118771221">S'ha produït un error</translation>
 <translation id="2480572840229215612">crancs</translation>
 <translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
 <translation id="2486301288428798846">fusta</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">No es pot connectar a Internet</translation>
 <translation id="6156030503438652198">granat i rosa</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retorn</translation>
+<translation id="7117228822971127758">Torna-ho a provar més tard</translation>
 <translation id="7118522231018231199">Assegura't de seleccionar els APN que hagi proporcionat el teu administrador o proveïdor de serveis per a mòbils. Si selecciones un APN, es desactivaran tots els APN personalitzats. Els APN no vàlids poden interrompre la connexió mòbil.</translation>
 <translation id="7119389851461848805">engegada</translation>
 <translation id="7129287270910503851">L'ús de dades es restablirà aquest dia de cada mes</translation>

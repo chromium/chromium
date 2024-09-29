@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Hætta við prentverk</translation>
 <translation id="2161656808144014275">Texti</translation>
 <translation id="2163937499206714165">Kveikja á dökku þema</translation>
+<translation id="2173302385160625112">Athugaðu nettenginguna</translation>
 <translation id="2180197493692062006">Eitthvað fór úrskeiðis. Prófaðu að opna forritið aftur.</translation>
 <translation id="2189104374785738357">Breyta upplýsingum um aðgangsstað</translation>
 <translation id="2195732836444333448">Við getum ekki tekið meira að okkur eins og er. Komdu fljótt aftur.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2468124392950503650">Veldu skipun til að búa til mynd eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Notaðu rithjálp til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google</translation>
+<translation id="2475982808118771221">Villa kom upp</translation>
 <translation id="2480572840229215612">krabbar</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
 <translation id="2486301288428798846">við</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Notandavottorð</translation>
 <translation id="6146993107019042706">Sláðu inn nýja aðgangsorðið til að ljúka þessu</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Ekki er hægt að tengjast internetinu</translation>
 <translation id="6156030503438652198">rauðbrúnum og bleikum lit</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Velja sérstök <ph name="PRODUCT_NAME" />-listaverk</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Reyndu aftur síðar</translation>
 <translation id="7118522231018231199">Gakktu úr skugga um að velja aðgangsstaði sem símafyrirtækið eða stjórnandinn þinn veita. Slökkt verður á sérsniðnum aðgangsstöðum þegar þú velur aðgangsstað. Ógildir aðgangsstaðir kunna að valda truflunum á farsímatengingunni þinni.</translation>
 <translation id="7119389851461848805">aflrofi</translation>
 <translation id="7129287270910503851">Gagnanotkunin þín endurnýjast á þessari dagsetningu hvers mánaðar</translation>

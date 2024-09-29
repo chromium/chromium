@@ -544,7 +544,6 @@
 <translation id="1392047138650695757">Օգտատիրոջ բառարաններ</translation>
 <translation id="139300021892314943">Թույլատրել մուտքը միայն նշված օգտատերերին</translation>
 <translation id="1393283411312835250">Արև և ամպեր</translation>
-<translation id="1395730723686586365">Թարմացումների գործարկիչը միացել է</translation>
 <translation id="1395832189806039783">Ընդգծել տարրը ստեղնաշարի միջոցով</translation>
 <translation id="1396120028054416908">Վերադառնալ «<ph name="FOLDER_TITLE" />» պանակ</translation>
 <translation id="1396139853388185343">Չհաջողվեց կարգավորել տպիչը</translation>
@@ -1353,7 +1352,6 @@
 <translation id="1942128823046546853">Կարդալ և փոփոխել ձեր տվյալները բոլոր կայքերում</translation>
 <translation id="1944528062465413897">Bluetooth-ով զուգակցման կոդ՝</translation>
 <translation id="1944535645109964458">Հասանելի մուտքի բանալիներ չկան</translation>
-<translation id="1944921356641260203">Գտնվել է թարմացում</translation>
 <translation id="1947136734041527201">Թույլ է տալիս ձեզ մուտք գործել կայքեր ինքնության հաստատման ծառայության միջոցով</translation>
 <translation id="1948528728718281125">Տեսախցիկը հասանելի է հավելվածներին, «Տեսախցիկ» թույլտվությունն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
 <translation id="1949332606889020901">Խափանումների նույնացուցիչներ</translation>
@@ -2225,7 +2223,6 @@
 <translation id="2546991196809436099">Մեծացրեք մասշտաբը՝ տարրերը էկրանին ավելի խոշոր դարձնելու համար։ Օգտագործեք Որոնում + Ctrl + M դյուրանցումը՝ խոշորացույցը միացնելու և անջատելու համար։</translation>
 <translation id="2548347166720081527">«<ph name="PERMISSION" />»՝ թույլատրված է</translation>
 <translation id="2548545707296594436">Վերակայել eSIM պրոֆիլի քեշը</translation>
-<translation id="2549766998450508148">Սեղմեք 4 կերպափոխիչ ստեղներից մեկը (ctrl, alt, shift կամ որոնում) ու ևս 1 ստեղն։ Կարող եք նաև մեկ ստեղն ընտրել։</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
 <translation id="2550212893339833758">Swap հիշողություն</translation>
 <translation id="2550596535588364872">Թույլատրե՞լ <ph name="EXTENSION_NAME" /> հավելվածին բացել «<ph name="FILE_NAME" />» ֆայլը:</translation>
@@ -2422,7 +2419,6 @@
 <translation id="2705736684557713153">Գնացեք ներքև և միացրեք ակնթարթային մոդեմի ռեժիմը, եթե այն ցուցադրվում է։ Եթե ոչ, ապա ամեն ինչ պատրաստ է։</translation>
 <translation id="2706304388244371417">Պահուստավորում Google Drive-ում։ Հեշտությամբ վերականգնեք տվյալները կամ տեղափոխեք այլ սարք։ Պահուստավորվում են նաև հավելվածների տվյալները։ Պահուստավորված տվյալները վերբեռնվում են Google և գաղտնագրվում ձեր երեխայի Google հաշվի գաղտնաբառի միջոցով։ <ph name="BEGIN_LINK1" />Իմանալ ավելին պահուստավորման մասին<ph name="BEGIN_LINK1_END" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Up</translation>
-<translation id="2707024448553392710">Բաղադրիչի ներբեռնում</translation>
 <translation id="270921614578699633">Միջին</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
@@ -2547,7 +2543,6 @@
 <translation id="2779728796406650689">Սա թույլ է տալիս, որ Google Օգնականը ձեր հարցերին տրամադրի անհատականացված պատասխաններ։</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
-<translation id="2783298271312924866">Ներբեռնված է</translation>
 <translation id="2783952358106015700">Մուտք «<ph name="APP_NAME" />» հավելված անվտանգության բանալու օգնությամբ</translation>
 <translation id="2785267875302712148">Գաղտնաբառերի ստուգում</translation>
 <translation id="2785279781154577715">Ներդիրի վրա պահման ժամանակ նախադիտման քարտի ցուցադրում</translation>
@@ -2874,7 +2869,6 @@
 <translation id="301525898020410885">Լեզուն սահմանվում է ձեր կազմակերպության կողմից</translation>
 <translation id="3015639418649705390">Վերագործարկել հիմա</translation>
 <translation id="3016381065346027039">Գրառումներ չկան</translation>
-<translation id="3016641847947582299">Բաղադրիչը թարմացված է</translation>
 <translation id="3019023222666709803">«Սլաք» գործիք</translation>
 <translation id="3019285239893817657">Ենթաէջի կոճակ</translation>
 <translation id="3019595674945299805">VPN ծառայություն</translation>
@@ -2953,6 +2947,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Պահել միայն այս սարքում</translation>
 <translation id="3076977359333237641">Ձեր մուտքի տվյալները հեռացվեցին</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Այս ցանցը համաժամացված չէ ձեր հաշվի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">ընդլայնումներ</translation>
@@ -7187,7 +7182,6 @@
 <translation id="6208521041562685716">Բջջային ինտերնետն ակտիվացվեց</translation>
 <translation id="6208725777148613371">Չհաջողվեց պահել «<ph name="WEB_DRIVE" />» ցուցակում – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="SETTINGS_LINK" />։</translation>
-<translation id="6209838773933913227">Բաղադրիչի թարմացում</translation>
 <translation id="6209908325007204267">Ձեր սարքում առկա է Chrome Enterprise-ի արտոնագիր, բայց ձեր օգտանունը կապված չէ կազմակերպության հաշվի հետ։ Մեկ այլ սարքով անցեք g.co/ChromeEnterpriseAccount էջ և ստեղծեք կազմակերպության հաշիվ։</translation>
 <translation id="6210282067670792090">Հասցեագոտում օգտագործեք այս ստեղնային դյուրանցումը և որոնողական համակարգերի ու կայքերում որոնման համար դյուրանցումները։</translation>
 <translation id="6211067089253408231">Միացնել ակնթարթային թեժ կետը</translation>
@@ -7251,7 +7245,6 @@
 <translation id="6247620186971210352">Հավելվածներ չեն գտնվել</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Համակարգ՝ <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Թարմացումը պատրաստ է</translation>
 <translation id="6248988683584659830">Որոնման կարգավորումներ</translation>
 <translation id="6249200942125593849">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="6250186368828697007">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
@@ -8079,7 +8072,6 @@
 <translation id="6852290167968069627">Ցանցի հետ կապված խնդրի պատճառով ChromeOS-ին չհաջողվեց վերսկսել ձեր նախորդ աշխատաշրջանը։ Միացեք կայուն ցանցի և նորից փորձեք։</translation>
 <translation id="6852529053326738838">Դիմեք ձեր կազմակերպությանը կամ գրանցվեք ձեր աշխատանքային էլ. հասցեի միջոցով՝ ստուգելու, թե արդյոք ձեր հաշիվը համապատասխանում է պահանջներին։</translation>
 <translation id="6853029310037965825">Որտեղից է տեղադրվել <ph name="APP_TYPE" /> հավելվածը՝ <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Թարմացումների գործարկիչը քնած ռեժիմում է</translation>
 <translation id="68541483639528434">Փակել մյուս ներդիրները</translation>
 <translation id="6855892664589459354">Crostini-ի պահուստավորում և վերականգնում</translation>
 <translation id="6856348640027512653">Չի թույլատրվում օգտագործել վիրտուալ իրականության սարքեր և տվյալներ</translation>
@@ -8889,7 +8881,6 @@
 <translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="746216226901520237">Smart Lock-ը միացնելու համար մուտքագրեք ձեր գաղտնաբառը։ Դրանից հետո ձեր հեռախոսով կարող եք ապակողպել <ph name="DEVICE_TYPE" /> սարքը։ Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Բաղադրիչն արդեն թարմացված է</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# բաց ներդիր: Սեղմեք՝ ներդիրների հատվածը ցուցադրելու/թաքցնելու համար:}one{# բաց ներդիր: Սեղմեք՝ ներդիրների հատվածը ցուցադրելու/թաքցնելու համար:}other{# բաց ներդիր: Սեղմեք՝ ներդիրների հատվածը ցուցադրելու/թաքցնելու համար:}}</translation>
 <translation id="7465635034594602553">Սխալ առաջացավ։ Սպասեք մի քանի րոպե և նորից գործարկեք <ph name="APP_NAME" /> հավելվածը։</translation>
 <translation id="7465777686629334728">Հեռացնել մշակման կառավարվող միջավայրը (<ph name="SPECIFIC_NAME" />)</translation>

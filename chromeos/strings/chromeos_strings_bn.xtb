@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
+<translation id="2173302385160625112">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
 <translation id="2189104374785738357">APN সম্পর্কিত বিবরণ এডিট করুন</translation>
 <translation id="2195732836444333448">সর্বোচ্চ সীমায় পৌঁছে গেছে। কিছুক্ষণ পরে চেষ্টা করুন।</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্রম্পট গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> তৈরি করতে বা দেখতে প্রম্পট বেছে নিন।</translation>
 <translation id="2472215337771558851">Google AI দ্বারা পরিচালিত, 'আমাকে লিখতে সাহায্য করুন' ফিচার কোনও ড্রাফ্ট তৈরি করতে বা আগে থাকা কাজ রিফাইন করতে ব্যবহার করুন</translation>
+<translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
 <translation id="2480572840229215612">কাঁকড়া</translation>
 <translation id="248546197012830854">ডিভাইস অফলাইন আছে। সহায়তা কন্টেন্ট দেখতে ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করুন।</translation>
 <translation id="2486301288428798846">কাঠ</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ইন্টারনেটে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="6156030503438652198">মেরুন ও গোলাপি</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />টি নামযুক্ত<ph name="NAME" />-এর মধ্যে <ph name="INDEX" /> নম্বর ডিভাইস।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="7108668606237948702">লিখুন</translation>
+<translation id="7117228822971127758">পরে আবার চেষ্টা করুন</translation>
 <translation id="7118522231018231199">শুধুমাত্র আপনার মোবাইল পরিষেবা প্রদানকারী বা অ্যাডমিনিস্ট্রেটরের দেওয়া APN বেছে নিয়েছেন কিনা দেখে নিন। APN বেছে নিলে যেকোনও কাস্টম APN বন্ধ হয়ে যাবে। ভুল APN বেছে নেওয়া হলে আপনার মোবাইল কানেকশন কাজ নাও করতে পারে।</translation>
 <translation id="7119389851461848805">পাওয়ার</translation>
 <translation id="7129287270910503851">আপনার ডেটার ব্যবহার প্রত্যেক মাসের এই দিনে রিসেট করা হবে</translation>

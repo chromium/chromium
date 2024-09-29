@@ -542,7 +542,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1392047138650695757">Dicionarios do usuario</translation>
 <translation id="139300021892314943">Limitar quen pode iniciar sesión</translation>
 <translation id="1393283411312835250">Sol e nubes</translation>
-<translation id="1395730723686586365">Iniciouse o actualizador</translation>
 <translation id="1395832189806039783">Destacar elemento co enfoque do teclado</translation>
 <translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Produciuse un erro ao configurar a impresora</translation>
@@ -1350,7 +1349,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1942128823046546853">Ler e cambiar todos os teus datos en todos os sitios web</translation>
 <translation id="1944528062465413897">Código de sincronización por Bluetooth:</translation>
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
-<translation id="1944921356641260203">Encontrouse unha actualización</translation>
 <translation id="1947136734041527201">Permíteche iniciar sesión en sitios web coa conta que teñas cun servizo de identidade</translation>
 <translation id="1948528728718281125">As aplicacións, os sitios web co permiso correspondente e os servizos do sistema poden acceder á cámara</translation>
 <translation id="1949332606889020901">Identificador de fallo</translation>
@@ -2224,7 +2222,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2546991196809436099">Achega a imaxe a fin de que os elementos da pantalla sexan meirandes. Para activar e desactivar a lupa, preme Buscar + Control + M.</translation>
 <translation id="2548347166720081527">Concedeuse o permiso: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restablecer memoria caché do perfil da eSIM</translation>
-<translation id="2549766998450508148">Preme as teclas modificadoras do 1 ao 4 (Control, Alt, Maiúsculas ou Buscar) e unha tecla máis. Tamén podes seleccionar unha única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2550212893339833758">Memoria cambiada</translation>
 <translation id="2550596535588364872">Queres permitirlle á extensión <ph name="EXTENSION_NAME" /> abrir <ph name="FILE_NAME" />?</translation>
@@ -2421,7 +2418,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2705736684557713153">Desprázate á parte inferior da pantalla e se aparece a opción Conexión compartida instantánea, actívaa. Se non a ves, non tes que facer nada.</translation>
 <translation id="2706304388244371417">Crea copias de seguranza en Google Drive. Restaura os datos ou cambia de dispositivo facilmente en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo ou filla. <ph name="BEGIN_LINK1" />Máis información sobre a copia de seguranza<ph name="BEGIN_LINK1_END" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
-<translation id="2707024448553392710">Descargando compoñente</translation>
 <translation id="270921614578699633">Media superior a</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2710101514844343743">Datos de uso e diagnóstico</translation>
@@ -2546,7 +2542,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2779728796406650689">Esta opción permite que o Asistente de Google forneza respostas adaptadas cando lle fagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
-<translation id="2783298271312924866">Descargado</translation>
 <translation id="2783952358106015700">Utiliza a chave de seguranza coa aplicación <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contrasinais</translation>
 <translation id="2785279781154577715">Aparencia da tarxeta de vista previa ao pasar por enriba das pestanas</translation>
@@ -2873,7 +2868,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="301525898020410885">A túa organización define o idioma</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">O rexistro está baleiro</translation>
-<translation id="3016641847947582299">Compoñente actualizado</translation>
 <translation id="3019023222666709803">Ferramenta de frechas</translation>
 <translation id="3019285239893817657">Botón de subpáxina</translation>
 <translation id="3019595674945299805">Servizo de VPN</translation>
@@ -2952,6 +2946,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Gardar só neste dispositivo</translation>
 <translation id="3076977359333237641">Elimináronse os teus datos de inicio de sesión</translation>
+<translation id="3077734595579995578">maiús</translation>
 <translation id="3080933187214341848">Esta rede non está sincronizada coa túa conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensións</translation>
@@ -7192,7 +7187,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6208521041562685716">Estanse activando os datos móbiles</translation>
 <translation id="6208725777148613371">Produciuse un erro ao gardar o contido en <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Actualización de compoñentes</translation>
 <translation id="6209908325007204267">O teu dispositivo inclúe unha licenza de Chrome Enterprise, pero o teu nome de usuario non está asociado a unha conta de empresa. Crea unha conta de empresa visitando g.co/ChromeEnterpriseAccount desde un dispositivo secundario.</translation>
 <translation id="6210282067670792090">Na barra de enderezos, utiliza esta combinación de teclas con atallos para motores de busca e a busca de sitios</translation>
 <translation id="6211067089253408231">Activar zona wifi instantánea</translation>
@@ -7256,7 +7250,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6247620186971210352">Non se atoparon aplicacións</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Actualización lista</translation>
 <translation id="6248988683584659830">Configuración de busca</translation>
 <translation id="6249200942125593849">Xestionar accesibilidade</translation>
 <translation id="6250186368828697007">Os detalles ocúltanse mentres compartes a pantalla</translation>
@@ -8082,7 +8075,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6852290167968069627">ChromeOS non puido retomar a sesión anterior porque houbo un problema coa rede. Conéctate a unha rede estable e téntao de novo.</translation>
 <translation id="6852529053326738838">Se queres comprobar se a túa conta cumpre os requisitos, pregúntallo á túa organización ou rexistra o dispositivo co teu correo electrónico do traballo.</translation>
 <translation id="6853029310037965825">Instalouse a aplicación (<ph name="APP_TYPE" />) desde <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">O actualizador está en suspensión</translation>
 <translation id="68541483639528434">Pechar outras pestanas</translation>
 <translation id="6855892664589459354">Copia de seguranza e restauración de Crostini</translation>
 <translation id="6856348640027512653">Permiso denegado para usar datos ou dispositivos de realidade virtual</translation>
@@ -8892,7 +8884,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
 <translation id="746216226901520237">A próxima vez, o teléfono desbloqueará o teu <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">O compoñente xa está actualizado</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestana aberta, preme o botón para activar/desactivar a franxa de pestanas}other{# pestanas abertas, preme o botón para activar/desactivar a franxa de pestanas}}</translation>
 <translation id="7465635034594602553">Produciuse un erro. Agarda uns poucos minutos e executa <ph name="APP_NAME" /> de novo.</translation>
 <translation id="7465777686629334728">Quitar contorno de desenvolvemento xestionado (<ph name="SPECIFIC_NAME" />)</translation>

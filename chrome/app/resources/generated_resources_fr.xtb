@@ -543,7 +543,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1392047138650695757">Dictionnaires personnels</translation>
 <translation id="139300021892314943">Limiter qui est autorisé à se connecter</translation>
 <translation id="1393283411312835250">Soleil et nuages</translation>
-<translation id="1395730723686586365">Processus de mise à jour lancé</translation>
 <translation id="1395832189806039783">Mettre en surbrillance l'élément sélectionné au clavier</translation>
 <translation id="1396120028054416908">Revenir à <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Erreur de configuration de l'imprimante</translation>
@@ -1352,7 +1351,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1942128823046546853">Lire et modifier toutes vos données sur tous les sites Web</translation>
 <translation id="1944528062465413897">Code d'association Bluetooth :</translation>
 <translation id="1944535645109964458">Aucune clé d'accès disponible</translation>
-<translation id="1944921356641260203">Mise à jour trouvée</translation>
 <translation id="1947136734041527201">Permet de vous connecter à des sites Web avec votre compte enregistré auprès d'un service d'identité</translation>
 <translation id="1948528728718281125">L'accès à l'appareil photo est accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
 <translation id="1949332606889020901">Identifiants de plantage</translation>
@@ -2226,7 +2224,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2546991196809436099">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe.</translation>
 <translation id="2548347166720081527">Autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="2548545707296594436">Réinitialiser le cache du profil eSIM</translation>
-<translation id="2549766998450508148">Appuyez sur une à quatre touches de modification (Ctrl, Alt, Maj ou Recherche) et une autre touche. Vous pouvez aussi sélectionner une seule touche.</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2550212893339833758">Espace mémoire d'échange</translation>
 <translation id="2550596535588364872">Autoriser <ph name="EXTENSION_NAME" /> à ouvrir le fichier <ph name="FILE_NAME" /> ?</translation>
@@ -2423,7 +2420,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2705736684557713153">Faites défiler l'écran vers le bas et activez le partage de connexion instantané si l'option correspondante s'affiche. Dans le cas contraire, vous avez terminé.</translation>
 <translation id="2706304388244371417">Sauvegarder dans Google Drive. Restaurez les données ou changez d'appareil facilement et à tout moment. Les données des applis sont sauvegardées. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant. <ph name="BEGIN_LINK1" />En savoir plus sur la sauvegarde<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Haut</translation>
-<translation id="2707024448553392710">Téléchargement de composants en cours…</translation>
 <translation id="270921614578699633">Moyenne de</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
@@ -2548,7 +2544,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2779728796406650689">Cela permet à l'Assistant Google de vous fournir des réponses personnalisées lorsque vous posez des questions.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
-<translation id="2783298271312924866">Téléchargé</translation>
 <translation id="2783952358106015700">Utilisez votre clé de sécurité avec <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Check-up Mots de passe</translation>
 <translation id="2785279781154577715">Apparence de la fiche d'aperçu du survol de l'onglet</translation>
@@ -2875,7 +2870,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="301525898020410885">La langue est définie par votre organisation</translation>
 <translation id="3015639418649705390">Relancer maintenant</translation>
 <translation id="3016381065346027039">Aucune entrée de journal</translation>
-<translation id="3016641847947582299">Composant mis à jour</translation>
 <translation id="3019023222666709803">Outil Flèche</translation>
 <translation id="3019285239893817657">Bouton pour accéder à la sous-page</translation>
 <translation id="3019595674945299805">Service VPN</translation>
@@ -2954,6 +2948,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Enregistrer exclusivement sur cet appareil</translation>
 <translation id="3076977359333237641">Vos données de connexion ont été supprimées</translation>
+<translation id="3077734595579995578">maj</translation>
 <translation id="3080933187214341848">Ce réseau n'est pas synchronisé avec votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensions</translation>
@@ -7191,7 +7186,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6208521041562685716">Activation des données mobiles…</translation>
 <translation id="6208725777148613371">Échec de l'enregistrement dans <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Mise à jour des composants…</translation>
 <translation id="6209908325007204267">Votre appareil bénéficie d'une licence Chrome Enterprise Upgrade, mais votre nom d'utilisateur n'est associé à aucun compte d'entreprise. Veuillez en créer un en accédant à g.co/ChromeEnterpriseAccount sur un autre appareil.</translation>
 <translation id="6210282067670792090">Dans la barre d'adresse, utilisez ce raccourci clavier avec les raccourcis des moteurs de recherche et de la recherche sur les sites</translation>
 <translation id="6211067089253408231">Activer le point d'accès instantané</translation>
@@ -7255,7 +7249,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6247620186971210352">Aucune application n'a été trouvée</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Système : <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Mise à jour prête</translation>
 <translation id="6248988683584659830">Rechercher</translation>
 <translation id="6249200942125593849">Gérer les paramètres d'accessibilité</translation>
 <translation id="6250186368828697007">Les détails sont masqués lors du partage d'écran</translation>
@@ -8083,7 +8076,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6852290167968069627">ChromeOS ne peut pas reprendre votre session précédente en raison d'un problème réseau. Connectez-vous à un réseau stable et réessayez.</translation>
 <translation id="6852529053326738838">Demandez à votre organisation ou procédez à l'enregistrement avec votre e-mail professionnel pour vérifier si votre compte est éligible.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> installée à partir de <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Processus de mise à jour en veille</translation>
 <translation id="68541483639528434">Fermer les autres onglets</translation>
 <translation id="6855892664589459354">Sauvegarde et restauration de Crostini</translation>
 <translation id="6856348640027512653">Non autorisés à utiliser des données ni des appareils de réalité virtuelle</translation>
@@ -8894,7 +8886,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746216226901520237">La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans les paramètres.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Composant déjà à jour</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# onglet ouvert (appuyez pour activer/désactiver la barre d'onglets)}one{# onglet ouvert (appuyez pour activer/désactiver la barre d'onglets)}other{# onglets ouverts (appuyez pour activer/désactiver la barre d'onglets)}}</translation>
 <translation id="7465635034594602553">Un problème est survenu. Veuillez patienter quelques minutes, puis relancer <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Supprimer l'environnement de développement géré (<ph name="SPECIFIC_NAME" />)</translation>

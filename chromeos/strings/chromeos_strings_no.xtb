@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
+<translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
 <translation id="2189104374785738357">Endre APN-detaljene</translation>
 <translation id="2195732836444333448">Full kapasitet akkurat nå. Kom tilbake senere.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2468124392950503650">Velg en forespørsel for å starte genereringen, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />veiledningen for forespørsler<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Bruk Hjelp meg å skrive til å lage utkast eller finjustere eksisterende tekst – basert på AI fra Google</translation>
+<translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
 <translation id="2486301288428798846">tre</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Brukersertifikat</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Kan ikke koble til internett</translation>
 <translation id="6156030503438652198">rødbrun og rosa</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Velg grafikk som kun finnes på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">Prøv på nytt senere</translation>
 <translation id="7118522231018231199">Sørg for at du velger APN-ene du har fått av mobiloperatøren eller administratoren din. Hvis du velger et APN, deaktiveres eventuelle egendefinerte APN. Ugyldige APN kan forstyrre mobiltilkoblingen.</translation>
 <translation id="7119389851461848805">av/på</translation>
 <translation id="7129287270910503851">Databruken din tilbakestilles denne dagen hver måned</translation>

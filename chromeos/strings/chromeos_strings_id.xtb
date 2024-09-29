@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
+<translation id="2173302385160625112">Periksa koneksi internet Anda</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2189104374785738357">Edit detail APN</translation>
 <translation id="2195732836444333448">Saat ini sudah mencapai batas kapasitas. Coba lagi nanti.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2468124392950503650">Pilih perintah untuk membuat atau melihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Menggunakan fitur Bantu tulis untuk membuat draf atau meningkatkan kualitas pekerjaan yang ada, didukung teknologi AI Google</translation>
+<translation id="2475982808118771221">Terjadi error</translation>
 <translation id="2480572840229215612">kepiting</translation>
 <translation id="248546197012830854">Perangkat sedang offline. Hubungkan ke jaringan Wi-Fi untuk melihat konten bantuan.</translation>
 <translation id="2486301288428798846">kayu</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Sertifikat pengguna</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Tidak dapat terhubung ke internet</translation>
 <translation id="6156030503438652198">merah marun dan merah muda</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Pilih ilustrasi eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">masuk</translation>
+<translation id="7117228822971127758">Coba lagi nanti</translation>
 <translation id="7118522231018231199">Pastikan untuk memilih APN yang disediakan oleh operator seluler atau administrator Anda. Memilih APN akan menonaktifkan APN kustom apa pun. APN yang tidak valid dapat mengganggu koneksi seluler Anda.</translation>
 <translation id="7119389851461848805">daya</translation>
 <translation id="7129287270910503851">Penggunaan data Anda akan direset setiap bulan pada tanggal ini</translation>

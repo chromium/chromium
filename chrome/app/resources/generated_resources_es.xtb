@@ -542,7 +542,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1392047138650695757">Diccionarios del usuario</translation>
 <translation id="139300021892314943">Limitar quién puede iniciar sesión</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
-<translation id="1395730723686586365">Herramienta de actualización iniciada</translation>
 <translation id="1395832189806039783">Destacar elemento con el enfoque del teclado</translation>
 <translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">No se ha podido configurar la impresora</translation>
@@ -1351,7 +1350,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1942128823046546853">Leer y cambiar todos tus datos en todos los sitios web</translation>
 <translation id="1944528062465413897">Código de emparejamiento por Bluetooth:</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
-<translation id="1944921356641260203">Actualización encontrada</translation>
 <translation id="1947136734041527201">Permite iniciar sesión en sitios web con la cuenta que tengas con un servicio de identidad</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara a aplicaciones, sitios web con el permiso de cámara y servicios del sistema</translation>
 <translation id="1949332606889020901">IDs de fallos</translation>
@@ -2226,7 +2224,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2546991196809436099">Acerca la vista para ampliar el contenido de la pantalla. Pulsa la tecla de búsqueda + Ctrl + M para activar o desactivar la lupa.</translation>
 <translation id="2548347166720081527">Permitido: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Borrar caché de perfil de eSIM</translation>
-<translation id="2549766998450508148">Pulsa entre 1 y 4 teclas modificadoras (Ctrl, Alt, Mayús o la tecla de búsqueda) y 1 tecla más. También puedes seleccionar una sola tecla.</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
 <translation id="2550212893339833758">Memoria trasladada al espacio de reserva</translation>
 <translation id="2550596535588364872">¿Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -2423,7 +2420,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2705736684557713153">Desplázate hasta el final de la pantalla y activa la opción Conexión compartida instantánea si aparece. Si no, ya has terminado.</translation>
 <translation id="2706304388244371417">Crea copias de seguridad en Google Drive. Recupera datos de forma sencilla o cambia de dispositivo en cualquier momento. Esta copia de seguridad incluye datos de aplicaciones. Las copias de seguridad se suben a Google y se cifran con la contraseña de la cuenta de Google de tu hijo/a. <ph name="BEGIN_LINK1" />Más información sobre las copias de seguridad<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Flecha hacia arriba</translation>
-<translation id="2707024448553392710">Descargando componente</translation>
 <translation id="270921614578699633">Por encima de la media</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
@@ -2548,7 +2544,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2779728796406650689">Esto permite al Asistente de Google ofrecer respuestas personalizadas cuando hagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Error al instalar la aplicación de Linux</translation>
-<translation id="2783298271312924866">Descargado</translation>
 <translation id="2783952358106015700">Usa tu llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
 <translation id="2785279781154577715">Aspecto de la tarjeta de vista previa que se muestra al colocar el cursor sobre una pestaña</translation>
@@ -2875,7 +2870,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="301525898020410885">Tu organización establece el idioma</translation>
 <translation id="3015639418649705390">Reiniciar ahora</translation>
 <translation id="3016381065346027039">No hay ninguna entrada de registro</translation>
-<translation id="3016641847947582299">Componente actualizado</translation>
 <translation id="3019023222666709803">Herramienta de flecha</translation>
 <translation id="3019285239893817657">Botón de página secundaria</translation>
 <translation id="3019595674945299805">Servicio VPN</translation>
@@ -2954,6 +2948,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar solo en este dispositivo</translation>
 <translation id="3076977359333237641">Se han eliminado tus datos de inicio de sesión</translation>
+<translation id="3077734595579995578">mayús</translation>
 <translation id="3080933187214341848">Esta red no está sincronizada con tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" />: <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensiones</translation>
@@ -7191,7 +7186,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6208521041562685716">Se están activando los datos móviles</translation>
 <translation id="6208725777148613371">No se ha podido guardar en <ph name="WEB_DRIVE" />. <ph name="INTERRUPT_REASON" />.</translation>
 <translation id="6209767197996242814">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Actualización del componente</translation>
 <translation id="6209908325007204267">Tu dispositivo incluye una Licencia de Chrome Enterprise, pero tu nombre de usuario no está asociado a ninguna cuenta de empresa. Accede a g.co/ChromeEnterpriseAccount desde otro dispositivo para crear una cuenta de empresa.</translation>
 <translation id="6210282067670792090">En la barra de direcciones, usa este atajo de teclado con atajos para buscadores y búsquedas en sitios</translation>
 <translation id="6211067089253408231">Activar conexión compartida instantánea</translation>
@@ -7255,7 +7249,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6247620186971210352">No se han encontrado aplicaciones</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Actualización lista</translation>
 <translation id="6248988683584659830">Buscar ajustes</translation>
 <translation id="6249200942125593849">Gestionar ajustes de accesibilidad</translation>
 <translation id="6250186368828697007">Los detalles se ocultan mientras compartes tu pantalla</translation>
@@ -8081,7 +8074,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6852290167968069627">ChromeOS no puede reanudar tu sesión anterior debido a un problema con la red. Conéctate a una red estable y vuelve a intentarlo.</translation>
 <translation id="6852529053326738838">Pregunta a tu organización o regístrate con tu correo del trabajo para comprobar si tu cuenta cumple los requisitos.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> instalada desde <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Herramienta de actualización no disponible</translation>
 <translation id="68541483639528434">Cerrar las demás pestañas</translation>
 <translation id="6855892664589459354">Copia de seguridad y restauración de Crostini</translation>
 <translation id="6856348640027512653">No pueden usar datos ni dispositivos de realidad virtual</translation>
@@ -8892,7 +8884,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">El componente ya está actualizado</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestaña abierta: pulsar para activar o desactivar la barra de pestañas}other{# pestañas abiertas; pulsar para activar o desactivar la barra de pestañas}}</translation>
 <translation id="7465635034594602553">Algo no va bien. Espera unos minutos y vuelve a ejecutar <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Quitar entorno de desarrollo gestionado (<ph name="SPECIFIC_NAME" />)</translation>

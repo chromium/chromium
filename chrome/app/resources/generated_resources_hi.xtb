@@ -543,7 +543,6 @@
 <translation id="1392047138650695757">उपयोगकर्ता डिक्शनरी</translation>
 <translation id="139300021892314943">लोगों के लिए साइन इन करने की अनुमति सीमित करें</translation>
 <translation id="1393283411312835250">सूरज और बादल</translation>
-<translation id="1395730723686586365">अपडेटर प्रारंभ हुआ</translation>
 <translation id="1395832189806039783">कीबोर्ड फ़ोकस की मदद से, आइटम हाइलाइट करें</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> पर वापस जाएं</translation>
 <translation id="1396139853388185343">प्रिंटर सेट अप करने में गड़बड़ी हुई</translation>
@@ -1362,7 +1361,6 @@
 <translation id="1942128823046546853">सभी वेबसाइटों पर आपका डेटा पढ़ और बदल सकेगा</translation>
 <translation id="1944528062465413897">ब्लूटूथ इस्तेमाल करके डिवाइस जोड़ने का कोड</translation>
 <translation id="1944535645109964458">कोई पासकी उपलब्ध नहीं है</translation>
-<translation id="1944921356641260203">अपडेट मिला</translation>
 <translation id="1947136734041527201">इसकी मदद से, पहचान करने वाली सेवा के लिए बनाए गए अपने खाते के ज़रिए, वेबसाइटों में साइन इन किया जा सकता है</translation>
 <translation id="1948528728718281125">सिस्टम सर्विस के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास कैमरा इस्तेमाल करने की अनुमति है उनके पास कैमरा का ऐक्सेस है</translation>
 <translation id="1949332606889020901">क्रैश आईडी</translation>
@@ -2239,7 +2237,6 @@
 <translation id="2546991196809436099">स्क्रीन पर मौजूद आइटम बड़े करने के लिए, ज़ूम इन करें. स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + M का इस्तेमाल करें.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी गई है</translation>
 <translation id="2548545707296594436">ई-सिम प्रोफ़ाइल की कैश मेमोरी को रीसेट करें</translation>
-<translation id="2549766998450508148">कार्रवाई बदलने वाली 1 से 4 कुंजियां (Ctrl, Alt, Shift या search) और एक और बटन दबाएं. एक बटन भी चुना जा सकता है.</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="2550212893339833758">स्वैप की गई मेमोरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> को <ph name="FILE_NAME" /> खोलने की मंज़ूरी दें?</translation>
@@ -2436,7 +2433,6 @@
 <translation id="2705736684557713153">स्क्रीन के सबसे नीचे तक स्क्रोल करें और अगर 'झटपट टेदरिंग' की सुविधा दिखाई देती है, तो उसे चालू करें. अगर वह नहीं दिखाई देती, तो आप पूरी तरह तैयार हैं.</translation>
 <translation id="2706304388244371417">Google Drive में बैक अप लें. जब चाहें, आसानी से अपना डेटा वापस पाएं या डिवाइस बदलें. इस बैकअप में ऐप्लिकेशन का डेटा शामिल होता है. डेटा का बैकअप, Google पर अपलोड किया जाता है और उसे आपके बच्चे के Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) किया जाता है. <ph name="BEGIN_LINK1" />बैकअप लेने के बारे में ज़्यादा जानें<ph name="BEGIN_LINK1_END" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ऊपर</translation>
-<translation id="2707024448553392710">घटक डाउनलोड करना</translation>
 <translation id="270921614578699633">औसत से ज़्यादा</translation>
 <translation id="2709516037105925701">ऑटोमैटिक भरना</translation>
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
@@ -2561,7 +2557,6 @@
 <translation id="2779728796406650689">इससे Google Assistant, आपके सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
-<translation id="2783298271312924866">डाउनलोड किए गए</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> के ज़रिए अपनी 'सुरक्षा चाबी' का इस्तेमाल करें</translation>
 <translation id="2785267875302712148">पासवर्ड जांचने की सुविधा</translation>
 <translation id="2785279781154577715">टैब पर कर्सर घुमाने पर झलक दिखाने वाले कार्ड के दिखने का तरीका</translation>
@@ -2888,7 +2883,6 @@
 <translation id="301525898020410885">भाषा को आपका संगठन सेट करता है</translation>
 <translation id="3015639418649705390">अभी फिर से लॉन्च करें</translation>
 <translation id="3016381065346027039">कोई लॉग एंट्री नहीं है</translation>
-<translation id="3016641847947582299">घटक अपडेट किया गया</translation>
 <translation id="3019023222666709803">ऐरो टूल</translation>
 <translation id="3019285239893817657">सबपेज बटन</translation>
 <translation id="3019595674945299805">वीपीएन सेवा</translation>
@@ -2967,6 +2961,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">सिर्फ़ इस डिवाइस में सेव करें</translation>
 <translation id="3076977359333237641">आपका साइन-इन डेटा मिटा दिया गया</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">यह नेटवर्क आपके खाते से सिंक नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">एक्सटेंशन</translation>
@@ -7204,7 +7199,6 @@
 <translation id="6208521041562685716">मोबाइल डेटा चालू किया जा रहा है</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> में सेव नहीं किया जा सका - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">कॉम्पोनेंट अपडेट हो रहा है</translation>
 <translation id="6209908325007204267">आपके डिवाइस में Chrome Enterprise Upgrade शामिल है, लेकिन आपका उपयोगकर्ता नाम किसी Enterprise खाते से जुड़ा हुआ नहीं है. कृपया किसी दूसरे डिवाइस से g.co/ChromeEnterpriseAccount पर जाकर एक Enterprise खाता बनाएं.</translation>
 <translation id="6210282067670792090">पता बार में, सर्च इंजन और साइट खोज के लिए इस्तेमाल होने वाले शॉर्टकट के साथ, इस कीबोर्ड शॉर्टकट का इस्तेमाल करें</translation>
 <translation id="6211067089253408231">इंस्टैंट हॉटस्पॉट की सुविधा चालू करें</translation>
@@ -7268,7 +7262,6 @@
 <translation id="6247620186971210352">कोई ऐप्लिकेशन नहीं मिला</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">सिस्टम: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">अपडेट तैयार है</translation>
 <translation id="6248988683584659830">सेटिंग में खोजें</translation>
 <translation id="6249200942125593849">सुलभता प्रबंधित करें</translation>
 <translation id="6250186368828697007">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट नहीं दिखता</translation>
@@ -8096,7 +8089,6 @@
 <translation id="6852290167968069627">नेटवर्क में किसी समस्या की वजह से, ChromeOS आपके पिछले सेशन को फिर से शुरू नहीं कर सकता. बिना रुकावट वाले नेटवर्क से कनेक्ट करें और फिर से कोशिश करें.</translation>
 <translation id="6852529053326738838">यह देखने के लिए कि आपका खाता शर्तें पूरी करता है या नहीं, अपने संगठन से कहें या अपने ऑफ़िस के ईमेल से रजिस्टर करें.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> को <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> से इंस्टॉल किया गया</translation>
-<translation id="6853388645642883916">अपडेटर निष्क्रिय</translation>
 <translation id="68541483639528434">अन्य टैब बंद करें</translation>
 <translation id="6855892664589459354">Crostini का बैक अप करना और बहाल करना</translation>
 <translation id="6856348640027512653">वर्चुअल रियलिटी वाले डिवाइसों या डेटा का इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -8906,7 +8898,6 @@
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746216226901520237">अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">कॉम्पोनेंट पहले से ही अप-टू-डेट है</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}one{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}other{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}}</translation>
 <translation id="7465635034594602553">कोई गड़बड़ी हुई. कृपया कुछ देर इंतज़ार करें और <ph name="APP_NAME" /> को फिर से चलाएं.</translation>
 <translation id="7465777686629334728">मैनेज किए गए डेवलपमेंट एनवायरमेंट को हटाएं (<ph name="SPECIFIC_NAME" />)</translation>

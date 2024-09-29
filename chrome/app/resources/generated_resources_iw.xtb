@@ -544,7 +544,6 @@
 <translation id="1392047138650695757">המילונים של המשתמש</translation>
 <translation id="139300021892314943">הגבלת המשתמשים שיכולים להיכנס</translation>
 <translation id="1393283411312835250">שמש ועננים</translation>
-<translation id="1395730723686586365">המעדכן הופעל</translation>
 <translation id="1395832189806039783">הדגשה של פריט באמצעות מיקוד המקלדת</translation>
 <translation id="1396120028054416908">חזרה אל <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">אירעה שגיאה בהגדרת המדפסת</translation>
@@ -1360,7 +1359,6 @@
 <translation id="1942128823046546853">קריאה ושינוי של כל הנתונים שלך בכל האתרים</translation>
 <translation id="1944528062465413897">‏קוד התאמת Bluetooth:</translation>
 <translation id="1944535645109964458">אין מפתחות גישה זמינים</translation>
-<translation id="1944921356641260203">נמצא עדכון</translation>
 <translation id="1947136734041527201">אפשרות להיכנס לאתרים באמצעות החשבון שלך בשירות זיהוי מסוים</translation>
 <translation id="1948528728718281125">הגישה למצלמה מותרת לאפליקציות, לאתרים עם הרשאת גישה למצלמה ולשירותי המערכת</translation>
 <translation id="1949332606889020901">מזהי קריסת מחשב</translation>
@@ -2237,7 +2235,6 @@
 <translation id="2546991196809436099">‏הגדלת התצוגה כדי להגדיל את הפריטים שמופיעים במסך. כדי להפעיל או להשבית את תכונת ההגדלה, מקישים על מקש החיפוש + Ctrl‏ + M.</translation>
 <translation id="2548347166720081527">ההרשאה <ph name="PERMISSION" /> הוענקה</translation>
 <translation id="2548545707296594436">‏איפוס המטמון של פרופיל ה-eSIM</translation>
-<translation id="2549766998450508148">‏מקישים על 1-4 מקשי צירוף (Ctrl,‏ Alt,‏ Shift או מקש החיפוש) ועוד מקש אחד. אפשר גם לבחור מקש יחיד.</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
 <translation id="2550212893339833758">זיכרון מוחלף</translation>
 <translation id="2550596535588364872">האם להתיר ל-<ph name="EXTENSION_NAME" /> לפתוח את <ph name="FILE_NAME" />?</translation>
@@ -2434,7 +2431,6 @@
 <translation id="2705736684557713153">גוללים לתחתית המסך ומפעילים את האפשרות 'שיתוף אינטרנט מיידי בין מכשירים', אם היא מופיעה. אם היא לא מופיעה, הכול מוכן.</translation>
 <translation id="2706304388244371417">‏גיבוי ב-Google Drive. אפשר לשחזר נתונים או להחליף מכשיר בכל שלב. הגיבוי הזה כולל נתוני אפליקציות. הגיבויים מועלים ל-Google ומוצפנים באמצעות הסיסמה לחשבון Google של הילד או הילדה שלך. <ph name="BEGIN_LINK1" />מידע נוסף על גיבוי<ph name="BEGIN_LINK1_END" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">למעלה</translation>
-<translation id="2707024448553392710">הורדת הרכיב מתבצעת</translation>
 <translation id="270921614578699633">מעל לממוצע</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
 <translation id="2710101514844343743">מידע על אופן השימוש בנתונים וניתוח הביצועים</translation>
@@ -2559,7 +2555,6 @@
 <translation id="2779728796406650689">‏כך Google Assistant תוכל לתת תשובות מותאמות אישית לשאלות שלך.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
-<translation id="2783298271312924866">ההורדה בוצעה</translation>
 <translation id="2783952358106015700">שימוש במפתח האבטחה באפליקציה <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">בדיקת סיסמאות</translation>
 <translation id="2785279781154577715">המראה של כרטיס התצוגה המקדימה שמופיע כשמעבירים את העכבר מעל לכרטיסייה</translation>
@@ -2886,7 +2881,6 @@
 <translation id="301525898020410885">השפה הוגדרה על ידי הארגון שלך</translation>
 <translation id="3015639418649705390">הפעלה מחדש עכשיו</translation>
 <translation id="3016381065346027039">אין רשומות ביומן</translation>
-<translation id="3016641847947582299">הרכיב עודכן</translation>
 <translation id="3019023222666709803">כלי החץ</translation>
 <translation id="3019285239893817657">לחצן למעבר אל דף משנה</translation>
 <translation id="3019595674945299805">‏שירות VPN</translation>
@@ -2965,6 +2959,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">שמירה רק במכשיר הזה</translation>
 <translation id="3076977359333237641">פרטי הכניסה שלך נמחקו</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">הרשת הזו לא מסונכרנת לחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">תוספים</translation>
@@ -7206,7 +7201,6 @@
 <translation id="6208521041562685716">המערכת מפעילה את חבילת הגלישה</translation>
 <translation id="6208725777148613371">נכשלה השמירה ב-<ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">עדכון רכיבים</translation>
 <translation id="6209908325007204267">‏המכשיר כולל אפשרות שדרוג ל-Chrome Enterprise, אבל שם המשתמש שלך לא משויך לחשבון ארגוני. כדי ליצור חשבון ארגוני, יש להיכנס לכתובת g.co/ChromeEnterpriseAccount במכשיר אחר.</translation>
 <translation id="6210282067670792090">בסרגל הכתובות, צריך להשתמש במקש הקיצור הזה בשילוב עם קיצורי דרך למנועי חיפוש ולחיפוש באתרים.</translation>
 <translation id="6211067089253408231">הפעלת שיתוף אינטרנט מיידי בין מכשירים</translation>
@@ -7270,7 +7264,6 @@
 <translation id="6247620186971210352">לא נמצאו אפליקציות</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">מערכת: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">העדכון מוכן</translation>
 <translation id="6248988683584659830">חיפוש בהגדרות</translation>
 <translation id="6249200942125593849">ניהול הנגישוּת</translation>
 <translation id="6250186368828697007">הפרטים מוסתרים בזמן שיתוף המסך</translation>
@@ -8100,7 +8093,6 @@
 <translation id="6852290167968069627">‏אי אפשר לחזור לסשן הקודם ב-ChromeOS עקב בעיה ברשת. עליך להתחבר לרשת יציבה ולנסות שוב.</translation>
 <translation id="6852529053326738838">כדאי לבקש מהארגון שלך, או להירשם באמצעות האימייל בעבודה, כדי לבדוק אם החשבון שלך עומד בדרישות.</translation>
 <translation id="6853029310037965825">מקור ההתקנה של <ph name="APP_TYPE" />:‏ <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">המעדכן במצב שינה</translation>
 <translation id="68541483639528434">סגירת כרטיסיות אחרות</translation>
 <translation id="6855892664589459354">‏גיבוי ושחזור ב-Crostini</translation>
 <translation id="6856348640027512653">לא מורשים להשתמש בנתונים או במכשירים של מציאות מדומה</translation>
@@ -8911,7 +8903,6 @@
 <translation id="7461924472993315131">הצמדה</translation>
 <translation id="746216226901520237">‏בפעם הבאה, הטלפון יבטל את הנעילה של <ph name="DEVICE_TYPE" />. אפשר להשבית את Smart Lock דרך ההגדרות.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">הרכיב כבר מעודכן</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{כרטיסייה פתוחה אחת. עליך ללחוץ כדי להחליף את המצב של שורת הכרטיסיות}one{# כרטיסיות פתוחות. עליך ללחוץ כדי להחליף את המצב של שורת הכרטיסיות}two{# כרטיסיות פתוחות. עליך ללחוץ כדי להחליף את המצב של שורת הכרטיסיות}other{# כרטיסיות פתוחות. עליך ללחוץ כדי להחליף את המצב של שורת הכרטיסיות}}</translation>
 <translation id="7465635034594602553">משהו השתבש. יש להמתין כמה דקות ולהפעיל את <ph name="APP_NAME" /> מחדש.</translation>
 <translation id="7465777686629334728">הסרה של סביבת פיתוח מנוהלת (<ph name="SPECIFIC_NAME" />)</translation>

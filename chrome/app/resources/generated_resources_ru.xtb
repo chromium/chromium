@@ -545,7 +545,6 @@
 <translation id="1392047138650695757">Словари пользователя</translation>
 <translation id="139300021892314943">Разрешить вход только указанным пользователям</translation>
 <translation id="1393283411312835250">Солнце и облака</translation>
-<translation id="1395730723686586365">Программа обновлений запущена</translation>
 <translation id="1395832189806039783">Выделять объект с помощью клавиатуры</translation>
 <translation id="1396120028054416908">Вернуться в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не удалось настроить принтер</translation>
@@ -1353,7 +1352,6 @@
 <translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах</translation>
 <translation id="1944528062465413897">Код Bluetooth-подключения:</translation>
 <translation id="1944535645109964458">Ключи доступа не найдены</translation>
-<translation id="1944921356641260203">Найдено обновление</translation>
 <translation id="1947136734041527201">Позволяет выполнять вход на сайтах через сервисы подтверждения личности.</translation>
 <translation id="1948528728718281125">Камеру могут использовать приложения и сайты с разрешением на доступ к ней, а также системные сервисы</translation>
 <translation id="1949332606889020901">Идентификаторы сбоев</translation>
@@ -2227,7 +2225,6 @@
 <translation id="2546991196809436099">Увеличивать объекты на экране. Включайте и выключайте режим лупы с помощью сочетания клавиш Поиск + Ctrl + M.</translation>
 <translation id="2548347166720081527">Предоставлено разрешение: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Сбросить кеш профиля eSIM</translation>
-<translation id="2549766998450508148">Используйте от одной до четырех клавиш-модификаторов (Ctrl, Alt, Shift, Поиск) и ещё одну клавишу. Вы также можете выбрать отдельную клавишу.</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="2550212893339833758">Память подкачки</translation>
 <translation id="2550596535588364872">Разрешить <ph name="EXTENSION_NAME" /> открыть файл <ph name="FILE_NAME" />?</translation>
@@ -2424,7 +2421,6 @@
 <translation id="2705736684557713153">Прокрутите экран вниз и включите мгновенную точку доступа. Если этой функции нет, значит она настроена.</translation>
 <translation id="2706304388244371417">Резервное копирование на Google Диск. Позволяет в любой момент восстановить данные (в том числе данные приложений) или перенести их на новое устройство. Резервные копии загружаются в Google и шифруются с помощью пароля аккаунта Google вашего ребенка. <ph name="BEGIN_LINK1" />Узнать больше о резервном копировании<ph name="BEGIN_LINK1_END" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
-<translation id="2707024448553392710">Компонент скачивается</translation>
 <translation id="270921614578699633">Среднее</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2710101514844343743">Данные о работе устройства</translation>
@@ -2549,7 +2545,6 @@
 <translation id="2779728796406650689">Это позволяет Google Ассистенту давать персонализированные ответы на ваши вопросы.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
-<translation id="2783298271312924866">Сохранено</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />: вход с помощью электронного ключа</translation>
 <translation id="2785267875302712148">Проверка паролей</translation>
 <translation id="2785279781154577715">Внешний вид карточек предпросмотра вкладок</translation>
@@ -2876,7 +2871,6 @@
 <translation id="301525898020410885">Язык установлен вашей организацией</translation>
 <translation id="3015639418649705390">Перезапустить</translation>
 <translation id="3016381065346027039">Записи в журнале отсутствуют.</translation>
-<translation id="3016641847947582299">Компонент обновлен</translation>
 <translation id="3019023222666709803">Инструмент "Стрелка"</translation>
 <translation id="3019285239893817657">Кнопка для перехода к подстранице</translation>
 <translation id="3019595674945299805">VPN-сервис</translation>
@@ -2956,6 +2950,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Сохранить только на этом устройстве</translation>
 <translation id="3076977359333237641">Ваши учетные данные удалены</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Эта сеть не синхронизируется с вашим аккаунтом. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">расширения</translation>
@@ -7195,7 +7190,6 @@
 <translation id="6208521041562685716">Мобильный Интернет активирован</translation>
 <translation id="6208725777148613371">Не удалось сохранить список "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Если вы забыли кодовую фразу или хотите изменить эти настройки, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Обновление компонента</translation>
 <translation id="6209908325007204267">На этом устройстве есть лицензия Chrome Enterprise, но ваше имя пользователя не связано с корпоративным аккаунтом. Создайте корпоративный аккаунт на странице g.co/ChromeEnterpriseAccount, используя другое устройство.</translation>
 <translation id="6210282067670792090">Используйте это сочетание клавиш с быстрыми командами в поисковых системах и для поиска по определенным сайтам.</translation>
 <translation id="6211067089253408231">Активировать мгновенную точку доступа</translation>
@@ -7259,7 +7253,6 @@
 <translation id="6247620186971210352">Приложения не найдены.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Обновление готово</translation>
 <translation id="6248988683584659830">Поиск настроек</translation>
 <translation id="6249200942125593849">Настройки специальных возможностей</translation>
 <translation id="6250186368828697007">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
@@ -8091,7 +8084,6 @@
 <translation id="6852290167968069627">ChromeOS не может возобновить предыдущий сеанс из-за проблемы с сетью. Подключитесь к стабильной сети и повторите попытку.</translation>
 <translation id="6852529053326738838">Чтобы узнать, соответствует ли ваш аккаунт требованиям, направьте запрос в организацию или зарегистрируйтесь с помощью рабочего адреса электронной почты.</translation>
 <translation id="6853029310037965825">Источник установки для категории "<ph name="APP_TYPE" />": <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Программа обновлений перешла в спящий режим</translation>
 <translation id="68541483639528434">Закрыть другие вкладки</translation>
 <translation id="6855892664589459354">Резервное копирование и восстановление Crostini</translation>
 <translation id="6856348640027512653">Сайты, которым запрещено использовать устройства и данные виртуальной реальности:</translation>
@@ -8901,7 +8893,6 @@
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746216226901520237">После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Установлена последняя версия компонента</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# открытая вкладка. Нажмите, чтобы показать или скрыть панель вкладок.}one{# открытая вкладка. Нажмите, чтобы показать или скрыть панель вкладок.}few{# открытые вкладки. Нажмите, чтобы показать или скрыть панель вкладок.}many{# открытых вкладок. Нажмите, чтобы показать или скрыть панель вкладок.}other{# открытой вкладки. Нажмите, чтобы показать или скрыть панель вкладок.}}</translation>
 <translation id="7465635034594602553">Произошла ошибка. Запустите <ph name="APP_NAME" /> снова через несколько минут.</translation>
 <translation id="7465777686629334728">Удалить управляемую среду разработки (<ph name="SPECIFIC_NAME" />)</translation>

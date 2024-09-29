@@ -543,7 +543,6 @@
 <translation id="1392047138650695757">ব্যৱহাৰকাৰীৰ অভিধানসমূহ</translation>
 <translation id="139300021892314943">কোনে ছাইন ইন কৰিব পাৰে সেয়া সীমিত কৰক</translation>
 <translation id="1393283411312835250">সূৰ্য আৰু মেঘ</translation>
-<translation id="1395730723686586365">আপডে‘টাৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="1395832189806039783">কীব’ৰ্ড ফ’কাছৰ জৰিয়তে বস্তু হাইলাইট কৰক</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />লৈ উভতি যাওক</translation>
 <translation id="1396139853388185343">প্ৰিণ্টাৰ ছেট আপ কৰি থাকোঁতে কিবা আসোঁৱাহ হ’ল</translation>
@@ -1359,7 +1358,6 @@
 <translation id="1942128823046546853">আটাইবোৰ ৱেবছাইটত আপোনাৰ ডেটা পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
 <translation id="1944528062465413897">ব্লুটুথ পেয়াৰিং ক’ড:</translation>
 <translation id="1944535645109964458">কোনো পাছকী উপলব্ধ নহয়</translation>
-<translation id="1944921356641260203">আপডে'ট পোৱা গৈছে</translation>
 <translation id="1947136734041527201">কোনো পৰিচয় সেৱাৰ সৈতে থকা আপোনাৰ একাউণ্টটো ব্যৱহাৰ কৰি আপোনাক ৱেবছাইটসমূহত ছাইন ইন কৰিবলৈ দিয়ে</translation>
 <translation id="1948528728718281125">কেমেৰাৰ অনুমতি থকা এপ্‌, ৱেবছাইট আৰু ছিষ্টেম সেৱাৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়া হয়</translation>
 <translation id="1949332606889020901">ক্ৰেশ্ব আইডি</translation>
@@ -2236,7 +2234,6 @@
 <translation id="2546991196809436099">স্ক্ৰীনখনত থকা বস্তুবোৰ ডাঙৰ কৰিবলৈ জুম ইন কৰক। বিৱৰ্ধক অন আৰু অফ কৰিবলৈ Search + Ctrl + M ব্যৱহাৰ কৰক।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />ৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2548545707296594436">ই-ছিমৰ প্ৰ'ফাইলৰ কেশ্ব ৰিছেট কৰক</translation>
-<translation id="2549766998450508148">১-৪ টা সংশোধক কী (ctrl, alt, shift বা search) আৰু ১ টা কী। আপুনি এটা কীয়ো বাছনি কৰিব পাৰে।</translation>
 <translation id="2549985041256363841">ৰেকৰ্ডিং কৰা আৰম্ভ কৰক</translation>
 <translation id="2550212893339833758">ছোৱেপ কৰা মেম’ৰী</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> খুলিবলৈ <ph name="EXTENSION_NAME" /> অনুমতি দিবনে?</translation>
@@ -2433,7 +2430,6 @@
 <translation id="2705736684557713153">তাৎক্ষণিক টেথাৰিং কৰাৰ সুবিধাটো প্ৰদর্শিত হ’লে স্ক্ৰীনৰ তলৰ অংশলৈ স্ক্ৰ’ল কৰি এই সুবিধাটো অন কৰক। যদি এইটো প্ৰদর্শিত হোৱা নাই তেন্তে আপুনি সাজু আছে।</translation>
 <translation id="2706304388244371417">Google Driveত বেক আপ লওক। ডেটা সহজে পুনঃস্থাপন কৰক অথবা যিকোনো সময়তে ডিভাইচ সলনি কৰক। এই বেকআপত এপ্‌ ডেটা আছে। বেকআপসমূহ Googleত আপল’ড কৰা হয় আৰু আপোনাৰ শিশুৰ Google একাউণ্টৰ পাছৱৰ্ড ব্যৱহাৰ কৰি সেইসমূহ এনক্ৰিপ্ট কৰা হয়। <ph name="BEGIN_LINK1" />বেক আপৰ বিষয়ে অধিক জানক<ph name="BEGIN_LINK1_END" />অধিক জানক<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ওপৰলৈ</translation>
-<translation id="2707024448553392710">উপাদান ডাউনল’ড কৰি থকা আছে</translation>
 <translation id="270921614578699633">গড় বৃদ্ধি</translation>
 <translation id="2709516037105925701">স্বয়ংপূৰ্তি</translation>
 <translation id="2710101514844343743">ব্যৱহাৰ আৰু ডায়েগন’ষ্টিক ডেটা</translation>
@@ -2558,7 +2554,6 @@
 <translation id="2779728796406650689">আপুনি প্ৰশ্ন সুধিলে, এইটোৱে Google Assistantক প্ৰস্তুত কৰি থোৱা সঁহাৰিসমূহ প্ৰদান কৰিবলৈ দিয়ে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
-<translation id="2783298271312924866">ডাউনল’ড কৰা হ‘ল</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />ৰ জৰিয়তে আপোনাৰ নিৰাপত্তা চাবি ব্যৱহাৰ কৰক</translation>
 <translation id="2785267875302712148">পাছৱৰ্ড চেকআপ</translation>
 <translation id="2785279781154577715">এটা টেবৰ ওপৰত কাৰ্ছৰডাল লৰচৰ কৰোঁতে পূৰ্বদৰ্শন দেখুওৱা কাৰ্ডৰ ৰূপ</translation>
@@ -2885,7 +2880,6 @@
 <translation id="301525898020410885">ভাষা আপোনাৰ প্ৰতিষ্ঠানে ছেট কৰে</translation>
 <translation id="3015639418649705390">এতিয়া পুনৰ লঞ্চ কৰক</translation>
 <translation id="3016381065346027039">কোনো লগ অন্তৰ্ভুক্তি নাই</translation>
-<translation id="3016641847947582299">উপাদান আপডে'ট কৰা হৈছে</translation>
 <translation id="3019023222666709803">কাঁড়চিহ্নৰ সঁজুলি</translation>
 <translation id="3019285239893817657">উপ-পৃষ্ঠাৰ বুটাম</translation>
 <translation id="3019595674945299805">ভিপিএন সেৱা</translation>
@@ -2965,6 +2959,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">কেৱল এই ডিভাইচটোত ছেভ কৰক</translation>
 <translation id="3076977359333237641">আপোনাৰ ছাইন ইন ডেটা মচা হৈছিল</translation>
+<translation id="3077734595579995578">Shift+</translation>
 <translation id="3080933187214341848">এই নেটৱর্কটো আপোনাৰ একাউণ্টৰ সৈতে ছিংক কৰা নাই। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">এক্সটেনশ্বন</translation>
@@ -7204,7 +7199,6 @@
 <translation id="6208521041562685716">ম’বাইল ডেটা সক্রিয় কৰি থকা হৈছে</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" />ত ছেভ কৰিব পৰা নগ’ল</translation>
 <translation id="6209767197996242814">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে বা এই ছেটিংটো সলনি কৰিব বিচাৰে, <ph name="SETTINGS_LINK" />।</translation>
-<translation id="6209838773933913227">উপাদান আপডে’ট কৰা</translation>
 <translation id="6209908325007204267">আপোনাৰ ডিভাইচটোত এটা Chrome Enterpriseৰ আপগ্ৰে’ড অন্তৰ্ভুক্ত আছে, কিন্তু আপোনাৰ ব্যৱহাৰকাৰীৰ নামটো কোনো এণ্টাৰপ্ৰাইজ একাউণ্টৰ সৈতে জড়িত নহয়। অনুগ্ৰহ কৰি এটা গৌণ ডিভাইচত g.co/ChromeEnterpriseAccountলৈ গৈ এটা এণ্টাৰপ্ৰাইজ একাউণ্ট সৃষ্টি কৰক।</translation>
 <translation id="6210282067670792090">ঠিকনাৰ বাৰডালত সন্ধান ইঞ্জিন আৰু ছাইটৰ সন্ধানৰ শ্বৰ্টকাটৰ সৈতে কীব’ৰ্ডৰ এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰক</translation>
 <translation id="6211067089253408231">তাৎক্ষণিক হ’টস্প’ট অন কৰক</translation>
@@ -7268,7 +7262,6 @@
 <translation id="6247620186971210352">কোনো এপ্‌ পোৱা নগ’ল</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">ছিষ্টেম <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">আপডে’ট সাজু</translation>
 <translation id="6248988683584659830">সন্ধান সম্পৰ্কীয় ছেটিংসমূহ</translation>
 <translation id="6249200942125593849">সাধ্য সুবিধাসমূহ পৰিচালনা কৰক</translation>
 <translation id="6250186368828697007">আপুনি আপোনাৰ স্ক্ৰীনখন শ্বেয়াৰ কৰিলে সবিশেষ লুকুওৱা হয়</translation>
@@ -8096,7 +8089,6 @@
 <translation id="6852290167968069627">নেটৱৰ্ক সম্পৰ্কীয় এটা সমস্যাৰ বাবে ChromeOSএ আপোনাৰ পূৰ্বৰ ছেশ্বনটো পুনৰ আৰম্ভ কৰিব পৰা নাই। এটা স্থিৰ নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6852529053326738838">আপোনাৰ একাউণ্টটো যোগ্য হয়নে নহয় পৰীক্ষা কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানক সোধক অথবা আপোনাৰ কৰ্মস্থানৰ ইমেইলৰ জৰিয়তে পঞ্জীয়ন কৰক।</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />ৰ পৰা <ph name="APP_TYPE" /> ইনষ্টল কৰা হৈছে</translation>
-<translation id="6853388645642883916">আপডে’টাৰ সুপ্ত অৱস্থাত আছে</translation>
 <translation id="68541483639528434">অন্য টেবসমূহ বন্ধ কৰক</translation>
 <translation id="6855892664589459354">Crostiniৰ বেক আপ আৰু পুনঃস্থাপন</translation>
 <translation id="6856348640027512653">ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
@@ -8906,7 +8898,6 @@
 <translation id="7461924472993315131">পিন</translation>
 <translation id="746216226901520237">আগলৈ আপোনাৰ ফ’নটোৱে আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিব। আপুনি ছেটিংসমূহ-লৈ গৈ স্মাৰ্ট লক অফ কৰিব পাৰে।</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">উপাদান ইতিমধ্যে আপ টু ডে’ট হৈ আছে</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}one{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}other{#টা খোলা টেব আছে, টেবৰ ষ্ট্রিপটো ট’গল কৰিবলৈ টিপক}}</translation>
 <translation id="7465635034594602553">কিবা ভুল হ’ল। অনুগ্ৰহ কৰি কেইমিনিটমান অপেক্ষা কৰক আৰু পুনৰ <ph name="APP_NAME" /> চলাওক।</translation>
 <translation id="7465777686629334728">পৰিচালিত উন্নয়ন পৰিৱেশ (<ph name="SPECIFIC_NAME" />) আঁতৰাওক</translation>

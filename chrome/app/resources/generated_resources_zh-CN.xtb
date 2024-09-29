@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">用户字典</translation>
 <translation id="139300021892314943">限制哪些用户可以登录</translation>
 <translation id="1393283411312835250">太阳和云朵</translation>
-<translation id="1395730723686586365">更新程序已启动</translation>
 <translation id="1395832189806039783">突出显示键盘焦点所在的项</translation>
 <translation id="1396120028054416908">返回“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="1396139853388185343">设置打印机时出错</translation>
@@ -1344,7 +1343,6 @@
 <translation id="1942128823046546853">读取和更改您在所有网站上的所有数据</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
 <translation id="1944535645109964458">没有可用的通行密钥</translation>
-<translation id="1944921356641260203">发现更新</translation>
 <translation id="1947136734041527201">允许您使用您在身份服务中注册的账号登录网站</translation>
 <translation id="1948528728718281125">允许系统服务以及具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1949332606889020901">崩溃 ID</translation>
@@ -2217,7 +2215,6 @@
 <translation id="2546991196809436099">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
-<translation id="2549766998450508148">按 1-4 个辅助键（Ctrl、Alt、Shift 或搜索键）和另外 1 个键。您也可选择单个键。</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2550212893339833758">已交换的内存</translation>
 <translation id="2550596535588364872">允许“<ph name="EXTENSION_NAME" />”打开“<ph name="FILE_NAME" />”？</translation>
@@ -2414,7 +2411,6 @@
 <translation id="2705736684557713153">滚动到屏幕底部，如果看到“即时网络共享”，请将其开启。如果未看到该功能，则表示您已设置完毕。</translation>
 <translation id="2706304388244371417">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。此类备份内容包含应用数据。备份内容将上传到 Google 平台并使用您孩子的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">向上箭头键</translation>
-<translation id="2707024448553392710">正在下载组件</translation>
 <translation id="270921614578699633"> </translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
@@ -2539,7 +2535,6 @@
 <translation id="2779728796406650689">这样一来，Google 助理便可在您提问时给出量身定制的回答。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
-<translation id="2783298271312924866">已下载</translation>
 <translation id="2783952358106015700">使用您的安全密钥在 <ph name="APP_NAME" /> 上进行身份验证</translation>
 <translation id="2785267875302712148">密码安全检查</translation>
 <translation id="2785279781154577715">标签页悬停预览卡片的外观</translation>
@@ -2866,7 +2861,6 @@
 <translation id="301525898020410885">语言由贵单位设置</translation>
 <translation id="3015639418649705390">立即重新启动</translation>
 <translation id="3016381065346027039">没有日志条目</translation>
-<translation id="3016641847947582299">组件已更新</translation>
 <translation id="3019023222666709803">箭头工具</translation>
 <translation id="3019285239893817657">子页面按钮</translation>
 <translation id="3019595674945299805">VPN 服务</translation>
@@ -2945,6 +2939,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">仅保存到此设备上</translation>
 <translation id="3076977359333237641">您的登录数据已删除</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">此网络未同步到您的账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">扩展程序</translation>
@@ -7177,7 +7172,6 @@
 <translation id="6208521041562685716">正在激活移动数据</translation>
 <translation id="6208725777148613371">未能保存到“<ph name="WEB_DRIVE" />”- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />。</translation>
-<translation id="6209838773933913227">正在更新组件</translation>
 <translation id="6209908325007204267">您的设备随附了一份 Chrome 企业版升级许可，但您的用户名并未与任何企业账号关联。请先在辅助设备上前往 g.co/ChromeEnterpriseAccount 创建一个企业账号。</translation>
 <translation id="6210282067670792090">在地址栏中，将此键盘快捷键与用于搜索引擎和网站搜索的快捷字词结合使用</translation>
 <translation id="6211067089253408231">开启智能热点</translation>
@@ -7241,7 +7235,6 @@
 <translation id="6247620186971210352">未找到任何应用</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">系统：<ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">有可用的更新</translation>
 <translation id="6248988683584659830">在设置中搜索</translation>
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
@@ -8067,7 +8060,6 @@
 <translation id="6852290167968069627">ChromeOS 无法恢复您的上一个会话，因为网络出问题了。请连接到稳定的网络，然后重试。</translation>
 <translation id="6852529053326738838">请询问贵组织，或使用您的工作电子邮件地址进行注册，以检查您的账号是否符合条件。</translation>
 <translation id="6853029310037965825">从<ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安装的<ph name="APP_TYPE" /></translation>
-<translation id="6853388645642883916">更新程序处于休眠模式</translation>
 <translation id="68541483639528434">关闭其他标签页</translation>
 <translation id="6855892664589459354">Crostini 备份和恢复</translation>
 <translation id="6856348640027512653">不得使用虚拟现实设备或数据</translation>
@@ -8878,7 +8870,6 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">组件已是最新版本</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}other{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}}</translation>
 <translation id="7465635034594602553">出了点问题。请在几分钟后重新运行 <ph name="APP_NAME" />。</translation>
 <translation id="7465777686629334728">移除代管式开发环境 (<ph name="SPECIFIC_NAME" />)</translation>

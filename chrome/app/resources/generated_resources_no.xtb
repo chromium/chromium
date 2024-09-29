@@ -542,7 +542,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1392047138650695757">Brukerordlister</translation>
 <translation id="139300021892314943">Begrens hvem som kan logge på</translation>
 <translation id="1393283411312835250">Sol og skyer</translation>
-<translation id="1395730723686586365">Oppdatereringsprogrammet er startet</translation>
 <translation id="1395832189806039783">Fremhev elementet med tastaturfokus</translation>
 <translation id="1396120028054416908">Tilbake til <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Feil ved konfigurasjonen av skriveren</translation>
@@ -1355,7 +1354,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1942128823046546853">lese og endre alle dataene dine på alle nettsteder</translation>
 <translation id="1944528062465413897">Bluetooth-sammenkoblingskode</translation>
 <translation id="1944535645109964458">Ingen passnøkler er tilgjengelige</translation>
-<translation id="1944921356641260203">En oppdatering ble funnet</translation>
 <translation id="1947136734041527201">Lar deg logge på nettsteder med kontoer du har hos identitetstjenester</translation>
 <translation id="1948528728718281125">Kameratilgang er tillatt for apper, nettsteder med kameratillatelsen og systemtjenester</translation>
 <translation id="1949332606889020901">Programstopp-ID-er</translation>
@@ -2232,7 +2230,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2546991196809436099">Zoom inn for å gjøre elementer på skjermen større. Bruk søketasten + Ctrl + M for å slå på og av lupen.</translation>
 <translation id="2548347166720081527">Tillatt <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Tilbakestill eSIM-profilbufferen</translation>
-<translation id="2549766998450508148">Trykk på 1–4 modifikatortaster (Ctrl, Alt, Shift eller Søk) og én tast til. Du kan også velge én enkelt tast.</translation>
 <translation id="2549985041256363841">Start opptak</translation>
 <translation id="2550212893339833758">Virtuelt minne</translation>
 <translation id="2550596535588364872">Vil du gi <ph name="EXTENSION_NAME" /> tillatelse til å åpne <ph name="FILE_NAME" />?</translation>
@@ -2429,7 +2426,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2705736684557713153">Rull til bunnen av skjermen, og trykk på Umiddelbar internettdeling hvis dette alternativet vises. Hvis ikke er alt klart.</translation>
 <translation id="2706304388244371417">Sikkerhetskopier til Google Disk. Gjenopprett data enkelt eller bytt enhet når som helst. Denne sikkerhetskopien inkluderer appdata. Sikkerhetskopier lastes opp til Google og krypteres med passordet for barnets Google-konto. <ph name="BEGIN_LINK1" />Finn ut mer om sikkerhetskopiering<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Opp</translation>
-<translation id="2707024448553392710">Komponenten lastes ned</translation>
 <translation id="270921614578699633">Gjennomsnitt for</translation>
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
@@ -2554,7 +2550,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2779728796406650689">Dette gjør at Google-assistenten kan gi deg skreddersydde svar når du stiller spørsmål.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Feil ved installasjon av Linux-programmet</translation>
-<translation id="2783298271312924866">Lastet ned</translation>
 <translation id="2783952358106015700">Bruk sikkerhetsnøkkelen din med <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Passordsjekk</translation>
 <translation id="2785279781154577715">Utseendet til forhåndsvisningskortet som vises når markøren holdes over faner</translation>
@@ -2881,7 +2876,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="301525898020410885">Språket er angitt av organisasjonen din</translation>
 <translation id="3015639418649705390">Start på nytt nå</translation>
 <translation id="3016381065346027039">Ingen loggoppføringer</translation>
-<translation id="3016641847947582299">Komponenten er oppdatert</translation>
 <translation id="3019023222666709803">Pilverktøy</translation>
 <translation id="3019285239893817657">knapp til underordnet side</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
@@ -2960,6 +2954,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Lagre kun på denne enheten</translation>
 <translation id="3076977359333237641">Påloggingsinformasjonen ble slettet</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Dette nettverket er ikke synkronisert med kontoen din. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">utvidelser</translation>
@@ -7195,7 +7190,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6208521041562685716">Mobildata aktiveres</translation>
 <translation id="6208725777148613371">Kunne ikke lagre i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Komponenten oppdateres</translation>
 <translation id="6209908325007204267">En Chrome Enterprise-oppgradering følger med enheten din, men brukernavnet ditt er ikke knyttet til noen bedriftskonto. Opprett en bedriftskonto ved å besøke g.co/ChromeEnterpriseAccount på en annen enhet.</translation>
 <translation id="6210282067670792090">Bruk denne hurtigtasten sammen med snarveier til søkemotorer og nettstedsøk i adressefeltet</translation>
 <translation id="6211067089253408231">Slå på umiddelbar wifi-sone</translation>
@@ -7259,7 +7253,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6247620186971210352">Fant ingen apper</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Oppdateringen er klar</translation>
 <translation id="6248988683584659830">Søk i innstillingene</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6250186368828697007">Detaljene skjules mens du deler skjermen</translation>
@@ -8085,7 +8078,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6852290167968069627">ChromeOS kan ikke gjenoppta den forrige økten på grunn av et nettverksproblem. Koble til et stabilt nettverk, og prøv på nytt.</translation>
 <translation id="6852529053326738838">Spør organisasjonen din, eller registrer deg med jobb-e-postadressen din for å sjekke om kontoen din er kvalifisert.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> er installert fra <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Oppdatereringsprogrammet er i hvilemodus</translation>
 <translation id="68541483639528434">Lukk andre faner</translation>
 <translation id="6855892664589459354">Crostini-sikkerhetskopiering og -gjenoppretting</translation>
 <translation id="6856348640027512653">Nettsteder som ikke har lov til å bruke virtuell virkelighet-enheter eller -data</translation>
@@ -8896,7 +8888,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746216226901520237">Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Komponenten er allerede oppdatert</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# åpen fane – trykk for å slå av/på faneraden}other{# åpne faner – trykk for å slå av/på faneraden}}</translation>
 <translation id="7465635034594602553">Noe gikk galt. Vent noen minutter, og kjør <ph name="APP_NAME" /> på nytt.</translation>
 <translation id="7465777686629334728">Fjern det administrerte utviklingsmiljøet (<ph name="SPECIFIC_NAME" />)</translation>

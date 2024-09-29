@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="2173302385160625112">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2189104374785738357">APN ବିବରଣୀକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2195732836444333448">ବର୍ତ୍ତମାନ କୌଣସି ରିସୋର୍ସ ନାହିଁ। ଶୀଘ୍ର ଫେରି ଆସନ୍ତୁ।</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ତିଆରି କରିବା କିମ୍ବା ଦେଖିବା ପାଇଁ ପ୍ରମ୍ପ୍ଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2472215337771558851">ଏକ ଡ୍ରାଫ୍ଟ ତିଆରି କରିବା କିମ୍ବା Google AI ଦ୍ୱାରା ପରିଚାଳିତ ପୂର୍ବରୁ ଥିବା କାର୍ଯ୍ୟକୁ ରିଫାଇନ କରିବା ପାଇଁ 'ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
 <translation id="2480572840229215612">କଙ୍କଡ଼ା</translation>
 <translation id="248546197012830854">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି। ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖିବାକୁ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2486301288428798846">କାଠ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">ୟୁଜରଙ୍କ ସାର୍ଟିଫିକେଟ</translation>
 <translation id="6146993107019042706">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ନୂଆ ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ଇଣ୍ଟର୍ନେଟ୍ ସହ ସଂଯୋଗ ହୋଇପାରୁ ନାହିଁ</translation>
 <translation id="6156030503438652198">ମେରୁନ ଏବଂ ଗୋଲାପୀ</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ବାଛନ୍ତୁ</translation>
 <translation id="7108668606237948702">ଏଣ୍ଟର୍</translation>
+<translation id="7117228822971127758">ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7118522231018231199">ଆପଣଙ୍କ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା APNଗୁଡ଼ିକୁ ଚୟନ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଏକ APNକୁ ଚୟନ କରିବା ଫଳରେ ଏହା ଯେ କୌଣସି କଷ୍ଟମ APNକୁ ଅକ୍ଷମ କରିଦେବ। ଅବୈଧ APNଗୁଡ଼ିକ ଆପଣଙ୍କ ମୋବାଇଲ କନେକ୍ସନରେ ବାଧା ସୃଷ୍ଟି କରିପାରେ।</translation>
 <translation id="7119389851461848805">ପାୱାର</translation>
 <translation id="7129287270910503851">ପ୍ରତ୍ୟେକ ମାସ ଏହି ଦିନ ଆପଣଙ୍କ ଡାଟା ବ୍ୟବହାରକୁ ରିସେଟ କରାଯିବ</translation>

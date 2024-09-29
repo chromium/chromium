@@ -621,7 +621,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2111166930115883695">Premi la barra spaziatrice per giocare</translation>
 <translation id="2113977810652731515">Carta</translation>
 <translation id="2114841414352855701">Ignorata perché è stata sostituita da <ph name="POLICY_NAME" />.</translation>
-<translation id="2115549780565563931">Sconti</translation>
 <translation id="2118132148597630479">Busta C5</translation>
 <translation id="2119505898009119320">Rilasciato a: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforatura in basso a destra</translation>
@@ -4149,7 +4148,6 @@ Ulteriori dettagli:
 <translation id="8564466070529550495">La carta virtuale non è al momento disponibile. Riprova più tardi.</translation>
 <translation id="8564985650692024650">Chromium ti consiglia di reimpostare la password di <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, se l'hai utilizzata su altri siti.</translation>
 <translation id="8570895683659698018">Hobby e tempo libero</translation>
-<translation id="8572792595597115856">Sconto valido fino al giorno <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Frigoriferi e congelatori</translation>
 <translation id="8577192028579836704">Tutte le opzioni in genere <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carta virtuale non disponibile</translation>

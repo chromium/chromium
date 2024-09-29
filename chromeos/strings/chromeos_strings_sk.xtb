@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
+<translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
 <translation id="2189104374785738357">Úprava podrobností názvu prístupového bodu (APN)</translation>
 <translation id="2195732836444333448">Služba je momentálne vyťažená. Vráťte sa o chvíľu.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2468124392950503650">Vyberte pokyn na vytvorenie alebo si pozrite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />sprievodcu pokynmi<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocou asistenta pri písaní používajúceho umelú inteligenciu od Googlu môžete vytvoriť koncept alebo spresniť existujúcu prácu</translation>
+<translation id="2475982808118771221">Vyskytla sa chyba</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Zariadenie je offline. Ak chcete zobraziť pomocný obsah, pripojte ho k sieti Wi‐Fi.</translation>
 <translation id="2486301288428798846">drevo</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certifikát používateľa</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nedá sa pripojiť k internetu</translation>
 <translation id="6156030503438652198">gaštanovohnedá a ružová</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Vybrať exkluzívny plagát pre <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Skúste to neskôr</translation>
 <translation id="7118522231018231199">Vyberte názvy prístupových bodov (APN), ktoré vám poskytol mobilný operátor alebo správca. Výberom názvu prístupového bodu (APN) sa deaktivujú všetky vlastné názvy prístupových bodov (APN). Neplatné názvy prístupových bodov môžu prerušiť vaše mobilné pripojenie.</translation>
 <translation id="7119389851461848805">napájanie</translation>
 <translation id="7129287270910503851">Vaša spotreba dát bude každý mesiac v tento deň resetovaná</translation>

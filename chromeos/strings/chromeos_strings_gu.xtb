@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
+<translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2189104374785738357">APNની વિગતોમાં ફેરફાર કરો</translation>
 <translation id="2195732836444333448">હાલમાં મહત્તમ ક્ષમતાએ કામ કરી રહ્યાં છીએ. જલ્દી પાછા આવીશું.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />પ્રૉમ્પ્ટ સંબંધિત ગાઇડ<ph name="END_LINK_PROMPTING_GUIDE" /> બનાવવા કે જોવા માટે પ્રૉમ્પ્ટ પસંદ કરો</translation>
 <translation id="2472215337771558851">ડ્રાફ્ટ બનાવ અથવા હાલના લખાણને સુધારવા માટે, Google AI દ્વારા સંચાલિત 'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરો</translation>
+<translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
 <translation id="2480572840229215612">કરચલાં</translation>
 <translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
 <translation id="2486301288428798846">લાકડું</translation>
@@ -1018,11 +1020,13 @@
 <translation id="6122191549521593678">ઓનલાઇન</translation>
 <translation id="6122277663991249694">ChromeOSની ઇનપુટ પદ્ધતિની સેવા</translation>
 <translation id="6127426868813166163">સફેદ</translation>
+<translation id="613049107179582049">જ્યારે Chromebook ઑડિયો ચાલુ હોય, ત્યારે Recorder આ ડિવાઇસ પર ચાલતો તમામ ઑડિયો કૅપ્ચર કરે છે</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">સાઇબરપન્ક</translation>
 <translation id="6137767437444130246">વપરાશકર્તા પ્રમાણપત્ર</translation>
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="6156030503438652198">મરૂન અને ગુલાબી</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> નામનું ડિવાઇસ (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> માટે વિશેષ આર્ટવર્ક પસંદ કરો</translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="7118522231018231199">તમારા મોબાઇલ પ્રદાતા કે ઍડમિનિસ્ટ્રેટરે પ્રદાન કરેલા APNs પસંદ કરવાની ખાતરી કરો. કોઈ APN પસંદ કરવાથી જે પણ કસ્ટમ APNs હશે, તે બંધ થઈ જશે. અમાન્ય APNs તમારા મોબાઇલ કનેક્શનને વિક્ષેપિત કરી શકે છે.</translation>
 <translation id="7119389851461848805">પાવર</translation>
 <translation id="7129287270910503851">પ્રત્યેક મહિને આ દિવસે તમારો ડેટા વપરાશ રીસેટ કરવામાં આવશે</translation>

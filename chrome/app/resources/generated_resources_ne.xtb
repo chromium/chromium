@@ -540,7 +540,6 @@
 <translation id="1392047138650695757">प्रयोगकर्ताले तयार पारेका शब्दकोशहरू</translation>
 <translation id="139300021892314943">साइन इन गर्न सक्ने मान्छेहरू सीमित गर्नुहोस्</translation>
 <translation id="1393283411312835250">घाम र बादल</translation>
-<translation id="1395730723686586365">अद्यतनकर्ता सुरु भयो</translation>
 <translation id="1395832189806039783">किबोर्डको फोकसका सहायताले वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> मा फर्कनुहोस्</translation>
 <translation id="1396139853388185343">प्रिन्टर सेटअप गर्दा त्रुटि</translation>
@@ -1348,7 +1347,6 @@
 <translation id="1942128823046546853">सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न तथा बदल्न</translation>
 <translation id="1944528062465413897">ब्लुटुथबाट जोडा बनाउन प्रयोग गर्नु पर्ने कोड:</translation>
 <translation id="1944535645109964458">कुनै पनि पासकी उपलब्ध छैन</translation>
-<translation id="1944921356641260203">अपडेट फेला पर्‍यो</translation>
 <translation id="1947136734041527201">तपाईंले यो सेटिङ अन गर्नुभयो भने तपाईं आफूले पहिचान सेवा प्रदायकबाट प्राप्त गरेको खाता प्रयोग गरी वेबसाइटहरूमा साइन इन गर्न सक्नुहुन्छ</translation>
 <translation id="1948528728718281125">क्यामेरा प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइट र सिस्टमका सेवाहरूलाई क्यामेरा प्रयोग गर्न दिइन्छ</translation>
 <translation id="1949332606889020901">क्र्यास ID हरू</translation>
@@ -2222,7 +2220,6 @@
 <translation id="2546991196809436099">स्क्रिनमा देखिएका वस्तुहरू अझ ठुलो बनाउन जुम इन गर्नुहोस्। म्याग्निफायर अन र अफ गर्न Search + Ctrl + M थिच्नुहोस्।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="2548545707296594436">eSIM प्रोफाइलको क्यास रिसेट गर्नुहोस्</translation>
-<translation id="2549766998450508148">१ देखि ४ वटा मोडिफायर की (ctrl, alt, सिफ्ट वा सर्च) र थप एउटा की थिच्नुहोस्। तपाईं एउटा की चयन गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="2550212893339833758">स्वाप गरिएको मेमोरी</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> लाई <ph name="EXTENSION_NAME" /> खोल्न अनुमति दिने हो?</translation>
@@ -2419,7 +2416,6 @@
 <translation id="2705736684557713153">स्क्रिनको फेदतिर स्क्रोल गर्दा तात्कालिक टेदरिङ नामक सुविधा देखिएको खण्डमा त्यसलाई अन गर्नुहोस्। उक्त बटन देखिएन भने केही गर्नु पर्दैन।</translation>
 <translation id="2706304388244371417">Google Drive मा ब्याकअप गर्नुहोस्। जुनसुकै बेला सजिलैसँग डेटा रिस्टोर गर्नुहोस् वा डिभाइस बदल्नुहोस्। यो ब्याकअपमा एपसम्बन्धी डेटा समावेश हुन्छ। ब्याकअपहरू Google मा अपलोड गरिन्छन् र तपाईंका बच्चाको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्। <ph name="BEGIN_LINK1" />ब्याकअपका बारेमा थप जान्नुहोस्<ph name="BEGIN_LINK1_END" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">माथि</translation>
-<translation id="2707024448553392710">अवयव डाउनलोड गर्दै</translation>
 <translation id="270921614578699633">औसत ओभर</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="2710101514844343743">प्रयोग तथा निदानसम्बन्धी डेटा</translation>
@@ -2544,7 +2540,6 @@
 <translation id="2779728796406650689">तपाईंले प्रश्नहरू सोध्दा यसले Google एसिस्टेन्टलाई आवश्यकताअनुसारका जवाफ दिने अनुमति दिन्छ।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
-<translation id="2783298271312924866">डाउनलोड गरिएको</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> मार्फत आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="2785267875302712148">पासवर्ड जाँच</translation>
 <translation id="2785279781154577715">ट्याबमा होभर गर्दा देखिने प्रिभ्यू कार्डको स्वरूप</translation>
@@ -2872,7 +2867,6 @@
 <translation id="301525898020410885">तपाईंको सङ्गठनले भाषा तय गर्छ</translation>
 <translation id="3015639418649705390">अहिले नै पुनः सुरु गर्नुहोस्</translation>
 <translation id="3016381065346027039">कुनै पनि लग प्रविष्टि गरिएको छैन</translation>
-<translation id="3016641847947582299">अवयव अपडेड गरियो</translation>
 <translation id="3019023222666709803">एरो टुल</translation>
 <translation id="3019285239893817657">उपपृष्ठको बटन</translation>
 <translation id="3019595674945299805">VPN सेवा</translation>
@@ -2951,6 +2945,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">यो डिभाइसमा मात्र सुरक्षित गर्नुहोस्</translation>
 <translation id="3076977359333237641">तपाईंको साइन इन गर्न चाहिने डेटा मेटाइयो</translation>
+<translation id="3077734595579995578">शिफ्ट</translation>
 <translation id="3080933187214341848">यो नेटवर्क र तपाईंको खाता बिच सिंक भएको छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">एक्स्टेन्सनहरू</translation>
@@ -7187,7 +7182,6 @@
 <translation id="6208521041562685716">मोबाइल डेटा सक्रिय गरिँदै छ</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> मा सेभ गर्न सकिएन - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="SETTINGS_LINK" />।</translation>
-<translation id="6209838773933913227">कम्पोनेन्टहरू अपडेट हुँदै छन्</translation>
 <translation id="6209908325007204267">तपाईंको डिभाइसमा स्तरवृद्धि गरी Chrome Enterprise बनाउने सुविधा उपलब्ध छ तर तपाईंको प्रयोगकर्ता नाम भने कुनै पनि इन्टरप्राइजको खातासँग सम्बन्धित छैन। कृपया कुनै सहायक यन्त्रमार्फत g.co/ChromeEnterpriseAccount मा गई इन्टरप्राइज खाता बनाउनुहोस्।</translation>
 <translation id="6210282067670792090">एड्रेस बारमा सर्च इन्जिन र साइटमा खोज्ने विभिन्न सर्टकट समावेश भएको यो किबोर्ड सर्टकट प्रयोग गर्नुहोस्</translation>
 <translation id="6211067089253408231">इन्स्ट्यान्ट हटस्पट अन गर्नुहोस्</translation>
@@ -7251,7 +7245,6 @@
 <translation id="6247620186971210352">कुनै पनि एप भेटिएन</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">प्रणाली: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">अपडेट तैयार छ</translation>
 <translation id="6248988683584659830">खोज सेटिङहरू</translation>
 <translation id="6249200942125593849">पहुँचसम्बन्धी सुविधाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6250186368828697007">तपाईंले आफ्नो स्क्रिन सेयर गरिरहेका बेला सूचनाका विवरणहरू लुकाइन्छन्</translation>
@@ -8077,7 +8070,6 @@
 <translation id="6852290167968069627">नेटवर्कसम्बन्धी समस्या आएकाले ChromeOS ले तपाईंको यसअघिको सत्र सुचारु गर्न सक्दैन। कनेक्सनमा समस्या नआएको नेटवर्कमा कनेक्ट गर्नुहोस् अनि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6852529053326738838">तपाईंको सङ्गठनलाई आफ्नो खाता योग्य छ कि छैन भन्ने कुरा सोध्नुहोस्। अन्यथा उक्त कुरा जान्न आफ्नो कार्यालयको इमेल ठेगाना प्रयोग गरेर दर्ता गर्नुहोस्।</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> बाट इन्स्टल गरिएको <ph name="APP_TYPE" /></translation>
-<translation id="6853388645642883916">अद्यतनकर्ता सुतिरहेको</translation>
 <translation id="68541483639528434">अन्य ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="6855892664589459354">Crostini को ब्याकअप तथा पुनर्स्थापना</translation>
 <translation id="6856348640027512653">भर्चुअल रियालिटी चल्ने यन्त्र वा तिनमा भएका डेटा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
@@ -8887,7 +8879,6 @@
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">अर्को पटकदेखि, तपाईंको फोनले तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्ने छ। तपाईं सेटिङहरूमा गई Smart Lock निष्क्रिय पार्न सक्नुहुन्छ।</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">यो कम्पोनेन्ट अपडेट नै छ</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# खुला ट्याब, ट्याब स्ट्रिप टगल गर्न थिच्नुहोस्}other{# खुला ट्याबहरू, ट्याब स्ट्रिप टगल गर्न थिच्नुहोस्}}</translation>
 <translation id="7465635034594602553">कुनै समस्या आयो। कृपया केही बेर प्रतीक्षा गरी <ph name="APP_NAME" /> फेरि चलाउनुहोस्।</translation>
 <translation id="7465777686629334728">व्यवस्थापन गरिएको डेभलपमेन्ट इन्भाइरोन्मेन्ट (<ph name="SPECIFIC_NAME" />) हटाउनुहोस्</translation>

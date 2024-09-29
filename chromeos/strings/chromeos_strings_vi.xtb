@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2161656808144014275">Văn bản</translation>
 <translation id="2163937499206714165">Bật chế độ tối</translation>
+<translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
 <translation id="2189104374785738357">Chỉnh sửa chi tiết về APN</translation>
 <translation id="2195732836444333448">Hệ thống hiện đang hoạt động hết công suất. Vui lòng quay lại sau giây lát.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2468124392950503650">Chọn câu lệnh để sáng tạo hoặc xem <ph name="BEGIN_LINK_PROMPTING_GUIDE" />hướng dẫn viết câu lệnh<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
+<translation id="2475982808118771221">Đã xảy ra lôi</translation>
 <translation id="2480572840229215612">cua</translation>
 <translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
 <translation id="2486301288428798846">gỗ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Chứng chỉ người dùng</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Không thể kết nối Internet</translation>
 <translation id="6156030503438652198">nâu sẫm và hồng</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Thiết bị <ph name="INDEX" />/<ph name="COUNT" /> tên là <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Chọn hình minh hoạ dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">nhập</translation>
+<translation id="7117228822971127758">Vui lòng thử lại sau</translation>
 <translation id="7118522231018231199">Hãy nhớ chọn APN do nhà cung cấp mạng di động hoặc quản trị viên của bạn cung cấp. Nếu bạn chọn một APN thì mọi APN tuỳ chỉnh sẽ bị tắt. APN không hợp lệ có thể làm gián đoạn kết nối di động.</translation>
 <translation id="7119389851461848805">nguồn</translation>
 <translation id="7129287270910503851">Mức sử dụng dữ liệu của bạn sẽ được đặt lại vào ngày này mỗi tháng</translation>

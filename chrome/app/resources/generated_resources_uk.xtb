@@ -545,7 +545,6 @@
 <translation id="1392047138650695757">Словники користувача</translation>
 <translation id="139300021892314943">Обмежити коло користувачів, які можуть входити в систему</translation>
 <translation id="1393283411312835250">Сонце та хмари</translation>
-<translation id="1395730723686586365">Засіб оновлення запущено</translation>
 <translation id="1395832189806039783">Виділяти елемент, вибраний за допомогою клавіатури</translation>
 <translation id="1396120028054416908">Назад до папки "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не вдалося налаштувати принтер</translation>
@@ -1364,7 +1363,6 @@
 <translation id="1942128823046546853">Читати та змінювати всі ваші дані на всіх веб-сайтах</translation>
 <translation id="1944528062465413897">Код підключення через Bluetooth:</translation>
 <translation id="1944535645109964458">Ключів доступу не знайдено</translation>
-<translation id="1944921356641260203">Знайдено оновлення</translation>
 <translation id="1947136734041527201">Дає змогу входити на веб-сайти, використовуючи обліковий запис сервісу ідентифікації</translation>
 <translation id="1948528728718281125">Доступ до камери мають додатки, вебсайти з відповідним дозволом і системні сервіси</translation>
 <translation id="1949332606889020901">Ідентифікатори збоїв</translation>
@@ -2241,7 +2239,6 @@
 <translation id="2546991196809436099">Щоб збільшити елементи на екрані, наблизьте область. Щоб увімкнути або вимкнути лупу, натисніть клавішу пошуку + Ctrl + M.</translation>
 <translation id="2548347166720081527">Дозволено: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Скинути кеш профілю eSIM-карти</translation>
-<translation id="2549766998450508148">Натисніть одну із чотирьох клавіш-модифікаторів (Ctrl, Alt, Shift або клавішу пошуку) і ще 1 клавішу. Також можна вибрати одну клавішу.</translation>
 <translation id="2549985041256363841">Почати запис</translation>
 <translation id="2550212893339833758">Змінна пам’ять</translation>
 <translation id="2550596535588364872">Дозволити розширенню <ph name="EXTENSION_NAME" /> відкрити файл <ph name="FILE_NAME" />?</translation>
@@ -2438,7 +2435,6 @@
 <translation id="2705736684557713153">Прокрутіть сторінку вниз і ввімкніть миттєву точку доступу (якщо ця опція відображається). Якщо ні, усе готово.</translation>
 <translation id="2706304388244371417">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Ця резервна копія містить дані додатків. Резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google вашої дитини. <ph name="BEGIN_LINK1" />Докладніше про резервне копіювання<ph name="BEGIN_LINK1_END" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Вгору</translation>
-<translation id="2707024448553392710">Завантаження компонента</translation>
 <translation id="270921614578699633">Середнє значення за</translation>
 <translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
@@ -2563,7 +2559,6 @@
 <translation id="2779728796406650689">Так Google Асистент зможе надавати персоналізовані відповіді, коли ви ставитимете запитання.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
-<translation id="2783298271312924866">Завантажено</translation>
 <translation id="2783952358106015700">Використовуйте ключ безпеки з додатком <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Перевірка паролів</translation>
 <translation id="2785279781154577715">Вигляд картки попереднього перегляду вкладки</translation>
@@ -2890,7 +2885,6 @@
 <translation id="301525898020410885">Мову вибирає ваша організація</translation>
 <translation id="3015639418649705390">Перезапустити зараз</translation>
 <translation id="3016381065346027039">Немає записів журналу</translation>
-<translation id="3016641847947582299">Компонент оновлено</translation>
 <translation id="3019023222666709803">Інструмент "Стрілка"</translation>
 <translation id="3019285239893817657">Кнопка підсторінки</translation>
 <translation id="3019595674945299805">Сервіс VPN</translation>
@@ -2969,6 +2963,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Зберегти лише на цьому пристрої</translation>
 <translation id="3076977359333237641">Дані для входу видалено</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Цю мережу не синхронізовано з вашим обліковим записом. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">розширення</translation>
@@ -7204,7 +7199,6 @@
 <translation id="6208521041562685716">Мобільне передавання даних активується</translation>
 <translation id="6208725777148613371">Не вдалося зберегти в сервісі <ph name="WEB_DRIVE" />. <ph name="INTERRUPT_REASON" />.</translation>
 <translation id="6209767197996242814">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Оновлення компонента</translation>
 <translation id="6209908325007204267">На цьому пристрої є ліцензія Chrome Enterprise Upgrade, але ваше ім'я користувача не зв'язане з жодним корпоративним обліковим записом. Створіть його, перейшовши на додатковому пристрої на сторінку g.co/ChromeEnterpriseAccount.</translation>
 <translation id="6210282067670792090">Використайте в адресному рядку цю комбінацію клавіш і команду для пошукових систем та пошуку на сайтах</translation>
 <translation id="6211067089253408231">Увімкнути миттєву точку доступу</translation>
@@ -7268,7 +7262,6 @@
 <translation id="6247620186971210352">Немає додатків</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Оновлення завершено</translation>
 <translation id="6248988683584659830">Пошук налаштувань</translation>
 <translation id="6249200942125593849">Керувати спеціальними можливостями</translation>
 <translation id="6250186368828697007">Доки ви показуєте свій екран, деталі приховуються</translation>
@@ -8100,7 +8093,6 @@
 <translation id="6852290167968069627">ChromeOS не може відновити попередній сеанс через проблему з мережею. Підключіться до стабільної мережі й повторіть спробу.</translation>
 <translation id="6852529053326738838">Щоб дізнатися, чи відповідає ваш обліковий запис вимогам, зверніться до своєї організації або зареєструйтеся за допомогою робочої електронної адреси.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> (джерело встановлення – <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />)</translation>
-<translation id="6853388645642883916">Оновлення в режимі сну</translation>
 <translation id="68541483639528434">Закрити інші вкладки</translation>
 <translation id="6855892664589459354">Резервне копіювання й відновлення Crostini</translation>
 <translation id="6856348640027512653">Заборонено використовувати пристрої або дані віртуальної реальності</translation>
@@ -8910,7 +8902,6 @@
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746216226901520237">Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Компонент уже оновлено</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# відкрита вкладка. Натисніть, щоб перемкнути панель вкладок.}one{# відкрита вкладка. Натисніть, щоб перемкнути панель вкладок.}few{# відкриті вкладки. Натисніть, щоб перемкнути панель вкладок.}many{# відкритих вкладок. Натисніть, щоб перемкнути панель вкладок.}other{# відкритої вкладки. Натисніть, щоб перемкнути панель вкладок.}}</translation>
 <translation id="7465635034594602553">Сталася помилка. Зачекайте кілька хвилин і запустіть додаток <ph name="APP_NAME" /> ще раз.</translation>
 <translation id="7465777686629334728">Вилучити кероване середовище для розробки (<ph name="SPECIFIC_NAME" />)</translation>

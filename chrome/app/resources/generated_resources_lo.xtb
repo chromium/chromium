@@ -544,7 +544,6 @@
 <translation id="1392047138650695757">ວັດຈະນານຸກົມຜູ້ໃຊ້</translation>
 <translation id="139300021892314943">ຈຳກັດຜູ້ທີ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="1393283411312835250">ແສງແດດ ແລະ ເມກເຝື້ອ</translation>
-<translation id="1395730723686586365">ຕົວອັບເດດເລີ່ມຕົ້ນແລ້ວ</translation>
 <translation id="1395832189806039783">ໄຮໄລ້ລາຍການດ້ວຍໂຟກັສແປ້ນພິມ</translation>
 <translation id="1396120028054416908">ກັບໄປທີ່ <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">ຜິດພາດໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
@@ -1360,7 +1359,6 @@
 <translation id="1942128823046546853">ອ່ານ ແລະ ປ່ຽນຂໍ້ມູນທັງໝົດຂອງທ່ານຢູ່ທຸກເວັບໄຊ</translation>
 <translation id="1944528062465413897">ລະຫັດການຈັບຄູ່ Bluetooth</translation>
 <translation id="1944535645109964458">ກະແຈຜ່ານໃຊ້ບໍ່ໄດ້</translation>
-<translation id="1944921356641260203">ພົບການອັບເດດແລ້ວ</translation>
 <translation id="1947136734041527201">ເຮັດໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາເວັບໄຊຕ່າງໆໂດຍໃຊ້ບັນຊີທີ່ທ່ານມີກັບບໍລິການຕົວຕົນໄດ້</translation>
 <translation id="1948528728718281125">ອະນຸຍາດໃຫ້ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບສຳລັບແອັບ, ເວັບໄຊທີ່ມີການອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ບໍລິການລະບົບ</translation>
 <translation id="1949332606889020901">ID ຫລົ້ມ</translation>
@@ -2239,7 +2237,6 @@
 <translation id="2546991196809436099">ຊູມເຂົ້າເພື່ອເຮັດໃຫ້ລາຍການຕ່າງໆຢູ່ໜ້າຈໍໃຫຍ່ຂຶ້ນ. ໃຊ້ຊອກຫາ + Ctrl + M ເພື່ອເປີດ ແລະ ປິດແວ່ນຂະຫຍາຍ.</translation>
 <translation id="2548347166720081527">ອະນຸຍາດ <ph name="PERMISSION" /> ແລ້ວ</translation>
 <translation id="2548545707296594436">ຣີເຊັດແຄສໂປຣໄຟລ໌ eSIM</translation>
-<translation id="2549766998450508148">ກົດປຸ່ມຕົວດັດແປງ 1-4 ປຸ່ມ (Ctrl, Alt, Shift ຫຼື ຊອກຫາ) ແລະ ອີກ 1 ປຸ່ມ. ຫຼື ທ່ານຈະເລືອກປຸ່ມດຽວກໍໄດ້ເຊັ່ນກັນ.</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
 <translation id="2550212893339833758">ສັບປ່ຽນຄວາມຈຳແລ້ວ</translation>
 <translation id="2550596535588364872">ອະນຸຍາດໃຫ້ <ph name="EXTENSION_NAME" /> ເປີດ <ph name="FILE_NAME" /> ບໍ?</translation>
@@ -2436,7 +2433,6 @@
 <translation id="2705736684557713153">ເລື່ອນລົງສ່ວນລຸ່ມຂອງໜ້າຈໍ ແລະ ເປີດການປ່ອຍສັນຍານທັນທີ ຖ້າມັນປາກົດ. ຖ້າມັນບໍ່ປາກົດ ທ່ານຕັ້ງຄ່າຮຽບຮ້ອຍແລ້ວ.</translation>
 <translation id="2706304388244371417">ສຳຮອງຂໍ້ມູນໄປໃສ່ Google Drive. ກູ້ຄືນຂໍ້ມູນ ຫຼື ປ່ຽນອຸປະກອນໄດ້ຢ່າງງ່າຍດາຍທຸກເວລາ. ຂໍ້ມູນສຳຮອງນີ້ຈະຮວມທັງຂໍ້ມູນແອັບ. ລະບົບຈະອັບໂຫຼດຂໍ້ມູນສຳຮອງໄປໃສ່ Google ແລະ ເຂົ້າລະຫັດໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງລູກຂອງທ່ານ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການສຳຮອງຂໍ້ມູນ<ph name="BEGIN_LINK1_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ຂຶ້ນ</translation>
-<translation id="2707024448553392710">ການດາວ​ໂຫລດ​ອົງ​ປະ​ກອບ</translation>
 <translation id="270921614578699633">ສະເລ່ຍເກີນ</translation>
 <translation id="2709516037105925701">ຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="2710101514844343743">ຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິນິໄສ</translation>
@@ -2561,7 +2557,6 @@
 <translation id="2779728796406650689">ວິທີນີ້ຊ່ວຍໃຫ້ຜູ້ຊ່ວຍ Google ສະແດງຄຳຕອບທີ່ປັບແຕ່ງໃຫ້ເໝາະກັບທ່ານໄດ້ເມື່ອທ່ານຖາມຄຳຖາມ.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">ເກີດຜິດພາດໃນການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux</translation>
-<translation id="2783298271312924866">ດາວ​ໂຫລດແລ້ວ</translation>
 <translation id="2783952358106015700">ໃຊ້ກະແຈຄວາມປອດໄພຂອງທ່ານກັບ <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">ການກວດສອບລະຫັດຜ່ານ</translation>
 <translation id="2785279781154577715">ລັກສະນະຂອງບັດຕົວຢ່າງເມື່ອວາງເມົ້າເທິງແຖບ</translation>
@@ -2888,7 +2883,6 @@
 <translation id="301525898020410885">ອົງການຂອງທ່ານຕັ້ງພາສາໄວ້ແລ້ວ</translation>
 <translation id="3015639418649705390">ເລີ່ມເປີດໃຊ້ໃໝ່ຕອນນີ້ເລີຍ</translation>
 <translation id="3016381065346027039">ບໍ່ມີລາຍການບັນທຶກ</translation>
-<translation id="3016641847947582299">ອັບເດດອົງ​ປະ​ກອບ​ແລ້ວ</translation>
 <translation id="3019023222666709803">ເຄື່ອງມືລູກສອນ</translation>
 <translation id="3019285239893817657">ປຸ່ມໜ້າຍ່ອຍ</translation>
 <translation id="3019595674945299805">ບໍລິການ VPN</translation>
@@ -2968,6 +2962,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
 <translation id="3076977359333237641">ລຶບຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານແລ້ວ</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">ເຄືອຂ່າຍນີ້ບໍ່ໄດ້ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">ສ່ວນຂະຫຍາຍ</translation>
@@ -7207,7 +7202,6 @@
 <translation id="6208521041562685716">ກຳລັງເປີດນຳໃຊ້ອິນເຕີເນັດມືຖື</translation>
 <translation id="6208725777148613371">ບັນທຶກໄປໃສ່ <ph name="WEB_DRIVE" /> ບໍ່ສຳເລັດ - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">ກຳລັງອັບເດດອົງປະກອບ</translation>
 <translation id="6209908325007204267">ອຸປະກອນຂອງທ່ານຮວມມີການອັບເກຣດ Chrome Enterprise, ແຕ່ຊື່ຜູ້ໃຊ້ຂອງທ່ານບໍ່ເຊື່ອມໂຍງກັບບັນຊີວິສາຫະກິດ. ກະລຸນາສ້າງບັນຊີວິສາຫະກິດໂດຍການເຂົ້າຫາ g.co/ChromeEnterpriseAccount ໃນອຸປະກອນສຳຮອງ.</translation>
 <translation id="6210282067670792090">ໃນແຖບທີ່ຢູ່, ໃຫ້ໃຊ້ຄີລັດກັບທາງລັດຕ່າງໆສຳລັບໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊ</translation>
 <translation id="6211067089253408231">ເປີດຮັອດສະປອດພ້ອມໃຊ້</translation>
@@ -7271,7 +7265,6 @@
 <translation id="6247620186971210352">ບໍ່ພົບແອັບໃດໆ</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">ລະບົບ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">ອັບເດດພ້ອມແລ້ວ</translation>
 <translation id="6248988683584659830">ການຕັ້ງຄ່າຄົ້ນຫາ</translation>
 <translation id="6249200942125593849">ຈັດການ a11y</translation>
 <translation id="6250186368828697007">ເຊື່ອງລາຍລະອຽດໃນຂະນະທີ່ທ່ານແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
@@ -8097,7 +8090,6 @@
 <translation id="6852290167968069627">ChromeOS ບໍ່ສາມາດດຳເນີນການເຊດຊັນກ່ອນໜ້ານີ້ຂອງທ່ານຕໍ່ໄດ້ເນື່ອງຈາກບັນຫາກ່ຽວກັບເຄືອຂ່າຍ. ກະລຸນາເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ສະຖຽນແລ້ວລອງໃໝ່.</translation>
 <translation id="6852529053326738838">ຖາມອົງການຂອງທ່ານ ຫຼື ລົງທະບຽນດ້ວຍອີເມວວຽກເພື່ອກວດສອບວ່າບັນຊີຂອງທ່ານມີສິດຫຼືບໍ່.</translation>
 <translation id="6853029310037965825">ຕິດຕັ້ງ <ph name="APP_TYPE" /> ຈາກ <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> ແລ້ວ</translation>
-<translation id="6853388645642883916">ຕົວອັບເດດກໍາລັງຫຼັບຢູ່</translation>
 <translation id="68541483639528434">ປິດແຖບອື່ນ</translation>
 <translation id="6855892664589459354">ການສຳຮອງ ແລະ ກູ້ຂໍ້ມູນໃນ Crostini</translation>
 <translation id="6856348640027512653">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ຫຼື ຂໍ້ມູນ</translation>
@@ -8907,7 +8899,6 @@
 <translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="746216226901520237">ຄັ້ງຕໍ່ໄປ, ໂທລະສັບຂອງທ່ານຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">ອົງປະກອບມີການອັບເດດແລ້ວ</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{ມີແຖບເປີດຢູ່ # ແຖບ, ກະລຸນາກົດເພື່ອສະຫຼັບແນວແຖບ}other{ມີແຖບເປີດຢູ່ # ແຖບ, ກະລຸນາກົດເພື່ອສະຫຼັບແນວແຖບ}}</translation>
 <translation id="7465635034594602553">ມີບາງຢ່າງຜິດພາດ. ກະລຸນາລໍຖ້າສອງສາມນາທີ ແລ້ວເປີດໃຊ້ <ph name="APP_NAME" /> ອີກຄັ້ງ.</translation>
 <translation id="7465777686629334728">ລຶບສະພາບແວດລ້ອມການພັດທະນາທີ່ມີການຈັດການ (<ph name="SPECIFIC_NAME" />)</translation>

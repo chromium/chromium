@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">ഉപയോക്തൃ നിഘണ്ടുക്കൾ</translation>
 <translation id="139300021892314943">ആർക്കൊക്കെ സൈൻ ഇൻ ചെയ്യാമെന്നത് പരിമിതപ്പെടുത്തുക</translation>
 <translation id="1393283411312835250">സൂര്യനും മേഘങ്ങളും</translation>
-<translation id="1395730723686586365">അപ്‌ഡേറ്റർ ആരംഭിച്ചു</translation>
 <translation id="1395832189806039783">കീബോഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> എന്ന ഫോൾഡറിലേക്ക് മടങ്ങുക</translation>
 <translation id="1396139853388185343">പ്രിന്റർ സജ്ജീകരിക്കുന്നതിൽ പിശക്</translation>
@@ -1348,7 +1347,6 @@
 <translation id="1942128823046546853">എല്ലാ വെബ്സൈറ്റുകളിലെയും നിങ്ങളുടെ എല്ലാ ഡാറ്റയും വായിക്കുക, മാറ്റുക</translation>
 <translation id="1944528062465413897">Bluetooth ജോടിയാക്കൽ കോഡ്:</translation>
 <translation id="1944535645109964458">പാസ്‌കീകൾ ലഭ്യമല്ല</translation>
-<translation id="1944921356641260203">അപ്‌ഡേറ്റ് കണ്ടെത്തി</translation>
 <translation id="1947136734041527201">സമാനമായ സേവനത്തിൽ നിങ്ങൾക്കുള്ള അക്കൗണ്ട് ഉപയോഗിച്ച് വെബ്സൈറ്റുകളിൽ സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുന്നു</translation>
 <translation id="1948528728718281125">ക്യാമറാ അനുമതിയുള്ള ആപ്പുകൾ, വെബ്സൈറ്റുകൾ എന്നിവയ്ക്കും സിസ്റ്റം സേവനങ്ങൾക്കും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുണ്ട്</translation>
 <translation id="1949332606889020901">ക്രാഷ് ഐഡികൾ</translation>
@@ -2222,7 +2220,6 @@
 <translation id="2546991196809436099">സ്ക്രീനിലെ ഇനങ്ങൾ വലുതാക്കാൻ സൂം ഇൻ ചെയ്യുക. മാഗ്നിഫയർ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + M ഉപയോഗിക്കുക.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="2548545707296594436">eSIM പ്രൊഫൈൽ കാഷെ റീസെറ്റ് ചെയ്യുക</translation>
-<translation id="2549766998450508148">1-4 മോഡിഫയർ കീകളും (ctrl, alt, shift അല്ലെങ്കിൽ തിരയൽ) മറ്റൊരു കീയും അമർത്തുക. നിങ്ങൾക്ക് ഒറ്റ കീ തിരഞ്ഞെടുക്കാനും കഴിയും.</translation>
 <translation id="2549985041256363841">റെക്കോർഡിംഗ് ആരംഭിക്കൂ</translation>
 <translation id="2550212893339833758">സ്വാപ്പുചെയ്‌ത മെമ്മറി</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> തുറക്കാൻ <ph name="EXTENSION_NAME" />-നെ അനുവദിക്കണോ?</translation>
@@ -2419,7 +2416,6 @@
 <translation id="2705736684557713153">സ്‌ക്രീനിന്റെ താഴേക്ക് സ്‍ക്രോള്‍ ചെയ്യുകയും, തൽക്ഷണ ടെതറിംഗ് ദൃശ്യമാകുന്നെങ്കിൽ അത് ഓണാക്കുകയും ചെയ്യുക. അത് ദൃശ്യമാകുന്നില്ലെങ്കിൽ, നിങ്ങൾ സജ്ജമായി.</translation>
 <translation id="2706304388244371417">Google Drive-ലേക്ക് ബാക്കപ്പ് ചെയ്യുക. എളുപ്പത്തിൽ ഡാറ്റ പുനഃസ്ഥാപിക്കുകയോ ഏതുസമയത്തും ഉപകരണം മാറുകയോ ചെയ്യുക. ഈ ബാക്കപ്പിൽ ആപ്പ് ഡാറ്റയും ഉൾപ്പെടുന്നു. ബാക്കപ്പുകൾ Google-ലേക്ക് അപ്‌ലോഡ് ചെയ്‌ത്, നിങ്ങളുടെ കുട്ടിയുടെ Google Account പാസ്‌വേഡ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യും. <ph name="BEGIN_LINK1" />ബാക്കപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="BEGIN_LINK1_END" />കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">മുകളിലേക്കുള്ള കീ</translation>
-<translation id="2707024448553392710">ഘടക ഭാഗം ഡൗൺലോഡുചെയ്യുന്നു</translation>
 <translation id="270921614578699633">ശരാശരിയ്ക്കും മുകളിൽ</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="2710101514844343743">ഉപയോഗവും പ്രശ്‌നനിർണ്ണയവുമായും ബന്ധപ്പെട്ട ഡാറ്റ</translation>
@@ -2544,7 +2540,6 @@
 <translation id="2779728796406650689">നിങ്ങൾ ചോദ്യങ്ങൾ ചോദിക്കുമ്പോൾ ഉചിതമായ പ്രതികരണങ്ങൾ നൽകാൻ ഇത് Google Assistant-നെ അനുവദിക്കുന്നു.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിഴവ്</translation>
-<translation id="2783298271312924866">ഡൗൺലോഡുചെയ്‌തു</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />-നോടൊപ്പം നിങ്ങളുടെ സുരക്ഷാ കീ ഉപയോഗിക്കുക</translation>
 <translation id="2785267875302712148">പാസ്‌വേഡ് പരിശോധന</translation>
 <translation id="2785279781154577715">ടാബ് ഹോവർ പ്രിവ്യൂ കാർഡ് ദൃശ്യമാകുന്ന രീതി</translation>
@@ -2871,7 +2866,6 @@
 <translation id="301525898020410885">നിങ്ങളുടെ സ്ഥാപനം ഭാഷ സജ്ജീകരിച്ചിരിക്കുന്നു</translation>
 <translation id="3015639418649705390">ഇപ്പോള്‍ വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="3016381065346027039">ലോഗ് എൻട്രികളൊന്നുമില്ല</translation>
-<translation id="3016641847947582299">ഘടകഭാഗം അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="3019023222666709803">അമ്പടയാള ടൂൾ</translation>
 <translation id="3019285239893817657">ഉപപേജ് ബട്ടൺ</translation>
 <translation id="3019595674945299805">VPN സേവനം</translation>
@@ -2951,6 +2945,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ഈ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിക്കുക</translation>
 <translation id="3076977359333237641">നിങ്ങളുടെ സൈൻ ഇൻ ഡാറ്റ ഇല്ലാതാക്കി</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">ഈ നെറ്റ്‌വർക്ക് നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് സമന്വയിപ്പിച്ചിട്ടില്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">വിപുലീകരണങ്ങൾ</translation>
@@ -7191,7 +7186,6 @@
 <translation id="6208521041562685716">മൊബൈൽ ഡാറ്റ സജീവമാക്കുന്നു</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> എന്നതിലേക്ക് സംരക്ഷിക്കാനായില്ല - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">കമ്പോണന്റ് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="6209908325007204267">നിങ്ങളുടെ ഉപകരണത്തിൽ Chrome എന്റർപ്രൈസ് അപ്‌ഗ്രേഡ് ഉൾപ്പെടുന്നു, എന്നാൽ നിങ്ങളുടെ ഉപയോക്തൃനാമം ഒരു എന്റർപ്രൈസ് അക്കൗണ്ടുമായി ബന്ധപ്പെട്ടതല്ല. മറ്റൊരു ഉപകരണത്തിൽ g.co/ChromeEnterpriseAccount സന്ദർശിച്ച് എന്റർപ്രൈസ് അക്കൗണ്ട് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="6210282067670792090">വിലാസ ബാറിൽ, തിരയൽ യന്ത്രങ്ങൾക്കും സൈറ്റ് തിരയലിനുമുള്ള കുറുക്കുവഴികൾക്കൊപ്പം ഈ കീബോർഡ് കുറുക്കുവഴികൾ ഉപയോഗിക്കുക</translation>
 <translation id="6211067089253408231">ഇൻസ്റ്റന്റ് ഹോട്ട്‌സ്പോട്ട് ഓണാക്കുക</translation>
@@ -7255,7 +7249,6 @@
 <translation id="6247620186971210352">ആപ്പുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">സിസ്‌റ്റം: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">അപ്‌ഡേറ്റ് തയ്യാറാണ്</translation>
 <translation id="6248988683584659830">തിരയൽ സജ്ജീകരണങ്ങള്‍</translation>
 <translation id="6249200942125593849">a11y മാനേജ് ചെയ്യുക</translation>
 <translation id="6250186368828697007">നിങ്ങൾ സ്ക്രീൻ പങ്കിടുമ്പോൾ വിശദാംശങ്ങൾ മറയ്ക്കുന്നു</translation>
@@ -8081,7 +8074,6 @@
 <translation id="6852290167968069627">നെറ്റ്‌വർക്കിലെ പ്രശ്‌നം കാരണം ChromeOS-ന് നിങ്ങളുടെ മുമ്പത്തെ സെഷൻ പുനരാരംഭിക്കാനാകുന്നില്ല. സ്ഥിരതയുള്ള നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6852529053326738838">നിങ്ങളുടെ അക്കൗണ്ടിന് യോഗ്യതയുണ്ടോയെന്ന് പരിശോധിക്കാൻ സ്ഥാപനത്തോട് ചോദിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ഔദ്യോഗിക ഇമെയിൽ ഉപയോഗിച്ച് എൻറോൾ ചെയ്യുക.</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> എന്നതിൽ നിന്ന് <ph name="APP_TYPE" /> ഇൻസ്റ്റാൾ ചെയ്തു</translation>
-<translation id="6853388645642883916">അപ്‌ഡേറ്റർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="68541483639528434">മറ്റ് ടാബുകള്‍ അടയ്ക്കുക</translation>
 <translation id="6855892664589459354">Crostini ബാക്കപ്പെടുത്ത് പുനഃസ്ഥാപിക്കൽ</translation>
 <translation id="6856348640027512653">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളോ ഡാറ്റയോ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
@@ -8891,7 +8883,6 @@
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746216226901520237">അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. Smart Lock ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">കമ്പോണന്റ് നിലവിൽ അപ് ടു ഡേറ്റാണ്</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ടാബ് തുറന്നിരിക്കുന്നു, തുറന്ന് വച്ചിട്ടുള്ള ടാബ് അടയ്ക്കാൻ അമർത്തുക}other{# ടാബുകൾ തുറന്നിരിക്കുന്നു, തുറന്ന് വച്ചിട്ടുള്ള ടാബ് അടയ്ക്കാൻ അമർത്തുക}}</translation>
 <translation id="7465635034594602553">എന്തോ കുഴപ്പമുണ്ടായി. അൽപ്പസമയം കാത്തിരുന്ന ശേഷം, <ph name="APP_NAME" /> വീണ്ടും റൺ ചെയ്യുക.</translation>
 <translation id="7465777686629334728">മാനേജ് ചെയ്യുന്ന ഡെവലപ്പ്‌മെന്റ് പരിതസ്ഥിതി (<ph name="SPECIFIC_NAME" />) നീക്കം ചെയ്യുക</translation>

@@ -544,7 +544,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1392047138650695757">Dizionari utente</translation>
 <translation id="139300021892314943">Limita gli utenti che possono accedere</translation>
 <translation id="1393283411312835250">Sole e nuvole</translation>
-<translation id="1395730723686586365">Programma di aggiornamento avviato</translation>
 <translation id="1395832189806039783">Evidenzia l'elemento con stato attivo della tastiera</translation>
 <translation id="1396120028054416908">Torna alla cartella <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Errore durante la configurazione della stampante</translation>
@@ -1353,7 +1352,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1942128823046546853">Leggere e modificare tutti i tuoi dati su tutti i siti web</translation>
 <translation id="1944528062465413897">Codice di accoppiamento Bluetooth:</translation>
 <translation id="1944535645109964458">Nessuna passkey disponibile</translation>
-<translation id="1944921356641260203">Aggiornamento trovato</translation>
 <translation id="1947136734041527201">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
 <translation id="1948528728718281125">L'accesso alla fotocamera è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema</translation>
 <translation id="1949332606889020901">ID arresti anomali</translation>
@@ -2227,7 +2225,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2546991196809436099">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento.</translation>
 <translation id="2548347166720081527">Autorizzazione <ph name="PERMISSION" /> consentita</translation>
 <translation id="2548545707296594436">Reimposta la cache del profilo eSIM</translation>
-<translation id="2549766998450508148">Premi da 1 a 4 tasti di modifica (Ctrl, Alt, Maiusc o Ricerca) e 1 altro tasto. Puoi anche selezionare un singolo tasto.</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="2550212893339833758">Memoria sostituita</translation>
 <translation id="2550596535588364872">Vuoi consentire a <ph name="EXTENSION_NAME" /> di aprire <ph name="FILE_NAME" />?</translation>
@@ -2424,7 +2421,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2705736684557713153">Scorri fino alla parte inferiore dello schermo e attiva la funzione Tethering istantaneo, se presente. In caso contrario non devi fare nulla.</translation>
 <translation id="2706304388244371417">Esegui il backup su Google Drive. Ripristina i dati o cambia dispositivo in qualsiasi momento e in tutta facilità. Questo backup include i dati delle app. I backup vengono caricati su Google e criptati mediante la password del tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sul backup<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Su</translation>
-<translation id="2707024448553392710">Download del componente in corso...</translation>
 <translation id="270921614578699633">Media superiore a</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="2710101514844343743">Dati diagnostici e sull'utilizzo</translation>
@@ -2549,7 +2545,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2779728796406650689">In questo modo l'Assistente Google potrà fornire risposte personalizzate alle tue domande.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
-<translation id="2783298271312924866">Scaricato</translation>
 <translation id="2783952358106015700">Utilizza il token di sicurezza con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Controllo password</translation>
 <translation id="2785279781154577715">Aspetto della scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
@@ -2876,7 +2871,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="301525898020410885">La lingua viene impostata dall'organizzazione</translation>
 <translation id="3015639418649705390">Riavvia ora</translation>
 <translation id="3016381065346027039">Non ci sono voci di log</translation>
-<translation id="3016641847947582299">Componente aggiornato</translation>
 <translation id="3019023222666709803">Strumento Freccia</translation>
 <translation id="3019285239893817657">Pulsante pagina secondaria</translation>
 <translation id="3019595674945299805">Servizio VPN</translation>
@@ -2956,6 +2950,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Salva solo su questo dispositivo</translation>
 <translation id="3076977359333237641">I dati di accesso sono stati eliminati</translation>
+<translation id="3077734595579995578">maiusc</translation>
 <translation id="3080933187214341848">Questa rete non è sincronizzata con il tuo account. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">estensioni</translation>
@@ -7192,7 +7187,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6208521041562685716">Attivazione dei dati mobili in corso</translation>
 <translation id="6208725777148613371">Impossibile salvare su <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Aggiornamento del componente</translation>
 <translation id="6209908325007204267">Il tuo dispositivo include una licenza Chrome Enterprise Upgrade, ma il tuo nome utente non è associato a un account aziendale. Crea un account aziendale dal sito g.co/ChromeEnterpriseAccount su un dispositivo secondario.</translation>
 <translation id="6210282067670792090">Nella barra degli indirizzi, utilizza questa scorciatoia da tastiera con le scorciatoie per motori di ricerca e ricerca su sito</translation>
 <translation id="6211067089253408231">Attiva hotspot istantaneo</translation>
@@ -7256,7 +7250,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6247620186971210352">Nessuna app trovata</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Aggiornamento pronto</translation>
 <translation id="6248988683584659830">Cerca nelle impostazioni</translation>
 <translation id="6249200942125593849">Gestire impostazioni di accessibilità</translation>
 <translation id="6250186368828697007">I dettagli sono nascosti durante la condivisione dello schermo</translation>
@@ -8082,7 +8075,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6852290167968069627">ChromeOS non può riprendere la sessione precedente a causa di un problema di rete. Connettiti a una rete stabile e riprova.</translation>
 <translation id="6852529053326738838">Chiedi alla tua organizzazione di registrarsi oppure fallo tu con la tua email di lavoro per verificare se il tuo account è idoneo.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> installata da <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Programma di aggiornamento in sospensione</translation>
 <translation id="68541483639528434">Chiudi le altre schede</translation>
 <translation id="6855892664589459354">Backup e ripristino Crostini</translation>
 <translation id="6856348640027512653">Non autorizzati a usare i dati o dispositivi per realtà virtuale</translation>
@@ -8894,7 +8886,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746216226901520237">La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Componente già aggiornato</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# scheda aperta; premi per attivare/disattivare la tabstrip}other{# schede aperte; premi per attivare/disattivare la tabstrip}}</translation>
 <translation id="7465635034594602553">Si è verificato un problema. Attendi qualche minuto ed esegui di nuovo <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Rimuovi ambiente di sviluppo gestito (<ph name="SPECIFIC_NAME" />)</translation>

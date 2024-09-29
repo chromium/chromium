@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
+<translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2189104374785738357">APN-Details bearbeiten</translation>
 <translation id="2195732836444333448">Das Tool ist derzeit ausgelastet. Versuche es später noch einmal.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Art</translation>
 <translation id="2468124392950503650">Prompt zum Erstellen auswählen oder <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung für Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> aufrufen</translation>
 <translation id="2472215337771558851">Mit der Funktion „Formuliere für mich“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
+<translation id="2475982808118771221">Ein Fehler ist aufgetreten.</translation>
 <translation id="2480572840229215612">Krebse</translation>
 <translation id="248546197012830854">Das Gerät ist offline. Stelle eine WLAN-Verbindung her, um Hilfeinhalte zu sehen.</translation>
 <translation id="2486301288428798846">Holz</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Gib zum Schluss dein neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Internetverbindung kann nicht hergestellt werden</translation>
 <translation id="6156030503438652198">Kastanienbraun und Rosa</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
 <translation id="7107255225945990211">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
 <translation id="7108668606237948702">Eingabe</translation>
+<translation id="7117228822971127758">Bitte versuche es später noch einmal</translation>
 <translation id="7118522231018231199">Lege nur APNs fest, die von deinem Mobilfunkanbieter oder Administrator bereitgestellt wurden. Wenn du einen APN festlegst, werden alle benutzerdefinierten APNs deaktiviert. Ungültige APNs können dazu führen, dass deine Mobilfunkverbindung unterbrochen wird.</translation>
 <translation id="7119389851461848805">Ein/Aus</translation>
 <translation id="7129287270910503851">Deine Datennutzung wird jeden Monat an diesem Tag zurückgesetzt</translation>

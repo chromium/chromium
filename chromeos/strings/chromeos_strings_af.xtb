@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Skakel donkermodus aan</translation>
+<translation id="2173302385160625112">Gaan jou internetverbinding na</translation>
 <translation id="2180197493692062006">Iets was fout. Probeer om die program weer oop te maak.</translation>
 <translation id="2189104374785738357">Wysig APN-besonderhede</translation>
 <translation id="2195732836444333448">Ons het nie op die oomblik kapasiteit nie. Kom gou terug.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2468124392950503650">Kies porboodskap om te skep of sien die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google AI</translation>
+<translation id="2475982808118771221">'n Fout het voorgekom</translation>
 <translation id="2480572840229215612">krappe</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
 <translation id="2486301288428798846">hout</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Gebruikersertifikaat</translation>
 <translation id="6146993107019042706">Voer jou nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Kan nie aan die internet koppel nie</translation>
 <translation id="6156030503438652198">maroen en pienk</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Toestel <ph name="INDEX" /> van <ph name="COUNT" /> genaamd <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Kies <ph name="PRODUCT_NAME" />-eksklusiewe kunswerk</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Probeer later weer</translation>
 <translation id="7118522231018231199">Maak seker dat jy APN’s kies wat deur jou mobielediensverskaffer of administrateur verskaf word. As jy ’n APN kies sal dit enige gepasmaakte APN's deaktiveer. Ongeldige APN's kan jou mobiele verbinding ontwrig.</translation>
 <translation id="7119389851461848805">krag</translation>
 <translation id="7129287270910503851">Jou datagebruik sal elke maand op hierdie dag teruggestel word</translation>

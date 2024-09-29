@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2161656808144014275">मजकूर</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
+<translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2189104374785738357">APN शी संबंधित तपशील संपादित करा</translation>
 <translation id="2195732836444333448">आता मर्यादा गाठली आहे. लवकरच परत या.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2468124392950503650">तयार करण्यासाठी प्रॉम्प्ट निवडा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
 <translation id="2472215337771558851">मसुदा तयार करण्यासाठी किंवा सध्याच्या कामामध्ये सुधारणा करण्यासाठी Google AI द्वारे सक्षम केलेले मला लिहिण्यात मदत करा वापरा</translation>
+<translation id="2475982808118771221">एक एरर आली आहे</translation>
 <translation id="2480572840229215612">खेकडे</translation>
 <translation id="248546197012830854">डिव्हाइस ऑफलाइन आहे. मदत आशय पाहण्यासाठी वाय-फायशी कनेक्ट करा.</translation>
 <translation id="2486301288428798846">लाकूड</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">इंटरनेटशी कनेक्ट करू शकत नाही</translation>
 <translation id="6156030503438652198">मरून आणि पिंक</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> नावाची <ph name="COUNT" /> पैकी <ph name="INDEX" /> डिव्हाइस.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> विशिष्ट आर्टवर्क निवडा</translation>
 <translation id="7108668606237948702">प्रविष्‍ट करा</translation>
+<translation id="7117228822971127758">कृपया नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="7118522231018231199">तुमच्या मोबाइल पुरवठादार किंवा अ‍ॅडमिनिस्ट्रेटरद्वारे दिलेले APNs निवडण्याची खात्री करा. APN निवडल्याने कोणतीही कस्टम APNs बंद होतील. चुकीची APNs तुमच्या मोबाइल कनेक्शनमध्ये व्यत्यय आणू शकतात.</translation>
 <translation id="7119389851461848805">उर्जा</translation>
 <translation id="7129287270910503851">तुमचा डेटा वापर प्रत्येक महिन्याला या दिवशी रीसेट केला जाईल</translation>

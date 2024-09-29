@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
 <translation id="2161656808144014275">ਲਿਖਤ</translation>
 <translation id="2163937499206714165">ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2173302385160625112">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2180197493692062006">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2189104374785738357">APN ਵੇਰਵਿਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2195732836444333448">ਸਾਡੇ ਕੋਲ ਹਾਲੇ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਵਾਪਸ ਆਓ।</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ਉਤਪ੍ਰੇਰਕ ਗਾਈਡ<ph name="END_LINK_PROMPTING_GUIDE" /> ਬਣਾਉਣ ਜਾਂ ਦੇਖਣ ਲਈ ਉਤਪ੍ਰੇਰਕ ਚੁਣੋ</translation>
 <translation id="2472215337771558851">ਡਰਾਫਟ ਬਣਾਉਣ ਜਾਂ ਮੌਜੂਦਾ ਕੰਮ ਨੂੰ ਸੋਧਣ ਲਈ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਰਤੋ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
+<translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="2480572840229215612">ਕੇਕੜੇ</translation>
 <translation id="248546197012830854">ਡੀਵਾਈਸ ਆਫ਼ਲਾਈਨ ਹੈ। ਮਦਦ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="2486301288428798846">ਲੱਕੜ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="6156030503438652198">ਉਨਾਬੀ ਅਤੇ ਗੁਲਾਬੀ</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਡੀਵਾਈਸ ਨੂੰ <ph name="NAME" /> ਨਾਮ ਦਿੱਤਾ ਗਿਆ।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ਦਾ ਵਿਸ਼ੇਸ਼ ਆਰਟਵਰਕ ਚੁਣੋ</translation>
 <translation id="7108668606237948702">ਦਰਜ ਕਰੋ</translation>
+<translation id="7117228822971127758">ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7118522231018231199">ਸਿਰਫ਼ ਤੁਹਾਡੇ ਮੋਬਾਈਲ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਏ ਗਏ APN ਨੂੰ ਚੁਣਨਾ ਪੱਕਾ ਕਰੋ। ਕਿਸੇ APN ਨੂੰ ਚੁਣਨ ਨਾਲ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦਾ ਵਿਉਂਤਬੱਧ APN ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਅਵੈਧ APN ਤੁਹਾਡੇ ਮੋਬਾਈਲ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਵਿਘਨ ਪਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7119389851461848805">ਪਾਵਰ</translation>
 <translation id="7129287270910503851">ਤੁਹਾਡੀ ਡਾਟਾ ਵਰਤੋਂ ਹਰ ਮਹੀਨੇ ਇਸ ਦਿਨ ਰੀਸੈੱਟ ਕੀਤੀ ਜਾਵੇਗੀ</translation>

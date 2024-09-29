@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
+<translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
 <translation id="2189104374785738357">Editar detalles de APN</translation>
 <translation id="2195732836444333448">Al máximo de su capacidad. Vuelve pronto.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2468124392950503650">Selecciona la petición que quieras crear o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía sobre peticiones<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Usa Ayúdame a escribir para crear un borrador o perfeccionar un trabajo, con la tecnología de la IA de Google</translation>
+<translation id="2475982808118771221">Se ha producido un error.</translation>
 <translation id="2480572840229215612">cangrejos</translation>
 <translation id="248546197012830854">El dispositivo no tiene conexión. Conéctate a una red Wi‑Fi para ver contenido de ayuda.</translation>
 <translation id="2486301288428798846">madera</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">No se puede establecer conexión a Internet</translation>
 <translation id="6156030503438652198">granate y rosa</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />; nombre: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Elige vídeos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
+<translation id="7117228822971127758">Inténtalo de nuevo más tarde</translation>
 <translation id="7118522231018231199">Asegúrate de seleccionar los APNs que te haya proporcionado tu operador móvil o administrador. Si seleccionas un APN, se inhabilitarán los APNs personalizados. Los APNs no válidos pueden interrumpir tu conexión móvil.</translation>
 <translation id="7119389851461848805">encendido</translation>
 <translation id="7129287270910503851">Tu uso de datos se restablecerá este día de cada mes</translation>

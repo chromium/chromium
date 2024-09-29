@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
 <translation id="2161656808144014275">Matn</translation>
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
+<translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2180197493692062006">Xatolik yuz berdi. Ilovani qayta ochishga urining.</translation>
 <translation id="2189104374785738357">APN maʼlumotlarini tahrirlash</translation>
 <translation id="2195732836444333448">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Turi</translation>
 <translation id="2468124392950503650">Soʻrov tanlang yoki <ph name="BEGIN_LINK_PROMPTING_GUIDE" />soʻrov tuzish qoʻllanmasi<ph name="END_LINK_PROMPTING_GUIDE" /> bilan tanishing</translation>
 <translation id="2472215337771558851">Matn yordamchisi qoralama yaratish yoki mavjud matnni yaxshilashga yordam beradi, Google AI asosida ishlaydi</translation>
+<translation id="2475982808118771221">Xatolik yuz berdi</translation>
 <translation id="2480572840229215612">qisqichbaqalar</translation>
 <translation id="248546197012830854">Qurilma internetga ulanmagan. Yordam sahifasini ochish uchun Wi-Fi tarmoqqa ulaning.</translation>
 <translation id="2486301288428798846">yogʻoch</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Foydalanuvchi sertifikati</translation>
 <translation id="6146993107019042706">Yakunlash uchun yangi parolni kiriting</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Internetga ulanish imkonsiz</translation>
 <translation id="6156030503438652198">toʻq qizil va pushti</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> nomli qurilma (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ekskluziv tasvirlarini tanlang</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Keyinroq qaytadan urining</translation>
 <translation id="7118522231018231199">Faqat mobil operator yoki administrator taklif qilgan APN tanlang. APN tanlanganda boshqalarini tanlash imkoni yopiladi. Yaroqsiz APN mobil internet ishlashiga xalaqit qilishi mumkin.</translation>
 <translation id="7119389851461848805">quvvat tugmasi</translation>
 <translation id="7129287270910503851">Trafik sarfi har oyning shu kunida nolga qaytariladi</translation>

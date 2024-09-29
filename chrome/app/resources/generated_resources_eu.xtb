@@ -542,7 +542,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1392047138650695757">Erabiltzailearen hiztegiak</translation>
 <translation id="139300021892314943">Mugatu nork has dezakeen saioa</translation>
 <translation id="1393283411312835250">Eguzkia eta lainoak</translation>
-<translation id="1395730723686586365">Eguneratzailea abiarazi da</translation>
 <translation id="1395832189806039783">Nabarmendu elementu bat teklatuaren fokuratze-puntuarekin</translation>
 <translation id="1396120028054416908">Itzuli <ph name="FOLDER_TITLE" /> karpetara</translation>
 <translation id="1396139853388185343">Errore bat gertatu da inprimagailua konfiguratzean</translation>
@@ -1351,7 +1350,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1942128823046546853">Edozein webgunetan dauzkazun datu guztiak irakurri eta aldatu</translation>
 <translation id="1944528062465413897">Bluetooth bidez konektatzeko parekatze-kodea:</translation>
 <translation id="1944535645109964458">Ez dago sarbide-gakorik erabilgarri</translation>
-<translation id="1944921356641260203">Eguneratzea aurkitu da</translation>
 <translation id="1947136734041527201">Aukera honi esker, identitate-zerbitzu bateko kontuaren bidez webguneetan saioa has dezakezu</translation>
 <translation id="1948528728718281125">Kamera erabiltzeko baimena duten aplikazio eta webguneek erabil dezakete kamera, baita sistemaren zerbitzuek ere</translation>
 <translation id="1949332606889020901">Hutsegiteen identifikatzaileak</translation>
@@ -2225,7 +2223,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2546991196809436099">Handitu pantaila bertako elementuak hobeto ikusteko. Erabili Bilaketa + Ktrl + M lupa aktibatu eta desaktibatzeko.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> baimendu da</translation>
 <translation id="2548545707296594436">Berrezarri eSIMaren profilaren cachea</translation>
-<translation id="2549766998450508148">Sakatu 1-4 tekla aldatzaileak (Ktrl, Alt, Maius edo Bilaketa) eta beste tekla bat. Tekla bakarra ere hauta dezakezu.</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
 <translation id="2550212893339833758">Trukerako memoria</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> fitxategia irekitzeko baimena eman nahi diozu <ph name="EXTENSION_NAME" /> luzapenari?</translation>
@@ -2422,7 +2419,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2705736684557713153">Joan pantailaren behealdera eta aktibatu konexioa bizkor partekatzeko eginbidea, halakorik agertzen bada. Agertzen ez bada, dagoeneko prest duzu dena.</translation>
 <translation id="2706304388244371417">Egin babeskopiak Google Drive-n; horrela, errazagoa izango da datuak leheneratzea edo beste gailu batera eramatea. Aplikazioetako datuak ere sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuaren pasahitza erabilita. <ph name="BEGIN_LINK1" />Lortu babeskopiei buruzko informazio gehiago<ph name="BEGIN_LINK1_END" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Gora</translation>
-<translation id="2707024448553392710">Osagaiak deskargatzen</translation>
 <translation id="270921614578699633">Batez bestekoa</translation>
 <translation id="2709516037105925701">Betetze automatikoa</translation>
 <translation id="2710101514844343743">Erabilera- eta diagnostiko-datuak</translation>
@@ -2547,7 +2543,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2779728796406650689">Galderak egiten dituzunean, erantzun pertsonalizatuak eman ahal izango dizkizu Google-ren Laguntzailea zerbitzuak.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
-<translation id="2783298271312924866">Deskargatu da</translation>
 <translation id="2783952358106015700">Erabili segurtasun-giltza <ph name="APP_NAME" /> aplikazioarekin</translation>
 <translation id="2785267875302712148">Pasahitz-egiaztapena</translation>
 <translation id="2785279781154577715">Fitxen gainetik pasatzean agertzen diren aurrebista-txartelen itxura</translation>
@@ -2874,7 +2869,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="301525898020410885">Erakundeak ezartzen du hizkuntza</translation>
 <translation id="3015639418649705390">Exekutatu berriro</translation>
 <translation id="3016381065346027039">Ez dago sarrerarik erregistroan</translation>
-<translation id="3016641847947582299">Osagaia eguneratu da</translation>
 <translation id="3019023222666709803">Geziaren tresna</translation>
 <translation id="3019285239893817657">Azpiorrira joateko botoia</translation>
 <translation id="3019595674945299805">VPNaren zerbitzua</translation>
@@ -2953,6 +2947,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" /> / <ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Gorde gailu honetan bakarrik</translation>
 <translation id="3076977359333237641">Ezabatu dira saioa hasteko datuak</translation>
+<translation id="3077734595579995578">maius</translation>
 <translation id="3080933187214341848">Sare hau ez dago sinkronizatuta zure kontuarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">luzapenak</translation>
@@ -7186,7 +7181,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6208521041562685716">Datu-konexioa aktibatzen</translation>
 <translation id="6208725777148613371">Ezin izan da gorde hemen: <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" />.</translation>
 <translation id="6209767197996242814">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Osagaiaren eguneratzea</translation>
 <translation id="6209908325007204267">Gailuak Chrome Enterprise Upgrade erabiltzeko lizentzia bat dakar, baina zure izena ez dago erlazionatuta ezein enpresako konturekin. Joan g.co/ChromeEnterpriseAccount helbidera beste gailu batean, eta sortu enpresako kontu bat.</translation>
 <translation id="6210282067670792090">Helbide-barran, erabili lasterbide hau bilatzaileetara edo webguneetan bilaketak egitera joateko</translation>
 <translation id="6211067089253408231">Aktibatu istanteko wifi-gunea</translation>
@@ -7250,7 +7244,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6247620186971210352">Ez da aurkitu aplikaziorik</translation>
 <translation id="6247708409970142803">% <ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Eguneratzea prest dago</translation>
 <translation id="6248988683584659830">Bilatu ezarpenetan</translation>
 <translation id="6249200942125593849">Kudeatu erabilerraztasun-ezarpenak</translation>
 <translation id="6250186368828697007">Xehetasunak ezkutatu egingo dira pantaila partekatzen duzun bitartean</translation>
@@ -8076,7 +8069,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6852290167968069627">ChromeOS-ek ezin dio berrekin aurreko saioari, sareak arazo bat daukalako. Konektatu sare egonkor batera eta saiatu berriro.</translation>
 <translation id="6852529053326738838">Kontuak baldintzak betetzen dituen ala ez jakiteko, galdetu erakundeari, edo erregistratu zure laneko helbide elektronikoarekin.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> hemendik instalatu da: <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Eguneratzailea inaktibo dago</translation>
 <translation id="68541483639528434">Itxi beste fitxak</translation>
 <translation id="6855892664589459354">Crostini-ren babeskopiak eta leheneratzea</translation>
 <translation id="6856348640027512653">Ezin dituzte erabili errealitate birtualeko gailuak edo datuak</translation>
@@ -8885,7 +8877,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746216226901520237">Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Osagaia eguneratuta dago jada</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# fitxa dago irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}other{# fitxa daude irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}}</translation>
 <translation id="7465635034594602553">Arazo bat izan da. Itxaron minutu batzuk eta exekutatu <ph name="APP_NAME" /> berriro.</translation>
 <translation id="7465777686629334728">Kendu garapen-ingurune kudeatua (<ph name="SPECIFIC_NAME" />)</translation>

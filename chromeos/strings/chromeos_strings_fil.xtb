@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
+<translation id="2173302385160625112">Suriin ang iyong koneksyon sa internet</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
 <translation id="2189104374785738357">I-edit ang mga detalye ng APN</translation>
 <translation id="2195732836444333448">Masyadong abala sa ngayon. Bumalik sa ibang pagkakataon.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2468124392950503650">Pumili ng prompt para gumawa o makita ang<ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
+<translation id="2475982808118771221">May isang naganap na error</translation>
 <translation id="2480572840229215612">mga alimango</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
 <translation id="2486301288428798846">kahoy</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificate ng user</translation>
 <translation id="6146993107019042706">Para tapusin, ilagay ang bago mong password</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Hindi makakonekta sa internet</translation>
 <translation id="6156030503438652198">maroon at pink</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Pumili ng artwork na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Pakisubukang muli sa ibang pagkakataon</translation>
 <translation id="7118522231018231199">Tiyaking pipiliin ang mga APN na ibinigay ng iyong mobile provider o administrator. Kapag pumili ng APN, madi-disable ang anumang custom na APN. Posibleng maantala ng mga invalid na APN ang iyong koneksyon sa mobile.</translation>
 <translation id="7119389851461848805">power</translation>
 <translation id="7129287270910503851">Ire-reset ang iyong paggamit ng data kada buwan sa araw na ito</translation>

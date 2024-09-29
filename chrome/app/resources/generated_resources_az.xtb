@@ -540,7 +540,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1392047138650695757">İstifadəçi lüğətləri</translation>
 <translation id="139300021892314943">Girişə limit qoyun</translation>
 <translation id="1393283411312835250">Günəş və buludlar</translation>
-<translation id="1395730723686586365">Güncəlləşdirici başladıldı</translation>
 <translation id="1395832189806039783">Klaviatura fokusu ilə elementi vurğulayın</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> qovluğuna qayıdın</translation>
 <translation id="1396139853388185343">Printer ayarlanarkən xəta baş verdi</translation>
@@ -1347,7 +1346,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1942128823046546853">Bütün veb saytlarda bütün datanızı oxumaq və dəyişdirmək</translation>
 <translation id="1944528062465413897">Bluetooth birləşdirmə kodu:</translation>
 <translation id="1944535645109964458">Əlçatan giriş açarı yoxdur</translation>
-<translation id="1944921356641260203">Güncəllənmə tapıldı</translation>
 <translation id="1947136734041527201">Kimlik xidməti ilə sahib olduğunuz hesabdan istifadə edərək vebsaytlara daxil olmağa imkan verir</translation>
 <translation id="1948528728718281125">Kamera icazəsi olan tətbiq və veb-saytlar, habelə sistem xidmətləri üçün kameraya giriş imkanı verilir</translation>
 <translation id="1949332606889020901">Xəta ID-ləri</translation>
@@ -2224,7 +2222,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2546991196809436099">Ekrandakı elementləri böyütmək üçün yaxınlaşdırın. Böyüdücünü aktiv və deaktiv etmək üçün Axtarış + Ctrl + M istifadə edin.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> üçün icazə verilib</translation>
 <translation id="2548545707296594436">eSIM profil keşini sıfırlayın</translation>
-<translation id="2549766998450508148">1-4 dəyişdirici düymələrini (ctrl, alt, shift və ya axtarış) və daha 1 düyməni basın. Tək düymə də seçə bilərsiniz.</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2550212893339833758">Dəyişdirilmiş Yaddaş</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> artırmasının <ph name="FILE_NAME" /> faylını açmasına icazə verilsin?</translation>
@@ -2421,7 +2418,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2705736684557713153">Ekranın aşağısına sürüşdürün. Görünürsə, cəld modemi aktiv edin. Görünmürsə, artıq ayarlanıb.</translation>
 <translation id="2706304388244371417">Google Diskə yedəkləyin. İstənilən vaxt asanlıqla datanı bərpa edin və ya cihazı dəyişin. Bu yedəkləməyə tətbiq datası daxildir. Yedəklər Google-a yüklənir və Google Hesab parolu ilə şifrələnir. <ph name="BEGIN_LINK1" />Yedəkləmə haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK1_END" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Yuxarı</translation>
-<translation id="2707024448553392710">Komponent endirilir</translation>
 <translation id="270921614578699633">Ortam Bitdi</translation>
 <translation id="2709516037105925701">Avtomatik doldurma</translation>
 <translation id="2710101514844343743">İstifadə və diaqnostika datası</translation>
@@ -2546,7 +2542,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2779728796406650689">Bu, sual soruşanda Google Assistentin uyğun cavablar verməsini təmin edir.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
-<translation id="2783298271312924866">Endirildi</translation>
 <translation id="2783952358106015700">Təhlükəsizlik açarını <ph name="APP_NAME" /> ilə istifadə edin</translation>
 <translation id="2785267875302712148">Parol Yoxlanışı</translation>
 <translation id="2785279781154577715">Tabda mausla tuşlama ilə önizləmə kartının görünüşü</translation>
@@ -2873,7 +2868,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="301525898020410885">Dil Təşkilatınız tərəfindən təyin olunur</translation>
 <translation id="3015639418649705390">Yenidən başladın</translation>
 <translation id="3016381065346027039">Giriş daxiletməsi yoxdur</translation>
-<translation id="3016641847947582299">Komponent güncəlləşib</translation>
 <translation id="3019023222666709803">Ox Aləti</translation>
 <translation id="3019285239893817657">Alt səhifə düyməsi</translation>
 <translation id="3019595674945299805">VPN xidməti</translation>
@@ -2952,6 +2946,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Yalnız bu cihazda saxlayın</translation>
 <translation id="3076977359333237641">Giriş datanız silindi</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Bu şəbəkə hesabınızla sinxronizasiya edilmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">artırmalar</translation>
@@ -7188,7 +7183,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6208521041562685716">Mobil data aktiv edilir</translation>
 <translation id="6208725777148613371"><ph name="INTERRUPT_REASON" /> səbəbindən <ph name="WEB_DRIVE" /> yaddaşında saxlamaq mümkün olmadı</translation>
 <translation id="6209767197996242814">Parol ifadənizi unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Komponent güncəllənir</translation>
 <translation id="6209908325007204267">Cihazınıza Chrome Enterprise Güncəlləməsi daxildir, lakin istifadəçi adınız təşkilat hesabı ilə əlaqələndirilməyib. İkinci cihazda g.co/ChromeEnterpriseAccount ünvanına keçərək təşkilat hesabı yaradın.</translation>
 <translation id="6210282067670792090">Ünvan panelində axtarış sistemləri və sayt axtarışı üçün qısayollarla bu klaviatura qısayolundan istifadə edin</translation>
 <translation id="6211067089253408231">Ani hotspotu yandırın</translation>
@@ -7252,7 +7246,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6247620186971210352">Tətbiq tapılmadı</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistem: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Yükləmə hazırdır</translation>
 <translation id="6248988683584659830">Axtarış ayarları</translation>
 <translation id="6249200942125593849">A11y funksiyalarını idarə edin</translation>
 <translation id="6250186368828697007">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
@@ -8078,7 +8071,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6852290167968069627">Şəbəkə probleminə görə ChromeOS əvvəlki sessiyanı bərpa edə bilmir. Stabil şəbəkəyə qoşulub, təkrar cəhd edin.</translation>
 <translation id="6852529053326738838">Hesabın uyğunluğunu yoxlamaq üçün təşkilatdan soruşun, yaxud iş e-poçtu ilə qeydiyyatdan keçin.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> buradan quraşdırılıb: <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Güncəlləşdirici yatır</translation>
 <translation id="68541483639528434">Digər tabları qapadın</translation>
 <translation id="6855892664589459354">Crostini yedəkləmə və bərpası</translation>
 <translation id="6856348640027512653">Virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verilməyib</translation>
@@ -8888,7 +8880,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Komponent artıq güncəldir</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# açıq tab, tab sətrini dəyişmək üçün basın}other{# açıq tab, tab sətrini dəyişmək üçün basın}}</translation>
 <translation id="7465635034594602553">Xəta baş verdi. Bir neçə dəqiqə gözləyib <ph name="APP_NAME" /> tətbiqini yenidən işə salın.</translation>
 <translation id="7465777686629334728">İdarə edilən inkişaf mühitini silin (<ph name="SPECIFIC_NAME" />)</translation>

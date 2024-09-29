@@ -3410,6 +3410,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operasi Perniagaan</translation>
 <translation id="7244061187185055290">Dalam beberapa perkataan, perihalkan perkara yang anda cari</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang manfaat kad</translation>
 <translation id="7251437084390964440">Konfigurasi rangkaian tidak mematuhi standard ONC. Sebahagian konfigurasi tidak boleh diimport.
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
@@ -3479,6 +3480,7 @@ Butiran tambahan:
 <translation id="7390545607259442187">Sahkan Kad</translation>
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>
 <translation id="7393161616326137353">Permainan Kembara</translation>
+<translation id="7393475648162498734">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa semak keluar</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
 <translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
@@ -4150,7 +4152,6 @@ Butiran tambahan:
 <translation id="8564466070529550495">Kad maya tidak tersedia sekarang, sila cuba sebentar lagi.</translation>
 <translation id="8564985650692024650">Chromium mengesyorkan penetapan semula kata laluan <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="8570895683659698018">Hobi &amp; Santai</translation>
-<translation id="8572792595597115856">Sah hingga <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Peti Sejuk &amp; Penyejuk Beku</translation>
 <translation id="8577192028579836704">Semua pilihan biasanya <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Kad maya tidak tersedia</translation>
@@ -4496,6 +4497,7 @@ Butiran tambahan:
 <translation id="939736085109172342">Folder baharu</translation>
 <translation id="940524522703752213">Fail anda yang dimuat naik kepada <ph name="CLOUD_PROVIDER" /> akan bermula selepas <ph name="MINUTES" /> minit</translation>
 <translation id="944540589955480312">Gunakan kata laluan dan kunci laluan yang disimpan dalam Google Account anda</translation>
+<translation id="944578681290094302">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa menyemak keluar. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ketahui tentang manfaat kad<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas.</translation>
 <translation id="945855313015696284">Semak maklumat di bawah dan padamkan sebarang kad yang tidak sah</translation>
 <translation id="94613679163347541">Bandingkan <ph name="CATEGORY" />?</translation>

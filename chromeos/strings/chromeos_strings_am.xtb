@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
+<translation id="2173302385160625112">የበይነመረብ ግኑኝነትዎን ይፈትሹ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
 <translation id="2189104374785738357">የኤፒኤን ዝርዝሮችን ያርትዑ</translation>
 <translation id="2195732836444333448">ሙሉ አቅም ላይ ነው። በቅርቡ ተመልሰው ይምጡ።</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />የጥያቄ መመሪያውን<ph name="END_LINK_PROMPTING_GUIDE" /> ለመፍጠር ወይም ለማየት ጥያቄ ይምረጡ</translation>
 <translation id="2472215337771558851">በGoogle ሰው ሰራሽ አስተውሎት የተጎላበተ፣ ረቂቅ ለመፍጠር ወይም የነበረን ስራ ለማጥራት እንድጽፍ እርዳኝን ይጠቀሙ</translation>
+<translation id="2475982808118771221">ስህተት ተከስቷል</translation>
 <translation id="2480572840229215612">ሸርጣኖች</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="2486301288428798846">እንጨት</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">የተጠቃሚ እውቅና ማረጋገጫ</translation>
 <translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ከበይነመረቡ ጋር መገናኘት አልተቻለም</translation>
 <translation id="6156030503438652198">ማሩን እና ሮዝ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6184793017104303157">ቢ4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
 <translation id="7107255225945990211">ለ<ph name="PRODUCT_NAME" /> የተወሰነ ሥነ ጥበብ ይምረጡ</translation>
 <translation id="7108668606237948702">ያስገቡ</translation>
+<translation id="7117228822971127758">እባክዎ ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="7118522231018231199">በእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ወይም አስተዳዳሪ የቀረቡ ኤፒኤኖችን መምረጥዎን ያረጋግጡ። ኤፒኤን መምረጥ ማንኛውንም ብጁ ኤፒኤን ያሰናክላል። ልክ ያልሆኑ ኤፒኤኖች የተንቀሳቃሽ ስልክ ግንኙነትዎን ሊያበላሹ ይችላሉ።</translation>
 <translation id="7119389851461848805">ኃይል</translation>
 <translation id="7129287270910503851">በዚህ ቀን የእርስዎ የውሂብ አጠቃቀም በየወሩ ዳግም ይጀመራል።</translation>

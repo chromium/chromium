@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Donkere modus aanzetten</translation>
+<translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
 <translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2468124392950503650">Selecteer een prompt die je wilt maken of bekijk de <ph name="BEGIN_LINK_PROMPTING_GUIDE" />handleiding voor prompts<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help me met schrijven om een conceptversie te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
+<translation id="2475982808118771221">Er is een fout opgetreden</translation>
 <translation id="2480572840229215612">krabben</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
 <translation id="2486301288428798846">hout</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
 <translation id="6147514244879357420">Png</translation>
+<translation id="6149015141270619212">Kan geen verbinding maken met internet</translation>
 <translation id="6156030503438652198">kastanjebruin en roze</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7103252855940681301">Apparaat <ph name="INDEX" /> van <ph name="COUNT" /> met de naam <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Kies exclusieve <ph name="PRODUCT_NAME" />-kunst</translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">Probeer het later opnieuw</translation>
 <translation id="7118522231018231199">Zorg dat je APN's selecteert die worden geleverd door je mobiele provider of beheerder. Als je een APN selecteert, worden aangepaste APN's uitgezet. Ongeldige APN's kunnen je mobiele verbinding verstoren.</translation>
 <translation id="7119389851461848805">aan/uit</translation>
 <translation id="7129287270910503851">Je datagebruik wordt elke maand op deze dag gereset</translation>

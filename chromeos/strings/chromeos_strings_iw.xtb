@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
 <translation id="2161656808144014275">טקסט</translation>
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
+<translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2180197493692062006">משהו השתבש. צריך לנסות לפתוח את האפליקציה מחדש.</translation>
 <translation id="2189104374785738357">‏עריכת פרטי ה-APN</translation>
 <translation id="2195732836444333448">יש עומס גדול מהרגיל. אפשר לנסות שוב בעוד כמה דקות.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2468124392950503650">אפשר לבחור הנחיה ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
+<translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="2480572840229215612">סרטנים</translation>
 <translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
 <translation id="2486301288428798846">עץ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">אישור משתמש</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">לא ניתן להתחבר לאינטרנט</translation>
 <translation id="6156030503438652198">ורוד וחום ערמוני</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
+<translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
 <translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופסו מדי חודש ביום הזה</translation>

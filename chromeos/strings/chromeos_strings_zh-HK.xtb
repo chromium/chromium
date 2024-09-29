@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">開啟暗光模式</translation>
+<translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
 <translation id="2189104374785738357">編輯 APN 詳情</translation>
 <translation id="2195732836444333448">目前已達資源上限，請稍後再回來。</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">類型</translation>
 <translation id="2468124392950503650">選取要建立的提示或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">「幫我寫」功能採用 Google AI 技術，用來建立草稿或修正現有作品</translation>
+<translation id="2475982808118771221">發生錯誤</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">裝置已離線。連線至 Wi-Fi 網絡即可查看說明內容。</translation>
 <translation id="2486301288428798846">木材</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">無法連線至互聯網</translation>
 <translation id="6156030503438652198">栗紅色和粉紅色</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (總共 <ph name="COUNT" /> 個)，名稱為 <ph name="NAME" />。</translation>
 <translation id="7107255225945990211">選擇 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
 <translation id="7108668606237948702">Enter 鍵</translation>
+<translation id="7117228822971127758">請稍後再試</translation>
 <translation id="7118522231018231199">請務必選取由流動服務供應商或管理員提供的 APN。選取 APN 後，系統便會停用任何自訂 APN。無效的 APN 可能會干擾流動網絡連線。</translation>
 <translation id="7119389851461848805">電源</translation>
 <translation id="7129287270910503851">數據用量會在每個月的這一天重設</translation>

@@ -621,7 +621,6 @@
 <translation id="2111166930115883695">ກົດຍະຫວ່າງເພື່ອຫຼິ້ນ</translation>
 <translation id="2113977810652731515">ບັດ</translation>
 <translation id="2114841414352855701">ຖືກລະເລີຍ ເພາະວ່າມັນຖືກລົບລ້າງໂດຍ <ph name="POLICY_NAME" />.</translation>
-<translation id="2115549780565563931">ສ່ວນຫຼຸດ</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">ອອກໃຫ້ແກ່: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຂວາ</translation>
@@ -4151,7 +4150,6 @@
 <translation id="8564466070529550495">ບັດສະເໝືອນບໍ່ພ້ອມນຳໃຊ້ໃນຕອນນີ້, ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="8564985650692024650">Chromium ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="8570895683659698018">ວຽກເວລາຫວ່າງ ແລະ ການພັກຜ່ອນ</translation>
-<translation id="8572792595597115856">ໃຊ້ໄດ້ຈົນຮອດວັນທີ <ph name="DATE" /></translation>
 <translation id="8574841453995331336">ຕູ້ເຢັນ ແລະ ຕູ້ແຊ່</translation>
 <translation id="8577192028579836704">ຕົວເລືອກທັງໝົດປົກກະຕິແມ່ນ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ບໍ່ສາມາດໃຊ້ບັດສະເໝືອນໄດ້</translation>

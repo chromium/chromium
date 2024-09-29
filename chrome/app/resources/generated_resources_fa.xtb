@@ -543,7 +543,6 @@
 <translation id="1392047138650695757">فرهنگ‌های لغت کاربر</translation>
 <translation id="139300021892314943">محدود کردن افرادی که می‌توانند به سیستم وارد شوند</translation>
 <translation id="1393283411312835250">آفتاب و ابر</translation>
-<translation id="1395730723686586365">به‌روزرسان شروع شد</translation>
 <translation id="1395832189806039783">برجسته کردن صفحه‌کلید با کانونی کردن صفحه‌کلید</translation>
 <translation id="1396120028054416908">بازگشت به <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">خطا هنگام راه‌اندازی چاپگر</translation>
@@ -1358,7 +1357,6 @@
 <translation id="1942128823046546853">همه داده‌های شما را در همه وب‌سایت‌ها بخواند و تغییر دهد</translation>
 <translation id="1944528062465413897">کد جفت‌سازی بلوتوث:</translation>
 <translation id="1944535645109964458">گذرکلیدی موجود نیست</translation>
-<translation id="1944921356641260203">به‌روزرسانی پیدا شد</translation>
 <translation id="1947136734041527201">مجاز می‌شوید بااستفاده از حسابی که در سرویس مدیریت هویت دارید به سیستم سایت وارد شوید</translation>
 <translation id="1948528728718281125">دسترسی به دوربین برای برنامه‌ها، وب‌سایت‌های دارای اجازه دوربین، و خدمات سیستم مجاز می‌شود</translation>
 <translation id="1949332606889020901">شناسه‌های خرابی</translation>
@@ -2235,7 +2233,6 @@
 <translation id="2546991196809436099">‏صفحه‌نمایش بزرگ‌نمایی می‌شود تا موارد روی آن بزرگ‌تر شود. از کلیدهای «جستجو + مهار + M» برای روشن و خاموش کردن ذره‌بین استفاده کنید.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> مجاز شده است</translation>
 <translation id="2548545707296594436">بازنشانی حافظه پنهان نمایه سیم‌کارت داخلی</translation>
-<translation id="2549766998450508148">‏کلیدهای تغییردهنده ‎۱-۴ (مهار، دگرساز، تبدیل، یا جستجو) و ۱ کلید دیگر را فشار دهید. همچنین می‌توانید یک کلید تکی را انتخاب کنید.</translation>
 <translation id="2549985041256363841">شروع ضبط</translation>
 <translation id="2550212893339833758">حافظه جابه‌جاشده</translation>
 <translation id="2550596535588364872">به <ph name="EXTENSION_NAME" /> اجازه می‌دهید <ph name="FILE_NAME" /> را باز کند؟</translation>
@@ -2432,7 +2429,6 @@
 <translation id="2705736684557713153">به پایین صفحه نمایش پیمایش کنید و اگر «اشتراک‌گذاری اینترنت فوری» نمایان شد، آن را روشن کنید. اگر نمایان نشد، همه چیز آماده است.</translation>
 <translation id="2706304388244371417">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. این نسخه پشتیبان حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» فرزندتان رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />درباره پشتیبان‌گیری بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">پیکان بالا</translation>
-<translation id="2707024448553392710">در حال بارگیری مؤلفه</translation>
 <translation id="270921614578699633">میانگین بالا</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
@@ -2557,7 +2553,6 @@
 <translation id="2779728796406650689">‏با این کار، وقتی سؤال می‌پرسید، «دستیار Google» می‌تواند پاسخ‌های سفارشی‌سازی‌شده ارائه دهد.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
-<translation id="2783298271312924866">بارگیری شد</translation>
 <translation id="2783952358106015700">برای <ph name="APP_NAME" />، از کلید امنیتی‌تان استفاده کنید</translation>
 <translation id="2785267875302712148">بازبینی گذرواژه</translation>
 <translation id="2785279781154577715">ظاهر «کارت پیش‌نمایش نگه داشتن روی برگه»</translation>
@@ -2884,7 +2879,6 @@
 <translation id="301525898020410885">زبان را «سازمان» شما تنظیم کرده است</translation>
 <translation id="3015639418649705390">اکنون راه‌اندازی مجدد شود</translation>
 <translation id="3016381065346027039">ورودی گزارشی وجود ندارد</translation>
-<translation id="3016641847947582299">مؤلفه به‌روز شد</translation>
 <translation id="3019023222666709803">ابزار پیکان</translation>
 <translation id="3019285239893817657">دکمه صفحه فرعی</translation>
 <translation id="3019595674945299805">‏سرویس VPN</translation>
@@ -2963,6 +2957,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ذخیره فقط در این دستگاه</translation>
 <translation id="3076977359333237641">داده‌های ورود به سیستمتان حذف شد</translation>
+<translation id="3077734595579995578">تبدیل</translation>
 <translation id="3080933187214341848">این شبکه با حسابتان همگام‌سازی نشده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">افزونه‌ها</translation>
@@ -7203,7 +7198,6 @@
 <translation id="6208521041562685716">داده تلفن همراه درحال فعال شدن است</translation>
 <translation id="6208725777148613371">در <ph name="WEB_DRIVE" /> ذخیره نشد - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">درحال به‌روزرسانی مؤلفه</translation>
 <translation id="6209908325007204267">‏دستگاهتان ارتقای Chrome Enterprise دارد، اما نام کاربری‌تان با حساب سازمانی مرتبط نیست. لطفاً با مراجعه به g.co/ChromeEnterpriseAccount در دستگاهی دیگر، حساب سازمانی ایجاد کنید.</translation>
 <translation id="6210282067670792090">در نوار نشانی، از این میان‌بر صفحه‌کلید با میان‌برهای موتورهای جستجو و جستجوی سایت استفاده کنید</translation>
 <translation id="6211067089253408231">روشن کردن «نقطه اتصال فوری»</translation>
@@ -7267,7 +7261,6 @@
 <translation id="6247620186971210352">برنامه‌ای پیدا نشد</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">سیستم: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">به‌روزرسانی آماده است</translation>
 <translation id="6248988683584659830">تنظیمات جستجو</translation>
 <translation id="6249200942125593849">‏مدیریت کردن a11y</translation>
 <translation id="6250186368828697007">درحین هم‌رسانی صفحه، جزئیات پنهان می‌شود</translation>
@@ -8095,7 +8088,6 @@
 <translation id="6852290167968069627">‏ChromeOS به‌دلیل وجود مشکلی در شبکه نمی‌تواند جلسه قبلی شما را ازسر بگیرد. به شبکه پایداری متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="6852529053326738838">از سازمانتان بپرسید یا با ایمیل کاری‌تان ثبت‌نام کنید تا ببینید حسابتان واجدشرایط است یا نه.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> نصب‌شده از <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">به‌روزرسان در حالت خواب</translation>
 <translation id="68541483639528434">بستن برگه‌های دیگر</translation>
 <translation id="6855892664589459354">‏پشتیبان‌گیری و بازیابی Crostini</translation>
 <translation id="6856348640027512653">اجازه ندارد از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کند</translation>
@@ -8906,7 +8898,6 @@
 <translation id="7461924472993315131">پین</translation>
 <translation id="746216226901520237">‏دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> را باز خواهد کرد. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">عنصر درحال‌حاضر به‌روز است</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}one{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}other{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}}</translation>
 <translation id="7465635034594602553">مشکلی پیش آمد. لطفاً چند دقیقه صبر کنید و دوباره <ph name="APP_NAME" /> را اجرا کنید.</translation>
 <translation id="7465777686629334728">برداشتن محیط توسعه نرم‌افزار مدیریت‌شده (<ph name="SPECIFIC_NAME" />)</translation>

@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">បោះបង់​ការងារ​បោះពុម្ព</translation>
 <translation id="2161656808144014275">អត្ថបទ</translation>
 <translation id="2163937499206714165">បើក​មុខងារ​ងងឹត</translation>
+<translation id="2173302385160625112">ពិនិត្យមើល​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក</translation>
 <translation id="2180197493692062006">មានអ្វីមួយខុសប្រក្រតី។ សូមសាកល្បង​បើកកម្មវិធី​ឡើងវិញ។</translation>
 <translation id="2189104374785738357">កែព័ត៌មានលម្អិតអំពី APN</translation>
 <translation id="2195732836444333448">យើងជាប់រវល់ហើយនៅពេលនេះ។ ត្រឡប់មកវិញ​ឆាប់ៗនេះ។</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2468124392950503650">ជ្រើសរើស​សារតម្រុយ ដើម្បីបង្កើត ឬមើល<ph name="BEGIN_LINK_PROMPTING_GUIDE" />ការណែនាំ​អំពី​សារតម្រុយ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ប្រើ "ជួយខ្ញុំក្នុងការសរសេរ" ដើម្បីបង្កើតសេចក្ដីព្រាង ឬកែលម្អស្នាដៃដែលមានស្រាប់ ដែលដំណើរការដោយ Google AI</translation>
+<translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
 <translation id="2480572840229215612">ក្ដាម</translation>
 <translation id="248546197012830854">ឧបករណ៍​គ្មាន​អ៊ីនធឺណិត​ទេ។ ភ្ជាប់ទៅ​បណ្ដាញ WiFi ដើម្បីមើល​ខ្លឹមសារជំនួយ។</translation>
 <translation id="2486301288428798846">ឈើ</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">វិញ្ញាបនបត្រ​អ្នក​ប្រើប្រាស់</translation>
 <translation id="6146993107019042706">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ថ្មីរបស់អ្នក</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">មិនអាចភ្ជាប់អ៊ីនធឺណិតបានទេ</translation>
 <translation id="6156030503438652198">ឈាមជ្រូក និងផ្កាឈូក</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">ឧបករណ៍ <ph name="INDEX" /> ក្នុងចំណោម <ph name="COUNT" /> មានឈ្មោះថា <ph name="NAME" />។</translation>
 <translation id="7107255225945990211">ជ្រើសរើស​រូបផូស្ទ័រ​ផ្ដាច់មុខ​របស់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">បញ្ចូល</translation>
+<translation id="7117228822971127758">សូម​ព្យាយាម​ម្ដង​ទៀត​នៅ​ពេល​ក្រោយ</translation>
 <translation id="7118522231018231199">សូមប្រាកដថាជ្រើសរើស APN ដែលផ្ដល់ដោយក្រុមហ៊ុនផ្ដល់សេវាទូរសព្ទចល័ត ឬអ្នកគ្រប់គ្រងរបស់អ្នក។ ការជ្រើសរើស APN នឹងបិទ APN ផ្ទាល់ខ្លួនទាំងឡាយ។ APN មិនត្រឹមត្រូវអាចរំខានដល់ការ​តភ្ជាប់​បណ្ដាញ​ចល័តរបស់អ្នក។</translation>
 <translation id="7119389851461848805">ថាមពល</translation>
 <translation id="7129287270910503851">ការប្រើទិន្នន័យរបស់អ្នកនឹងត្រូវបានកំណត់ឡើងវិញជារៀងរាល់ខែនៅថ្ងៃមួយនេះ</translation>

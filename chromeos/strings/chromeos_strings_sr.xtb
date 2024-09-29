@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Укључите тамни режим</translation>
+<translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2180197493692062006">Дошло је до грешке. Пробајте да поново отворите апликацију.</translation>
 <translation id="2189104374785738357">Измените детаље назива приступне тачке</translation>
 <translation id="2195732836444333448">Капацитет је тренутно попуњен. Вратите се брзо.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2468124392950503650">Изаберите упит за прављење или погледајте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водич за упите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користите Помоћ при писању да бисте направили радну верзију или побољшали постојећи рад који омогућава Google вештачка интелигенција</translation>
+<translation id="2475982808118771221">Дошло је до грешке</translation>
 <translation id="2480572840229215612">крабе</translation>
 <translation id="248546197012830854">Уређај је офлајн. Повежите се на WiFi мрежу да бисте видели садржај помоћи.</translation>
 <translation id="2486301288428798846">дрвета</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Кориснички сертификат</translation>
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Не можете да се повежете на интернет</translation>
 <translation id="6156030503438652198">црвенкастобраон и розе</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. уређај од <ph name="COUNT" /> са називом <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Одаберите ексклузивне илустрације за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Пробајте поново касније</translation>
 <translation id="7118522231018231199">Обавезно изаберите називе приступних тачака које пружа мобилни оператер или администратор. Ако изаберете назив приступне тачке, онемогућићете све прилагођене називе приступних тачака. Неважећи називи приступних тачака могу да прекину мобилну везу.</translation>
 <translation id="7119389851461848805">напајање</translation>
 <translation id="7129287270910503851">Потрошња података ће се ресетовати сваког месеца овог дана</translation>

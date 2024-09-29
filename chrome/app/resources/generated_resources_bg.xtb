@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">Потребителски речници</translation>
 <translation id="139300021892314943">Ограничаване на това, кой може да влиза</translation>
 <translation id="1393283411312835250">Слънце и облаци</translation>
-<translation id="1395730723686586365">Актуализиращата програма е стартирана</translation>
 <translation id="1395832189806039783">Открояване на елемента, върху който е фокусът на клавиатурата</translation>
 <translation id="1396120028054416908">Назад към <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">При настройването на принтера възникна грешка</translation>
@@ -1357,7 +1356,6 @@
 <translation id="1942128823046546853">да чете и променя всичките ви данни в уебсайтовете</translation>
 <translation id="1944528062465413897">Код за сдвояване през Bluetooth:</translation>
 <translation id="1944535645109964458">Няма налични кодове за достъп</translation>
-<translation id="1944921356641260203">Намерена е актуализация</translation>
 <translation id="1947136734041527201">Позволява ви да влизате в уебсайтове посредством профила си в услуга за идентифициране</translation>
 <translation id="1948528728718281125">Достъпът до камерата е разрешен за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="1949332606889020901">Идентификатори на сривовете</translation>
@@ -2234,7 +2232,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
 <translation id="2548347166720081527">„<ph name="PERMISSION" />“ е разрешено</translation>
 <translation id="2548545707296594436">Нулиране на кеша на потребителските профили на електронната SIM карта</translation>
-<translation id="2549766998450508148">Натиснете от 1 до 4 модифициращи клавиша (Ctrl, Alt, Shift или клавиша „търсене“) и още 1 клавиш. Можете също да изберете един клавиш.</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2550212893339833758">Резервна памет</translation>
 <translation id="2550596535588364872">Да се разреши ли на <ph name="EXTENSION_NAME" /> да отвори <ph name="FILE_NAME" />?</translation>
@@ -2431,7 +2428,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2705736684557713153">Превъртете надолу до края на екрана и включете опцията за незабавен тетъринг, ако се показва. В случай че не я виждате, тя вече е активна.</translation>
 <translation id="2706304388244371417">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервното копие включва данните на приложенията. Резервните копия се качват в Google и се шифроват посредством паролата за профила в Google на детето ви. <ph name="BEGIN_LINK1" />Научете повече за създаването на резервни копия<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Клавиш за нагоре</translation>
-<translation id="2707024448553392710">Компонентът се изтегля</translation>
 <translation id="270921614578699633">Осредняване</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
@@ -2556,7 +2552,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2779728796406650689">Това дава възможност на Google Асистент да ви предоставя персонализирани отговори, когато задавате въпроси.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
-<translation id="2783298271312924866">Изтеглено</translation>
 <translation id="2783952358106015700">Използване на ключа ви за сигурност за <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Проверка на паролите</translation>
 <translation id="2785279781154577715">Изглед на картата за визуализация при задържане на курсора на мишката върху даден раздел</translation>
@@ -2883,7 +2878,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="301525898020410885">Езикът е зададен от организацията ви</translation>
 <translation id="3015639418649705390">Рестартиране сега</translation>
 <translation id="3016381065346027039">Няма записи в регистрационния файл</translation>
-<translation id="3016641847947582299">Компонентът е актуализиран</translation>
 <translation id="3019023222666709803">Инструмент за стрелка</translation>
 <translation id="3019285239893817657">Бутон за подстраница</translation>
 <translation id="3019595674945299805">VPN услуга</translation>
@@ -2962,6 +2956,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Запазване само на това устройство</translation>
 <translation id="3076977359333237641">Данните ви за вход бяха изтрити</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Тази мрежа не е синхронизирана с профила ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">разширения</translation>
@@ -7204,7 +7199,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6208521041562685716">Мобилните данни се активират</translation>
 <translation id="6208725777148613371">Запазването в(ъв) <ph name="WEB_DRIVE" /> не бе успешно – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Компонентът се актуализира</translation>
 <translation id="6209908325007204267">Устройството ви включва надстройка за Chrome Enterprise, но потребителското ви име не е свързано с корпоративен профил. Моля, създайте си такъв, като посетите g.co/ChromeEnterpriseAccount на алтернативно устройство.</translation>
 <translation id="6210282067670792090">В адресната лента използвайте тази клавишна комбинация заедно с преки пътища за търсещи машини и търсене в сайтове</translation>
 <translation id="6211067089253408231">Включване на мигновената точка за достъп</translation>
@@ -7268,7 +7262,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6247620186971210352">Няма намерени приложения</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Актуализацията е готова</translation>
 <translation id="6248988683584659830">Търсене в „Настройки“</translation>
 <translation id="6249200942125593849">Управление на настройките за достъпност</translation>
 <translation id="6250186368828697007">Подробностите са скрити, когато споделяте екрана си</translation>
@@ -8094,7 +8087,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6852290167968069627">ChromeOS не може да възобнови предишната ви сесия поради проблем с мрежата. Свържете се със стабилна мрежа и опитайте отново.</translation>
 <translation id="6852529053326738838">Попитайте организацията си или се регистрирайте със служебния си имейл адрес, за да проверите дали профилът ви отговаря на условията.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" />, инсталирано от <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Актуализиращата програма е в спящ режим</translation>
 <translation id="68541483639528434">Затваряне на другите раздели</translation>
 <translation id="6855892664589459354">Резервни копия и възстановяване на Crostini</translation>
 <translation id="6856348640027512653">Сайтове без разрешение за използване на устройствата и данните за виртуална реалност</translation>
@@ -8905,7 +8897,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7461924472993315131">Фиксиране</translation>
 <translation id="746216226901520237">Следващия път телефонът ви ще отключи устройството ви <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Компонентът вече е актуален</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# отворен раздел – натиснете за превключване на лентата с раздели}other{# отворени раздела – натиснете за превключване на лентата с раздели}}</translation>
 <translation id="7465635034594602553">Нещо се обърка. Изчакайте няколко минути и стартирайте <ph name="APP_NAME" /> отново.</translation>
 <translation id="7465777686629334728">Премахване на управляваната среда на програмиране (<ph name="SPECIFIC_NAME" />)</translation>

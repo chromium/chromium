@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Aktivera mörkt läge</translation>
+<translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2180197493692062006">Något gick fel. Testa att öppna appen igen.</translation>
 <translation id="2189104374785738357">Redigera APN-information</translation>
 <translation id="2195732836444333448">Jag kan inte göra det just nu. Testa igen om ett tag.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2468124392950503650">Välj en prompt för att skapa eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
+<translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
 <translation id="2486301288428798846">trä</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Användarcertifikat</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Det går inte att ansluta till internet</translation>
 <translation id="6156030503438652198">rödbrunt och rosa</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" /> heter <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Välj exklusiva konstverk för <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retur</translation>
+<translation id="7117228822971127758">Försök igen senare</translation>
 <translation id="7118522231018231199">Välj endast APN:er som tillhandahålls av mobiloperatören eller administratören. När du väljer en APN inaktiveras eventuella anpassade APN:er. Ogiltiga APN:er kan störa mobilanslutningen.</translation>
 <translation id="7119389851461848805">strömbrytare</translation>
 <translation id="7129287270910503851">Dataanvändningen återställs varje månad på denna dag</translation>

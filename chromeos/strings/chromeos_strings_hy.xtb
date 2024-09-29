@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
 <translation id="2161656808144014275">Տեքստ</translation>
 <translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
+<translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
 <translation id="2189104374785738357">APN-ի տվյալների փոփոխում</translation>
 <translation id="2195732836444333448">Սերվերում չկան բավականաչափ ռեսուրսներ։ Վերադարձեք քիչ անց։</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2468124392950503650">Ընտրեք հարցումը, որպեսզի տեսնեք կամ ստեղծեք <ph name="BEGIN_LINK_PROMPTING_GUIDE" />հարցումների ուղեցույցը<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Google AI տեխնոլոգիաների վրա հիմնված «Օգնիր ինձ գրել» գործառույթի միջոցով ստեղծեք սևագիր կամ հղկեք առկա տեքստը</translation>
+<translation id="2475982808118771221">Սխալ առաջացավ</translation>
 <translation id="2480572840229215612">խաչափառներ</translation>
 <translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
 <translation id="2486301288428798846">փայտ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Օգտատիրոջ հավաստագիր</translation>
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Հնարավոր չէ միանալ համացանցին</translation>
 <translation id="6156030503438652198">կարմրաշագանակագույն և վարդագույն</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
 <translation id="7107255225945990211">Ընտրեք <ph name="PRODUCT_NAME" />-ի բացառիկ պաստառներ</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Փորձեք ավելի ուշ</translation>
 <translation id="7118522231018231199">Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։ APN ընտրելու արդյունքում բոլոր հատուկ APN-ները կանջատվեն։ Անվավեր APN-ները կարող են խաթարել ձեր բջջային կապը։</translation>
 <translation id="7119389851461848805">power</translation>
 <translation id="7129287270910503851">Յուրաքանչյուր ամիս այս օրը թրաֆիկի օգտագործման մասին տվյալները կզրոյացվեն</translation>

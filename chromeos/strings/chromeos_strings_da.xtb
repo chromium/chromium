@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
+<translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
 <translation id="2189104374785738357">Rediger APN-oplysninger</translation>
 <translation id="2195732836444333448">Der er ingen kapacitet i øjeblikket. Vend tilbage senere.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2468124392950503650">Vælg en prompt, eller tjek <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptvejledningen<ph name="END_LINK_PROMPTING_GUIDE" /> for at oprette et AI-billede</translation>
 <translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI</translation>
+<translation id="2475982808118771221">Der opstod en fejl</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
 <translation id="2486301288428798846">træ</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Brugercertifikat</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Det er ikke muligt at oprette forbindelse til internettet</translation>
 <translation id="6156030503438652198">rødbrun og lyserød</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Vælg kunst, der kun er tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Prøv igen senere</translation>
 <translation id="7118522231018231199">Sørg for at vælge APN'er fra dit mobilselskab eller din administrator. Når du vælger et APN, deaktiveres alle tilpassede APN'er. Ugyldige APN'er kan forstyrre din mobilforbindelse.</translation>
 <translation id="7119389851461848805">tænd/sluk</translation>
 <translation id="7129287270910503851">Dit dataforbrug nulstilles hver måned på denne dag</translation>

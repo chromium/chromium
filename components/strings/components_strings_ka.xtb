@@ -621,7 +621,6 @@
 <translation id="2111166930115883695">დასაკრავად დააჭირეთ შორისს</translation>
 <translation id="2113977810652731515">ბიზნეს ბარათი დიზაინი</translation>
 <translation id="2114841414352855701">იგნორირებულია, რადგან იგი ჩანაცვლებულია <ph name="POLICY_NAME" />-ის მიერ.</translation>
-<translation id="2115549780565563931">ფასდაკლებები</translation>
 <translation id="2118132148597630479">კონვერტი C5</translation>
 <translation id="2119505898009119320">გაცემულია შემდეგის სახელზე: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ქვედა მარჯვენა ნაწილის გახვრეტა</translation>
@@ -4151,7 +4150,6 @@
 <translation id="8564466070529550495">ვირტუალური ბარათი ამჟამად მიუწვდომელია, ცადეთ მოგვიანებით.</translation>
 <translation id="8564985650692024650">Chromium გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="8570895683659698018">ჰობი და დასვენება</translation>
-<translation id="8572792595597115856">ძალაშია <ph name="DATE" />-მდე</translation>
 <translation id="8574841453995331336">მაცივრები და საყინულეები</translation>
 <translation id="8577192028579836704">ყველა ვარიანტი, როგორც წესი, <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ვირტუალური ბარათი მიუწვდომელია</translation>

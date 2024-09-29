@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2161656808144014275">نص</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
+<translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2189104374785738357">تعديل تفاصيل اسم نقطة الوصول</translation>
 <translation id="2195732836444333448">تم بلوغ الحدّ الأقصى من الطلبات حاليًا. يُرجى المحاولة مرة أخرى قريبًا.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2468124392950503650">اختَر طلبًا لإنشاء الصور أو اطّلِع على <ph name="BEGIN_LINK_PROMPTING_GUIDE" />دليل الطلبات<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏حسِّن نصًا سبقت كتابته أو أنشئ مسوّدة باستخدام ميزة "مساعدة في الكتابة" التي تستند إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
+<translation id="2475982808118771221">حدث خطأ</translation>
 <translation id="2480572840229215612">حيوانات سلطعون</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
 <translation id="2486301288428798846">الخشب</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">شهادة المستخدم</translation>
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">يتعذّر الاتصال بالإنترنت.</translation>
 <translation id="6156030503438652198">الأحمر الداكن والوردي</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">اختيار عمل فني حصري مِن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">إدخال</translation>
+<translation id="7117228822971127758">يُرجى إعادة المحاولة لاحقًا</translation>
 <translation id="7118522231018231199">‏يُرجى التأكّد من اختيار أسماء نقاط الوصول (APN) التي يوفّرها المشرف أو مقدِّم خدمات شبكة الجوّال. سيؤدي اختيار اسم نقطة وصول إلى إيقاف أي أسماء نقاط وصول مخصَّصة. وقد تؤدي أسماء نقاط الوصول غير الصالحة إلى إيقاف الاتصال بشبكة الجوّال.</translation>
 <translation id="7119389851461848805">الطاقة</translation>
 <translation id="7129287270910503851">ستتم إعادة ضبط استخدام البيانات كل شهر في هذا اليوم</translation>

@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
+<translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
 <translation id="2189104374785738357">แก้ไขรายละเอียด APN</translation>
 <translation id="2195732836444333448">ขณะนี้ถึงขีดจำกัดแล้ว โปรดกลับมาใหม่เร็วๆ นี้</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ประเภท</translation>
 <translation id="2468124392950503650">เลือกพรอมต์เพื่อสร้างหรือดู<ph name="BEGIN_LINK_PROMPTING_GUIDE" />คู่มือการใช้พรอมต์<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ใช้ฟีเจอร์ช่วยฉันเขียนเพื่อสร้างข้อความร่างหรือปรับแต่งงานที่มีอยู่ซึ่งทำงานด้วยระบบ AI ของ Google</translation>
+<translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="2480572840229215612">ปู</translation>
 <translation id="248546197012830854">อุปกรณ์ออฟไลน์อยู่ เชื่อมต่อกับเครือข่าย Wi-Fi เพื่อดูเนื้อหาช่วยเหลือ</translation>
 <translation id="2486301288428798846">ไม้</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ใบรับรองของผู้ใช้</translation>
 <translation id="6146993107019042706">ป้อนรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">เชื่อมต่ออินเทอร์เน็ตไม่ได้</translation>
 <translation id="6156030503438652198">น้ำตาลแดงและชมพู</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
 <translation id="7107255225945990211">เลือกงานศิลปะพิเศษเฉพาะคุณจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="7118522231018231199">โปรดเลือก APN ที่มาจากผู้ให้บริการเครือข่ายมือถือหรือผู้ดูแลระบบ การเลือก APN จะปิดใช้ APN ที่กําหนดเอง APN ที่ไม่ถูกต้องอาจทำให้การเชื่อมต่อมือถือของคุณหยุดชะงัก</translation>
 <translation id="7119389851461848805">เปิด/ปิด</translation>
 <translation id="7129287270910503851">ปริมาณการใช้อินเทอร์เน็ตจะรีเซ็ตในวันนี้ของทุกเดือน</translation>

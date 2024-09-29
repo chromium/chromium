@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
+<translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
 <translation id="2195732836444333448">Usługa zajęta. Spróbuj ponownie wkrótce.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2468124392950503650">Wybierz prompt, aby go utworzyć, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
+<translation id="2475982808118771221">Wystąpił błąd</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Urządzenie jest offline. Aby wyświetlić materiały pomocy, połącz się z siecią Wi-Fi.</translation>
 <translation id="2486301288428798846">drewna</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nie można połączyć się z internetem</translation>
 <translation id="6156030503438652198">fioletowych i różowych</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Wybierz wyjątkowe obrazy na urządzenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">wpisz</translation>
+<translation id="7117228822971127758">Spróbuj ponownie później</translation>
 <translation id="7118522231018231199">Wybierz te punkty APN, które udostępnia operator komórkowy lub administrator. Wybranie punktu APN spowoduje wyłączenie wszystkich niestandardowych punktów APN. Nieprawidłowe punkty APN mogą zakłócać połączenie mobilne.</translation>
 <translation id="7119389851461848805">zasilanie</translation>
 <translation id="7129287270910503851">Użycie danych będzie resetowane co miesiąc tego dnia</translation>

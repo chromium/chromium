@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
 <translation id="2161656808144014275">نوشتار</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
+<translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
 <translation id="2189104374785738357">ویرایش جزئیات «نام نقطه دستیابی»</translation>
 <translation id="2195732836444333448">به حداکثر ظرفیت رسیده‌ایم. به‌زودی دوباره برمی‌گردیم.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2468124392950503650">پیام‌واره موردنظر را برای ایجاد کردن انتخاب کنید یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />راهنمای پیام‌واره<ph name="END_LINK_PROMPTING_GUIDE" /> را مشاهده کنید</translation>
 <translation id="2472215337771558851">‏بااستفاده از «کمک به نوشتن»، پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید؛ از هوش مصنوعی Google بهره می‌گیرد</translation>
+<translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2480572840229215612">خرچنگ</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
 <translation id="2486301288428798846">چوب</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">گواهی کاربر</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">اتصال به اینترنت ممکن نیست</translation>
 <translation id="6156030503438652198">زرشکی و صورتی</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">نام دستگاه <ph name="INDEX" /> از <ph name="COUNT" /> <ph name="NAME" /> است.</translation>
 <translation id="7107255225945990211">انتخاب کار هنری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">لطفاً بعداً دوباره امتحان کنید</translation>
 <translation id="7118522231018231199">‏حتماً APN ارائه‌شده ازسوی شرکت مخابرات سیار یا سرپرستتان را انتخاب کنید. با انتخاب APN جدید، همه موارد APN سفارشی غیرفعال می‌شود. APN نامعتبر می‌تواند اتصال همراهتان را مختل کند.</translation>
 <translation id="7119389851461848805">روشن/خاموش</translation>
 <translation id="7129287270910503851">مصرف داده شما هر ماه در این روز بازنشانی می‌شود</translation>

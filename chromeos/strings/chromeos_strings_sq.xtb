@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
+<translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
 <translation id="2189104374785738357">Modifiko detajet e APN-së</translation>
 <translation id="2195732836444333448">Në maksimumin e kapacitetin për momentin. Kthehu përsëri së shpejti.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2468124392950503650">Zgjidh kërkesën për të krijuar ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin e kërkesave<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Përdor "Më ndihmo të shkruaj" për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google</translation>
+<translation id="2475982808118771221">Ndodhi një gabim</translation>
 <translation id="2480572840229215612">gaforre</translation>
 <translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
 <translation id="2486301288428798846">dru</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certifikata e përdoruesit</translation>
 <translation id="6146993107019042706">Për të përfunduar, fut fjalëkalimin e ri</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nuk mund të lidhet me internetin</translation>
 <translation id="6156030503438652198">gështenjë dhe rozë</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Pajisja <ph name="INDEX" /> nga <ph name="COUNT" /> me emrin <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Zgjidh ilustrime ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">hyr</translation>
+<translation id="7117228822971127758">Provo përsëri më vonë</translation>
 <translation id="7118522231018231199">Sigurohu që të zgjedhë sh APN-të e ofruara nga operatori celular ose administratori. Zgjedhja e një APN-je do të çaktivizojë çdo APN të personalizuar. APN-të e pavlefshme mund të ndërpresin lidhjen e rrjetit celular.</translation>
 <translation id="7119389851461848805">energjia</translation>
 <translation id="7129287270910503851">Përdorimi yt i të dhënave do të rivendoset çdo muaj në këtë ditë</translation>

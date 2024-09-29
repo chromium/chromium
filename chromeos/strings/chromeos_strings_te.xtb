@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయండి</translation>
 <translation id="2161656808144014275">వచనం</translation>
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
+<translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2189104374785738357">APN వివరాలను ఎడిట్ చేయండి</translation>
 <translation id="2195732836444333448">ప్రస్తుతం కెపాసిటీని మించిపోయింది. త్వరగా తిరిగి రండి.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ప్రాంప్ట్ గైడ్<ph name="END_LINK_PROMPTING_GUIDE" />‌ను క్రియేట్ చేయడానికి లేదా చూడటానికి ప్రాంప్ట్‌ను ఎంచుకోండి</translation>
 <translation id="2472215337771558851">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోన్న డ్రాఫ్ట్‌ను క్రియేట్ చేయడానికి లేదా ఇప్పటికే ఉన్న దాన్ని మెరుగుపరచడానికి 'నాకు రాయడానికి సహాయం చేయండి'ని ఉపయోగించండి</translation>
+<translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
 <translation id="2480572840229215612">పీతలు</translation>
 <translation id="248546197012830854">పరికరం ఆఫ్‌లైన్‌లో ఉంది. Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేసి, సహాయక కంటెంట్‌ను చూడండి.</translation>
 <translation id="2486301288428798846">కలప</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">యూజర్ సర్టిఫికెట్</translation>
 <translation id="6146993107019042706">దీనిని ముగించడానికి, మీ కొత్త పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="6156030503438652198">ముదురు ఎరుపు రంగు, గులాబీ రంగు</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />లో <ph name="INDEX" /> పరికరాలు <ph name="NAME" /> అనే పేరుతో ఉన్నాయి.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ప్రత్యేక పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="7108668606237948702">ఎంటర్</translation>
+<translation id="7117228822971127758">దయచేసి తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="7118522231018231199">మీ మొబైల్ ప్రొవైడర్ లేదా అడ్మినిస్ట్రేటర్ అందించిన APNలనే ఎంచుకున్నారని నిర్ధారించుకోండి. APNని ఎంచుకోవడం వలన ఏవైనా అనుకూల APNలు ఉంటే అవి డిజేబుల్ చేయబడతాయి. చెల్లని APN లు మీ మొబైల్ కనెక్షన్‌కు అంతరాయం కలిగించవచ్చు.</translation>
 <translation id="7119389851461848805">పవర్</translation>
 <translation id="7129287270910503851">మీ డేటా వినియోగం ప్రతి నెల ఈ రోజున రీసెట్ చేయబడుతుంది</translation>

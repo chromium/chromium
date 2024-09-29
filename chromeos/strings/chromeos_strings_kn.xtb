@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
+<translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2195732836444333448">ಪ್ರಸ್ತುತ ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ಪ್ರಾಂಪ್ಟ್‌ ಮಾರ್ಗದರ್ಶಿಯನ್ನು<ph name="END_LINK_PROMPTING_GUIDE" /> ರಚಿಸಲು ಅಥವಾ ನೋಡಲು ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2472215337771558851">Google AI ನಿಂದ ಚಾಲಿತ, ಡ್ರಾಫ್ಟ್ ರಚಿಸಲು ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಕೆಲಸವನ್ನು ರೀಫೈನ್ ಮಾಡುವುದಕ್ಕೆ ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ ಎಂಬುದನ್ನು ಬಳಸಿ</translation>
+<translation id="2475982808118771221">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ</translation>
 <translation id="2480572840229215612">ಏಡಿಗಳು</translation>
 <translation id="248546197012830854">ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ. ಸಹಾಯ ವಿಷಯವನ್ನು ನೋಡಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="2486301288428798846">ಮರ</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ಬಳಕೆದಾರರ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="6146993107019042706">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6156030503438652198">ಕಡುಗೆಂಪು ಮತ್ತು ಗುಲಾಬಿ</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ಗಾಗಿ ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆಗಿ ಇರುವ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="7108668606237948702">ನಮೂದಿಸಿ</translation>
+<translation id="7117228822971127758">ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7118522231018231199">ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸಿದ APN ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. APN ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಯಾವುದೇ ಕಸ್ಟಮ್ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಪರ್ಕವನ್ನು ಅಡ್ಡಿಪಡಿಸಬಹುದು.</translation>
 <translation id="7119389851461848805">ಪವರ್‌</translation>
 <translation id="7129287270910503851">ಈ ದಿನದಂದು ನಿಮ್ಮ ಡೇಟಾ ಬಳಕೆಯನ್ನು ಪ್ರತಿ ತಿಂಗಳು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>

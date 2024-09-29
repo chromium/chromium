@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
+<translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
 <translation id="2189104374785738357">Modifier les détails du nom de point d'accès</translation>
 <translation id="2195732836444333448">Le serveur est au maximum de sa capacité pour le moment. Revenez plus tard.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2468124392950503650">Sélectionnez la requête pour commencer votre création ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
+<translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
 <translation id="2486301288428798846">bois</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificat utilisateur</translation>
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Impossible de se connecter à Internet</translation>
 <translation id="6156030503438652198">bordeaux et rose</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> de <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Choisir parmi les illustrations exclusives à <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Entrée</translation>
+<translation id="7117228822971127758">Veuillez réessayer plus tard</translation>
 <translation id="7118522231018231199">Assurez-vous de sélectionner les noms de point d'accès fournis par votre fournisseur de services mobiles ou votre administrateur. La sélection d'un nom de point d'accès désactivera tous les noms du point d'accès personnalisés. Des noms de point d'accès invalides peuvent perturber votre connexion mobile.</translation>
 <translation id="7119389851461848805">marche</translation>
 <translation id="7129287270910503851">Votre utilisation de données sera réinitialisée chaque mois ce jour-là</translation>

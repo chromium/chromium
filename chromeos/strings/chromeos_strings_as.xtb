@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
 <translation id="2161656808144014275">পাঠ</translation>
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
+<translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2180197493692062006">কিবা ভুল হ’ল। এপ্‌টো পুনৰ খুলিবলৈ চেষ্টা কৰক।</translation>
 <translation id="2189104374785738357">এপিএনৰ সবিশেষ সম্পাদনা কৰক</translation>
 <translation id="2195732836444333448">এই মুহূৰ্তত সক্ষমতাত আছে। সোনকালে উভতি আহক।</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্পট্‌ গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> সৃষ্টি কৰিবলৈ বা চাবলৈ প্ৰম্পট্‌ বাছনি কৰক</translation>
 <translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
+<translation id="2475982808118771221">কোনো আসোঁৱাহ হৈছে</translation>
 <translation id="2480572840229215612">কেঁকোৰা</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
 <translation id="2486301288428798846">কাঠ</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="6156030503438652198">মেৰুন আৰু গুলপীয়া</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> টা ডিভাইচৰ ভিতৰত <ph name="INDEX" />তম ডিভাইচ, যাৰ নাম <ph name="NAME" />।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" />ৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
 <translation id="7108668606237948702">দিয়ক</translation>
+<translation id="7117228822971127758">অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="7118522231018231199">আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা এপিএনসমূহ বাছনি কৰাটো নিশ্চিত কৰক। কোনো এপিএন বাছনি কৰাটোৱে যিকোনো কাষ্টম এপিএন অক্ষম কৰিব। অমান্য এপিএনসমূহে আপোনাৰ ম’বাইল সংযোগত ব্যাঘাত জন্মাব পাৰে।</translation>
 <translation id="7119389851461848805">পাৱাৰ</translation>
 <translation id="7129287270910503851">প্ৰতিমাহে এই দিনটোত আপোনাৰ ডেটাৰ ব্যৱহাৰ ৰিছেট কৰা হ’ব</translation>

@@ -543,7 +543,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1392047138650695757">Dicionários do usuário</translation>
 <translation id="139300021892314943">Limitar quem pode fazer login</translation>
 <translation id="1393283411312835250">Sol e nuvens</translation>
-<translation id="1395730723686586365">Atualizador iniciado</translation>
 <translation id="1395832189806039783">Destacar item com o foco do teclado</translation>
 <translation id="1396120028054416908">Voltar para <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Erro na configuração da impressora</translation>
@@ -1362,7 +1361,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1942128823046546853">Ler e mudar seus dados em qualquer site</translation>
 <translation id="1944528062465413897">Código de pareamento Bluetooth:</translation>
 <translation id="1944535645109964458">Nenhuma chave de acesso disponível</translation>
-<translation id="1944921356641260203">Atualização encontrada</translation>
 <translation id="1947136734041527201">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
 <translation id="1948528728718281125">O acesso à câmera é concedido a apps e sites com essa permissão e serviços do sistema</translation>
 <translation id="1949332606889020901">IDs de falha</translation>
@@ -2239,7 +2237,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2546991196809436099">Aumente o zoom para ampliar os itens na tela. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> permitida</translation>
 <translation id="2548545707296594436">Redefinir o cache do perfil do eSIM</translation>
-<translation id="2549766998450508148">Pressione de 1 a 4 teclas modificadoras (Ctrl, Alt, Shift ou pesquisa) e mais 1 tecla. Também é possível selecionar uma única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2550212893339833758">Memória trocada</translation>
 <translation id="2550596535588364872">Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -2436,7 +2433,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2705736684557713153">Role até a parte inferior da tela e ative o tethering instantâneo, se essa opção for exibida. Se não for, está tudo pronto.</translation>
 <translation id="2706304388244371417">Faça backup no Google Drive Restaure dados ou troque de dispositivo a qualquer momento com facilidade. O backup inclui dados do app. Os backups são enviados ao Google e criptografados usando a senha da Conta do Google da criança. <ph name="BEGIN_LINK1" />Saiba mais sobre o backup<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Para cima</translation>
-<translation id="2707024448553392710">Fazendo o download do componente</translation>
 <translation id="270921614578699633">Média</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2710101514844343743">Dados de uso e diagnóstico</translation>
@@ -2560,7 +2556,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2779728796406650689">Essa opção permite que o Google Assistente dê respostas personalizadas quando você fizer perguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Erro ao instalar o aplicativo Linux</translation>
-<translation id="2783298271312924866">Download concluído</translation>
 <translation id="2783952358106015700">Usar sua chave de segurança com <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Check-up de senha</translation>
 <translation id="2785279781154577715">Aparência do card de visualização ao passar o cursor sobre a guia</translation>
@@ -2887,7 +2882,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="301525898020410885">O idioma foi definido pela organização</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">Nenhuma entrada de registro</translation>
-<translation id="3016641847947582299">Componente atualizado</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão de subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
@@ -2966,6 +2960,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Salvar apenas neste dispositivo</translation>
 <translation id="3076977359333237641">Seus dados de login foram excluídos</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">A rede não está sincronizada com a conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">extensões</translation>
@@ -7208,7 +7203,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6208521041562685716">Ativando dados móveis</translation>
 <translation id="6208725777148613371">Falha ao salvar no <ph name="WEB_DRIVE" />: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Se você esqueceu a senha longa ou quer mudar essa configuração, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Atualizando componente</translation>
 <translation id="6209908325007204267">Seu dispositivo inclui um Upgrade do Chrome Enterprise, mas seu nome de usuário não está associado a uma conta corporativa. Acesse g.co/ChromeEnterpriseAccount em outro dispositivo para criar uma conta corporativa.</translation>
 <translation id="6210282067670792090">Na barra de endereço, use essa tecla com atalhos de mecanismos de pesquisa e da pesquisa em sites</translation>
 <translation id="6211067089253408231">Ativar o ponto de acesso instantâneo</translation>
@@ -7272,7 +7266,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Atualização pronta</translation>
 <translation id="6248988683584659830">Pesquisar nas configurações</translation>
 <translation id="6249200942125593849">Gerenciar recursos de acessibilidade</translation>
 <translation id="6250186368828697007">Os detalhes são ocultados quando você compartilha a tela</translation>
@@ -8100,7 +8093,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6852290167968069627">O ChromeOS não pode retomar sua sessão anterior devido a um problema na rede. Conecte-se a uma rede estável e tente de novo.</translation>
 <translation id="6852529053326738838">Pergunte à sua organização ou registre-se com seu e-mail comercial para verificar se a conta está qualificada.</translation>
 <translation id="6853029310037965825">O <ph name="APP_TYPE" /> instalado foi pela <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Atualizador em modo de espera</translation>
 <translation id="68541483639528434">Fechar outras guias</translation>
 <translation id="6855892664589459354">Backup e restauração do Crostini</translation>
 <translation id="6856348640027512653">Sem permissão para usar dispositivos ou dados de realidade virtual</translation>
@@ -8911,7 +8903,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Na próxima vez, o smartphone desbloqueará o <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">O componente já está atualizado</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# guia aberta, pressione para alternar a barra de guias}one{# guia aberta, pressione para alternar a barra de guias}other{# guias abertas, pressione para alternar a barra de guias}}</translation>
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7465777686629334728">Remover ambiente de desenvolvimento gerenciado (<ph name="SPECIFIC_NAME" />)</translation>

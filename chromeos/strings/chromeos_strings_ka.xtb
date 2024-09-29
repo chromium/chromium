@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
+<translation id="2173302385160625112">შეამოწმეთ თქვენი ინტერნეტ-კავშირი</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
 <translation id="2189104374785738357">შეასრულეთ APN-ის დეტალების რედაქტირება</translation>
 <translation id="2195732836444333448">რესურსები არასაკმარისია. დაბრუნდით მოგვიანებით.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">ტიპი</translation>
 <translation id="2468124392950503650">აირჩიეთ მოთხოვნა, რომ შექმნათ ან ნახოთ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />მოთხოვნის სახელმძღვანელო<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ისარგებლეთ დაწერაში დახმარებით, რომ Google-ის ხელოვნური ინტელექტის მეშვეობით შექმნათ მონახაზი, ან დახვეწოთ არსებული ნამუშევარი.</translation>
+<translation id="2475982808118771221">შეცდომა მოხდა</translation>
 <translation id="2480572840229215612">კიბორჩხლები</translation>
 <translation id="248546197012830854">მოწყობილობა ხაზგარეშე რეჟიმშია. დამხმარე კონტენტის სანახავად დაუკავშირდით Wi-Fi ქსელს.</translation>
 <translation id="2486301288428798846">ტყე</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">მომხმარებლის სერტიფიკატი</translation>
 <translation id="6146993107019042706">დასასრულებლად შეიყვანეთ თქვენი ახალი პაროლი</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ინტერნეტთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="6156030503438652198">წაბლისფერი და ვარდისფერი</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">მოწყობილობა <ph name="INDEX" /> / <ph name="COUNT" />-დან, სახელწოდებით — <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრების არჩევა</translation>
 <translation id="7108668606237948702">შეყვანა</translation>
+<translation id="7117228822971127758">გთხოვთ, ცადოთ მოგვიანებით</translation>
 <translation id="7118522231018231199">აირჩიეთ მხოლოდ თქვენი მობილური ოპერატორის ან ადმინისტრატორის მიერ მოწოდებული APN-ები. APN-ის არჩევისას გაითიშება მორგებული APN-ები. არასწორმა APN-ებმა, შესაძლოა, მობილური კავშირის შეფერხება გამოიწვიოს.</translation>
 <translation id="7119389851461848805">ენერგია</translation>
 <translation id="7129287270910503851">მონაცემთა მოხმარების მთვლელი განულდება ყოველი თვის ამ დღეს</translation>

@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
 <translation id="2161656808144014275">Тэкст</translation>
 <translation id="2163937499206714165">Уключыць цёмны рэжым</translation>
+<translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2180197493692062006">Нешта пайшло не так. Паспрабуйце адкрыць праграму паўторна.</translation>
 <translation id="2189104374785738357">Змяненне падрабязных звестак пра APN</translation>
 <translation id="2195732836444333448">Не хапае рэсурсаў. Вярніцеся крыху пазней.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Тып</translation>
 <translation id="2468124392950503650">Выберыце запыт для стварэння ці паглядзіце <ph name="BEGIN_LINK_PROMPTING_GUIDE" />дапаможнік па запытах<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Выкарыстоўвайце дапамогу з напісаннем на аснове штучнага інтэлекту ад Google, каб ствараць чарнавікі або дапрацоўваць існуючыя тэксты</translation>
+<translation id="2475982808118771221">Адбылася памылка</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Прылада па-за сеткай. Каб праглядзець даведачнае змесціва, падключыцеся да сеткі Wi-Fi.</translation>
 <translation id="2486301288428798846">драўніна</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Сертыфікат карыстальніка</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Не ўдалося падключыцца да інтэрнэту</translation>
 <translation id="6156030503438652198">каштанавы і ружовы</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Прылада <ph name="INDEX" /> з <ph name="COUNT" />. Назва: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Выбраць эксклюзіўныя відэа для <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7117228822971127758">Паўтарыце спробу пазней</translation>
 <translation id="7118522231018231199">Выберыце APN, прапанаваныя аператарам мабільнай сувязі або адміністратарам. Пасля гэтага ўсе карыстальніцкія APN будуць адключаны. Пры выкарыстанні недапушчальных APN мабільнае падключэнне можа быць страчана.</translation>
 <translation id="7119389851461848805">сілкаванне</translation>
 <translation id="7129287270910503851">Даныя пра выкарыстанне трафіка будуць скідацца штомесяц у выбраны дзень</translation>

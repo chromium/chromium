@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2161656808144014275">Mətn</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
+<translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
 <translation id="2189104374785738357">APN detallarını redaktə edin</translation>
 <translation id="2195732836444333448">Hazırda doludur. Sonra yoxlayın.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />Sorğu bələdçisini<ph name="END_LINK_PROMPTING_GUIDE" /> yaratmaq və ya görmək üçün sorğunu seçin</translation>
 <translation id="2472215337771558851">Qaralama yaratmaq və ya mövcud işi təkmilləşdirmək üçün Google AI tərəfindən dəstəklənən Yazı yardımını istifadə edin</translation>
+<translation id="2475982808118771221">Xəta baş verdi</translation>
 <translation id="2480572840229215612">krablar</translation>
 <translation id="248546197012830854">Cihaz oflayndır. Yardım məzmununa baxmaq üçün Wi-Fi şəbəkəsinə qoşulun.</translation>
 <translation id="2486301288428798846">taxta</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">İstifadəçi sertifikatı</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">İnternetə qoşulmaq mümkün deyil</translation>
 <translation id="6156030503438652198">qəhvəyi-qırmızı və çəhrayı</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> üçün eksklüziv illüstrasiya seçin</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Sonra cəhd edin</translation>
 <translation id="7118522231018231199">Mobil təminatçı və ya administrator tərəfindən təqdim edilən APN-ləri seçin. APN seçdikdə fərdi APN-lər deaktiv ediləcək. Yanlış APN-lər mobil bağlantıya mane ola bilər.</translation>
 <translation id="7119389851461848805">qidalanma</translation>
 <translation id="7129287270910503851">Data istifadəsi hər ayın bu günü sıfırlanacaq</translation>

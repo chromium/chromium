@@ -543,7 +543,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1392047138650695757">Brugerordbøger</translation>
 <translation id="139300021892314943">Begræns, hvem der kan logge ind</translation>
 <translation id="1393283411312835250">Sol og skyer</translation>
-<translation id="1395730723686586365">Opdateringsprogrammet er startet</translation>
 <translation id="1395832189806039783">Fremhæv element med tastaturfokus</translation>
 <translation id="1396120028054416908">Tilbage til <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Der opstod en fejl under konfigurationen af printeren</translation>
@@ -1362,7 +1361,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1942128823046546853">Læse og redigere alle dine data på alle websites</translation>
 <translation id="1944528062465413897">Bluetooth-parringskode:</translation>
 <translation id="1944535645109964458">Ingen tilgængelige adgangsnøgler</translation>
-<translation id="1944921356641260203">En opdatering er fundet</translation>
 <translation id="1947136734041527201">Tillader, at du logger ind på websites med den konto, du har hos en identitetstjeneste</translation>
 <translation id="1948528728718281125">Apps, websites, der har kameratilladelsen, og systemtjenester har adgang til kameraet</translation>
 <translation id="1949332606889020901">Id'er for nedbrud</translation>
@@ -2239,7 +2237,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2546991196809436099">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen.</translation>
 <translation id="2548347166720081527">Tillod <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nulstil eSIM-profilens cache</translation>
-<translation id="2549766998450508148">Tryk på 1-4 ændringstaster (Ctrl, Alt, Shift eller søgetasten) og 1 anden tast. Du kan også vælge en enkelt tast.</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="2550212893339833758">Ombyttet hukommelse</translation>
 <translation id="2550596535588364872">Vil du tillade, at <ph name="EXTENSION_NAME" /> åbner <ph name="FILE_NAME" />?</translation>
@@ -2436,7 +2433,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2705736684557713153">Rul til bunden af skærmen, og aktivér Øjeblikkelig netdeling, hvis det vises. Hvis det ikke vises, er alt som det skal være.</translation>
 <translation id="2706304388244371417">Sikkerhedskopiér i Google Drev. Gendan nemt data, eller skift enhed når som helst. Denne sikkerhedskopi omfatter appdata. Sikkerhedskopier uploades til Google og krypteres ved hjælp af adgangskoden til dit barns Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger om sikkerhedskopiering<ph name="BEGIN_LINK1_END" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Op</translation>
-<translation id="2707024448553392710">Komponenten downloades</translation>
 <translation id="270921614578699633">Gennemsnit op</translation>
 <translation id="2709516037105925701">Autofyld</translation>
 <translation id="2710101514844343743">Brugs- og diagnostikdata</translation>
@@ -2561,7 +2557,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2779728796406650689">Dette giver Google Assistent mulighed for at give dig tilpassede svar, når du stiller spørgsmål.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Der opstod en fejl ved installation af Linux-appen</translation>
-<translation id="2783298271312924866">Downloadet</translation>
 <translation id="2783952358106015700">Brug din sikkerhedsnøgle med <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Adgangskodetjek</translation>
 <translation id="2785279781154577715">Det forhåndsvisningsvindue, der vises, når markøren holdes over fanen</translation>
@@ -2888,7 +2883,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="301525898020410885">Sprog, din organisation har angivet</translation>
 <translation id="3015639418649705390">Genstart nu</translation>
 <translation id="3016381065346027039">Ingen logfilposter</translation>
-<translation id="3016641847947582299">Komponenten er opdateret</translation>
 <translation id="3019023222666709803">Pileværktøj</translation>
 <translation id="3019285239893817657">Knap til underside</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
@@ -2967,6 +2961,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Gem kun på denne enhed</translation>
 <translation id="3076977359333237641">Dine logindata blev slettet</translation>
+<translation id="3077734595579995578">Shift</translation>
 <translation id="3080933187214341848">Dette netværk synkroniseres ikke med din konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">udvidelser</translation>
@@ -7207,7 +7202,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6208521041562685716">Mobildata aktiveres</translation>
 <translation id="6208725777148613371">Elementet kunne ikke gemmes i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Komponenten opdateres</translation>
 <translation id="6209908325007204267">Din enhed inkluderer en Chrome Enterprise-opgradering, men dit brugernavn er ikke tilknyttet en virksomhedskonto. Du skal oprette en virksomhedskonto på g.co/ChromeEnterpriseAccount på en sekundær enhed.</translation>
 <translation id="6210282067670792090">I adresselinjen kan du bruge denne tastaturgenvej til genveje til søgemaskiner og websitesøgning</translation>
 <translation id="6211067089253408231">Aktivér øjeblikkeligt hotspot</translation>
@@ -7271,7 +7265,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6247620186971210352">Der blev ikke fundet nogen apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Opdateringen er klar</translation>
 <translation id="6248988683584659830">Søg i indstillinger</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6250186368828697007">Oplysningerne er skjulte, når du deler din skærm</translation>
@@ -8099,7 +8092,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6852290167968069627">ChromeOS kan ikke genoptage din forrige session på grund af et netværksproblem. Opret forbindelse til et stabilt netværk, og prøv igen.</translation>
 <translation id="6852529053326738838">Spørg din organisation, eller tilmeld dig med din arbejdsmail for at se, om din konto er kvalificeret.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> er installeret fra <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Opdateringsprogrammet er i dvale</translation>
 <translation id="68541483639528434">Luk alle andre faner</translation>
 <translation id="6855892664589459354">Sikkerhedskopiering og gendannelse i Crostini</translation>
 <translation id="6856348640027512653">Har ikke tilladelse til at bruge virtual reality-enheder eller -data</translation>
@@ -8910,7 +8902,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746216226901520237">Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Komponenten er allerede opdateret</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# åben fane. Tryk for at vise eller skjule fanelinje.}one{# åben fane. Tryk for at vise eller skjule fanelinje.}other{# åbne faner. Tryk for at vise eller skjule fanelinje.}}</translation>
 <translation id="7465635034594602553">Noget gik galt. Vent et øjeblik, og prøv derefter at køre <ph name="APP_NAME" /> igen.</translation>
 <translation id="7465777686629334728">Fjern administreret udviklingsmiljø (<ph name="SPECIFIC_NAME" />)</translation>

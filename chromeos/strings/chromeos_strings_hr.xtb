@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Uključivanje tamnog načina</translation>
+<translation id="2173302385160625112">Provjerite internetsku vezu</translation>
 <translation id="2180197493692062006">Nešto nije u redu. Pokušajte ponovo otvoriti aplikaciju.</translation>
 <translation id="2189104374785738357">Uređivanje pojedinosti o APN-u</translation>
 <translation id="2195732836444333448">Radimo punim kapacitetom. Vratite se uskoro.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2468124392950503650">Odaberite upit da biste izradili sliku ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Značajku Pomoć pri pisanju koju omogućuje Googleov AI koristite da biste izradili skicu ili usavršili postojeći rad</translation>
+<translation id="2475982808118771221">Došlo je do pogreške</translation>
 <translation id="2480572840229215612">rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s Wi-Fi mrežom da biste vidjeli sadržaj pomoći.</translation>
 <translation id="2486301288428798846">drveta</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Korisnički certifikat</translation>
 <translation id="6146993107019042706">Za dovršetak unesite novu zaporku</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Povezivanje s internetom nije moguće</translation>
 <translation id="6156030503438652198">kestenjaste i ružičaste</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Odaberite ekskluzivna umjetnička djela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Pokušajte ponovo kasnije</translation>
 <translation id="7118522231018231199">Obavezno odaberite APN-ove koje ste dobili od mobilnog operatera ili administratora. Odabirom APN-a onemogućit ćete sve prilagođene APN-ove. Nevažeći APN-ovi mogu ometati vašu mobilnu vezu.</translation>
 <translation id="7119389851461848805">uključivanje/isključivanje</translation>
 <translation id="7129287270910503851">Vaša potrošnja podatkovnog prometa poništavat će se svakog mjeseca na ovaj dan</translation>

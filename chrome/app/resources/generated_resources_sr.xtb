@@ -546,7 +546,6 @@
 <translation id="1392047138650695757">Кориснички речници</translation>
 <translation id="139300021892314943">Ограничи ко може да се пријави</translation>
 <translation id="1393283411312835250">Сунце и облаци</translation>
-<translation id="1395730723686586365">Програм за ажурирање је покренут</translation>
 <translation id="1395832189806039783">Истакните ставку помоћу фокуса тастатуре</translation>
 <translation id="1396120028054416908">Назад на <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Дошло је до грешке при подешавању штампача</translation>
@@ -1352,7 +1351,6 @@
 <translation id="1942128823046546853">да чита и мења све ваше податке на свим веб-сајтовима</translation>
 <translation id="1944528062465413897">Кôд за упаривање са Bluetooth уређајем:</translation>
 <translation id="1944535645109964458">Није доступан ниједан приступни кôд</translation>
-<translation id="1944921356641260203">Ажурирање је пронађено</translation>
 <translation id="1947136734041527201">Омогућава вам да се пријављујете на веб-сајтове помоћу налога који имате у услузи за идентитет</translation>
 <translation id="1948528728718281125">Приступ камери је дозвољен за апликације, веб-сајтове са дозволом за камеру и системске услуге</translation>
 <translation id="1949332606889020901">ИД-ови отказивања</translation>
@@ -2225,7 +2223,6 @@
 <translation id="2546991196809436099">Увећајте приказ да бисте увећали ставке на екрану. Користите тастер за претрагу + Ctrl + M да бисте укључили или искључили лупу.</translation>
 <translation id="2548347166720081527">Функција <ph name="PERMISSION" /> је дозвољена</translation>
 <translation id="2548545707296594436">Ресетуј кеш eSIM профила</translation>
-<translation id="2549766998450508148">Притисните 1–4 модификујућа тастера (ctrl, alt, shift или тастер за претрагу) и још 1 тастер. Можете да изаберете и само један тастер.</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
 <translation id="2550212893339833758">Замењена меморија</translation>
 <translation id="2550596535588364872">Желите ли да дозволите да <ph name="EXTENSION_NAME" /> отвори <ph name="FILE_NAME" />?</translation>
@@ -2422,7 +2419,6 @@
 <translation id="2705736684557713153">Померите до дна екрана и укључите тренутно привезивање ако се приказује. Ако се не прикаже, спремни сте.</translation>
 <translation id="2706304388244371417">Правите резервне копије на Google диску. Лако вратите податке или пређите на други уређај у било ком тренутку. Ова резервна копија укључује податке апликација. Резервне копије се отпремају на Google и шифрују лозинком за дететов Google налог. <ph name="BEGIN_LINK1" />Сазнајте више о резервним копијама<ph name="BEGIN_LINK1_END" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
-<translation id="2707024448553392710">Преузимање компоненте</translation>
 <translation id="270921614578699633">Просек преко</translation>
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
 <translation id="2710101514844343743">Подаци о коришћењу и дијагностички подаци</translation>
@@ -2547,7 +2543,6 @@
 <translation id="2779728796406650689">То омогућава Google помоћнику да пружа прилагођене одговоре када постављате питања.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Грешка при инсталирању Linux апликације</translation>
-<translation id="2783298271312924866">Преузето</translation>
 <translation id="2783952358106015700">Користите безбедносни кључ у апликацији <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Провера лозинки</translation>
 <translation id="2785279781154577715">Изглед картице за преглед при преласку курсором</translation>
@@ -2874,7 +2869,6 @@
 <translation id="301525898020410885">Организација је подесила језик</translation>
 <translation id="3015639418649705390">Поново покрени</translation>
 <translation id="3016381065346027039">Нема уноса у евиденцији</translation>
-<translation id="3016641847947582299">Компонента је ажурирана</translation>
 <translation id="3019023222666709803">Алатка за стрелице</translation>
 <translation id="3019285239893817657">Дугме за подстраницу</translation>
 <translation id="3019595674945299805">Услуга VPN-а</translation>
@@ -2954,6 +2948,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Сачувај само на овом уређају</translation>
 <translation id="3076977359333237641">Подаци за пријављивање су избрисани</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Ова мрежа није синхронизована са налогом. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">додаци</translation>
@@ -7193,7 +7188,6 @@
 <translation id="6208521041562685716">Мобилни подаци се активирају</translation>
 <translation id="6208725777148613371">Чување на листу <ph name="WEB_DRIVE" /> није успело – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Ажурира се компонента</translation>
 <translation id="6209908325007204267">Уређај садржи надоградњу на Chrome за предузећа, али ваше корисничко име није повезано са налогом предузећа. Отворите налог за предузећа тако што ћете посетити g.co/ChromeEnterpriseAccount на секундарном уређају.</translation>
 <translation id="6210282067670792090">У траци за адресу користите ову тастерску пречицу са пречицама за претраживаче и претрагу сајта</translation>
 <translation id="6211067089253408231">Укључи инстант хотспот</translation>
@@ -7257,7 +7251,6 @@
 <translation id="6247620186971210352">Није пронађена ниједна апликација</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Систем: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Ажурирање је спремно</translation>
 <translation id="6248988683584659830">Претражите подешавања</translation>
 <translation id="6249200942125593849">Управљајте функцијама приступачности</translation>
 <translation id="6250186368828697007">Детаљи су сакривени док делите екран</translation>
@@ -8087,7 +8080,6 @@
 <translation id="6852290167968069627">ChromeOS не може да настави претходну сесију због проблема са мрежом. Повежите се на стабилну мрежу и пробајте поново.</translation>
 <translation id="6852529053326738838">Питајте организацију или се региструјте помоћу пословног имејла да бисте проверили да ли ваш налог испуњава услове.</translation>
 <translation id="6853029310037965825">Апликација <ph name="APP_TYPE" /> је инсталирана из: <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Програм за ажурирање је у стању спавања</translation>
 <translation id="68541483639528434">Затвори друге картице</translation>
 <translation id="6855892664589459354">Crostini резервне копије и враћање</translation>
 <translation id="6856348640027512653">Није им дозвољено да користе уређаје или податке виртуелне реалности</translation>
@@ -8899,7 +8891,6 @@
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746216226901520237">Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима.</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">Компонента је већ ажурирана</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# отворена картица, притисните да бисте укључили/искључили траку са картицама}one{# отворена картица, притисните да бисте укључили/искључили траку са картицама}few{# отворене картице, притисните да бисте укључили/искључили траку са картицама}other{# отворених картица, притисните да бисте укључили/искључили траку са картицама}}</translation>
 <translation id="7465635034594602553">Дошло је до грешке. Сачекајте пар минута, па поново покрените апликацију <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Уклоните окружење за развој којим се управља (<ph name="SPECIFIC_NAME" />)</translation>

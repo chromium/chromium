@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
+<translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
 <translation id="2189104374785738357">Úprava podrobností o APN</translation>
 <translation id="2195732836444333448">Momentálně je kapacita plně obsazena. Zkuste to později.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2468124392950503650">Vyberte pokyn nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce pokyny<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
+<translation id="2475982808118771221">Došlo k chybě</translation>
 <translation id="2480572840229215612">krabi</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
 <translation id="2486301288428798846">dřevo</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certifikát uživatele</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Nelze se připojit k internetu</translation>
 <translation id="6156030503438652198">kaštanová a růžová</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Vybrat umělecké dílo exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7117228822971127758">Zkuste to znovu později</translation>
 <translation id="7118522231018231199">Vyberte APN, které vám poskytl mobilní operátor nebo administrátor. Výběrem APN deaktivujete všechny vlastní APN. Neplatné APN mohou narušit vaše mobilní připojení.</translation>
 <translation id="7119389851461848805">napájení</translation>
 <translation id="7129287270910503851">V tento den se využití dat každý měsíc resetuje</translation>

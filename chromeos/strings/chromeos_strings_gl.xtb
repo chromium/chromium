@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
+<translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
 <translation id="2189104374785738357">Editar os detalles do APN</translation>
 <translation id="2195732836444333448">Está ao límite da súa capacidade. Volve probar dentro dun anaco.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2468124392950503650">Selecciona unha solicitude para xerar contido ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía de creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utiliza Axúdame a escribir, con tecnoloxía da IA de Google, para preparar borradores ou puír o traballo que xa teñas feito</translation>
+<translation id="2475982808118771221">Produciuse un erro</translation>
 <translation id="2480572840229215612">cangrexos</translation>
 <translation id="248546197012830854">O dispositivo non ten conexión. Conéctao á rede wifi para ver o contido de axuda.</translation>
 <translation id="2486301288428798846">madeira</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Non se pode establecer conexión con Internet</translation>
 <translation id="6156030503438652198">granates e rosas</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Escoller o material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
+<translation id="7117228822971127758">Téntao de novo máis tarde</translation>
 <translation id="7118522231018231199">Asegúrate de seleccionar os APN que forneza o teu operador móbil ou persoa administradora. Ao seleccionar un APN, desactivaranse os APN personalizados. Os APN non válidos poden provocar que se desconecte a conexión móbil.</translation>
 <translation id="7119389851461848805">alimentación</translation>
 <translation id="7129287270910503851">O teu uso de datos restablecerase este día de cada mes</translation>

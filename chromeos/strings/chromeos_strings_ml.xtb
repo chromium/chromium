@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2161656808144014275">വാചകം</translation>
 <translation id="2163937499206714165">ഡാർക്ക് മോഡ് ഓണാക്കുക</translation>
+<translation id="2173302385160625112">ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="2189104374785738357">APN വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2195732836444333448">നിലവിൽ പരമാവധി ശേഷിയിലെത്തിയിരിക്കുന്നു. ഉടനെ തിരിച്ചു വരൂ.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">തരം</translation>
 <translation id="2468124392950503650">സൃഷ്ടിക്കാൻ പ്രോംപ്റ്റ് തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />പ്രോംപ്റ്റ് ഗൈഡ്<ph name="END_LINK_PROMPTING_GUIDE" /> കാണുക</translation>
 <translation id="2472215337771558851">ഒരു ഡ്രാഫ്റ്റ് സൃഷ്ടിക്കാനോ നിലവിലുള്ള വർക്ക് പരിഷ്കരിക്കാനോ, Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന 'എന്നെ എഴുതാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
+<translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
 <translation id="2480572840229215612">ഞണ്ടുകൾ</translation>
 <translation id="248546197012830854">ഉപകരണം ഓഫ്‌ലൈനാണ്. സഹായ ഉള്ളടക്കം കാണാൻ വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="2486301288428798846">മരത്തടി</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ്</translation>
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ഇന്റർനെറ്റ് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="6156030503438652198">മെറൂണും പിങ്കും</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />-ൽ <ph name="COUNT" />-ാമത്തെ ഉപകരണം, പേര് <ph name="NAME" />.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> എക്‌സ്‌ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
+<translation id="7117228822971127758">പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7118522231018231199">നിങ്ങളുടെ മൊബൈൽ ദാതാവോ അഡ്‌മിനോ നൽകിയ APN-കൾ തിരഞ്ഞെടുക്കുന്നുവെന്ന് ഉറപ്പാക്കുക. ഒരു APN തിരഞ്ഞെടുക്കുന്നത് എല്ലാ ഇഷ്‌ടാനുസൃത APN-കളും പ്രവർത്തനരഹിതമാക്കും. അസാധുവായ APN-കൾ നിങ്ങളുടെ മൊബൈൽ കണക്ഷനെ തടസ്സപ്പെടുത്തിയേക്കാം.</translation>
 <translation id="7119389851461848805">പവർ</translation>
 <translation id="7129287270910503851">എല്ലാ മാസവും ഈ ദിവസം നിങ്ങളുടെ ഡാറ്റാ ഉപയോഗം റീസെറ്റ് ചെയ്യും</translation>

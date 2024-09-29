@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
+<translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
 <translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2468124392950503650">Выберите запрос или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство по его составлению<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
+<translation id="2475982808118771221">Произошел сбой.</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Устройство не подключено к интернету. Подключитесь к сети Wi-Fi, чтобы посмотреть справочный контент.</translation>
 <translation id="2486301288428798846">древесина</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Сертификат пользователя</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Не удается подключиться к Интернету</translation>
 <translation id="6156030503438652198">темно-бордовых и розовых</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> из <ph name="COUNT" /> под названием "<ph name="NAME" />".</translation>
 <translation id="7107255225945990211">Выбрать эксклюзивное видео для <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Войти</translation>
+<translation id="7117228822971127758">Повторите попытку позже.</translation>
 <translation id="7118522231018231199">Выберите один из вариантов, предложенных мобильным оператором или администратором. Персональные точки доступа будут отключены. Из-за недопустимой точки доступа подключение к мобильной сети может быть прервано.</translation>
 <translation id="7119389851461848805">питание</translation>
 <translation id="7129287270910503851">Сброс данных об использовании трафика будет происходить в этот день каждого месяца</translation>

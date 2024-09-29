@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
+<translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
 <translation id="2195732836444333448">目前已达到资源上限。请稍后再试。</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">类型</translation>
 <translation id="2468124392950503650">选择提示来生成图片，或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
+<translation id="2475982808118771221">出现错误</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
 <translation id="2486301288428798846">木材</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">用户证书</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">无法连接到互联网</translation>
 <translation id="6156030503438652198">栗色和粉色</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
 <translation id="7107255225945990211">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="7108668606237948702">输入</translation>
+<translation id="7117228822971127758">请稍后重试</translation>
 <translation id="7118522231018231199">请务必选择您的移动服务商或管理员提供的 APN。选择 APN 会停用所有自定义 APN。无效的 APN 可能会中断移动网络连接。</translation>
 <translation id="7119389851461848805">电源</translation>
 <translation id="7129287270910503851">您的流量消耗会在每月的这一天重置</translation>

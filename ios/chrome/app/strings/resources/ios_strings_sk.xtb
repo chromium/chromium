@@ -45,7 +45,6 @@
 <translation id="1204075260022434100">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{{count} záložky boli uložené do priečinka {title} vo vašom účte {email}}many{{count} bookmarks saved to "{title}" in your account, {email}}other{{count} záložiek bolo uložených do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="120431140543679678">Sledovať</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1209206284964581585">Skryť</translation>
 <translation id="1217294226280635614">Rozdelené zobrazenie</translation>
 <translation id="1219674500290482172">Nepodarilo sa pripojiť k internetu.</translation>
 <translation id="1227113644794103810">Neaktívne karty</translation>
@@ -77,6 +76,7 @@
 <translation id="1334485477792811969">Webové služby</translation>
 <translation id="1347468774581902829">Spravovať aktivitu</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358214951266274152">Navštíviť skopírovaný odkaz</translation>
 <translation id="1360432990279830238">Odhlásiť sa a vypnúť synchronizáciu?</translation>
 <translation id="1363028406613469049">Stopa</translation>
 <translation id="1364367057792633742">Nová karta</translation>
@@ -97,7 +97,6 @@
 <translation id="1436671784520050284">Pokračovať v nastavení</translation>
 <translation id="143681031165817424">Adresa je uložená iba v tomto zariadení</translation>
 <translation id="1445276840641906250">Všetky vaše karty v jednom prehliadači</translation>
-<translation id="1446895492767488343">Skryť položku Vyžiadať mobilný web</translation>
 <translation id="1450170672351507823">Je zapnutá štandardná ochrana. Lepšie zabezpečenie dosiahnete používaním rozšírenej ochrany.</translation>
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
 <translation id="1466035273550360103">Žiadne otvorené karty</translation>
@@ -111,7 +110,6 @@
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
 <translation id="1497590942294823549">Ponuka → Správca hesiel</translation>
 <translation id="1498283581832036924">Účet na webe <ph name="WEBSITE" /> odstránený nebude.</translation>
-<translation id="1501480321619201731">Odstrániť skupinu</translation>
 <translation id="1506063256525392513">Umožňuje vytvárať a nahrávať fotky, ako aj skenovať QR kódy</translation>
 <translation id="1509486075633541495">Prihláste sa na webe</translation>
 <translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
@@ -123,6 +121,8 @@
 <translation id="1531038290222364269">Zobraziť karty</translation>
 <translation id="1536390784834419204">Preložiť stránku</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
+<translation id="1545749641540134597">Naskenovať kód QR</translation>
+<translation id="1554477036522844996">Nové okno</translation>
 <translation id="1571780780926010134">Karty inkognito</translation>
 <translation id="1580715474678097352">Chráňte sa pred nebezpečenými webmi</translation>
 <translation id="1580783302095112590">E-mail bol odoslaný.</translation>
@@ -131,6 +131,7 @@
 <translation id="1598751033135758830">Otvoriť v aplikácii…</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}few{# adresy}many{# addresses}other{# adries}}</translation>
 <translation id="1605405588277479165">Vypnuté – neodporúča sa</translation>
+<translation id="1605658421715042784">Kopírovať obrázok</translation>
 <translation id="1612642630650745968">Sledovanie zásielky bolo zrušené</translation>
 <translation id="1612754831519568745">Bezpečné prehliadanie je momentálne vypnuté. Získajte ochranu pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -148,12 +149,12 @@
 <translation id="1654232554734641711">Prístup k mikrofónu je povolený</translation>
 <translation id="16554782717487656">Rozpoznať jednotky</translation>
 <translation id="1657011748321897393">Zdieľanie zlyhalo, pretože nemáte pripojenie k sieti.</translation>
+<translation id="1668001730617725852">Otvoriť v novej skupine kariet</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="169048873465870056">Chcete odstrániť kartu aj skupinu?</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Odstránenie prístupového kľúča</translation>
-<translation id="1713541401465507417">Zavrieť všetky karty a skupiny</translation>
 <translation id="1713777106376424209">Doručila služba</translation>
 <translation id="1715515772563243997">Ak doméne <ph name="SITE" /> dôverujete, môžete sa prihlásiť uloženým heslom.</translation>
 <translation id="1728549374069268714">Prilepiť a prejsť</translation>
@@ -167,6 +168,7 @@
 <translation id="1767766085187034454">Prekladač Google</translation>
 <translation id="1771016937398045251">Ponuka Nástroje</translation>
 <translation id="1779354709911146450">Chyba overenia</translation>
+<translation id="1780152987505130652">Zavrieť skupinu</translation>
 <translation id="178400879184240105">Vaše heslá sú jedinečné</translation>
 <translation id="1807893857950749072">Povoľte upozornenia na sledovanie cien…</translation>
 <translation id="1810976980198522421">Zrušiť</translation>
@@ -177,11 +179,9 @@
 <translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Upozornenia, keď dostanete karty z iných zariadení.</translation>
 <translation id="1827529786398596735">Pridržte plochu</translation>
-<translation id="1829244130665387512">Nájsť na stránke</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{Záložky boli uložené do vášho účtu Google {email}}many{Záložky boli uložené do vášho účtu Google {email}}other{Záložky boli uložené do vášho účtu Google {email}}}</translation>
 <translation id="183878838231635348">Na tejto karte sa zobrazujú všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás kontrola bezpečnosti automaticky zistí.</translation>
-<translation id="1853236860984942211">Pridanie do čitateľského zoznamu</translation>
 <translation id="1854463785401910334">Hľadať v otvorených kartách</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} z {count} hesla}few{{position} z {count} hesiel}many{{position} of {count} passwords}other{{position} z {count} hesiel}}</translation>
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
@@ -236,7 +236,6 @@
 <translation id="2067852168641682340">Vždy ukladať do tohto účtu</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 karta}few{{count} karty}many{{count} tabs}other{{count} kariet}}</translation>
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
-<translation id="2074527029802029717">Odopnúť kartu</translation>
 <translation id="2078437078822043850">Ak chcete prehliadať v režime inkognito, posuňte sa doprava.</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2082906935540894275">Funkcie, ktoré sú pre vás najrelevantnejšie v rôznych časoch.</translation>
@@ -244,11 +243,14 @@
 <translation id="2096239473850415494">Nepodarilo sa stiahnuť</translation>
 <translation id="2103075008456228677">Otvoriť history.google.com</translation>
 <translation id="2104436223719117661">Populárne vyhľadávania</translation>
+<translation id="21133533946938348">Pripnúť kartu</translation>
 <translation id="2119636449201577317">Otvoriť v aplikácii…</translation>
 <translation id="2122754583996902531">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="2139867232736819575">Vyhľadať skopírovaný text</translation>
 <translation id="2147127444698817042">K dispozícii len v iPhone</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2149968176347646218">Pripojenie nie je zabezpečené</translation>
+<translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2161446265348023004">Prepnúť na otvorené okno</translation>
 <translation id="2164946989711475905">Prihlásiť sa…</translation>
 <translation id="2175927920773552910">QR kód</translation>
@@ -271,10 +273,10 @@
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Exportovať heslá…</translation>
 <translation id="2265069324308685684">Odstraňujú sa dáta prehliadania…</translation>
+<translation id="2267753748892043616">Pridať účet</translation>
 <translation id="2268044343513325586">Upraviť</translation>
 <translation id="2271452184061378400">Tu sa ukladajú vaše skupiny kariet</translation>
 <translation id="2273327106802955778">Ponuka Viac</translation>
-<translation id="227432585807186192">Otvoriť v skupine kariet</translation>
 <translation id="2274800392139890332">Zastaviť sledovanie tejto zásielky</translation>
 <translation id="2287614783861766820">{count,plural, =1{Táto adresa bude odstránená z tohto zariadenia.}few{Tieto adresy budú odstránené z tohto zariadenia.}many{Tieto adresy budú odstránené z tohto zariadenia.}other{Tieto adresy budú odstránené z tohto zariadenia.}}</translation>
 <translation id="2297989278479054870">Po odhlásení budú záložky, heslá a ďalšie položky vo vašom účte Google odstránené z tohto zariadenia.</translation>
@@ -294,6 +296,7 @@
 <translation id="235789365079050412">Pravidlá ochrany súkromia spoločnosti Google</translation>
 <translation id="2359043044084662842">Preložiť</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
+<translation id="2360196772093551345">Vyžiadať stránky pre mobil</translation>
 <translation id="2362083820973145409">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
 <translation id="236977714248711277">Weby nemôžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
 
@@ -325,6 +328,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2511117522375201202">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) odhalených hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
 <translation id="2513103768503127042">Tu nájdete svoje skupiny kariet</translation>
 <translation id="251837347827266434">Systém vás odhlási, karty sa zavrú a dáta prehliadania odstránia</translation>
+<translation id="2529021024822217800">Otvoriť všetky</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skryté, heslo</translation>
 <translation id="2539748786028143624">Zapnúť rozšírenú ochranu…</translation>
@@ -370,7 +374,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="271033894570825754">Nové</translation>
 <translation id="2718352093833049315">Len s Wi‑Fi</translation>
 <translation id="2721190673959776287">Ukážka účinného pomocníka v službe pre kontextový panel, ktorý by sa mal zobrazovať niekoľkokrát denne.</translation>
-<translation id="2723020285498840769">Skryť položku Textová lupa</translation>
 <translation id="2747003861858887689">Predchádzajúce pole</translation>
 <translation id="2749231692441336879">Sledujete <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755595981383829244">Teraz budete dostávať upozornenia na obsah</translation>
@@ -395,25 +398,23 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2870560284913253234">Web</translation>
 <translation id="2876369937070532032">Pri ohrození zabezpečenia odosiela Googlu webové adresy niektorých navštívených stránok</translation>
 <translation id="2883151425485251736">Zobrazujte si a upravujte témy, ktoré ste v účte skryli</translation>
+<translation id="288655811176831528">Zavrieť kartu</translation>
 <translation id="2888631381369839306">Upozornenia na sledovanie cien sú zapnuté</translation>
 <translation id="288902476966286676">Vrátenie odosielateľovi</translation>
-<translation id="2894757982205307093">Nová karta v skupine</translation>
 <translation id="2905479111267140204">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
-<translation id="2908238736374560183">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Add tabs to group}other{Pridať karty do skupiny}}</translation>
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
 <translation id="2920866371965792875">Ak si chcete pozrieť aktuality z tohto webu, prejdite tu.</translation>
 <translation id="2922210239002704889">Prejdite na domovskú stránku alebo klávesnicu</translation>
 <translation id="2924940770243654951">Otvoriť na novej karte Inkognito</translation>
 <translation id="2931440415625410757">Zobraziť pokyny</translation>
+<translation id="2952278131021475699">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="2962516096219646456">Zobraziť všetky údaje automatického dopĺňania</translation>
 <translation id="2963044753825419640">Povoľte webom a aplikáciám automaticky inovovať existujúce účty, aby mohli používať prístupové kľúče (keď sú k dispozícii)</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
-<translation id="2977480621796371840">Odstrániť zo skupiny</translation>
-<translation id="2979639724566107830">Otvoriť v novom okne</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
+<translation id="2989805286512600854">Otvoriť na novej karte</translation>
 <translation id="2990025507101398383">Žiadne karty inkognito</translation>
 <translation id="2996291259634659425">Vytvorenie prístupovej frázy</translation>
-<translation id="2999340291133730">Otvoriť offline verziu</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Nová zásielka je sledovaná}few{Nové zásielky sú sledované}many{New packages tracked}other{Nové zásielky sú sledované}}</translation>
 <translation id="3010025794097054078">Chráňte sa pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>
 <translation id="301080557829842765">Sprievodca ochranou súkromia</translation>
@@ -446,6 +447,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="313283613037595347">Vytvoriť novú kartu inkognito.</translation>
 <translation id="3143515551205905069">Zrušiť synchronizáciu</translation>
 <translation id="314837624430314508">Udržte si prehľad o najnovších správach, sledovaní cien, aktualitách a ďalšom obsahu.</translation>
+<translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="315778507796115851">História</translation>
 <translation id="31652791196570636">Zavrieť</translation>
 <translation id="3167868116600277716">Kanál Objaviť</translation>
@@ -484,13 +486,11 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3371831930909698441">Prekladač je k dispozícii. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, heslá a ďalšie položky nájdete odteraz na začiatku.</translation>
 <translation id="3380352560400387991">Tento web sa pokúša otvoriť aplikáciu. Opustíte tým režim inkognito.</translation>
-<translation id="3383954226298202851">Sledovať cenu</translation>
 <translation id="3404232721752787413">Uložiť vo Fotkách Google</translation>
 <translation id="3404744938087714423">Po odhlásení sa vypne synchronizácia.</translation>
 <translation id="3406506285180498376">Zdieľať stránku…</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. október 2023</translation>
-<translation id="3419398945326849444">Vyhľadávanie v režime inkognito</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="3443810440409579745">Karta bola prijatá.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -506,20 +506,17 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3504377992102007712">Nastavenia</translation>
 <translation id="35083190962747987">Otvoriť ${url}</translation>
 <translation id="3511519535430890904">Pridajte ochranu pri prehliadaní</translation>
-<translation id="3513276283366825110">Prispôsobenie ponuky</translation>
 <translation id="3517216995152707259">Odstránením dát prehliadania sa neodhlásite z účtu Google. Ak to chcete urobiť, <ph name="BEGIN_LINK" />odhláste sa z Chromu<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Otvorte kartu a prehliadajte web.</translation>
-<translation id="3519519192193787760">Skryť položku Upraviť záložku</translation>
 <translation id="3519905498307021260">{count,plural, =1{Otvoriť kartu}few{Otvoriť {count} karty}many{Open {count} tabs}other{Otvoriť {count} kariet}}</translation>
 <translation id="3523789730715594198">Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="3527085408025491307">Priečinok</translation>
 <translation id="3529024052484145543">Nezabezpečené</translation>
 <translation id="3530206579861815432">Rýchlo nájdite otvorené a nedávno zavreté karty vo svojich synchronizovaných zariadeniach.</translation>
 <translation id="3530767473765895035">Spravovať účty v tomto zariadení…</translation>
+<translation id="3533436815740441613">Nová karta</translation>
 <translation id="3547356470684043247">Prečítajte si hodnotenia zákazníkov týkajúce sa výrobkov, služieb alebo ich skúseností. Na základe týchto recenzií sa potom budete môcť informovane rozhodovať.</translation>
 <translation id="3549391962818677448">Bol uskutočnený pokus o doručenie. Zopakuje sa.</translation>
-<translation id="3551148497083524451">Vyhľadanie na stránke…</translation>
-<translation id="3551602038921373325">Textová lupa…</translation>
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="355765753469272474">Späť</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
@@ -530,11 +527,11 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
 <translation id="3582976576569261467">Váš obľúbený prehliadač je teraz k dispozícii v systéme iPadOS</translation>
 <translation id="3587885837929752825">Vaša organizácia obmedzuje, čo môžete uložiť vo svojom účte Google.</translation>
+<translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
 <translation id="3591006724568464696">Nedávne karty nie sú k dispozícii</translation>
 <translation id="3595252146048399851">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="3596414637720633074">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3602260545951981695">Vyberte položku Rozšírená ochrana</translation>
-<translation id="3606746615845065096">Zavrieť kartu</translation>
 <translation id="3622175633937495219">Hľadať v histórii (nájdené: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Potiahnutím po okraji sa vrátite späť.</translation>
 <translation id="362709345066740529">Tu si môžete prispôsobiť karty, feed a ďalšie položky</translation>
@@ -606,7 +603,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3982893814825393515">Nahlásenie problému…</translation>
 <translation id="398604237578616937">Prihlásili ste sa ako <ph name="USER_EMAIL" />. Otvorte ponuku účtu.</translation>
 <translation id="3986739045730058129">Prejsť na kartu</translation>
-<translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="3994422733891749358">Vyberte, ktoré upozornenia chcete dostávať</translation>
 <translation id="3995521777587992544">Ukazovateľ priebehu načítania stránky, načítané <ph name="EMAIL" />.</translation>
@@ -617,12 +613,12 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4021931095789478915">Pridanie ${url} do čitateľského zoznamu</translation>
 <translation id="4028871427853484857">Uložiť do účtu…</translation>
 <translation id="4038354071007134711">Tento súbor nedokáže otvoriť žiadna aplikácia na tomto zariadení.</translation>
+<translation id="4042870976416480368">Nájsť na stránke</translation>
 <translation id="4045648459118332842">Získajte svoje uložené heslá v ľubovoľnej aplikácii jedným klepnutím</translation>
 <translation id="4049419681095579435">Zásielka je už sledovaná</translation>
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
 <translation id="4054572406751135230">Udržte si prehľad o správach, športe a ďalších témach.</translation>
 <translation id="4070132839822635162">Neprihlasovať sa</translation>
-<translation id="4078089558472488816">Vyžiadať web pre počítače</translation>
 <translation id="4094361089640885693">Jednoducho sledujte ceny a získavajte cenové štatistiky.</translation>
 <translation id="4108998448622696017">Zisťuje škodlivé udalosti a upozorní vás, keď k nim dôjde.</translation>
 <translation id="4111985840824673503">Označiť všetko ako prečítané</translation>
@@ -648,7 +644,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4183350924949589798">Chcete zvýšiť zabezpečenie?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} slabé heslo}few{{count} slabé heslá}many{{count} weak passwords}other{{count} slabých hesiel}}</translation>
-<translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} položka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju do účtu Google {email}.}few{{count} položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
 <translation id="421070604241073551">Keď je táto možnosť zapnutá, údaje sa ukladajú do vášho účtu Google. Keď je vypnutá, údaje sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="4224534474590365556">Chcete zavrieť viac než 99 neaktívnych kariet?</translation>
@@ -656,7 +651,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4231395118547300571">Upozornenia kontroly bezpečnosti sú zapnuté</translation>
 <translation id="4237377247299956313">Klepnite na položku <ph name="BEGIN_BOLD" />Predvolená aplikácia prehliadača<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
-<translation id="4248717096351188227">Vytvoriť QR kód</translation>
 <translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{Otvoriť {count} kartu}few{Otvoriť {count} karty}many{Open {count} tabs}other{Otvoriť {count} kariet}}</translation>
 <translation id="4251531167342733205">Využívajte svoj obľúbený prehliadač naplno.</translation>
 <translation id="4253168017788158739">Poznámka</translation>
@@ -666,19 +660,19 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4272631900155121838">Ak chcete naskenovať QR kód, povoľte v nastaveniach fotoaparát</translation>
 <translation id="4277990410970811858">Bezpečné prehliadanie</translation>
 <translation id="4279431713294750185">Posunutím po okraji prejdete dopredu.</translation>
-<translation id="427987768447457592">Nová skupina kariet</translation>
 <translation id="4282944936010261425">Nenašli sa žiadne problémy so zabezpečením, ktoré by ste mali vyriešiť.</translation>
 <translation id="4286718549648564014">Adresa bola presunutá do vášho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označiť ako prečítané</translation>
 <translation id="428768789042547925">Novinky</translation>
+<translation id="429074084062258019">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Pridať karty do skupiny}other{Pridať karty do skupiny}}</translation>
 <translation id="4302061870579014542">Nastaviť umiestnenie</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4309403553630140242">Ďalšie informácie získate dvojitým klepnutím</translation>
 <translation id="4320848494125124980">Nedávne</translation>
+<translation id="4322394346347055525">Zatvoriť ostatné karty</translation>
 <translation id="4324735664183300693">Zapnúť upozornenia</translation>
 <translation id="4328843285884395590">Môj disk</translation>
 <translation id="4331177082088332784">Môžete to spravovať v BEGIN_LINK nastaveniach obsahu END_LINK</translation>
-<translation id="4333100555184633720">Odstrániť dáta prehliadania</translation>
 <translation id="4334428914252001502">1 neprečítaný článok.</translation>
 <translation id="4338258232580025606">Nemôžem sa prihlásiť</translation>
 <translation id="4338650699862464074">Odosiela Googlu webové adresy navštívených stránok.</translation>
@@ -712,7 +706,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4495516234578759322">Nájsť ďalšie</translation>
 <translation id="4502423230170890588">Odstrániť z tohto zariadenia</translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
-<translation id="4511669830082467224">Vyhľadať obrázok Googlom</translation>
 <translation id="4520798012560649652">Ďalšie informácie o režime inkognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} záložka}few{{count} záložky}many{{count} bookmarks}other{{count} záložiek}}</translation>
 <translation id="4525629404718770519">Zobraziť ukážky odkazov</translation>
@@ -734,7 +727,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="461440297010471931">Vyhľadávate pomocou Googlu</translation>
 <translation id="4619564267100705184">Overte, že ste to vy</translation>
 <translation id="4619615317237390068">Karty z iných zariadení</translation>
-<translation id="4620446472171153485">Vyžiadať mobilný web</translation>
 <translation id="4620845369664293551">Tu môžete zdieľať túto stránku.</translation>
 <translation id="4624080227980645783">Nové okno inkognito</translation>
 <translation id="4630212057753624203">Vzorová bublina</translation>
@@ -762,9 +754,9 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4720530280568305198">Váš výber sa otvoril na novej karte</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4742407542027196863">Spravovať heslá…</translation>
-<translation id="4742897645503301228">Skryť položku Sledovať cenu</translation>
 <translation id="4744428388659507035">Ak chcete mať záložky vo všetkých zariadeniach, zapnite v nastaveniach Záložky.</translation>
 <translation id="4746926359847517643">V sekcii História sa k nim môžete kedykoľvek vrátiť.</translation>
+<translation id="4751645464639803239">Nová karta inkognito</translation>
 <translation id="4752348350801431746">Vypnúť upozornenia kontroly bezpečnosti…</translation>
 <translation id="4764612367328936189">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Objaviť a sledovanie</translation>
@@ -792,15 +784,14 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4840495572919996524">Záložky, história, heslá a ďalší obsah sa už nebudú synchronizovať do vášho účtu Google.</translation>
 <translation id="484280513275854557">Systém vás odhlásil a dáta prehliadania boli odstránené</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
-<translation id="4852871795239756651">Skryť položku Pridať do čitateľského zoznamu</translation>
 <translation id="4860895144060829044">Volajte</translation>
 <translation id="4869146460927742717">Umiestnenie panela s adresou</translation>
 <translation id="4870911314065352661">Chcete zavrieť všetky karty?</translation>
-<translation id="4871719318659334896">Zavrieť skupinu</translation>
 <translation id="4872664437015695612">Otvoriť v priečinku Stiahnuté</translation>
 <translation id="4876305945144899064">Žiadne používateľské meno</translation>
 <translation id="4877597489778380935">Pripomenúť neskôr</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
+<translation id="488785315393301722">Zobraziť podrobnosti</translation>
 <translation id="4889521386764567563">Aktuálny profil</translation>
 <translation id="4894963374040315706">Umožňuje vyhľadávať hlasom</translation>
 <translation id="4896467949657706481">Karty boli zatvorené a systém vás odhlásil</translation>
@@ -812,12 +803,12 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4937410517508563815">Uloženie hesiel v účte</translation>
 <translation id="4938338714234463591">Umožní vám to používať hlas v prípade určitých funkcií na weboch.</translation>
 <translation id="4941089862236492464">Je nám ľúto, pri zdieľaní položky sa vyskytol problém.</translation>
+<translation id="4944543191714094452">Nájsť na stránke…</translation>
 <translation id="4945756290001680296">Prejdite do nastavení hesla</translation>
 <translation id="4949302115427722371">Spravovať Nastavenia…</translation>
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
 <translation id="496392417432935267">Otvorené inde</translation>
 <translation id="4971735654804503942">Rýchlejšia a proaktívna ochrana pred nebezpečnými webmi, stiahnutým súbormi a rozšíreniami. Upozorní vás na porušenie ochrany hesla. Vyžaduje odoslanie dát prehliadania do Googlu.</translation>
-<translation id="497576524745133089">Vyžiadať mobilný web</translation>
 <translation id="4979397965658815378">Prihláste sa účtom Google a používajte svoje záložky, heslá, históriu a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
 <translation id="4989065233040279145">Vyberte, kam sa má uložiť <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Farba skupiny kariet: <ph name="COLOR" /></translation>
@@ -858,14 +849,12 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5174591196806162275">Hľadať skopírovaný obrázok cez Lens</translation>
 <translation id="5176312250994681348">Ponechať posledné heslo</translation>
 <translation id="5177141896043341906">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) slabých hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
-<translation id="5179471839166060416">Skryť položku Odstrániť dáta prehliadania</translation>
 <translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5186185447130319458">Súkromné</translation>
 <translation id="5188482106078495165">Nastavenie súborov cookie platí pre všetky karty. Ak chcete pre otvorenú kartu použiť nové nastavenie, znova ju načítajte.</translation>
 <translation id="518997337573684769">Odosiela sa report pádu…</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5200226585829185758">Skryť položku Pridať medzi záložky</translation>
 <translation id="5200894869889836319">Možnosti nastavenia povolení</translation>
 <translation id="5206453674369664567">Odhlásiť sa a vymazať údaje</translation>
 <translation id="5210365745912300556">Zatvoriť kartu</translation>
@@ -905,6 +894,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="541276233349960923">Používajte heslá vo všetkých svojich zariadeniach</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
 <translation id="5415289094036440596">Prístupové kľúče sa nedajú zdieľať</translation>
+<translation id="5416455648658732408">Presunúť do skupiny kariet</translation>
 <translation id="5431239785743546285">Prečítané strany</translation>
 <translation id="5431252637281434233">Systém vás odhlási</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
@@ -914,7 +904,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5452354193031718372">Použite silné heslo:</translation>
 <translation id="5454211924362324495">Ak nechcete, aby ostatní používali vaše heslo, <ph name="BEGIN_LINK" />zmeňte si ho na <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Pridajte do vyhľadávania</translation>
-<translation id="5470555063139385235">Odoslať do vášho zariadenia</translation>
+<translation id="5457226814769348910">Otvoriť offline verziu</translation>
 <translation id="5478327362747197944">Vytvorte udalosti v kalendári priamo kliknutím na dátum na webovej stránke.</translation>
 <translation id="5482922178977937393">Chcete dostávať upozornenia na správy, šport a ďalší obsah na základe svojich záujmov?</translation>
 <translation id="5483838506518938965">Všetko je nastavené</translation>
@@ -944,7 +934,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
-<translation id="5602586420788540146">Otvoriť v novej skupine kariet</translation>
 <translation id="560322036295180549">Vypnuté vašou organizáciou</translation>
 <translation id="5611107723541161735">Odkazy na weby, ktoré ste v poslednom čase navštívili v tomto zariadení.</translation>
 <translation id="5611398002774823980">Uložiť v účte</translation>
@@ -954,7 +943,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5624120631404540903">Správa hesiel</translation>
 <translation id="5624637933505983014">Nezapínať synchronizáciu</translation>
 <translation id="5626245204502895507">Súbor sa momentálne nedá stiahnuť.</translation>
-<translation id="5627356199445503927">Zavretie karty</translation>
 <translation id="562753339521713441">Spustite kontrolu bezpečnosti</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} stránka vo vašom čitateľskom zozname}few{{count} stránky vo vašom čitateľskom zozname}many{{count} pages on your reading list}other{{count} stránok vo vašom čitateľskom zozname}}</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
@@ -1015,6 +1003,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5869522115854928033">Uložené heslá</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Spravuje vaša organizácia.</translation>
 <translation id="5888889603768021126">Prihlásenie cez poskytovateľa</translation>
+<translation id="5889333064153755823">Odstrániť dáta prehliadania</translation>
 <translation id="5896576662943111387">Vyrobené pre iOS</translation>
 <translation id="5897749768294722429">Ak sa chcete rýchlo vrátiť na navštívené weby, synchronizujte si karty aj históriu.</translation>
 <translation id="5898848375214731122">Hmotnosť</translation>
@@ -1028,7 +1017,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="594324569139756587">Blokovanie tretích strán</translation>
 <translation id="5944869793365969636">Skenovanie QR kódu</translation>
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
-<translation id="5954322191260787920">Upraviť záložku</translation>
 <translation id="5956112131836209882">Karta skupiny kariet. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Odkaz na zvýraznenie sa nedá vytvoriť.</translation>
@@ -1059,6 +1047,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6074656473835429958">Dostávajte upozornenia</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) sa nepodarilo nahrať</translation>
 <translation id="6077126322656614846">Prístup ku kamere je povolený</translation>
+<translation id="6084848228346514841">Výber kariet</translation>
 <translation id="6089212833343035912">PIN Správcu hesiel Google</translation>
 <translation id="6090760257419195752">Zavreté upozornenia</translation>
 <translation id="6096965253650248286">Nájdený počet: <ph name="COUNT" /></translation>
@@ -1094,6 +1083,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6225572914528673855">Panel s adresou</translation>
 <translation id="6227126502342367214">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="6231782223312638214">Navrhované</translation>
+<translation id="6232329973559504466">Vyhľadávanie v režime inkognito</translation>
 <translation id="6234438496206735891">Zobrazenie stiahnutých súborov</translation>
 <translation id="6236952928980352967">Obnoviť upozornenie</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
@@ -1136,6 +1126,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6418346271604475326">Príprava PDF</translation>
 <translation id="6429213933892582367">Otvorte Možnosti hesiel</translation>
 <translation id="6434591244308415567">Vyskytla sa chyba. Skúste to neskôr.</translation>
+<translation id="6442697326824312960">Odopnúť kartu</translation>
 <translation id="6443118737398455446">Neplatný dátum ukončenia platnosti</translation>
 <translation id="6444435711855078002">Ďalšie možnosti</translation>
 <translation id="6445051938772793705">Krajina</translation>
@@ -1152,14 +1143,11 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6476284679642588870">Spravovať spôsoby platby</translation>
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="647867789226964031">Zmeňte si heslá</translation>
-<translation id="6489017415570962672">Informácie o webe</translation>
 <translation id="6494931198667773526">Končí sa</translation>
-<translation id="6496122455598515335">Označiť ako neprečítané</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Zastaviť sledovanie tejto zásielky}few{Zastaviť sledovanie týchto zásielok}many{Untrack all packages}other{Zastaviť sledovanie týchto zásielok}}</translation>
 <translation id="6503077044568424649">Najnavštevovanejšie</translation>
 <translation id="6503763061813913607">Upozornenia kontroly bezpečnosti</translation>
 <translation id="6505334220040167806">Zbaliť skupinu kariet</translation>
-<translation id="6505432801953153174">Vyhľadať skopírovaný obrázok</translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
 <translation id="6518133107902771759">Overiť</translation>
 <translation id="6523575793810663688">Postup</translation>
@@ -1179,6 +1167,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6583087784430677195">Túto funkciu môžete vypnete v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /> v sekcii Automatické dopĺňanie hesiel.</translation>
 <translation id="6585048665672348661">Odstránenie dát prehliadania…</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
+<translation id="6596481460663245319">Vyhľadať obrázok Googlom</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 heslo}few{# heslá}many{# passwords}other{# hesiel}}</translation>
 <translation id="6601302169302852717">Obrázok používateľa <ph name="USER_EMAIL" /> bol uložený vo Fotkách Google</translation>
 <translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.
@@ -1192,6 +1181,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6625830436658400045">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
+<translation id="6638511529934826365">Textová lupa…</translation>
 <translation id="6640268266988685324">Otvoriť kartu</translation>
 <translation id="6641465290890659327">Zdieľajte kópiu svojho hesla</translation>
 <translation id="6642362222295953972">Prepnúť na existujúcu kartu</translation>
@@ -1201,7 +1191,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659660757330712663">Medzi kartami môžete prepínať potiahnutím po paneli s nástrojmi.</translation>
 <translation id="6663529247339810546">Obrázok sa nedá uložiť</translation>
-<translation id="6671495933530132209">Kopírovať obrázok</translation>
+<translation id="6668619169535738264">Upraviť záložku</translation>
 <translation id="6672241253012342409">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
 
 Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
@@ -1223,15 +1213,13 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6779455296366983087">Dáta prehliadania budú odstránené</translation>
 <translation id="6790502149545262384">Čoskoro sa vám budú po otvorení novej karty zobrazovať príbehy z webu <ph name="CHANNEL_NAME" />.</translation>
-<translation id="6797178503433441669">Navštíviť skopírovaný odkaz</translation>
 <translation id="6800349425672670802">Prístup k všetkým otvoreným kartám získate v prepínači kariet</translation>
 <translation id="681368974849482173">Položka bola vytvorená</translation>
 <translation id="6825078212112407882">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{{count} záložky boli uložené vo vašom účte Google {email}}many{{count} bookmarks saved in your Google Account, {email}}other{{count} záložiek bolo uložených vo vašom účte Google {email}}}</translation>
 <translation id="6830728435402077660">Nezabezpečené</translation>
 <translation id="6831043979455480757">Preložiť</translation>
-<translation id="6832861194202253171">Presunúť do skupiny kariet</translation>
 <translation id="6842136130964845393">Ak chcete mať neustály prístup k svojim uloženým heslám, overte svoju totožnosť</translation>
-<translation id="68541483639528434">Zavrieť ostatné karty</translation>
+<translation id="6851516051005285358">Vyžiadať stránky pre počítač</translation>
 <translation id="6858718102216837409">Pridať jazyk…</translation>
 <translation id="6858855187367714033">Naskenované</translation>
 <translation id="6859944681507688231">Ak chcete nasnímať kód QR alebo kreditnú kartu, povoľte v nastaveniach fotoaparát.</translation>
@@ -1253,14 +1241,15 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6906448540340261898">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť heslá</translation>
 <translation id="6908734251759299256">Aktualizujte si prehliadač</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Iba v tomto zariadení</translation>
+<translation id="6914583639806229067">Vyhľadať skopírovaný obrázok</translation>
 <translation id="6914783257214138813">Vaše heslá uvidí každý, kto si môže zobraziť exportovaný súbor.</translation>
 <translation id="6930162026494574854">Obnoviť nastavenia Prekladača</translation>
 <translation id="6930799952781667037">Klepnutím prepnete na tento jazyk.</translation>
-<translation id="693165111545149627">Odoslať do zariadení</translation>
 <translation id="693761253105515415">Nastavte vstupný kód</translation>
 <translation id="6943681254152031826">{COUNT,plural, =1{Chcete sledovať túto zásielku?}few{Chcete sledovať {COUNT} zásielky?}many{Track {COUNT} packages?}other{Chcete sledovať {COUNT} zásielok?}}</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6950522403736391608">Skryté</translation>
+<translation id="6964760285928603117">Odstrániť zo skupiny</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Priečinky</translation>
 <translation id="69739764870135975">Ak je Google aj váš predvolený vyhľadávač, budú sa vám zobrazovať lepšie a kontextovo relevantnejšie návrhy</translation>
@@ -1299,7 +1288,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="714291438898585119">S hviezdičkou</translation>
 <translation id="7146301801400584641">K dispozícii je súbor kalendára</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
-<translation id="716059570521443369">Nájsť skopírovaný text</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7173721738069475737">{count,plural, =1{Záložka bola uložená}few{{count} záložky boli uložené}many{{count} bookmarks saved}other{{count} záložiek bolo uložených}}</translation>
@@ -1344,6 +1332,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7409985198648820906">Počet neprečítaných článkov: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Pokračovať</translation>
 <translation id="741204030948306876">Áno, súhlasím</translation>
+<translation id="7417689656810783109">Premenovať skupinu</translation>
 <translation id="7419565702166471774">Vždy používať zabezpečené pripojenia</translation>
 <translation id="7425053386765766120">Pridať spôsob platby…</translation>
 <translation id="7425346204213733349">Záložky, história, heslá a ďalšie nastavenia sa už nebudú ďalej synchronizovať do vášho účtu Google. Vaše súčasné údaje však zostanú uložené v účte Google.</translation>
@@ -1373,13 +1362,13 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7521117365186708026">Tipy na nastavenie, ktoré vám pomôžu využívať Chrome naplno.</translation>
 <translation id="7524055474074101597">Majte prístup k heslám a ďalším položkám v aplikáciách.</translation>
+<translation id="75362970626182391">Nová skupina kariet</translation>
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="754655535278952384">Skontrolované <ph name="TIME" /></translation>
 <translation id="755255281989213264">Prispôsobenie ponuky</translation>
 <translation id="7553234618121028547">Ak chcete túto možnosť vypnúť, otvorte <ph name="BEGIN_LINK" />Nastavenia<ph name="END_LINK" /> a prejdite do sekcie Možnosti hesiel.</translation>
 <translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7561196759112975576">Vždy</translation>
-<translation id="7561417064797856920">Prekrytie objektívu</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7567579665882069209">Záložky sú skryté</translation>
 <translation id="7577900504646297215">Spravovať záujmy</translation>
@@ -1393,7 +1382,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7605594153474022051">Synchronizácia nefunguje</translation>
 <translation id="760667371114328991">Vypnite upozornenia kontroly bezpečnosti</translation>
 <translation id="7612619742409846846">Prihlásený účet Google</translation>
-<translation id="7622357910031310733">Zavrieť pripnutú kartu</translation>
 <translation id="7638584964844754484">Nesprávna prístupová fráza</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="7640669552036055091">Karty z Androidu</translation>
@@ -1427,7 +1415,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="777637629667389858">Keď sa prihlásite, chráni váš v službách Googlu.</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7788868432173225918">Zavrieť rozbalené zobrazenie</translation>
-<translation id="7790954908631836016">Skryť položku Vyžiadať web pre počítače</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="7801064017114765401">Počítače</translation>
 <translation id="7802239711290932774">Použite navrhnuté heslo:</translation>
@@ -1435,7 +1422,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7807060072011926525">Poskytuje Google</translation>
 <translation id="7812377703891978671">Prístup k celej histórii prehliadania získate výberom možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Stiahnuté</translation>
-<translation id="7818164453519941565">Nová karta inkognito</translation>
 <translation id="7839994177130598711">Členovia vašej rodiny môžu teraz používať vaše používateľské meno a heslo pri prihlasovaní na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocou Správcu hesiel Google.</translation>
 <translation id="7840771868269352570">Vybrané položky budú odstránené.</translation>
 <translation id="7841180087127694526">Vyhľadať skopírovaný text</translation>
@@ -1447,7 +1433,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7859988229622350291">Nikdy neprekladať tieto jazyky</translation>
 <translation id="7863211248337747225">Získať aplikáciu</translation>
 <translation id="7865127013871431856">Možnosti prekladu</translation>
-<translation id="7865811152374876731">Nové okno</translation>
 <translation id="7866501058614003444">Sledovanie tejto zásielky bolo úspešne zrušené.</translation>
 <translation id="7866872729285243843">Ak chcete mať svoj čitateľský zoznam vo všetkých zariadeniach, zapnite v nastaveniach Čitateľský zoznam.</translation>
 <translation id="7874107544081154809">Automaticky doplniť formulár pomocou údajov <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -1488,6 +1473,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8011489434346330032">Kontrola internetu</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8023878949384262191">Rozbalí sekciu.</translation>
+<translation id="8027581147000338959">Otvoriť v novom okne</translation>
 <translation id="8032569120109842252">Sledované</translation>
 <translation id="8035133914807600019">Nový priečinok…</translation>
 <translation id="8035412398498507358">Fotky</translation>
@@ -1499,17 +1485,15 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8059533439631660104">Zbalí sekciu.</translation>
 <translation id="8061584726507121204">História</translation>
 <translation id="8069394452933076548">Vyberte, kedy sa majú karty, ktoré neboli v poslednom čase použité, presunúť do sekcie s neaktívnymi kartami.</translation>
-<translation id="8071979093798117528">Premenovať skupinu</translation>
-<translation id="8073388330009372546">Otvoriť obrázok na novej karte</translation>
 <translation id="8073670137947914548">Sťahovanie bolo dokončené</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8079530767338315840">Opakovať</translation>
 <translation id="8079602123447022758">Toto nastavenie je spravované. Viac sa dozviete po dvojitom klepnutí.</translation>
+<translation id="8080028325999236607">Zavrieť všetky karty</translation>
 <translation id="8084285576995584326">Ovládať údaje účtu Google</translation>
 <translation id="809543534949702122">Hľadať v histórii</translation>
 <translation id="8101409298456377967">Vytvárajte, ukladajte a spravujte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
-<translation id="8114502941341617322">Nová karta</translation>
 <translation id="8114753159095730575">Súbor je k dispozícii na stiahnutie. Možnosti sú k dispozícii v dolnej časti obrazovky.</translation>
 <translation id="8123502380991596210">Skryť Novinky</translation>
 <translation id="8123953306357309250">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v nastaveniach.</translation>
@@ -1518,7 +1502,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8132598642024322408">Teraz za <ph name="PRICE" />, predtým <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Používajte pre jednotlivé weby a aplikácie jedinečné heslá. Ak niekto odhalí recyklované heslo, bude ním môcť získať prístup do vašich ďalších účtov. Kliknutím otvorte web a zmeňte jeho heslo.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ďalší}few{# ďalšie}many{# others}other{# ďalších}}</translation>
-<translation id="8146443796605935558">Vyžiadať web pre počítače</translation>
 <translation id="8150167929304790980">Celé meno</translation>
 <translation id="8152331954420209374">Prejsť na Lens</translation>
 <translation id="8157532349231307196">Počet účtov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
@@ -1539,7 +1522,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8219424187226230983">Zobraziť offline verziu na novej karte</translation>
 <translation id="8230355548492839438">Vyhľadanie predchádzajúcich položiek</translation>
 <translation id="8232956427053453090">Ponechať údaje</translation>
-<translation id="8236097722223016103">Pridať medzi záložky</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="82619448491672958">Zobraziť iné karty</translation>
 <translation id="8263809106706527890">Možno sa zmenili nastavenia predvoleného prehliadača. Môžete to skontrolovať v nastaveniach.</translation>
@@ -1550,11 +1532,14 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8278488584187265939">Prispôsobenie domovskej stránky</translation>
 <translation id="8281781826761538115">Predvolené – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskočiť</translation>
+<translation id="8282657446819506217">Otvoriť v skupine kariet</translation>
+<translation id="828291969289324795">{count,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Pridať karty do novej skupiny}other{Pridať karty do novej skupiny}}</translation>
 <translation id="8283172974887967105">Nastaviť…</translation>
 <translation id="8289930144142009940">Upozornenia funkcie <ph name="FEATURE_NAME" /> sú vypnuté</translation>
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8307481894409578819">Tento súbor sa nepodarilo nahrať</translation>
+<translation id="8319076807703933069">Nové vyhľadávanie</translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
 <translation id="8366466717204352506">Kontrola nebola nikdy spustená</translation>
@@ -1575,7 +1560,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8428634594422941299">Dobre</translation>
 <translation id="8430694217306051839">Vyberte, kam sa má <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) uložiť</translation>
-<translation id="8431534975995791748">Označiť ako prečítané</translation>
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
 <translation id="8453847087068411809">Nikdy nezisťovať zásielky automaticky</translation>
@@ -1603,7 +1587,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8535368836838588657">Odhaľte heslo</translation>
 <translation id="8545276357312221485">Skontrolujte nastavenia predvoleného prehliadača</translation>
 <translation id="854938212724803178">Máte jedno odhalené heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
-<translation id="855081842937141170">Pripnúť kartu</translation>
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
 <translation id="8564894539416715395">Stránka na novej karte</translation>
@@ -1622,7 +1605,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8636825310635137004">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu.</translation>
 <translation id="8637431369725868556">Získajte ochranu pred nebezpečnými webmi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
-<translation id="8640575194957831802">naposledy otvorené</translation>
+<translation id="8643403533759285912">Odstrániť skupinu</translation>
 <translation id="8647280737650867362">Cenu sa nepodarilo prestať sledovať.</translation>
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8660600697590740984">Funkcia Lens skopírovala obrázok</translation>
@@ -1643,6 +1626,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8709409604518538305">Karty boli zatvorené</translation>
 <translation id="8712534545803964353">Vyhľadanie na stránke…</translation>
 <translation id="8712637175834984815">Dobre</translation>
+<translation id="8717864919010420084">Kopírovať odkaz</translation>
 <translation id="8722229818691036192">Účty v tomto zariadení</translation>
 <translation id="8722649775263832315">Klepnutím alebo zvýraznením vyhľadajte čokoľvek pomocou funkcie Google Lens</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
@@ -1658,6 +1642,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8764015330924122850">Prestať sledovať doménu <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Heslá pre <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>
+<translation id="8781834595282316166">Nová karta v skupine</translation>
 <translation id="8786100550345425552">Upraviť povolenia</translation>
 <translation id="8792626944327216835">mikrofón</translation>
 <translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
@@ -1685,6 +1670,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8871974300055371298">Nastavenia obsahu</translation>
 <translation id="8879604564928138696">Vyskúšajte dvojitým klepnutím</translation>
 <translation id="8879952635974818770">Prispôsobený obsah</translation>
+<translation id="8887595428614802520">Zavrieť všetky karty a skupiny</translation>
 <translation id="8893208530912252670">Videá</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
 <translation id="890565330728586731">Späť</translation>
@@ -1701,9 +1687,9 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8943780400130412484">Chcete začať nové sťahovanie?</translation>
 <translation id="8944844131570002190">Otvorenie umiestnenia…</translation>
 <translation id="8953046091948372197">Tu nájdete svoje heslá</translation>
+<translation id="895541991026785598">Nahlásiť problém</translation>
 <translation id="8960979149015305">Zavrieť sťahovanie</translation>
 <translation id="8961092256396236619">Rozšírená ochrana je vypnutá</translation>
-<translation id="8967427617812342790">Pridať do čitateľského zoznamu</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
 <translation id="8974714402877957201">1. Otvorte nastavenia iPadu</translation>
 <translation id="8975015774710126284">Dáta prehliadania boli odstránené</translation>
@@ -1722,7 +1708,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9032405509996909363">Potvrdiť odstránenie dát prehliadania</translation>
 <translation id="9034759925968272072">Neodhlásime vás z účtu Google. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
-<translation id="9050743386845294615">Skryť položku Vyhľadanie na stránke</translation>
 <translation id="9057972802061533987">Nedá sa sledovať. Niečo sa pokazilo.</translation>
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="9070824521421603770">Systém vás odhlási a karty sa zavrú</translation>
@@ -1739,7 +1724,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9100610230175265781">Vyžaduje sa prístupová fráza</translation>
 <translation id="9106655997975673326">Zo zariadenia <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, či neboli prelomené heslá</translation>
-<translation id="9116465289595958864">Naposledy upravené</translation>
 <translation id="9124387962554796433">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu.</translation>
 <translation id="913036870884277353">Jednoducho otvárajte odkazy v iných aplikáciách.</translation>
 <translation id="9137013805542155359">Zobraziť originál</translation>
@@ -1759,7 +1743,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9205189991633470489">Zámka režimu inkognito</translation>
 <translation id="9206887540681440657">Rýchlosť</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>
-<translation id="926058026105978593">{count,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Add tabs to new group}other{Pridať karty do novej skupiny}}</translation>
 <translation id="929748059769569925">Zvýraznený text</translation>
 <translation id="932305336591073205">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close tabs}other{Zavrieť karty}}</translation>
 <translation id="939472100615258482">Aktuálny web</translation>
@@ -1767,7 +1750,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="939736085109172342">Nový priečinok</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
-<translation id="947861518682912388">Nové vyhľadávanie</translation>
 <translation id="952704832371081537">Zrušiť</translation>
 <translation id="954667170699278022">Čitateľský zoznam</translation>
 <translation id="959066944189734975">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
@@ -1778,7 +1760,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="973493300226275298">Sledujte cenu výrobku v internetových obchodoch. Keď klesne, dostanete upozornenie.</translation>
 <translation id="976392601789283511">Opätovné otvorenie naposledy zavretej karty</translation>
 <translation id="981498610235328462">Vaša organizácia vám povoľuje prihlásiť sa iba určitým účtami. Nepovolené účty sú skryté.</translation>
-<translation id="983192555821071799">Zavrieť všetky karty</translation>
 <translation id="984275831282074731">Spôsoby platby</translation>
 <translation id="985379595344853742">Zavrieť všetky karty inkognito</translation>
 <translation id="988141524645182168">Iné zariadenia</translation>

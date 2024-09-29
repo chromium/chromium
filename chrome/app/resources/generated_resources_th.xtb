@@ -329,7 +329,9 @@
 <translation id="1227660082540388410">แก้ไขพาสคีย์</translation>
 <translation id="1227993798763400520">แคสต์ไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="1230417814058465809">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ดียิ่งขึ้นเพื่อเพิ่มความปลอดภัยให้มากขึ้น</translation>
+<translation id="1230961867057865279">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">เราจะจำเครือข่ายไว้ในครั้งต่อไปที่คุณใช้ <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">เว็บไซต์ต่างๆ สามารถขอบันทึกและใช้อินพุตจากเมาส์</translation>
 <translation id="1232569758102978740">ไม่ระบุชื่อ</translation>
 <translation id="1233497634904001272">แตะคีย์ความปลอดภัยอีกครั้งเพื่อส่งคำขอให้สมบูรณ์</translation>
@@ -542,7 +544,6 @@
 <translation id="1392047138650695757">พจนานุกรมผู้ใช้</translation>
 <translation id="139300021892314943">จำกัดผู้ที่สามารถลงชื่อเข้าใช้</translation>
 <translation id="1393283411312835250">ดวงอาทิตย์และเมฆ</translation>
-<translation id="1395730723686586365">โปรแกรมอัปเดตเริ่มต้นแล้ว</translation>
 <translation id="1395832189806039783">ไฮไลต์รายการที่มีโฟกัสของแป้นพิมพ์</translation>
 <translation id="1396120028054416908">กลับไปที่ <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">เกิดข้อผิดพลาดในการตั้งค่าเครื่องพิมพ์</translation>
@@ -1351,7 +1352,6 @@
 <translation id="1942128823046546853">อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดของคุณในทุกเว็บไซต์</translation>
 <translation id="1944528062465413897">รหัสการจับคู่บลูทูธ</translation>
 <translation id="1944535645109964458">ไม่มีพาสคีย์ที่ใช้งานได้</translation>
-<translation id="1944921356641260203">พบการอัปเดต</translation>
 <translation id="1947136734041527201">ช่วยให้ลงชื่อเข้าใช้เว็บไซต์ได้ผ่านบัญชีที่คุณมีด้วยบริการระบุตัวตน</translation>
 <translation id="1948528728718281125">อนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
 <translation id="1949332606889020901">รหัสข้อขัดข้อง</translation>
@@ -2225,7 +2225,6 @@
 <translation id="2546991196809436099">ซูมเข้าเพื่อทำให้รายการในหน้าจอมีขนาดใหญ่ขึ้น ใช้แป้นค้นหา + Ctrl + M เพื่อเปิดและปิดแว่นขยาย</translation>
 <translation id="2548347166720081527">อนุญาตการเข้าถึง<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">รีเซ็ตแคชของโปรไฟล์ eSIM</translation>
-<translation id="2549766998450508148">กดแป้นกดร่วม 1-4 คีย์ (Ctrl, Alt, Shift หรือค้นหา) และอีก 1 คีย์ หรือจะเลือกคีย์เดียวก็ได้เช่นกัน</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
 <translation id="2550212893339833758">หน่วยความจำสว็อป</translation>
 <translation id="2550596535588364872">อนุญาตให้ <ph name="EXTENSION_NAME" /> เปิด <ph name="FILE_NAME" /> ไหม</translation>
@@ -2422,7 +2421,6 @@
 <translation id="2705736684557713153">เลื่อนลงด้านล่างของหน้าจอ และเปิดการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือแบบด่วนหากมีปรากฏขึ้นมา หากไม่มี แสดงว่าทุกอย่างเรียบร้อยแล้ว</translation>
 <translation id="2706304388244371417">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองนี้มีข้อมูลแอปอยู่ด้วย ระบบจะอัปโหลดข้อมูลสำรองไปยัง Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการสำรองข้อมูล<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ขึ้น</translation>
-<translation id="2707024448553392710">คอมโพเนนต์กำลังดาวน์โหลด</translation>
 <translation id="270921614578699633">เฉลี่ยสูงกว่า</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
 <translation id="2710101514844343743">ข้อมูลการใช้งานและการวินิจฉัย</translation>
@@ -2547,7 +2545,6 @@
 <translation id="2779728796406650689">วิธีนี้ช่วยให้ Google Assistant แสดงคำตอบที่ปรับเปลี่ยนให้เหมาะกับคุณได้เมื่อคุณถามคำถาม</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
-<translation id="2783298271312924866">ดาวน์โหลดแล้ว</translation>
 <translation id="2783952358106015700">ใช้คีย์ความปลอดภัยกับ <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">การตรวจสอบรหัสผ่าน</translation>
 <translation id="2785279781154577715">ลักษณะของการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
@@ -2874,7 +2871,6 @@
 <translation id="301525898020410885">องค์กรเป็นผู้ตั้งค่าภาษา</translation>
 <translation id="3015639418649705390">เปิดใหม่เลย</translation>
 <translation id="3016381065346027039">ไม่มีรายการบันทึก</translation>
-<translation id="3016641847947582299">อัปเดตคอมโพเนนต์แล้ว</translation>
 <translation id="3019023222666709803">เครื่องมือลูกศร</translation>
 <translation id="3019285239893817657">ปุ่มหน้าย่อย</translation>
 <translation id="3019595674945299805">บริการ VPN</translation>
@@ -2954,6 +2950,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">บันทึกในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="3076977359333237641">ลบข้อมูลการลงชื่อเข้าใช้ของคุณแล้ว</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">เครือข่ายนี้ไม่ได้ซิงค์กับบัญชีของคุณ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">ส่วนขยาย</translation>
@@ -7187,7 +7184,6 @@
 <translation id="6208521041562685716">กำลังเปิดใช้งานอินเทอร์เน็ตมือถือ</translation>
 <translation id="6208725777148613371">บันทึกใน <ph name="WEB_DRIVE" /> ไม่สำเร็จ - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="SETTINGS_LINK" /></translation>
-<translation id="6209838773933913227">กำลังอัปเดตคอมโพเนนต์</translation>
 <translation id="6209908325007204267">อุปกรณ์ของคุณมี Chrome Enterprise Upgrade แต่ชื่อผู้ใช้ไม่ตรงกับบัญชีองค์กร โปรดสร้างบัญชีองค์กรโดยไปที่ g.co/ChromeEnterpriseAccount ในอุปกรณ์รอง</translation>
 <translation id="6210282067670792090">ในแถบที่อยู่ ให้ใช้แป้นพิมพ์ลัดนี้พร้อมด้วยทางลัดสำหรับเครื่องมือค้นหาและ Site Search</translation>
 <translation id="6211067089253408231">เปิดฮอตสปอตด่วน</translation>
@@ -7251,7 +7247,6 @@
 <translation id="6247620186971210352">ไม่พบแอป</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">ระบบ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">พร้อมอัปเดต</translation>
 <translation id="6248988683584659830">ค้นหาการตั้งค่า</translation>
 <translation id="6249200942125593849">จัดการการช่วยเหลือพิเศษ</translation>
 <translation id="6250186368828697007">รายละเอียดจะซ่อนอยู่ขณะที่คุณแชร์หน้าจอ</translation>
@@ -8077,7 +8072,6 @@
 <translation id="6852290167968069627">ChromeOS เรียกเซสชันก่อนหน้าให้กลับมาทำงานอีกครั้งไม่ได้เนื่องจากเครือข่ายมีปัญหา โปรดเชื่อมต่อเครือข่ายที่เสถียรแล้วลองอีกครั้ง</translation>
 <translation id="6852529053326738838">โปรดสอบถามองค์กรของคุณหรือลงทะเบียนด้วยอีเมลที่ทํางานเพื่อตรวจสอบว่าบัญชีมีสิทธิ์หรือไม่</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> ติดตั้งจาก <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">โปรแกรมอัปเดตอยู่ในโหมดสลีป</translation>
 <translation id="68541483639528434">ปิดแท็บอื่นๆ</translation>
 <translation id="6855892664589459354">การสำรองและกู้คืนข้อมูลใน Crostini</translation>
 <translation id="6856348640027512653">ไม่ได้รับอนุญาตให้ใช้อุปกรณ์หรือข้อมูล Virtual Reality</translation>
@@ -8543,6 +8537,7 @@
 <translation id="7212097698621322584">ป้อน PIN ปัจจุบันเพื่อเปลี่ยน PIN หากไม่ทราบ PIN คุณจะต้องรีเซ็ตคีย์ความปลอดภัย แล้วสร้าง PIN ใหม่</translation>
 <translation id="7214047272988222011">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิด<ph name="LINK_BEGIN" />การเข้าถึงกล้องของระบบ<ph name="LINK_END" /></translation>
 <translation id="721490496276866468">นำเข้ารหัสผ่าน</translation>
+<translation id="7217208603285112910">ข้อความที่เลือกไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
 <translation id="7219473482981809164">พบหลายโปรไฟล์พร้อมให้ดาวน์โหลด เลือกโปรไฟล์ที่ต้องการก่อนดำเนินการต่อ</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{ไม่มีรหัสผ่านที่ไม่รัดกุม}=1{มีรหัสผ่านที่ไม่รัดกุม 1 รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {NUM_WEAK} รายการ}}</translation>
@@ -8887,7 +8882,6 @@
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">คอมโพเนนต์เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}other{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}}</translation>
 <translation id="7465635034594602553">เกิดข้อผิดพลาด โปรดรอสักครู่แล้วเรียกใช้ <ph name="APP_NAME" /> อีกครั้ง</translation>
 <translation id="7465777686629334728">นำสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ที่มีการจัดการ (<ph name="SPECIFIC_NAME" />) ออก</translation>
@@ -10105,6 +10099,7 @@
 <translation id="8325413836429495820">ไม่ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="8326478304147373412">PKCS #7, กลุ่มใบรับรอง (Certificate Chain)</translation>
 <translation id="8327386430364625757">แบบอักษรทางคณิตศาสตร์</translation>
+<translation id="8327490658947427005">ข้อความที่เลือกไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">การตั้งค่าสิทธิ์และเนื้อหา</translation>
 <translation id="8328228852664998535">หากดำเนินการต่อ ระบบจะลบรหัสผ่าน พาสคีย์ และข้อมูลอื่นๆ ออกจาก<ph name="BRAND" />อย่างถาวร ระบบจะไม่ลบบัญชีที่คุณสร้างไว้สำหรับเว็บไซต์หรือแอป</translation>
 <translation id="8328777765163860529">ปิดทั้งหมด</translation>

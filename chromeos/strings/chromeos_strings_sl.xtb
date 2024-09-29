@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2161656808144014275">Besedilo</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
+<translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2189104374785738357">Urejanje podrobnosti APN-ja</translation>
 <translation id="2195732836444333448">Trenutno ni prostih zmogljivosti. Vrnite se pozneje.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2468124392950503650">Izberite poziv za ustvarjanje ali si oglejte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodnik za pozive<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Uporabite funkcijo za pomoč pri pisanju, da ustvarite osnutek ali izboljšate obstoječe delo z Googlovo umetno inteligenco</translation>
+<translation id="2475982808118771221">Prišlo je do napake</translation>
 <translation id="2480572840229215612">raki</translation>
 <translation id="248546197012830854">Naprava nima vzpostavljene povezave. Če si želite ogledati vsebino s pomočjo, vzpostavite povezavo z omrežjem Wi-Fi.</translation>
 <translation id="2486301288428798846">les</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Internetne povezave ni mogoče vzpostaviti</translation>
 <translation id="6156030503438652198">kostanjeva in rožnata</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1235,6 +1238,7 @@
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">vnos</translation>
+<translation id="7117228822971127758">Poskusite znova pozneje</translation>
 <translation id="7118522231018231199">Izberite APN-je, ki jih zagotavlja mobilni operater ali skrbnik. Če izberete APN, onemogočite vse APN-je po meri. Neveljavni APN-ji lahko motijo vašo mobilno povezavo.</translation>
 <translation id="7119389851461848805">vklop</translation>
 <translation id="7129287270910503851">Prenesena količina podatkov bo ponastavljena vsak mesec na ta dan</translation>

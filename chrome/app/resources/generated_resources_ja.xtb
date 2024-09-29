@@ -542,7 +542,6 @@
 <translation id="1392047138650695757">単語リスト</translation>
 <translation id="139300021892314943">ログインできるユーザーを制限する</translation>
 <translation id="1393283411312835250">太陽と雲</translation>
-<translation id="1395730723686586365">アップデータ起動</translation>
 <translation id="1395832189806039783">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="1396120028054416908">「<ph name="FOLDER_TITLE" />」に戻る</translation>
 <translation id="1396139853388185343">プリンタの設定中にエラーが発生しました</translation>
@@ -1348,7 +1347,6 @@
 <translation id="1942128823046546853">すべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
 <translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1944535645109964458">利用可能なパスキーがありません</translation>
-<translation id="1944921356641260203">アップデートが見つかりました</translation>
 <translation id="1947136734041527201">ID サービスで使用しているアカウントでウェブサイトにログインできます</translation>
 <translation id="1948528728718281125">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対してカメラへのアクセスが許可されています</translation>
 <translation id="1949332606889020901">クラッシュ ID</translation>
@@ -2219,7 +2217,6 @@
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />を許可</translation>
 <translation id="2548545707296594436">eSIM プロファイルのキャッシュをリセット</translation>
-<translation id="2549766998450508148">1～4 個の修飾キー（Ctrl、Alt、Shift、または検索）と、もう 1 つキーを押してください。キーを 1 つだけ選択することもできます。</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="2550212893339833758">スワップ対象メモリ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> が <ph name="FILE_NAME" /> を開くことを許可しますか？</translation>
@@ -2416,7 +2413,6 @@
 <translation id="2705736684557713153">画面の一番下までスクロールし、[インスタント テザリング] が表示される場合は有効にします。表示されない場合は、設定が完了しています。</translation>
 <translation id="2706304388244371417">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使用して暗号化されます。 <ph name="BEGIN_LINK1" />バックアップの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
-<translation id="2707024448553392710">コンポーネントのダウンロード中</translation>
 <translation id="270921614578699633">次の平均:</translation>
 <translation id="2709516037105925701">自動入力</translation>
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
@@ -2541,7 +2537,6 @@
 <translation id="2779728796406650689">質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
-<translation id="2783298271312924866">ダウンロード済み</translation>
 <translation id="2783952358106015700">「<ph name="APP_NAME" />」でセキュリティ キーを使用</translation>
 <translation id="2785267875302712148">パスワード チェックアップ</translation>
 <translation id="2785279781154577715">タブ マウスオーバーのプレビュー カードのデザイン</translation>
@@ -2868,7 +2863,6 @@
 <translation id="301525898020410885">言語は組織で設定されています</translation>
 <translation id="3015639418649705390">今すぐ再起動</translation>
 <translation id="3016381065346027039">ログエントリはありません</translation>
-<translation id="3016641847947582299">コンポーネント更新完了</translation>
 <translation id="3019023222666709803">矢印ツール</translation>
 <translation id="3019285239893817657">サブページのボタン</translation>
 <translation id="3019595674945299805">VPN サービス</translation>
@@ -2947,6 +2941,7 @@
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">このデバイスにのみ保存</translation>
 <translation id="3076977359333237641">ログインデータが削除されました</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">このネットワークはアカウントに同期されていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">拡張機能</translation>
@@ -7178,7 +7173,6 @@
 <translation id="6208521041562685716">モバイルデータを有効化しています</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> に保存できませんでした - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="SETTINGS_LINK" /> してください。</translation>
-<translation id="6209838773933913227">コンポーネントを更新しています</translation>
 <translation id="6209908325007204267">デバイスには Chrome Enterprise Upgrade が含まれていますが、ユーザー名が Enterprise アカウントに関連付けられていません。サブデバイスで g.co/ChromeEnterpriseAccount にアクセスし、Enterprise アカウントを作成してください。</translation>
 <translation id="6210282067670792090">アドレスバーで、このキーボード ショートカットを検索エンジンやサイト内検索のショートカットとともに使用します</translation>
 <translation id="6211067089253408231">インスタント アクセス ポイントをオンにする</translation>
@@ -7242,7 +7236,6 @@
 <translation id="6247620186971210352">アプリが見つかりません</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">システム: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">アップデート準備完了</translation>
 <translation id="6248988683584659830">設定項目を検索</translation>
 <translation id="6249200942125593849">ユーザー補助設定の管理</translation>
 <translation id="6250186368828697007">画面の共有中は詳細が表示されません</translation>
@@ -8066,7 +8059,6 @@
 <translation id="6852290167968069627">ネットワークの問題により、ChromeOS で前のセッションを再開できません。安定したネットワークに接続して、もう一度お試しください。</translation>
 <translation id="6852529053326738838">組織に問い合わせるか、仕事用メールアドレスを使用して登録を行い、アカウントが対象かどうかを確認します。</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> から <ph name="APP_TYPE" /> をインストールしました</translation>
-<translation id="6853388645642883916">アップデータのスリープ中</translation>
 <translation id="68541483639528434">他のタブをすべて閉じる</translation>
 <translation id="6855892664589459354">Crostini のバックアップと復元</translation>
 <translation id="6856348640027512653">バーチャル リアリティのデバイスやデータの使用を許可しないサイト</translation>
@@ -8876,7 +8868,6 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7464153996453281700">コンポーネントはすでに最新です</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}other{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}}</translation>
 <translation id="7465635034594602553">エラーが発生しました。数分後にもう一度 <ph name="APP_NAME" /> を実行してください。</translation>
 <translation id="7465777686629334728">管理対象の開発環境（<ph name="SPECIFIC_NAME" />）を削除</translation>

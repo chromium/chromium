@@ -544,7 +544,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1392047138650695757">Słowniki użytkownika</translation>
 <translation id="139300021892314943">Określ, kto może się zalogować</translation>
 <translation id="1393283411312835250">Słońce i chmury</translation>
-<translation id="1395730723686586365">Aktualizator został uruchomiony</translation>
 <translation id="1395832189806039783">Podświetlaj element za pomocą klawiatury</translation>
 <translation id="1396120028054416908">Wróć do folderu <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Błąd podczas konfigurowania drukarki</translation>
@@ -1349,7 +1348,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1942128823046546853">Odczytywanie i zmienianie wszystkich Twoich danych we wszystkich witrynach</translation>
 <translation id="1944528062465413897">Kod parowania Bluetooth:</translation>
 <translation id="1944535645109964458">Brak dostępnych kluczy dostępu</translation>
-<translation id="1944921356641260203">Znaleziono aktualizację</translation>
 <translation id="1947136734041527201">Umożliwia logowanie się w witrynach za pomocą Twojego konta u dostawcy tożsamości.</translation>
 <translation id="1948528728718281125">Dostęp do aparatu jest dozwolony w przypadku aplikacji i stron, które mają odpowiednie uprawnienia, oraz usług systemowych</translation>
 <translation id="1949332606889020901">Identyfikatory awarii</translation>
@@ -2209,7 +2207,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2546991196809436099">Powiększa elementy na ekranie. Aby włączyć lub wyłączyć lupę, użyj klawisza wyszukiwania + Ctrl + M.</translation>
 <translation id="2548347166720081527">Przyznano uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Zresetuj pamięć podręczną profilu eSIM</translation>
-<translation id="2549766998450508148">Naciśnij od 1 do 4 klawiszy modyfikujących (Ctrl, Alt, Shift lub Wyszukaj) oraz jeszcze 1 klawisz. Możesz też wybrać pojedynczy klawisz.</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="2550212893339833758">Zamieniona pamięć</translation>
 <translation id="2550596535588364872">Pozwolić rozszerzeniu <ph name="EXTENSION_NAME" /> otworzyć plik <ph name="FILE_NAME" />?</translation>
@@ -2406,7 +2403,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2705736684557713153">Przewiń na dół ekranu i włącz Instant Tethering, jeśli taka opcja jest widoczna. Jeśli jej nie ma, wszystko jest już gotowe.</translation>
 <translation id="2706304388244371417">Kopia zapasowa na Dysku Google W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane za pomocą hasła do konta Google Twojego dziecka i przesyłane do Google. <ph name="BEGIN_LINK1" />Więcej informacji o kopii zapasowej<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">W górę</translation>
-<translation id="2707024448553392710">Pobieram składnik</translation>
 <translation id="270921614578699633">Średnia z</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
 <translation id="2710101514844343743">Dane diagnostyczne i informacje o użytkowaniu</translation>
@@ -2531,7 +2527,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2779728796406650689">Dzięki temu, gdy zadajesz pytania, Asystent Google może udzielać spersonalizowanych odpowiedzi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
-<translation id="2783298271312924866">Pobrane</translation>
 <translation id="2783952358106015700">Użyj klucza bezpieczeństwa w: <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Sprawdzanie haseł</translation>
 <translation id="2785279781154577715">Wygląd karty podglądu wyświetlanej po najechaniu kursorem</translation>
@@ -2858,7 +2853,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="301525898020410885">Język został ustawiony na poziomie organizacji</translation>
 <translation id="3015639418649705390">Uruchom ponownie teraz</translation>
 <translation id="3016381065346027039">Brak wpisów dziennika</translation>
-<translation id="3016641847947582299">Składnik został zaktualizowany</translation>
 <translation id="3019023222666709803">Narzędzie Strzałka</translation>
 <translation id="3019285239893817657">Przycisk podstrony</translation>
 <translation id="3019595674945299805">Usługa VPN</translation>
@@ -2938,6 +2932,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Zapisz tylko na tym urządzeniu</translation>
 <translation id="3076977359333237641">Twoje dane logowania zostały usunięte</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">Ta sieć nie jest zsynchronizowana z Twoim kontem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">rozszerzenia</translation>
@@ -7171,7 +7166,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6208521041562685716">Aktywuję mobilną transmisję danych</translation>
 <translation id="6208725777148613371">Nie udało się zapisać w: <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209767197996242814">Jeśli nie pamiętasz hasła wielowyrazowego lub chcesz zmienić to ustawienie, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6209838773933913227">Aktualizacja komponentu</translation>
 <translation id="6209908325007204267">Twoje urządzenie ma licencję na Chrome Enterprise, ale Twoja nazwa użytkownika nie jest powiązana z kontem służbowym. Utwórz takie konto na stronie g.co/ChromeEnterpriseAccount, korzystając z dodatkowego urządzenia.</translation>
 <translation id="6210282067670792090">Użyj tego skrótu na pasku adresu razem ze skrótami wyszukiwania w wyszukiwarkach lub witrynach.</translation>
 <translation id="6211067089253408231">Włącz błyskawiczny hotspot</translation>
@@ -7235,7 +7229,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6247620186971210352">Nie znaleziono aplikacji</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="624789221780392884">Aktualizacja jest gotowa</translation>
 <translation id="6248988683584659830">Przeszukaj ustawienia</translation>
 <translation id="6249200942125593849">Zarządzaj funkcjami ułatwień dostępu</translation>
 <translation id="6250186368828697007">Gdy udostępniasz ekran, szczegóły są ukryte</translation>
@@ -8063,7 +8056,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6852290167968069627">ChromeOS nie może wznowić poprzedniej sesji z powodu problemu z siecią. Połącz się ze stabilną siecią i spróbuj ponownie.</translation>
 <translation id="6852529053326738838">Zapytaj swoją organizację, czy Twoje konto spełnia warunki, lub zarejestruj się za pomocą służbowego e-maila, aby to sprawdzić.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" />, zainstalowano ze strony <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
-<translation id="6853388645642883916">Aktualizator jest uśpiony</translation>
 <translation id="68541483639528434">Zamknij inne karty</translation>
 <translation id="6855892664589459354">Tworzenie i przywracanie kopii zapasowej Crostini</translation>
 <translation id="6856348640027512653">Nie zezwolono na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
@@ -8873,7 +8865,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746216226901520237">Następnym razem Twój telefon odblokuje urządzenie <ph name="DEVICE_TYPE" />. Smart Lock możesz wyłączyć w Ustawieniach.</translation>
 <translation id="746329643760972486">macOS</translation>
-<translation id="7464153996453281700">Komponent jest już aktualny</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otwarta karta – naciśnij, by przełączyć pasek kart}few{# otwarte karty – naciśnij, by przełączyć pasek kart}many{# otwartych kart – naciśnij, by przełączyć pasek kart}other{# otwartej karty – naciśnij, by przełączyć pasek kart}}</translation>
 <translation id="7465635034594602553">Coś poszło nie tak. Zaczekaj kilka minut, a potem uruchom <ph name="APP_NAME" /> ponownie.</translation>
 <translation id="7465777686629334728">Usuń zarządzane środowisko programistyczne (<ph name="SPECIFIC_NAME" />)</translation>

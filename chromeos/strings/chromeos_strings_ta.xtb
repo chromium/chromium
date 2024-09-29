@@ -266,6 +266,7 @@
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
 <translation id="2161656808144014275">உரை</translation>
 <translation id="2163937499206714165">டார்க் பயன்முறையை இயக்குதல்</translation>
+<translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="2180197493692062006">ஏதோ தவறாகிவிட்டது. ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
 <translation id="2189104374785738357">APN விவரங்களை மாற்றுதல்</translation>
 <translation id="2195732836444333448">தற்போது அதிகமானோர் பயன்படுத்துகின்றனர். மீண்டும் வந்து பார்க்கவும்.</translation>
@@ -322,6 +323,7 @@
 <translation id="2448312741937722512">வகை</translation>
 <translation id="2468124392950503650">உருவாக்க ஒரு ப்ராம்ப்ட்டைத் தேர்ந்தெடுங்கள் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட் வழிகாட்டியைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பாருங்கள்</translation>
 <translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
+<translation id="2475982808118771221">ஒரு பிழை ஏற்பட்டது</translation>
 <translation id="2480572840229215612">நண்டுகள்</translation>
 <translation id="248546197012830854">சாதனம் ஆஃப்லைனில் உள்ளது. உதவி உள்ளடக்கத்தைப் பார்க்க வைஃபை நெட்வொர்க்குடன் இணைக்கவும்.</translation>
 <translation id="2486301288428798846">மரம்</translation>
@@ -1023,6 +1025,7 @@
 <translation id="6137767437444130246">பயனர் சான்றிதழ்</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">இணையத்துடன் இணைக்க முடியவில்லை</translation>
 <translation id="6156030503438652198">கருஞ்சிவப்பு மற்றும் இளஞ்சிவப்பு</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1234,6 +1237,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> பிரத்தியேக ஆர்ட்வொர்க்கைத் தேர்வுசெய்யும்</translation>
 <translation id="7108668606237948702">உள்ளிடு</translation>
+<translation id="7117228822971127758">பிறகு முயலவும்</translation>
 <translation id="7118522231018231199">உங்கள் மொபைல் சேவை வழங்குநர் அல்லது நிர்வாகி வழங்கியுள்ள APNகளை மட்டும் தேர்ந்தெடுப்பதை உறுதிசெய்துகொள்ளவும். APNனைத் தேர்ந்தெடுக்கும்போது ஏற்கெனவே இருக்கும் பிரத்தியேக APNகள் முடக்கப்படும். தவறான APNகள் உங்கள் மொபைல் இணைப்பை முடக்கக்கூடும்.</translation>
 <translation id="7119389851461848805">பவர்</translation>
 <translation id="7129287270910503851">ஒவ்வொரு மாதமும் இந்தத் தேதியில் டேட்டா பயன்பாடு ரீசெட் செய்யப்படும்</translation>

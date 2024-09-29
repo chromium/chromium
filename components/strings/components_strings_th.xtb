@@ -3408,6 +3408,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">การดำเนินธุรกิจ</translation>
 <translation id="7244061187185055290">อธิบายสิ่งที่คุณกำลังค้นหาสั้นๆ</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับสิทธิประโยชน์ของบัตร</translation>
 <translation id="7251437084390964440">การกำหนดค่าเครือข่ายไม่เป็นไปตามมาตรฐาน ONC ระบบอาจไม่นำเข้าการกำหนดค่าบางส่วน
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
@@ -3477,6 +3478,7 @@
 <translation id="7390545607259442187">ยืนยันบัตร</translation>
 <translation id="7392089738299859607">อัปเดตที่อยู่</translation>
 <translation id="7393161616326137353">เกมผจญภัย</translation>
+<translation id="7393475648162498734">แสดงรางวัลและสิทธิประโยชน์ที่ใช้กับบัตรของคุณได้เมื่อชำระเงิน</translation>
 <translation id="739728382607845710">ไอคอนเครื่องจัดการการชําระเงิน</translation>
 <translation id="7399616692258236448">ระบบจะบล็อกคำขอตำแหน่งจากทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
@@ -4148,7 +4150,6 @@
 <translation id="8564466070529550495">บัตรเสมือน (Virtual Card) ไม่พร้อมใช้งานในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="8570895683659698018">งานอดิเรกและงานยามว่าง</translation>
-<translation id="8572792595597115856">ใช้ได้ถึงวันที่ <ph name="DATE" /></translation>
 <translation id="8574841453995331336">ตู้เย็นและตู้แช่แข็ง</translation>
 <translation id="8577192028579836704">ราคาปกติของตัวเลือกทั้งหมดอยู่ที่ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>
@@ -4493,6 +4494,7 @@
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940524522703752213">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก <ph name="MINUTES" /> นาที</translation>
 <translation id="944540589955480312">ใช้รหัสผ่านและพาสคีย์ที่บันทึกไว้ในบัญชี Google</translation>
+<translation id="944578681290094302">แสดงรางวัลและสิทธิประโยชน์ที่ใช้กับบัตรของคุณได้เมื่อชำระเงิน <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ดูข้อมูลเกี่ยวกับสิทธิประโยชน์ของบัตร<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ</translation>
 <translation id="945855313015696284">ตรวจสอบข้อมูลด้านล่างและลบบัตรที่ไม่ถูกต้อง</translation>
 <translation id="94613679163347541">เปรียบเทียบ<ph name="CATEGORY" />ไหม</translation>
