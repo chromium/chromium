@@ -927,11 +927,6 @@ void AddInstallWorkItems(const InstallParams& install_params,
       installer_state.root_key(),
       GetNotificationHelperPath(target_path, new_version), install_list);
 
-  if (installer_state.system_install()) {
-    AddElevationServiceWorkItems(
-        GetElevationServicePath(target_path, new_version), install_list);
-  }
-
   AddUpdateDowngradeVersionItem(installer_state.root_key(), current_version,
                                 new_version, install_list);
 
@@ -1197,11 +1192,16 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
 
+  const base::FilePath target_path = installer_state.target_path();
   AddOldWerHelperRegistrationCleanupItems(installer_state.root_key(),
-                                          installer_state.target_path(), list);
-  AddWerHelperRegistration(
-      installer_state.root_key(),
-      GetWerHelperPath(installer_state.target_path(), new_version), list);
+                                          target_path, list);
+  AddWerHelperRegistration(installer_state.root_key(),
+                           GetWerHelperPath(target_path, new_version), list);
+
+  if (installer_state.system_install()) {
+    AddElevationServiceWorkItems(
+        GetElevationServicePath(target_path, new_version), list);
+  }
 
   const std::wstring client_state_key = install_static::GetClientStateKeyPath();
 
