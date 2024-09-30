@@ -800,8 +800,7 @@ TEST_F(AudioAndroidOutputTest, OpenAndCloseOutputStream) {
 
 // Start input streaming using default input parameters and ensure that the
 // callback sequence is sane.
-// Flaky, see crbug.com/683408.
-TEST_P(AudioAndroidInputTest, DISABLED_StartInputStreamCallbacks) {
+TEST_P(AudioAndroidInputTest, StartInputStreamCallbacks) {
   AudioParameters native_params = GetInputStreamParameters();
   StartInputStreamCallbacks(native_params);
 }
@@ -810,8 +809,7 @@ TEST_P(AudioAndroidInputTest, DISABLED_StartInputStreamCallbacks) {
 // callback sequence is sane. The only change we make in this test is to select
 // a 10ms buffer size instead of the default size.
 // Flaky, see crbug.com/683408.
-TEST_P(AudioAndroidInputTest,
-       DISABLED_StartInputStreamCallbacksNonDefaultParameters) {
+TEST_P(AudioAndroidInputTest, StartInputStreamCallbacksNonDefaultParameters) {
   AudioParameters params = GetInputStreamParameters();
   params.set_frames_per_buffer(params.sample_rate() / 100);
   StartInputStreamCallbacks(params);
@@ -829,9 +827,7 @@ TEST_F(AudioAndroidOutputTest, StartOutputStreamCallbacks) {
 // select a 10ms buffer size instead of the default size and to open up the
 // device in mono.
 // TODO(henrika): possibly add support for more variations.
-// TODO(crbug.com/40833066): Flaky.
-TEST_F(AudioAndroidOutputTest,
-       DISABLED_StartOutputStreamCallbacksNonDefaultParameters) {
+TEST_F(AudioAndroidOutputTest, StartOutputStreamCallbacksNonDefaultParameters) {
   GetDefaultOutputStreamParametersOnAudioThread();
   AudioParameters params(audio_output_parameters().format(),
                          ChannelLayoutConfig::Mono(),
