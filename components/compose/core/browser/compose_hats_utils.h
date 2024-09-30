@@ -10,15 +10,15 @@ namespace compose::hats {
 struct HatsFields {
   // Hats String data fields:
 
-  static constexpr char kSessionID[] = "Execution id";
+  static constexpr char kSessionID[] = "Prompt and page context ID";
   static constexpr char kURL[] = "Url";
   static constexpr char kLocale[] = "Locale";
   // Hats  Bits data fields:
 
   static constexpr char kResponseModified[] =
-      "User modified a response in this session";
+      "Session used a modifier, like elaborate or formal";
   static constexpr char kSessionContainedFilteredResponse[] =
-      "A filtered response appeared in this session";
+      "A safety filter edited a response in this session";
   static constexpr char kSessionContainedError[] =
       "Any error appeared in this session";
   static constexpr char kSessionBeganWithNudge[] =
