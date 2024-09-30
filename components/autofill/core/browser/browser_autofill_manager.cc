@@ -1448,63 +1448,43 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           client().GetAutofillPredictionImprovementsDelegate();
       delegate && form_structure && delegate->IsFormEligible(*form_structure)) {
     delegate->HasDataStored(base::BindOnce(
-        &BrowserAutofillManager::
-            GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI,
+        &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
         weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
         base::OwnedRef(context), std::move(callback)));
     return;
   }
 
   // IMPORTANT NOTE: DON'T ADD CODE HERE, but in
-  // `GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI()`
-  // instead.
+  // `GenerateSuggestionsAndMaybeShowUIPhase1()` instead.
 
   // If user annotations wasn't checked for readiness above, synchronously move
   // on with generating suggestions and maybe showing the UI.
-  GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
+  GenerateSuggestionsAndMaybeShowUIPhase1(
       form, field, trigger_source, context, std::move(callback),
       AutofillPredictionImprovementsDelegate::HasData(false));
 }
 
-void BrowserAutofillManager::
-    GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
-        const FormData& form,
-        const FormFieldData& field,
-        AutofillSuggestionTriggerSource trigger_source,
-        SuggestionsContext& context,
-        OnGenerateSuggestionsCallback callback,
-        AutofillPredictionImprovementsDelegate::HasData has_data) {
+void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuggestionsContext& context,
+    OnGenerateSuggestionsCallback callback,
+    AutofillPredictionImprovementsDelegate::HasData
+        has_prediction_improvements_data) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // We cannot early-return here because GetCachedFormAndField() yields
-  // nullptr even if there it finds a FormStructure but its `autofill_count()`
-  // is 0. In such cases, we still need to offer Autocomplete (if prediction
-  // improvements doesn't take precedence). Therefore, the code below, including
-  // called functions, must handle `form_structure == nullptr` and
-  // `autofill_field == nullptr`.
+  // Note that this function cannot exit early in case GetCachedFormAndField()
+  // yields nullptrs for form_structure and autofill_field. This happens in case
+  // autofill_count() returns 0 (i.e. the number of autofillable fields is 0).
+  // Even if autofill cannot fill the form, Autocomplete gets a chance to fill
+  // the form. Therefore:
+  // * the following code needs to be executed (autocomplete is handled further
+  //   down in the code path)
+  // * the following code needs to gracefully deal with the situation that
+  //   form_structure and autofill_field are null.
   std::ignore =
       GetCachedFormAndField(form, field, &form_structure, &autofill_field);
-  if (AutofillPredictionImprovementsDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate();
-      delegate && has_data) {
-    autofill_metrics::SuggestionRankingContext ranking_context;
-    // `GetAvailableAddressAndCreditCardSuggestions()` handles cases where
-    // `form_structure` and / or `autofill_field` are nullptr's.
-    std::vector<Suggestion> suggestions =
-        GetAvailableAddressAndCreditCardSuggestions(
-            form, form_structure, field, autofill_field, trigger_source,
-            context, ranking_context);
-    if (delegate->MaybeUpdateSuggestions(
-            suggestions, field,
-            /*should_add_trigger_suggestion=*/trigger_source ==
-                    AutofillSuggestionTriggerSource::kPredictionImprovements ||
-                trigger_source == AutofillSuggestionTriggerSource::
-                                      kFormControlElementClicked)) {
-      std::move(callback).Run(/*show_suggestions=*/true, suggestions,
-                              /*ranking_context=*/std::nullopt);
-      return;
-    }
-  }
 
   context.field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
@@ -1517,29 +1497,32 @@ void BrowserAutofillManager::
        client().GetPlusAddressDelegate()->IsPlusAddressFillingEnabled(
            client().GetLastCommittedPrimaryMainFrameOrigin()));
 
-  auto generate_suggestions_callback =
-      base::BindOnce(&BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI,
-                     weak_ptr_factory_.GetWeakPtr(), form, form_structure,
-                     field, autofill_field, trigger_source,
-                     base::OwnedRef(context), std::move(callback));
+  auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
+      &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
+      weak_ptr_factory_.GetWeakPtr(), form, form_structure, field,
+      autofill_field, trigger_source, has_prediction_improvements_data,
+      base::OwnedRef(context), std::move(callback));
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        std::move(generate_suggestions_callback));
+        std::move(generate_suggestions_and_maybe_show_ui_phase2));
 
     return;
   }
 
-  std::move(generate_suggestions_callback).Run({});
+  std::move(generate_suggestions_and_maybe_show_ui_phase2)
+      .Run(/*plus_addresses=*/{});
 }
 
-void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
+void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
     const FormStructure* form_structure,
     const FormFieldData& field,
     AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
+    AutofillPredictionImprovementsDelegate::HasData
+        has_prediction_improvements_data,
     SuggestionsContext& context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
@@ -1558,6 +1541,22 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                               std::nullopt);
     }
     return;
+  }
+
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate && has_prediction_improvements_data) {
+    bool suggestions_were_updated = delegate->MaybeUpdateSuggestions(
+        suggestions, field,
+        /*should_add_trigger_suggestion=*/trigger_source ==
+                AutofillSuggestionTriggerSource::kPredictionImprovements ||
+            trigger_source ==
+                AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    if (suggestions_were_updated) {
+      std::move(callback).Run(/*show_suggestions=*/true, suggestions,
+                              /*ranking_context=*/std::nullopt);
+      return;
+    }
   }
 
   const bool form_element_was_clicked =

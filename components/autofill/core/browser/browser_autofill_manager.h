@@ -99,7 +99,7 @@ enum class ValuePatternsMetric {
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {
  public:
-  // Triggered when `GenerateSuggestionsAndMaybeShowUI` is complete.
+  // Triggered when `GenerateSuggestionsAndMaybeShowUIPhase2` is complete.
   // `show_suggestions` indicates whether or not the list of `suggestions`
   // should be displayed (via the `external_delegate_`). `ranking_context`
   // contains information regarding the ranking of suggestions and is used for
@@ -618,45 +618,41 @@ class BrowserAutofillManager : public AutofillManager {
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
   // Generates and prioritizes different kinds of suggestions and
-  // suggestion surfaces accordingly (e.g. Fast Checkout,
-  // SingleFieldFormFiller(s), address and credit card popups). Suggestion flows
-  // that handle their own UI flow (e.g. FastCheckout, TTF,
-  // SingleFieldFormFiller) are triggered from within this function. The
-  // function requires the list of `plus_addresses` as these can influence how
+  // suggestion surfaces accordingly (e.g. Fast Checkout, Prediction
+  // improvements, SingleFieldFormFiller(s), address and credit card popups).
+  // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
+  // SingleFieldFormFiller) are triggered from within these functions.
+  //
+  // This process is split into phrases 1 and 2 to support asynchronous
+  // operations in the middle.
+  //
+  // Phase 2 requires the list of `plus_addresses` as these can influence how
   // address profile suggestions are shown. Other flows that rely on the
   // `external_delegate_` to show their suggestions, pass the suggestions list
-  // to the delegate on `OnGenerateSuggestionsComplete` and request them to be
-  // shown (via `show_suggestions`). Note that the `callback` is always called
-  // regardless of the suggestion surface. The only case when it's not called is
-  // when suggestions are suppressed (See `ShouldSuppressSuggestions`).
-  void GenerateSuggestionsAndMaybeShowUI(
+  // to the delegate via `OnGenerateSuggestionsComplete` and request them to be
+  // shown (via `show_suggestions`). Note that the `callback` is almost always
+  // called, regardless of the suggestion surface. The only case when it's not
+  // called is when suggestions are suppressed (See
+  // `ShouldSuppressSuggestions`).
+  void GenerateSuggestionsAndMaybeShowUIPhase1(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext& context,
+      OnGenerateSuggestionsCallback callback,
+      AutofillPredictionImprovementsDelegate::HasData
+          has_prediction_improvements_data);
+  void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormStructure* form_structure,
       const FormFieldData& field,
       AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
+      AutofillPredictionImprovementsDelegate::HasData
+          has_prediction_improvements_data,
       SuggestionsContext& context,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::string> plus_addresses);
-
-  // This method
-  // 1) is an event handler called when the
-  // `AutofillPredictionImprovementsDelegate` is checking user annotations for
-  // readiness.
-  // 2) continues Autofill's regular flow by calling
-  // `GenerateSuggestionsAndMaybeShowUI()` if user annotations isn't ready or
-  // `AutofillPredictionImprovementsDelegate` doesn't exist.
-  //
-  // To be clear, only one branch for showing suggestions in the UI will be
-  // followed eventually: either the one for Autofill or the one for prediction
-  // improvements (the latter might also show Autofill suggestions).
-  void GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
-      const FormData& form,
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext& context,
-      OnGenerateSuggestionsCallback callback,
-      AutofillPredictionImprovementsDelegate::HasData has_data);
 
   // Receives the lists of plus address and single field form fill suggestions
   // and combines them. It gives priority to the plus address suggestions,
@@ -679,11 +675,11 @@ class BrowserAutofillManager : public AutofillManager {
       SuppressReason suppress_reason);
 
   // The function receives a the list of `suggestions` from
-  // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
-  // is true (via the `external_delegate_`). It also logs whether there is a
-  // suggestion for the user and whether the suggestion is shown.
-  // `ranking_context` contains information regarding the ranking of suggestions
-  // and is used for metrics logging.
+  // `GenerateSuggestionsAndMaybeShowUIPhase2` and displays them if
+  // `show_suggestions` is true (via the `external_delegate_`). It also logs
+  // whether there is a suggestion for the user and whether the suggestion is
+  // shown. `ranking_context` contains information regarding the ranking of
+  // suggestions and is used for metrics logging.
   void OnGenerateSuggestionsComplete(
       const FormData& form,
       const FormFieldData& field,
