@@ -19,9 +19,9 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/last_tile_container"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/shared_image_tiles_icon_height"
+        android:layout_height="@dimen/shared_image_tiles_icon_total_height"
         android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"
-        android:minWidth="@dimen/shared_image_tiles_icon_height"
+        android:minWidth="@dimen/shared_image_tiles_icon_total_height"
         android:orientation="vertical"
         android:background="@drawable/round_image_filled"
         android:focusable="false"
