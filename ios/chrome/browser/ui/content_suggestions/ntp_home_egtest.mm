@@ -156,6 +156,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSearchSuggestEnabled];
 
   [self closeAllTabs];
+  [ChromeEarlGrey clearBrowsingHistory];
 }
 
 + (void)tearDown {
