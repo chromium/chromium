@@ -26,9 +26,11 @@
             [[numSystemCertsString_]]
           </div>
         </div>
+        <!-- TODO(crbug.com/40928765): Have this toggle control whether the OS
+          imported certs are used.  -->
         <cr-toggle id="importOsCerts"
             aria-label="Toggle operating system certificate imports"
-            checked="[[importOsCertsEnabled_]]" disabled>
+            checked="[[importOsCertsEnabled_]]" disabled$="[[importOsCertsEnabledManaged_]]">
         </cr-toggle>
 
         <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"

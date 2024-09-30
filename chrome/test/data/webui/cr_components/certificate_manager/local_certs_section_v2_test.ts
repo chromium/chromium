@@ -290,4 +290,36 @@ suite('LocalCertsSectionV2Test', () => {
     const linkRow = customSection!.querySelector('cr-link-row');
     assertEquals('5 certificates', linkRow!.subLabel);
   });
+
+  // <if expr="not is_chromeos">
+  test('os certs set by policy, disable OS certs toggle', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 5,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    assertTrue(localCertsSection.$.importOsCerts.disabled);
+  });
+
+  test('os certs not set by policy, enable OS certs toggle', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 5,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    assertFalse(localCertsSection.$.importOsCerts.disabled);
+  });
+  // </if>
 });
