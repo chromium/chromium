@@ -1628,6 +1628,9 @@ bool BackForwardCacheImpl::
         SiteInstanceGroupId site_instance_group_id) {
   bool found = false;
   for (std::unique_ptr<Entry>& entry : entries_) {
+    if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
+      continue;
+    }
     entry->render_frame_host()->ForEachRenderFrameHostWithAction(
         [&found, site_instance_group_id](RenderFrameHostImpl* rfh) {
           if (rfh->GetSiteInstance()->group()->GetId() ==
@@ -1644,7 +1647,8 @@ bool BackForwardCacheImpl::
 bool BackForwardCacheImpl::IsRelatedSiteInstanceInBackForwardCacheForDebugging(
     SiteInstance& site_instance) {
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (entry->render_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+    if (!entry->render_frame_host()->is_evicted_from_back_forward_cache() &&
+        entry->render_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
             &site_instance)) {
       return true;
     }
@@ -1657,8 +1661,9 @@ bool BackForwardCacheImpl::
         SiteInstanceGroupId site_instance_group_id) {
   for (std::unique_ptr<Entry>& entry : entries_) {
     for (const auto& entry_rfph : entry->proxy_hosts()) {
-      if (entry_rfph.second->site_instance_group()->GetId() ==
-          site_instance_group_id) {
+      if (!entry->render_frame_host()->is_evicted_from_back_forward_cache() &&
+          entry_rfph.second->site_instance_group()->GetId() ==
+              site_instance_group_id) {
         return true;
       }
     }
@@ -1671,7 +1676,8 @@ bool BackForwardCacheImpl::
         const RenderViewHostImpl& rvh) {
   for (std::unique_ptr<Entry>& entry : entries_) {
     for (const auto& entry_rvh : entry->render_view_hosts()) {
-      if (entry_rvh->rvh_map_id() == rvh.rvh_map_id()) {
+      if (!entry->render_frame_host()->is_evicted_from_back_forward_cache() &&
+          entry_rvh->rvh_map_id() == rvh.rvh_map_id()) {
         return true;
       }
     }
