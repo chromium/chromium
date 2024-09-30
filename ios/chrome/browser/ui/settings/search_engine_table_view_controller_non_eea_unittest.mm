@@ -148,8 +148,7 @@ TEST_F(SearchEngineTableViewControllerNonEEATest, TestChangeProvider) {
   // literal symbol(e.g. "google" or "AOL") from
   // "components/search_engines/prepopulated_engines.h" since it's a generated
   // file.
-  std::vector<const PrepopulatedEngine*> prepopulated_engines =
-      GetAllPrepopulatedEngines();
+  const auto prepopulated_engines = GetAllPrepopulatedEngines();
   ASSERT_LE(2UL, prepopulated_engines.size());
 
   TemplateURL* url_p1 =

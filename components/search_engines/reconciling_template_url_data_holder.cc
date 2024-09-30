@@ -70,7 +70,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
     result = std::move(*engine_iter);
   } else if (switches::kReconcileWithAllKnownEngines.Get()) {
     auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
-    for (auto engine : all_engines) {
+    for (const auto* engine : all_engines) {
       if (engine->keyword == keyword) {
         result = TemplateURLDataFromPrepopulatedEngine(*engine);
         break;
@@ -96,7 +96,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     result = std::move(*engine_iter);
   } else if (switches::kReconcileWithAllKnownEngines.Get()) {
     auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
-    for (auto engine : all_engines) {
+    for (const auto* engine : all_engines) {
       if (engine->id == prepopulate_id) {
         result = TemplateURLDataFromPrepopulatedEngine(*engine);
         break;

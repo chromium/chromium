@@ -151,10 +151,8 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
     if 'generate_array' in description:
       f.write(u'\n')
       f.write(
-          u'extern const %s* const %s[];\n' %
+          u'extern const base::span<const %s* const> %s;\n' %
           (schema['type_name'], description['generate_array']['array_name']))
-      f.write(u'extern const size_t %s;\n' %
-              (description['generate_array']['array_name'] + u'Length'))
 
     if namespace:
       f.write(u'\n')
@@ -196,14 +194,14 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
     if 'generate_array' in description:
       f.write(u'\n')
       f.write(
-          u'const %s* const %s[] = {\n' %
+          u'const %s* const array_%s[] = {\n' %
           (schema['type_name'], description['generate_array']['array_name']))
       for element_name, _ in description['elements'].items():
         f.write(u'\t&%s,\n' % element_name)
       f.write(u'};\n')
-      f.write(u'const size_t %s = %d;\n' %
-              (description['generate_array']['array_name'] + u'Length',
-               len(description['elements'])))
+      f.write(u'const base::span<const %s* const> %s{array_%s};\n' %
+              (schema['type_name'], description['generate_array']['array_name'],
+               description['generate_array']['array_name']))
 
     if namespace:
       f.write(u'\n')
