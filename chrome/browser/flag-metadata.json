@@ -1410,6 +1410,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "cct-auth-tab-disable-all-external-intents",
+    "owners": [ "sinansahin@google.com", "chrome-connective-tissue@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "cct-before-unload",
     "owners": [ "katzz@google.com", "twellington@google.com"],
     "expiry_milestone": 142

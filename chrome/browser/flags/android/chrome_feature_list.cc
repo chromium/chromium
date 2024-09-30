@@ -201,6 +201,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kCCTAuthTab,
+    &kCCTAuthTabDisableAllExternalIntents,
     &kCCTBeforeUnload,
     &kCCTClientDataHeader,
     &kCCTExtendTrustedCdnPublisher,
@@ -530,6 +531,9 @@ BASE_FEATURE(kCastDeviceFilter,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTAuthTab, "CCTAuthTab", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCTAuthTabDisableAllExternalIntents,
+             "CCTAuthTabDisableAllExternalIntents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBeforeUnload,
              "CCTBeforeUnload",

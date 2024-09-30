@@ -2543,6 +2543,9 @@ extern const char kBoardingPassDetectorDescription[];
 extern const char kCCTAuthTabName[];
 extern const char kCCTAuthTabDescription[];
 
+extern const char kCCTAuthTabDisableAllExternalIntentsName[];
+extern const char kCCTAuthTabDisableAllExternalIntentsDescription[];
+
 extern const char kCCTBeforeUnloadName[];
 extern const char kCCTBeforeUnloadDescription[];
 

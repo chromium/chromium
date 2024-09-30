@@ -7556,6 +7556,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-auth-tab", flag_descriptions::kCCTAuthTabName,
      flag_descriptions::kCCTAuthTabDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTAuthTab)},
+    {"cct-auth-tab-disable-all-external-intents",
+     flag_descriptions::kCCTAuthTabDisableAllExternalIntentsName,
+     flag_descriptions::kCCTAuthTabDisableAllExternalIntentsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTAuthTabDisableAllExternalIntents)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

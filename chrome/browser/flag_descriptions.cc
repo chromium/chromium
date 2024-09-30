@@ -4374,6 +4374,11 @@ const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 const char kCCTAuthTabName[] = "CCT Auth Tab";
 const char kCCTAuthTabDescription[] = "Enable AuthTab used for authentication";
 
+const char kCCTAuthTabDisableAllExternalIntentsName[] =
+    "Disable all external intents in Auth Tab";
+const char kCCTAuthTabDisableAllExternalIntentsDescription[] =
+    "Disables all external intents in Auth Tab";
+
 const char kCCTBeforeUnloadName[] = "CCT before unload";
 const char kCCTBeforeUnloadDescription[] =
     "Kill switch for new CCT before unload behavior during back press";
