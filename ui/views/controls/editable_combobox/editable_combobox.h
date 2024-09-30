@@ -133,6 +133,10 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   Button* GetArrowButtonForTesting() { return arrow_; }
 
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+
  private:
   friend class EditableComboboxTest;
   friend class EditablePasswordComboboxTest;

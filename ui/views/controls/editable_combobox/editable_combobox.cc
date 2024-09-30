@@ -459,6 +459,13 @@ void EditableCombobox::UpdateMenu() {
   menu_model_->UpdateItemsShown();
 }
 
+gfx::Size EditableCombobox::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  gfx::Size preferred_size = textfield_->GetPreferredSize({});
+  preferred_size.SetToMax(control_elements_container_->GetPreferredSize({}));
+  return preferred_size;
+}
+
 void EditableCombobox::RequestFocus() {
   textfield_->RequestFocus();
 }
@@ -505,14 +512,8 @@ void EditableCombobox::OnLayoutIsAnimatingChanged(
 ProposedLayout EditableCombobox::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layout;
-  if (!size_bounds.is_fully_bounded()) {
-    layout.host_size = textfield_->GetPreferredSize({});
-    layout.host_size.SetToMax(
-        control_elements_container_->GetPreferredSize({}));
-  } else {
-    layout.host_size =
-        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
-  }
+  layout.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   layout.child_layouts.emplace_back(
       textfield_.get(), textfield_->GetVisible(),
       gfx::Rect(0, 0, layout.host_size.width(), layout.host_size.height()));
