@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/web_contents.h"
@@ -86,6 +87,7 @@ bool ToastController::MaybeShowToast(ToastParams params) {
     return false;
   }
 
+  RecordToastTriggeredToShow(params.toast_id_);
   CloseToast(toasts::ToastCloseReason::kPreempted);
 
   if (IsShowingToast()) {
@@ -278,14 +280,20 @@ void ToastController::CreateToast(const ToastParams& params,
       anchor_view,
       FormatString(spec->body_string_id(),
                    params.body_string_replacement_params_),
-      spec->icon(), spec->has_close_button(),
-      browser_window_interface_->ShouldHideUIForFullscreen());
+      spec->icon(), browser_window_interface_->ShouldHideUIForFullscreen(),
+      base::BindRepeating(&RecordToastDismissReason, params.toast_id_));
+
+  if (spec->has_close_button()) {
+    toast_view->AddCloseButton(
+        base::BindRepeating(&RecordToastCloseButtonClicked, params.toast_id_));
+  }
 
   if (spec->action_button_string_id().has_value()) {
     toast_view->AddActionButton(
         FormatString(spec->action_button_string_id().value(),
                      params.action_button_string_replacement_params_),
-        spec->action_button_callback());
+        spec->action_button_callback().Then(base::BindRepeating(
+            &RecordToastActionButtonClicked, params.toast_id_)));
   }
 
   toast_view_ = toast_view.get();
@@ -339,6 +347,8 @@ void ToastController::ClearTabScopedToasts() {
     if (!specification->is_global_scope()) {
       next_ephemeral_params_ = std::nullopt;
     }
+    RecordToastDismissReason(next_ephemeral_params_.value().toast_id_,
+                             toasts::ToastCloseReason::kAbort);
   }
 
   if (current_ephemeral_params_.has_value()) {

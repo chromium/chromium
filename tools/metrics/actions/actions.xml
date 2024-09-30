@@ -42677,6 +42677,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Toast.ActionButtonClicked">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user clicks on toast's action button.
+  </description>
+</action>
+
+<action name="Toast.CloseButtonClicked">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user clicks on the toast's close button.
+  </description>
+</action>
+
 <action name="TodayExtension.ExtensionDismissed">
   <obsolete>
     Deprecated. Replaced by IOS.SearchExtension.Action histogram.
@@ -46851,6 +46869,12 @@ should be able to be added at any place in this file.
   <affected-action name="IOS.Omnibox.Promo.PositionValidated"/>
   <affected-action name="IOS.Omnibox.Promo.Presented"/>
   <affected-action name="IOS.Omnibox.Promo.Skipped"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AddedToReadingList" label="Added to reading list"/>
+  <affected-action name="Toast.ActionButtonClicked"/>
+  <affected-action name="Toast.CloseButtonClicked"/>
 </action-suffix>
 
 </actions>

@@ -1,0 +1,44 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Toast.TriggeredToShow" enum="ToastId"
+    expires_after="2024-12-31">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the ToastId of the toast that is triggered to shown to users. This is
+    logged each time a feature attempts to trigger the toast and is used to
+    learn how often users see a particular toast.
+  </summary>
+</histogram>
+
+<histogram name="Toast.{ToastName}.Dismissed" enum="ToastCloseReason"
+    expires_after="2024-12-31">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the reason why the {ToastName} toast was dismissed. This is used to
+    gain insight on if the user ignores or interacts with the toast.
+  </summary>
+  <token key="ToastName">
+    <variant name="AddedToReadingList" summary="add to reading list"/>
+    <variant name="ImageCopied" summary="image copied"/>
+    <variant name="LensOverlay" summary="lens overlay"/>
+    <variant name="LinkCopied" summary="link copied"/>
+    <variant name="LinkToHighlightCopied" summary="link to highlight"/>
+    <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

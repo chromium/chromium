@@ -10,6 +10,7 @@ source_set("toasts") {
   sources = [
     "toast_controller.h",
     "toast_features.h",
+    "toast_metrics.h",
     "toast_service.h",
     "toast_view.h",
   ]
@@ -31,6 +32,7 @@ source_set("impl") {
   sources = [
     "toast_controller.cc",
     "toast_features.cc",
+    "toast_metrics.cc",
     "toast_service.cc",
     "toast_view.cc",
   ]

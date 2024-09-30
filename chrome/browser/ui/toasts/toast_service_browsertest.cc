@@ -15,7 +15,8 @@
 #include "content/public/test/browser_test.h"
 
 namespace {
-using ToastIdEnumSet = base::EnumSet<ToastId, ToastId::kMin, ToastId::kMax>;
+using ToastIdEnumSet =
+    base::EnumSet<ToastId, ToastId::kMinValue, ToastId::kMaxValue>;
 }
 
 class ToastServiceBrowserTest : public InProcessBrowserTest {

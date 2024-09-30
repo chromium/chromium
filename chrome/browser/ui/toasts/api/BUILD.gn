@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 
 source_set("toasts") {
   sources = [
+    "toast_id.cc",
     "toast_id.h",
     "toast_registry.cc",
     "toast_registry.h",
@@ -21,7 +22,10 @@ source_set("toasts") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "toast_registry_unittest.cc" ]
+  sources = [
+    "toast_id_unittest.cc",
+    "toast_registry_unittest.cc",
+  ]
   deps = [
     ":toasts",
     "//base",

@@ -7,6 +7,7 @@
 #include <climits>
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -43,18 +44,21 @@ gfx::Transform GetScaleTransformation(gfx::Rect bounds) {
 
 namespace toasts {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastActionButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastCloseButton);
 
-ToastView::ToastView(views::View* anchor_view,
-                     const std::u16string& toast_text,
-                     const gfx::VectorIcon& icon,
-                     bool has_close_button,
-                     bool render_toast_over_web_contents)
+ToastView::ToastView(
+    views::View* anchor_view,
+    const std::u16string& toast_text,
+    const gfx::VectorIcon& icon,
+    bool render_toast_over_web_contents,
+    base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
       AnimationDelegateViews(this),
       toast_text_(toast_text),
       icon_(icon),
-      has_close_button_(has_close_button),
-      render_toast_over_web_contents_(render_toast_over_web_contents) {
+      render_toast_over_web_contents_(render_toast_over_web_contents),
+      toast_close_callback_(std::move(toast_close_callback)) {
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -74,6 +78,12 @@ void ToastView::AddActionButton(const std::u16string& action_button_text,
   has_action_button_ = true;
   action_button_text_ = action_button_text;
   action_button_callback_ = std::move(action_button_callback);
+}
+
+void ToastView::AddCloseButton(base::RepeatingClosure close_callback) {
+  CHECK(!has_close_button_);
+  has_close_button_ = true;
+  close_button_callback_ = std::move(close_callback);
 }
 
 void ToastView::Init() {
@@ -123,19 +133,23 @@ void ToastView::Init() {
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
     action_button_->SetStyle(ui::ButtonStyle::kProminent);
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    action_button_->SetProperty(views::kElementIdentifierKey,
+                                kToastActionButton);
     SetInitiallyFocusedView(action_button_);
   }
 
   if (has_close_button_) {
     close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&ToastView::Close, base::Unretained(this),
-                            ToastCloseReason::kCloseButton),
+        close_button_callback_.Then(
+            base::BindRepeating(&ToastView::Close, base::Unretained(this),
+                                ToastCloseReason::kCloseButton)),
         vector_icons::kCloseIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT) -
             lp->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON).height(),
         ui::kColorToastForeground));
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
+    close_button_->SetProperty(views::kElementIdentifierKey, kToastCloseButton);
     if (!HasConfiguredInitiallyFocusedView()) {
       SetInitiallyFocusedView(close_button_);
     }
@@ -223,6 +237,7 @@ void ToastView::Close(ToastCloseReason reason) {
       break;
   }
 
+  toast_close_callback_.Run(reason);
   if (GetWidget()->IsVisible()) {
     AnimateOut(
         base::BindOnce(&views::Widget::CloseWithReason,
