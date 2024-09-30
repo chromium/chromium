@@ -696,7 +696,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
                                 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedAppUnknown) {
+// Flaky on Android. crbug.com/369804412
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PreferRelatedAppUnknown DISABLED_PreferRelatedAppUnknown
+#else
+#define MAYBE_PreferRelatedAppUnknown PreferRelatedAppUnknown
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_PreferRelatedAppUnknown) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
 
   GURL test_url = embedded_test_server()->GetURL(
@@ -713,7 +719,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedAppUnknown) {
 #else
 #define MAYBE_PreferRelatedChromeApp PreferRelatedChromeApp
 #endif
-
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_PreferRelatedChromeApp) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::HistogramTester histograms;
@@ -1086,7 +1091,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_ValidManifestShowBanne
             InstallableWebAppCheckResult::kYes_Promotable);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, ImplicitName) {
+// Flaky on Android. crbug.com/369804412
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ImplicitName DISABLED_ImplicitName
+#else
+#define MAYBE_ImplicitName ImplicitName
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_ImplicitName) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
 
   GURL test_url = embedded_test_server()->GetURL(
