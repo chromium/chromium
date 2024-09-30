@@ -12106,22 +12106,6 @@
             ]
         }
     ],
-    "IOSSaveToDrive": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240523",
-                    "enable_features": [
-                        "IOSDownloadNoUIUpdateInBackground",
-                        "IOSSaveToDrive"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [
