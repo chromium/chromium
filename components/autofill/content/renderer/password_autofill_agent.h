@@ -343,8 +343,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     // The user accepted a suggestion from a dropdown on a password field.
     bool password_field_suggestion_was_accepted = false;
   };
-  using WebInputToPasswordInfoMap = std::map<FieldRef, PasswordInfo>;
-  using PasswordToLoginMap = std::map<FieldRef, FieldRef>;
 
   // Stores information about form field structure.
   struct FormFieldInfo {
@@ -593,11 +591,18 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // A map from WebInput elements to `PasswordInfo` for all elements that
   // password manager has fill information for.
-  WebInputToPasswordInfoMap web_input_to_password_info_;
+  //
+  // After any mutation, `last_supplied_password_info_iter_` must be updated.
+  std::map<FieldRef, PasswordInfo> web_input_to_password_info_;
+
   // A (sort-of) reverse map to `web_input_to_password_info_`.
-  PasswordToLoginMap password_to_username_;
+  std::map<FieldRef, FieldRef> password_to_username_;
+
   // The chronologically last insertion into `web_input_to_password_info_`.
-  WebInputToPasswordInfoMap::iterator last_supplied_password_info_iter_;
+  // This iterator always points to `web_input_to_password_info_`.
+  std::map<FieldRef, PasswordInfo>::iterator last_supplied_password_info_iter_ =
+      web_input_to_password_info_.end();
+
   // Set of fields that are reliably identified as non-credential fields.
   base::flat_set<FieldRendererId> suggestion_banned_fields_;
 
@@ -606,20 +611,19 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   PasswordValueGatekeeper gatekeeper_;
 
   // True indicates that user debug information should be logged.
-  bool logging_state_active_;
+  bool logging_state_active_ = false;
 
   std::vector<PreviewInfo> previewed_elements_;
 
   // True indicates that a request for credentials has been sent to the store.
-  bool sent_request_to_store_;
+  bool sent_request_to_store_ = false;
 
   // True indicates that a safe browsing reputation check has been triggered.
-  bool checked_safe_browsing_reputation_;
+  bool checked_safe_browsing_reputation_ = false;
 
   raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 
-  raw_ptr<PasswordGenerationAgent>
-      password_generation_agent_;  // Weak reference.
+  raw_ptr<PasswordGenerationAgent> password_generation_agent_ = nullptr;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PagePasswordsAnalyser page_passwords_analyser_;

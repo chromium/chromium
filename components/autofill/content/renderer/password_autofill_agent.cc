@@ -755,12 +755,7 @@ PasswordAutofillAgent::PasswordAutofillAgent(
     blink::AssociatedInterfaceRegistry* registry,
     EnableHeavyFormDataScraping enable_heavy_form_data_scraping)
     : content::RenderFrameObserver(render_frame),
-      enable_heavy_form_data_scraping_(enable_heavy_form_data_scraping),
-      last_supplied_password_info_iter_(web_input_to_password_info_.end()),
-      logging_state_active_(false),
-      sent_request_to_store_(false),
-      checked_safe_browsing_reputation_(false),
-      password_generation_agent_(nullptr) {
+      enable_heavy_form_data_scraping_(enable_heavy_form_data_scraping) {
   registry->AddInterface<mojom::PasswordAutofillAgent>(base::BindRepeating(
       &PasswordAutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -1162,8 +1157,7 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
 
     auto iter = web_input_to_password_info_.find(FieldRef(element));
     if (iter == web_input_to_password_info_.end()) {
-      PasswordToLoginMap::const_iterator password_iter =
-          password_to_username_.find(FieldRef(element));
+      auto password_iter = password_to_username_.find(FieldRef(element));
       if (password_iter == password_to_username_.end()) {
         if (!use_fallback_data || web_input_to_password_info_.empty()) {
           return false;
