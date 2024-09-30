@@ -3055,6 +3055,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Regmon.PolicyHandlerTime" units="ms"
+    expires_after="2025-09-19">
+  <owner>chiav@chromium.org</owner>
+  <owner>crmullins@chromium.org</owner>
+  <summary>
+    Records the amount of time (milliseconds) it takes to run the policy
+    handler.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Regmon.PolicyViolation"
     enum="NetworkAnnotationHashCodes" expires_after="2025-09-19">
   <owner>chiav@chromium.org</owner>
