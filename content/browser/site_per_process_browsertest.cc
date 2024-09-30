@@ -13355,15 +13355,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 
   // Now do a browser-initiated navigation to about:blank in a new tab created
-  // in the previous SiteInstance. This happens to stay in the same process,
-  // though there may not be a requirement for that.
+  // in the previous SiteInstance. The current behavior is for the navigation
+  // to switch to a new SiteInstance, though there is no real requirement for
+  // that. In the past the existing SiteInstance was used.
   WebContents::CreateParams new_contents_params(
       web_contents()->GetBrowserContext(), web_contents()->GetSiteInstance());
   std::unique_ptr<WebContents> new_web_contents(
       WebContents::Create(new_contents_params));
 
   EXPECT_TRUE(NavigateToURL(new_web_contents.get(), GURL(url::kAboutBlankURL)));
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetProcess(),
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_web_contents->GetPrimaryMainFrame()->GetProcess());
 }
 

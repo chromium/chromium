@@ -1112,15 +1112,6 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   if (should_check_for_wrong_process && !IsSuitableForUrlInfo(dest_url_info))
     return false;
 
-  // If we don't have a last successful URL, we can't trust the origin or URL
-  // stored on the frame, so we fall back to the SiteInstance URL.  This case
-  // matters for newly created frames which haven't committed a navigation yet,
-  // as well as for net errors. Note that we use the SiteInstance's
-  // original_url() and not the site URL, so that we can do this comparison
-  // without the effective URL resolution if needed.
-  if (last_successful_url.is_empty())
-    return IsOriginalUrlSameSite(dest_url_info, should_compare_effective_urls);
-
   // In the common case, we use the last successful URL. Thus, we compare
   // against the last successful commit when deciding whether to swap this time.
   // We convert |last_successful_url| to UrlInfo with |origin_isolation_request|
