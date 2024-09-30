@@ -1081,12 +1081,6 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 
 // static
 std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
-  // Trigger feature list initialization here to ensure no population bias in
-  // the experimental and control groups.
-  [[maybe_unused]] const bool high_renderer_limits =
-      base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
-
 #if defined(ARCH_CPU_64_BITS)
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
@@ -1109,7 +1103,7 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
       memory_limit = 8 * GB;
     }
 
-    if (sandbox_type == Sandbox::kRenderer && high_renderer_limits) {
+    if (sandbox_type == Sandbox::kRenderer) {
       // Set limit to 1Tb.
       memory_limit = 1024 * GB;
     }

@@ -70,13 +70,6 @@ BASE_FEATURE(kRendererAppContainer,
              "RendererAppContainer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables very high job memory limits for sandboxed renderer processes. This
-// sets a limit of 1Tb, effectively removing the Job memory limits, except in
-// egregious cases.
-BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
-             "WinSboxHighRendererJobMemoryLimits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, launch the network service within an LPAC sandbox. If disabled,
 // the network service will run inside an App Container.
 BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
