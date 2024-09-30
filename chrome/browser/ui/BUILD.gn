@@ -5917,6 +5917,7 @@ static_library("ui_public_dependencies") {
       "//ui/base/dragdrop/mojom:mojom_headers",
       "//ui/views",
       "//ui/views/controls/webview",
+      "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
 
       # TODO: Use //chrome/browser after fixing cyclic dependency.
       "//components/commerce/core:coupon_db_content_proto",
