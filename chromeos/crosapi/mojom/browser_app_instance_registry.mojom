@@ -9,7 +9,6 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Represents an update to an instance of a tabbed Chrome browser window.
-[Stable]
 struct BrowserWindowInstanceUpdate {
   // Instance ID generated in lacros-chrome.
   mojo_base.mojom.UnguessableToken id@0;
@@ -39,7 +38,7 @@ struct BrowserWindowInstanceUpdate {
   uint64 lacros_profile_id@6;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum BrowserAppInstanceType {
   kAppTab,
   kAppWindow,
@@ -47,7 +46,6 @@ enum BrowserAppInstanceType {
 
 // Represents an update to an instance of an app running in WebContents (either
 // an app window or a tab).
-[Stable]
 struct BrowserAppInstanceUpdate {
   // Instance ID generated in lacros-chrome.
   mojo_base.mojom.UnguessableToken id@0;
@@ -86,7 +84,7 @@ struct BrowserAppInstanceUpdate {
 
 // Implemented in ash-chrome, and is used to receive browser app instance
 // events from lacros-chrome.
-[Stable, Uuid="c29f078d-8d82-4f65-bce0-18f047b1ea31"]
+[Uuid="c29f078d-8d82-4f65-bce0-18f047b1ea31"]
 interface BrowserAppInstanceRegistry {
   // Called by lacros-chrome when when a new browser window is created.
   OnBrowserWindowAdded@0(BrowserWindowInstanceUpdate update);
@@ -118,7 +116,7 @@ interface BrowserAppInstanceRegistry {
 
 // Implemented in lacros-chrome, and is used to perform actions on instances
 // that live in lacros-chrome from ash-chrome.
-[Stable, Uuid="5058756a-9826-4276-abff-f2a84b9386b9"]
+[Uuid="5058756a-9826-4276-abff-f2a84b9386b9"]
 interface BrowserAppInstanceController {
   // Activate the tab for the given instance ID in lacros-chrome. If the
   // instance being referenced is not a tab instance, does nothing.

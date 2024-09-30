@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 //
 // Next MinVersion: 3
 // Next ID: 1
-[Stable, Uuid="00c78a1d-b80e-426a-9df1-428c439b3942"]
+[Uuid="00c78a1d-b80e-426a-9df1-428c439b3942"]
 interface HoldingSpaceService {
 
   // Adds a printed PDF item backed by the provided absolute `file_path`. If

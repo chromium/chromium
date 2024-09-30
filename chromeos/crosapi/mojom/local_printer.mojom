@@ -13,7 +13,6 @@ import "url/mojom/url.mojom";
 // This structure holds basic information about a printer.
 // It corresponds to the LocalDestinationInfo object in
 // chrome/browser/resources/print_preview/data/local_parsers.ts.
-[Stable]
 struct LocalDestinationInfo {
   // Printer id.
   string id@0;
@@ -35,7 +34,6 @@ struct LocalDestinationInfo {
 // query can return multiple errors so PrinterStatus contains multiple
 // StatusReasons. This struct corresponds to the PrinterStatus object in
 // chrome/browser/resources/print_preview/data/printer_status_cros.ts.
-[Stable]
 struct PrinterStatus {
   // Printer id.
   string printer_id@0;
@@ -50,7 +48,6 @@ struct PrinterStatus {
 // printer, and a severity, which is the level of seriousness of that state.
 // The Reason and Severity enum types are also used by the CupsPrinterStatus
 // object in chromeos/printing/cups_printer_status.h.
-[Stable]
 struct StatusReason {
   // Reason describes the state of the printer.
   // It is used by the CupsPrinterStatus class
@@ -65,7 +62,7 @@ struct StatusReason {
   // which correspond to IPP printer-state-reasons (rfc2911#section-4.4.12)
   // to the Reason enum below. kNoError is a reserved value that is unused
   // by the PrinterStatus object.
-  [Stable, Extensible]
+  [Extensible]
   enum Reason {
     [Default] kUnknownReason,
     kDeviceError,
@@ -85,7 +82,7 @@ struct StatusReason {
     kTrayMissing,
     [MinVersion=1] kExpiredCertificate,
   };
-  [Stable, Extensible]
+  [Extensible]
   enum Severity {
     [Default] kUnknownSeverity,
     kReport,
@@ -96,7 +93,6 @@ struct StatusReason {
 
 // This structure is a subset of the PrintJobInfo message in
 // chrome/browser/chromeos/printing/history/print_job_info.proto.
-[Stable]
 struct PrintJob {
   // Printer id.
   string device_name@0;
@@ -126,14 +122,14 @@ struct PrintJob {
   // A subset of DuplexMode in printing/mojom/print.mojom.
   // kUnknownDuplexMode has been removed to match the proto version
   // in chrome/browser/chromeos/printing/history/print_job_info.proto.
-  [Stable, Extensible]
+  [Extensible]
   enum DuplexMode {
     [Default] kSimplex,
     kLongEdge,
     kShortEdge,
   };
   // Used in chrome/browser/printing/print_job.h.
-  [Stable, Extensible]
+  [Extensible]
   enum Source {
     [Default] kUnknown = -1,
     kPrintPreview,
@@ -146,12 +142,11 @@ struct PrintJob {
 
 // This structure corresponds to the chromeos::PrintServersConfig struct
 // in chrome/browser/chromeos/printing/print_servers_manager.h.
-[Stable]
 struct PrintServersConfig {
   ServerPrintersFetchingMode fetching_mode@0;
   array<PrintServer> print_servers@1;
   // Used in chrome/browser/chromeos/printing/print_servers_policy_provider.h.
-  [Stable, Extensible]
+  [Extensible]
   enum ServerPrintersFetchingMode {
     // Use the first 16 print servers.
     [Default] kStandard,
@@ -160,14 +155,12 @@ struct PrintServersConfig {
   };
 };
 
-[Stable]
 struct PrintServer {
   string id@0;
   url.mojom.Url url@1;
   string name@2;
 };
 
-[Stable]
 struct CapabilitiesResponse {
   // Basic information about the printer.
   LocalDestinationInfo basic_info@0;
@@ -190,7 +183,6 @@ struct CapabilitiesResponse {
 };
 
 // Global print policies that are not printer specific.
-[Stable]
 struct Policies {
   // The allowed value for the 'Headers and footers' checkbox, in Print Preview.
   OptionalBool print_header_footer_allowed@0;
@@ -219,14 +211,13 @@ struct Policies {
   // This is used in pref file and should never change.
   // Corresponds to enum class BackgroundGraphicsModeRestriction in
   // printing/backend/printing_restrictions.h.
-  [Stable, Extensible]
+  [Extensible]
   enum BackgroundGraphicsModeRestriction {
     [Default] kUnset = 0,
     kEnabled = 1,
     kDisabled = 2,
   };
-  [Stable]
-  enum OptionalBool {
+    enum OptionalBool {
     kUnset,
     kFalse,
     kTrue,
@@ -234,7 +225,7 @@ struct Policies {
 };
 
 // This interface is used to notify Lacros about print server events.
-[Stable, Uuid="39885b28-cbc6-4878-834f-b0902d8e6fbf"]
+[Uuid="39885b28-cbc6-4878-834f-b0902d8e6fbf"]
 interface PrintServerObserver {
   // Runs when the print server configuration is updated, e.g.
   // a new print server is added or discovered.
@@ -248,7 +239,7 @@ interface PrintServerObserver {
 
 // Corresponds to functions in CupsPrintJobManager::Observer
 // (chrome/browser/chromeos/printing/cups_print_job_manager.h).
-[Stable, Extensible]
+[Extensible]
 enum PrintJobStatus {
   [Default] kUnknown, // reserved
   kCreated,
@@ -261,14 +252,13 @@ enum PrintJobStatus {
   kCancelled,
 };
 
-[Stable]
 struct PrintJobUpdate {
   PrintJobStatus status;
   uint32 pages_printed;
 };
 
 // This interface is used to notify Lacros about print job events.
-[Stable, Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
+[Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
 interface PrintJobObserver {
   // Deprecated and replaced with `OnPrintJobUpdate` below.
   OnPrintJobUpdateDeprecated@0(
@@ -285,7 +275,7 @@ interface PrintJobObserver {
 };
 
 // Used to specify which source(s) to observe print jobs from.
-[Stable, Extensible]
+[Extensible]
 enum PrintJobSource {
   [Default] kAny, // reserved
   kExtension,
@@ -293,7 +283,6 @@ enum PrintJobSource {
 };
 
 // This interface is used to notify Lacros about local printer events.
-[Stable]
 interface LocalPrintersObserver {
   // Fires for any update to a local printer and sends the full set of connected
   // local printers.
@@ -301,13 +290,9 @@ interface LocalPrintersObserver {
 };
 
 // This union of structs represents the OAuth-related status of a printer.
-[Stable]
 struct OAuthNotNeeded {};
-[Stable]
 struct OAuthError {};
-[Stable]
 struct OAuthAccessToken { string token; };
-[Stable]
 union GetOAuthAccessTokenResult {
   OAuthNotNeeded  none;
   OAuthError error;
@@ -317,7 +302,7 @@ union GetOAuthAccessTokenResult {
 // This interface is used to query information about local printers
 // associated with the current Ash profile that can be used for
 // printing from Lacros.
-[Stable, Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
+[Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
 interface LocalPrinter {
   // Gets a list of printers. An empty array is returned on error.
   GetPrinters@0() => (array<LocalDestinationInfo> printers);

@@ -13,7 +13,7 @@ import "mojo/public/mojom/base/values.mojom";
 // the PrinterError enum in extensions/common/api/printer_provider.idl.
 //
 // LINT.IfChange(StartPrintStatus)
-[Stable, Extensible]
+[Extensible]
 enum StartPrintStatus {
   [Default] kUnknown,
   // Specifies that the operation was completed successfully.
@@ -34,7 +34,7 @@ enum StartPrintStatus {
 //
 // Next version: 1.
 // Next method id: 2.
-[Stable, Uuid="def89e7c-8e4f-4718-92db-24f1329fcd29"]
+[Uuid="def89e7c-8e4f-4718-92db-24f1329fcd29"]
 interface ExtensionPrinterService {
   // An ExtensionPrinterServiceProvider can register itself with
   // ExtensionPrinterService, so that ExtensionPrinterService can communicate
@@ -55,7 +55,7 @@ interface ExtensionPrinterService {
 //
 // Next version: 4.
 // Next method id: 5.
-[Stable, Uuid="74d95a4e-56e3-4fdf-8df5-62660939dc73"]
+[Uuid="74d95a4e-56e3-4fdf-8df5-62660939dc73"]
 interface ExtensionPrinterServiceProvider {
   // Dispatch StartGetPrinters requests to lacros from ash-chrome. The
   // |request_id| will be used when reporting printers back to ash-chrome by

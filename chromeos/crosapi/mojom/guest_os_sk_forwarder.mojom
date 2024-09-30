@@ -8,7 +8,7 @@ module crosapi.mojom;
 // GuestOsSkForwarder interface.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="c1cbf02f-dd4b-4d85-850c-a16e958ae4b9"]
+[Uuid="c1cbf02f-dd4b-4d85-850c-a16e958ae4b9"]
 interface GuestOsSkForwarderFactory {
   BindGuestOsSkForwarder@0(pending_remote<GuestOsSkForwarder> remote);
 };
@@ -17,7 +17,7 @@ interface GuestOsSkForwarderFactory {
 // Implemented by lacros-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="c372e29f-897f-471e-9cc9-4239cc2dcf25"]
+[Uuid="c372e29f-897f-471e-9cc9-4239cc2dcf25"]
 interface GuestOsSkForwarder {
   // Forward a single security key request.
   ForwardRequest@0(string message) => (string response);

@@ -5,7 +5,7 @@
 module crosapi.mojom;
 
 // This interface provides Lacros with access to input method APIs.
-[Stable, Uuid="063f784e-9aac-4a87-8078-eeaf64914e63"]
+[Uuid="063f784e-9aac-4a87-8078-eeaf64914e63"]
 interface InputMethods {
   // Changes the current (active) input method.
   // This will only succeed if the selected input method is enabled, otherwise

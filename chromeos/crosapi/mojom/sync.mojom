@@ -10,7 +10,6 @@ import "chromeos/crosapi/mojom/synced_session_client.mojom";
 // A mojo representation of syncer::Nigori. Should only be obtained by using
 // Nigori::ExportKeys() or direct mapping from other Nigori representations,
 // such as sync_pb::NigoriKey.
-[Stable]
 struct NigoriKey {
   array<uint8> encryption_key@0;
   array<uint8> mac_key@1;
@@ -19,7 +18,7 @@ struct NigoriKey {
 // Allows lacros-chrome to observe the explicit-passphrase related state.
 // Next version: 1
 // Next ordinal value: 2
-[Stable, Uuid="aeec552c-67c7-43dc-bbcf-d2fcc7c6a754"]
+[Uuid="aeec552c-67c7-43dc-bbcf-d2fcc7c6a754"]
 interface SyncExplicitPassphraseClientObserver {
   // Called when passphrase became required for observed client (e.g. explicit
   // passphrase Nigori update is received and correct passphrase is not yet
@@ -36,7 +35,7 @@ interface SyncExplicitPassphraseClientObserver {
 // ash-chrome and is accessed from lacros-chrome.
 // Next version: 1
 // Next ordinal value: 3
-[Stable, Uuid="4d13845c-a628-404b-8a88-c39a0aeea298"]
+[Uuid="4d13845c-a628-404b-8a88-c39a0aeea298"]
 interface SyncExplicitPassphraseClient {
   // Adds a new observer. Immediately fires OnPassphraseRequired()
   // or OnPassphraseAvailable() if needed.
@@ -61,7 +60,7 @@ interface SyncExplicitPassphraseClient {
 };
 
 // Allows lacros-chrome to observe ash-chrome user settings changes.
-[Stable, Uuid="925b02ff-cc06-44a1-a244-69e84259c1cf"]
+[Uuid="925b02ff-cc06-44a1-a244-69e84259c1cf"]
 interface SyncUserSettingsClientObserver {
   // Called when apps sync is enabled/disabled by the user.
   OnAppsSyncEnabledChanged@0(bool enabled);
@@ -69,7 +68,7 @@ interface SyncUserSettingsClientObserver {
 
 // Defines a Sync API related to sync user settings that lives in ash-chrome
 // and is accessed from lacros-chrome.
-[Stable, Uuid="a3466eae-955f-492f-9bc7-b4bfb57b6dca"]
+[Uuid="a3466eae-955f-492f-9bc7-b4bfb57b6dca"]
 interface SyncUserSettingsClient {
   // Adds a new observer.
   AddObserver@0(pending_remote<SyncUserSettingsClientObserver> observer);
@@ -82,7 +81,7 @@ interface SyncUserSettingsClient {
 // lacros-chrome. To be extended in the future.
 // Next version: 3
 // Next ordinal value: 3
-[Stable, Uuid="4499c528-4578-466d-a97d-d66217323f48"]
+[Uuid="4499c528-4578-466d-a97d-d66217323f48"]
 interface SyncService {
   // Binds SyncExplicitPassphraseClient, that lives in ash-chrome.
   BindExplicitPassphraseClient@0(

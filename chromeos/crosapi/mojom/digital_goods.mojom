@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 
 // Implemented in ash-chrome. Allows lacros-chrome to perform Digital Goods
 // operations (forwarded to ARC).
-[Stable, Uuid="6f2fbc9e-2ff1-47bd-a15d-08e12c226f61"]
+[Uuid="6f2fbc9e-2ff1-47bd-a15d-08e12c226f61"]
 interface DigitalGoods {
   // Queries the associated backend for information about one or more items.
   GetDetails@0(string web_app_id, url.mojom.Url scope, array<string> item_ids)
@@ -37,7 +37,7 @@ interface DigitalGoods {
 
 // Implemented in ash-chrome. Allows lacros-chrome to create a |DigitalGoods|
 // instance.
-[Stable, Uuid="1197d2ad-0f33-49e4-b6d6-370e255a9896"]
+[Uuid="1197d2ad-0f33-49e4-b6d6-370e255a9896"]
 interface DigitalGoodsFactory {
   // Creates a DigitalGoods instance. The |digital_goods| is non-null iff
   // |code| == kOk.

@@ -15,7 +15,7 @@ import "url/mojom/url.mojom";
 
 // The enum of possible states for a shelf item.
 // Each value must be a power of 2.
-[Stable, Extensible]
+[Extensible]
 enum ShelfItemState {
   // Usually represents an app with no running instance.
   [Default] kNormal = 0,
@@ -27,7 +27,7 @@ enum ShelfItemState {
   kNotification = 4
 };
 
-[Stable, Extensible]
+[Extensible]
 enum TouchEventType {
   kUnknown = 0,
   kPressed = 1,
@@ -41,14 +41,14 @@ enum TouchEventType {
 };
 
 // Augments a bool to include an 'unknown' value.
-[Stable, Extensible]
+[Extensible]
 enum OptionalBoolean {
   [Default] kUnknown = 0,
   kFalse,
   kTrue,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum MachineStatisticKeyType {
   [Default] kUnknown = 0,
   kOemDeviceRequisitionKey = 1,
@@ -58,26 +58,22 @@ enum MachineStatisticKeyType {
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
 // file.
-[Stable]
 union IsolatedWebAppLocation {
   url.mojom.Url proxy_origin;
   mojo_base.mojom.FilePath bundle_path;
 };
 
-[Stable]
 union InstallWebAppResult {
   string app_id;
   string error_message;
 };
 
-[Stable]
 struct AppListItemAttributes {
   string item_position@0;
   string pin_position@1;
 };
 
 // For use with StandaloneBrowserTestController's ObserveDomMessages method.
-[Stable]
 interface DomMessageObserver {
   // Invoked when a message arrived.
   OnMessage@0(string message);
@@ -88,7 +84,7 @@ interface DomMessageObserver {
 // lacros-chrome instance.
 // Next version: 12
 // Next method id: 14
-[Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
+[Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
   // in a tab or window) and returns the ID of the installed app (see
@@ -165,7 +161,7 @@ interface StandaloneBrowserTestController {
 // See chrome/browser/lacros/vpn_provider_lacros_apitest.cc for details.
 // Next version: 1
 // Next method id: 2
-[Stable, Uuid="e2bca22e-32e9-40b3-a0bc-035b41534496"]
+[Uuid="e2bca22e-32e9-40b3-a0bc-035b41534496"]
 interface TestShillController {
   // Simulate |data| being received by the configuration determined by
   // |extension_id| and |configuration_name|.
@@ -181,7 +177,7 @@ interface TestShillController {
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to access the TestInterfaces
 // of ash::Shill*Client classes.
-[Stable, Uuid="12d5dbb4-e974-4f41-820e-6d92c2215452"]
+[Uuid="12d5dbb4-e974-4f41-820e-6d92c2215452"]
 interface ShillClientTestInterface {
   // From ash::ShillDeviceClient::TestInterface:
 
@@ -226,7 +222,7 @@ interface ShillClientTestInterface {
   AddIPConfig@9(string ip_config_path, mojo_base.mojom.Value properties) => ();
 };
 
-[Stable, Extensible]
+[Extensible]
 enum KeyEventType {
   [Default] kKeyPress = 0,
   kKeyRelease = 1
@@ -234,7 +230,6 @@ enum KeyEventType {
 
 // Next version: 2
 // Next id: 5
-[Stable]
 struct KeyEvent {
   KeyEventType type@0;
   int32 dom_key@1;
@@ -247,7 +242,6 @@ struct KeyEvent {
 
 // Next version: 2
 // Next id: 1
-[Stable]
 struct InputMethod {
   string xkb_layout@0;
 };
@@ -258,7 +252,7 @@ struct InputMethod {
 // changed with `InstallAndSwitchToInputMethod` during a test.
 // Next version: 9
 // Next method id: 10
-[Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
+[Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
   WaitForFocus@0() => ();
@@ -330,7 +324,7 @@ interface InputMethodTestInterface {
 
 // Types of accessibility features in Ash that Lacros needs to be able
 // to set for testing.
-[Stable, Extensible]
+[Extensible]
 enum AssistiveTechnologyType {
   [Default] kUnknown = 0,
   kChromeVox = 1,
@@ -339,7 +333,7 @@ enum AssistiveTechnologyType {
   [MinVersion=1] kFocusHighlight = 4,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum SnapPosition {
   [Default] kPrimary = 0,
   kSecondary = 1,
@@ -350,7 +344,7 @@ enum SnapPosition {
 // In the future, this interface may merge with an automation or a11y interface.
 // Next version: 37
 // Next method id: 54
-[Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
+[Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
   [MinVersion=11]

@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum PowerState {
   // A power status was read from the display but its value is unknown.
   [Default] kUnknown = 0,
@@ -28,7 +28,7 @@ enum PowerState {
 };
 
 // Private API for HDMI CEC functionality.
-[Stable, Uuid="e820f536-cad8-4891-be37-ba2f3aa770cc"]
+[Uuid="e820f536-cad8-4891-be37-ba2f3aa770cc"]
 interface CecPrivate {
 
   // Attempt to put all HDMI CEC compatible devices in standby.

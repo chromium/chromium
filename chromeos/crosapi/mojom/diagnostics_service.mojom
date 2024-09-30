@@ -20,7 +20,7 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 //
 // Next version: 9
 // Next ID: 32
-[Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
+[Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -501,7 +501,7 @@ interface DiagnosticsService {
 //
 // Next version: 8
 // Next ID: 32
-[Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
+[Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
   kBatteryCapacity = 0,
@@ -540,7 +540,7 @@ enum DiagnosticsRoutineEnum {
 // Enumeration of each of the possible statuses for a diagnostics routine.
 //
 // Next ID: 13
-[Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineStatusEnum"]
+[Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineStatusEnum"]
 enum DiagnosticsRoutineStatusEnum {
   [Default] kUnknown = 12,
   kReady = 0,  // Routine is ready to start.
@@ -564,7 +564,7 @@ enum DiagnosticsRoutineStatusEnum {
 //
 // Next version: 2
 // Next ID: 4
-[Stable, Extensible,
+[Extensible,
 RenamedFrom="ash.health.mojom.DiagnosticRoutineUserMessageEnum"]
 enum DiagnosticsRoutineUserMessageEnum {
   [Default] kUnknown = 2,
@@ -577,7 +577,7 @@ enum DiagnosticsRoutineUserMessageEnum {
 // Enumeration of the possible commands to send a diagnostics routine.
 //
 // Next ID: 5
-[Stable, Extensible,
+[Extensible,
 RenamedFrom="ash.health.mojom.DiagnosticRoutineCommandEnum"]
 enum DiagnosticsRoutineCommandEnum {
   [Default] kUnknown = 4,
@@ -593,7 +593,7 @@ enum DiagnosticsRoutineCommandEnum {
 // Status fields specific to interactive routines.
 //
 // Next ID: 1
-[Stable, RenamedFrom="ash.health.mojom.InteractiveRoutineUpdate"]
+[RenamedFrom="ash.health.mojom.InteractiveRoutineUpdate"]
 struct DiagnosticsInteractiveRoutineUpdate {
   // Request for user action. This message should be localized and displayed to
   // the user.
@@ -603,7 +603,7 @@ struct DiagnosticsInteractiveRoutineUpdate {
 // Status fields specific to noninteractive routines.
 //
 // Next ID: 2
-[Stable, RenamedFrom="ash.health.mojom.NonInteractiveRoutineUpdate"]
+[RenamedFrom="ash.health.mojom.NonInteractiveRoutineUpdate"]
 struct DiagnosticsNonInteractiveRoutineUpdate {
   // Current status of the routine.
   DiagnosticsRoutineStatusEnum status@0;
@@ -614,7 +614,7 @@ struct DiagnosticsNonInteractiveRoutineUpdate {
 };
 
 // Responses will be either interactive or noninteractive.
-[Stable, RenamedFrom="ash.health.mojom.RoutineUpdateUnion"]
+[RenamedFrom="ash.health.mojom.RoutineUpdateUnion"]
 union DiagnosticsRoutineUpdateUnion {
   DiagnosticsInteractiveRoutineUpdate interactive_update;
   DiagnosticsNonInteractiveRoutineUpdate noninteractive_update;
@@ -623,7 +623,7 @@ union DiagnosticsRoutineUpdateUnion {
 // Response type for GetRoutineUpdate.
 //
 // Next ID: 3
-[Stable, RenamedFrom="ash.health.mojom.RoutineUpdate"]
+[RenamedFrom="ash.health.mojom.RoutineUpdate"]
 struct DiagnosticsRoutineUpdate {
   // Percent complete, must be between 0 and 100, inclusive.
   uint32 progress_percent@0;
@@ -640,7 +640,7 @@ struct DiagnosticsRoutineUpdate {
 // Generic return value for a RunSomeRoutine call.
 //
 // Next ID: 2
-[Stable, RenamedFrom="ash.health.mojom.RunRoutineResponse"]
+[RenamedFrom="ash.health.mojom.RunRoutineResponse"]
 struct DiagnosticsRunRoutineResponse {
   // Unique identifier for the newly-created routine. An id of kFailedToStartId
   // means that the routine was unable to be created. Can be used in a
@@ -655,7 +655,7 @@ struct DiagnosticsRunRoutineResponse {
 // routine.
 //
 // Next ID: 3
-[Stable, Extensible, RenamedFrom="ash.health.mojom.AcPowerStatusEnum"]
+[Extensible, RenamedFrom="ash.health.mojom.AcPowerStatusEnum"]
 enum DiagnosticsAcPowerStatusEnum {
   [Default] kUnknown = 2,
   kConnected = 0,     // Power supply is connected.
@@ -665,7 +665,7 @@ enum DiagnosticsAcPowerStatusEnum {
 // Enumeration of the self-test type in nvme_self_test routine
 //
 // Next ID: 3
-[Stable, Extensible, RenamedFrom="ash.health.mojom.NvmeSelfTestTypeEnum"]
+[Extensible, RenamedFrom="ash.health.mojom.NvmeSelfTestTypeEnum"]
 enum DiagnosticsNvmeSelfTestTypeEnum {
   [Default] kUnknown = 2,
   kShortSelfTest = 0, // Short time self-test.
@@ -673,7 +673,7 @@ enum DiagnosticsNvmeSelfTestTypeEnum {
 };
 
 // Enumeration of the possible DiskRead routine's command type
-[Stable, Extensible, RenamedFrom="ash.health.mojom.DiskReadRoutineTypeEnum"]
+[Extensible, RenamedFrom="ash.health.mojom.DiskReadRoutineTypeEnum"]
 enum DiagnosticsDiskReadRoutineTypeEnum {
   kLinearRead = 0,
   kRandomRead = 1,

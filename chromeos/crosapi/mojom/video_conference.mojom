@@ -10,7 +10,6 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
 // Struct containing the id and new title for a VC app whose title updated.
-[Stable]
 struct TitleChangeInfo {
   // Unique id corresponding to a VC web app.
   mojo_base.mojom.UnguessableToken id@0;
@@ -19,7 +18,7 @@ struct TitleChangeInfo {
   mojo_base.mojom.String16 new_title@1;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum VideoConferenceAppUpdate {
   [Default] kNone,
   kAppAdded,
@@ -27,7 +26,6 @@ enum VideoConferenceAppUpdate {
 };
 
 // Useful notifications from clients. Intended mainly for the VC tray.
-[Stable]
 struct VideoConferenceClientUpdate {
   // Client just added or removed a new VC app.
   VideoConferenceAppUpdate added_or_removed_app@0;
@@ -40,7 +38,6 @@ struct VideoConferenceClientUpdate {
 // Aggregated media usage status for a client. Used by
 // VideoConferenceManagerAsh to determine UI tray triggering,
 // contents, and hiding.
-[Stable]
 struct VideoConferenceMediaUsageStatus {
   // ID for the manager to distinguish between
   // different clients. Used for aggregating status
@@ -70,7 +67,7 @@ struct VideoConferenceMediaUsageStatus {
 };
 
 
-[Stable, Extensible]
+[Extensible]
 enum VideoConferenceMediaDevice {
   // Required for marking enums extensible but should never occur.
   [Default] kUnusedDefault,
@@ -80,7 +77,7 @@ enum VideoConferenceMediaDevice {
 
 // Interface between the Ash system and clients (lacros, ARC++, etc.)
 // for Video Conference Manager. Implemented in Ash.
-[Stable, Uuid="7dc5b924-abb8-4c0b-b2c0-676458afde5f"]
+[Uuid="7dc5b924-abb8-4c0b-b2c0-676458afde5f"]
 interface VideoConferenceManager {
   // Notifies the manager of changes in media apps.
   NotifyMediaUsageUpdate@0(VideoConferenceMediaUsageStatus status)
@@ -102,7 +99,7 @@ interface VideoConferenceManager {
 };
 
 // Note to keep this in sync with VideoConferenceAppType in enums.xml.
-[Stable, Extensible]
+[Extensible]
 enum VideoConferenceAppType {
   // App is traced by Browser, but the type is unknown.
   [Default] kBrowserUnknown,
@@ -123,7 +120,6 @@ enum VideoConferenceAppType {
   [MinVersion=2] kAshCaptureMode,
 };
 
-[Stable]
 struct VideoConferenceMediaAppInfo {
   // The id represents a unique identifier for the app. It's
   // used by the manager to bring the app back into focus
@@ -157,7 +153,7 @@ struct VideoConferenceMediaAppInfo {
 };
 
 // Client interface implemented by browsers (ash or lacros).
-[Stable, Uuid="511e08b4-2151-4c93-b46c-ded5218304b0"]
+[Uuid="511e08b4-2151-4c93-b46c-ded5218304b0"]
 interface VideoConferenceManagerClient {
   // Returns media apps running on this client.
   GetMediaApps@0() => (array<VideoConferenceMediaAppInfo> apps);

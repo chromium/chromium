@@ -8,7 +8,6 @@ module crosapi.mojom;
 // be running in OS (Ash).
 // Next version: 1
 // Next id: 4
-[Stable]
 struct ExtensionKeepList {
   // The ids of the extension apps running in ash-chrome only.
   array<string> extension_apps_run_in_os_only@0;
@@ -35,7 +34,6 @@ struct ExtensionKeepList {
 // should not by published in AppService in Lacros.
 // Next version: 1
 // Next id: 2
-[Stable]
 struct StandaloneBrowserAppServiceBlockList {
   // The ids of the extension apps to be blocked for app service in lacros.
   // Extension apps include chrome apps and hosted apps.

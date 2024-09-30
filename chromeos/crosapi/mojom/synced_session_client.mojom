@@ -10,7 +10,6 @@ import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Contains information regarding a Chrome tab for sync.
-[Stable]
 struct SyncedSessionTab {
   url.mojom.Url current_navigation_url@0;
   mojo_base.mojom.String16 current_navigation_title@1;
@@ -18,13 +17,11 @@ struct SyncedSessionTab {
 };
 
 // Contains all tabs synced to a Chrome window.
-[Stable]
 struct SyncedSessionWindow {
   array<SyncedSessionTab> tabs@0;
 };
 
 // Contains all windows in a Chrome session.
-[Stable]
 struct SyncedSession {
   // |session_name| is a user-visible name that maps to session_name in
   // //components/sync_sessions/synced_session.h.
@@ -34,7 +31,6 @@ struct SyncedSession {
 };
 
 // Used by ash-chrome to request favicons for SyncedSessionTabs.
-[Stable]
 interface SyncedSessionClientFaviconDelegate {
   // Request a favicon for the given page URL. Responds with an empty image
   // if the favicon is not found.
@@ -43,7 +39,6 @@ interface SyncedSessionClientFaviconDelegate {
 };
 
 // Defines an API for updating synced foreign sessions.
-[Stable]
 interface SyncedSessionClient {
   // Notifies ash-chrome when any foreign phone session is updated.
   OnForeignSyncedPhoneSessionsUpdated@0(array<SyncedSession> sessions);

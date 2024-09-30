@@ -14,7 +14,7 @@ import "url/mojom/url.mojom";
 
 // Type of notification to show. See the chrome.notifications extension API:
 // https://developer.chrome.com/extensions/notifications#type-TemplateType
-[Stable, Extensible]
+[Extensible]
 enum NotificationType {
   // Icon, title and message.
   kSimple = 0,
@@ -29,7 +29,7 @@ enum NotificationType {
   kProgress = 3,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum NotifierType {
   [Default] kApplication = 0,
   kArcApplication = 1,
@@ -42,7 +42,7 @@ enum NotifierType {
 // How to display notifications when a fullscreen window is open. For example,
 // a child account time limit notification should appear over a fullscreen
 // video.
-[Stable, Extensible]
+[Extensible]
 enum FullscreenVisibility {
   // Do not show over fullscreen windows.
   kNone = 0,
@@ -51,7 +51,7 @@ enum FullscreenVisibility {
   kOverUser = 1,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum SettingsButtonHandler {
   // No settings handler, no settings options shown for notification.
   [Default]kNone = 0,
@@ -63,7 +63,6 @@ enum SettingsButtonHandler {
   kDelegate = 2,
 };
 
-[Stable]
 struct NotifierId {
   NotifierType type@0;
   // The identifier of the app notifier. Empty if |type| is kWebPage.
@@ -78,7 +77,6 @@ struct NotifierId {
 };
 
 // List items for NotificationType::kList.
-[Stable]
 struct NotificationItem {
   mojo_base.mojom.String16 title@0;
   mojo_base.mojom.String16 message@1;
@@ -86,7 +84,6 @@ struct NotificationItem {
 
 // Data for each button. Implemented as a struct for extensibility (e.g. so we
 // could add icon buttons).
-[Stable]
 struct ButtonInfo {
   mojo_base.mojom.String16 title@0;
 
@@ -104,7 +101,6 @@ struct ButtonInfo {
 //
 //  Next MinVersion: 5
 //  Next ID: 29
-[Stable]
 struct Notification {
   // Type of notification to show.
   NotificationType type@0;

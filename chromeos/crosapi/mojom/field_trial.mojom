@@ -5,7 +5,6 @@
 module crosapi.mojom;
 
 // Information about Ash's field trial group to be propagated to lacros.
-[Stable]
 struct FieldTrialGroupInfo {
   string trial_name;
   string group_name;
@@ -14,7 +13,7 @@ struct FieldTrialGroupInfo {
 
 // Interface for field trial observers. Implemented by lacros-chrome.
 // Used by ash-chrome to send field trial updates.
-[Stable, Uuid="4867d01a-c21d-4e67-9452-d9a6fe53606d"]
+[Uuid="4867d01a-c21d-4e67-9452-d9a6fe53606d"]
 interface FieldTrialObserver {
   // Called when a field trial group is activated.
   OnFieldTrialGroupActivated@0(
@@ -23,7 +22,7 @@ interface FieldTrialObserver {
 
 // Interface that allows clients to receive update
 // when a trial field becomes active. Implemented by ash-chrome.
-[Stable, Uuid="14fa84de-e4ab-4fdc-aab6-9e933a8b2558"]
+[Uuid="14fa84de-e4ab-4fdc-aab6-9e933a8b2558"]
 interface FieldTrialService {
   // Adds an observer for field trial changes.
   AddFieldTrialObserver@0(

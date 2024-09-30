@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // Volume info for chrome.fileSystem API usage, serving as intermediary from
 // file_manager::Volume to file_system::Volume, with additional fields.
-[Stable]
 struct Volume {
   string volume_id@0;
   string volume_label@1;
@@ -23,14 +22,14 @@ struct Volume {
 
 // Interface for volume list observers. Implemented by lacros-chrome. Used by
 // ash-chrome to send Volume list info and updates.
-[Stable, Uuid="ed85b34f-5ccc-41cd-b688-c0601dd629c3"]
+[Uuid="ed85b34f-5ccc-41cd-b688-c0601dd629c3"]
 interface VolumeListObserver {
   // Called when the volume list changes.
   OnVolumeListChanged@0(array<Volume> volume_list);
 };
 
 // Interface with Ash volume manager. Implemented in ash-chrome.
-[Stable, Uuid="a5f21bb6-e2f9-4ddf-a01a-f73c09915936"]
+[Uuid="a5f21bb6-e2f9-4ddf-a01a-f73c09915936"]
 interface VolumeManager {
   // Adds an observer for volume list changes.
   AddVolumeListObserver@0(pending_remote<VolumeListObserver> observer);

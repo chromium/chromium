@@ -11,7 +11,6 @@ import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 
-[Stable]
 struct MahiPageInfo {
   // Id for the delegate to distinguish between different clients.
   mojo_base.mojom.UnguessableToken client_id@0;
@@ -38,7 +37,7 @@ struct MahiPageInfo {
   bool is_incognito@6;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum MahiContextMenuActionType {
   [Default] kNone,
   kSummary,
@@ -48,7 +47,6 @@ enum MahiContextMenuActionType {
 };
 
 // The struct of the mahi context menu request from the browser.
-[Stable]
 struct MahiContextMenuRequest {
   // Unique identifier associated with the display.
   // -1 means invalid display.
@@ -69,7 +67,7 @@ struct MahiContextMenuRequest {
 
 // Interface between the Ash system and browser (lacros, ash) for Mahi.
 // Implemented in Ash.
-[Stable, Uuid="40c4bc35-7592-4cfd-9620-212621daeda2"]
+[Uuid="40c4bc35-7592-4cfd-9620-212621daeda2"]
 interface MahiBrowserDelegate {
   // Registers a mojo client.
   RegisterMojoClient@0(pending_remote<MahiBrowserClient> client,
@@ -85,7 +83,6 @@ interface MahiBrowserDelegate {
 };
 
 // Struct containing the id and the content for the requested page.
-[Stable]
 struct MahiPageContent {
   // Id for the delegate to distinguish between different clients.
   mojo_base.mojom.UnguessableToken client_id@0;
@@ -99,7 +96,7 @@ struct MahiPageContent {
 
 // Client interface implemented by browser (ash or lacros).
 // Empty if the page is not found from this id.
-[Stable, Uuid="12ef21cc-18ad-4571-899a-d691c7419ef2"]
+[Uuid="12ef21cc-18ad-4571-899a-d691c7419ef2"]
 interface MahiBrowserClient {
   // Requests the contents of this web page.
   GetContent@0(mojo_base.mojom.UnguessableToken id)

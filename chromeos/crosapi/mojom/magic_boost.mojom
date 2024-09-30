@@ -8,11 +8,11 @@ module crosapi.mojom;
 // from Lacros (Client) to the actual implementation in Ash-Chrome.
 // Next Method ID: 2
 // Next MinVersion: 4
-[Stable, Uuid="7045789d-b1df-422c-a9c2-39990e977b2b"]
+[Uuid="7045789d-b1df-422c-a9c2-39990e977b2b"]
 interface MagicBoostController {
   // Specifies which action to complete after the opt-in flow has been
   // completed, transitioning from the opt-in experience to the main feature.
-  [Stable, Extensible]
+  [Extensible]
   enum TransitionAction {
     // Default option. Not do anything.
     [Default] kDoNothing = 0,
@@ -25,7 +25,7 @@ interface MagicBoostController {
   };
 
   // Specifies which features are the opt in ones.
-  [Stable, Extensible]
+  [Extensible]
   enum OptInFeatures {
     // Default option. Only opt in HMR.
     [Default] kHmrOnly = 0,

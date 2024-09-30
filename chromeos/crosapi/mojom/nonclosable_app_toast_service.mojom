@@ -8,7 +8,7 @@ module crosapi.mojom;
 // if the user tries to close an nonclosable web app.
 // Next version: 1
 // Next method id: 2
-[Stable, Uuid="5f8a9353-6ee4-49e0-971b-e5f3b84afb9d"]
+[Uuid="5f8a9353-6ee4-49e0-971b-e5f3b84afb9d"]
 interface NonclosableAppToastService {
   // Called when a user attempts to close a nonclosable web app.
   OnUserAttemptedClose@0(string app_id, string app_name);

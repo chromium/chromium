@@ -16,7 +16,7 @@ import "url/mojom/url.mojom";
 // Next MinVersion: 3
 // Next ID: 8
 //
-[Stable, Extensible]
+[Extensible]
 enum CreationResult {
   kUnknown = 0,
   kSuccess = 1,
@@ -30,7 +30,7 @@ enum CreationResult {
 };
 
 // Represents the source of this OpenUrl request.
-[Stable, Extensible]
+[Extensible]
 enum OpenUrlFrom {
   // From is not specified or unknown.
   [Default] kUnspecified = 0,
@@ -42,10 +42,9 @@ enum OpenUrlFrom {
 // Parameters to specify OpenUrl behavior.
 // Next version: 3
 // Next id: 3
-[Stable]
 struct OpenUrlParams {
   // Decides the disposition of the opening page.
-  [Stable, Extensible]
+  [Extensible]
   enum WindowOpenDisposition {
     // DEPRECATED. Equivalent to kNewForegroundTab since M111.
     [Default] kLegacyAutoDetection = 0,
@@ -72,7 +71,7 @@ struct OpenUrlParams {
   // Decides how the URL's path is to be considered when WindowOpenDisposition
   // is kSwitchToTab, i.e. a search is performed for an existing tab that
   // matches a given URL.
-  [Stable, Extensible]
+  [Extensible]
   enum SwitchToTabPathBehavior {
     // If the two paths are different, the URLs do not match.
     [Default] kRespect = 0,
@@ -93,7 +92,7 @@ struct OpenUrlParams {
 // Next MinVersion: 78.
 // Next ID: 24
 //
-[Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
+[Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
   // Removed method. No longer used.
@@ -274,7 +273,7 @@ interface BrowserService {
 // Next MinVersion: 2.
 // Next ID: 2
 //
-[Stable, Uuid="7864a7d6-c74d-4e5f-8589-8cdb99d0c92e"]
+[Uuid="7864a7d6-c74d-4e5f-8589-8cdb99d0c92e"]
 interface BrowserServiceHost {
   // Registers the remote as a BrowserService. Crosapi host (ash-chrome)
   // can make requests to control the registered browser.

@@ -9,14 +9,14 @@ module crosapi.mojom;
 // The structs in this file are mirroring types from
 // https://developer.chrome.com/docs/extensions/reference/audio/#type
 
-[Stable, Extensible]
+[Extensible]
 enum StreamType {
   [Default] kNone = 0,
   kInput = 1,
   kOutput = 2,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum DeviceType {
   [Default] kNone = 0,
   kHeadphone = 1,
@@ -37,7 +37,6 @@ enum DeviceType {
   kOther = 16,
 };
 
-[Stable]
 struct AudioDeviceInfo {
   // Device name.
   string deviceName@0;
@@ -64,9 +63,8 @@ struct AudioDeviceInfo {
   StreamType streamType@7;
 };
 
-[Stable]
 struct DeviceFilter {
-  [Stable, Extensible]
+  [Extensible]
   enum ActiveState {
     [Default] kUnset = 0,
     kInactive = 1,
@@ -82,7 +80,6 @@ struct DeviceFilter {
   array<StreamType>? includedStreamTypes@1;
 };
 
-[Stable]
 struct DeviceIdLists {
   // List of input devices specified by their ID.
   array<string> inputs@0;
@@ -91,7 +88,6 @@ struct DeviceIdLists {
   array<string> outputs@1;
 };
 
-[Stable]
 struct AudioDeviceProperties {
   // The audio device's desired sound level.
   // If used with audio input device, represents audio device gain.
@@ -101,7 +97,7 @@ struct AudioDeviceProperties {
 
 // Interface for audio change observer. Implemented by lacros-chrome. Used by
 // ash-chrome to send audio change events.
-[Stable, Uuid="aa4fcb30-c406-4133-be23-db3fcc6ca113"]
+[Uuid="aa4fcb30-c406-4133-be23-db3fcc6ca113"]
 interface AudioChangeObserver {
   // Fired when audio devices change, either new devices being added,
   // or existing devices being removed.
@@ -121,7 +117,7 @@ interface AudioChangeObserver {
 //
 // Next MinVersion: 1
 // Next ID: 6
-[Stable, Uuid="495da3b2-8c95-43d3-a508-79474c80e738"]
+[Uuid="495da3b2-8c95-43d3-a508-79474c80e738"]
 interface AudioService {
   // Gets a list of audio devices filtered based on filter.
   // Returns empty optional if ash call failed

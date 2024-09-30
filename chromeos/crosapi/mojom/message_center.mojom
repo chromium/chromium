@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/string16.mojom";
 // Handles notifications created via the Notifications web platform API and the
 // chrome.notifications() extension API. Shows the notifications in the
 // message center. Implemented in ash-chrome.
-[Stable, Uuid="0d9c1eb6-a383-45c0-ac11-2336e1227f74"]
+[Uuid="0d9c1eb6-a383-45c0-ac11-2336e1227f74"]
 interface MessageCenter {
   // Displays a notification. If the notification's ID is the same as an
   // existing notification, that notification is replaced. The delegate will be
@@ -30,7 +30,7 @@ interface MessageCenter {
 // Handles responses to user actions on notifications. Multiple actions may
 // occur on a single notification. For example, clicking a notification button
 // may not close the notification. Implemented in lacros-chrome.
-[Stable, Uuid="1a850ac9-a813-4d0d-aa2d-b0d6cf10d548"]
+[Uuid="1a850ac9-a813-4d0d-aa2d-b0d6cf10d548"]
 interface NotificationDelegate {
   // Called when a notification previously displayed by the client is closed.
   OnNotificationClosed@0(bool by_user);

@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 // Interface for browser version observers. Implemented by lacros-chrome.
 // Used by ash-chrome to send browser version updates.
-[Stable, Uuid="e2be41cc-1a70-4258-b548-e7b510d73980"]
+[Uuid="e2be41cc-1a70-4258-b548-e7b510d73980"]
 interface BrowserVersionObserver {
   // Called when a browser version change happens.
   OnBrowserVersionInstalled@0(string version);
@@ -17,7 +17,7 @@ interface BrowserVersionObserver {
 // downloaded a new version of the browser. Implemented by ash-chrome.
 // Next version: 2
 // Next method id: 2
-[Stable, Uuid="381c0e9c-110c-4acf-accc-26ace4cc917a"]
+[Uuid="381c0e9c-110c-4acf-accc-26ace4cc917a"]
 interface BrowserVersionService {
   // Adds an observer for browser version changes.
   AddBrowserVersionObserver@0(

@@ -9,7 +9,7 @@ import "chromeos/crosapi/mojom/video_capture.mojom";
 import "skia/public/mojom/bitmap.mojom";
 
 // A unique identifier and title for a window (or screen).
-[Stable, RenamedFrom="crosapi.mojom.WindowDetails"]
+[RenamedFrom="crosapi.mojom.WindowDetails"]
 struct SnapshotSource {
   // Guaranteed to be unique and never reused. This represents an ID that is
   // only significant to the SnapshotCapturer, and may not have meaning for
@@ -35,7 +35,7 @@ struct SnapshotSource {
 
 // This interface is used to capture bitmap snapshots of screens or windows.
 // See ScreenManager methods used to create instances of this interface.
-[Stable, Uuid="90487679-7dc8-40ad-a1e4-e741def0d79f"]
+[Uuid="90487679-7dc8-40ad-a1e4-e741def0d79f"]
 interface SnapshotCapturer {
   // Returns list of screens or windows that can be captured.
   [Sync]
@@ -60,7 +60,7 @@ interface SnapshotCapturer {
 // TODO(crbug.com/40135428): This is a very simple interface. We will
 // likely want to replace it with a more feature-complete and performant
 // interface in the future.
-[Stable, Uuid="95c3035c-5c63-45e3-8ec8-dd2a344c7dc2"]
+[Uuid="95c3035c-5c63-45e3-8ec8-dd2a344c7dc2"]
 interface ScreenManager {
   // DEPRECATED. Unimplemented and unused. Delete this once deletion is
   // supported. https://crbug.com/1156872.

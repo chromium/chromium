@@ -148,7 +148,7 @@ import "url/mojom/url.mojom";
 // BrowserInfo is a set of parameters passed to ash from browser (such as
 // lacros-chrome) upon its startup, which contains the browser information
 // such as version, etc.
-[Stable, RenamedFrom="crosapi.mojom.LacrosInfo"]
+[RenamedFrom="crosapi.mojom.LacrosInfo"]
 struct BrowserInfo {
   // Version of the browser displayed to user in feedback report, etc.
   // It includes both browser version and channel in the format of:
@@ -172,7 +172,7 @@ struct BrowserInfo {
 //
 // Next version: 145
 // Next method id: 147
-[Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
+[Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
   // Deprecated.
@@ -942,7 +942,7 @@ interface Crosapi {
     BindInputMethods@139(pending_receiver<InputMethods> receiver);
 };
 
-[Stable, Extensible]
+[Extensible]
 enum SessionType {
   [Default] kUnknown,
   kRegularSession,
@@ -954,7 +954,7 @@ enum SessionType {
 };
 
 // Device mode (e.g. enterprise enrollment state). See policy::DeviceMode.
-[Stable, Extensible]
+[Extensible]
 enum DeviceMode {
   kUnknown = 0,
   // Not yet set.
@@ -974,7 +974,7 @@ enum DeviceMode {
 };
 
 // Whether or not metrics reporting in ash is managed by policy.
-[Stable, Extensible]
+[Extensible]
 enum MetricsReportingManaged {
   // Default value for backwards compatibility with old versions of ash.
   kUnknown = 0,
@@ -988,7 +988,6 @@ enum MetricsReportingManaged {
 //
 // Next version: 36
 // Next id: 12
-[Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
   // /home/chronos/u-<hash>/MyFiles.
@@ -1041,7 +1040,6 @@ struct DefaultPaths {
 // The device specific data needed in Lacros.
 // Next version: 4
 // Next id: 9
-[Stable]
 struct DeviceProperties {
   // The value of device DM token. It is the raw data from the policy, not
   // encrypted.
@@ -1090,7 +1088,6 @@ struct DeviceProperties {
 //
 // Next version: 2
 // Next id: 4
-[Stable]
 struct EntropySource {
   // Metrics service low entropy source of ash chrome.
   int32 low_entropy@0;
@@ -1109,7 +1106,7 @@ struct EntropySource {
   string? limited_entropy_randomization_source@3;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum ExoImeSupport {
   kUnsupported = 0,
 
@@ -1130,7 +1127,7 @@ enum ExoImeSupport {
 // Which windows and tabs to show, if any, when first launching lacros.
 // This values overrides the built-in chrome preference, with the exception of
 // kUseStartupPreference.
-[Stable, Extensible]
+[Extensible]
 enum InitialBrowserAction {
   // Uses the Lacros preference SessionStartupPref.
   [Default] kUseStartupPreference = 0,
@@ -1157,7 +1154,7 @@ enum InitialBrowserAction {
 };
 
 // Whether / how mlservice on-device handwriting is supported.
-[Stable, Extensible]
+[Extensible]
 enum OndeviceHandwritingSupport {
   kUnsupported = 0,
   kUseRootfs = 1,
@@ -1166,7 +1163,7 @@ enum OndeviceHandwritingSupport {
 
 // Corresponds to BUILDFLAGs we use in ash-chrome that we want to propagate to
 // Lacros Chrome. On the Lacros side we turn this into command line switches.
-[Stable, Extensible]
+[Extensible]
 enum BuildFlag {
   [Default] kUnknown = 0,
   kUseChromeosProtectedMedia = 1,
@@ -1199,7 +1196,7 @@ enum BuildFlag {
 //
 // Next version: 90
 // Next id: 90
-[Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
+[RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
   // lacros-chrome to determine which interface methods are safe to call.
@@ -1364,7 +1361,7 @@ struct BrowserInitParams {
   [MinVersion=39]
   bool publish_hosted_apps@39;
 
-  [Stable, Extensible]
+  [Extensible]
   enum InitialKeepAlive {
     // ash-chrome is too old so the keep-alive settings in ash-chrome is not
     // available.
@@ -1428,7 +1425,7 @@ struct BrowserInitParams {
   [MinVersion=35]
   bool is_device_enterprised_managed@35;
 
-  [Stable, Extensible]
+  [Extensible]
   enum DeviceType {
     [Default] kUnknown,
     kChromebook,
@@ -1489,7 +1486,7 @@ struct BrowserInitParams {
   [MinVersion=49]
   bool enable_lacros_tts_support@49;
 
-  [Stable, Extensible]
+  [Extensible]
   enum LacrosSelection {
     [Default] kUnspecified,
     // Instance residing in the rootfs partition.
@@ -1512,7 +1509,7 @@ struct BrowserInitParams {
   [MinVersion=52]
   bool is_cloud_gaming_device@52;
 
-  [Stable, Extensible]
+  [Extensible]
   enum GpuSandboxStartMode {
     [Default] kUnspecified,
     // Start the GPU process sandbox as if --gpu-sandbox-start-early was
@@ -1719,7 +1716,6 @@ struct BrowserInitParams {
 //
 // Next version: 3
 // Next id: 21
-[Stable]
 struct BrowserPostLoginParams {
   // Type of the ash-chrome session at the browser startup time.
   SessionType session_type@0;

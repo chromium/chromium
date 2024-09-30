@@ -8,7 +8,7 @@ import "chromeos/crosapi/mojom/app_service_types.mojom";
 
 // The source from which the sharesheet was launched from.
 // Based on sharesheet::LaunchSource.
-[Stable, Extensible]
+[Extensible]
 enum SharesheetLaunchSource {
   [Default] kUnknown = 0,
   kWebShare = 3,
@@ -16,7 +16,7 @@ enum SharesheetLaunchSource {
 };
 
 // The result from showing a sharesheet bubble.
-[Stable, Extensible]
+[Extensible]
 enum SharesheetResult {
   kSuccess,            // Successfully passed data to selected target.
   kCancel,             // Share was cancelled before completion.
@@ -27,7 +27,7 @@ enum SharesheetResult {
 // Interacts with the Sharesheet service. Implemented in ash-chrome.
 // Next version: 2
 // Next method id: 3
-[Stable, Uuid="be0b8049-1fdd-4ba7-a980-997b8c59420e"]
+[Uuid="be0b8049-1fdd-4ba7-a980-997b8c59420e"]
 interface Sharesheet {
   // Displays the dialog (aka bubble) for sharing content (or files) with
   // other applications and targets. |intent| contains the list of the

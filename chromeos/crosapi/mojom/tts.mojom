@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
 // Events sent back from the TTS engine indicating the progress.
-[Stable, Extensible]
+[Extensible]
 enum TtsEventType {
   [Default] kStart = 0,
   kEnd = 1,
@@ -24,7 +24,6 @@ enum TtsEventType {
 };
 
 // Represents a tts voice.
-[Stable]
 struct TtsVoice {
   // Name of the voice.
   string voice_name;
@@ -50,7 +49,6 @@ struct TtsVoice {
 };
 
 // Represents a Tts utterance.
-[Stable]
 struct TtsUtterance {
   // Unique id of utterance that helps route a Tts event back to the client.
   // This is needed when speaking an Ash utterance with a Lacros voice.
@@ -116,7 +114,7 @@ struct TtsUtterance {
 // speech requests to ash.
 // Next version: 5
 // Next method id: 7
-[Stable, Uuid="8550e8d0-a818-49a3-93c1-d8053a33b2e6"]
+[Uuid="8550e8d0-a818-49a3-93c1-d8053a33b2e6"]
 interface Tts {
   // A TtsClient can register itself with Tts, so that Tts can communicate with
   // the remote TtsClient associated with a particular |browser_context_id| in
@@ -159,7 +157,7 @@ interface Tts {
 // Used by ash-chrome to send voices to Lacros.
 // Next version: 3
 // Next method id: 5
-[Stable, Uuid="60ce0365-451e-402d-9a1c-e57350f9a202"]
+[Uuid="60ce0365-451e-402d-9a1c-e57350f9a202"]
 interface TtsClient {
   // Called when voices changed in ash TtsController .
   // |all_voices| contains the new voices (provided by both Ash and
@@ -202,7 +200,7 @@ interface TtsClient {
 // Similarly, it is also passed as argument in TtsClient::SpeakWithLacrosVoice
 // when Ash calls this API to speak an Ash Utterance with a Lacros speech
 // engine.
-[Stable, Uuid="edf0536d-53ea-445c-9519-cb39af32364f"]
+[Uuid="edf0536d-53ea-445c-9519-cb39af32364f"]
 interface TtsUtteranceClient {
   // Forwards a Tts event received from the remote speech engine to the callback
   // function of the TtsUtterance. |error_message| may contain an error message

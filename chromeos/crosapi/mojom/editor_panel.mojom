@@ -6,7 +6,7 @@
 
 module crosapi.mojom;
 
-[Stable, Extensible]
+[Extensible]
 enum EditorPanelMode {
   // Editor panel should not be shown (due to consent rejected or other
   // restrictions). This mode is deprecated.
@@ -26,7 +26,7 @@ enum EditorPanelMode {
   [MinVersion=6] kSoftBlocked = 5,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum EditorPanelPresetQueryCategory {
   [Default] kUnknown = 0,
   [MinVersion=1] kShorten = 1,
@@ -37,7 +37,6 @@ enum EditorPanelPresetQueryCategory {
   [MinVersion=4] kProofread = 6,
 };
 
-[Stable]
 struct EditorPanelPresetTextQuery {
   string text_query_id@0;
   string name@1;
@@ -45,7 +44,6 @@ struct EditorPanelPresetTextQuery {
   EditorPanelPresetQueryCategory category@3;
 };
 
-[Stable]
 struct EditorPanelContext {
   EditorPanelMode editor_panel_mode@0;
 
@@ -58,7 +56,7 @@ struct EditorPanelContext {
 
 // An interface to allow clients in the Lacros side to observe important state
 // changes in the Ash side.
-[Stable, Uuid="4622a780-9055-4e61-8e21-638a152a23ac"]
+[Uuid="4622a780-9055-4e61-8e21-638a152a23ac"]
 interface EditorObserver {
   // Fired whenever the EditorPanelMode state has changed.
   OnEditorPanelModeChanged@0(EditorPanelMode mode);
@@ -67,7 +65,7 @@ interface EditorObserver {
 // EditorPanelManager is an interface to allow lacros to handle requests between
 // the context menu editor panel and the backend of the editor feature
 // Next MinVersion: 2
-[Stable, Uuid="a5d776e7-98e6-489c-9b15-57f00000c847"]
+[Uuid="a5d776e7-98e6-489c-9b15-57f00000c847"]
 interface EditorPanelManager {
   // Gets the context required to determine what should be shown on the editor
   // panel.

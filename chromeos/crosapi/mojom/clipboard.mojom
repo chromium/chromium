@@ -9,7 +9,7 @@ module crosapi.mojom;
 // APIs. This currently requires a major refactor to become fully functional,
 // see https://crbug.com/913422 for details. This is a short-term workaround
 // that provides synchronous clipboard access.
-[Stable, Uuid="f2c9e4b9-8782-4b20-a8be-f3b2a3400a38"]
+[Uuid="f2c9e4b9-8782-4b20-a8be-f3b2a3400a38"]
 interface Clipboard {
   // Returns the unicode contents of the clipboard copy/paste buffer, UTF-8
   // encoded.

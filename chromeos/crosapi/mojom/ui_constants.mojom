@@ -11,7 +11,7 @@ module crosapi.mojom;
 // enum value to a float. kScaleFactorNone is used for density independent
 // resources such as string, html/js files or an image that can be used for any
 // scale factors (such as wallpapers).
-[Stable, Extensible]
+[Extensible]
 enum ResourceScaleFactor {
   [Default] kScaleFactorNone = 0,
   k100Percent = 1,

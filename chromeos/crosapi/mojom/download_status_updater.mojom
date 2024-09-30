@@ -14,7 +14,7 @@ import "ui/gfx/image/mojom/image.mojom";
 // Next MinVersion: 1
 // Next ID: 4
 //
-[Stable, Uuid="9533a4a7-962f-4723-86f1-752a12623d5a"]
+[Uuid="9533a4a7-962f-4723-86f1-752a12623d5a"]
 struct DownloadProgress {
   // Indicates whether the progress should be represented as infinitely looping.
   bool loop@0;
@@ -37,7 +37,7 @@ struct DownloadProgress {
 // Next MinVersion: 7
 // Next ID: 13
 //
-[Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
+[Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
 struct DownloadStatus {
 
   // The GUID for the underlying download which uniquely identifies the download
@@ -98,7 +98,7 @@ struct DownloadStatus {
 //
 // WARNING: Sending UI icons directly has drawbacks (see http://b/328070365).
 // Prefer sending metadata to construct the UI instead.
-[Stable, Uuid="9258a38a-0005-466c-9e5f-89516993cea6"]
+[Uuid="9258a38a-0005-466c-9e5f-89516993cea6"]
 struct DownloadStatusIcons {
   gfx.mojom.ImageSkia dark_mode@0;
   gfx.mojom.ImageSkia light_mode@1;
@@ -110,7 +110,7 @@ struct DownloadStatusIcons {
 // Next MinVersion: 1
 // Next ID: 4
 //
-[Stable, Uuid="a62293a0-4404-42d3-9bb6-0f0232ddf1af"]
+[Uuid="a62293a0-4404-42d3-9bb6-0f0232ddf1af"]
 interface DownloadStatusUpdaterClient {
 
   // Invoked to cancel the download associated with the specified `guid`.
@@ -138,7 +138,7 @@ interface DownloadStatusUpdaterClient {
 // Next MinVersion: 2
 // Next ID: 2
 //
-[Stable, Uuid="2f06d2a1-7c81-4418-affe-bc821f43594e"]
+[Uuid="2f06d2a1-7c81-4418-affe-bc821f43594e"]
 interface DownloadStatusUpdater {
 
   // Invoked to bind the `client` which is implemented in Lacros Chrome.

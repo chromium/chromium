@@ -7,19 +7,16 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/values.mojom";
 
 // Optional int64 field.
-[Stable]
 struct NullableInt64 {
   int64 value;
 };
 
 // Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
-[Stable]
 struct UsbDetachableAllowlist {
   array<UsbDeviceId> usb_device_ids@0;
 };
 
 // Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
-[Stable]
 struct UsbDeviceId {
   // USB Vendor Identifier (aka idVendor).
   bool has_vendor_id@0;
@@ -32,7 +29,6 @@ struct UsbDeviceId {
 // All the device settings data that are needed in Lacros should be here.
 //
 // Next MinVersion: 7
-[Stable]
 struct DeviceSettings {
   // The value of AttestationForContentProtectionEnabled device setting.
   OptionalBool attestation_for_content_protection_enabled@0;
@@ -73,8 +69,7 @@ struct DeviceSettings {
   [MinVersion=6]
   OptionalBool? device_extensions_system_log_enabled@10;
 
-  [Stable]
-  enum OptionalBool {
+    enum OptionalBool {
     kUnset,
     kFalse,
     kTrue,
@@ -83,7 +78,7 @@ struct DeviceSettings {
 
 // Interface for device settings observers. Implemented by lacros-chrome. Used
 // by ash-chrome to send device settings updates.
-[Stable, Uuid="c2d2367e-1179-42ca-97ab-426a0c3cd265"]
+[Uuid="c2d2367e-1179-42ca-97ab-426a0c3cd265"]
 interface DeviceSettingsObserver {
   // Called when device settings have changed.
   UpdateDeviceSettings@0(DeviceSettings device_settings);
@@ -92,7 +87,7 @@ interface DeviceSettingsObserver {
 // This interface is implemented by Ash-Chrome.
 // It includes the device policy and other device settings configurable by the
 // user that are needed in Lacros.
-[Stable, Uuid="7ce66db5-5d91-4b45-b7aa-4fcfd8a53985"]
+[Uuid="7ce66db5-5d91-4b45-b7aa-4fcfd8a53985"]
 interface DeviceSettingsService {
   // Adds an observer for device settings updates.
   AddDeviceSettingsObserver@0(pending_remote<DeviceSettingsObserver> observer);

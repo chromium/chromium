@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum OpenResult {
   kUnknown = 0,
   kSucceeded = 1,
@@ -24,7 +24,7 @@ enum OpenResult {
 
 // Interacts with the file manager (the Chrome OS equivalent of macOS Finder or
 // Windows Explorer). Implemented in ash-chrome.
-[Stable, Uuid="61e61690-fb13-40c8-a167-d7fc18a8fe6b"]
+[Uuid="61e61690-fb13-40c8-a167-d7fc18a8fe6b"]
 interface FileManager {
   // Deprecated. Prefer ShowItemInFolder() below.
   DeprecatedShowItemInFolder@0(mojo_base.mojom.FilePath path);

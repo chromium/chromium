@@ -6,13 +6,12 @@ module crosapi.mojom;
 
 import "ui/gfx/image/mojom/image.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum InstanceType {
   [Default] kIsolatedWebAppInstaller,
 };
 
 
-[Stable]
 struct WindowData {
   // The key of the Shelf item. The caller is responsible for defining a unique
   // ID for each Shelf item they want to add. If a Shelf item with the |item_id|
@@ -33,7 +32,7 @@ struct WindowData {
 
 // Implemented in ash-chrome, called by lacros-chrome. This interface is used by
 // Lacros to integrate its windows with Ash shelf.
-[Stable, Uuid="ae203cbb-22b8-4c26-8a3d-2e01f73aa94d"]
+[Uuid="ae203cbb-22b8-4c26-8a3d-2e01f73aa94d"]
 interface LacrosShelfItemTracker{
 
   // Adds or updates the window to the tracker. Tracker will decide whether to

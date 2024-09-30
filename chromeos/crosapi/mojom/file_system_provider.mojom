@@ -10,7 +10,6 @@ import "ui/gfx/image/mojom/image.mojom";
 
 // A file system is uniquely identified by an opaque string (consisting of at
 // least the extension id + profile unique identifier) and a file_system_id.
-[Stable]
 struct FileSystemId {
   // At a minimum, identifies the extension. May also need to identify profiles
   // in the future.
@@ -21,7 +20,7 @@ struct FileSystemId {
 };
 
 // The primary data source for the file system.
-[Stable, Extensible]
+[Extensible]
 enum FileSystemSource {
   [Default] kFile,
   kNetwork,
@@ -29,7 +28,6 @@ enum FileSystemSource {
 };
 
 // Provides immutable metadata about a file system.
-[Stable]
 struct FileSystemMetadata {
   // The identifier of the file system.
   FileSystemId file_system_id@0;
@@ -50,13 +48,12 @@ struct FileSystemMetadata {
 };
 
 // Files can be opened either for reading or writing.
-[Stable, Extensible]
+[Extensible]
 enum OpenFileMode {
   [Default] kRead,
   kWrite,
 };
 
-[Stable]
 struct OpenedFile {
   // A request ID to be be used by consecutive read/write and close requests.
   int64 open_request_id@0;
@@ -71,7 +68,6 @@ struct OpenedFile {
 };
 
 // Represents a watcher.
-[Stable]
 struct FSPWatcher {
   // The path of the entry being observed.
   mojo_base.mojom.FilePath entry_path@0;
@@ -84,7 +80,6 @@ struct FSPWatcher {
   string last_tag@2;
 };
 
-[Stable]
 struct FileSystemInfo {
   // Fixed metadata about the file system.
   FileSystemMetadata metadata@0;
@@ -96,18 +91,16 @@ struct FileSystemInfo {
   array<FSPWatcher> watchers@2;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum FSPChangeType {
   [Default] kChanged,
   kDeleted
 };
 
-[Stable]
 struct CloudFileInfo {
   string? version_tag@0;
 };
 
-[Stable]
 struct FSPChange {
   // Next MinVersion: 2
   FSPChangeType type@0;
@@ -115,7 +108,7 @@ struct FSPChange {
   [MinVersion=1] CloudFileInfo? cloud_file_info@2;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum FSPOperationResponse {
   // Next MinVersion: 2
   [Default] kUnknown,
@@ -129,7 +122,7 @@ enum FSPOperationResponse {
   [MinVersion=1] kOpenFileSuccess,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum FSPForwardResult {
   [Default] kUnknown,
   kSuccess,
@@ -138,7 +131,7 @@ enum FSPForwardResult {
 };
 
 // Implemented by Lacros.
-[Stable, Uuid="8cbcf151-c189-4fe9-90ff-892c7f5637a9"]
+[Uuid="8cbcf151-c189-4fe9-90ff-892c7f5637a9"]
 interface FileSystemProvider {
   // Allows Ash to forward requests to Lacros extension providers.
   // We use mojo_base.mojom.Value as the type because:
@@ -195,7 +188,7 @@ interface FileSystemProvider {
 // creates a state machine with state spread between Ash and Lacros. This is
 // dispreferred but unfortunately impossible to avoid given the design of the
 // fileSystemProvider extension API.
-[Stable, Uuid="82db93f7-e0a5-4a9c-a09f-db92f9e45348"]
+[Uuid="82db93f7-e0a5-4a9c-a09f-db92f9e45348"]
 interface FileSystemProviderService {
   // File system providers use this interface to receive operation requests.
   RegisterFileSystemProvider@0(pending_remote<FileSystemProvider> provider);

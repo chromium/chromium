@@ -6,7 +6,6 @@ module crosapi.mojom;
 
 import "services/network/public/mojom/network_param.mojom";
 
-[Stable]
 struct GetCertDatabaseInfoResult {
   // Deprecated on 10/2021. Use `user_nss_database` from
   // crosapi.BrowserInitParams instead.
@@ -24,7 +23,6 @@ struct GetCertDatabaseInfoResult {
   uint32 system_slot_id@4;
 };
 
-[Stable]
 struct CertInfo {
   // Certificates are very complex, and different versions of Ash and Lacros
   // may catch different invalid inputs. Because of that, we send DER-enconded
@@ -38,7 +36,7 @@ struct CertInfo {
   array<uint16> supported_algorithms@1;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum CertDatabaseChangeType {
   [Default] kUnknown,
   kTrustStore,
@@ -46,14 +44,14 @@ enum CertDatabaseChangeType {
 };
 
 // This interface is implemented by Lacros-Chrome.
-[Stable, Uuid="e48d9c66-98b4-4049-9b85-dc98c854d54c"]
+[Uuid="e48d9c66-98b4-4049-9b85-dc98c854d54c"]
 interface AshCertDatabaseObserver {
   // Ash calls this to notify Lacros about new changes to certificates.
   OnCertsChangedInAsh@0([MinVersion=1] CertDatabaseChangeType change_type);
 };
 
 // This interface is implemented by Ash-Chrome.
-[Stable, Uuid="e7f924bf-0e10-4aef-98d3-6e2f216dc914"]
+[Uuid="e7f924bf-0e10-4aef-98d3-6e2f216dc914"]
 interface CertDatabase {
   // Waits until Ash-Chrome finishes certificate database initialization and
   // returns necessary data for Lacros-Chrome to connect to it.

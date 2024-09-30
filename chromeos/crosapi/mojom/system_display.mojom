@@ -17,7 +17,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // However, the two mojoms operate at different layers and have different
 // version stability requirements, so should not be mixed.
 
-[Stable, RenamedFrom="crosapi.mojom.DisplayMode"]
+[RenamedFrom="crosapi.mojom.DisplayMode"]
 struct SysDisplayMode {
   // The display mode sizes in device independent (user visible) pixels.
   gfx.mojom.Size size@0;
@@ -50,7 +50,7 @@ struct SysDisplayMode {
 // EXTENDED DISPLAY IDENTIFICATION DATA STANDARD (Defines EDID Structure
 // Version 1, Revision 4)" Release A, Revision 2 September 25, 2006.
 // https://www.vesa.org/vesa-standards
-[Stable, RenamedFrom="crosapi.mojom.Edid"]
+[RenamedFrom="crosapi.mojom.Edid"]
 struct SysDisplayEdid {
   // Three character manufacturer code, Sec. 3.4.1 page 21.
   string manufacturer_id@0;
@@ -63,7 +63,7 @@ struct SysDisplayEdid {
 };
 
 // Struct to transmit extensions::api::system_display::DisplayUnitInfo.
-[Stable, RenamedFrom="crosapi.mojom.DisplayUnitInfo"]
+[RenamedFrom="crosapi.mojom.DisplayUnitInfo"]
 struct SysDisplayUnitInfo {
   // The unique identifier of the display.
   string id@0;
@@ -145,7 +145,7 @@ struct SysDisplayUnitInfo {
 
 // Interface for display change observer. Implemented by lacros-chrome. Used by
 // ash-chrome to send display change event.
-[Stable, Uuid="5c1e28fd-2f79-4b47-ab7c-780ef0cd2b0a"]
+[Uuid="5c1e28fd-2f79-4b47-ab7c-780ef0cd2b0a"]
 interface DisplayChangeObserver {
   // Called by ash-chrome when display changes.
   OnCrosapiDisplayChanged@0();
@@ -154,7 +154,7 @@ interface DisplayChangeObserver {
 // Deprecated.
 // Replaced by CrosDisplayConfigController.
 // Crosapi support for chrome.system.display extensions API.
-[Stable, Uuid="07f25a88-9762-4876-a8ce-2c1e6ad9f797",
+[Uuid="07f25a88-9762-4876-a8ce-2c1e6ad9f797",
  RenamedFrom="crosapi.mojom.SystemDisplay"]
 interface SystemDisplayDeprecated {
   // Returns the properties for all displays. If |single_unified| is true, a

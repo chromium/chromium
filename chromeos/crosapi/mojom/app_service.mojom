@@ -12,7 +12,7 @@ import "chromeos/crosapi/mojom/ui_constants.mojom";
 // for both Web Apps and Chrome Apps in Lacros.
 // Next version: 3
 // Next method id: 3
-[Stable, Uuid="238dd8e0-480e-49f4-a3a0-28e610ef7119"]
+[Uuid="238dd8e0-480e-49f4-a3a0-28e610ef7119"]
 interface AppPublisher {
   // Publish a stream of apps from lacros-chrome.
   // |deltas| holds a sparse data structure that includes the update App data
@@ -34,7 +34,7 @@ interface AppPublisher {
 // ash-chrome.
 // Next version: 22
 // Next method id: 22
-[Stable, Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
+[Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
 interface AppController {
   // Directly uninstalls |app_id| without prompting the user.
   // If |clear_site_data| is true, any site data associated with the app will
@@ -152,7 +152,7 @@ interface AppController {
 // all types of apps installed in Chrome OS.
 // Next version: 21
 // Next method id: 9
-[Stable, Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
+[Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
 interface AppServiceProxy {
   // Lacros exposes an AppServiceSubscriber interface to Ash. This allows Ash
   // to update the info for apps that registered in app service.
@@ -227,7 +227,7 @@ interface AppServiceProxy {
 // in the same process.
 // Next version: 16
 // Next method id: 3
-[Stable, Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
+[Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
 interface AppServiceSubscriber {
   // Receives a stream of apps from ash-chrome from a publisher, and save to
   // AppRegistryCache.
@@ -254,7 +254,7 @@ interface AppServiceSubscriber {
 // implementation for browser shortcuts and other future lacros based shortcut
 // (e.g. shortcut to a web app).
 // Deprecated in M127, reason: moving shortcuts storage from Lacros to Ash.
-[Stable, Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
+[Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
 interface AppShortcutPublisher {
   // Publish a stream of app shortcuts from lacros-chrome.
   // |deltas| holds a sparse data structure that includes the update
@@ -277,7 +277,7 @@ interface AppShortcutPublisher {
 // Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome
 // and called in ash-chrome.
 // Deprecated in M127, reason: moving shortcuts storage from Lacros to Ash.
-[Stable, Uuid="aa20b7ea-e177-4e14-b30e-cf54d9cde94c"]
+[Uuid="aa20b7ea-e177-4e14-b30e-cf54d9cde94c"]
 interface AppShortcutController {
 
   // Launches a shortcut identified by `local_shortcut_id` in the app identified

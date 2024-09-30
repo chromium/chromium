@@ -4,7 +4,6 @@
 
 module crosapi.mojom;
 
-[Stable]
 union LoginScreenStorageRetrieveResult {
   // Implies failure.
   string error_message;
@@ -14,7 +13,6 @@ union LoginScreenStorageRetrieveResult {
 };
 
 // Copy of LoginScreenStorageMetadata from login_screen_storage.proto.
-[Stable]
 struct LoginScreenStorageMetadata {
   // Whether the saved key/value pair should be deleted on session exit.
   bool clear_on_session_exit@0;
@@ -22,7 +20,7 @@ struct LoginScreenStorageMetadata {
 
 // This API allows Lacros to store and retrieve data from the login screen
 // storage.
-[Stable, Uuid="ba85caf8-08f2-4404-add7-2343ea9ac943"]
+[Uuid="ba85caf8-08f2-4404-add7-2343ea9ac943"]
 interface LoginScreenStorage {
   // Stores data to the login screen storage that needs to be accessible from
   // multiple extensions. Each key should contain the calling extension's ID and

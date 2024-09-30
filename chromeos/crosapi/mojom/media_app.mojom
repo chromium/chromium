@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "url/mojom/url.mojom";
 
 // MediaApp is a set of interfaces needed by the media_app for special powers.
-[Stable, Uuid="0a0ba748-dffe-44fd-b974-8d7285436e81"]
+[Uuid="0a0ba748-dffe-44fd-b974-8d7285436e81"]
 interface MediaApp {
   // Submit an HTML form and open in a new tab.
   SubmitForm@0(

@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/values.mojom";
 
 // Represents error code from ash desk feature implementation.
-[Stable, Extensible]
+[Extensible]
 enum DeskCrosApiError {
   // Deprecated. No do use for actual error since it's mapped to default
   // value-0 by mistake. Treat it as unknown error. For storage error use
@@ -31,7 +31,7 @@ enum DeskCrosApiError {
   [MinVersion=3]kStorageError,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum SavedDeskType {
   // Unknown desk type.
   [Default] kUnknown,
@@ -42,7 +42,6 @@ enum SavedDeskType {
 };
 
 // A Struct represents an ash desk.
-[Stable]
 struct DeskModel {
   // Unique identifier of a desk.
   string desk_uuid@0;
@@ -51,7 +50,6 @@ struct DeskModel {
 };
 
 // A Struct represents an saved desk.
-[Stable]
 struct SavedDeskModel {
   // Unique identifier of a saved desk.
   string saved_desk_uuid@0;
@@ -62,91 +60,78 @@ struct SavedDeskModel {
 };
 
 // A Struct represents GUID.
-[Stable]
 struct GUID {
   // Lowercase string representation of GUID.
   string lowercase@0;
 };
 
 // The response from LaunchEmptyDesk API.
-[Stable]
 union LaunchEmptyDeskResult{
   DeskCrosApiError error;
   GUID desk_id;
 };
 
 // The response from RemoveDesk API.
-[Stable]
 union RemoveDeskResult {
   DeskCrosApiError error;
   bool succeeded;
 };
 
 // The response from RemoveDesk API.
-[Stable]
 union GetTemplateJsonResult{
   DeskCrosApiError error;
   mojo_base.mojom.Value template_json;
 };
 
 // The response from GetAllDesks API.
-[Stable]
 union GetAllDesksResult{
   DeskCrosApiError error;
   array<DeskModel> desks;
 };
 
 // The response from SaveActiveDesk API.
-[Stable]
 union SaveActiveDeskResult{
   DeskCrosApiError error;
   DeskModel saved_desk;
 };
 
 // The response from RecallSavedDesk API.
-[Stable]
 union RecallSavedDeskResult{
   DeskCrosApiError error;
   GUID desk_id;
 };
 
 // The response from DeleteSavedDesk API.
-[Stable]
 union DeleteSavedDeskResult {
   DeskCrosApiError error;
   bool succeeded;
 };
 
 // The response from SetAllDesksProperty API.
-[Stable]
 union SetAllDesksPropertyResult {
   DeskCrosApiError error;
   bool succeeded;
 };
 
 // The response from GetSavedDesks API.
-[Stable]
 union GetSavedDesksResult {
   DeskCrosApiError error;
   array<SavedDeskModel> saved_desks;
 };
 
 // The response from GetActiveDesk API.
-[Stable]
 union GetActiveDeskResult {
   DeskCrosApiError error;
   GUID desk_id;
 };
 
 // The response from SwitchDesk API.
-[Stable]
 union SwitchDeskResult {
   DeskCrosApiError error;
   bool succeeded;
 };
 
 // The response from GetDeskByID API.
-[Stable]
 union GetDeskByIDResult {
   DeskCrosApiError error;
   DeskModel desk;
@@ -156,7 +141,6 @@ union GetDeskByIDResult {
 
 // next version: 2
 // next method id: 3
-[Stable]
 interface DeskEventObserver {
   // Fired when desk switch event dispatched.
   OnDeskSwitched@0(GUID new_desk_id, GUID previous_desk_id);
@@ -174,7 +158,7 @@ interface DeskEventObserver {
 //
 // next version: 6
 // next method id: 13
-[Stable, Uuid="5fbc1ef6-3fb5-4553-a161-9f113370daf7"]
+[Uuid="5fbc1ef6-3fb5-4553-a161-9f113370daf7"]
 interface Desk {
   // Launch an empty desk from ash. Returns the `desk_id` if the operation
   //succeeded. Returns `error` if the operation failed.

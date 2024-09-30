@@ -8,12 +8,12 @@
 module crosapi.mojom;
 
 // Deprecated.
-[Stable, Uuid="87a1c872-dc14-47a6-a9e5-e51c0cb6d3c0",
+[Uuid="87a1c872-dc14-47a6-a9e5-e51c0cb6d3c0",
  RenamedFrom="crosapi.mojom.FirewallHole"]
 interface FirewallHoleDeprecated {};
 
 // Deprecated.
-[Stable, Uuid="50025df1-fcfa-443e-925e-569f2cec0a19",
+[Uuid="50025df1-fcfa-443e-925e-569f2cec0a19",
  RenamedFrom="crosapi.mojom.FirewallHoleService"]
 interface FirewallHoleServiceDeprecated {
   // Deprecated.

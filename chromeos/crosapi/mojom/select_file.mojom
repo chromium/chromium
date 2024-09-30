@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // Deprecated.
-[Stable, Extensible, RenamedFrom="crosapi.mojom.SelectFileDialogType"]
+[Extensible, RenamedFrom="crosapi.mojom.SelectFileDialogType"]
 enum SelectFileDialogTypeDeprecated {
   // For opening a file.
   [Default] kOpenFile = 0,
@@ -31,7 +31,7 @@ enum SelectFileDialogTypeDeprecated {
 };
 
 // Deprecated.
-[Stable, Extensible, RenamedFrom="crosapi.mojom.AllowedPaths"]
+[Extensible, RenamedFrom="crosapi.mojom.AllowedPaths"]
 enum AllowedPathsDeprecated {
   // Any type of path, whether local/native or remote/virtual.
   [Default] kAnyPath,
@@ -47,7 +47,7 @@ enum AllowedPathsDeprecated {
 };
 
 // Deprecated.
-[Stable, RenamedFrom="crosapi.mojom.SelectFileTypeInfo"]
+[RenamedFrom="crosapi.mojom.SelectFileTypeInfo"]
 struct SelectFileTypeInfoDeprecated {
   // The list of allowed file extensions. For example:
   // { { "htm", "html" }, { "txt" } }
@@ -77,7 +77,7 @@ struct SelectFileTypeInfoDeprecated {
 };
 
 // Deprecated.
-[Stable, RenamedFrom="crosapi.mojom.SelectFileOptions"]
+[RenamedFrom="crosapi.mojom.SelectFileOptions"]
 struct SelectFileOptionsDeprecated {
   // Dialog type.
   SelectFileDialogTypeDeprecated REMOVED_0@0;
@@ -102,7 +102,7 @@ struct SelectFileOptionsDeprecated {
 };
 
 // Deprecated.
-[Stable, Extensible, RenamedFrom="crosapi.mojom.SelectFileResult"]
+[Extensible, RenamedFrom="crosapi.mojom.SelectFileResult"]
 enum SelectFileResultDeprecated {
   // Everything worked.
   [Default] kSuccess = 0,
@@ -112,7 +112,7 @@ enum SelectFileResultDeprecated {
 };
 
 // Deprecated.
-[Stable, RenamedFrom="crosapi.mojom.SelectedFileInfo"]
+[RenamedFrom="crosapi.mojom.SelectedFileInfo"]
 struct SelectedFileInfoDeprecated {
   // Path to the file, as seen in the UI.
   mojo_base.mojom.FilePath REMOVED_0@0;
@@ -136,7 +136,7 @@ struct SelectedFileInfoDeprecated {
 };
 
 // Deprecated.
-[Stable, Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125",
+[Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125",
     RenamedFrom="crosapi.mojom.SelectFile"]
 interface SelectFileDeprecated {
   // Selects one or more files. If the dialog is closed or canceled without

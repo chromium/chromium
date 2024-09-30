@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
 // Describes an Android package associated with a web app.
-[Stable]
 struct WebAppAndroidPackage {
   // Android package name.
   string package_name@0;
@@ -19,7 +18,6 @@ struct WebAppAndroidPackage {
 };
 
 // Contains the web app information used to mint an Android WebApk.
-[Stable]
 struct WebApkCreationParams {
   // The URL of the Web App Manifest.
   string manifest_url@0;
@@ -33,7 +31,7 @@ struct WebApkCreationParams {
 // lacros-chrome.
 // Next version: 8
 // Next method id: 9
-[Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
+[Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
   // package containing web app metadata) and installs this web app in the
@@ -103,7 +101,7 @@ interface WebAppProviderBridge {
 //
 // Next version: 3
 // Next method id: 3
-[Stable, Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
+[Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
 interface WebAppService {
   // Register a web app provider bridge that lets ash-chrome to update or query
   // WebAppProvider in lacros-chrome.

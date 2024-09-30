@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/values.mojom";
 
 // Extension installer that passes the relevant extension data through into the
 // extension system in Lacros.
-[Stable]
 interface DeviceLocalAccountExtensionInstaller {
   // Update the install information for the set of force installed extension.
   // |dict| contains a mapping from extension id to the install information for
@@ -21,7 +20,7 @@ interface DeviceLocalAccountExtensionInstaller {
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable, Uuid="4220cf0b-c0d3-4c2d-8cdb-db63bf8d9354"]
+[Uuid="4220cf0b-c0d3-4c2d-8cdb-db63bf8d9354"]
 interface DeviceLocalAccountExtensionService{
   // Bind an extension installer.
   BindExtensionInstaller@0(

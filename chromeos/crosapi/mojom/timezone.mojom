@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 
 // Interface to observe system timezone updates.
-[Stable, Uuid="6c74acf2-44fe-40ef-aad0-c8bd0073ec3d"]
+[Uuid="6c74acf2-44fe-40ef-aad0-c8bd0073ec3d"]
 interface TimeZoneObserver {
   // Called when the system timezone is updated.
   // Also called just after initial registration.
@@ -17,7 +17,7 @@ interface TimeZoneObserver {
 };
 
 // Interface to register TimeZoneObserver.
-[Stable, Uuid="98927de7-6858-4931-be9d-0475ef2421f2"]
+[Uuid="98927de7-6858-4931-be9d-0475ef2421f2"]
 interface TimeZoneService {
   // Adds an observer for the system timezone updates.
   // On the registration, OnTimeZoneChanged is called once

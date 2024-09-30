@@ -9,7 +9,7 @@ module crosapi.mojom;
 // that metadata. Implemented by ash-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="45ecfa93-4332-4c68-a355-87e3d0407427"]
+[Uuid="45ecfa93-4332-4c68-a355-87e3d0407427"]
 interface Metrics {
   // Provides an opaque string which identifies the current hardware. The string
   // is not structured and information should not be derived from its content.

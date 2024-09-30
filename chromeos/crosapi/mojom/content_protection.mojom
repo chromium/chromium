@@ -5,7 +5,6 @@
 module crosapi.mojom;
 
 // Status returned by a successful call to QueryWindowStatus.
-[Stable]
 struct ContentProtectionWindowStatus {
   // The type of connected output links, which is a bit-mask of the LinkType
   // values.
@@ -18,7 +17,6 @@ struct ContentProtectionWindowStatus {
 
 // Returned by a successful call to ChallengePlatform. The structure mirrors the
 // CdmDocumentService interface to avoid unnecessary conversions.
-[Stable]
 struct ChallengePlatformResult {
   // The data signed by the platform.
   string signed_data;
@@ -46,7 +44,7 @@ struct ChallengePlatformResult {
 // |window_id|. As such, a failure in one of these methods is not considered
 // irrecoverable -- it's possible that calling the method again at a later point
 // in time will result in success.
-[Stable, Uuid="e3020766-dd9b-4cfe-b387-8ed677212b50"]
+[Uuid="e3020766-dd9b-4cfe-b387-8ed677212b50"]
 interface ContentProtection {
   // Returns content-protection related status for a window. Returns null on
   // failure.
