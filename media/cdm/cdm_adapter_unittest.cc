@@ -140,6 +140,11 @@ class CdmAdapterTestBase : public testing::Test,
   virtual CdmConfig GetCdmConfig() = 0;
   virtual CdmAdapter::CreateCdmFunc GetCreateCdmFunc() = 0;
 
+  void ClearCdm() {
+    cdm_helper_ = nullptr;
+    cdm_ = nullptr;
+  }
+
   int GetCdmInterfaceVersion() { return GetParam(); }
 
   // Initializes the adapter. |expected_result| tests that the call succeeds
@@ -189,11 +194,11 @@ class CdmAdapterTestBase : public testing::Test,
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   StrictMock<MockCdmClient> cdm_client_;
-  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>, DanglingUntriaged> cdm_helper_ =
-      nullptr;
 
   // Keep track of the loaded CDM.
   scoped_refptr<ContentDecryptionModule> cdm_;
+  // Owned by `cdm_`.
+  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -202,7 +207,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
  public:
   ~CdmAdapterTestWithClearKeyCdm() {
     // Clear |cdm_| before we destroy |helper_|.
-    cdm_ = nullptr;
+    ClearCdm();
     RunUntilIdle();
   }
 
@@ -340,8 +345,6 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
   ~CdmAdapterTestWithMockCdm() override {
     // Makes sure Destroy() is called on CdmAdapter destruction.
     EXPECT_CALL(*mock_library_cdm_, DestroyCalled());
-    cdm_ = nullptr;
-    RunUntilIdle();
   }
 
   // CdmAdapterTestBase implementation.
@@ -362,8 +365,9 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
     ASSERT_TRUE(cdm_host_proxy_);
   }
 
-  raw_ptr<MockLibraryCdm, DanglingUntriaged> mock_library_cdm_ = nullptr;
-  raw_ptr<CdmHostProxy, DanglingUntriaged> cdm_host_proxy_ = nullptr;
+  // These are both owned by `cdm_`.
+  raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
+  raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 };
 
 // Instantiate test cases
