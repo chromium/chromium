@@ -202,9 +202,29 @@ TEST_F(TabsClosureUtilTest, CloseTabs_RemoveAllTabs) {
   WebStateIDToTime tabs =
       AppendUnrealizedWebstates(end_time - base::Minutes(1));
 
-  CloseTabs(web_state_list, begin_time, end_time, tabs);
+  CloseTabs(web_state_list, begin_time, end_time, tabs,
+            /*keep_active_tab=*/false);
 
   EXPECT_TRUE(web_state_list->empty());
+}
+
+// Tests that `CloseTabs` correctly closes the tabs within the time range, in
+// this case, all tabs associated with the browser which are unrealized.
+TEST_F(TabsClosureUtilTest, CloseTabs_KeepActiveTab) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  WebStateIDToTime tabs =
+      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+  web_state_list->ActivateWebStateAt(0);
+
+  CloseTabs(web_state_list, begin_time, end_time, tabs,
+            /*keep_active_tab=*/true);
+
+  EXPECT_EQ(web_state_list->count(), 1);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state);
 }
 
 // Tests that `GetTabsToClose` correctly return the tabs within the time range,
@@ -305,7 +325,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_NoMatchingTabsForDeletion) {
 
   // The unrelized webstates are passed direcly. The realized webstates will be
   // checked directly.
-  CloseTabs(web_state_list, begin_time, end_time, tabs);
+  CloseTabs(web_state_list, begin_time, end_time, tabs,
+            /*keep_active_tab=*/false);
 
   EXPECT_TRUE(web_state_list->empty());
 }
@@ -387,7 +408,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_OnlyOneTabForDeletion) {
       AppendUnrealizedWebstates(end_time - base::Minutes(1));
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{tabs.begin()->first, tabs.begin()->second}});
+            {{tabs.begin()->first, tabs.begin()->second}},
+            /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 1);
   EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state1());
@@ -470,7 +492,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedAndNotMatchingTabs) {
   AppendUnrealizedWebstates(end_time - base::Minutes(1));
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}});
+            {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}},
+            /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 2);
   EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0());
@@ -526,7 +549,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedNotCachedTabs) {
       AppendWebState(/*realized=*/false, end_time - base::Minutes(1)));
   webstate->SetLastActiveTime(end_time - base::Minutes(1));
 
-  CloseTabs(web_state_list, begin_time, end_time, {});
+  CloseTabs(web_state_list, begin_time, end_time, {},
+            /*keep_active_tab=*/false);
 
   EXPECT_TRUE(web_state_list->empty());
 }
@@ -562,7 +586,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedCachedPinnedTabs) {
       /*realized=*/false, last_navigation_time, /*pinned=*/true));
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{webstate->GetUniqueIdentifier(), last_navigation_time}});
+            {{webstate->GetUniqueIdentifier(), last_navigation_time}},
+            /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 1);
 }
@@ -597,7 +622,8 @@ TEST_F(TabsClosureUtilTest, CloseTabs_RealizedNotCachedPinnedTabs) {
       AppendWebState(/*realized=*/true, last_navigation_time, /*pinned=*/true));
 
   CloseTabs(web_state_list, begin_time, end_time,
-            {{webstate->GetUniqueIdentifier(), last_navigation_time}});
+            {{webstate->GetUniqueIdentifier(), last_navigation_time}},
+            /*keep_active_tab=*/false);
 
   EXPECT_EQ(web_state_list->count(), 1);
 }

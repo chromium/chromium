@@ -180,12 +180,16 @@ bool IsWebStatesReloadNeeded(bool is_off_the_record,
 void CloseTabsHelper(base::WeakPtr<Browser> browser,
                      base::Time delete_begin,
                      base::Time delete_end,
-                     const tabs_closure_util::WebStateIDToTime& tabs_info) {
+                     const tabs_closure_util::WebStateIDToTime& tabs_info,
+                     BrowsingDataRemover::RemovalParams params) {
   if (!browser) {
     return;
   }
+  bool keep_active_tab =
+      params.keep_active_tab ==
+      BrowsingDataRemover::KeepActiveTabPolicy::kKeepActiveTab;
   tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
-                               delete_end, tabs_info);
+                               delete_end, tabs_info, keep_active_tab);
 }
 
 }  // namespace
@@ -369,7 +373,7 @@ void BrowsingDataRemoverImpl::RunNextTask() {
 
   PrepareForRemoval(removal_task.mask, removal_task.params);
   RemoveImpl(removal_task.delete_begin, removal_task.delete_end,
-             removal_task.mask);
+             removal_task.mask, removal_task.params);
 }
 
 void BrowsingDataRemoverImpl::PrepareForRemoval(BrowsingDataRemoveMask mask,
@@ -442,7 +446,8 @@ void BrowsingDataRemoverImpl::CleanupAfterRemoval(BrowsingDataRemoveMask mask,
 
 void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
                                          base::Time delete_end,
-                                         BrowsingDataRemoveMask mask) {
+                                         BrowsingDataRemoveMask mask,
+                                         RemovalParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ScopedClosureRunner synchronous_clear_operations(
       CreatePendingTaskCompletionClosure());
@@ -706,7 +711,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   // Close tabs.
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Tabs"));
-    MaybeFetchTabsInfoThenCloseTabs(delete_begin, delete_end);
+    MaybeFetchTabsInfoThenCloseTabs(delete_begin, delete_end, params);
   }
 
   // Always wipe accumulated network related data (TransportSecurityState and
@@ -780,7 +785,8 @@ void BrowsingDataRemoverImpl::OnKeywordsLoaded(base::Time delete_begin,
 
 void BrowsingDataRemoverImpl::MaybeFetchTabsInfoThenCloseTabs(
     base::Time delete_begin,
-    base::Time delete_end) {
+    base::Time delete_end,
+    RemovalParams params) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
@@ -793,7 +799,7 @@ void BrowsingDataRemoverImpl::MaybeFetchTabsInfoThenCloseTabs(
       current_task_runner->PostTaskAndReply(
           FROM_HERE,
           base::BindOnce(&CloseTabsHelper, browser->AsWeakPtr(), delete_begin,
-                         delete_end, cached_tabs_info_),
+                         delete_end, cached_tabs_info_, params),
           CreatePendingTaskCompletionClosure());
     } else {
       service->LoadDataFromStorage(
@@ -802,7 +808,8 @@ void BrowsingDataRemoverImpl::MaybeFetchTabsInfoThenCloseTabs(
               &tabs_closure_util::GetLastCommittedTimestampFromStorage),
           base::BindOnce(&BrowsingDataRemoverImpl::OnTabsInformationLoaded,
                          GetWeakPtr(), browser->AsWeakPtr(), delete_begin,
-                         delete_end, CreatePendingTaskCompletionClosure()));
+                         delete_end, params,
+                         CreatePendingTaskCompletionClosure()));
     }
   }
 }
@@ -811,6 +818,7 @@ void BrowsingDataRemoverImpl::OnTabsInformationLoaded(
     base::WeakPtr<Browser> weak_browser,
     base::Time delete_begin,
     base::Time delete_end,
+    RemovalParams params,
     base::OnceClosure callback,
     tabs_closure_util::WebStateIDToTime result) {
   Browser* browser = weak_browser.get();
@@ -818,8 +826,10 @@ void BrowsingDataRemoverImpl::OnTabsInformationLoaded(
     tabs_closure_util::WebStateIDToTime tabs_info =
         tabs_closure_util::GetTabsInfoForCache(result, delete_begin,
                                                delete_end);
+    bool keep_active_tab =
+        params.keep_active_tab == KeepActiveTabPolicy::kKeepActiveTab;
     tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
-                                 delete_end, tabs_info);
+                                 delete_end, tabs_info, keep_active_tab);
   }
   std::move(callback).Run();
 }

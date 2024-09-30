@@ -105,7 +105,8 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // Removes the specified items related to browsing.
   void RemoveImpl(base::Time delete_begin,
                   base::Time delete_end,
-                  BrowsingDataRemoveMask mask);
+                  BrowsingDataRemoveMask mask,
+                  RemovalParams params);
 
   // Removes the browsing data stored in WKWebsiteDataStore if needed.
   void RemoveDataFromWKWebsiteDataStore(base::Time delete_begin,
@@ -116,13 +117,15 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // close and closes them. Otherwise, fetches the relevant information from
   // persisted storage first.
   void MaybeFetchTabsInfoThenCloseTabs(base::Time delete_begin,
-                                       base::Time delete_end);
+                                       base::Time delete_end,
+                                       RemovalParams params);
 
   // Called when the information about tabs from a single browser has been
   // loaded from persisted storage. Closes tabs from that browser.
   void OnTabsInformationLoaded(base::WeakPtr<Browser> weak_browser,
                                base::Time delete_begin,
                                base::Time delete_end,
+                               RemovalParams params,
                                base::OnceClosure callback,
                                tabs_closure_util::WebStateIDToTime result);
 

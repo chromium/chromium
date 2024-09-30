@@ -331,8 +331,12 @@ void MainControllerAuthenticationServiceDelegate::
   // cleared for all time, which is intended to happen in this case.
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
+  BrowsingDataRemover::RemovalParams params;
+  params.keep_active_tab =
+      BrowsingDataRemover::KeepActiveTabPolicy::kKeepActiveTab;
   browsingDataRemover->RemoveInRange(last_signin_timestamp, base::Time::Now(),
-                                     remove_mask, std::move(completion));
+                                     remove_mask, std::move(completion),
+                                     params);
 }
 
 }  // namespace
