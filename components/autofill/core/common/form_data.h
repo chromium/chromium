@@ -328,9 +328,7 @@ class FormData {
   }
   class MutableFieldsPassKey {
     constexpr MutableFieldsPassKey() = default;
-    friend class AutofillAgent;
     friend class FormDataAndroid;
-    friend class FormFiller;
     friend class internal::FormForest;
     friend class autofill_prediction_improvements::
         AutofillPredictionImprovementsFillingEngineImpl;
