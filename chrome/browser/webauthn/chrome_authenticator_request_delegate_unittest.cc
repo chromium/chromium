@@ -964,6 +964,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     SCOPED_TRACE(::testing::Message()
                  << "creds=" << base::JoinString(test.user_ids, ","));
     TransportAvailabilityInfo data;
+    data.has_empty_allow_list = true;
     data.request_type = device::FidoRequestType::kGetAssertion;
     TransportAvailabilityInfo result;
     EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
@@ -1011,6 +1012,46 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
               device::AuthenticatorType::kICloudKeychain);
     testing::Mock::VerifyAndClearExpectations(&observer_);
   }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       FilterGoogleComPasskeysWithNonEmptyAllowList) {
+  // Regression test for crbug.com/40071851, b/366128135.
+  constexpr char kGoogleRpId[] = "google.com";
+  TransportAvailabilityInfo data;
+  data.has_empty_allow_list = false;
+  data.request_type = device::FidoRequestType::kGetAssertion;
+  TransportAvailabilityInfo result;
+  EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
+      .WillOnce([&result](const auto* _, const auto* new_tai) {
+        result = std::move(*new_tai);
+      });
+
+  // User ID doesn't start with the `GOOGLE_ACCOUNT:` prefix that distinguishes
+  // them as suitable for login auth.
+  std::string user_id = "test user id";
+  data.recognized_credentials.emplace_back(
+      device::AuthenticatorType::kOther, kGoogleRpId, std::vector<uint8_t>{0},
+      device::PublicKeyCredentialUserEntity(
+          std::vector<uint8_t>(user_id.begin(), user_id.end())));
+  data.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
+      RecognizedCredential::kHasRecognizedCredential;
+
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetRelyingPartyId(kGoogleRpId);
+  delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
+                                   base::DoNothing(), base::DoNothing(),
+                                   base::DoNothing(), base::DoNothing());
+  delegate.OnTransportAvailabilityEnumerated(std::move(data));
+
+  // Despite lacking the user ID prefix, credentials are not filtered from
+  // `recognized_credentials` because the request has a non-empty allow list.
+  // The RecognizedCredential status isn't adjusted either.
+  ASSERT_EQ(result.recognized_credentials.size(), 1u);
+  EXPECT_EQ(result.has_platform_authenticator_credential,
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential);
+  testing::Mock::VerifyAndClearExpectations(&observer_);
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, DeletePasskey) {

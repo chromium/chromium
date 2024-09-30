@@ -1671,6 +1671,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
 void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {
   if (dialog_model()->relying_party_id == kGoogleRpId &&
+      tai->has_empty_allow_list &&
       base::ranges::any_of(tai->recognized_credentials,
                            IsCredentialFromPlatformAuthenticator)) {
     const size_t pre_filter_size = tai->recognized_credentials.size();
