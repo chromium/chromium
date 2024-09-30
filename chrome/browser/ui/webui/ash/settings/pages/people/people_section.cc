@@ -226,7 +226,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
-                              PrefService* pref_service) {
+                              Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"lockScreenNotificationTitle",
        IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_TITLE},
@@ -266,8 +266,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON},
       {"lockScreenPasswordLabel",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL},
-      {"lockScreenPasswordDescription",
-       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION},
       {"lockScreenPinLabel", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL},
       {"lockScreenSetupPasswordButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PASSWORD_BUTTON},
@@ -314,9 +312,10 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
-  html_source->AddBoolean("quickUnlockDisabledByPolicy",
-                          quick_unlock::IsPinDisabledByPolicy(
-                              pref_service, quick_unlock::Purpose::kAny));
+  html_source->AddBoolean(
+      "quickUnlockDisabledByPolicy",
+      quick_unlock::IsPinDisabledByPolicy(profile->GetPrefs(),
+                                          quick_unlock::Purpose::kAny));
   html_source->AddBoolean("lockScreenNotificationsEnabled",
                           ash::features::IsLockScreenNotificationsEnabled());
   html_source->AddBoolean(
@@ -329,6 +328,11 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       "lockScreenSwitchLocalPasswordDescription",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION,
+          ui::GetChromeOSDeviceName()));
+  html_source->AddString(
+      "lockScreenSwitchSetLocalPasswordDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION,
           ui::GetChromeOSDeviceName()));
   html_source->AddString("lockScreenFingerprintNotice",
                          l10n_util::GetStringFUTF16(
@@ -570,7 +574,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
   AddAccountManagerPageStrings(html_source, profile());
-  AddLockScreenPageStrings(html_source, profile()->GetPrefs());
+  AddLockScreenPageStrings(html_source, profile());
   AddFingerprintListStrings(html_source);
   AddFingerprintResources(html_source, AreFingerprintSettingsAllowed());
   AddSetupFingerprintDialogStrings(html_source);

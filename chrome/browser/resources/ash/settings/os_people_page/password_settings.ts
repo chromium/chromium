@@ -10,11 +10,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './password_settings.html.js';
 import {SettingsSetLocalPasswordDialogElement} from './set_local_password_dialog.js';
 
-enum PasswordType {
-  LOCAL = 'local',
-  GAIA = 'gaia',
-}
-
 export class SettingsPasswordSettingsElement extends PolymerElement {
   static get is() {
     return 'settings-password-settings' as const;
@@ -109,23 +104,8 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     return !this.hasPassword_();
   }
 
-  /**
-   * Computes the current |PasswordType| based on the values of
-   * hasGaiaPassword_ and hasLocalPassword_.
-   */
-  private passwordType_(): PasswordType|null {
-    // This control works only when there is at most one password.
-    assert(!(this.hasGaiaPassword_ && this.hasLocalPassword_));
-
-    if (this.hasGaiaPassword_) {
-      return PasswordType.GAIA;
-    }
-
-    if (this.hasLocalPassword_) {
-      return PasswordType.LOCAL;
-    }
-
-    return null;
+  private shouldSetupPassword_(): boolean {
+    return this.hasNoPassword_() || this.canSwitchLocalPassword_();
   }
 
   private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {

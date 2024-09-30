@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_engine_api.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -69,7 +70,9 @@ enum class PinType {
 class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
                                public testing::WithParamInterface<PinType> {
  public:
-  OSSettingsPinSetupTest() : pin_type_(GetParam()) {
+  OSSettingsPinSetupTest()
+      : OSSettingsLockScreenBrowserTestBase(ash::AshAuthFactor::kGaiaPassword),
+        pin_type_(GetParam()) {
     switch (pin_type_) {
       case PinType::kPrefs:
         cryptohome_->set_supports_low_entropy_credentials(false);
@@ -507,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   auto go_to_lock_screen_settings_and_authenticate = [&]() {
     if (ash::features::IsUseAuthPanelInSessionEnabled()) {
       OpenLockScreenSettings();
-      AuthenticateUsingPassword();
+      Authenticate();
       return mojom::LockScreenSettingsAsyncWaiter{
           lock_screen_settings_remote_.get()};
     } else {
@@ -536,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
 
     base::RunLoop().RunUntilIdle();
 
-    AuthenticateUsingPassword();
+    Authenticate();
 
     base::RunLoop().RunUntilIdle();
 

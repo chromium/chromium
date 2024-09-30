@@ -12,11 +12,14 @@
 
 namespace ash::settings {
 
-class OSSettingsPasswordSetupTest : public OSSettingsLockScreenBrowserTestBase {
+class OSSettingsAuthFactorSetupTest
+    : public OSSettingsLockScreenBrowserTestBase {
   using OSSettingsLockScreenBrowserTestBase::
       OSSettingsLockScreenBrowserTestBase;
 
  public:
+  explicit OSSettingsAuthFactorSetupTest(ash::AshAuthFactor type)
+      : OSSettingsLockScreenBrowserTestBase(type) {}
   mojom::PasswordSettingsApiAsyncWaiter GoToPasswordSettings(
       mojom::LockScreenSettingsAsyncWaiter& lock_screen_settings) {
     password_settings_remote_ =
@@ -29,12 +32,12 @@ class OSSettingsPasswordSetupTest : public OSSettingsLockScreenBrowserTestBase {
   mojo::Remote<mojom::PasswordSettingsApi> password_settings_remote_;
 };
 
-class OSSettingsPasswordSetupTestWithGaiaPassword
-    : public OSSettingsPasswordSetupTest,
+class OSSettingsAuthFactorSetupTestWithGaiaPassword
+    : public OSSettingsAuthFactorSetupTest,
       public testing::WithParamInterface<bool> {
  public:
-  OSSettingsPasswordSetupTestWithGaiaPassword()
-      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kGaiaPassword) {
+  OSSettingsAuthFactorSetupTestWithGaiaPassword()
+      : OSSettingsAuthFactorSetupTest(ash::AshAuthFactor::kGaiaPassword) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
@@ -50,20 +53,20 @@ class OSSettingsPasswordSetupTestWithGaiaPassword
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         OSSettingsPasswordSetupTestWithGaiaPassword,
+                         OSSettingsAuthFactorSetupTestWithGaiaPassword,
                          testing::Bool());
 
-class OSSettingsPasswordSetupTestWithLocalPassword
-    : public OSSettingsPasswordSetupTest {
+class OSSettingsAuthFactorSetupTestWithLocalPassword
+    : public OSSettingsAuthFactorSetupTest {
  public:
-  OSSettingsPasswordSetupTestWithLocalPassword()
-      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kLocalPassword) {}
+  OSSettingsAuthFactorSetupTestWithLocalPassword()
+      : OSSettingsAuthFactorSetupTest(ash::AshAuthFactor::kLocalPassword) {}
 };
 
 // If user has Gaia password, the control for changing passwords is shown if
 // `kChangePasswordFactorSetup` feature is enabled; otherwise, it should not be
 // shown.
-IN_PROC_BROWSER_TEST_P(OSSettingsPasswordSetupTestWithGaiaPassword,
+IN_PROC_BROWSER_TEST_P(OSSettingsAuthFactorSetupTestWithGaiaPassword,
                        Visibility) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
@@ -80,10 +83,38 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPasswordSetupTestWithGaiaPassword,
 }
 
 // The control for changing passwords is shown if user has local password.
-IN_PROC_BROWSER_TEST_F(OSSettingsPasswordSetupTestWithLocalPassword, Shown) {
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithLocalPassword, Shown) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertPasswordControlVisibility(true);
+}
+
+class OSSettingsAuthFactorSetupTestWithPinOnly
+    : public OSSettingsAuthFactorSetupTest {
+ public:
+  OSSettingsAuthFactorSetupTestWithPinOnly()
+      : OSSettingsAuthFactorSetupTest(ash::AshAuthFactor::kCryptohomePin) {
+    cryptohome_->set_supports_low_entropy_credentials(true);
+    cryptohome_->set_enable_auth_check(false);
+
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kChangePasswordFactorSetup);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The control for setting passwords is shown if user has pin only setup.
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithPinOnly, Shown) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertPasswordControlVisibility(true);
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+  password_settings.AssertCanOpenLocalPasswordDialog();
+  password_settings.AssertSubmitButtonDisabledForInvalidPasswordInput();
+  password_settings.AssertSubmitButtonEnabledForValidPasswordInput();
 }
 
 }  // namespace ash::settings

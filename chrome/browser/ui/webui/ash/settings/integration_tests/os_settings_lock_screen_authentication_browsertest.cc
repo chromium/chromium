@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
     ASSERT_FALSE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(false);
 
-    AuthenticateUsingPassword();
+    Authenticate();
 
     ASSERT_TRUE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(true);
@@ -93,11 +93,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
         cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
             user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED));
 
-    AuthenticateUsingPassword();
+    Authenticate();
     ASSERT_FALSE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(false);
 
-    AuthenticateUsingPassword();
+    Authenticate();
 
     ASSERT_TRUE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(true);

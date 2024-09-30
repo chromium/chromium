@@ -5523,7 +5523,7 @@ Press an assigned switch or key to remove assignment.
     Password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
-    Device password or Google Account password
+    Set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
     Currently using Google Account password. You can set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in.

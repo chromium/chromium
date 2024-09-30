@@ -174,6 +174,17 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         },
         readOnly: true,
       },
+
+      /**
+       * Whether the device account is managed.
+       */
+      deviceAccountManaged_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isDeviceAccountManaged');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -191,6 +202,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
   private changePasswordFactorSetupEnabled_: boolean;
+  private deviceAccountManaged_: boolean;
 
   static get observers() {
     return [
@@ -445,15 +457,38 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     assert(authToken === this.authToken);
 
-    const [{configured: hasGaiaPassword}, {configured: hasLocalPassword}] =
-        await Promise.all([
-          this.authFactorConfig.isConfigured(
-              this.authToken, AuthFactor.kGaiaPassword),
-          this.authFactorConfig.isConfigured(
-              this.authToken, AuthFactor.kLocalPassword),
-        ]);
-    this.showPasswordSettings_ = hasLocalPassword ||
-        (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword);
+    const [
+      { configured: hasGaiaPassword },
+      { configured: hasLocalPassword },
+      { configured: hasPin },
+    ] = await Promise.all([
+      this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kGaiaPassword),
+      this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kLocalPassword),
+      this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kPin),
+    ]);
+
+    if (hasLocalPassword) {
+      // Local Password is the overriding factor here. We need to show change
+      // option here.
+      this.showPasswordSettings_ = true;
+    } else if (!this.deviceAccountManaged_) {
+      // Onto scenarios for non managed accounts now.
+      if (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword) {
+        // If the gaia password is setup, for non managed users, we will allow
+        // them to switch to local password.
+        this.showPasswordSettings_ = true;
+      } else if (!hasGaiaPassword && hasPin) {
+        // At this point we know the user does not have a password
+        // and has a pin. We can allow them to set password.
+        this.showPasswordSettings_ = true;
+      }
+    } else {
+      // This is a safety reset.
+      this.showPasswordSettings_ = false;
+    }
   }
 
   /**
