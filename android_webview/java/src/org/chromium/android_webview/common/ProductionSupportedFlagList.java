@@ -249,6 +249,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
+                "Improves form submission tracking and duplicate submission handling"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
                 "Fixes the overloaded meaning of FormFieldData::value"),
         Flag.baseFeature(

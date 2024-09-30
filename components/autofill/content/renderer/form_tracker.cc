@@ -294,7 +294,9 @@ void FormTracker::FormControlDidChangeImpl(
 
 void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  ResetLastInteractedElements();
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    ResetLastInteractedElements();
+  }
 }
 
 void FormTracker::DidFinishSameDocumentNavigation() {
@@ -341,7 +343,8 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
     FireInferredFormSubmission(SubmissionSource::FRAME_DETACHED);
   }
   if (base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
+          features::kAutofillUnifyAndFixFormTracking) &&
+      !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
     // TODO(crbug.com/40281981): Figure out if this is still needed, and
     // document the reason, otherwise remove.
     ResetLastInteractedElements();
@@ -395,7 +398,9 @@ void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
                                 SubmissionSource::FORM_SUBMISSION);
   for (auto& observer : observers_)
     observer.OnFormSubmitted(form);
-  ResetLastInteractedElements();
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    ResetLastInteractedElements();
+  }
 }
 
 void FormTracker::FireProbablyFormSubmitted() {
@@ -403,7 +408,9 @@ void FormTracker::FireProbablyFormSubmitted() {
                                 SubmissionSource::PROBABLY_FORM_SUBMITTED);
   for (auto& observer : observers_)
     observer.OnProbablyFormSubmitted();
-  ResetLastInteractedElements();
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    ResetLastInteractedElements();
+  }
 }
 
 void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
@@ -411,9 +418,10 @@ void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
   for (auto& observer : observers_)
     observer.OnInferredFormSubmission(source);
-  if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking) &&
+      (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillAcceptDomMutationAfterAutofillSubmission))) {
     ResetLastInteractedElements();
   }
 }
