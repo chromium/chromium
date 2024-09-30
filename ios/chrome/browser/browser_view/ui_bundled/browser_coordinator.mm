@@ -3907,6 +3907,42 @@ enum class ToolbarKind {
   _quickDeleteCoordinator = nil;
 }
 
+- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
+  CHECK(IsIosQuickDeleteEnabled());
+
+  // TODO(crbug.com/335387869): Remove NotFatalUntil and the if below when we're
+  // sure this code path is infeasible. The BrowserViewController should always
+  // have at least the QuickDeleteViewController on top of it.
+  CHECK(self.viewController.presentedViewController, base::NotFatalUntil::M133);
+
+  // If BrowserViewController has not presented any view controller, then
+  // trigger `completion` immediately.
+  if (!self.viewController.presentedViewController) {
+    completion();
+    [self stopQuickDelete];
+    return;
+  }
+
+  // If BrowserViewController has presented a view controller, then dismiss
+  // every VC on top of it.
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissalCompletion = ^{
+    if (completion) {
+      completion();
+    }
+
+    // Properly shutdown all coordinators started either by this coordinator or
+    // by the scene controller. This should include Quick Delete, History and
+    // the Privacy Settings.
+    [weakSelf clearPresentedStateWithCompletion:nil dismissOmnibox:YES];
+    [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+  };
+  [self.viewController dismissViewControllerAnimated:YES
+                                          completion:dismissalCompletion];
+}
+
 #pragma mark - WhatsNewCommands
 
 - (void)showWhatsNew {

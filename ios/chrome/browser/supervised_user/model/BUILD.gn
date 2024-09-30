@@ -137,6 +137,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
+    "//components/browsing_data/core",
     "//components/policy:policy_code_generate",
     "//components/signin/internal/identity_manager",
     "//components/strings",
