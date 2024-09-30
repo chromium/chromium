@@ -3478,6 +3478,8 @@
                     "name": "Enabled",
                     "params": {
                         "prioritize_prerendering": "false",
+                        "prioritize_prerendering_only": "false",
+                        "prioritize_renderer_initiated": "true",
                         "target_urls": "[]"
                     },
                     "enable_features": [
