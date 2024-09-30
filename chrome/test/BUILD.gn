@@ -648,14 +648,6 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos_ash && also_build_lacros_chrome) {
-    data_deps += [
-      # TODO(crbug.com/40281506): Try to drop building ordinary Lacros binary.
-      "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)",
-      "//chrome/test:test_lacros_chrome(//build/toolchain/linux:lacros_clang_x64)",
-    ]
-  }
-
   if (is_linux) {
     data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
   }
@@ -12204,14 +12196,8 @@ if (!is_android) {
       deps += [ "//ui/views" ]
     }
 
-    # This target should not require the Chrome executable to run
-    # except it wants to build lacros as a secondary toolchain.
-    if (!(is_chromeos_ash && also_build_lacros_chrome)) {
-      assert_no_deps = [
-        "//chrome",
-        "//chrome/test:test_lacros_chrome",
-      ]
-    }
+    # This target should not require the Chrome executable to run.
+    assert_no_deps = [ "//chrome" ]
   }
 
   # Executable to measure time to load libraries.
@@ -12581,14 +12567,10 @@ if (!is_android) {
 
 # This target is defined for Lacros testing.
 # See //chrome/test/base/chromeos/README.md for more information.
-if (is_chromeos) {
+if (is_chromeos_ash) {
   assert(use_aura)
 
-  if (is_chromeos_ash) {
-    _target_name = "test_ash_chrome"
-  } else {
-    _target_name = "test_lacros_chrome"
-  }
+  _target_name = "test_ash_chrome"
   executable(_target_name) {
     output_name = _target_name
     testonly = true
@@ -12628,63 +12610,38 @@ if (is_chromeos) {
       "//chrome:packed_resources",
     ]
 
-    if (is_chromeos_ash) {
-      sources += [
-        "base/chromeos/test_ash_chrome_browser_main_extra_parts.cc",
-        "base/chromeos/test_ash_chrome_browser_main_extra_parts.h",
-      ]
-      deps += [
-        "//ash:test_support",
-        "//chrome/browser:main_extra_parts",
-        "//chrome/browser/ash/boot_times_recorder",
-        "//chrome/browser/ash/crosapi",
-        "//chrome/browser/ash/crosapi:test_support",
-        "//chrome/browser/ash/locale",
-        "//chrome/browser/ash/login/signin",
-        "//chrome/browser/ash/schedqos",
-        "//chromeos/services/machine_learning/public/cpp:stub",
-        "//components/exo/wayland:test_controller",
-        "//components/exo/wayland:ui_controls_protocol",
-        "//ui/base:test_support",
-      ]
+    sources += [
+      "base/chromeos/test_ash_chrome_browser_main_extra_parts.cc",
+      "base/chromeos/test_ash_chrome_browser_main_extra_parts.h",
+    ]
+    deps += [
+      "//ash:test_support",
+      "//chrome/browser:main_extra_parts",
+      "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/ash/locale",
+      "//chrome/browser/ash/login/signin",
+      "//chrome/browser/ash/schedqos",
+      "//chromeos/services/machine_learning/public/cpp:stub",
+      "//components/exo/wayland:test_controller",
+      "//components/exo/wayland:ui_controls_protocol",
+      "//ui/base:test_support",
+    ]
 
-      # crbug.com/1223310 There is an issue that for the second toolchain the built
-      # nacl_irt_x86_64.nexe is not in subfolder ash_clang_x64.
-      # This action will copy the related files to the correct folder.
-      if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
-        copy("copy_files_to_ash_clang_x64") {
-          sources = [
-            "${root_build_dir}/nacl_irt_x86_64.nexe",
-            "${root_build_dir}/nacl_irt_x86_64.nexe.debug",
-          ]
-          outputs = [ "${root_build_dir}/ash_clang_x64/{{source_file_part}}" ]
-          deps = [ "//ppapi/native_client:irt" ]
-        }
-        deps += [ ":copy_files_to_ash_clang_x64" ]
+    # crbug.com/1223310 There is an issue that for the second toolchain the built
+    # nacl_irt_x86_64.nexe is not in subfolder ash_clang_x64.
+    # This action will copy the related files to the correct folder.
+    if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
+      copy("copy_files_to_ash_clang_x64") {
+        sources = [
+          "${root_build_dir}/nacl_irt_x86_64.nexe",
+          "${root_build_dir}/nacl_irt_x86_64.nexe.debug",
+        ]
+        outputs = [ "${root_build_dir}/ash_clang_x64/{{source_file_part}}" ]
+        deps = [ "//ppapi/native_client:irt" ]
       }
-    }
-
-    if (is_chromeos_lacros) {
-      sources += [
-        "//chrome/test/chromeos/standalone_browser_test_controller.cc",
-        "//chrome/test/chromeos/standalone_browser_test_controller.h",
-        "base/chromeos/test_lacros_chrome_browser_main_extra_parts.cc",
-        "base/chromeos/test_lacros_chrome_browser_main_extra_parts.h",
-      ]
-      deps += [
-        "//chrome/browser:main_extra_parts",
-
-        # For StandaloneBrowserTestController.
-        "//chrome/browser/apps/app_service",
-        "//chrome/browser/extensions:test_support",
-        "//chrome/browser/ui",
-        "//chrome/browser/web_applications",
-        "//chromeos/lacros:lacros_paths",
-        "//components/webapps/browser",
-        "//components/webapps/common",
-        "//content/test:test_support",
-        "//extensions/browser",
-      ]
+      deps += [ ":copy_files_to_ash_clang_x64" ]
     }
 
     if (use_ozone) {
