@@ -1160,6 +1160,17 @@ delta = "1.4.0 -> 1.5.0"
 notes = "Unsafe review notes: https://crrev.com/c/5650836"
 
 [[audits.log]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.4.22"
+notes = """
+Unsafe review in https://docs.google.com/document/d/1IXQbD1GhTRqNHIGxq6yy7qHqxeO4CwN5noMFXnqyDIM/edit?usp=sharing
+
+Unsafety is generally very well-documented, with one exception, which we
+describe in the review doc.
+"""
+
+[[audits.log]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.4.20 -> 0.4.21"
