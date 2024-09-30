@@ -777,6 +777,10 @@ void HTMLPermissionElement::OnPermissionStatusChange(
   auto it = permission_status_map_.find(permission_name);
   CHECK(it != permission_status_map_.end());
   it->value = status;
+  permissions_granted_ =
+      base::ranges::all_of(permission_status_map_, [](const auto& status) {
+        return status.value == MojoPermissionStatus::GRANTED;
+      });
   UpdateAppearance();
 }
 
@@ -1050,15 +1054,11 @@ void HTMLPermissionElement::UpdateAppearance() {
 void HTMLPermissionElement::UpdateText() {
   CHECK_GT(permission_status_map_.size(), 0U);
   CHECK_LE(permission_status_map_.size(), 2u);
-  bool granted =
-      base::ranges::all_of(permission_status_map_, [](const auto& status) {
-        return status.value == MojoPermissionStatus::GRANTED;
-      });
-
-  int message_id = permission_status_map_.size() == 1
-                       ? GetMessageIDSinglePermission(
-                             permission_status_map_.begin()->key, granted)
-                       : GetMessageIDMultiplePermissions(granted);
+  int message_id =
+      permission_status_map_.size() == 1
+          ? GetMessageIDSinglePermission(permission_status_map_.begin()->key,
+                                         permissions_granted_)
+          : GetMessageIDMultiplePermissions(permissions_granted_);
 
   CHECK(message_id);
   permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
