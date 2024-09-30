@@ -1365,7 +1365,9 @@
       </template>
       <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
         <template is="dom-if" route-path="/content/smartCardReaders" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}">
+          <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
+              search-label="$i18n{siteSettingsAllSitesSearch}"
+              search-term="{{searchFilter_}}">
             <settings-smart-card-readers-page filter="[[searchFilter_]]">
             </settings-smart-card-readers-page>
           </settings-subpage>

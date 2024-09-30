@@ -2848,6 +2848,12 @@
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block Isolated Web Apps from controlling smart card readers.">
     Isolated Web Apps cannot control smart card readers. Apps won't gain access to any smart card.
   </message>
+  <message name="IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND" desc="No smart card readers were found.">
+    No smart card readers found.
+  </message>
+  <message name="IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION" desc="Confirmation for resetting smart card reader permissions.">
+    Reset all smart card reader permissions?
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
     Sites usually show images to provide illustration, like photos for online stores or news articles
   </message>

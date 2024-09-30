@@ -3297,7 +3297,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsSmartCardReadersAllowed",
        IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED},
       {"siteSettingsSmartCardReadersBlocked",
-       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED}};
+       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED},
+      {"siteSettingsNoSmartCardReadersFound",
+       IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND},
+      {"siteSettingsResetSmartCardConfirmation",
+       IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Tracking protection learn more links.

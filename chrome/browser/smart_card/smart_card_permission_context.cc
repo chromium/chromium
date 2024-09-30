@@ -4,10 +4,15 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
+#include <algorithm>
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
@@ -19,6 +24,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 namespace {
 constexpr char kReaderNameKey[] = "reader-name";
@@ -294,6 +300,47 @@ void SmartCardPermissionContext::RevokeEphemeralPermissions() {
 
   ephemeral_grants_.clear();
   StopObserving();
+}
+
+void SmartCardPermissionContext::RevokeAllPermissions() {
+  for (auto& origin : GetOriginsWithGrants()) {
+    RevokeObjectPermissions(origin);
+  }
+  RevokeEphemeralPermissions();
+}
+
+void SmartCardPermissionContext::RevokePersistentPermission(
+    const std::string& reader_name,
+    const url::Origin& origin) {
+  RevokeObjectPermission(origin, ReaderNameToValue(reader_name));
+}
+
+SmartCardPermissionContext::ReaderGrants::ReaderGrants(
+    const std::string& reader_name,
+    const std::vector<url::Origin>& origins)
+    : reader_name(reader_name), origins(origins) {}
+SmartCardPermissionContext::ReaderGrants::~ReaderGrants() = default;
+SmartCardPermissionContext::ReaderGrants::ReaderGrants(
+    const ReaderGrants& other) = default;
+bool SmartCardPermissionContext::ReaderGrants::operator==(
+    const ReaderGrants& other) const = default;
+
+std::vector<SmartCardPermissionContext::ReaderGrants>
+SmartCardPermissionContext::GetPersistentReaderGrants() {
+  std::map<std::string, std::set<url::Origin>> reader_grants;
+  for (const auto& object : GetAllGrantedObjects()) {
+    const base::Value::Dict& reader_value = object->value;
+
+    CHECK(IsValidObject(reader_value));
+
+    reader_grants[*reader_value.FindString(kReaderNameKey)].insert(
+        url::Origin::Create(object->origin));
+  }
+
+  return base::ToVector(
+      reader_grants, [](const auto& reader_grants) -> ReaderGrants {
+        return {reader_grants.first, base::ToVector(reader_grants.second)};
+      });
 }
 
 void SmartCardPermissionContext::OnTrackingStarted(

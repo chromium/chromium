@@ -155,6 +155,8 @@ build_webui_tests("build") {
     "unused_site_permissions_test.ts",
     "unused_site_permissions_interactive_ui_test.ts",
     "zoom_levels_test.ts",
+    "smart_card_readers_page_test.ts",
+    "smart_card_reader_origin_entry_test.ts",
   ]
 
   if (is_chromeos_ash) {

@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_value_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +50,10 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#endif
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
@@ -106,6 +111,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -715,6 +721,20 @@ void SiteSettingsHandler::RegisterMessages() {
       "revokeFileSystemGrants",
       base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrants,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSmartCardReaderGrants",
+      base::BindRepeating(&SiteSettingsHandler::HandleGetSmartCardReaderGrants,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeAllSmartCardReadersGrants",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeSmartCardReaderGrant",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleRevokeSmartCardReaderGrant,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
@@ -1545,6 +1565,65 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrants(
   permission_context->RevokeGrants(origin);
 }
 
+void SiteSettingsHandler::HandleGetSmartCardReaderGrants(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK_EQ(1U, args.size());
+  AllowJavascript();
+
+  const base::Value& callback_id = args[0];
+  base::Value::List reader_names;
+#if BUILDFLAG(IS_CHROMEOS)
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+
+  reader_names = base::ToValueList(
+      permission_context.GetPersistentReaderGrants(),
+      [](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
+        return base::Value::Dict()
+            .Set(site_settings::kReaderName, reader_grant.reader_name)
+            .Set(site_settings::kOrigins,
+                 base::ToValueList(reader_grant.origins,
+                                   &url::Origin::Serialize));
+      });
+#endif
+  ResolveJavascriptCallback(callback_id, reader_names);
+}
+
+void SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK(args.empty());
+  AllowJavascript();
+#if BUILDFLAG(IS_CHROMEOS)
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+
+  permission_context.RevokeAllPermissions();
+#endif
+}
+
+void SiteSettingsHandler::HandleRevokeSmartCardReaderGrant(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK_EQ(2U, args.size());
+  AllowJavascript();
+#if BUILDFLAG(IS_CHROMEOS)
+
+  auto reader_name = args[0].GetString();
+  auto url = GURL(args[1].GetString());
+  DCHECK(url.is_valid());
+  const url::Origin& origin = url::Origin::Create(url);
+
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+  permission_context.RevokePersistentPermission(reader_name, origin);
+#endif
+}
+
 void SiteSettingsHandler::HandleSetOriginPermissions(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
@@ -2171,6 +2250,16 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
           file_system_access_permission_context);
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+    auto& smart_card_context =
+        SmartCardPermissionContextFactory::GetForProfile(*profile);
+    if (!chooser_observations_.IsObservingSource(&smart_card_context)) {
+      chooser_observations_.AddObservation(&smart_card_context);
+    }
+  }
+#endif
   observed_profiles_.AddObservation(profile);
 }
 

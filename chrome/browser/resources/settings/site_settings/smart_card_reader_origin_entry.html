@@ -1,0 +1,36 @@
+<style include="cr-shared-style settings-shared">
+  .origin {
+    flex-grow: 1;
+    padding-inline-start: 20px;
+  }
+
+  .origin-row {
+    align-items: center;
+    display: flex;
+    padding-bottom: 5px;
+    padding-inline-end: 10px;
+    padding-top: 5px;
+  }
+
+  .subpage-arrow {
+    margin-inline-end: 2px;
+  }
+
+  .separator {
+    padding-inline-end: 25px;
+  }
+</style>
+
+<div class="list-frame">
+  <div class="origin-row">
+    <site-favicon url="[[origin]]"></site-favicon>
+    <div class="origin">[[origin]]</div>
+    <div class="separator"></div>
+    <cr-icon-button
+        class="icon-delete-gray"
+        id="removeOrigin"
+        on-click="onRemoveOriginClick_"
+        aria-label$="[[origin]]">
+    </cr-icon-button>
+  </div>
+</div>

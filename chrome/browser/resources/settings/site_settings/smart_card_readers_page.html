@@ -3,11 +3,19 @@
   .radio-group {
     padding: 0 var(--cr-section-padding);
   }
+  #resetButton {
+    margin-top: 24px;
+  }
+  .smart-card-reader-entry {
+    margin-top: 30px;
+    margin-bottom: 16px;
+  }
 </style>
 
 <div class="content-settings-header secondary">
   $i18n{siteSettingsSmartCardReadersDescription}
 </div>
+
 <settings-category-default-radio-group
     category="[[contentSettingsType_]]"
     description=
@@ -18,3 +26,44 @@
     block-option-label="$i18n{siteSettingsSmartCardReadersBlocked}"
     block-option-icon="privacy:smart-card-reader-off">
 </settings-category-default-radio-group>
+
+<div id="readersNotFound"
+  class="content-settings-header secondary smart-card-reader-entry"
+  hidden$="[[hasReadersWithGrants_(readersWithGrants_.*)]]">
+  $i18n{siteSettingsNoSmartCardReadersFound}
+</div>
+
+<div class="cr-row first"
+  hidden$="[[!hasReadersWithGrants_(readersWithGrants_.*)]]">
+  <cr-button id="resetButton" class="header-aligned-button"
+      role="button" aria-disabled="false"
+      on-click="onClickShowResetConfirmDialog_">
+    $i18n{siteSettingsReset}
+  </cr-button>
+</div>
+
+<template is="dom-repeat" items="[[readersWithGrants_]]" as="reader">
+  <div class="content-settings-header secondary smart-card-reader-entry">
+    [[reader.readerName]]
+  </div>
+  <template is="dom-repeat" items="[[reader.origins]]" as="origin">
+    <smart-card-reader-origin-entry
+      smart-card-reader-name="[[reader.readerName]]"
+      origin="[[origin]]">
+    </smart-card-reader-origin-entry>
+  </template>
+</template>
+
+<!-- Confirm reset settings dialog. -->
+<cr-dialog id="confirmReset" close-text="$i18n{close}"
+    on-close="onResetDialogClosed_">
+  <div slot="title">$i18n{siteSettingsResetSmartCardConfirmation}</div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCloseDialog_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onClickReset_">
+      $i18n{siteSettingsSiteResetAll}
+    </cr-button>
+  </div>
+</cr-dialog>
