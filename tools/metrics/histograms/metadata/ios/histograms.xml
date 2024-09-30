@@ -3046,8 +3046,9 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
-    expires_after="2024-06-30">
+    expires_after="2025-10-30">
   <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     The &quot;true&quot; value of this boolean histogram counts the number of
@@ -5127,8 +5128,9 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2025-10-30">
   <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     WKWebView should notify navigation commit before navigation finish, but
