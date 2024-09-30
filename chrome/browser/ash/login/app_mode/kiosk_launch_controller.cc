@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
-#include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -261,8 +260,6 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kExtensionsLoadTimeout);
     CASE(kExtensionsPolicyInvalid);
     CASE(kUserNotAllowlisted);
-    CASE(kLacrosDataMigrationStarted);
-    CASE(kLacrosBackwardDataMigrationStarted);
   }
   NOTREACHED();
 #undef CASE
@@ -434,7 +431,12 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
   CHECK_DEREF(network_ui_controller_.get()).SetProfile(&profile);
 
   InitializeKeyboard();
-  LaunchLacros();
+
+  if (network_ui_controller_->ShouldShowNetworkConfig()) {
+    network_ui_controller_->UserRequestedNetworkConfig();
+  } else {
+    InitializeLauncher();
+  }
 }
 
 void KioskLaunchController::InitializeKeyboard() {
@@ -444,22 +446,6 @@ void KioskLaunchController::InitializeKeyboard() {
     // Make keyboard config sync with the `VirtualKeyboardFeatures`
     // policy.
     ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
-  }
-}
-
-void KioskLaunchController::LaunchLacros() {
-  app_state_ = kLaunchingLacros;
-  lacros_launcher_ = std::make_unique<app_mode::LacrosLauncher>();
-  lacros_launcher_->Start(
-      base::BindOnce(&KioskLaunchController::OnLacrosLaunchComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void KioskLaunchController::OnLacrosLaunchComplete() {
-  if (network_ui_controller_->ShouldShowNetworkConfig()) {
-    network_ui_controller_->UserRequestedNetworkConfig();
-  } else {
-    InitializeLauncher();
   }
 }
 
@@ -589,10 +575,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
       // Reboot the device on recoverable cryptohome errors. Do not save error
       // because that prevents re-launch on the next run.
       std::move(attempt_relaunch_).Run();
-      break;
-    case Error::kLacrosDataMigrationStarted:
-    case Error::kLacrosBackwardDataMigrationStarted:
-      // The migration code handles the chrome restart, so nothing to do.
       break;
     case Error::kHasPendingLaunch:
     case Error::kUnableToMount:
