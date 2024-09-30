@@ -53,8 +53,14 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
     object_builder.AddNull("offset");
   }
   object_builder.AddString("easing", easing_->ToString());
-  object_builder.AddString("composite",
-                           EffectModel::CompositeOperationToString(composite_));
+  if (composite_) {
+    object_builder.AddString(
+        "composite", V8CompositeOperation(EffectModel::CompositeOperationToEnum(
+                                              composite_.value()))
+                         .AsCStr());
+  } else {
+    object_builder.AddString("composite", "auto");
+  }
 }
 
 bool Keyframe::ResolveTimelineOffset(const TimelineRange& timeline_range,

@@ -145,9 +145,8 @@ KeyframeEffect* KeyframeEffect::Create(
   String pseudo = String();
   if (options->IsKeyframeEffectOptions()) {
     auto* effect_options = options->GetAsKeyframeEffectOptions();
-    composite =
-        EffectModel::StringToCompositeOperation(effect_options->composite())
-            .value();
+    composite = EffectModel::EnumToCompositeOperation(
+        effect_options->composite().AsEnum());
     if (!effect_options->pseudoElement().empty()) {
       pseudo = effect_options->pseudoElement();
       if (!ValidateAndCanonicalizePseudo(pseudo)) {
@@ -283,13 +282,14 @@ void KeyframeEffect::RefreshTarget() {
   }
 }
 
-String KeyframeEffect::composite() const {
-  return EffectModel::CompositeOperationToString(CompositeInternal());
+V8CompositeOperation KeyframeEffect::composite() const {
+  return V8CompositeOperation(
+      EffectModel::CompositeOperationToEnum(CompositeInternal()));
 }
 
-void KeyframeEffect::setComposite(String composite_string) {
+void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
   Model()->SetComposite(
-      EffectModel::StringToCompositeOperation(composite_string).value());
+      EffectModel::EnumToCompositeOperation(composite.AsEnum()));
 
   ClearEffects();
   InvalidateAndNotifyOwner();

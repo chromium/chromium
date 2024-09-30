@@ -20,34 +20,34 @@ Timing::V8Delay* Timing::Delay::ToV8Delay() const {
   return MakeGarbageCollected<V8Delay>(AsTimeValue().InMillisecondsF());
 }
 
-String Timing::FillModeString(FillMode fill_mode) {
+V8FillMode::Enum Timing::FillModeEnum(FillMode fill_mode) {
   switch (fill_mode) {
     case FillMode::NONE:
-      return "none";
+      return V8FillMode::Enum::kNone;
     case FillMode::FORWARDS:
-      return "forwards";
+      return V8FillMode::Enum::kForwards;
     case FillMode::BACKWARDS:
-      return "backwards";
+      return V8FillMode::Enum::kBackwards;
     case FillMode::BOTH:
-      return "both";
+      return V8FillMode::Enum::kBoth;
     case FillMode::AUTO:
-      return "auto";
+      return V8FillMode::Enum::kAuto;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "none";
 }
 
-Timing::FillMode Timing::StringToFillMode(const String& fill_mode) {
-  if (fill_mode == "none")
-    return Timing::FillMode::NONE;
-  if (fill_mode == "backwards")
-    return Timing::FillMode::BACKWARDS;
-  if (fill_mode == "both")
-    return Timing::FillMode::BOTH;
-  if (fill_mode == "forwards")
-    return Timing::FillMode::FORWARDS;
-  DCHECK_EQ(fill_mode, "auto");
-  return Timing::FillMode::AUTO;
+Timing::FillMode Timing::EnumToFillMode(V8FillMode::Enum fill_mode) {
+  switch (fill_mode) {
+    case V8FillMode::Enum::kNone:
+      return Timing::FillMode::NONE;
+    case V8FillMode::Enum::kBackwards:
+      return Timing::FillMode::BACKWARDS;
+    case V8FillMode::Enum::kBoth:
+      return Timing::FillMode::BOTH;
+    case V8FillMode::Enum::kForwards:
+      return Timing::FillMode::FORWARDS;
+    case V8FillMode::Enum::kAuto:
+      return Timing::FillMode::AUTO;
+  }
 }
 
 String Timing::PlaybackDirectionString(PlaybackDirection playback_direction) {
@@ -81,7 +81,7 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   // Specified values used here so that inputs match outputs for JS API calls
   effect_timing->setDelay(start_delay.ToV8Delay());
   effect_timing->setEndDelay(end_delay.ToV8Delay());
-  effect_timing->setFill(FillModeString(fill_mode));
+  effect_timing->setFill(FillModeEnum(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
   V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration;
@@ -154,7 +154,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
   computed_timing->setDelay(start_delay.ToV8Delay());
   computed_timing->setEndDelay(end_delay.ToV8Delay());
   computed_timing->setFill(
-      Timing::FillModeString(ResolvedFillMode(is_keyframe_effect)));
+      Timing::FillModeEnum(ResolvedFillMode(is_keyframe_effect)));
   computed_timing->setIterationStart(iteration_start);
   computed_timing->setIterations(iteration_count);
 

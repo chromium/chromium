@@ -37,6 +37,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
 #include "cc/animation/keyframe_model.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_fill_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -52,8 +53,8 @@
 
 namespace blink {
 
-class EffectTiming;
 class ComputedEffectTiming;
+class EffectTiming;
 enum class TimelinePhase;
 
 struct CORE_EXPORT Timing {
@@ -132,8 +133,8 @@ struct CORE_EXPORT Timing {
 
   static double NullValue() { return std::numeric_limits<double>::quiet_NaN(); }
 
-  static String FillModeString(FillMode);
-  static FillMode StringToFillMode(const String&);
+  static V8FillMode::Enum FillModeEnum(FillMode);
+  static FillMode EnumToFillMode(V8FillMode::Enum);
   static String PlaybackDirectionString(PlaybackDirection);
 
   Timing() = default;

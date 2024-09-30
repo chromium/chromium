@@ -26,15 +26,18 @@
 namespace blink {
 namespace {
 
-Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
-  if (direction == "reverse")
-    return Timing::PlaybackDirection::REVERSE;
-  if (direction == "alternate")
-    return Timing::PlaybackDirection::ALTERNATE_NORMAL;
-  if (direction == "alternate-reverse")
-    return Timing::PlaybackDirection::ALTERNATE_REVERSE;
-  DCHECK_EQ(direction, "normal");
-  return Timing::PlaybackDirection::NORMAL;
+Timing::PlaybackDirection ConvertPlaybackDirection(
+    V8PlaybackDirection::Enum direction) {
+  switch (direction) {
+    case V8PlaybackDirection::Enum::kReverse:
+      return Timing::PlaybackDirection::REVERSE;
+    case V8PlaybackDirection::Enum::kAlternate:
+      return Timing::PlaybackDirection::ALTERNATE_NORMAL;
+    case V8PlaybackDirection::Enum::kAlternateReverse:
+      return Timing::PlaybackDirection::ALTERNATE_REVERSE;
+    case V8PlaybackDirection::Enum::kNormal:
+      return Timing::PlaybackDirection::NORMAL;
+  }
 }
 
 std::optional<AnimationTimeDelta> ConvertIterationDuration(
@@ -232,8 +235,8 @@ bool TimingInput::Update(Timing& timing,
     timing.SetTimingOverride(Timing::kOverrideEndDelay);
   }
   if (input->hasFill()) {
-    changed |= UpdateValueIfChanged(timing.fill_mode,
-                                    Timing::StringToFillMode(input->fill()));
+    changed |= UpdateValueIfChanged(
+        timing.fill_mode, Timing::EnumToFillMode(input->fill().AsEnum()));
     timing.SetTimingOverride(Timing::kOverideFillMode);
   }
   if (input->hasIterationStart()) {
@@ -253,7 +256,8 @@ bool TimingInput::Update(Timing& timing,
   }
   if (input->hasDirection()) {
     changed |= UpdateValueIfChanged(
-        timing.direction, ConvertPlaybackDirection(input->direction()));
+        timing.direction,
+        ConvertPlaybackDirection(input->direction().AsEnum()));
     timing.SetTimingOverride(Timing::kOverrideDirection);
   }
   if (timing_function) {

@@ -89,15 +89,15 @@ Vector<std::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
   switch (composite->GetContentType()) {
     case V8UnionCompositeOperationOrAutoOrCompositeOperationOrAutoSequence::
         ContentType::kCompositeOperationOrAuto:
-      return {EffectModel::StringToCompositeOperation(
-          composite->GetAsCompositeOperationOrAuto().AsString())};
+      return {EffectModel::EnumToCompositeOperation(
+          composite->GetAsCompositeOperationOrAuto().AsEnum())};
     case V8UnionCompositeOperationOrAutoOrCompositeOperationOrAutoSequence::
         ContentType::kCompositeOperationOrAutoSequence: {
       Vector<std::optional<EffectModel::CompositeOperation>> result;
       for (const auto& composite_operation :
            composite->GetAsCompositeOperationOrAutoSequence()) {
-        result.push_back(EffectModel::StringToCompositeOperation(
-            composite_operation.AsString()));
+        result.push_back(EffectModel::EnumToCompositeOperation(
+            composite_operation.AsEnum()));
       }
       return result;
     }
@@ -500,7 +500,8 @@ StringKeyframeVector ConvertArrayForm(Element* element,
     }
 
     std::optional<EffectModel::CompositeOperation> composite =
-        EffectModel::StringToCompositeOperation(base_keyframe->composite());
+        EffectModel::EnumToCompositeOperation(
+            base_keyframe->composite().AsEnum());
     if (composite) {
       keyframe->SetComposite(composite.value());
     }
