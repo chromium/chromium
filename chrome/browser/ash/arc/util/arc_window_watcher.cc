@@ -20,18 +20,9 @@ namespace ash {
 
 namespace {
 
-bool IgnoreWindow(aura::Window* window) {
-  // Lacros browser windows:
-  if (crosapi::browser_util::IsLacrosWindow(window)) {
-    return true;
-  }
-
-  // Ash browser windows:
-  if (chrome::FindBrowserWithWindow(window)) {
-    return true;
-  }
-
-  return false;
+bool ShouldIgnoreWindow(aura::Window* window) {
+  // ArcWindowWatcher doesn't interested in Ash browser windows.
+  return chrome::FindBrowserWithWindow(window);
 }
 
 class Tracker : public aura::WindowObserver {
@@ -83,7 +74,7 @@ class Tracker : public aura::WindowObserver {
       return;
     }
 
-    if (IgnoreWindow(window)) {
+    if (ShouldIgnoreWindow(window)) {
       ash::ArcWindowWatcher::instance()->OnTrackerRemoved(this, nullptr);
       // WARNING: this is deleted here - must return immediately.
       return;
@@ -147,7 +138,7 @@ void ArcWindowWatcher::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (IgnoreWindow(window)) {
+  if (ShouldIgnoreWindow(window)) {
     return;
   }
 
