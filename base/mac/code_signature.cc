@@ -86,21 +86,4 @@ OSStatus ProcessIdIsSignedAndFulfillsRequirement_DoNotUse(
   return ValidateGuestWithAttributes(attributes.get(), requirement);
 }
 
-ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
-    std::string_view requirement_string) {
-  ScopedCFTypeRef<CFStringRef> requirement_string_cf(
-      base::SysUTF8ToCFStringRef(requirement_string));
-  ScopedCFTypeRef<SecRequirementRef> requirement;
-  OSStatus status = SecRequirementCreateWithString(
-      requirement_string_cf.get(), kSecCSDefaultFlags,
-      requirement.InitializeInto());
-  if (status != errSecSuccess) {
-    OSSTATUS_LOG(ERROR, status)
-        << "SecRequirementCreateWithString: " << requirement_string;
-    return base::apple::ScopedCFTypeRef<SecRequirementRef>(nullptr);
-  }
-
-  return requirement;
-}
-
 }  // namespace base::mac
