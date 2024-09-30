@@ -14,6 +14,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -154,9 +155,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Tracks field when current password was generated.
 @property(nonatomic) FieldRendererId passwordGeneratedIdentifier;
-
-// Tracks current potential generated password until accepted or rejected.
-@property(nonatomic, copy) NSString* generatedPotentialPassword;
 
 - (BOOL)IsOffTheRecord;
 
@@ -948,25 +946,32 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                               : PasswordGenerationType::kAutomatic,
           formSignature, fieldSignature, maxLength);
 
-  self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
+  base::UmaHistogramBoolean(
+      "PasswordGeneration.iOS.GeneratedPasswordIsEmpty.BeforeParsing",
+      generatedPassword.empty());
+
+  NSString* generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
 
   __weak SharedPasswordController* weakSelf = self;
   [self.delegate sharedPasswordController:self
-           showGeneratedPotentialPassword:self.generatedPotentialPassword
+           showGeneratedPotentialPassword:generatedPotentialPassword
                                 proactive:self.proactivePasswordGeneration
                           decisionHandler:^(BOOL accept) {
                             [weakSelf
-                                onPasswordGenerationAccepted:accept
-                                         isManuallyTriggered:isManuallyTriggered
-                                              formIdentifier:formIdentifier
-                                                       frame:weakFrame];
+                                onGeneratedPasswordAccepted:
+                                    generatedPotentialPassword
+                                                 isAccepted:accept
+                                        isManuallyTriggered:isManuallyTriggered
+                                             formIdentifier:formIdentifier
+                                                      frame:weakFrame];
                           }];
 }
 
-- (void)onPasswordGenerationAccepted:(BOOL)accepted
-                 isManuallyTriggered:(BOOL)isManuallyTriggered
-                      formIdentifier:(FormRendererId)formIdentifier
-                               frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+- (void)onGeneratedPasswordAccepted:(NSString*)generatedPassword
+                         isAccepted:(BOOL)accepted
+                isManuallyTriggered:(BOOL)isManuallyTriggered
+                     formIdentifier:(FormRendererId)formIdentifier
+                              frame:(base::WeakPtr<web::WebFrame>)weakFrame {
   if (!_webState) {
     // Stop here if the '_webState' was deleted before handling the decision for
     // the generated password. Doing anything further is unsafe.
@@ -982,28 +987,29 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self logUserChoice:accepted
             proactive:self.proactivePasswordGeneration
                manual:isManuallyTriggered];
+  bool generatedPasswordEmpty = generatedPassword.length == 0;
   if (accepted) {
+    // Log "on accepted" metrics which doesn't necessarily mean that the generated
+    // password can be injected.
     LogPasswordGenerationEvent(
         autofill::password_generation::PASSWORD_ACCEPTED);
-
-    __weak SharedPasswordController* weakSelf = self;
+    base::UmaHistogramBoolean(
+        "PasswordGeneration.iOS.AcceptedGeneratedPasswordIsEmpty",
+        generatedPasswordEmpty);
+  }
+  if (accepted && !generatedPasswordEmpty) {
+    // Only inject the generated password if not empty, password manager will
+    // trigger a crash otherwise.
     [self injectGeneratedPasswordForFormId:formIdentifier
                                    inFrame:frame
-                         generatedPassword:self.generatedPotentialPassword
-                         completionHandler:^{
-                           [weakSelf clearGeneratedPotentialPassword];
-                         }];
+                         generatedPassword:generatedPassword
+                         completionHandler:nil];
   } else {
     [self cancelPasswordGeneration];
   }
 }
 
-- (void)clearGeneratedPotentialPassword {
-  self.generatedPotentialPassword = nil;
-}
-
 - (void)cancelPasswordGeneration {
-  [self clearGeneratedPotentialPassword];
   _passwordManager->OnPasswordNoLongerGenerated();
 }
 
@@ -1056,6 +1062,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        completionHandler:(void (^)())completionHandler {
   const autofill::PasswordFormGenerationData* generationData =
       [self formForGenerationFromFormID:formIdentifier];
+  CHECK_GT(generatedPassword.length, 0u);
   if (!generationData) {
     return;
   }

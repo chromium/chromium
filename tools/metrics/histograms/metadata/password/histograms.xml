@@ -387,6 +387,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordGeneration.iOS.AcceptedGeneratedPasswordIsEmpty"
+    enum="Boolean" expires_after="2025-06-18">
+  <owner>vincb@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records true when the accepted generated password is empty, false otherwise.
+    Recorded when the user accepts a generated password from the password
+    generation sheet regardless of the trigger for the sheet (e.g. the keyboard
+    accessory chip).
+  </summary>
+</histogram>
+
 <histogram name="PasswordGeneration.iOS.AcceptedGeneratedPasswordSource"
     enum="AcceptedGeneratedPasswordSourceType" expires_after="2025-03-09">
   <owner>cloutierc@google.com</owner>
@@ -397,6 +410,17 @@ chromium-metrics-reviews@google.com.
     Recorded when they accept a suggestion from a password generation bottom
     sheet, which was either presented proactively or it was triggered by the
     keyboard accessory.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.iOS.GeneratedPasswordIsEmpty.BeforeParsing"
+    enum="Boolean" expires_after="2025-06-18">
+  <owner>vincb@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records true when the generated password is empty, false otherwise. Recorded
+    right after the password is generated but before parsing it to a NSString.
   </summary>
 </histogram>
 
