@@ -707,7 +707,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // Bookmarks
   registry->RegisterBooleanPref(prefs::kIosBookmarkPromoAlreadySeen, false);
   registry->RegisterBooleanPref(prefs::kIosBookmarkSettingsPromoAlreadySeen,

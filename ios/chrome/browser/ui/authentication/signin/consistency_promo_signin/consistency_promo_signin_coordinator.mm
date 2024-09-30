@@ -70,9 +70,9 @@
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                           accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   if (!accountManagerService->HasIdentities() &&
       accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     RecordConsistencyPromoUserAction(
@@ -110,18 +110,18 @@
   signin_metrics::LogSignInStarted(self.accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   self.consistencyPromoSigninMediator = [[ConsistencyPromoSigninMediator alloc]
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
                     identityManager:identityManager
-                    userPrefService:browserState->GetPrefs()
+                    userPrefService:profile->GetPrefs()
                         accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
   // Create ConsistencyDefaultAccountCoordinator.
@@ -320,8 +320,8 @@
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  PrefService* userPrefService = browserState->GetPrefs();
+  ProfileIOS* profile = self.browser->GetProfile();
+  PrefService* userPrefService = profile->GetPrefs();
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     const int skipCounter =

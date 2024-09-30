@@ -101,14 +101,13 @@
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
-  _authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  _syncService = SyncServiceFactory::GetForProfile(profile);
+  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
-  _prefService = browserState->GetPrefs();
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  _identityManager = IdentityManagerFactory::GetForProfile(profile);
+  _prefService = profile->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
 
@@ -129,7 +128,7 @@
       UIPopoverArrowDirectionUp;
   _navigationController.presentationController.delegate = self;
 
-  PrefService* prefs = browserState->GetPrefs();
+  PrefService* prefs = profile->GetPrefs();
 
   _mediator =
       [[AccountMenuMediator alloc] initWithSyncService:_syncService

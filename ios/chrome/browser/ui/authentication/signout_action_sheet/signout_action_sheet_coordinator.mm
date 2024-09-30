@@ -163,21 +163,21 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 #pragma mark - Browser-based properties
 
 - (AuthenticationService*)authenticationService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 // Returns the user's sign-in and syncing state.
 - (SignedInUserState)signedInUserState {
   DCHECK(self.browser);
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+  ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationService* authenticationService = self.authenticationService;
   const bool is_managed_account_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
-          IdentityManagerFactory::GetForProfile(browserState),
-          browserState->GetPrefs()) &&
+          IdentityManagerFactory::GetForProfile(profile),
+          profile->GetPrefs()) &&
       authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);
 
@@ -324,7 +324,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   constexpr syncer::DataTypeSet kDataTypesToQuery =
       syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
     CHECK(kDataTypesToQuery.HasAll(set))
@@ -609,7 +609,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     return nil;
   }
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   int message_id =
       syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||

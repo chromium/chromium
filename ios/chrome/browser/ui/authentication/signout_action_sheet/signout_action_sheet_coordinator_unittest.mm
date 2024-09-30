@@ -57,20 +57,19 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity_);
     system_identity_manager->AddIdentity(managed_identity_);
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
@@ -85,8 +84,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
   // Identity services.
   AuthenticationService* authentication_service() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   // Sign-out coordinator.
@@ -109,10 +107,10 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     return GetApplicationContext()->GetLocalState();
   }
 
-  PrefService* GetPrefs() { return browser_state_->GetPrefs(); }
+  PrefService* GetPrefs() { return profile_->GetPrefs(); }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   base::test::TaskEnvironment task_environment_;
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -123,7 +121,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_ = nullptr;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
   id<SnackbarCommands> snackbar_handler_ =

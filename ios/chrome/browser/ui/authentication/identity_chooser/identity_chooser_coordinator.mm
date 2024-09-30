@@ -79,8 +79,8 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   // Creates the mediator.
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+                                        GetForProfile(
+                                            self.browser->GetProfile())];
 
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.

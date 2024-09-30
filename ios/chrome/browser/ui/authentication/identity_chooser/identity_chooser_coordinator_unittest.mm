@@ -25,8 +25,8 @@
 class IdentityChooserCoordinatorTest : public PlatformTest {
  public:
   IdentityChooserCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
@@ -53,9 +53,9 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
   }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
 

@@ -158,13 +158,13 @@ NSString* const kAuthenticationSnackbarCategory =
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
              toProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignIn(
-      identity, accessPoint);
+  AuthenticationServiceFactory::GetForProfile(profile)->SignIn(identity,
+                                                               accessPoint);
 }
 
 - (void)signOutProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+  AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       /*force_clear_browsing_data=*/false, ^{
         [weakDelegate didSignOut];
@@ -172,7 +172,7 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+  AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
 }
@@ -243,7 +243,7 @@ NSString* const kAuthenticationSnackbarCategory =
     // potential bad memory accesses.
     Browser* alertedBrowser = weakAlert.browser;
     if (alertedBrowser) {
-      PrefService* prefService = alertedBrowser->GetBrowserState()->GetPrefs();
+      PrefService* prefService = alertedBrowser->GetProfile()->GetPrefs();
       // TODO(crbug.com/40225352): Remove this line once we determined that the
       // notification isn't needed anymore.
       [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
@@ -280,9 +280,8 @@ NSString* const kAuthenticationSnackbarCategory =
                           browser:(Browser*)browser {
   DCHECK(browser);
   base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalChromeBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(profile);
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   // Signing in from bookmarks and reading list enables the corresponding
   // type.
@@ -316,7 +315,7 @@ NSString* const kAuthenticationSnackbarCategory =
     base::RecordAction(
         base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(profile);
+        AuthenticationServiceFactory::GetForProfile(profile);
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       // Signing in from bookmarks and reading list enables the corresponding
       // type. The undo button should handle that before signing out.

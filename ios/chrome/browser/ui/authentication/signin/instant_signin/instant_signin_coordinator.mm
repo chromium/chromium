@@ -73,9 +73,9 @@
 - (void)start {
   [super start];
   signin_metrics::LogSignInStarted(self.accessPoint);
-  ChromeBrowserState* chromeState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(chromeState);
+      SyncServiceFactory::GetForProfile(profile);
   _mediator =
       [[InstantSigninMediator alloc] initWithSyncService:syncService
                                              accessPoint:self.accessPoint];
@@ -96,7 +96,7 @@
   }
 
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   if (!accountManagerService->HasIdentities()) {
     signin_metrics::RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::

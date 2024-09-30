@@ -89,16 +89,17 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
   return kShowSigninUpgradePromoMaxDelay;
 }
 
-bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
+bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
                                     const base::Version& current_version) {
-  DCHECK(browser_state);
+  DCHECK(profile);
   DCHECK(current_version.IsValid());
 
   if (tests_hook::DisableUpgradeSigninPromo())
     return false;
 
-  if (browser_state->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return false;
+  }
 
   // There will be an error shown if the user chooses to sign in or select
   // another account while offline.
@@ -107,7 +108,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   // Sign-in can be disabled by policy or through user Settings.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   switch (authentication_service->GetServiceStatus()) {
     case AuthenticationService::ServiceStatus::SigninDisabledByUser:
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
@@ -119,17 +120,17 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   }
 
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     return false;
   }
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForBrowserState(browser_state);
+        SyncServiceFactory::GetForProfile(profile);
     HistorySyncSkipReason skip_reason = [HistorySyncCoordinator
         getHistorySyncOptInSkipReason:sync_service
                 authenticationService:auth_service
-                          prefService:browser_state->GetPrefs()
+                          prefService:profile->GetPrefs()
                 isHistorySyncOptional:YES];
     switch (skip_reason) {
       case HistorySyncSkipReason::kNone:
@@ -146,7 +147,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   // Avoid showing the upgrade sign-in promo when the device restore sign-in
   // promo should be shown instead.
-  if (GetPreRestoreIdentity(browser_state->GetPrefs()).has_value()) {
+  if (GetPreRestoreIdentity(profile->GetPrefs()).has_value()) {
     return false;
   }
 
@@ -154,7 +155,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   // before ForceStartupSigninPromo() to avoid any DCHECK failures if
   // ForceStartupSigninPromo() returns true.
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   NSArray<id<SystemIdentity>>* identities =
       account_manager_service->GetAllIdentities();
   if (identities.count == 0)
@@ -197,9 +198,9 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   return IsStrictSubset(last_known_gaia_id_list, identities);
 }
 
-bool ShouldPresentWebSignin(ChromeBrowserState* browser_state) {
+bool ShouldPresentWebSignin(ProfileIOS* profile) {
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (authentication_service->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // For some reasons, Gaia might ask for the web sign-in while the user is
@@ -231,7 +232,7 @@ bool ShouldPresentWebSignin(ChromeBrowserState* browser_state) {
       break;
   }
   // Show the sign-in dialog less than `kSigninWebSignDismissalCount` times.
-  PrefService* user_pref_service = browser_state->GetPrefs();
+  PrefService* user_pref_service = profile->GetPrefs();
   const int current_dismissal_count =
       user_pref_service->GetInteger(prefs::kSigninWebSignDismissalCount);
   if (current_dismissal_count >= kDefaultWebSignInDismissalCount) {
@@ -264,12 +265,10 @@ void RecordUpgradePromoSigninStarted(
   [defaults setInteger:display_count forKey:kSigninPromoViewDisplayCountKey];
 }
 
-IdentitySigninState GetPrimaryIdentitySigninState(
-    ChromeBrowserState* browser_state) {
+IdentitySigninState GetPrimaryIdentitySigninState(ProfileIOS* profile) {
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   // TODO(crbug.com/40066949): After phase 3 migration of kSync users, Remove
   // this usage.
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&

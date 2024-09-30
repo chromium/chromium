@@ -70,7 +70,7 @@ class AuthenticationFlowTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.SetPrefService(CreatePrefService());
     profile_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -209,7 +209,7 @@ class AuthenticationFlowTest : public PlatformTest {
 
   void SignOut() {
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     // Can't use a RunLoop multiple times, create a new one.
     run_loop_ = std::make_unique<base::RunLoop>();
     authentication_service->SignOut(

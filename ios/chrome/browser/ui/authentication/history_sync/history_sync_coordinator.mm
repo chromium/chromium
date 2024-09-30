@@ -143,13 +143,12 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = self.browser->GetProfile();
+  CHECK_EQ(profile, profile->GetOriginalProfile());
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  _prefService = browserState->GetPrefs();
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  _prefService = profile->GetPrefs();
   // Check if History Sync Opt-In should be skipped.
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:syncService
@@ -167,9 +166,9 @@
   _viewController.delegate = self;
 
   ChromeAccountManagerService* chromeAccountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   _mediator = [[HistorySyncMediator alloc]
       initWithAuthenticationService:authenticationService
         chromeAccountManagerService:chromeAccountManagerService

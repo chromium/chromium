@@ -32,8 +32,8 @@ class HistorySyncCapabilitiesFetcherTest
 
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
   void TearDown() override {
@@ -72,7 +72,7 @@ class HistorySyncCapabilitiesFetcherTest
  protected:
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   HistorySyncCapabilitiesFetcher* fetcher_ = nil;
 };
 

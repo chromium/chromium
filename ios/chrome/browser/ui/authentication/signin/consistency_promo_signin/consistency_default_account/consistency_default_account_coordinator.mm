@@ -42,12 +42,11 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.mediator = [[ConsistencyDefaultAccountMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(browserState)
-                        syncService:SyncServiceFactory::GetForBrowserState(
-                                        browserState)
+                                        GetForProfile(profile)
+                        syncService:SyncServiceFactory::GetForProfile(profile)
                         accessPoint:self.accessPoint];
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];

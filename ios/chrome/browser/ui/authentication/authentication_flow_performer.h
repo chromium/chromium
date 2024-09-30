@@ -35,7 +35,7 @@ class Browser;
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-// Signs `identity` with `hostedDomain` into `browserState`.
+// Signs `identity` with `hostedDomain` into `profile`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain

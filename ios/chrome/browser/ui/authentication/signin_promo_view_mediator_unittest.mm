@@ -66,17 +66,16 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void SetUp() override {
     identity_ = [FakeSystemIdentity fakeIdentity1];
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     // Set up the test browser and attach the browser agents.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   void TearDown() override {
@@ -104,10 +103,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(AccountSettingsPresenter));
     mediator_ = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForBrowserState(
-                                              chrome_browser_state_.get())
+                                          GetForProfile(profile_.get())
                           authService:GetAuthenticationService()
-                          prefService:chrome_browser_state_.get()->GetPrefs()
+                          prefService:profile_.get()->GetPrefs()
                           syncService:GetSyncService()
                           accessPoint:access_point
                       signinPresenter:signin_presenter_
@@ -133,12 +131,11 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   }
 
   AuthenticationService* GetAuthenticationService() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   syncer::SyncService* GetSyncService() {
-    return SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
+    return SyncServiceFactory::GetForProfile(profile_.get());
   }
 
   // Creates the default identity and adds it into the ChromeIdentityService.
@@ -404,7 +401,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Task environment.
   WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
@@ -613,10 +610,9 @@ TEST_F(SigninPromoViewMediatorTest,
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfDisabledByPolicy) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
   EXPECT_FALSE([SigninPromoViewMediator
@@ -625,7 +621,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                 signinPromoAction:SigninPromoAction::
                                                       kInstantSignin
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
 }
 
 // Tests that the default identity is the primary account, when the user is
@@ -765,26 +761,25 @@ TEST_F(SigninPromoViewMediatorTest,
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfAlreadySeen) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
-  browser_state->GetPrefs()->SetBoolean(
-      prefs::kIosBookmarkSettingsPromoAlreadySeen, true);
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  profile->GetPrefs()->SetBoolean(prefs::kIosBookmarkSettingsPromoAlreadySeen,
+                                  true);
   EXPECT_FALSE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:
           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
                                 signinPromoAction:SigninPromoAction::
                                                       kReviewAccountSettings
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
   EXPECT_TRUE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:
           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
                                 signinPromoAction:SigninPromoAction::
                                                       kInstantSignin
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
 }
 
 }  // namespace

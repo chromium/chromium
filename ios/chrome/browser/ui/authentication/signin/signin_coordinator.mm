@@ -43,7 +43,7 @@ using signin_metrics::PromoAction;
   return self;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
   registry->RegisterDictionaryPref(prefs::kSigninHasAcceptedManagementDialog);
@@ -157,7 +157,7 @@ using signin_metrics::PromoAction;
                                                           (signin_metrics::
                                                                AccessPoint)
                                                               accessPoint {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser

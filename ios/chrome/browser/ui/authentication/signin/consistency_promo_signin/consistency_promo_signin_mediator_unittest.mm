@@ -42,16 +42,14 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     GetSystemIdentityManager()->AddIdentity(kDefaultIdentity);
     GetSystemIdentityManager()->AddIdentity(kNonDefaultIdentity);
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForBrowserState(
-                  browser_state_.get())
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForProfile(profile_.get())
                   ->GetDefaultIdentity(),
               kDefaultIdentity);
   }
@@ -63,7 +61,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
-    return browser_state_->GetTestingPrefService();
+    return profile_->GetTestingPrefService();
   }
 
   FakeSystemIdentityManager* GetSystemIdentityManager() {
@@ -74,12 +72,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   ConsistencyPromoSigninMediator* BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint access_point) {
     ChromeAccountManagerService* chrome_account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     ConsistencyPromoSigninMediator* mediator =
         [[ConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chrome_account_manager_service
@@ -130,7 +127,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
         consistencyPromoSigninMediatorSigninStarted:[OCMArg any]]);
     OCMExpect([authentication_flow_ identity]).andReturn(identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     OCMExpect([authentication_flow_
         startSignInWithCompletion:[OCMArg
                                       checkWithBlock:^BOOL(
@@ -152,11 +149,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
       OCMStrictProtocolMock(@protocol(ConsistencyPromoSigninMediatorDelegate));
 
  private:
-  // Needed for test browser state.
+  // Needed for test profile.
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests start and cancel by user.

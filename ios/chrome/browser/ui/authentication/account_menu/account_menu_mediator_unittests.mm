@@ -49,30 +49,27 @@ class AccountMenuMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    // Set the browser state.
-    TestChromeBrowserState::Builder builder;
+    // Set the profile.
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     // Set the manager and services variables.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     authentication_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    identity_manager_ =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();
@@ -85,7 +82,7 @@ class AccountMenuMediatorTest : public PlatformTest {
         accountManagerService:account_manager_service_
                   authService:authentication_service_
               identityManager:identity_manager_
-                        prefs:browser_state_->GetPrefs()];
+                        prefs:profile_->GetPrefs()];
     mediator_.delegate = delegate_;
     mediator_.consumer = consumer_;
   }
@@ -161,7 +158,7 @@ class AccountMenuMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 #pragma mark - Test for ChromeAccountManagerServiceObserver

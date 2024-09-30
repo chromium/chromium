@@ -14,7 +14,7 @@ class PrefRegistrySyncable;
 namespace history_sync {
 
 // Registers prefs used to skip too frequent History Sync Opt-In prompt.
-void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Resets prefs related to declined History Sync Opt-In prompt.
 void ResetDeclinePrefs(PrefService* pref_service);

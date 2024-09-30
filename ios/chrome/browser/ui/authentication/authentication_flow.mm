@@ -401,7 +401,7 @@ bool HasMachineLevelPolicies() {
 
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
-      AuthenticationServiceFactory::GetForBrowserState([self originalProfile])
+      AuthenticationServiceFactory::GetForProfile([self originalProfile])
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     // If the identity to sign-in is different than the current identity,
@@ -418,7 +418,7 @@ bool HasMachineLevelPolicies() {
   }
   ProfileIOS* profile = [self originalProfile];
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(profile);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   if (accountManagerService->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
@@ -582,7 +582,7 @@ bool HasMachineLevelPolicies() {
 
 // The original profile used for services that don't exist in incognito mode.
 - (ProfileIOS*)originalProfile {
-  return _browser->GetProfile()->GetOriginalChromeBrowserState();
+  return _browser->GetProfile()->GetOriginalProfile();
 }
 
 - (PrefService*)prefs {
@@ -632,7 +632,7 @@ bool HasMachineLevelPolicies() {
   }
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState([self originalProfile]);
+      SyncServiceFactory::GetForProfile([self originalProfile]);
   syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
 
   if (userSettings->GetSelectedTypes().HasAll(

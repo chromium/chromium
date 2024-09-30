@@ -51,7 +51,7 @@ using base::UserMetricsAction;
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                accessPoint:accessPoint];
@@ -70,8 +70,8 @@ using base::UserMetricsAction;
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        ChromeAccountManagerServiceFactory::GetForProfile(
+            self.browser->GetProfile());
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
     [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
                                    accountManagerService:accountManagerService];
@@ -114,8 +114,7 @@ using base::UserMetricsAction;
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   ProceduralBlock completion = ^{

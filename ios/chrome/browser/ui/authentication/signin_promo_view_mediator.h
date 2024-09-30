@@ -106,7 +106,7 @@ enum class SigninPromoAction {
 @property(nonatomic, assign) syncer::DataType dataTypeToWaitForInitialSync;
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Tests if the sign-in promo view should be displayed according to the number
 // of times it has been displayed and if the user closed the sign-in promo view.

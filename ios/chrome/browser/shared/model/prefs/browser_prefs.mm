@@ -815,8 +815,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [BookmarksHomeMediator registerBrowserStatePrefs:registry];
   [ContentSuggestionsMediator registerBrowserStatePrefs:registry];
   [HandoffManager registerBrowserStatePrefs:registry];
-  [SigninCoordinator registerBrowserStatePrefs:registry];
-  [SigninPromoViewMediator registerBrowserStatePrefs:registry];
+  [SigninCoordinator registerProfilePrefs:registry];
+  [SigninPromoViewMediator registerProfilePrefs:registry];
 
   tab_groups::prefs::RegisterProfilePrefs(registry);
 
@@ -964,7 +964,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
-  history_sync::RegisterBrowserStatePrefs(registry);
+  history_sync::RegisterProfilePrefs(registry);
 
   // Deprecated pref, moved to LocalState.
   registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,

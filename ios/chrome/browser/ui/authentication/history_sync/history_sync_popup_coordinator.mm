@@ -63,17 +63,15 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
-  _authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  CHECK_EQ(profile, profile->GetOriginalProfile());
+  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   // Check if History Sync Opt-In should be skipped.
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:syncService
               authenticationService:_authenticationService
-                        prefService:browserState->GetPrefs()
+                        prefService:profile->GetPrefs()
               isHistorySyncOptional:_isOptional];
   if (skipReason != HistorySyncSkipReason::kNone) {
     [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason

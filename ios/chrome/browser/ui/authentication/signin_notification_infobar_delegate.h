@@ -27,7 +27,7 @@ class InfoBarManager;
 // Shows a sign-in notification in an infobar.
 class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state,
+  SigninNotificationInfoBarDelegate(ProfileIOS* profile,
                                     id<SettingsCommands> dispatcher,
                                     UIViewController* view_controller);
 
@@ -40,7 +40,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Creates a sign-in notification infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
-                     ChromeBrowserState* browser_state,
+                     ProfileIOS* profile,
                      id<SettingsCommands> dispatcher,
                      UIViewController* view_controller);
 
