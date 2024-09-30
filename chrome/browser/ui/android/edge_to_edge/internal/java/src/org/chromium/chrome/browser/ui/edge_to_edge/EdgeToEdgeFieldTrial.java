@@ -60,8 +60,6 @@ public final class EdgeToEdgeFieldTrial {
 
     private EdgeToEdgeFieldTrial() {
         mOemMinVersionOverrides = new HashMap<>();
-        // Some version of Samsung OneUi can draw a solid nav bar with e2e. See crbug.com/41487034.
-        mOemMinVersionOverrides.put("samsung", Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
         initializeOverrides();
     }
 

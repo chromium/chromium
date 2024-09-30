@@ -45,35 +45,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
-    public void noOverrides_samsung_meetMinVersion() {
-        ShadowBuild.setManufacturer("SAMSUNG");
-        assertTrue(
-                "Samsung has min version override as 34.",
-                EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion());
-    }
-
-    @Test
-    @Config(sdk = 30)
-    public void noOverrides_samsung_notMeetMinVersion() {
-        ShadowBuild.setManufacturer("SAMSUNG");
-        assertFalse(
-                "Samsung has min version override as 34.",
-                EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion());
-    }
-
-    @Test
-    @Config(sdk = 30)
-    public void overrides_samsung_meetMinVersion() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("samsung");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("30");
-        ShadowBuild.setManufacturer("SAMSUNG");
-        assertTrue(
-                "Samsung has min version override as 30.",
-                EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion());
-    }
-
-    @Test
     @Config(sdk = 30)
     public void overrides_notMeetMinVersion() {
         EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
