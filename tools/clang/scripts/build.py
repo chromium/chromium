@@ -264,9 +264,12 @@ def AddGnuWinToPath():
     f.write('group: files\n')
 
 
-def AddZlibToPath():
+def AddZlibToPath(dry_run = False):
   """Download and build zlib, and add to PATH."""
   zlib_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'zlib-1.2.11')
+  if dry_run:
+    return zlib_dir
+
   if os.path.exists(zlib_dir):
     RmTree(zlib_dir)
   zip_name = 'zlib-1.2.11.tar.gz'
