@@ -3552,6 +3552,7 @@
     "bases": [
       "external/wpt/css/css-overflow/line-clamp",
       "external/wpt/css/css-overflow/parsing",
+      "external/wpt/css/css-inline/text-box-trim/text-box-trim-line-clamp-001.html",
       "fast/overflow"
     ],
     "args": [

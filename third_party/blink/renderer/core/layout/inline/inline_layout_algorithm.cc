@@ -553,8 +553,10 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   const ConstraintSpace& space = GetConstraintSpace();
   if (space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd())
       [[unlikely]] {
-    ApplyTextBoxTrim(*line_info,
-                     line_clamp_state == LineClampState::kEllipsize);
+    bool is_truncated = line_clamp_state == LineClampState::kEllipsize ||
+                        space.GetLineClampData().state ==
+                            LineClampData::kMeasureLinesUntilBfcOffset;
+    ApplyTextBoxTrim(*line_info, is_truncated);
   }
 
   // |container_builder_| is already set up by |PlaceBlockInInline|.

@@ -2558,7 +2558,18 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       should_text_box_trim_start_ = false;
       container_builder_.SetIsBlockStartTrimmed();
     }
-    if (should_text_box_trim_end_) {
+    if (should_text_box_trim_end_ &&
+        line_clamp_data_.data.state ==
+            LineClampData::kMeasureLinesUntilBfcOffset &&
+        layout_result->GetPhysicalFragment().GetBreakToken()) {
+      // If we trimmed the end only because we're in the first layout of a
+      // line-clamp: auto context, and we might not trim in the relayout, then
+      // we don't reset should_text_box_trim_end_, and we add the trim length to
+      // the logical block offset so next lines are set in the right position.
+      DCHECK(layout_result->TrimBlockEndBy());
+      previous_inflow_position->logical_block_offset +=
+          *layout_result->TrimBlockEndBy();
+    } else if (should_text_box_trim_end_) {
       if (layout_result->IsBlockEndTrimmed()) {
         should_text_box_trim_end_ = false;
         container_builder_.SetIsBlockEndTrimmed();
