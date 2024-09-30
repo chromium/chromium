@@ -196,6 +196,14 @@ PATH_CONTEXT = {
             'chromedriver_binary_name': 'chromedriver.exe',
             'chromedriver_archive_name': 'chromedriver_win64.zip',
         },
+        'win-arm64': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'win-arm64-clang/',
+            'archive_name': 'chrome-win-arm64-clang.zip',
+            'archive_extract_dir': 'chrome-win-arm64-clang',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win64.zip',
+        },
     },
     'official': {
         'android-arm': {
