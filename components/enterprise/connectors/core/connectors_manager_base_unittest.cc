@@ -16,7 +16,7 @@ namespace {
 constexpr ReportingConnector kAllReportingConnectors[] = {
     ReportingConnector::SECURITY_EVENT};
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr char kNormalReportingSettingsPref[] = R"([
   {
     "service_provider": "google"
@@ -75,8 +75,8 @@ class ConnectorsManagerBaseReportingTest
 };
 
 TEST_P(ConnectorsManagerBaseReportingTest, DynamicPolicies) {
-  // TODO(b/344593927): Re-enable this test for Android.
-#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/344593927): Re-enable this test for Android and iOS
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   ASSERT_FALSE(pref_service()->FindPreference(
       "enterprise_connectors.on_security_event"));
 #else

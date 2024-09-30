@@ -36,6 +36,7 @@ source_set("browser_prefs") {
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/enterprise",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/idle",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/flags_ui",
