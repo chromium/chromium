@@ -296,7 +296,26 @@ module.exports = {
       // https://google.github.io/styleguide/tsguide.html#ts-ignore
       '@typescript-eslint/ban-ts-comment': ['error', {'ts-ignore': true}],
     }
-  }],
+  },
+  // We do not allow per-directory custom eslint rules. This section exists for
+  // rules that are in the process of being applied to the whole code base.
+  {
+    'files': ['ui/webui/resources/**/*.[jt]s'],
+    'rules': {
+      'eqeqeq': ['error', 'always', {'null': 'ignore'}],
+    }
+  },
+
+  // 1-month exception for //ui/file_manager. This can be removed in November
+  // 2024. http://b/370371134.
+  {
+    'files' : ['ui/file_manager/**/*.[jt]s'],
+    'rules' : {
+      'no-console' : 'off',
+      'no-restricted-syntax': 'off',
+    },
+  },
+  ],
 
   'ignorePatterns': [
     // Ignore because eslint doesn't understand // <if expr>
