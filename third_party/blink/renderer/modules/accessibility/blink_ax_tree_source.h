@@ -8,20 +8,20 @@
 #include <stdint.h>
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
+
+namespace ui {
+struct AXTreeData;
+}
 
 namespace blink {
 

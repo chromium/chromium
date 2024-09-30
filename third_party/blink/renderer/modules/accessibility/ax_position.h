@@ -10,10 +10,8 @@
 #include <ostream>
 
 #include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -25,6 +23,7 @@ class AXObject;
 class ContainerNode;
 class Document;
 class Node;
+class OffsetMapping;
 
 // When converting to a DOM position from an |AXPosition| or vice versa, and the
 // corresponding position is invalid, doesn't exist, or is inside an ignored

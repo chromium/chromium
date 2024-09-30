@@ -35,7 +35,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -51,7 +50,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -60,8 +58,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/ax_tree_serializer.h"
-#include "ui/gfx/geometry/quad_f.h"
 
 namespace gfx {
 class Transform;

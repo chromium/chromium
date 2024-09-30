@@ -6,13 +6,8 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <set>
-
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -22,13 +17,8 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 

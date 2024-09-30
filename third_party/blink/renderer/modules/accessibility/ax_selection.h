@@ -11,7 +11,6 @@
 #include <ostream>
 
 #include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
