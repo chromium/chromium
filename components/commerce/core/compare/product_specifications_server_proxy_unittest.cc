@@ -59,6 +59,7 @@ const std::string kSimpleResponse = R"(
               }
             ],
             "imageUrl": "http://example.com/image.png",
+            "buyingOptionsUrl": "http://example.com/jackpot",
             "productSpecificationValues": [
               {
                 "key": "100000",
@@ -176,6 +177,8 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
             ASSERT_EQ("Circle", spec->products[0].title);
             ASSERT_EQ("http://example.com/image.png",
                       spec->products[0].image_url.spec());
+            ASSERT_EQ("http://example.com/jackpot",
+                      spec->products[0].buying_options_url.spec());
             ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
             ASSERT_EQ("http://example.com/circle/",
                       spec->products[0].summary[0].urls[0].url.spec());
@@ -237,6 +240,8 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ("Circle", spec->products[0].title);
                      ASSERT_EQ("http://example.com/image.png",
                                spec->products[0].image_url.spec());
+                     ASSERT_EQ("http://example.com/jackpot",
+                               spec->products[0].buying_options_url.spec());
                      ASSERT_EQ("Circle is round",
                                spec->products[0].summary[0].text);
                      ASSERT_EQ("http://example.com/circle/",

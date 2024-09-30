@@ -29,6 +29,7 @@ const char kEndpointUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/products:specifications";
 
 const char kAltTextKey[] = "alternativeText";
+const char kBuyingOptionsURLKey[] = "buyingOptionsUrl";
 const char kDescriptionKey[] = "description";
 const char kFaviconUrlKey[] = "faviconUrl";
 const char kGPCKey[] = "gpcId";
@@ -388,6 +389,12 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
     const std::string* image_url = spec.GetDict().FindString(kImageURLKey);
     if (image_url) {
       product.image_url = GURL(*image_url);
+    }
+
+    const std::string* buying_options_url =
+        spec.GetDict().FindString(kBuyingOptionsURLKey);
+    if (buying_options_url) {
+      product.buying_options_url = GURL(*buying_options_url);
     }
 
     const base::Value::List* product_spec_values =

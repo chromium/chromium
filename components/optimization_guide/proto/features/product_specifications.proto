@@ -88,6 +88,9 @@ message ProductSpecification {
 
   // Generated summary description for the product.
   repeated DescriptionText summary_description = 5;
+
+  // Buying options URL (jackpot URL).
+  string buying_options_url = 6;
 }
 
 // Can contain any available identifiers for the product specification.

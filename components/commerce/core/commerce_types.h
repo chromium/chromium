@@ -228,6 +228,7 @@ struct ProductSpecifications {
     GURL image_url;
     std::map<ProductDimensionId, Value> product_dimension_values;
     std::vector<DescriptionText> summary;
+    GURL buying_options_url;
   };
 
   // A map of each product dimension ID to its human readable name.
