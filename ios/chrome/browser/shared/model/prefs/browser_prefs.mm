@@ -536,6 +536,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Preferences related to the profile manager.
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
+  registry->RegisterBooleanPref(prefs::kLegacyProfileHidden, false);
+  registry->RegisterDictionaryPref(prefs::kLegacyProfileMap);
 
   [MemoryDebuggerManager registerLocalState:registry];
   [IncognitoReauthSceneAgent registerLocalState:registry];

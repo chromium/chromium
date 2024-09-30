@@ -9,6 +9,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
@@ -136,6 +137,10 @@ std::set<std::string> GetRecentlyActiveProfiles(PrefService* local_state) {
 
 }  // namespace
 
+BASE_FEATURE(kHideLegacyProfiles,
+             "HideLegacyProfiles",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Stores information about a single Profile.
 class ProfileManagerIOSImpl::ProfileInfo {
  public:
@@ -229,6 +234,13 @@ void ProfileManagerIOSImpl::LoadProfiles() {
   // recently active Profile, create one with a default name.
   if (profiles.empty()) {
     profiles.insert(kIOSChromeInitialBrowserState);
+  }
+
+  // Take care of the legacy profiles.
+  if (base::FeatureList::IsEnabled(kHideLegacyProfiles)) {
+    HideLegacyProfiles(profiles);
+  } else {
+    RestoreLegacyProfiles(profiles);
   }
 
   for (const std::string& name : profiles) {
@@ -392,6 +404,11 @@ bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {
 
 bool ProfileManagerIOSImpl::CanCreateProfileWithName(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cannot create a profile with the same name as a legacy profile.
+  if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
+    return false;
+  }
+
   // TODO(crbug.com/335630301): check whether there is a Profile with that name
   // whose deletion is pending, and return false if this is the case (to avoid
   // recovering its state).
@@ -494,4 +511,57 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
   ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
+}
+
+void ProfileManagerIOSImpl::HideLegacyProfiles(
+    const std::set<std::string>& profiles) {
+  CHECK(base::FeatureList::IsEnabled(kHideLegacyProfiles));
+  if (local_state_->GetBoolean(prefs::kLegacyProfileHidden)) {
+    return;
+  }
+
+  base::Value::Dict legacy_profiles;
+
+  const size_t count = profile_attributes_storage_.GetNumberOfProfiles();
+  for (size_t i = 0; i < count; ++i) {
+    const size_t index = count - i - 1;  // iterate backwards
+    ProfileAttributesIOS attr =
+        profile_attributes_storage_.GetAttributesForProfileAtIndex(index);
+
+    const std::string name = attr.GetProfileName();
+    if (!base::Contains(profiles, name)) {
+      legacy_profiles.Set(name, std::move(attr).GetStorage());
+      profile_attributes_storage_.RemoveProfile(name);
+    }
+  }
+
+  local_state_->SetBoolean(prefs::kLegacyProfileHidden, true);
+  local_state_->SetDict(prefs::kLegacyProfileMap, std::move(legacy_profiles));
+}
+
+void ProfileManagerIOSImpl::RestoreLegacyProfiles(
+    const std::set<std::string>& profiles) {
+  CHECK(!base::FeatureList::IsEnabled(kHideLegacyProfiles));
+  if (!local_state_->GetBoolean(prefs::kLegacyProfileHidden)) {
+    return;
+  }
+
+  const base::Value::Dict& legacy_profiles =
+      local_state_->GetDict(prefs::kLegacyProfileMap);
+
+  for (const auto [key, value] : legacy_profiles) {
+    DCHECK(!base::Contains(profiles, key));
+    DCHECK(value.is_dict());
+
+    profile_attributes_storage_.AddProfile(key);
+    profile_attributes_storage_.UpdateAttributesForProfileWithName(
+        key, base::BindOnce(
+                 [](const base::Value::Dict* dict, ProfileAttributesIOS attr) {
+                   return ProfileAttributesIOS(attr.GetProfileName(), dict);
+                 },
+                 &value.GetDict()));
+  }
+
+  local_state_->ClearPref(prefs::kLegacyProfileHidden);
+  local_state_->ClearPref(prefs::kLegacyProfileMap);
 }

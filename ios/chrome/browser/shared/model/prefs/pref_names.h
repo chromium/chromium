@@ -62,6 +62,12 @@ inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 // A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
+// A map of legacy profile names to their information.
+inline constexpr char kLegacyProfileMap[] = "profile.legacy_profiles.map";
+
+// A boolean recording whether the legacy profiles have been marked as such.
+inline constexpr char kLegacyProfileHidden[] = "profile.legacy_profiles.hidden";
+
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
 
