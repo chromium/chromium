@@ -15,7 +15,7 @@ class SegmentReader;
 
 class PLATFORM_EXPORT SegmentStream : public SkStream {
  public:
-  SegmentStream();
+  explicit SegmentStream(size_t reading_offset = 0);
   SegmentStream(const SegmentStream&) = delete;
   SegmentStream& operator=(const SegmentStream&) = delete;
   SegmentStream(SegmentStream&&);
@@ -43,6 +43,7 @@ class PLATFORM_EXPORT SegmentStream : public SkStream {
  private:
   scoped_refptr<SegmentReader> reader_;
   size_t position_ = 0;
+  size_t reading_offset_ = 0;
 };
 
 }  // namespace blink

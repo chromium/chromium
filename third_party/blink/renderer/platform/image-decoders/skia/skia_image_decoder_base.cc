@@ -7,6 +7,7 @@
 #include <limits>
 #include <stack>
 
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkCodecAnimation.h"
@@ -37,12 +38,14 @@ ImageFrame::DisposalMethod ConvertDisposalMethod(
 
 SkiaImageDecoderBase::SkiaImageDecoderBase(AlphaOption alpha_option,
                                            ColorBehavior color_behavior,
-                                           wtf_size_t max_decoded_bytes)
+                                           wtf_size_t max_decoded_bytes,
+                                           wtf_size_t reading_offset)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
                    cc::AuxImage::kDefault,
-                   max_decoded_bytes) {}
+                   max_decoded_bytes),
+      reading_offset_(reading_offset) {}
 
 SkiaImageDecoderBase::~SkiaImageDecoderBase() = default;
 
@@ -60,7 +63,8 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
   } else {
     DCHECK(!codec_);
 
-    auto segment_stream = std::make_unique<SegmentStream>();
+    auto segment_stream = std::make_unique<SegmentStream>(
+        base::checked_cast<size_t>(reading_offset_));
     SegmentStream* segment_stream_ptr = segment_stream.get();
     segment_stream->SetReader(std::move(data));
 

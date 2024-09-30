@@ -15,14 +15,18 @@
 
 namespace blink {
 
-SegmentStream::SegmentStream() = default;
+SegmentStream::SegmentStream(size_t reading_offset)
+    : position_(reading_offset), reading_offset_(reading_offset) {}
 
 SegmentStream::SegmentStream(SegmentStream&& rhs)
-    : reader_(std::move(rhs.reader_)), position_(rhs.position_) {}
+    : reader_(std::move(rhs.reader_)),
+      position_(rhs.position_),
+      reading_offset_(rhs.reading_offset_) {}
 
 SegmentStream& SegmentStream::operator=(SegmentStream&& rhs) {
   reader_ = std::move(rhs.reader_);
   position_ = rhs.position_;
+  reading_offset_ = rhs.reading_offset_;
 
   return *this;
 }
@@ -90,7 +94,7 @@ bool SegmentStream::isAtEnd() const {
 }
 
 bool SegmentStream::rewind() {
-  position_ = 0;
+  position_ = reading_offset_;
   return true;
 }
 
@@ -99,11 +103,11 @@ bool SegmentStream::hasPosition() const {
 }
 
 size_t SegmentStream::getPosition() const {
-  return position_;
+  return position_ - reading_offset_;
 }
 
 bool SegmentStream::seek(size_t position) {
-  position_ = position;
+  position_ = reading_offset_ + position;
   return true;
 }
 

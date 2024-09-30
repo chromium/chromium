@@ -606,6 +606,62 @@ TEST(SegmentStreamTest, HasLengthShouldBeSupported) {
   ASSERT_TRUE(segment_stream.hasLength());
 }
 
+TEST(SegmentStreamTest, BasicReadingTest) {
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
+  buffer->Append(std::string_view("0123456789"));
+  scoped_refptr<SegmentReader> reader =
+      SegmentReader::CreateFromSharedBuffer(buffer);
+
+  SegmentStream stream;
+  stream.SetReader(reader);
+  EXPECT_EQ(0u, stream.getPosition());
+
+  std::vector<uint8_t> output(1024, 0x00);
+  size_t read_bytes = stream.read(output.data(), output.size());
+  std::string_view result =
+      base::as_string_view(base::span(output).first(read_bytes));
+  EXPECT_EQ("0123456789", result);
+  EXPECT_EQ(10u, stream.getPosition());
+}
+
+TEST(SegmentStreamTest, OffsetReadingTest) {
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
+  buffer->Append(std::string_view("0123456789"));
+  scoped_refptr<SegmentReader> reader =
+      SegmentReader::CreateFromSharedBuffer(buffer);
+
+  constexpr size_t kOffset = 5;
+  SegmentStream stream(kOffset);
+  stream.SetReader(reader);
+  EXPECT_EQ(0u, stream.getPosition());
+
+  // Test basic reading.
+  std::vector<uint8_t> output(1024, 0x00);
+  size_t read_bytes = stream.read(output.data(), output.size());
+  std::string_view result =
+      base::as_string_view(base::span(output).first(read_bytes));
+  EXPECT_EQ("56789", result);
+  EXPECT_EQ(5u, stream.getPosition());
+
+  // Test that rewinding takes reading offset into account.
+  ASSERT_TRUE(stream.rewind());
+  EXPECT_EQ(0u, stream.getPosition());
+
+  read_bytes = stream.read(output.data(), output.size());
+  result = base::as_string_view(base::span(output).first(read_bytes));
+  EXPECT_EQ("56789", result);
+  EXPECT_EQ(5u, stream.getPosition());
+
+  // Test that seeking takes reading offset into account.
+  ASSERT_TRUE(stream.seek(2));
+  EXPECT_EQ(2u, stream.getPosition());
+
+  read_bytes = stream.read(output.data(), output.size());
+  result = base::as_string_view(base::span(output).first(read_bytes));
+  EXPECT_EQ("789", result);
+  EXPECT_EQ(5u, stream.getPosition());
+}
+
 namespace {
 
 ::testing::AssertionResult IsCleared(const SegmentStream& segment_stream) {
