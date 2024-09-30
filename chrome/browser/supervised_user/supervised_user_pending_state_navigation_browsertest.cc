@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -215,8 +216,16 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 
 // Tests that the sign-in tabs opened through the re-auth interstitial
 // are closed on re-authentication.
+// TODO(https://crbug.com/370115099): This test fails on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
+  DISABLED_TestReauthInterstitialClosesSignInTabsAndReloads
+#else
+#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
+  TestReauthInterstitialClosesSignInTabsAndReloads
+#endif
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
-                       TestReauthInterstitialClosesSignInTabsAndReloads) {
+                       MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads) {
   base::HistogramTester histogram_tester;
 
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
