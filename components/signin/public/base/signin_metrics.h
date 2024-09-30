@@ -665,13 +665,11 @@ void RecordSignoutConfirmationFromDataLossAlert(
 void RecordSignoutForceClearDataChoice(bool force_clear_data);
 #endif  // BUILDFLAG(IS_IOS)
 
-// Records the total number of open tabs, the number of tab groups, and the
-// number of tabs contained in any group, at the moment of signin.
-void RecordTabAndGroupCountsOnSignin(signin_metrics::AccessPoint access_point,
-                                     signin::ConsentLevel consent_level,
-                                     size_t tabs_count,
-                                     size_t groups_count,
-                                     size_t grouped_tabs_count);
+// Records the total number of open tabs at the moment of signin or enabling
+// sync.
+void RecordOpenTabCountOnSignin(signin_metrics::AccessPoint access_point,
+                                signin::ConsentLevel consent_level,
+                                size_t tabs_count);
 
 // -----------------------------------------------------------------------------
 // User actions

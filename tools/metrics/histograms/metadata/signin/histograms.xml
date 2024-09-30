@@ -1796,6 +1796,22 @@ should be kept to monitor/debug signin Multilogin issues-->
   <summary>Response status received from gaia Multilogin.</summary>
 </histogram>
 
+<histogram name="Signin.OpenTabsCount.{ConsentLevel}" units="count"
+    expires_after="2025-01-19">
+  <owner>treib@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recording the count of open tabs, at the moment when the user is
+    {ConsentLevel} Chrome.
+  </summary>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.PAMInitialize.PrimaryAccountInfoState"
     enum="PAMInitializePrimaryAccountInfoState" expires_after="2025-02-10">
   <owner>msarda@chromium.org</owner>
@@ -2679,28 +2695,6 @@ name="TransactionalReauthEntryPoint" -->
   <token key="AccessPoint">
     <variant name="PasswordSigninPromo" summary="the Password Sign-in promo"/>
     <variant name="ProfileMenu" summary="the Profile Menu"/>
-  </token>
-</histogram>
-
-<histogram name="Signin.{GroupOrTab}.{ConsentLevel}" units="count"
-    expires_after="2025-01-19">
-  <owner>treib@chromium.org</owner>
-  <owner>rsult@google.com</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Recording the count of {GroupOrTab}, at the moment when the user is
-    {ConsentLevel} Chrome.
-  </summary>
-  <token key="GroupOrTab">
-    <variant name="OpenTabsCount" summary="open tabs"/>
-    <variant name="TabGroupsCount" summary="tab groups"/>
-    <variant name="TabGroupsTabsCount"
-        summary="tabs that are part of a tab group"/>
-  </token>
-  <token key="ConsentLevel">
-    <variant name="OnSignin" summary="signing in to"/>
-    <variant name="OnSync" summary="enabling sync in"/>
   </token>
 </histogram>
 

@@ -105,22 +105,14 @@ void IOSChromeSigninClient::OnPrimaryAccountChanged(
           event_details.GetSetPrimaryAccountAccessPoint().value();
 
       size_t tabs_count = 0;
-      size_t groups_count = 0;
-      size_t grouped_tabs_count = 0;
 
       BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
       for (Browser* browser : browser_list->BrowsersOfType(
                BrowserList::BrowserType::kRegularAndInactive)) {
-        WebStateList* web_state_list = browser->GetWebStateList();
-        tabs_count += web_state_list->count();
-        for (const TabGroup* group : web_state_list->GetGroups()) {
-          ++groups_count;
-          grouped_tabs_count += group->range().count();
-        }
+        tabs_count += browser->GetWebStateList()->count();
       }
 
-      signin_metrics::RecordTabAndGroupCountsOnSignin(
-          access_point, signin::ConsentLevel::kSignin, tabs_count, groups_count,
-          grouped_tabs_count);
+      signin_metrics::RecordOpenTabCountOnSignin(
+          access_point, signin::ConsentLevel::kSignin, tabs_count);
   }
 }
