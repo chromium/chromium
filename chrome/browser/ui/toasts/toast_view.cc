@@ -260,7 +260,7 @@ void ToastView::OnThemeChanged() {
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       *icon_, color_provider->GetColor(ui::kColorToastForeground),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT)));
+          DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIZE)));
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,
