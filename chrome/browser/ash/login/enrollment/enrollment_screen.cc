@@ -180,32 +180,28 @@ EnrollmentScreen::~EnrollmentScreen() {
 void EnrollmentScreen::SetEnrollmentConfig(
     const policy::EnrollmentConfig& enrollment_config) {
   prescribed_config_ = enrollment_config;
-  switch (prescribed_config_.auth_mechanism) {
-    case EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE:
+  if (prescribed_config_.is_mode_oauth()) {
+    current_auth_ = AUTH_OAUTH;
+    next_auth_ = AUTH_OAUTH;
+  } else if (prescribed_config_.is_mode_attestation()) {
+    if (TestForcesManualEnrollment()) {
       current_auth_ = AUTH_OAUTH;
       next_auth_ = AUTH_OAUTH;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_ATTESTATION:
+    } else if (prescribed_config_.is_mode_with_manual_fallback()) {
+      current_auth_ = AUTH_ATTESTATION;
+      next_auth_ = AUTH_OAUTH;
+    } else {
       current_auth_ = AUTH_ATTESTATION;
       next_auth_ = AUTH_ATTESTATION;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED:
-      if (TestForcesManualEnrollment()) {
-        current_auth_ = AUTH_OAUTH;
-        next_auth_ = AUTH_OAUTH;
-        break;
-      }
-      current_auth_ = AUTH_ATTESTATION;
-      next_auth_ = AUTH_OAUTH;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED:
-      current_auth_ = AUTH_ENROLLMENT_TOKEN;
-      next_auth_ = AUTH_OAUTH;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    }
+  } else if (prescribed_config_.is_mode_token()) {
+    current_auth_ = AUTH_ENROLLMENT_TOKEN;
+    next_auth_ = AUTH_OAUTH;
+  } else {
+    NOTREACHED() << "EnrollmentConfig does not match any auth: "
+                 << prescribed_config_;
   }
+
   SetConfig();
 }
 

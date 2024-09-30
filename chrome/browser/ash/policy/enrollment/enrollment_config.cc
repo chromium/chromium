@@ -108,30 +108,11 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
 #undef CASE
 }
 
-std::string_view ToStringView(EnrollmentConfig::AuthMechanism auth) {
-#define CASE(_name)                            \
-  case EnrollmentConfig::AuthMechanism::_name: \
-    return #_name;
-
-  switch (auth) {
-    CASE(AUTH_MECHANISM_INTERACTIVE);
-    CASE(AUTH_MECHANISM_ATTESTATION);
-    CASE(AUTH_MECHANISM_ATTESTATION_PREFERRED);
-    CASE(AUTH_MECHANISM_TOKEN_PREFERRED);
-  }
-
-  NOTREACHED();
-#undef CASE
-}
-
 EnrollmentConfig GetPrescribedRecoveryConfig(
     PrefService* local_state,
     const ash::InstallAttributes& install_attributes,
     ash::system::StatisticsProvider* statistics_provider) {
   EnrollmentConfig recovery_config;
-
-  // Regardless what mode is applicable, auth mechanism must be manual one.
-  recovery_config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   // Regardless what mode is applicable, the enrollment domain is fixed.
   recovery_config.management_domain = install_attributes.GetDomain();
@@ -215,7 +196,6 @@ EnrollmentConfig::Mode GetManualFallbackMode(
 
 struct EnrollmentConfig::PrescribedConfig {
   EnrollmentConfig::Mode mode = MODE_NONE;
-  EnrollmentConfig::AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
   std::string management_domain;
   std::string enrollment_token;
   OOBEConfigSource oobe_config_source = OOBEConfigSource::kNone;
@@ -236,9 +216,7 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
     const ash::OobeConfiguration* oobe_configuration) {
   // Decide enrollment mode. Give precedence to forced variants.
   if (IsEnrollingAfterRollback()) {
-    return {.mode = EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED,
-            .auth_mechanism =
-                EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED};
+    return {.mode = EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED};
   }
 
   const std::string device_state_mode =
@@ -248,27 +226,21 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
 
   if (device_state_mode == kDeviceStateRestoreModeReEnrollmentEnforced) {
     return {.mode = EnrollmentConfig::MODE_SERVER_FORCED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
             .management_domain = device_state_management_domain};
   }
 
   if (device_state_mode == kDeviceStateInitialModeEnrollmentEnforced) {
     return {.mode = EnrollmentConfig::MODE_INITIAL_SERVER_FORCED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
             .management_domain = device_state_management_domain};
   }
 
   if (device_state_mode == kDeviceStateRestoreModeReEnrollmentZeroTouch) {
     return {.mode = EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-            .auth_mechanism =
-                EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
             .management_domain = device_state_management_domain};
   }
 
   if (device_state_mode == kDeviceStateInitialModeEnrollmentZeroTouch) {
     return {.mode = EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
-            .auth_mechanism =
-                EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
             .management_domain = device_state_management_domain};
   }
 
@@ -283,7 +255,6 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
               ash::configuration::kSource);
       return {
           .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
-          .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED,
           .enrollment_token = std::move(enrollment_token.value()),
           .oobe_config_source = ConvertToOOBEConfigSource(oobe_config_source)};
     } else {
@@ -303,8 +274,7 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
 
   if (pref_enrollment_auto_start_present && pref_enrollment_auto_start &&
       pref_enrollment_can_exit_present && !pref_enrollment_can_exit) {
-    return {.mode = EnrollmentConfig::MODE_LOCAL_FORCED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE};
+    return {.mode = EnrollmentConfig::MODE_LOCAL_FORCED};
   }
 
   const bool oem_is_managed = ash::system::StatisticsProvider::FlagValueToBool(
@@ -318,8 +288,7 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
           /*default_value=*/true);
 
   if (oem_is_managed && !oem_can_exit_enrollment) {
-    return {.mode = EnrollmentConfig::MODE_LOCAL_FORCED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE};
+    return {.mode = EnrollmentConfig::MODE_LOCAL_FORCED};
   }
 
   if (local_state->GetBoolean(ash::prefs::kOobeComplete)) {
@@ -330,18 +299,15 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
 
   if (device_state_mode == kDeviceStateRestoreModeReEnrollmentRequested) {
     return {.mode = EnrollmentConfig::MODE_SERVER_ADVERTISED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
             .management_domain = device_state_management_domain};
   }
 
   if (pref_enrollment_auto_start_present && pref_enrollment_auto_start) {
-    return {.mode = EnrollmentConfig::MODE_LOCAL_ADVERTISED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE};
+    return {.mode = EnrollmentConfig::MODE_LOCAL_ADVERTISED};
   }
 
   if (oem_is_managed) {
-    return {.mode = EnrollmentConfig::MODE_LOCAL_ADVERTISED,
-            .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE};
+    return {.mode = EnrollmentConfig::MODE_LOCAL_ADVERTISED};
   }
 
   return {.mode = EnrollmentConfig::MODE_NONE};
@@ -399,7 +365,6 @@ EnrollmentConfig::~EnrollmentConfig() = default;
 EnrollmentConfig::EnrollmentConfig(PrescribedConfig prescribed_config,
                                    PrescribedLicense prescribed_license)
     : mode(prescribed_config.mode),
-      auth_mechanism(prescribed_config.auth_mechanism),
       management_domain(std::move(prescribed_config.management_domain)),
       is_license_packaged_with_device(
           prescribed_license.is_license_packaged_with_device),
@@ -444,11 +409,10 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
 
 // static
 EnrollmentConfig EnrollmentConfig::GetDemoModeEnrollmentConfig() {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
-  config.auth_mechanism = AUTH_MECHANISM_ATTESTATION;
-  config.management_domain = policy::kDemoModeDomain;
-  config.license_type = policy::LicenseType::kEnterprise;
+  EnrollmentConfig config;
+  config.mode = EnrollmentConfig::MODE_ATTESTATION;
+  config.management_domain = kDemoModeDomain;
+  config.license_type = LicenseType::kEnterprise;
   return config;
 }
 
@@ -463,7 +427,6 @@ EnrollmentConfig EnrollmentConfig::GetEffectiveConfig() const {
   // needs to be deprecated.
   manual_config.mode =
       management_domain.empty() ? MODE_MANUAL : MODE_MANUAL_REENROLLMENT;
-  manual_config.auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
   return manual_config;
 }
 
@@ -475,8 +438,6 @@ EnrollmentConfig EnrollmentConfig::GetManualFallbackConfig() const {
 
   EnrollmentConfig manual_fallback_config = *this;
   manual_fallback_config.mode = GetManualFallbackMode(mode);
-  manual_fallback_config.auth_mechanism =
-      EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   return manual_fallback_config;
 }
@@ -485,14 +446,8 @@ std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode) {
   return os << ToStringView(mode);
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const EnrollmentConfig::AuthMechanism& auth) {
-  return os << ToStringView(auth);
-}
-
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig& config) {
-  return os << "EnrollmentConfig(" << config.mode << ", "
-            << config.auth_mechanism << ")";
+  return os << "EnrollmentConfig(" << config.mode << ")";
 }
 
 }  // namespace policy

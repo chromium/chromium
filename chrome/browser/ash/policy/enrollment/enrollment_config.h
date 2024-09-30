@@ -108,27 +108,6 @@ struct EnrollmentConfig {
     MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 20,
   };
 
-  // An enumeration of authentication mechanisms that can be used for
-  // enrollment.
-  enum AuthMechanism {
-    // Interactive authentication.
-    // Note: the entry is used as both a signal for interactive enrollment and
-    // as a default value (e.g. in `should_enroll_with_attestation()`).
-    // TODO(b/332529631): Introduce kNone entry to represent default config
-    // that does not require enrollment.
-    AUTH_MECHANISM_INTERACTIVE = 0,
-    // Automatic authentication relying on the attestation process.
-    AUTH_MECHANISM_ATTESTATION = 1,
-    // Prefer to use attestation enrollment, falling back to manual enrollment
-    // if attestation fails or manual enrollment is forced on the system.
-    AUTH_MECHANISM_ATTESTATION_PREFERRED = 2,
-    // Prefer to use automatic enrollment-token-based authentication relying on
-    // the device. If token-based auth fails, fall back to manual enrollment.
-    // As of writing, token-based-enrollment on ChromeOS only happens for Flex
-    // Auto Enrollment.
-    AUTH_MECHANISM_TOKEN_PREFERRED = 3,
-  };
-
   // An enumeration of assigned upgrades that a device can after initial
   // enrollment.
   enum class AssignedUpgradeType {
@@ -207,25 +186,28 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_ROLLBACK_FORCED;
   }
 
-  // Whether this configuration is an automatic enrollment mode that has a
-  // manual fallback. I.e. after a failed attempt at automatic enrolling,
-  // manual enrollment will be triggered.
-  bool is_mode_with_manual_fallback() const {
-    return is_mode_attestation_server() ||
-           mode == MODE_ATTESTATION_ROLLBACK_FORCED ||
-           mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-  }
-
   // Whether this configuration is in attestation mode.
   bool is_mode_attestation() const {
     return is_mode_attestation_client() || is_mode_attestation_server();
   }
 
+  // Whether this configuration is in token-based mode.
+  bool is_mode_token() const {
+    return mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+  }
+
   // Whether this configuration's mode causes the device to automatically
   // enroll without user interaction.
   bool is_automatic_enrollment() const {
-    return is_mode_attestation() ||
-           mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+    return is_mode_attestation() || is_mode_token();
+  }
+
+  // Whether this configuration is an automatic enrollment mode that has a
+  // manual fallback. I.e. after a failed attempt at automatic enrolling,
+  // manual enrollment will be triggered.
+  bool is_mode_with_manual_fallback() const {
+    return is_mode_attestation_server() ||
+           mode == MODE_ATTESTATION_ROLLBACK_FORCED || is_mode_token();
   }
 
   // Whether this configuration is in OAuth mode.
@@ -247,10 +229,6 @@ struct EnrollmentConfig {
 
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
-
-  // The authentication mechanism to use.
-  // TODO(drcrash): Change to best available once ZTE is everywhere.
-  AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
 
   // The domain to enroll the device to, if applicable. If this is not set, the
   // device may be enrolled to any domain. Note that for the case where the
@@ -294,9 +272,6 @@ struct EnrollmentConfig {
 };
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode);
-
-std::ostream& operator<<(std::ostream& os,
-                         const EnrollmentConfig::AuthMechanism& auth);
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig& config);
 

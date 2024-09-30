@@ -751,8 +751,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     ASSERT_TRUE(owner_settings_service);
 
     EnrollmentConfig enrollment_config;
-    enrollment_config.auth_mechanism =
-        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     enrollment_config.mode = with_cert ? EnrollmentConfig::MODE_ATTESTATION
                                        : EnrollmentConfig::MODE_MANUAL;
     DMAuth auth =

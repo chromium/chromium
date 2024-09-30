@@ -260,25 +260,18 @@ class EnrollmentScreenBaseTest : public testing::Test {
             });
   }
 
-  void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
-                              policy::EnrollmentConfig::AuthMechanism auth) {
-    EXPECT_CALL(
-        mock_view_,
-        SetEnrollmentConfig(testing::AllOf(
-            testing::Field(&policy::EnrollmentConfig::mode, mode),
-            testing::Field(&policy::EnrollmentConfig::auth_mechanism, auth))));
+  void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode) {
+    EXPECT_CALL(mock_view_, SetEnrollmentConfig(testing::AllOf(testing::Field(
+                                &policy::EnrollmentConfig::mode, mode))));
   }
 
   void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
-                              policy::EnrollmentConfig::AuthMechanism auth,
                               std::string enrollment_token) {
-    EXPECT_CALL(
-        mock_view_,
-        SetEnrollmentConfig(testing::AllOf(
-            testing::Field(&policy::EnrollmentConfig::mode, mode),
-            testing::Field(&policy::EnrollmentConfig::auth_mechanism, auth),
-            testing::Field(&policy::EnrollmentConfig::enrollment_token,
-                           enrollment_token))));
+    EXPECT_CALL(mock_view_,
+                SetEnrollmentConfig(testing::AllOf(
+                    testing::Field(&policy::EnrollmentConfig::mode, mode),
+                    testing::Field(&policy::EnrollmentConfig::enrollment_token,
+                                   enrollment_token))));
   }
 
   void ExpectShowView() { EXPECT_CALL(mock_view_, Show()); }
@@ -426,8 +419,6 @@ class EnrollmentScreenManualFlowTest
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
     config.mode = GetParamEnrollmentMode();
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
     DCHECK(!config.is_mode_attestation())
         << "Config must not be attestation: " << config;
 
@@ -453,7 +444,7 @@ class EnrollmentScreenManualFlowTest
 TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
 
   ExpectShowViewWithLogin();
   ExpectManualEnrollmentAndReportEnrolled();
@@ -471,7 +462,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
 TEST_P(EnrollmentScreenManualFlowTest, ShouldNotAutomaticallyRetryEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
 
   ExpectShowViewWithLogin();
   ExpectManualEnrollmentAndReportFailure();
@@ -493,7 +484,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
   {
     testing::InSequence s;
     // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+    ExpectEnrollmentConfig(config.mode);
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportFailure();
     ExpectErrorScreen();
@@ -558,8 +549,6 @@ class EnrollmentAddUserTest : public EnrollmentScreenBaseTest {
   policy::EnrollmentConfig GetManualConfig() {
     policy::EnrollmentConfig config;
     config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
     return config;
   }
 
@@ -692,8 +681,6 @@ class EnrollmentScreenAttestationFlowTest
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
     config.mode = GetParam();
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     DCHECK(config.is_mode_attestation())
         << "Config must be attestation: " << config;
 
@@ -708,7 +695,7 @@ class EnrollmentScreenAttestationFlowTest
 TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
 
   ExpectAttestationBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
@@ -728,7 +715,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest,
        ShouldNotAutomaticallyRetryEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
   ExpectAttestationBasedEnrollmentAndReportFailure();
   ExpectErrorScreen();
   ExpectClearAuth();
@@ -748,7 +735,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
   {
     testing::InSequence s;
     // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+    ExpectEnrollmentConfig(config.mode);
     ExpectShowView();
     ExpectAttestationBasedEnrollmentAndReportFailure();
     ExpectErrorScreen();
@@ -786,7 +773,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest,
 
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
 
   ExpectAttestationBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
@@ -828,13 +815,12 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   {
     testing::InSequence s;
     // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism);
+    ExpectEnrollmentConfig(initial_config.mode);
     ExpectShowView();
     ExpectAttestationBasedEnrollmentAndReportFailureWithAutomaticFallback();
 
     // Second view is shown for manual fallback.
-    ExpectEnrollmentConfig(fallback_config.mode,
-                           fallback_config.auth_mechanism);
+    ExpectEnrollmentConfig(fallback_config.mode);
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
@@ -860,15 +846,14 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   {
     testing::InSequence s;
     // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism);
+    ExpectEnrollmentConfig(initial_config.mode);
     ExpectShowView();
     ExpectAttestationBasedEnrollmentAndReportFailure();
     ExpectErrorScreen();
 
     // Second view is shown for manual fallback. This should be triggered after
     // user decides to fallback.
-    ExpectEnrollmentConfig(fallback_config.mode,
-                           fallback_config.auth_mechanism);
+    ExpectEnrollmentConfig(fallback_config.mode);
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
@@ -901,14 +886,12 @@ INSTANTIATE_TEST_SUITE_P(
 class EnrollmentScreenTokenBasedEnrollmentTest
     : public EnrollmentScreenBaseTest {
  protected:
-  EnrollmentScreenTokenBasedEnrollmentTest() {}
+  EnrollmentScreenTokenBasedEnrollmentTest() = default;
 
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
     config.mode =
         policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
     // The token isn't used directly by EnrollmentScreen, but let's set it here
     // for realism.
     config.enrollment_token = policy::test::kEnrollmentToken;
@@ -928,8 +911,7 @@ class EnrollmentScreenTokenBasedEnrollmentTest
 TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
-                         config.enrollment_token);
+  ExpectEnrollmentConfig(config.mode, config.enrollment_token);
 
   ExpectTokenBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(false);
@@ -956,8 +938,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
 
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
-                         config.enrollment_token);
+  ExpectEnrollmentConfig(config.mode, config.enrollment_token);
 
   ExpectTokenBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(false);
@@ -980,8 +961,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
   {
     testing::InSequence s;
     // First view is shown for token-based enrollment failure.
-    ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
-                           config.enrollment_token);
+    ExpectEnrollmentConfig(config.mode, config.enrollment_token);
     ExpectShowView();
     ExpectTokenBasedEnrollmentAndReportFailure();
     ExpectErrorScreen();
@@ -1010,7 +990,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldNotAutomaticallyRetryEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectEnrollmentConfig(config.mode);
   ExpectTokenBasedEnrollmentAndReportFailure();
   ExpectErrorScreen();
   ExpectClearAuth();
@@ -1038,8 +1018,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
   {
     testing::InSequence s;
     // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
-                           config.enrollment_token);
+    ExpectEnrollmentConfig(config.mode, config.enrollment_token);
     ExpectShowView();
     ExpectTokenBasedEnrollmentAndReportFailure(
         policy::EnrollmentStatus::ForRegistrationError(
@@ -1067,7 +1046,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
   {
     testing::InSequence s;
     // First view is shown for token-based failure.
-    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism,
+    ExpectEnrollmentConfig(initial_config.mode,
                            initial_config.enrollment_token);
     ExpectShowView();
     ExpectTokenBasedEnrollmentAndReportFailure();
@@ -1075,7 +1054,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
 
     // Second view is shown for manual fallback. This should be triggered after
     // user decides to fallback.
-    ExpectEnrollmentConfig(fallback_config.mode, fallback_config.auth_mechanism,
+    ExpectEnrollmentConfig(fallback_config.mode,
                            fallback_config.enrollment_token);
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
@@ -1111,7 +1090,6 @@ TEST_F(EnrollmentScreenLicenseTest,
        UserCanChooseLicenseTypeOnManualEnrollment) {
   policy::EnrollmentConfig config;
   config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
   config.license_type = policy::LicenseType::kEducation;
 
   ExpectShowViewWithLogin(policy::LicenseType::kTerminal);
@@ -1128,8 +1106,6 @@ TEST_F(EnrollmentScreenLicenseTest,
        AttestationBasedEnrollmentPicksPrescribedLicense) {
   policy::EnrollmentConfig config;
   config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
   config.license_type = policy::LicenseType::kTerminal;
 
   ExpectLicense(policy::LicenseType::kTerminal);
@@ -1145,8 +1121,6 @@ TEST_F(EnrollmentScreenLicenseTest, TokenEnrollmentPicksPrescribedLicense) {
   policy::EnrollmentConfig config;
   config.mode =
       policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
   config.enrollment_token = policy::test::kEnrollmentToken;
   config.license_type = policy::LicenseType::kEnterprise;
 

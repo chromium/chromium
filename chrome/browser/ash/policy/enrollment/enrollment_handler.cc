@@ -207,9 +207,7 @@ EnrollmentHandler::EnrollmentHandler(
   CHECK(!client_->is_registered());
   CHECK_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CHECK_EQ(dm_auth_.empty(), enrollment_config_.is_mode_attestation());
-  CHECK(enrollment_config_.auth_mechanism !=
-            EnrollmentConfig::AUTH_MECHANISM_ATTESTATION ||
-        attestation_flow_);
+  CHECK(enrollment_config_.is_mode_attestation() || attestation_flow_);
   register_params_ =
       std::make_unique<CloudPolicyClient::RegistrationParameters>(
           em::DeviceRegisterRequest::DEVICE,
