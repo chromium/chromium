@@ -141,6 +141,12 @@ source_set("side_panel") {
     "//ui/gfx/geometry",
     "//ui/views",
     "//ui/views/controls/webview",
+
+    # TODO(crbug.com/345487716): This is needed here because of the
+    # dependency in history_clusters_side_panel_ui.h; that file is
+    # part of //chrome/browser/ui:ui, but we can't depend on that
+    # because that depends on this.
+    "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     "//url",
   ]
   deps = [
