@@ -13,6 +13,10 @@
 #include "extensions/common/constants.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+namespace {
+constexpr SkColor kPdfExtensionBackgroundColor = SkColorSetRGB(82, 86, 89);
+}  // namespace
+
 void ReportPDFLoadStatus(PDFLoadStatus status) {
   UMA_HISTOGRAM_ENUMERATION("PDF.LoadStatus2", status,
                             PDFLoadStatus::kPdfLoadStatusCount);
@@ -33,4 +37,8 @@ bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
   // https://crbug.com/1027173.
   return IsPdfExtensionOrigin(origin) ||
          content::IsPdfInternalPluginAllowedOrigin(origin);
+}
+
+SkColor GetPdfBackgroundColor() {
+  return kPdfExtensionBackgroundColor;
 }

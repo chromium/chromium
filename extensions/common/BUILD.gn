@@ -512,6 +512,7 @@ static_library("common") {
     "//components/crash/core/common",
     "//components/crx_file",
     "//components/nacl/common:buildflags",
+    "//components/pdf/common:util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/url_formatter",

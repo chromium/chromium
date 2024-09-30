@@ -17,6 +17,8 @@ source_set("util") {
     "pdf_util.h",
   ]
 
+  public_deps = [ "//skia" ]
+
   deps = [
     "//base",
     "//content/public/common",
