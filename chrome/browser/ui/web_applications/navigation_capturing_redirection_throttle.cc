@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/link_capturing_redirect_navigation_throttle.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
 
 #include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
@@ -20,33 +20,32 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 // static
 std::unique_ptr<content::NavigationThrottle>
-LinkCapturingRedirectNavigationThrottle::MaybeCreate(
+NavigationCapturingRedirectionThrottle::MaybeCreate(
     content::NavigationHandle* handle) {
-  return base::WrapUnique(new LinkCapturingRedirectNavigationThrottle(handle));
+  return base::WrapUnique(new NavigationCapturingRedirectionThrottle(handle));
 }
 
-LinkCapturingRedirectNavigationThrottle::
-    ~LinkCapturingRedirectNavigationThrottle() = default;
+NavigationCapturingRedirectionThrottle::
+    ~NavigationCapturingRedirectionThrottle() = default;
 
-const char* LinkCapturingRedirectNavigationThrottle::GetNameForLogging() {
-  return "LinkCapturingRedirectNavigationThrottle";
+const char* NavigationCapturingRedirectionThrottle::GetNameForLogging() {
+  return "NavigationCapturingWebAppRedirectThrottle";
 }
 
 ThrottleCheckResult
-LinkCapturingRedirectNavigationThrottle::WillProcessResponse() {
+NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return HandleRequest();
 }
 
-ThrottleCheckResult LinkCapturingRedirectNavigationThrottle::HandleRequest() {
+ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // TODO(crbug.com/351775835): This is where the final response of a navigation
   // will be handled.
   return content::NavigationThrottle::PROCEED;
 }
 
-LinkCapturingRedirectNavigationThrottle::
-    LinkCapturingRedirectNavigationThrottle(
-        content::NavigationHandle* navigation_handle)
+NavigationCapturingRedirectionThrottle::NavigationCapturingRedirectionThrottle(
+    content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle) {}
 
 }  // namespace web_app

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_LINK_CAPTURING_REDIRECT_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_LINK_CAPTURING_REDIRECT_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_
+#define CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_
 
 #include <memory>
 
@@ -14,7 +14,7 @@ namespace web_app {
 
 // Navigation throttle used to handle navigation capturing at the end of a
 // redirect chain.
-class LinkCapturingRedirectNavigationThrottle
+class NavigationCapturingRedirectionThrottle
     : public content::NavigationThrottle {
  public:
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
@@ -22,11 +22,11 @@ class LinkCapturingRedirectNavigationThrottle
   static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 
-  LinkCapturingRedirectNavigationThrottle(
-      const LinkCapturingRedirectNavigationThrottle&) = delete;
-  LinkCapturingRedirectNavigationThrottle& operator=(
-      const LinkCapturingRedirectNavigationThrottle&) = delete;
-  ~LinkCapturingRedirectNavigationThrottle() override;
+  NavigationCapturingRedirectionThrottle(
+      const NavigationCapturingRedirectionThrottle&) = delete;
+  NavigationCapturingRedirectionThrottle& operator=(
+      const NavigationCapturingRedirectionThrottle&) = delete;
+  ~NavigationCapturingRedirectionThrottle() override;
 
   // content::NavigationHandle overrides:
   const char* GetNameForLogging() override;
@@ -36,7 +36,7 @@ class LinkCapturingRedirectNavigationThrottle
   ThrottleCheckResult WillProcessResponse() override;
 
  private:
-  explicit LinkCapturingRedirectNavigationThrottle(
+  explicit NavigationCapturingRedirectionThrottle(
       content::NavigationHandle* navigation_handle);
 
   ThrottleCheckResult HandleRequest();
@@ -44,4 +44,4 @@ class LinkCapturingRedirectNavigationThrottle
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_LINK_CAPTURING_REDIRECT_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_

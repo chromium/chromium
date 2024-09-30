@@ -5572,6 +5572,8 @@ static_library("ui") {
       "web_applications/diagnostics/app_type_initialized_event.h",
       "web_applications/diagnostics/web_app_icon_health_checks.cc",
       "web_applications/diagnostics/web_app_icon_health_checks.h",
+      "web_applications/navigation_capturing_redirection_throttle.cc",
+      "web_applications/navigation_capturing_redirection_throttle.h",
       "web_applications/share_target_utils.cc",
       "web_applications/share_target_utils.h",
       "web_applications/sub_apps_install_dialog_controller.cc",

@@ -51,17 +51,17 @@ class NavigationCompletionAwaiter : public content::WebContentsObserver,
     auto* navigation_handle_data =
         web_app::NavigationCapturingNavigationHandleUserData::
             GetForNavigationHandle(*handle);
-    disposition_in_handle_ = navigation_handle_data
-                                 ? navigation_handle_data->disposition()
-                                 : WindowOpenDisposition::UNKNOWN;
+    if (navigation_handle_data) {
+      redirection_info_ = navigation_handle_data->redirection_info();
+    }
     ConditionMet();
   }
 
   void AwaitNavigationCompletion() { Wait(); }
 
-  WindowOpenDisposition GetDispositionForNavigation() {
-    CHECK(disposition_in_handle_.has_value());
-    return disposition_in_handle_.value();
+  NavigationCapturingRedirectionInfo GetRedirectionInfoForNavigation() {
+    CHECK(redirection_info_.has_value());
+    return redirection_info_.value();
   }
 
   // AllTabsObserver override:
@@ -77,7 +77,7 @@ class NavigationCompletionAwaiter : public content::WebContentsObserver,
   }
 
  private:
-  std::optional<WindowOpenDisposition> disposition_in_handle_;
+  std::optional<NavigationCapturingRedirectionInfo> redirection_info_;
 };
 
 class NavigationCapturingDataTransferBrowserTest
@@ -181,8 +181,14 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
 
-  EXPECT_EQ(nav_awaiter.GetDispositionForNavigation(),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  NavigationCapturingRedirectionInfo redirection_info =
+      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+  // Triggered from a tab and not an app window.
+  EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
+            redirection_info.initial_nav_handling_result);
+  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            redirection_info.disposition);
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(
@@ -199,8 +205,15 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
                                test::ClickMethod::kLeftClick);
   nav_awaiter.AwaitNavigationCompletion();
 
-  EXPECT_EQ(nav_awaiter.GetDispositionForNavigation(),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  NavigationCapturingRedirectionInfo redirection_info =
+      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+
+  // Triggered from a tab and not an app window.
+  EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
+  EXPECT_EQ(NavigationHandlingInitialResult::kBrowserTab,
+            redirection_info.initial_nav_handling_result);
+  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            redirection_info.disposition);
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(contents), testing::IsNull());
@@ -220,8 +233,19 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
 
-  EXPECT_EQ(nav_awaiter.GetDispositionForNavigation(),
-            WindowOpenDisposition::NEW_WINDOW);
+  NavigationCapturingRedirectionInfo redirection_info =
+      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+
+  // Triggered from an app window for app_id_a.
+  EXPECT_TRUE(redirection_info.app_id_initial_browser.has_value());
+  EXPECT_EQ(app_id_a, redirection_info.app_id_initial_browser.value());
+  // Navigation capturing only extends to left clicks creating a capturable
+  // experience, and does not extend to user modified clicks like shift and
+  // middle clicks.
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowLaunchHandling,
+            redirection_info.initial_nav_handling_result);
+  EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW, redirection_info.disposition);
+
   EXPECT_THAT(GetForwarderForWebContents(
                   app_browser->tab_strip_model()->GetActiveWebContents()),
               testing::IsNull());
@@ -240,8 +264,17 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
 
-  EXPECT_EQ(nav_awaiter.GetDispositionForNavigation(),
-            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  NavigationCapturingRedirectionInfo redirection_info =
+      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+
+  // Triggered from an app window for app_id.
+  EXPECT_TRUE(redirection_info.app_id_initial_browser.has_value());
+  EXPECT_EQ(app_id, redirection_info.app_id_initial_browser.value());
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowLaunchHandling,
+            redirection_info.initial_nav_handling_result);
+  EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            redirection_info.disposition);
+
   EXPECT_THAT(GetForwarderForWebContents(
                   app_browser->tab_strip_model()->GetActiveWebContents()),
               testing::IsNull());

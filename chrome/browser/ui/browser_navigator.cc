@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -989,10 +990,18 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 // At this point, the `params->navigated_or_inserted_contents` is guaranteed to
 // be non null, so perform tasks if the navigation has been captured by a web
 // app, like enqueueing launch params.
+// The `params->browser` might change as a result of a navigation, so obtain the
+// `source_app_id` from the source browser, which retains a reference.
 #if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/336371044): Accessing the app_id from the WebAppTabHelper
+  // does not work here. Investigate why to support apps that open in a new tab.
+  std::optional<webapps::AppId> source_app_id;
+  if (source_browser && source_browser->app_controller()) {
+    source_app_id = source_browser->app_controller()->app_id();
+  }
   web_app::OnWebAppNavigationAfterWebContentsCreation(
       std::move(app_navigation_result), *params, navigation_handle,
-      original_disposition);
+      original_disposition, source_app_id);
 #endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }

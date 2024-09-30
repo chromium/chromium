@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
 
+#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace content {
 class WebContents;
@@ -38,11 +38,12 @@ class NavigationCapturingInformationForwarder
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  NavigationCapturingInformationForwarder(content::WebContents* contents,
-                                          WindowOpenDisposition disposition);
+  NavigationCapturingInformationForwarder(
+      content::WebContents* contents,
+      NavigationCapturingRedirectionInfo redirection_info);
   friend WebContentsUserData;
 
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::UNKNOWN;
+  NavigationCapturingRedirectionInfo redirection_info_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

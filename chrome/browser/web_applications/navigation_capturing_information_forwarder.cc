@@ -16,12 +16,13 @@ NavigationCapturingInformationForwarder::
     ~NavigationCapturingInformationForwarder() = default;
 
 NavigationCapturingInformationForwarder::
-    NavigationCapturingInformationForwarder(content::WebContents* contents,
-                                            WindowOpenDisposition disposition)
+    NavigationCapturingInformationForwarder(
+        content::WebContents* contents,
+        NavigationCapturingRedirectionInfo redirection_info)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<NavigationCapturingInformationForwarder>(
           *contents),
-      disposition_(disposition) {}
+      redirection_info_(std::move(redirection_info)) {}
 
 void NavigationCapturingInformationForwarder::SelfDestruct() {
   GetWebContents().RemoveUserData(UserDataKey());
@@ -29,9 +30,9 @@ void NavigationCapturingInformationForwarder::SelfDestruct() {
 
 void NavigationCapturingInformationForwarder::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  CHECK(disposition_ != WindowOpenDisposition::UNKNOWN);
   web_app::NavigationCapturingNavigationHandleUserData::
-      CreateForNavigationHandle(*navigation_handle, disposition_);
+      CreateForNavigationHandle(*navigation_handle,
+                                std::move(redirection_info_));
   SelfDestruct();
 }
 

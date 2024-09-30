@@ -191,6 +191,7 @@
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
@@ -199,7 +200,6 @@
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/link_capturing_redirect_navigation_throttle.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -5427,10 +5427,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 
   std::unique_ptr<content::NavigationThrottle>
-      link_capturing_redirect_nav_throttle =
-          web_app::LinkCapturingRedirectNavigationThrottle::MaybeCreate(handle);
-  if (link_capturing_redirect_nav_throttle) {
-    throttles.push_back(std::move(link_capturing_redirect_nav_throttle));
+      navigation_capturing_redirection_throttle =
+          web_app::NavigationCapturingRedirectionThrottle::MaybeCreate(handle);
+  if (navigation_capturing_redirection_throttle) {
+    throttles.push_back(std::move(navigation_capturing_redirection_throttle));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

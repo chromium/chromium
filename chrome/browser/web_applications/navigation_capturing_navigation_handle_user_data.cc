@@ -10,14 +10,21 @@
 
 namespace web_app {
 
+NavigationCapturingRedirectionInfo::NavigationCapturingRedirectionInfo() =
+    default;
+NavigationCapturingRedirectionInfo::~NavigationCapturingRedirectionInfo() =
+    default;
+NavigationCapturingRedirectionInfo::NavigationCapturingRedirectionInfo(
+    const NavigationCapturingRedirectionInfo& navigation_info) = default;
+
 NavigationCapturingNavigationHandleUserData::
     ~NavigationCapturingNavigationHandleUserData() = default;
 
 NavigationCapturingNavigationHandleUserData::
     NavigationCapturingNavigationHandleUserData(
         content::NavigationHandle& navigation_handle,
-        WindowOpenDisposition disposition)
-    : disposition_(disposition) {}
+        NavigationCapturingRedirectionInfo redirection_info)
+    : redirection_info_(std::move(redirection_info)) {}
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
     NavigationCapturingNavigationHandleUserData);

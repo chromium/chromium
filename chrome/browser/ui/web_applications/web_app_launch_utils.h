@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
@@ -52,10 +53,22 @@ enum class LaunchedAppType {
 // Returns information useful for the browser to show UI affordances, provided a
 // web app handles the navigation.
 struct AppNavigationResult {
+  // The browser instance to perform navigation in.
   Browser* browser = nullptr;
+  // If navigation needs to happen in a tab inside the browser, this stores the
+  // index of the tab.
   int tab_index = -1;
+  // Whether launch params need to be enqueued for the navigation.
   bool enqueue_launch_params = false;
+  // Whether the IPH bubble for navigation handling needs to be showed to the
+  // end user.
   bool show_iph = false;
+  // The result of navigation handling by the web app system. Useful for making
+  // future decisions if the navigation redirects.
+  NavigationHandlingInitialResult initial_result =
+      NavigationHandlingInitialResult::kBrowserTab;
+
+  // Debug information persisted to chrome://web-app-internals.
   base::Value::Dict debug_value;
 
   STACK_ALLOCATED();
@@ -170,7 +183,8 @@ void OnWebAppNavigationAfterWebContentsCreation(
     std::optional<web_app::AppNavigationResult> app_navigation_result,
     const NavigateParams& params,
     base::WeakPtr<content::NavigationHandle> navigation_handle,
-    WindowOpenDisposition original_disposition);
+    WindowOpenDisposition original_disposition,
+    std::optional<webapps::AppId> source_app_id);
 
 }  // namespace web_app
 
