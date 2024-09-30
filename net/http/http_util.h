@@ -414,8 +414,9 @@ class NET_EXPORT HttpUtil {
     ~NameValuePairsIterator();
 
     // Advances the iterator to the next pair, if any.  Returns true if there
-    // is a next pair.  Use name* and value* methods to access the resultant
-    // value.
+    // is a next pair. Returns false and on error, and `valid()` starts
+    // returning false. Once GetNext() returns false Use name() and value()
+    // methods to access the resultant value.
     bool GetNext();
 
     // Returns false if there was a parse error.
@@ -439,6 +440,11 @@ class NET_EXPORT HttpUtil {
     std::string raw_value() const { return std::string(value_); }
 
    private:
+    // Attempts to parse `name_value_pair`, populating `name_`, `value_`, and
+    // `unquoted_value_`. returns false on failure. On failure, the caller
+    // should clear those values, to ensure consistent behavior.
+    bool ParseNameValuePair(std::string_view name_value_pair);
+
     HttpUtil::ValuesIterator props_;
     bool valid_ = true;
 

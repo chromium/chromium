@@ -995,57 +995,66 @@ HttpUtil::NameValuePairsIterator::~NameValuePairsIterator() = default;
 // accept values with missing close quotemark (http://crbug.com/39836):
 //   name="value
 bool HttpUtil::NameValuePairsIterator::GetNext() {
-  if (!props_.GetNext())
-    return false;
-
-  // Set the value as everything. Next we will split out the name.
-  value_ = props_.value_piece();
-  name_ = std::string_view();
-
-  // Scan for the equals sign.
-  std::string_view::iterator equals =
-      std::find(value_.begin(), value_.end(), '=');
-  if (equals == value_.begin()) {
-    return valid_ = false;  // Malformed, no name
-  }
-  bool has_value = (equals != value_.end());
-  if (!has_value && !values_optional_) {
-    return valid_ = false;  // Malformed, no equals sign and values are required
-  }
-
-  // If an equals sign was found, verify that it wasn't inside of quote marks.
-  if (has_value) {
-    for (std::string_view::iterator it = value_.begin(); it != equals; ++it) {
-      if (IsQuote(*it))
-        return valid_ = false;  // Malformed, quote appears before equals sign
+  CHECK(valid_);
+  // Not an error, but nothing left to do.
+  if (props_.GetNext()) {
+    // State only becomes invalid if there's another element, but parsing it
+    // fails.
+    valid_ = ParseNameValuePair(props_.value_piece());
+    if (valid_) {
+      return true;
     }
   }
 
-  // Make `name_` everything up until the equals sign, and `value_` everything
-  // after it, if there is a value.
-  name_ = TrimLWS(std::string_view(value_.begin(), equals));
-  value_ = (equals == value_.end())
-               ? std::string_view()
-               : TrimLWS(std::string_view(equals + 1, value_.end()));
-  // `equals` is now an iterator to a no-longer-existant `value_`, so it's not a
-  // good idea to use it below this point.
+  // Clear all fields when returning false, regardless of whether `valid` is
+  // true or not, since any populated data is no longer valid.
+  name_ = std::string_view();
+  value_ = std::string_view();
+  unquoted_value_.clear();
+  value_is_quoted_ = false;
+  return false;
+}
 
+bool HttpUtil::NameValuePairsIterator::ParseNameValuePair(
+    std::string_view name_value_pair) {
+  // Scan for the equals sign.
+  const size_t equals = name_value_pair.find('=');
+  if (equals == 0) {
+    return false;  // Malformed, no name
+  }
+  const bool has_value = (equals != std::string_view::npos);
+  if (!has_value && !values_optional_) {
+    return false;  // Malformed, no equals sign and values are required
+  }
+
+  // Make `name_` everything up until the equals sign.
+  name_ = TrimLWS(name_value_pair.substr(0, equals));
+  // Clear rest of state.
+  value_ = std::string_view();
   value_is_quoted_ = false;
   unquoted_value_.clear();
 
-  if (has_value && value_.empty()) {
-    // Malformed; value is empty
-    return valid_ = false;
+  // If there is a value, do additional checking and calculate the value.
+  if (has_value) {
+    // Check that no quote appears before the equals sign.
+    if (base::ranges::any_of(name_, IsQuote)) {
+      return false;
+    }
+
+    // Value consists of everything after the equals sign, with whitespace
+    // trimmed.
+    value_ = TrimLWS(name_value_pair.substr(equals + 1));
+    if (value_.empty()) {
+      // Malformed; value is empty
+      return false;
+    }
   }
 
   if (has_value && IsQuote(value_.front())) {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(value_, &unquoted_value_)) {
-        return valid_ = false;
-      }
-      return true;
+      return HttpUtil::StrictUnquote(value_, &unquoted_value_);
     }
 
     // Trim surrounding quotemarks off the value

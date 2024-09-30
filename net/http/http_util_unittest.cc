@@ -1266,11 +1266,22 @@ void CheckInvalidNameValuePair(std::string valid_part,
 
   // valid_parser is exhausted and remains 'valid'
   ASSERT_TRUE(valid_parser.valid());
+  // But all data in it should have been cleared.
+  EXPECT_TRUE(valid_parser.name_piece().empty());
+  EXPECT_TRUE(valid_parser.value_piece().empty());
+  EXPECT_TRUE(valid_parser.raw_value().empty());
+  EXPECT_FALSE(valid_parser.value_is_quoted());
 
   // invalid_parser's corresponding call to GetNext also returns false...
   ASSERT_FALSE(invalid_parser.GetNext());
   // ...but the parser is in an invalid state.
   ASSERT_FALSE(invalid_parser.valid());
+
+  // All values in an invalid parser should be cleared.
+  EXPECT_TRUE(invalid_parser.name_piece().empty());
+  EXPECT_TRUE(invalid_parser.value_piece().empty());
+  EXPECT_TRUE(invalid_parser.raw_value().empty());
+  EXPECT_FALSE(invalid_parser.value_is_quoted());
 }
 
 }  // namespace
