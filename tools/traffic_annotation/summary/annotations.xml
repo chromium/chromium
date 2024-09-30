@@ -385,6 +385,7 @@ Refer to README.md for content description and update process.
  <item id="promise_app_service" added_in_milestone="114" content_hash_code="07856112" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.cc" />
  <item id="safe_browsing_hashprefix_realtime_lookup_ohttp" added_in_milestone="114" content_hash_code="0817ae7d" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.cc" />
  <item id="gaia_auth_rotate_bound_cookies" added_in_milestone="115" content_hash_code="04014185" os_list="linux,windows" file_path="chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc" />
+ <item id="unified_state_determination_kill_switch" added_in_milestone="115" content_hash_code="01f51d8e" os_list="chromeos" file_path="chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.cc" />
  <item id="crash_file_uploader" added_in_milestone="115" content_hash_code="05f6902f" os_list="linux,windows" file_path="remoting/host/crash/crash_file_uploader.cc" />
  <item id="glanceables_classroom_integration" added_in_milestone="115" content_hash_code="048f5ccb" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.cc" />
  <item id="promise_app_service_download_icon" added_in_milestone="115" content_hash_code="00521032" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_service.cc" />

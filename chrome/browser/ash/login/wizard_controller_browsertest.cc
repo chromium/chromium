@@ -153,6 +153,12 @@ using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NotNull;
 
+const char kUnifiedStateDeterminationKillSwitchConfigURL[] =
+    "https://www.gstatic.com/chromeos-usd-experiment/v1.json";
+const char kUnifiedStateDeterminationKillSwitchConfigResponseBody[] = R"({
+  "disable_up_to_version": 0
+})";
+
 const char kDMServerURLPrefix[] =
     "https://m.google.com/devicemanagement/data/api";
 
@@ -1117,6 +1123,10 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
                                                   "2000-01");
     fake_statistics_provider_.SetVpdStatus(
         system::StatisticsProvider::VpdStatus::kValid);
+    // Simulate disabled kill-switch for unified state determination.
+    test_url_loader_factory_.AddResponse(
+        GURL(kUnifiedStateDeterminationKillSwitchConfigURL).spec(),
+        kUnifiedStateDeterminationKillSwitchConfigResponseBody);
     // Make all requests to DMServer fail with net::ERR_CONNECTION_REFUSED.
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
@@ -1195,7 +1205,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(auto_enrollment_controller()->IsInProgress());
+  EXPECT_TRUE(policy::AutoEnrollmentTypeChecker::Initialized());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,

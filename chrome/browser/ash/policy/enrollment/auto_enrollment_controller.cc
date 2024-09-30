@@ -245,6 +245,17 @@ void AutoEnrollmentController::Start() {
     network_state_observation_.Observe(network_state_handler_);
   }
 
+  if (!AutoEnrollmentTypeChecker::Initialized()) {
+    if (!auto_enrollment_check_type_init_started_) {
+      auto_enrollment_check_type_init_started_ = true;
+      AutoEnrollmentTypeChecker::Initialize(
+          shared_url_loader_factory_,
+          base::BindOnce(&AutoEnrollmentController::Start,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+
   if (IsInProgress()) {
     return;
   }

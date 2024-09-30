@@ -416,6 +416,10 @@ inline constexpr char kUMAStateDeterminationDeviceIdentifierStatus[] =
     "Enterprise.StateDetermination.DeviceIdentifierStatus";
 inline constexpr char kUMAStateDeterminationEnabled[] =
     "Enterprise.StateDetermination.Enabled";
+inline constexpr char kUMAStateDeterminationKillSwitchFetchNetworkErrorCode[] =
+    "Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode";
+inline constexpr char kUMAStateDeterminationKillSwitchFetchNumTries[] =
+    "Enterprise.StateDetermination.KillSwitchFetch.NumTries";
 inline constexpr char kUMAStateDeterminationOnFlex[] =
     "Enterprise.StateDetermination.OnFlex";
 inline constexpr char kUMAStateDeterminationOwnershipStatus[] =
