@@ -838,6 +838,11 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+ToastController* GetToastController(Browser* browser) {
+  // Browser can sometimes be undefined in tests or when trying to open the
+  // context menu on a non-tab WebContents.
+  return browser ? browser->GetFeatures().toast_controller() : nullptr;
+}
 }  // namespace
 
 // static
@@ -2326,8 +2331,7 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
       content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
-      // Browser can sometimes be undefined in tests.
-      GetBrowser() ? GetBrowser()->GetFeatures().toast_controller() : nullptr);
+      GetToastController(GetBrowser()));
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);
@@ -3264,8 +3268,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       WriteURLToClipboard(params_.unfiltered_link_url);
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
-        ToastController* const toast_controller =
-            GetBrowser()->GetFeatures().toast_controller();
+        auto* const toast_controller = GetToastController(GetBrowser());
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
         }
@@ -3286,8 +3289,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecCopyImageAt();
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
-        ToastController* const toast_controller =
-            GetBrowser()->GetFeatures().toast_controller();
+        auto* const toast_controller = GetToastController(GetBrowser());
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
         }
