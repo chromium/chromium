@@ -762,6 +762,28 @@ suite('ItemTest', function() {
     assertFalse(isVisible(esbPromo));
   });
   // </if>
+
+  test('DownloadIsActive', async () => {
+    const content = item.shadowRoot!.querySelector<HTMLElement>('#content');
+    assertTrue(!!content);
+    item.data = createDownload({
+      state: State.kComplete,
+    });
+    await microtasksFinished();
+    assertTrue(content.classList.contains('is-active'));
+
+    item.data = createDownload({
+      state: State.kInProgress,
+    });
+    await microtasksFinished();
+    assertTrue(content.classList.contains('is-active'));
+
+    item.data = createDownload({
+      state: State.kDangerous,
+    });
+    await microtasksFinished();
+    assertFalse(content.classList.contains('is-active'));
+  });
 });
 
 suite('ItemFocusTest', function() {
