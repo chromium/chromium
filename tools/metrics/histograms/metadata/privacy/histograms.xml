@@ -331,6 +331,7 @@ reviewer.
   <owner>fsenra@google.com</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
+  <component>1456716</component>
   <summary>
     Cross-platform metric to show interactions with DBD Dialog. Recorded when
     the user interacts with the dialog either by opening it, changing its prefs
@@ -339,14 +340,32 @@ reviewer.
 </histogram>
 
 <histogram
+    name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration"
+    units="microseconds" expires_after="2025-03-09">
+  <owner>fsenra@chromium.org</owner>
+  <owner>alimariam@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    The microseconds that passed between the tabs closure animation being
+    triggered by Delete Browsing Data and the animation ending, iOS only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay"
     units="microseconds" expires_after="2025-03-09">
   <owner>fsenra@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
+  <owner>alimariam@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <component>1456716</component>
   <summary>
     The microseconds that passed between the tabs closure animation being
     triggered by Delete Browsing Data and the animation starting, iOS only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
