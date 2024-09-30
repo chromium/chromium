@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
@@ -36,12 +37,15 @@ std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {
       std::make_unique<WhatsNewStorageServiceImpl>());
 
   RegisterWhatsNewModules(registry.get());
-  // Perform module pref cleanup.
-  registry->ClearUnregisteredModules();
-
   RegisterWhatsNewEditions(registry.get());
-  // Perform edition pref cleanup.
-  registry->ClearUnregisteredEditions();
+
+  // In some tests, the pref service may not be initialized. Make sure
+  // this has been created before trying to clean up prefs.
+  if (g_browser_process->local_state()) {
+    // Perform module and edition pref cleanup.
+    registry->ClearUnregisteredModules();
+    registry->ClearUnregisteredEditions();
+  }
 
   return registry;
 }
