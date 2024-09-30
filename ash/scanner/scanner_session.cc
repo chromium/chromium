@@ -21,19 +21,7 @@ namespace ash {
 ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
     : delegate_(delegate) {}
 
-ScannerSession::~ScannerSession() {
-  for (auto& observer : observers_) {
-    observer.OnScannerSessionDestroying();
-  }
-}
-
-void ScannerSession::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ScannerSession::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
+ScannerSession::~ScannerSession() = default;
 
 void ScannerSession::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,

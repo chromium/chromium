@@ -15,8 +15,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/types/expected.h"
 
 namespace ash {
@@ -35,20 +33,10 @@ class ASH_EXPORT ScannerSession {
   using FetchActionsCallback =
       base::OnceCallback<void(std::vector<ScannerAction>)>;
 
-  // Observer of ScannerSession events.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when the Scanner session is about to be destroyed.
-    virtual void OnScannerSessionDestroying() = 0;
-  };
-
   ScannerSession(ScannerProfileScopedDelegate* delegate);
   ScannerSession(const ScannerSession&) = delete;
   ScannerSession& operator=(const ScannerSession&) = delete;
   ~ScannerSession();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Fetches Scanner actions that are available based on the contents of
   // `jpeg_bytes`. The actions are returned via `callback`.
@@ -61,8 +49,6 @@ class ASH_EXPORT ScannerSession {
       base::expected<std::vector<ScannerAction>, ScannerError> returned);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
-
-  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };
