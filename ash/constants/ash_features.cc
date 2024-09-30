@@ -2981,9 +2981,6 @@ BASE_FEATURE(kSystemProxyForSystemServices,
              "SystemProxyForSystemServices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the UI to show tab cluster info.
-BASE_FEATURE(kTabClusterUI, "TabClusterUI", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the UI to allow Chromebook hotspot functionality for experimental
 // carriers, modem and modem FW.
 BASE_FEATURE(kTetheringExperimentalFunctionality,
@@ -4805,10 +4802,6 @@ bool IsTimeOfDayScreenSaverEnabled() {
 
 bool IsTimeOfDayWallpaperEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
-}
-
-bool IsTabClusterUIEnabled() {
-  return base::FeatureList::IsEnabled(kTabClusterUI);
 }
 
 bool IsTouchscreenMappingExperienceEnabled() {

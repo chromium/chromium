@@ -281,7 +281,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
-  if (ash::features::IsTabClusterUIEnabled()) {
+  if (ash::features::IsBirchCoralEnabled()) {
     ash::TabClusterUIController* tab_cluster_ui_controller =
         ash::Shell::Get()->tab_cluster_ui_controller();
     DCHECK(tab_cluster_ui_controller);

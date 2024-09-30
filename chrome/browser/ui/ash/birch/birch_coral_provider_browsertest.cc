@@ -30,11 +30,7 @@ using coral::mojom::Tab;
 
 class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
  public:
-  BirchCoralProviderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kBirchCoral, features::kTabClusterUI}, {});
-  }
-
+  BirchCoralProviderTest() = default;
   BirchCoralProviderTest(const BirchCoralProviderTest&) = delete;
   BirchCoralProviderTest& operator=(const BirchCoralProviderTest&) = delete;
   ~BirchCoralProviderTest() override = default;
@@ -58,7 +54,7 @@ class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kBirchCoral};
 };
 
 // Tests that the coral provider collects correct in-session tab and app data.

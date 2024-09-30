@@ -1467,7 +1467,7 @@ void Shell::Init(
   frame_throttling_controller_ = std::make_unique<FrameThrottlingController>(
       context_factory->GetHostFrameSinkManager());
 
-  if (features::IsTabClusterUIEnabled()) {
+  if (features::IsBirchCoralEnabled()) {
     tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();
   }
 

@@ -160,18 +160,12 @@ std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
 BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     : birch_model_(birch_model) {
   g_instance = this;
-
-  if (features::IsTabClusterUIEnabled()) {
-    Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
-  }
+  Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   coral_item_remover_ = std::make_unique<CoralItemRemover>();
 }
 
 BirchCoralProvider::~BirchCoralProvider() {
-  if (features::IsTabClusterUIEnabled()) {
-    Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
-  }
-
+  Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
   g_instance = nullptr;
 }
 

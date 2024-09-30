@@ -62,8 +62,6 @@ class CoralBrowserTest : public InProcessBrowserTest {
  public:
   CoralBrowserTest() {
     set_launch_browser_for_testing(nullptr);
-    scoped_feature_list_.InitWithFeatures(
-        {features::kBirchCoral, features::kTabClusterUI}, {});
   }
   CoralBrowserTest(const CoralBrowserTest&) = delete;
   CoralBrowserTest& operator=(const CoralBrowserTest&) = delete;
@@ -88,7 +86,7 @@ class CoralBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kBirchCoral};
 };
 
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {
