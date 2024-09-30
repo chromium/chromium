@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -122,6 +124,15 @@ class LensOverlayController : public LensSearchboxClient,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
+  // Data struct representing options for translate data if set.
+  struct TranslateOptions {
+    std::string source_language;
+    std::string target_language;
+
+    TranslateOptions(const std::string& source, const std::string& target)
+        : source_language(source), target_language(target) {}
+  };
+
   // Data struct representing a previous search query.
   struct SearchQuery {
     explicit SearchQuery(std::string text_query, GURL url);
@@ -145,6 +156,8 @@ class LensOverlayController : public LensSearchboxClient,
     GURL search_query_url_;
     // The selection type of the current Lens request, if any.
     lens::LensOverlaySelectionType lens_selection_type_;
+    // The translate options currently enabled in the overlay.
+    std::optional<TranslateOptions> translate_options_;
   };
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
@@ -606,6 +619,9 @@ class LensOverlayController : public LensSearchboxClient,
 
     // The search query that is currently loaded in the results frame.
     std::optional<SearchQuery> currently_loaded_search_query_;
+
+    // The translate options currently enabled in the overlay.
+    std::optional<TranslateOptions> translate_options_;
   };
 
   class UnderlyingWebContentsObserver;

@@ -277,9 +277,11 @@ export class TextLayerElement extends PolymerElement {
     this.eventTracker_.add(
         document, 'translate-mode-state-changed',
         (e: CustomEvent<TranslateState>) => {
-          this.unselectWords();
           this.shouldRenderTranslateWords = e.detail.translateModeEnabled;
           this.currentTranslateLanguage = e.detail.targetLanguage;
+          if (this.shouldRenderTranslateWords) {
+            this.unselectWords();
+          }
         });
 
     // Set up listener to listen to events from C++.

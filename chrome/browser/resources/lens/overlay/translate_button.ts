@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {assertInstanceof} from '//resources/js/assert.js';
+import {assert, assertInstanceof} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -119,6 +119,9 @@ export class TranslateButtonElement extends PolymerElement {
   // A browser proxy for fetching the language settings from the Chrome API.
   private languageBrowserProxy: LanguageBrowserProxy =
       LanguageBrowserProxyImpl.getInstance();
+  // An array for keeping track of the events the translate button listens to
+  // from the browser proxy.
+  private listenerIds: number[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -137,6 +140,24 @@ export class TranslateButtonElement extends PolymerElement {
             this.contentLanguage = e.detail.contentLanguage;
           }
         });
+    // Set up listener to listen to events from C++.
+    this.listenerIds = [
+      this.browserProxy.callbackRouter.setTranslateMode.addListener(
+          this.enableTranslateMode.bind(this)),
+      this.browserProxy.callbackRouter.setTextSelection.addListener(
+          this.disableTranslateMode.bind(this)),
+      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
+          this.disableTranslateMode.bind(this)),
+    ];
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.listenerIds.forEach(
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
+    this.listenerIds = [];
+    this.eventTracker_.removeAll();
   }
 
   private onLanguageListRetrieved(
@@ -258,6 +279,63 @@ export class TranslateButtonElement extends PolymerElement {
           this.sourceLanguage ? this.sourceLanguage.code : 'auto',
           this.targetLanguage.code);
     }
+  }
+
+  private enableTranslateMode(sourceLanguage: string, targetLanguage: string) {
+    const newSourceLanguage = sourceLanguage === 'auto' ?
+        null :
+        this.translateLanguageList.find(
+            language => language.code === sourceLanguage);
+    const newTargetLanguage = this.translateLanguageList.find(
+        language => language.code === targetLanguage);
+
+    // Do nothing if the languages set are not in the language list. Source
+    // language can be null to indicate we should auto-detect source language.
+    // Also, do nothing if we set the translate mode to the same source and
+    // target language that already appear on the screen.
+    if (newSourceLanguage === undefined || !newTargetLanguage ||
+        (this.sourceLanguage === newSourceLanguage &&
+         this.targetLanguage === newTargetLanguage &&
+         this.isTranslateModeEnabled)) {
+      return;
+    }
+
+    this.sourceLanguage = newSourceLanguage;
+    this.targetLanguage = newTargetLanguage;
+    // Refocus the shimmer into translate mode if it was not already.
+    if (!this.isTranslateModeEnabled) {
+      focusShimmerOnRegion(
+          this, /*top=*/ 0, /*left=*/ 0, /*width=*/ 0, /*height=*/ 0,
+          ShimmerControlRequester.TRANSLATE);
+    }
+    this.isTranslateModeEnabled = true;
+    this.maybeIssueTranslateRequest();
+    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        translateModeEnabled: this.isTranslateModeEnabled,
+        targetLanguage: this.targetLanguage.code,
+      },
+    }));
+  }
+
+  private disableTranslateMode() {
+    if (!this.isTranslateModeEnabled) {
+      return;
+    }
+
+    this.isTranslateModeEnabled = false;
+    unfocusShimmer(this, ShimmerControlRequester.TRANSLATE);
+    this.browserProxy.handler.issueEndTranslateModeRequest();
+    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        translateModeEnabled: this.isTranslateModeEnabled,
+        targetLanguage: this.targetLanguage.code,
+      },
+    }));
   }
 
   private hideLanguagePickerMenus() {

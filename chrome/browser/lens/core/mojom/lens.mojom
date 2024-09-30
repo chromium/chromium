@@ -212,6 +212,10 @@ interface LensPage {
   // Sets text to be rendered as selected on the page.
   SetTextSelection(int32 selection_start_index, int32 selection_end_index);
 
+  // Sets the overlay to translate mode with the specified languages.
+  SetTranslateMode(
+      string source_language, string target_language);
+
   // Clears any post region selection on the page. No-op if none selected.
   ClearRegionSelection();
 
