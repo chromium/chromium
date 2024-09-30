@@ -751,6 +751,46 @@ TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
   }
 }
 
+TEST_P(CompositingTest, HitTestOpaquenessOfEmptyInline) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      html, body { margin: 0; }
+      #inline {
+        pointer-events: none;
+      }
+      #scrollable {
+        width: 150px;
+        height: 150px;
+        overflow-y: scroll;
+      }
+      #scrollable::-webkit-scrollbar {
+        display: none;
+      }
+      #content {
+        height: 1000px;
+        width: 150px;
+        background: linear-gradient(blue, yellow);
+        pointer-events: auto;
+      }
+    </style>
+    <span id="inline"><div id="scrollable"><div id="content"></div></div></span>
+  )HTML");
+
+  // We should have a layer for the scrolling contents.
+  auto* scrolling_contents =
+      CcLayersByDOMElementId(RootCcLayer(), "scrollable").back();
+  EXPECT_EQ(gfx::Size(150, 1000), scrolling_contents->bounds());
+
+  // If there is a following layer for inline contents, it should be non-opaque.
+  auto html_layers = CcLayersByName(RootCcLayer(), "LayoutBlockFlow HTML");
+  auto* html = html_layers.empty() ? nullptr : html_layers.back();
+  if (html) {
+    EXPECT_GT(html->id(), scrolling_contents->id());
+    EXPECT_EQ(gfx::Size(200, 150), html->bounds());
+    EXPECT_NE(cc::HitTestOpaqueness::kOpaque, html->hit_test_opaqueness());
+  }
+}
+
 TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="parent">

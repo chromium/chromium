@@ -1671,7 +1671,11 @@ inline void BoxFragmentPainter::PaintLineBox(
   DCHECK_GE(line_fragment_id, FragmentItem::kInitialLineFragmentId);
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   line_fragment_id);
-  if (ShouldRecordHitTestData(paint_info)) {
+
+  bool paints_hit_test_data =
+      !RuntimeEnabledFeatures::HitTestOpaquenessEnabled() ||
+      !RuntimeEnabledFeatures::HitTestOpaquenessOmitLineBoxEnabled();
+  if (paints_hit_test_data && ShouldRecordHitTestData(paint_info)) {
     ObjectPainter(*GetPhysicalFragment().GetLayoutObject())
         .RecordHitTestData(paint_info, ToPixelSnappedRect(border_box),
                            display_item_client);

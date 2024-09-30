@@ -23,7 +23,8 @@
     {
       "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [40, 40],
-      "bounds": [200, 205],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
