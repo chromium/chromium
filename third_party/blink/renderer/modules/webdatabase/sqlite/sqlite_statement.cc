@@ -72,6 +72,18 @@ int restrictError(int error) {
   }
 }
 
+scoped_refptr<StringImpl> ColumnText16ToStringImpl(sqlite3_stmt* statement,
+                                                   int col) {
+  const UChar* text16 =
+      static_cast<const UChar*>(sqlite3_column_text16(statement, col));
+  const size_t text16_byte_length =
+      base::checked_cast<size_t>(sqlite3_column_bytes16(statement, col));
+  // SAFETY: sqlite3_column_bytes16() returns at least the number of bytes that
+  // sqlite3_column_text16() points to.
+  return StringImpl::Create8BitIfPossible(
+      UNSAFE_BUFFERS({text16, text16_byte_length / sizeof(UChar)}));
+}
+
 }  // namespace
 
 namespace blink {
@@ -263,12 +275,8 @@ SQLValue SQLiteStatement::GetColumnValue(int col) {
       return SQLValue(sqlite3_column_double(statement_, col));
     case SQLITE_BLOB:  // SQLValue and JS don't represent blobs, so use TEXT
                        // -case
-    case SQLITE_TEXT: {
-      const UChar* string = reinterpret_cast<const UChar*>(
-          sqlite3_column_text16(statement_, col));
-      unsigned length = sqlite3_column_bytes16(statement_, col) / sizeof(UChar);
-      return SQLValue(StringImpl::Create8BitIfPossible(string, length));
-    }
+    case SQLITE_TEXT:
+      return SQLValue(ColumnText16ToStringImpl(statement_, col));
     case SQLITE_NULL:
       return SQLValue();
   }
@@ -283,10 +291,7 @@ String SQLiteStatement::GetColumnText(int col) {
       return String();
   if (ColumnCount() <= col)
     return String();
-  const UChar* string =
-      reinterpret_cast<const UChar*>(sqlite3_column_text16(statement_, col));
-  return StringImpl::Create8BitIfPossible(
-      string, sqlite3_column_bytes16(statement_, col) / sizeof(UChar));
+  return ColumnText16ToStringImpl(statement_, col);
 }
 
 int SQLiteStatement::GetColumnInt(int col) {

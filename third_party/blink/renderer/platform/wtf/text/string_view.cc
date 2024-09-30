@@ -196,8 +196,8 @@ String StringView::ToString() const {
   if (StringImpl* impl = SharedImpl())
     return impl;
   if (Is8Bit())
-    return String(Characters8(), length_);
-  return StringImpl::Create8BitIfPossible(Characters16(), length_);
+    return String(Span8());
+  return StringImpl::Create8BitIfPossible(Span16());
 }
 
 AtomicString StringView::ToAtomicString() const {

@@ -798,9 +798,7 @@ String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
   url::DecodeURLEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
-  return StringImpl::Create8BitIfPossible(
-      reinterpret_cast<UChar*>(unescaped.data()),
-      base::checked_cast<wtf_size_t>(unescaped.length()));
+  return StringImpl::Create8BitIfPossible(unescaped.view());
 }
 
 String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {

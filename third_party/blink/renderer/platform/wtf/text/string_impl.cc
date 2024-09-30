@@ -348,20 +348,22 @@ scoped_refptr<StringImpl> StringImpl::Create(
 }
 
 scoped_refptr<StringImpl> StringImpl::Create8BitIfPossible(
-    const UChar* characters,
-    wtf_size_t length) {
-  if (!characters || !length)
+    base::span<const UChar> characters) {
+  if (!characters.data() || characters.empty()) {
     return empty_;
-
-  LChar* data;
-  scoped_refptr<StringImpl> string = CreateUninitialized(length, data);
-
-  for (wtf_size_t i = 0; i < length; ++i) {
-    if (characters[i] & 0xff00)
-      return Create(characters, length);
-    data[i] = static_cast<LChar>(characters[i]);
   }
 
+  base::span<LChar> data;
+  scoped_refptr<StringImpl> string =
+      CreateUninitialized(characters.size(), data);
+
+  for (size_t i = 0; i < characters.size(); ++i) {
+    const UChar c = characters[i];
+    if (c & 0xff00) {
+      return Create(characters);
+    }
+    data[i] = static_cast<LChar>(c);
+  }
   return string;
 }
 

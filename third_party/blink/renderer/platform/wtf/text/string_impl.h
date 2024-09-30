@@ -167,13 +167,8 @@ class WTF_EXPORT StringImpl {
       const LChar*,
       wtf_size_t length,
       ASCIIStringAttributes ascii_attributes);
-  static scoped_refptr<StringImpl> Create8BitIfPossible(const UChar*,
-                                                        wtf_size_t length);
-  template <wtf_size_t inlineCapacity>
   static scoped_refptr<StringImpl> Create8BitIfPossible(
-      const Vector<UChar, inlineCapacity>& vector) {
-    return Create8BitIfPossible(vector.data(), vector.size());
-  }
+      base::span<const UChar>);
 
   ALWAYS_INLINE static scoped_refptr<StringImpl> Create(const char* s,
                                                         wtf_size_t length) {

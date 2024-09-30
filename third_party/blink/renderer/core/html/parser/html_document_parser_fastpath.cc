@@ -340,8 +340,7 @@ String ScanTextResult<LChar>::TextToString() const {
 
 template <>
 String ScanTextResult<UChar>::TextToString() const {
-  return String(StringImpl::Create8BitIfPossible(
-      text.data(), static_cast<wtf_size_t>(text.size())));
+  return String(StringImpl::Create8BitIfPossible(text));
 }
 
 // This HTML parser is used as a fast-path for setting innerHTML.

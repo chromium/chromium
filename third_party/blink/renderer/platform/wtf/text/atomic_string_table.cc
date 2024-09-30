@@ -62,7 +62,7 @@ class UCharBuffer {
   scoped_refptr<StringImpl> CreateStringImpl() const {
     switch (encoding_) {
       case AtomicStringUCharEncoding::kUnknown:
-        return StringImpl::Create8BitIfPossible(characters_, length_);
+        return StringImpl::Create8BitIfPossible({characters_, length_});
       case AtomicStringUCharEncoding::kIs8Bit:
         return String::Make8BitFrom16BitSource({characters_, length_})
             .ReleaseImpl();

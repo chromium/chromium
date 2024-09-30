@@ -62,9 +62,7 @@ WebString& WebString::operator=(const WebString&) = default;
 WebString& WebString::operator=(WebString&&) = default;
 
 WebString::WebString(std::u16string_view s)
-    : impl_(StringImpl::Create8BitIfPossible(
-          s.data(),
-          base::checked_cast<wtf_size_t>(s.length()))) {}
+    : impl_(StringImpl::Create8BitIfPossible(s)) {}
 
 void WebString::Reset() {
   impl_ = nullptr;
