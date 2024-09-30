@@ -8141,10 +8141,6 @@ crbug.com/358889281 [ Win ] external/wpt/event-timing/TapToStopFling.html [ Fail
 # Temporarily disable to land crrev.com/c/5861407
 crbug.com/363034702 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass ]
 
-# Gardener 2024-09-26
-# Flaky on WebKit Linux ASAN
-crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
-
 # These will not pass until the linked task is resolved.
 crbug.com/368038561 external/wpt/css/css-scroll-snap-2/scroll-start-target/* [ Failure ]
 
@@ -8170,3 +8166,8 @@ crbug.com/365737493 http/tests/devtools/security/main-origin-assigned-despite-re
 crbug.com/626703 [ Release Win ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/370303484 [ Debug Win10.20h2 ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/370303484 [ Debug Win11-arm64 ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
+
+# Flaky on WebKit Linux ASAN and Win
+crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
+crbug.com/369670465 [ Debug Win10.20h2 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
+crbug.com/369670465 [ Debug Win11-arm64 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
