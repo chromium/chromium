@@ -24,6 +24,9 @@ class MockInputManager : public InputManager {
 
   // Checks if a RenderInputRouter exists for |frame_sink_id|.
   bool RIRExistsForFrameSinkId(const FrameSinkId& frame_sink_id);
+  int GetRenderInputRouterMapSize() { return rir_map_.size(); }
+
+  int GetInputEventRouterMapSize() { return rwhier_map_.size(); }
 };
 
 }  // namespace viz

@@ -112,7 +112,9 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 
 }  // namespace
 
-RenderInputRouter::~RenderInputRouter() = default;
+RenderInputRouter::~RenderInputRouter() {
+  TRACE_EVENT_INSTANT("input", "RenderInputRouter::~RenderInputRouter");
+}
 
 RenderInputRouter::RenderInputRouter(
     RenderInputRouterClient* host,

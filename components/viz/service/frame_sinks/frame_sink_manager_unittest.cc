@@ -988,6 +988,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
   auto config = input::mojom::RenderInputRouterConfig::New();
   config->rir_client = std::move(rir_client);
+  config->grouping_id = 1;
 
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
@@ -1127,6 +1128,197 @@ TEST_P(AndroidFrameSinkManagerTest,
                 base::NumberToString(kFrameSinkIdB.sink_id()))));
   } else {
     EXPECT_EQ(result.value()[1][0], "0");
+  }
+}
+
+TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
+  const bool expected_creation = input::IsTransferInputToVizSupported();
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  auto config = input::mojom::RenderInputRouterConfig::New();
+  config->rir_client = std::move(rir_client);
+  config->grouping_id = 1;
+
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  EXPECT_EQ(InputManagerExists(), expected_creation);
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
+
+  // Create another CompositorFrameSinkImpl for a different WebContent.
+  MockCompositorFrameSinkClient compositor_frame_sink_client2;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink2;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client2;
+  auto config2 = input::mojom::RenderInputRouterConfig::New();
+  config2->rir_client = std::move(rir_client2);
+  config2->grouping_id = 2;
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink2.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client2.BindInterfaceRemote(), std::move(config2));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+  EXPECT_EQ(InputManagerExists(), expected_creation);
+
+  auto* mock_input_manager = GetMockInputManager();
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 2);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 2);
+  }
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 1);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 1);
+  }
+
+  manager_.InvalidateFrameSinkId(kFrameSinkIdB);
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 0);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 0);
+  }
+}
+
+TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
+  const bool expected_creation = input::IsTransferInputToVizSupported();
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  auto config = input::mojom::RenderInputRouterConfig::New();
+  config->rir_client = std::move(rir_client);
+  config->grouping_id = 1;
+
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  EXPECT_EQ(InputManagerExists(), expected_creation);
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
+
+  // Create another CompositorFrameSinkImpl for the same WebContent.
+  MockCompositorFrameSinkClient compositor_frame_sink_client2;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink2;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client2;
+  auto config2 = input::mojom::RenderInputRouterConfig::New();
+  config2->rir_client = std::move(rir_client2);
+  config2->grouping_id = 1;
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink2.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client2.BindInterfaceRemote(), std::move(config2));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+  EXPECT_EQ(InputManagerExists(), expected_creation);
+
+  auto* mock_input_manager = GetMockInputManager();
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 2);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 1);
+  }
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 1);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 1);
+  }
+
+  manager_.InvalidateFrameSinkId(kFrameSinkIdB);
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
+
+  if (expected_creation) {
+    EXPECT_EQ(mock_input_manager->GetRenderInputRouterMapSize(), 0);
+    EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 0);
+  }
+}
+
+TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz, input");
+
+  const bool expected_creation = input::IsTransferInputToVizSupported();
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  auto config = input::mojom::RenderInputRouterConfig::New();
+  config->rir_client = std::move(rir_client);
+  config->grouping_id = 1;
+
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  EXPECT_EQ(InputManagerExists(), expected_creation);
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT name
+    FROM slice
+    WHERE
+    (
+      name = 'RenderInputRouter::RenderInputRouter'
+      OR
+      name = 'RenderInputRouter::~RenderInputRouter'
+      OR
+      name = 'RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl'
+      OR
+      name = 'RenderInputRouterDelegateImpl::~RenderInputRouterDelegateImpl'
+    )
+    ORDER BY ts ASC
+  )";
+
+  auto result = ttp.RunQuery(query);
+  EXPECT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"name"},
+  // {"<name1>"}, {"<name2>"}, {"<name3>"}, {"<name4>"}}.
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_EQ(result.value().size(), 5u);
+    EXPECT_EQ(result.value()[1].size(), 1u);
+
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(
+            testing::ElementsAre("name"),
+            testing::ElementsAre("RenderInputRouterDelegateImpl::"
+                                 "RenderInputRouterDelegateImpl"),
+            testing::ElementsAre("RenderInputRouter::RenderInputRouter"),
+            testing::ElementsAre("RenderInputRouter::~RenderInputRouter"),
+            testing::ElementsAre("RenderInputRouterDelegateImpl::~"
+                                 "RenderInputRouterDelegateImpl")));
+  } else {
+    EXPECT_EQ(result.value()[0][0], "name");
   }
 }
 

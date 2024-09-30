@@ -3541,12 +3541,14 @@ void RenderWidgetHostImpl::CreateFrameSink(
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
          std::optional<mojo::PendingRemote<
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
-         const viz::FrameSinkId& frame_sink_id) {
+         uint32_t grouping_id, const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
         if (input::IsTransferInputToVizSupported()) {
           DCHECK(viz_rir_client_remote.has_value());
+
           config = input::mojom::RenderInputRouterConfig::New();
           config->rir_client = std::move(viz_rir_client_remote.value());
+          config->grouping_id = grouping_id;
         }
         GetHostFrameSinkManager()->CreateCompositorFrameSink(
             frame_sink_id, std::move(receiver), std::move(client),
@@ -3572,7 +3574,9 @@ void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
     compositor_metric_recorder_->DidRequestFrameSink();
   }
 
-  std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
+  std::move(create_frame_sink_callback_)
+      .Run(delegate_->GetCompositorFrameSinkGroupingId(),
+           view_->GetFrameSinkId());
 }
 
 void RenderWidgetHostImpl::RegisterRenderFrameMetadataObserver(

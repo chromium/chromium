@@ -228,6 +228,8 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/render_input_router_delegate_impl.cc",
+    "input/render_input_router_delegate_impl.h",
     "layers/layer_context_impl.cc",
     "layers/layer_context_impl.h",
     "performance_hint/boost_manager.cc",

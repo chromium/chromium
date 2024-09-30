@@ -61,6 +61,10 @@ RenderWidgetHostDelegate::GetOrCreateRootBrowserAccessibilityManager() {
   return nullptr;
 }
 
+uint32_t RenderWidgetHostDelegate::GetCompositorFrameSinkGroupingId() const {
+  NOTREACHED();  // Not implemented.
+}
+
 // If a delegate does not override this, the RenderWidgetHostView will
 // assume it is the sole platform event consumer.
 input::RenderWidgetHostInputEventRouter*

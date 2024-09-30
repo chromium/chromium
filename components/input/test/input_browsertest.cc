@@ -74,6 +74,66 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, RenderInputRouterCreation) {
   EXPECT_EQ(IsRenderInputRouterCreatedOnViz(), expected_creation);
 }
 
+// Tests whether RenderWidgetHostInputEventRouter was created with different
+// grouping id's for different WebContents.
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
+                       RenderWidgetHostInputEventRouterCreated) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
+
+  GURL url = GURL(
+      "data:text/html,<!doctype html>"
+      "<body style='background-color: magenta;'></body>");
+
+  // Loads a URL in two separate web contents.
+  {
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        shell()->web_contents());
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  {
+    auto* second_shell = content::Shell::CreateNewWindow(
+        shell()->web_contents()->GetBrowserContext(), url, nullptr, {800, 600});
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        second_shell->web_contents());
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+      SELECT EXTRACT_ARG(arg_set_id, 'debug.grouping_id') as id
+      FROM slice
+      WHERE slice.name = 'RenderWidgetHostInputEventRouterCreated'
+    )";
+
+  auto result = ttp.RunQuery(query);
+
+  EXPECT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"id"}, {"<num>"},
+  // {"<num>"}}.
+  EXPECT_EQ(result.value()[0].size(), 1u);
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_EQ(result.value().size(), 3u);
+    EXPECT_THAT(result.value(),
+                testing::ElementsAre(testing::ElementsAre("id"),
+                                     testing::ElementsAre("0"),
+                                     testing::ElementsAre("1")));
+  } else {
+    EXPECT_EQ(result.value().size(), 1u);
+    EXPECT_THAT(result.value(),
+                testing::ElementsAre(testing::ElementsAre("id")));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AndroidInputBrowserTest,
                          ::testing::Bool(),

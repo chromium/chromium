@@ -1074,6 +1074,7 @@ class CONTENT_EXPORT WebContentsImpl
                          bool should_show_handle,
                          bool should_show_context_menu) override;
   void MoveCaret(const gfx::Point& extent) override;
+  uint32_t GetCompositorFrameSinkGroupingId() const override;
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;
@@ -2368,7 +2369,9 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<PepperPlaybackObserver> pepper_playback_observer_;
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-  std::unique_ptr<input::RenderWidgetHostInputEventRouter>
+  // RenderWidgetHostInputEventRouter is uniquely owned by WebContentsImpl in
+  // the browser process.
+  scoped_refptr<input::RenderWidgetHostInputEventRouter>
       rwh_input_event_router_;
 
   std::unique_ptr<TouchEmulatorImpl> touch_emulator_;
@@ -2554,6 +2557,11 @@ class CONTENT_EXPORT WebContentsImpl
   base::WeakPtr<FileChooserImpl> active_file_chooser_;
 
   std::optional<base::Location> ownership_location_;
+
+  // This id is used by Viz to create RenderWidgetHostInputEventRouter per
+  // WebContents(concept in browser) to allow grouping CompositorFrameSinks for
+  // input event routing with InputVizard.
+  const uint32_t compositor_frame_sink_grouping_id_;
 
   // Indicates if the instance is hosted in a preview window.
   // This will be set in Init() and will be reset in WillActivatePreviewPage().
