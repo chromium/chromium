@@ -72,7 +72,8 @@ BocaUI::BocaUI(content::WebUI* web_ui)
   // Enables the page to load images. The page is restricted to only loading
   // images from data URLs passed to the page.
   host_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src data: https://lh3.googleusercontent.com;");
 
   // For testing
   host_source->OverrideContentSecurityPolicy(
