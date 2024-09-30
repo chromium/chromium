@@ -23,6 +23,7 @@ namespace {
 
 constexpr int kCoralIconSize = 14;
 constexpr int kCoralAppIconDesiredSize = 64;
+constexpr int kCoralMaxSubIconsNum = 4;
 
 // Callback for the favicon load request in `GetFaviconImageCoral()`. If the
 // load fails, passes an empty `ui::ImageModel` to the `barrier_callback`.
@@ -48,6 +49,7 @@ void OnGotAppIconCoral(
     std::move(barrier_callback)
         .Run(std::move(ui::ImageModel::FromImageSkia(image)));
   } else {
+    // TODO(zxdan): Define a backup icon for apps.
     std::move(barrier_callback).Run(ui::ImageModel());
   }
 }
@@ -57,10 +59,12 @@ void OnGotAppIconCoral(
 void OnAllFaviconsRetrievedCoral(
     base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
         final_callback,
+    int extra_number,
     const std::vector<ui::ImageModel>& loaded_icons) {
   std::vector<gfx::ImageSkia> resized_icons;
 
   for (const auto& loaded_icon : loaded_icons) {
+    // TODO(zxdan): Once all favicons have backup icons, change this to CHECK.
     if (!loaded_icon.IsEmpty()) {
       // Only a `ui::ImageModel` constructed from a `gfx::ImageSkia` produces a
       // valid result from `GetImage()`. Vector icons will not work.
@@ -71,10 +75,9 @@ void OnAllFaviconsRetrievedCoral(
     }
   }
 
-  // TODO(owenzhang): Hook up correct extra_number calculation.
   ui::ImageModel composed_image =
       CoralGroupedIconImage::DrawCoralGroupedIconImage(
-          /*icons_images=*/resized_icons, /*extra_tabs_number=*/7);
+          /*icons_images=*/resized_icons, extra_number);
 
   std::move(final_callback)
       .Run(std::move(composed_image), SecondaryIconType::kNoIcon);
@@ -153,23 +156,36 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
 // TODO(b/362530155): Consider refactoring icon loading logic into
 // `CoralGroupedIconImage`.
 void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
-  // Barrier callback that collects the results of multiple favicon loads and
-  // runs the original load_icon callback.
-  const auto barrier_callback = base::BarrierCallback<const ui::ImageModel&>(
-      /*num_callbacks=*/page_urls_.size() + app_ids_.size(),
-      /*done_callback=*/base::BindOnce(OnAllFaviconsRetrievedCoral,
-                                       std::move(original_callback)));
+  const int page_num = page_urls_.size();
+  const int app_num = app_ids_.size();
+  const int total_count = page_num + app_num;
 
-  for (const auto& url : page_urls_) {
-    // For each `url`, retrieve the icon using favicon_service, and run the
+  // If the total number of pages and apps exceeds the limit of number of sub
+  // icons, only show 3 icons and one extra number label. Otherwise, show all
+  // the icons.
+  const int icon_requests =
+      total_count > kCoralMaxSubIconsNum ? 3 : total_count;
+
+  // Barrier callback that collects the results of multiple favicon loads and
+  // runs the original load icon callback.
+  const auto barrier_callback = base::BarrierCallback<const ui::ImageModel&>(
+      /*num_callbacks=*/icon_requests,
+      /*done_callback=*/base::BindOnce(
+          OnAllFaviconsRetrievedCoral, std::move(original_callback),
+          /*extra_number=*/total_count > icon_requests
+              ? total_count - icon_requests
+              : 0));
+
+  for (int i = 0; i < std::min(icon_requests, page_num); i++) {
+    // For each `url`, retrieve the icon using favicon service, and run the
     // `barrier_callback` with the image result.
-    GetFaviconImageCoral(url, barrier_callback);
+    GetFaviconImageCoral(page_urls_[i], barrier_callback);
   }
 
-  for (const auto& id : app_ids_) {
+  for (int i = 0; i < icon_requests - page_num; i++) {
     // For each `id`, retrieve the icon using `saved_desk_delegate`, and run the
     // `barrier_callback` with the image result.
-    GetAppIconCoral(id, barrier_callback);
+    GetAppIconCoral(app_ids_[i], barrier_callback);
   }
 }
 

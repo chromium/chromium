@@ -41,11 +41,11 @@ constexpr int kExtraNumberLabelSpacing = 1;
 
 CoralGroupedIconImage::CoralGroupedIconImage(
     const std::vector<gfx::ImageSkia>& icon_images,
-    const int extra_tabs_number,
+    int extra_number,
     const ui::ColorProvider* color_provider)
     : gfx::CanvasImageSource(gfx::Size(kBackgroundSize, kBackgroundSize)),
       icon_images_(icon_images),
-      extra_tabs_number_(extra_tabs_number),
+      extra_number_(extra_number),
       color_provider_(color_provider) {}
 
 CoralGroupedIconImage::~CoralGroupedIconImage() = default;
@@ -53,16 +53,14 @@ CoralGroupedIconImage::~CoralGroupedIconImage() = default;
 // static
 ui::ImageModel CoralGroupedIconImage::DrawCoralGroupedIconImage(
     const std::vector<gfx::ImageSkia>& icons_images,
-    int extra_tabs_number) {
+    int extra_number) {
   auto image_generator = base::BindRepeating(
-      [](const std::vector<gfx::ImageSkia>& icon_images,
-         const int extra_tabs_number,
+      [](const std::vector<gfx::ImageSkia>& icon_images, const int extra_number,
          const ui::ColorProvider* color_provider) -> gfx::ImageSkia {
         return gfx::CanvasImageSource::MakeImageSkia<CoralGroupedIconImage>(
-            icon_images, extra_tabs_number, color_provider);
+            icon_images, extra_number, color_provider);
       },
-      /*icon_images=*/icons_images,
-      /*extra_number=*/extra_tabs_number);
+      icons_images, extra_number);
 
   return ui::ImageModel::FromImageGenerator(
       image_generator, gfx::Size(kBackgroundSize, kBackgroundSize));
@@ -97,7 +95,7 @@ void CoralGroupedIconImage::Draw(gfx::Canvas* canvas) {
     return;
   }
 
-  if (icon_count == 3) {
+  if (icon_count == 3 && !extra_number_) {
     // Draw the top-left icon image.
     canvas->DrawImageInt(icon_images_[0], kIconPaddingSmall, kIconPaddingSmall);
     // Draw the top-right icon image.
@@ -108,7 +106,7 @@ void CoralGroupedIconImage::Draw(gfx::Canvas* canvas) {
     return;
   }
 
-  CHECK_GE(icon_count, 4u);
+  CHECK_GE(icon_count, 3u);
   // Draw the top-left icon image.
   canvas->DrawImageInt(icon_images_[0], kIconPaddingSmall, kIconPaddingSmall);
   // Draw the top-right icon image.
@@ -122,7 +120,7 @@ void CoralGroupedIconImage::Draw(gfx::Canvas* canvas) {
     return;
   }
 
-  // Draw the bottom-right extra tab label circular background.
+  // Draw the bottom-right extra number label circular background.
   flags.setColor(
       color_provider_->GetColor(cros_tokens::kCrosSysPrimaryContainer));
   int icon_four_midpoint =
@@ -138,7 +136,7 @@ void CoralGroupedIconImage::Draw(gfx::Canvas* canvas) {
   gfx::FontList font_list({"Google Sans"}, gfx::Font::NORMAL, 10,
                           gfx::Font::Weight::NORMAL);
   canvas->DrawStringRectWithFlags(
-      base::NumberToString16(extra_tabs_number_), font_list,
+      base::NumberToString16(extra_number_), font_list,
       color_provider_->GetColor(cros_tokens::kCrosSysOnPrimaryContainer),
       string_bounds, gfx::Canvas::TEXT_ALIGN_CENTER);
 }
