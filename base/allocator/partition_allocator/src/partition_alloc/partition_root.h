@@ -2532,7 +2532,7 @@ PartitionRoot::GetSchedulerLoopQuarantineBranch() {
   if (ThreadCache::IsValid(thread_cache)) [[likely]] {
     return thread_cache->GetSchedulerLoopQuarantineBranch();
   } else {
-    return *scheduler_loop_quarantine->get();
+    return **scheduler_loop_quarantine;
   }
 }
 
