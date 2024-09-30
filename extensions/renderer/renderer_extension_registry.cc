@@ -5,11 +5,14 @@
 #include "extensions/renderer/renderer_extension_registry.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {
 
@@ -50,10 +53,28 @@ bool RendererExtensionRegistry::Contains(
 bool RendererExtensionRegistry::Insert(
     const scoped_refptr<const Extension>& extension) {
   DCHECK(content::RenderThread::Get());
-  // TODO(crbug.com/357889496): This should check to confirm that the activation
-  // token is set for service worker based extensions (except for incognito
-  // spanning mode), and is not set for non service worker based extensions.
   base::AutoLock lock(lock_);
+
+  if (!BackgroundInfo::IsServiceWorkerBased(extension.get())) {
+    // Non-SW based extension should never have an activation token.
+    CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
+    return extensions_.Insert(extension);
+  }
+
+  ExtensionsRendererClient* client = ExtensionsRendererClient::Get();
+
+  // SW based extensions should always have an activation token, except for
+  // incognito processes for a spanning mode extension. The CHECK() for all
+  // other worker based extension is performed in
+  // Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(). We can't CHECK() for
+  // IsIncognitoProcess() == false here because this may be called on renderer
+  // process initialization before the boolean for that has been set.
+  bool is_incognito_spanning = client->IsIncognitoProcess() &&
+                               IncognitoInfo::IsSpanningMode(extension.get());
+  if (is_incognito_spanning) {
+    CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
+  }
+
   return extensions_.Insert(extension);
 }
 

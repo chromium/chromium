@@ -77,6 +77,8 @@ std::optional<base::UnguessableToken> GetActivationTokenForWorkerBasedExtension(
     if (IncognitoInfo::IsSplitMode(&extension)) {
       // Split mode extensions will have a separate activation token.
       CHECK(activation_token.has_value());
+      // TODO(crbug.com/357889496): Add a test that confirms that split mode
+      // tokens are different across the OnTR and OffTR extension processes.
     } else if (IncognitoInfo::IsSpanningMode(&extension)) {
       // Spanning mode extensions will not have a separate activation token.
       CHECK(!activation_token.has_value());
