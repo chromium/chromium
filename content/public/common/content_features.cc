@@ -1328,7 +1328,7 @@ BASE_FEATURE(kAccessibilityUnifiedSnapshots,
 // background thread.
 BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
              "AccessibilityManageBroadcastReceiverOnBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline,

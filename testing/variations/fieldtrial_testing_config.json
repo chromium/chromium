@@ -68,22 +68,6 @@
             ]
         }
     ],
-    "AccessibilityManageBroadcastReceiverOnBackground": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240701",
-                    "enable_features": [
-                        "AccessibilityManageBroadcastReceiverOnBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomEnhancements": [
         {
             "platforms": [
