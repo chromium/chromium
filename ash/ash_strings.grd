@@ -7689,6 +7689,14 @@ New install
         desc="This string appears on a page that shows suggested image results from the user's Files app. The string is shown below an illustration banner. It indicates that there are no suggested images results available. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
         No images in Files
       </message>
+      <message name="IDS_PICKER_CAPS_LOCK_ON_TEXT"
+        desc="This string appears in a popup bubble to indicate that the user just turned on their keyboard's Caps Lock.">
+        Caps Lock on
+      </message>
+      <message name="IDS_PICKER_CAPS_LOCK_OFF_TEXT"
+        desc="This string appears in a popup bubble to indicate that the user just turned off their keyboard's Caps Lock.">
+        Caps Lock off
+      </message>
       <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME"
         desc="This string is read out by a screen reader for a grid of emojis.">
         Emojis
