@@ -60,35 +60,14 @@ public enum PersistedTabDataConfiguration {
         sEncryptedLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
         sLookup.put(ArchivePersistedTabData.class, ARCHIVE_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(ArchivePersistedTabData.class, ARCHIVE_PERSISTED_TAB_DATA);
-        MOCK_PERSISTED_TAB_DATA.mStorageFactory =
-                () -> {
-                    return getMockPersistedTabDataStorage();
-                };
-        ENCRYPTED_MOCK_PERSISTED_TAB_DATA.mStorageFactory =
-                () -> {
-                    return getMockPersistedTabDataStorage();
-                };
-        SHOPPING_PERSISTED_TAB_DATA.mStorageFactory = new LevelDBPersistedTabDataStorageFactory();
-        ARCHIVE_PERSISTED_TAB_DATA.mStorageFactory = new LevelDBPersistedTabDataStorageFactory();
-
-        TEST_CONFIG.mStorageFactory =
-                () -> {
-                    return getMockPersistedTabDataStorage();
-                };
-
-        EMPTY_BYTE_BUFFER_TEST_CONFIG.mStorageFactory =
-                () -> {
-                    return getEmptyByteBufferPersistedTabDataStorage();
-                };
     }
 
     private final String mId;
-    private PersistedTabDataStorageFactory mStorageFactory;
 
     /**
      * @param id identifier for {@link PersistedTabData}
      * @param storageFactory {@link PersistedTabDataStorageFactory} associated with {@link
-     *         PersistedTabData}
+     *     PersistedTabData}
      */
     PersistedTabDataConfiguration(String id) {
         mId = id;
@@ -98,7 +77,19 @@ public enum PersistedTabDataConfiguration {
      * @return {@link PersistedTabDataStorage} for a given configuration
      */
     public PersistedTabDataStorage getStorage() {
-        return mStorageFactory.create();
+        switch (this) {
+            case MOCK_PERSISTED_TAB_DATA:
+            case ENCRYPTED_MOCK_PERSISTED_TAB_DATA:
+            case TEST_CONFIG:
+                return getMockPersistedTabDataStorage();
+            case SHOPPING_PERSISTED_TAB_DATA:
+            case ARCHIVE_PERSISTED_TAB_DATA:
+                return new LevelDBPersistedTabDataStorageFactory().create();
+            case EMPTY_BYTE_BUFFER_TEST_CONFIG:
+                return getEmptyByteBufferPersistedTabDataStorage();
+        }
+        assert false;
+        return null;
     }
 
     /**
