@@ -57,6 +57,11 @@ class DataTypeManagerImpl : public DataTypeManager,
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(DataTypeSet)> callback) const override;
+  void GetLocalDataDescriptions(
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(DataTypeSet types) override;
   State state() const override;
   TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
       DataTypeSet throttled_types,
@@ -137,6 +142,9 @@ class DataTypeManagerImpl : public DataTypeManager,
                               DataTypeSet failed_configuration_types);
 
   DataTypeSet GetEnabledTypes() const;
+
+  // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
+  DataTypeSet GetDataTypesWithLocalDataBatchUploader() const;
 
   // Records per type histograms for estimated memory usage and number of
   // entities.

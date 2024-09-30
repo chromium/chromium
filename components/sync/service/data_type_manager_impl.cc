@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +29,7 @@
 #include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/get_all_nodes_request_barrier.h"
 #include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
+#include "components/sync/service/local_data_description.h"
 
 namespace syncer {
 
@@ -113,6 +115,17 @@ base::queue<DataTypeSet> PrioritizeTypes(const DataTypeSet& types) {
   }
 
   return result;
+}
+
+std::map<DataType, LocalDataDescription> JoinAllTypesAndLocalDataDescriptions(
+    const std::vector<std::pair<DataType, LocalDataDescription>>& pairs) {
+  return std::map<DataType, LocalDataDescription>(pairs.begin(), pairs.end());
+}
+
+std::pair<DataType, LocalDataDescription> JoinTypeAndLocalDataDescription(
+    DataType type,
+    LocalDataDescription description) {
+  return {type, description};
 }
 
 }  // namespace
@@ -990,8 +1003,24 @@ void DataTypeManagerImpl::GetTypesWithUnsyncedData(
   }
 }
 
-DataTypeManager::State DataTypeManagerImpl::state() const {
-  return state_;
+void DataTypeManagerImpl::GetLocalDataDescriptions(
+    DataTypeSet types,
+    base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
+        callback) {
+  types.RetainAll(GetDataTypesWithLocalDataBatchUploader());
+  // Only retain types that are not only preferred but also active, that is,
+  // those which are configured and have not encountered any error.
+  types.RetainAll(GetActiveDataTypes());
+
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<DataType, LocalDataDescription>>(
+          types.size(), base::BindOnce(&JoinAllTypesAndLocalDataDescriptions)
+                            .Then(std::move(callback)));
+  for (DataType type : types) {
+    controllers_.at(type)->GetLocalDataBatchUploader()->GetLocalDataDescription(
+        base::BindOnce(&JoinTypeAndLocalDataDescription, type)
+            .Then(barrier_callback));
+  }
 }
 
 const DataTypeController::TypeMap& DataTypeManagerImpl::GetControllerMap()
@@ -999,8 +1028,36 @@ const DataTypeController::TypeMap& DataTypeManagerImpl::GetControllerMap()
   return controllers_;
 }
 
+void DataTypeManagerImpl::TriggerLocalDataMigration(DataTypeSet types) {
+  types.RetainAll(GetDataTypesWithLocalDataBatchUploader());
+  // Only retain types that are not only preferred but also active, that is,
+  // those which are configured and have not encountered any error.
+  types.RetainAll(GetActiveDataTypes());
+
+  for (DataType type : types) {
+    controllers_.at(type)
+        ->GetLocalDataBatchUploader()
+        ->TriggerLocalDataMigration();
+  }
+}
+
+DataTypeManager::State DataTypeManagerImpl::state() const {
+  return state_;
+}
+
 DataTypeSet DataTypeManagerImpl::GetEnabledTypes() const {
   return Difference(preferred_types_, data_type_status_table_.GetFailedTypes());
+}
+
+DataTypeSet DataTypeManagerImpl::GetDataTypesWithLocalDataBatchUploader()
+    const {
+  DataTypeSet types;
+  for (const auto& [type, controller] : controllers_) {
+    if (controller->GetLocalDataBatchUploader()) {
+      types.Put(type);
+    }
+  }
+  return types;
 }
 
 void DataTypeManagerImpl::RecordMemoryUsageAndCountsHistograms() {

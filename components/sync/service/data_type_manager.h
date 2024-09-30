@@ -21,6 +21,7 @@ namespace syncer {
 
 struct ConfigureContext;
 class DataTypeConfigurer;
+struct LocalDataDescription;
 
 // This interface is for managing the start up and shut down life cycle
 // of many different syncable data types.
@@ -131,6 +132,25 @@ class DataTypeManager {
   virtual void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(DataTypeSet)> callback) const = 0;
+
+  // Queries the count and description/preview of existing local data for
+  // `types` data types. This is usually an asynchronous operation that returns
+  // the result via `callback` once available, which includes the description
+  // for each datatype in `types` that is active and supports batch uploading.
+  // This function may invoke `callback` immediately in some cases, e.g. if
+  // `types` is empty or none of the types is active.
+  virtual void GetLocalDataDescriptions(
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
+          callback) = 0;
+
+  // Requests sync service to move all local data to account for `types` data
+  // types. This is an asynchronous method which moves the local data for all
+  // `types` to the account store locally. Upload to the server will happen as
+  // part of the regular commit process, and is NOT part of this method.
+  // Note: Only data types that are enabled and support this functionality are
+  // triggered for upload.
+  virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
 
   // The current state of the data type manager.
   virtual State state() const = 0;

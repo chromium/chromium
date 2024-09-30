@@ -2145,70 +2145,6 @@ TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldOnlyForwardEnabledTypesUponGetLocalDataDescriptions) {
-  SignInWithoutSyncConsent();
-
-  // Both DEVICE_INFO and AUTOFILL will be passed to GetLocalDataDescription(),
-  // but only DEVICE_INFO is enabled in transport mode. So only the DEVICE_INFO
-  // uploader should be queried.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  auto autofill_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
-      .WillOnce(base::test::RunOnceCallback<0>(syncer::LocalDataDescription()));
-  EXPECT_CALL(*autofill_uploader, GetLocalDataDescription).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false,
-                      std::move(autofill_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(service()->GetActiveDataTypes(),
-            DataTypeSet({NIGORI, DEVICE_INFO}));
-
-  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
-  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL},
-                                      descriptions.GetCallback());
-  EXPECT_TRUE(descriptions.Wait());
-}
-
-TEST_F(SyncServiceImplTest,
-       ShouldNotForwardTypesWithErrorUponGetLocalDataDescriptions) {
-  SignInWithoutSyncConsent();
-
-  // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
-  // GetLocalDataDescription(), but AUTOFILL_WALLET_DATA will be in an error
-  // state. So only the DEVICE_INFO uploader should be queried.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
-      .WillOnce(base::test::RunOnceCallback<0>(syncer::LocalDataDescription()));
-  EXPECT_CALL(*wallet_uploader, GetLocalDataDescription).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
-                      std::move(wallet_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  // Simulate a data type error.
-  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
-  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
-
-  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
-  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL_WALLET_DATA},
-                                      descriptions.GetCallback());
-  EXPECT_TRUE(descriptions.Wait());
-}
-
-TEST_F(SyncServiceImplTest,
        ShouldNotForwardUponGetLocalDataDescriptionsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
@@ -2239,28 +2175,6 @@ TEST_F(SyncServiceImplTest,
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldReturnEmptyUponGetLocalDataDescriptionsForSignedOutUsers) {
-  // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
-  // signed out. So the uploader should not be queried.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
-
-  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
-  service()->GetLocalDataDescriptions({DEVICE_INFO},
-                                      descriptions.GetCallback());
-  EXPECT_THAT(descriptions.Get(), IsEmpty());
-}
-
-TEST_F(SyncServiceImplTest,
        ShouldReturnEmptyUponGetLocalDataDescriptionsForSyncingUsers) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
@@ -2286,96 +2200,6 @@ TEST_F(SyncServiceImplTest,
   EXPECT_THAT(descriptions.Get(), IsEmpty());
 }
 
-TEST_F(SyncServiceImplTest, ShouldJoinLocalDataDescriptionsForDifferentTypes) {
-  SignInWithoutSyncConsent();
-
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  syncer::LocalDataDescription device_info_description;
-  device_info_description.item_count = 42;
-  syncer::LocalDataDescription wallet_description;
-  wallet_description.item_count = 43;
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
-      .WillOnce(base::test::RunOnceCallback<0>(device_info_description));
-  EXPECT_CALL(*wallet_uploader, GetLocalDataDescription)
-      .WillOnce(base::test::RunOnceCallback<0>(wallet_description));
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
-                      std::move(wallet_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
-  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL_WALLET_DATA},
-                                      descriptions.GetCallback());
-  EXPECT_THAT(
-      descriptions.Get(),
-      UnorderedElementsAre(Pair(DEVICE_INFO, device_info_description),
-                           Pair(AUTOFILL_WALLET_DATA, wallet_description)));
-}
-
-TEST_F(SyncServiceImplTest,
-       ShouldOnlyForwardEnabledTypesUponTriggerLocalDataMigration) {
-  SignInWithoutSyncConsent();
-
-  // Both DEVICE_INFO and AUTOFILL will be passed to TriggerLocalDataMigration()
-  // but only DEVICE_INFO is enabled in transport mode. So only DEVICE_INFO
-  // should be uploaded.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  auto autofill_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
-  EXPECT_CALL(*autofill_uploader, TriggerLocalDataMigration).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false,
-                      std::move(autofill_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  // Only DEVICE_INFO is enabled since AUTOFILL is not supported in
-  // transport-only mode.
-  ASSERT_EQ(service()->GetActiveDataTypes(),
-            DataTypeSet({NIGORI, DEVICE_INFO}));
-
-  service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL});
-}
-
-TEST_F(SyncServiceImplTest,
-       ShouldNotForwardTypesWithErrorUponTriggerLocalDataMigration) {
-  SignInWithoutSyncConsent();
-
-  // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
-  // TriggerLocalDataMigration(), but AUTOFILL_WALLET_DATA will be in an error
-  // state. So only DEVICE_INFO should be uploaded.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
-  EXPECT_CALL(*wallet_uploader, TriggerLocalDataMigration).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
-                      std::move(wallet_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  // Simulate a data type error.
-  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
-  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
-
-  service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL_WALLET_DATA});
-}
-
 TEST_F(SyncServiceImplTest,
        ShouldNotForwardUponTriggerLocalDataMigrationIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
@@ -2399,25 +2223,6 @@ TEST_F(SyncServiceImplTest,
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
-
-  service()->TriggerLocalDataMigration({DEVICE_INFO});
-}
-
-TEST_F(SyncServiceImplTest,
-       ShouldDoNothingUponTriggerLocalDataMigrationForNotSignedInUsers) {
-  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
-  // signed out. So data should not be uploaded.
-  auto device_info_uploader =
-      std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
-
-  std::vector<FakeControllerInitParams> params;
-  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
-                      std::move(device_info_uploader));
-  InitializeService(std::move(params));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
   service()->TriggerLocalDataMigration({DEVICE_INFO});
 }

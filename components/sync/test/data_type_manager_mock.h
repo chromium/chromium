@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_manager.h"
+#include "components/sync/service/local_data_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -50,6 +51,13 @@ class DataTypeManagerMock : public DataTypeManager {
               GetTypesWithUnsyncedData,
               (DataTypeSet, base::OnceCallback<void(DataTypeSet)>),
               (const override));
+  MOCK_METHOD(
+      void,
+      GetLocalDataDescriptions,
+      (DataTypeSet,
+       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>),
+      (override));
+  MOCK_METHOD(void, TriggerLocalDataMigration, (DataTypeSet), (override));
   MOCK_METHOD(State, state, (), (const override));
   MOCK_METHOD(TypeStatusMapForDebugging,
               GetTypeStatusMapForDebugging,

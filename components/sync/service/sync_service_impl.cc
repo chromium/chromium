@@ -212,21 +212,6 @@ void MaybeClearAccountKeyedPreferences(
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-std::map<DataType, LocalDataDescription> JoinAllTypesAndLocalDataDescriptions(
-    const std::vector<std::pair<DataType, LocalDataDescription>>& pairs) {
-  std::map<DataType, LocalDataDescription> map;
-  for (const std::pair<DataType, LocalDataDescription>& pair : pairs) {
-    map.emplace(pair);
-  }
-  return map;
-}
-
-std::pair<DataType, LocalDataDescription> JoinTypeAndLocalDataDescription(
-    DataType type,
-    LocalDataDescription description) {
-  return {type, description};
-}
-
 }  // namespace
 
 SyncServiceImpl::InitParams::InitParams() = default;
@@ -2257,29 +2242,17 @@ void SyncServiceImpl::GetLocalDataDescriptionsImpl(
     return;
   }
 
-  // Only retain types that are not only preferred but also active, that is,
-  // those which are configured and have not encountered any error.
-  types.RetainAll(GetActiveDataTypes());
-
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
+    // Only retain types that are not only preferred but also active, that is,
+    // those which are configured and have not encountered any error.
+    types.RetainAll(GetActiveDataTypes());
+
     sync_client_->GetLocalDataDescriptions(types, std::move(callback));
     return;
   }
 
-  types.RetainAll(GetDataTypesWithLocalDataBatchUploader());
-  auto barrier_callback =
-      base::BarrierCallback<std::pair<DataType, LocalDataDescription>>(
-          types.size(), base::BindOnce(&JoinAllTypesAndLocalDataDescriptions)
-                            .Then(std::move(callback)));
-  for (DataType type : types) {
-    data_type_manager_->GetControllerMap()
-        .at(type)
-        ->GetLocalDataBatchUploader()
-        ->GetLocalDataDescription(
-            base::BindOnce(&JoinTypeAndLocalDataDescription, type)
-                .Then(barrier_callback));
-  }
+  data_type_manager_->GetLocalDataDescriptions(types, std::move(callback));
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
@@ -2297,34 +2270,17 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
     return;
   }
 
-  // Only retain types that are not only preferred but also active, that is,
-  // those which are configured and have not encountered any error.
-  types.RetainAll(GetActiveDataTypes());
-
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
+    // Only retain types that are not only preferred but also active, that is,
+    // those which are configured and have not encountered any error.
+    types.RetainAll(GetActiveDataTypes());
+
     sync_client_->TriggerLocalDataMigration(types);
     return;
   }
 
-  types.RetainAll(GetDataTypesWithLocalDataBatchUploader());
-  for (DataType type : types) {
-    data_type_manager_->GetControllerMap()
-        .at(type)
-        ->GetLocalDataBatchUploader()
-        ->TriggerLocalDataMigration();
-  }
-}
-
-DataTypeSet SyncServiceImpl::GetDataTypesWithLocalDataBatchUploader() const {
-  DataTypeSet types;
-  for (const auto& [type, controller] :
-       data_type_manager_->GetControllerMap()) {
-    if (controller->GetLocalDataBatchUploader()) {
-      types.Put(type);
-    }
-  }
-  return types;
+  return data_type_manager_->TriggerLocalDataMigration(types);
 }
 
 }  // namespace syncer

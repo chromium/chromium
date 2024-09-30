@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -20,7 +21,9 @@
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/test/fake_data_type_controller.h"
+#include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,6 +152,9 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
   DataTypeSet connected_types() const { return connected_types_; }
   int configure_call_count() const { return configure_call_count_; }
   const ConfigureParams& last_params() const { return last_params_; }
+  bool has_ongoing_configuration() const {
+    return !last_params_.ready_task.is_null();
+  }
 
  private:
   DataTypeSet connected_types_;
@@ -188,10 +194,12 @@ class DataTypeManagerImplTest : public testing::Test {
   ~DataTypeManagerImplTest() override = default;
 
   void InitDataTypeManager(DataTypeSet types_without_transport_mode_support,
-                           DataTypeSet types_with_transport_mode_support = {}) {
+                           DataTypeSet types_with_transport_mode_support = {},
+                           DataTypeSet types_with_batch_uploader = {}) {
     CHECK(Intersection(types_without_transport_mode_support,
                        types_with_transport_mode_support)
               .empty());
+    CHECK(types_with_transport_mode_support.HasAll(types_with_batch_uploader));
 
     DataTypeController::TypeVector controllers;
     for (DataType type : types_without_transport_mode_support) {
@@ -199,8 +207,12 @@ class DataTypeManagerImplTest : public testing::Test {
           type, /*enable_transport_mode=*/false));
     }
     for (DataType type : types_with_transport_mode_support) {
+      auto batch_uploader =
+          types_with_batch_uploader.Has(type)
+              ? std::make_unique<MockDataTypeLocalDataBatchUploader>()
+              : nullptr;
       controllers.push_back(std::make_unique<FakeDataTypeController>(
-          type, /*enable_transport_mode=*/true));
+          type, /*enable_transport_mode=*/true, std::move(batch_uploader)));
     }
     InitDataTypeManagerWithControllers(std::move(controllers));
   }
@@ -237,6 +249,14 @@ class DataTypeManagerImplTest : public testing::Test {
     return FinishDownloadWithFailedTypes(DataTypeSet());
   }
 
+  // Completes ongoing download requests until idle, i.e. until there is no
+  // download ongoing.
+  void FinishAllDownloadsUntilIdle() {
+    while (configurer_.has_ongoing_configuration()) {
+      FinishDownload();
+    }
+  }
+
   // Gets the fake controller for the given type, which should have
   // been previously added via InitDataTypeManager().
   FakeDataTypeController* GetController(DataType data_type) const {
@@ -246,6 +266,16 @@ class DataTypeManagerImplTest : public testing::Test {
       return nullptr;
     }
     return static_cast<FakeDataTypeController*>(it->second.get());
+  }
+
+  // Gets the batch uploader for the given type, which should have
+  // been previously added via InitDataTypeManager(). Returns null if the
+  // datatype was initialized without a batch uploader.
+  MockDataTypeLocalDataBatchUploader* GetBatchUploader(
+      DataType data_type) const {
+    CHECK(dtm_);
+    return static_cast<MockDataTypeLocalDataBatchUploader*>(
+        GetController(data_type)->GetLocalDataBatchUploader());
   }
 
   void FailEncryptionFor(DataTypeSet encrypted_types) {
@@ -1870,6 +1900,172 @@ TEST_F(DataTypeManagerImplTest, ClearMetadataWhileStoppedExceptFor) {
 
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   EXPECT_EQ(1, GetController(PREFERENCES)->model()->clear_metadata_count());
+}
+
+TEST_F(DataTypeManagerImplTest, ShouldGetLocalDataDescriptionsForOneType) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{BOOKMARKS, READING_LIST},
+      /*types_with_batch_uploader=*/{BOOKMARKS, READING_LIST});
+  Configure({BOOKMARKS, READING_LIST});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(),
+            AddControlTypesTo({BOOKMARKS, READING_LIST}));
+
+  base::OnceCallback<void(LocalDataDescription)> bookmarks_upload_callback;
+
+  // Only the controller for bookmarks should be exercised.
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), GetLocalDataDescription)
+      .Times(0);
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), GetLocalDataDescription)
+      .WillOnce([&](base::OnceCallback<void(LocalDataDescription)> callback) {
+        bookmarks_upload_callback = std::move(callback);
+      });
+
+  base::MockCallback<
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>>
+      mock_completion_callback;
+
+  dtm_->GetLocalDataDescriptions({BOOKMARKS}, mock_completion_callback.Get());
+
+  ASSERT_TRUE(bookmarks_upload_callback);
+
+  // When bookmarks complete, the caller should also be notified about
+  // completion.
+  LocalDataDescription bookmarks_description;
+  bookmarks_description.item_count = 42;
+  EXPECT_CALL(mock_completion_callback,
+              Run(ElementsAre(Pair(BOOKMARKS, bookmarks_description))));
+  std::move(bookmarks_upload_callback).Run(bookmarks_description);
+}
+
+TEST_F(DataTypeManagerImplTest,
+       ShouldGetLocalDataDescriptionsForMultipleTypes) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{BOOKMARKS, READING_LIST},
+      /*types_with_batch_uploader=*/{BOOKMARKS, READING_LIST});
+  Configure({BOOKMARKS, READING_LIST});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(),
+            AddControlTypesTo({BOOKMARKS, READING_LIST}));
+
+  base::OnceCallback<void(LocalDataDescription)> bookmarks_upload_callback;
+  base::OnceCallback<void(LocalDataDescription)> reading_list_upload_callback;
+
+  // Both controllers should be exercised.
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), GetLocalDataDescription)
+      .WillOnce([&](base::OnceCallback<void(LocalDataDescription)> callback) {
+        bookmarks_upload_callback = std::move(callback);
+      });
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), GetLocalDataDescription)
+      .WillOnce([&](base::OnceCallback<void(LocalDataDescription)> callback) {
+        reading_list_upload_callback = std::move(callback);
+      });
+
+  base::MockCallback<
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>>
+      mock_completion_callback;
+  EXPECT_CALL(mock_completion_callback, Run).Times(0);
+
+  dtm_->GetLocalDataDescriptions({BOOKMARKS, READING_LIST},
+                                 mock_completion_callback.Get());
+
+  ASSERT_TRUE(bookmarks_upload_callback);
+  ASSERT_TRUE(reading_list_upload_callback);
+
+  // When bookmarks complete, nothing happens because reading list is still
+  // ongoing.
+  LocalDataDescription bookmarks_description;
+  bookmarks_description.item_count = 42;
+  std::move(bookmarks_upload_callback).Run(bookmarks_description);
+
+  // When both types complete, the caller should also be notified about
+  // completion.
+  LocalDataDescription reading_list_description;
+  reading_list_description.item_count = 31;
+  EXPECT_CALL(
+      mock_completion_callback,
+      Run(UnorderedElementsAre(Pair(BOOKMARKS, bookmarks_description),
+                               Pair(READING_LIST, reading_list_description))));
+  std::move(reading_list_upload_callback).Run(reading_list_description);
+}
+
+TEST_F(DataTypeManagerImplTest,
+       ShouldOnlyGetLocalDataDescriptionsFromActiveTypes) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{BOOKMARKS, READING_LIST},
+      /*types_with_batch_uploader=*/{BOOKMARKS, READING_LIST});
+  Configure({BOOKMARKS});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(), AddControlTypesTo({BOOKMARKS}));
+
+  base::OnceCallback<void(LocalDataDescription)> bookmarks_upload_callback;
+
+  // Only the controller for bookmarks should be exercised, because reading list
+  // is not active.
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), GetLocalDataDescription)
+      .Times(0);
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), GetLocalDataDescription)
+      .WillOnce([&](base::OnceCallback<void(LocalDataDescription)> callback) {
+        bookmarks_upload_callback = std::move(callback);
+      });
+
+  base::MockCallback<
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>>
+      mock_completion_callback;
+  EXPECT_CALL(mock_completion_callback, Run).Times(0);
+
+  dtm_->GetLocalDataDescriptions({BOOKMARKS, READING_LIST},
+                                 mock_completion_callback.Get());
+
+  // When bookmarks complete, the caller should also be notified about
+  // completion.
+  EXPECT_CALL(mock_completion_callback, Run(ElementsAre(Pair(BOOKMARKS, _))));
+  std::move(bookmarks_upload_callback).Run(LocalDataDescription());
+}
+
+TEST_F(DataTypeManagerImplTest,
+       ShouldReturnEmptyGetLocalDataDescriptionsIfNoActiveTypes) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{BOOKMARKS, READING_LIST},
+      /*types_with_batch_uploader=*/{BOOKMARKS, READING_LIST});
+  Configure({});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(), ControlTypes());
+
+  // The types aren't active so the batch uploaders should not be exercised.
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), GetLocalDataDescription)
+      .Times(0);
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), GetLocalDataDescription).Times(0);
+
+  base::MockCallback<
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>>
+      mock_completion_callback;
+  EXPECT_CALL(mock_completion_callback, Run);
+  dtm_->GetLocalDataDescriptions({BOOKMARKS, READING_LIST},
+                                 mock_completion_callback.Get());
+}
+
+TEST_F(DataTypeManagerImplTest,
+       ShouldOnlyMigrateActiveTypesUponTriggerLocalDataMigration) {
+  InitDataTypeManager(
+      /*types_without_transport_mode_support=*/{},
+      /*types_with_transport_mode_support=*/{BOOKMARKS, READING_LIST},
+      /*types_with_batch_uploader=*/{BOOKMARKS, READING_LIST});
+  Configure({BOOKMARKS});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(dtm_->GetActiveDataTypes(), AddControlTypesTo({BOOKMARKS}));
+
+  // Only the controller for bookmarks should be exercised, because reading list
+  // is not active.
+  EXPECT_CALL(*GetBatchUploader(READING_LIST), TriggerLocalDataMigration)
+      .Times(0);
+  EXPECT_CALL(*GetBatchUploader(BOOKMARKS), TriggerLocalDataMigration);
+
+  dtm_->TriggerLocalDataMigration({BOOKMARKS, READING_LIST});
 }
 
 }  // namespace
