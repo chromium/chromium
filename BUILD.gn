@@ -353,6 +353,9 @@ group("gn_all") {
       deps += [
         "//chrome/credential_provider",
         "//chrome/credential_provider/test:gcp_unittests",
+
+        # TODO(grt): Remove when chrome depends on the service.
+        "//chrome/windows_services/tracing_service",
       ]
 
       if (enable_platform_experience) {

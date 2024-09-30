@@ -748,6 +748,12 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
       .Append(kElevationServiceExe);
 }
 
+base::FilePath GetTracingServicePath(const base::FilePath& target_path,
+                                     const base::Version& version) {
+  return target_path.AppendASCII(version.GetString())
+      .Append(kTracingServiceExe);
+}
+
 void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,
                                    const base::Version& new_version,

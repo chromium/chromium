@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//chrome/process_version_rc_template.gni")
+
+executable("tracing_service") {
+  sources = [
+    "tracing_service.cc",
+    "tracing_service.rc",
+  ]
+
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":version_resources",
+    "//build/win:default_exe_manifest",
+  ]
+}
+
+process_version_rc_template("version_resources") {
+  sources = [ "tracing_service_exe.ver" ]
+  output = "$target_gen_dir/tracing_service_exe.rc"
+}

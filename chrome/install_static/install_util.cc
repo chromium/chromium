@@ -387,6 +387,25 @@ std::wstring GetElevationServiceDisplayName() {
   return GetBaseAppName() + kElevationServiceDisplayName;
 }
 
+const CLSID& GetTracingServiceClsid() {
+  return InstallDetails::Get().tracing_service_clsid();
+}
+
+const IID& GetTracingServiceIid() {
+  return InstallDetails::Get().tracing_service_iid();
+}
+
+std::wstring GetTracingServiceName() {
+  std::wstring name = GetTracingServiceDisplayName();
+  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  return name;
+}
+
+std::wstring GetTracingServiceDisplayName() {
+  static constexpr wchar_t kTracingServiceDisplayName[] = L" Tracing Service";
+  return GetBaseAppName() + kTracingServiceDisplayName;
+}
+
 std::wstring GetBaseAppName() {
   return InstallDetails::Get().mode().base_app_name;
 }

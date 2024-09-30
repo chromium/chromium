@@ -115,6 +115,12 @@ const IID& GetElevatorIid();
 std::wstring GetElevationServiceName();
 std::wstring GetElevationServiceDisplayName();
 
+// Returns the Tracing Service CLSID, IID, Name, and Display Name respectively.
+const CLSID& GetTracingServiceClsid();
+const IID& GetTracingServiceIid();
+std::wstring GetTracingServiceName();
+std::wstring GetTracingServiceDisplayName();
+
 // Returns the unsuffixed application name of this program. This is the base of
 // the name registered with Default Programs. IMPORTANT: This must only be
 // called by the installer.

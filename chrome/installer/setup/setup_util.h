@@ -148,6 +148,10 @@ std::wstring GetWerHelperRegistryPath();
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);
 
+// Returns the file path to tracing_service.exe (in |version| directory).
+base::FilePath GetTracingServicePath(const base::FilePath& target_path,
+                                     const base::Version& version);
+
 // Adds or removes downgrade version registry value.
 void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,

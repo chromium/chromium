@@ -662,6 +662,10 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="The description of the Windows elevation service. Displayed in the Windows Services management console.">
           Provides elevated privileges for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>.
         </message>
+        <message name="IDS_TRACING_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows system tracing service. Displayed in the Windows Services management console.">
+          Provides system tracing services for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>. If this service is disabled, performance traces created by the browser will not include system-wide events such as context switch and ready thread events.
+        </message>
       </if>
       <!-- Options Dialog -->
       <if expr="is_win">

@@ -1,0 +1,7 @@
+monorail: {
+  component: "Speed>Tracing"
+}
+team_email: "tracing@chromium.org"
+buganizer_public: {
+  component_id: 1457213
+}

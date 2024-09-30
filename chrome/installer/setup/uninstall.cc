@@ -635,6 +635,14 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
       LOG(WARNING) << "Failed to delete "
                    << install_static::GetElevationServiceName();
     }
+    if (!InstallServiceWorkItem::DeleteService(
+            install_static::GetTracingServiceName(),
+            install_static::GetClientStateKeyPath(),
+            {install_static::GetTracingServiceClsid()},
+            {install_static::GetTracingServiceIid()})) {
+      LOG(WARNING) << "Failed to delete "
+                   << install_static::GetTracingServiceName();
+    }
   }
 
   // Delete all Start Menu Internet registrations that refer to this Chrome.

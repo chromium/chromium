@@ -63,6 +63,17 @@ const InstallConstants kInstallModes[] = {
                          {0xb8, 0x3e, 0x77, 0xcc, 0x67, 0xd9, 0xce,
                           0xed}},  // IElevator IID and TypeLib
                                    // {B88C45B9-8825-4629-B83E-77CC67D9CEED}.
+        .tracing_service_clsid = {0x83f69367,
+                                  0x442d,
+                                  0x447f,
+                                  {0x8b, 0xcc, 0x0e, 0x3f, 0x97, 0xbe, 0x9c,
+                                   0xf2}},  // SystemTraceSession CLSID.
+        .tracing_service_iid = {0xa3fd580a,
+                                0xffd4,
+                                0x4075,
+                                {0x91, 0x74, 0x75, 0xd0, 0xb1, 0x99, 0xd3,
+                                 0xcb}},  // ISystemTraceSessionChromium IID and
+                                          // TypeLib
         .default_channel_name =
             L"",  // Empty default channel name since no update integration.
         .channel_strategy = ChannelStrategy::UNSUPPORTED,
