@@ -21,9 +21,9 @@ FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser) : browser_(browser) {
       << "PagePlaceholderBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  ProfileIOS* profile = browser_->GetProfile();
   session_restoration_service_observation_.Observe(
-      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+      SessionRestorationServiceFactory::GetForProfile(profile));
 }
 
 FaviconBrowserAgent::~FaviconBrowserAgent() {

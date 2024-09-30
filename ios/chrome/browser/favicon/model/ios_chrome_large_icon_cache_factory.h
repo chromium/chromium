@@ -15,11 +15,11 @@ class KeyedService;
 class LargeIconCache;
 
 // Singleton that owns all LargeIconCaches and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSChromeLargeIconCacheFactory : public BrowserStateKeyedServiceFactory {
  public:
   // TODO(crbug.com/358301380): remove this method.
-  static LargeIconCache* GetForBrowserState(ChromeBrowserState* browser_state);
+  static LargeIconCache* GetForBrowserState(ProfileIOS* profile);
 
   static LargeIconCache* GetForProfile(ProfileIOS* profile);
   static IOSChromeLargeIconCacheFactory* GetInstance();

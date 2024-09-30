@@ -15,10 +15,9 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<FaviconLoader>(
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browser_state));
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace

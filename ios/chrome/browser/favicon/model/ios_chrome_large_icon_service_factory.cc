@@ -25,14 +25,13 @@ const char kGoogleServerClientParam[] = "chrome";
 
 std::unique_ptr<KeyedService> BuildLargeIconService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<favicon::LargeIconServiceImpl>(
-      ios::FaviconServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::FaviconServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           image_fetcher::CreateIOSImageDecoder(),
-          browser_state->GetSharedURLLoaderFactory()),
+          profile->GetSharedURLLoaderFactory()),
       kDipForServerRequests, kIconTypeForServerRequests,
       kGoogleServerClientParam);
 }
