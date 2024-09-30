@@ -715,6 +715,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   // Close tabs.
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
+    base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Tabs"));
     MaybeFetchTabsInfoThenCloseTabs(delete_begin, delete_end);
   }
 
