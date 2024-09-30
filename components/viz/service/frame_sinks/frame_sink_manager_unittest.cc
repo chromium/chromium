@@ -121,6 +121,28 @@ class FrameSinkManagerTest : public testing::Test {
     }
   }
 
+  // Creates a CompositorFrameSinkImpl.
+  void CreateCompositorFrameSink(
+      const FrameSinkId& frame_sink_id,
+      input::mojom::RenderInputRouterConfigPtr config) {
+    MockCompositorFrameSinkClient compositor_frame_sink_client;
+    mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+
+    manager_.CreateCompositorFrameSink(
+        frame_sink_id, /*bundle_id=*/std::nullopt,
+        compositor_frame_sink.BindNewPipeAndPassReceiver(),
+        compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
+    EXPECT_TRUE(CompositorFrameSinkExists(frame_sink_id));
+  }
+
+  input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(int grouping_id) {
+    auto config = input::mojom::RenderInputRouterConfig::New();
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+    config->rir_client = std::move(rir_client);
+    config->grouping_id = grouping_id;
+    return config;
+  }
+
   // testing::Test implementation.
   void SetUp() override {
     manager_.SetInputManagerForTesting(
@@ -168,14 +190,8 @@ TEST_F(FrameSinkManagerTest, InputManagerCreation) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  CreateCompositorFrameSink(kFrameSinkIdA,
+                            /* render_input_router_config= */ nullptr);
 
   // InputManager is not created since IsTransferInputToVizSupported() returns
   // false.
@@ -189,14 +205,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  CreateCompositorFrameSink(kFrameSinkIdA,
+                            /* render_input_router_config= */ nullptr);
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
   manager_.InvalidateFrameSinkId(kFrameSinkIdA);
@@ -814,14 +824,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.RegisterBeginFrameSource(&source, kFrameSinkIdA);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  CreateCompositorFrameSink(kFrameSinkIdA,
+                            /* render_input_router_config= */ nullptr);
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
@@ -863,14 +867,8 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
   manager_.RegisterBeginFrameSource(&source, kFrameSinkIdA);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  CreateCompositorFrameSink(kFrameSinkIdA,
+                            /* render_input_router_config= */ nullptr);
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
@@ -916,14 +914,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.RegisterBeginFrameSource(&source, kFrameSinkIdA);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  CreateCompositorFrameSink(kFrameSinkIdA,
+                            /* render_input_router_config= */ nullptr);
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
@@ -983,18 +975,8 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-  auto config = input::mojom::RenderInputRouterConfig::New();
-  config->rir_client = std::move(rir_client);
-  config->grouping_id = 1;
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
 
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
   if (InputManagerExists()) {
     EXPECT_TRUE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdA));
   }
@@ -1074,15 +1056,9 @@ TEST_P(AndroidFrameSinkManagerTest,
   ttp.StartTrace("viz");
 
   // Register a non layer tree frame sink.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(),
-      /* render_input_router_config= */ nullptr);
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+  CreateCompositorFrameSink(kFrameSinkIdB,
+                            /* render_input_router_config= */ nullptr);
 
   if (InputManagerExists()) {
     // RIR should not be created for non layer tree frame sink.
@@ -1136,34 +1112,15 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-  auto config = input::mojom::RenderInputRouterConfig::New();
-  config->rir_client = std::move(rir_client);
-  config->grouping_id = 1;
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
 
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
 
   // Create another CompositorFrameSinkImpl for a different WebContent.
-  MockCompositorFrameSinkClient compositor_frame_sink_client2;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink2;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client2;
-  auto config2 = input::mojom::RenderInputRouterConfig::New();
-  config2->rir_client = std::move(rir_client2);
-  config2->grouping_id = 2;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink2.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client2.BindInterfaceRemote(), std::move(config2));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/2));
+
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   auto* mock_input_manager = GetMockInputManager();
@@ -1196,34 +1153,15 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-  auto config = input::mojom::RenderInputRouterConfig::New();
-  config->rir_client = std::move(rir_client);
-  config->grouping_id = 1;
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
 
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
 
   // Create another CompositorFrameSinkImpl for the same WebContent.
-  MockCompositorFrameSinkClient compositor_frame_sink_client2;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink2;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client2;
-  auto config2 = input::mojom::RenderInputRouterConfig::New();
-  config2->rir_client = std::move(rir_client2);
-  config2->grouping_id = 1;
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink2.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client2.BindInterfaceRemote(), std::move(config2));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/1));
+
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   auto* mock_input_manager = GetMockInputManager();
@@ -1259,18 +1197,8 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   // Create a CompositorFrameSinkImpl.
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-  auto config = input::mojom::RenderInputRouterConfig::New();
-  config->rir_client = std::move(rir_client);
-  config->grouping_id = 1;
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
 
-  manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
-      compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
-  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
   EXPECT_EQ(InputManagerExists(), expected_creation);
   EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
 
