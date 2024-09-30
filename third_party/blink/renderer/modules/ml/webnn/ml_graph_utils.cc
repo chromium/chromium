@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -409,21 +410,23 @@ base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
       LogConsoleWarning(
           script_state,
           "WARNING: MLOperandDescriptor.dimensions is deprecated. "
-          "Use MLOperandDescriptor.shape instead.");
+          "Use MLOperandDescriptor.shape instead.",
+          mojom::blink::ConsoleMessageSource::kDeprecation);
     }
   }
 
   return desc.dimensions();
 }
 
-void LogConsoleWarning(ScriptState* script_state, const String& message) {
+void LogConsoleWarning(ScriptState* script_state,
+                       const String& message,
+                       mojom::blink::ConsoleMessageSource message_source) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!execution_context) {
     return;
   }
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
+      message_source, mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
 }  // namespace blink

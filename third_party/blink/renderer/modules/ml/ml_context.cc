@@ -176,6 +176,11 @@ ScriptPromise<MLComputeResult> MLContext::compute(
     return EmptyPromise();
   }
 
+  LogConsoleWarning(script_state,
+                    "WARNING: MLContext.compute() is deprecated. Use "
+                    "MLContext.dispatch() instead.",
+                    mojom::blink::ConsoleMessageSource::kDeprecation);
+
   return graph->Compute(std::move(scoped_trace), inputs, outputs, script_state,
                         exception_state);
 }

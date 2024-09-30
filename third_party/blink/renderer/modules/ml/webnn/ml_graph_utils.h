@@ -12,6 +12,7 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
@@ -116,8 +117,11 @@ MODULES_EXPORT base::expected<Vector<uint32_t>, std::string>
 GetShapeFromDescriptor(ScriptState* script_state,
                        const MLOperandDescriptor& desc);
 
-MODULES_EXPORT void LogConsoleWarning(ScriptState* script_state,
-                                      const String& message);
+MODULES_EXPORT void LogConsoleWarning(
+    ScriptState* script_state,
+    const String& message,
+    mojom::blink::ConsoleMessageSource message_source =
+        mojom::blink::ConsoleMessageSource::kJavaScript);
 
 }  // namespace blink
 
