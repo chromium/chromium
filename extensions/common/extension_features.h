@@ -171,10 +171,6 @@ BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
 
-// When enabled, causes extensions to allow access to certain APIs only if the
-// user is in the developer mode.
-BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);
-
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 // Automatically disable extensions not included in the Safe Browsing CRX
 // allowlist if the user has turned on Enhanced Safe Browsing (ESB). The
