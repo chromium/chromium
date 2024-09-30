@@ -387,10 +387,6 @@ suite('PrinterStatusTest', function() {
         .then(() => {
           assertEquals(
               PRINTER_ICON_GREY, getIconString(dropdown, destination.key));
-          assertEquals(
-              0,
-              nativeLayerCros.getCallCount(
-                  'recordPrinterStatusRetrySuccessHistogram'));
           return waitBeforeNextRender(destinationSelect);
         })
         .then(() => {
@@ -399,14 +395,6 @@ suite('PrinterStatusTest', function() {
               2, nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
           assertEquals(
               PRINTER_ICON_GREEN, getIconString(dropdown, destination.key));
-          assertEquals(
-              1,
-              nativeLayerCros.getCallCount(
-                  'recordPrinterStatusRetrySuccessHistogram'));
-          assertEquals(
-              true,
-              nativeLayerCros.getArgs(
-                  'recordPrinterStatusRetrySuccessHistogram')[0]);
         });
   });
 

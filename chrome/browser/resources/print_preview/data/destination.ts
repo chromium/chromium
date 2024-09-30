@@ -411,13 +411,6 @@ export class Destination {
             }
 
             this.printerStatusReason_ = statusReason;
-
-            // If this is the second printer status attempt, record the result.
-            if (this.printerStatusRetrySent_) {
-              NativeLayerCrosImpl.getInstance()
-                  .recordPrinterStatusRetrySuccessHistogram(
-                      !isPrinterUnreachable);
-            }
           }
           return Promise.resolve(this.key);
         });

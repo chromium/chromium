@@ -383,17 +383,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.PrinterStatusRetrySuccess" enum="Boolean"
-    expires_after="2022-12-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
-  <summary>
-    Records the success outcome for a retried printer status query to an
-    unreachable local printer. Only recorded for the retry attempt. The result
-    for the first attempt is recorded by Printing.CUPS.PrinterStatusQueryResult.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
     expires_after="2025-03-23">
   <owner>bmgordon@chromium.org</owner>
