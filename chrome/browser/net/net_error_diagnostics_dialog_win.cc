@@ -67,6 +67,10 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
   }
 
  private:
+// TODO(crbug.com/370065739): The Ndf* functions here have been deprecated.
+// Update this function and then remove these pragmas.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   void ShowDialogOnPrivateThread(HWND parent, const std::string& failed_url) {
     NDFHANDLE incident_handle;
     std::wstring failed_url_wide = base::UTF8ToWide(failed_url);
@@ -77,6 +81,7 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
     NdfExecuteDiagnosis(incident_handle, parent);
     NdfCloseIncident(incident_handle);
   }
+#pragma clang diagnostic pop
 
   void DiagnosticsDone(std::unique_ptr<RunState> run_state,
                        base::OnceClosure callback) {
