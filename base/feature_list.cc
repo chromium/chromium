@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/feature_list.h"
-
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <tuple>
 
 #include "base/base_switches.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
+#include "base/feature_visitor.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -36,10 +39,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_visitor.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -687,14 +686,39 @@ void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
   allowed_feature_names_.insert(std::move(feature_name));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
-void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor) {
-  CHECK(g_feature_list_instance);
+void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor,
+                                         std::string_view filter_prefix) {
+  // If there is no feature list, there are no overrides. This should only happen
+  // in tests.
+  // TODO(leszeks): Add a CHECK_IS_TEST() to verify the above.
+  if (!g_feature_list_instance) {
+    return;
+  }
+
   FieldTrialParamAssociator* params_associator =
       FieldTrialParamAssociator::GetInstance();
 
-  for (auto& feature_override : g_feature_list_instance->overrides_) {
+  using FeatureOverride = std::pair<std::string, OverrideEntry>;
+  base::span<FeatureOverride> filtered_overrides(
+      g_feature_list_instance->overrides_);
+  if (!filter_prefix.empty()) {
+    // If there is a filter prefix, then change the begin/end range to be the
+    // range where the values are prefixed with the given prefix (overrides are
+    // lexically sorted, so this will be a continuous range). This is
+    // implemented as a binary search of the upper and lower bounds of the
+    // override iterator, projecting each iterator value to just the
+    // key, trimmed to the length of the prefix.
+    DCHECK(std::ranges::is_sorted(
+        filtered_overrides, std::less<>(),
+        [](const FeatureOverride& entry) { return entry.first; }));
+    filtered_overrides = std::ranges::equal_range(
+        filtered_overrides, filter_prefix, std::less<>(),
+        [filter_prefix](const FeatureOverride& entry) {
+          return std::string_view(entry.first).substr(0, filter_prefix.size());
+        });
+  }
+  for (const FeatureOverride& feature_override : filtered_overrides) {
     FieldTrial* field_trial = feature_override.second.field_trial;
 
     std::string trial_name;
@@ -712,7 +736,6 @@ void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor) {
                   group_name);
   }
 }
-#endif  // BULDFLAG(IS_CHROMEOS_ASH)
 
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);

@@ -22,6 +22,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/feature_visitor.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -218,10 +219,77 @@ void SetV8FlagsIfOverridden(const base::Feature& feature,
   }
 }
 
+constexpr std::string_view kV8FlagFeaturePrefix = "V8Flag_";
+
+}  // namespace
+
+class V8FeatureVisitor : public base::FeatureVisitor {
+ public:
+  void Visit(const std::string& feature_name,
+             base::FeatureList::OverrideState override_state,
+             const std::map<std::string, std::string>& params,
+             const std::string& trial_name,
+             const std::string& group_name) override {
+    std::string_view feature_name_view(feature_name);
+
+    // VisitFeaturesAndParams is called with kV8FlagFeaturePrefix as a filter
+    // prefix, so we expect all feature names to start with "V8Flag_". Strip
+    // this prefix off to get the corresponding V8 flag name.
+    DCHECK(feature_name_view.starts_with(kV8FlagFeaturePrefix));
+    std::string_view flag_name =
+        feature_name_view.substr(kV8FlagFeaturePrefix.size());
+
+    switch (override_state) {
+      case base::FeatureList::OverrideState::OVERRIDE_USE_DEFAULT:
+        return;
+
+      case base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE:
+        SetV8FlagsFormatted("--no-%s", flag_name);
+        // Do not set parameters for disabled features.
+        break;
+
+      case base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE:
+        SetV8FlagsFormatted("--%s", flag_name);
+        for (const auto& [param_name, param_value] : params) {
+          SetV8FlagsFormatted("--%s=%s", param_name.c_str(),
+                              param_value.c_str());
+        }
+        break;
+    }
+  }
+};
+
+namespace {
+
 void SetFlags(IsolateHolder::ScriptMode mode,
               const std::string js_command_line_flags) {
-  // We assume that all feature flag defaults correspond to the default
-  // values of the corresponding V8 flags.
+  // Chromium features prefixed with "V8Flag_" are forwarded to V8 as V8 flags,
+  // with the "V8Flag_" prefix stripped off. For example, an enabled feature
+  // "V8Flag_foo_bar" will be passed to V8 as the flag `--foo_bar`. Similarly,
+  // if that feature is explicitly disabled, it will be passed to V8 as
+  // `--no-foo_bar`. No Chromium-side declaration of a V8Flag_foo_bar feature
+  // is necessary, the matching is done on strings.
+  //
+  // Parameters attached to features will also be passed through, with the same
+  // name as the parameter and the value passed by string, to be decoded by V8's
+  // flag parsing.
+  //
+  // Thus, running Chromium with:
+  //
+  //   --enable-features=V8Flag_foo,V8Flag_bar:bar_param/20
+  //   --disable-features=V8Flag_baz
+  //
+  // will be converted, on V8 initialization, to V8 flags:
+  //
+  //   --foo --bar --bar_param=20 --no-baz
+  V8FeatureVisitor feature_visitor;
+  base::FeatureList::VisitFeaturesAndParams(feature_visitor,
+                                            kV8FlagFeaturePrefix);
+
+  // Otherwise, feature flags explicitly defined in Chromium are translated
+  // to V8 flags as follows. We ignore feature flag default values, instead
+  // using the corresponding V8 flags default values if there is no explicit
+  // feature override.
   SetV8FlagsIfOverridden(features::kV8CompactCodeSpaceWithStack,
                          "--compact-code-space-with-stack",
                          "--no-compact-code-space-with-stack");

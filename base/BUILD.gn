@@ -294,6 +294,7 @@ component("base") {
     "export_template.h",
     "feature_list.cc",
     "feature_list.h",
+    "feature_visitor.h",
     "features.cc",
     "features.h",
     "file_version_info.h",
@@ -1000,10 +1001,6 @@ component("base") {
       "threading/cross_process_platform_thread_delegate.h",
       "threading/platform_thread_cros.cc",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "feature_visitor.h" ]
   }
 
   if (is_linux || is_chromeos || is_android) {

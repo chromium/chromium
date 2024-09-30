@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/feature_list_buildflags.h"
+#include "base/feature_visitor.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
@@ -31,10 +32,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_visitor.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -851,7 +848,6 @@ TEST(FeatureListAccessorTest, InitFromCommandLineWithFeatureParams) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test only class to verify correctness of
 // FeatureList::VisitFeaturesAndParams().
 class TestFeatureVisitor : public FeatureVisitor {
@@ -979,6 +975,35 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
 
   EXPECT_EQ(actual_feature_state, expected_feature_state);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST(TestFeatureVisitor, FeatureWithPrefix) {
+  base::test::ScopedFeatureList outer_scope;
+  outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  base::test::ScopedFeatureList initialized_feature_list;
+
+  initialized_feature_list.InitFromCommandLine(
+      /*enable_features=*/
+      "AFeature,AnotherFeature,TestFeature,TestFeature2,PrefixedFeature,"
+      "PrefixedFeature2",
+      /*disable_features=*/"");
+
+  TestFeatureVisitor visitor;
+  base::FeatureList::VisitFeaturesAndParams(visitor, "Prefixed");
+  std::multiset<TestFeatureVisitor::VisitedFeatureState> actual_feature_state =
+      visitor.feature_state();
+
+  std::multiset<TestFeatureVisitor::VisitedFeatureState>
+      expected_feature_state = {
+          {"PrefixedFeature",
+           FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+          {"PrefixedFeature2",
+           FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+      };
+
+  EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
 
 }  // namespace base
