@@ -92,13 +92,6 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   // visual viewport loop accounts for all iframe viewports, and the page visual
   // viewport accounts for the full window. Convert everything to root frame
   // coordinates in order to make sure offsets aren't lost along the way.
-  //
-  // TODO(1052145): Overflow and clip-path clips are ignored here, which results
-  // in delegated ink trails ignoring the clips and appearing incorrectly in
-  // some situations. This could also occur due to transformations, as the
-  // |presenation_area| is currently always a rectilinear bounding box. Ideally
-  // both of these situations are handled correctly, or the trail doesn't appear
-  // if we are unable to accurately render it.
   PhysicalRect border_box_rect_absolute = layout_box->LocalToAbsoluteRect(
       layout_box->PhysicalBorderBoxRect(), kTraverseDocumentBoundaries);
 
