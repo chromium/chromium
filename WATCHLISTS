@@ -1954,6 +1954,7 @@
                   '|chrome/renderer/v8_unwinder'\
                   '|components/metrics/call_stacks/.*call_stack'\
                   '|components/metrics/public/mojom/call_stack'\
+                  '|components/sampling_profiler'\
                   '|build/android/gyp/create_unwind_table*'\
                   '|build/android/gyp/extract_unwind_tables*'\
                   '|chrome/android/features/stack_unwinder/'\
