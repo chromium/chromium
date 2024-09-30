@@ -11,6 +11,7 @@
 
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
+#include <IOKit/hidsystem/IOLLEvent.h>  // for NX_ constants
 #include <stddef.h>
 
 #import <string_view>
@@ -51,14 +52,22 @@ struct ModifierKey {
 
 // Modifier keys, grouped into left/right pairs.
 const ModifierKey kModifierKeys[] = {
-    {kVK_Shift, 1 << 1, NSEventModifierFlagShift},            // Left Shift
-    {kVK_RightShift, 1 << 2, NSEventModifierFlagShift},       // Right Shift
-    {kVK_Command, 1 << 3, NSEventModifierFlagCommand},        // Left Command
-    {kVK_RightCommand, 1 << 4, NSEventModifierFlagCommand},   // Right Command
-    {kVK_Option, 1 << 5, NSEventModifierFlagOption},          // Left Alt
-    {kVK_RightOption, 1 << 6, NSEventModifierFlagOption},     // Right Alt
-    {kVK_Control, 1 << 0, NSEventModifierFlagControl},        // Left Control
-    {kVK_RightControl, 1 << 13, NSEventModifierFlagControl},  // Right Control
+    // Left Shift
+    {kVK_Shift, NX_DEVICELSHIFTKEYMASK, NSEventModifierFlagShift},
+    // Right Shift
+    {kVK_RightShift, NX_DEVICERSHIFTKEYMASK, NSEventModifierFlagShift},
+    // Left Command
+    {kVK_Command, NX_DEVICELCMDKEYMASK, NSEventModifierFlagCommand},
+    // Right Command
+    {kVK_RightCommand, NX_DEVICERCMDKEYMASK, NSEventModifierFlagCommand},
+    // Left Option
+    {kVK_Option, NX_DEVICELALTKEYMASK, NSEventModifierFlagOption},
+    // Right Option
+    {kVK_RightOption, NX_DEVICERALTKEYMASK, NSEventModifierFlagOption},
+    // Left Control
+    {kVK_Control, NX_DEVICELCTLKEYMASK, NSEventModifierFlagControl},
+    // Right Control
+    {kVK_RightControl, NX_DEVICERCTLKEYMASK, NSEventModifierFlagControl},
 };
 
 NSEvent* BuildFakeKeyEvent(NSUInteger key_code,
@@ -260,7 +269,7 @@ TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
 }
 
 // Test that individual modifier keys are still reported correctly, even if the
-// undocumented device dependent modifier flags are not set.
+// device dependent modifier flags are not set.
 TEST(WebInputEventBuilderMacTest, MissingUndocumentedModifierFlags) {
   for (const auto& key : kModifierKeys) {
     NSEvent* mac_event = BuildFakeKeyEvent(key.mac_key_code, 0,
