@@ -4253,6 +4253,7 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tabs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
@@ -4390,6 +4391,10 @@ static_library("browser") {
       # TODO(crbug.com/369756821): Remove this circular dependency when //c/b/feature_engagement
       # gets modularized.
       "//chrome/browser/ui/global_media_controls:impl",
+
+      # TODO(crbug.com/369794212): Remove this circular dependency when //c/b/signin/identity_manager_factory.h
+      # gets modularized.
+      "//chrome/browser/ui/toolbar/cast:impl",
 
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",

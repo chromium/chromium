@@ -1388,8 +1388,6 @@ static_library("ui") {
       "toolbar/back_forward_menu_model.h",
       "toolbar/bookmark_sub_menu_model.cc",
       "toolbar/bookmark_sub_menu_model.h",
-      "toolbar/cast/cast_contextual_menu.cc",
-      "toolbar/cast/cast_toolbar_button_controller.cc",
       "toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc",
       "toolbar/pinned_toolbar/pinned_toolbar_actions_model.h",
       "toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.cc",
@@ -1831,6 +1829,7 @@ static_library("ui") {
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/toolbar/cast",
+      "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:impl",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
@@ -1995,6 +1994,7 @@ static_library("ui") {
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/global_media_controls:impl",
+      "//chrome/browser/ui/toolbar/cast:impl",
     ]
 
     if (is_mac) {
