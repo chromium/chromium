@@ -197,6 +197,8 @@ static_library("test_support") {
     "../browser/tpcd/experiment/mock_experiment_manager.h",
     "../browser/tpcd/support/trial_test_utils.cc",
     "../browser/tpcd/support/trial_test_utils.h",
+    "../test/base/menu_model_test.cc",
+    "../test/base/menu_model_test.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_render_view_test.cc",
@@ -6344,8 +6346,6 @@ test("unit_tests") {
     "../renderer/media/flash_embed_rewrite_unittest.cc",
     "../renderer/net/net_error_helper_core_unittest.cc",
     "../renderer/v8_unwinder_unittest.cc",
-    "../test/base/menu_model_test.cc",
-    "../test/base/menu_model_test.h",
   ]
 
   if (build_with_tflite_lib) {
