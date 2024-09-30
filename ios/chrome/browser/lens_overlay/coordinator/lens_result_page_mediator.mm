@@ -27,6 +27,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
@@ -407,7 +408,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
   AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
-  _webState->GetWebViewProxy().allowsBackForwardNavigationGestures = NO;
+  id<CRWWebViewProxy> webViewProxy = _webState->GetWebViewProxy();
+  webViewProxy.allowsBackForwardNavigationGestures = NO;
+  // Allow the scrollView to cover the safe area.
+  webViewProxy.scrollViewProxy.clipsToBounds = NO;
 
   if (self.consumer) {
     _webState->SetWebUsageEnabled(true);

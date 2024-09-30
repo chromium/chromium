@@ -114,6 +114,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
   // Webview container.
   self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  self.webViewContainer.clipsToBounds = YES;
   [self.view addSubview:self.webViewContainer];
 
   // Omnibox popup container.
