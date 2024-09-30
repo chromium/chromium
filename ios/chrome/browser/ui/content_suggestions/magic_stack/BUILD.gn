@@ -68,10 +68,12 @@ source_set("utils") {
     "//base",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
+    "//components/prefs:prefs",
     "//components/segmentation_platform/public",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:price_tracking_promo",
   ]
   frameworks = [ "UIKit.framework" ]
 }

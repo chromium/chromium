@@ -358,7 +358,8 @@
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
   }
-  if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService)) {
+  if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService,
+                                      prefs)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(
@@ -658,6 +659,10 @@
       break;
     case ContentSuggestionsModuleType::kParcelTracking: {
       [self presentParcelTrackingAlertCoordinator];
+      break;
+    }
+    case ContentSuggestionsModuleType::kPriceTrackingPromo: {
+      [_priceTrackingPromoMediator disableModule];
       break;
     }
     default:

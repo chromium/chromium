@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class AuthenticationService;
+class PrefService;
 
 namespace commerce {
 class ShoppingService;
@@ -20,6 +21,7 @@ CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
 
 // True if the price tracking notification card feature is enabled.
 bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
-                                     AuthenticationService* auth_service);
+                                     AuthenticationService* auth_service,
+                                     PrefService* pref_service);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_UTILS_H_

@@ -164,6 +164,7 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return YES;
     default:
       return NO;
@@ -282,6 +283,8 @@ const float kCornerRadius = 24;
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      return @"";
     default:
       NOTREACHED();
   }
@@ -310,6 +313,9 @@ const float kCornerRadius = 24;
           IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
           base::SysNSStringToUTF16(l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD);
     default:
       NOTREACHED();
   }

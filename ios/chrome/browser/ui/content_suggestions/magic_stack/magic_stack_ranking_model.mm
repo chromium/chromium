@@ -348,7 +348,8 @@
   MagicStackModule* card;
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
-      if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService)) {
+      if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService,
+                                          _prefService)) {
         _ephemeralCardToShow =
             ContentSuggestionsModuleType::kPriceTrackingPromo;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;

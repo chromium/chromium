@@ -117,6 +117,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:features",

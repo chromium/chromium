@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator+testing.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -74,6 +75,8 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
         swizzle_block);
     pref_service_.registry()->RegisterBooleanPref(
         commerce::kPriceEmailNotificationsEnabled, false);
+    pref_service_.registry()->RegisterBooleanPref(kPriceTrackingPromoDisabled,
+                                                  false);
   }
 
   ~PriceTrackingPromoMediatorTest() override {}
