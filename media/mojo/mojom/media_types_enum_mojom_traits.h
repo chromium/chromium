@@ -484,6 +484,25 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kCrOsVerifiedAccessDisabled;
       case media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
         return media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
+      case media::CreateCdmStatus::kAndroidMediaDrmIllegalArgument:
+        return media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalArgument;
+      case media::CreateCdmStatus::kAndroidMediaDrmIllegalState:
+        return media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalState;
+      case media::CreateCdmStatus::kAndroidFailedL1SecurityLevel:
+        return media::mojom::CreateCdmStatus::kAndroidFailedL1SecurityLevel;
+      case media::CreateCdmStatus::kAndroidFailedL3SecurityLevel:
+        return media::mojom::CreateCdmStatus::kAndroidFailedL3SecurityLevel;
+      case media::CreateCdmStatus::kAndroidFailedSecurityOrigin:
+        return media::mojom::CreateCdmStatus::kAndroidFailedSecurityOrigin;
+      case media::CreateCdmStatus::kAndroidFailedMediaCryptoSession:
+        return media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoSession;
+      case media::CreateCdmStatus::kAndroidFailedToStartProvisioning:
+        return media::mojom::CreateCdmStatus::kAndroidFailedToStartProvisioning;
+      case media::CreateCdmStatus::kAndroidFailedMediaCryptoCreate:
+        return media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoCreate;
+      case media::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme:
+        return media::mojom::CreateCdmStatus::
+            kAndroidUnsupportedMediaCryptoScheme;
     }
 
     NOTREACHED();
@@ -556,6 +575,33 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return true;
       case media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
         *output = media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalArgument:
+        *output = media::CreateCdmStatus::kAndroidMediaDrmIllegalArgument;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalState:
+        *output = media::CreateCdmStatus::kAndroidMediaDrmIllegalState;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedL1SecurityLevel:
+        *output = media::CreateCdmStatus::kAndroidFailedL1SecurityLevel;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedL3SecurityLevel:
+        *output = media::CreateCdmStatus::kAndroidFailedL3SecurityLevel;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedSecurityOrigin:
+        *output = media::CreateCdmStatus::kAndroidFailedSecurityOrigin;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoSession:
+        *output = media::CreateCdmStatus::kAndroidFailedMediaCryptoSession;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedToStartProvisioning:
+        *output = media::CreateCdmStatus::kAndroidFailedToStartProvisioning;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoCreate:
+        *output = media::CreateCdmStatus::kAndroidFailedMediaCryptoCreate;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme:
+        *output = media::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme;
         return true;
     }
 

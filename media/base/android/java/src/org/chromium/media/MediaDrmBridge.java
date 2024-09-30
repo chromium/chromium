@@ -98,7 +98,10 @@ public class MediaDrmBridge {
 
     private MediaDrm mMediaDrm;
     private MediaCrypto mMediaCrypto;
+
+    // Reference to the C++ media::MediaDrmBridge object.
     private long mNativeMediaDrmBridge;
+
     private UUID mSchemeUUID;
     private final boolean mRequiresMediaCrypto;
 
@@ -326,7 +329,11 @@ public class MediaDrmBridge {
             Log.i(TAG, "Not provisioned during openSession()");
 
             if (!sMediaCryptoDeferrer.isProvisioning()) {
-                return startProvisioning();
+                boolean result = startProvisioning();
+                if (!result) {
+                    onCreateError(MediaDrmCreateError.FAILED_TO_START_PROVISIONING);
+                }
+                return result;
             }
 
             // Cannot provision. Defer MediaCrypto creation and try again later.
@@ -345,6 +352,7 @@ public class MediaDrmBridge {
         if (mediaCryptoSessionDrmId == null) {
             Log.e(TAG, "Cannot create MediaCrypto Session.");
             // No need to release() here since openSession() does so on failure.
+            onCreateError(MediaDrmCreateError.FAILED_MEDIA_CRYPTO_SESSION);
             return false;
         }
 
@@ -362,9 +370,11 @@ public class MediaDrmBridge {
                 return true;
             } else {
                 Log.e(TAG, "Cannot create MediaCrypto for unsupported scheme.");
+                onCreateError(MediaDrmCreateError.UNSUPPORTED_MEDIACRYPTO_SCHEME);
             }
         } catch (android.media.MediaCryptoException e) {
             Log.e(TAG, "Cannot create MediaCrypto", e);
+            onCreateError(MediaDrmCreateError.FAILED_MEDIA_CRYPTO_CREATE);
         }
 
         release();
@@ -456,8 +466,8 @@ public class MediaDrmBridge {
      * @param schemeUUID Crypto scheme UUID.
      * @param securityOrigin Security origin. Empty value means no need for origin isolated storage.
      * @param securityLevel Security level. If empty, the default one should be used.
-     * @param nativeMediaDrmBridge Native object of this class.
-     * @param nativeMediaDrmStorageBridge Native object of persistent storage.
+     * @param nativeMediaDrmBridge Native C++ object of this class.
+     * @param nativeMediaDrmStorageBridge Native C++ object of persistent storage.
      */
     @CalledByNative
     private static MediaDrmBridge create(
@@ -480,6 +490,9 @@ public class MediaDrmBridge {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
             if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
+                MediaDrmBridgeJni.get()
+                        .onCreateError(
+                                nativeMediaDrmBridge, MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
                 return null;
             }
 
@@ -491,21 +504,35 @@ public class MediaDrmBridge {
                             nativeMediaDrmStorageBridge);
         } catch (android.media.UnsupportedSchemeException e) {
             Log.e(TAG, "Unsupported DRM scheme", e);
+            MediaDrmBridgeJni.get()
+                    .onCreateError(
+                            nativeMediaDrmBridge, MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
             return null;
         } catch (java.lang.IllegalArgumentException e) {
             Log.e(TAG, "Failed to create MediaDrmBridge", e);
+            MediaDrmBridgeJni.get()
+                    .onCreateError(
+                            nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_ARGUMENT);
             return null;
         } catch (java.lang.IllegalStateException e) {
             Log.e(TAG, "Failed to create MediaDrmBridge", e);
+            MediaDrmBridgeJni.get()
+                    .onCreateError(
+                            nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_STATE);
             return null;
         }
 
         if (!securityLevel.isEmpty() && !mediaDrmBridge.setSecurityLevel(securityLevel)) {
+            MediaDrmBridgeJni.get()
+                    .onCreateError(nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_LEVEL);
             mediaDrmBridge.release();
             return null;
         }
 
         if (!securityOrigin.isEmpty() && !mediaDrmBridge.setOrigin(securityOrigin)) {
+            MediaDrmBridgeJni.get()
+                    .onCreateError(
+                            nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_ORIGIN);
             mediaDrmBridge.release();
             return null;
         }
@@ -515,7 +542,7 @@ public class MediaDrmBridge {
         // process, in which case MediaCrypto will be created after provision
         // is finished.
         if (requiresMediaCrypto && !mediaDrmBridge.createMediaCrypto()) {
-            // No need to call release() as createMediaCrypto() does if it fails.
+            // No need to call release() or onCreateError() as createMediaCrypto() does if it fails.
             return null;
         }
 
@@ -1663,6 +1690,12 @@ public class MediaDrmBridge {
         }
     }
 
+    private void onCreateError(final int error) {
+        if (isNativeMediaDrmBridgeValid()) {
+            MediaDrmBridgeJni.get().onCreateError(mNativeMediaDrmBridge, error);
+        }
+    }
+
     private class EventListener implements MediaDrm.OnEventListener {
         @Override
         public void onEvent(
@@ -1936,5 +1969,7 @@ public class MediaDrmBridge {
                 MediaDrmBridge caller,
                 byte[] emeSessionId,
                 long expirationTime);
+
+        void onCreateError(long nativeMediaDrmBridge, int errorCode);
     }
 }

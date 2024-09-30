@@ -24,12 +24,14 @@
 #include "media/base/android/media_drm_storage_bridge.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/cdm_promise_adapter.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_drm_storage.h"
 #include "media/base/media_export.h"
 #include "media/base/provision_fetcher.h"
+#include "media/base/status.h"
 #include "url/origin.h"
 
 namespace base {
@@ -80,7 +82,26 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
     MAX_VALUE = ILLEGAL_STATE,
   };
 
+  // Errors that can occur when creating a MediaDrmBridge Java object.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  enum class MediaDrmCreateError {
+    MIN_VALUE = 0,
+    SUCCESS = MIN_VALUE,
+    UNSUPPORTED_DRM_SCHEME,
+    MEDIADRM_ILLEGAL_ARGUMENT,
+    MEDIADRM_ILLEGAL_STATE,
+    FAILED_SECURITY_LEVEL,
+    FAILED_SECURITY_ORIGIN,
+    FAILED_MEDIA_CRYPTO_SESSION,
+    FAILED_TO_START_PROVISIONING,
+    FAILED_MEDIA_CRYPTO_CREATE,
+    UNSUPPORTED_MEDIACRYPTO_SCHEME,
+    MAX_VALUE = UNSUPPORTED_MEDIACRYPTO_SCHEME,
+  };
+
   using MediaCryptoReadyCB = MediaCryptoContext::MediaCryptoReadyCB;
+  using CdmCreationResult =
+      CreateCdmTypedStatus::Or<scoped_refptr<MediaDrmBridge>>;
 
   // Checks whether |key_system| is supported.
   static bool IsKeySystemSupported(const std::string& key_system);
@@ -112,7 +133,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   //
   // |create_fetcher_cb| can be empty when we don't want origin provision
   // to happen, e.g. when unprovision the origin.
-  static scoped_refptr<MediaDrmBridge> CreateWithoutSessionSupport(
+  static CdmCreationResult CreateWithoutSessionSupport(
       const std::string& key_system,
       const std::string& origin_id,
       SecurityLevel security_level,
@@ -269,12 +290,16 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const base::android::JavaParamRef<jbyteArray>& j_session_id,
       jlong expiry_time_ms);
 
+  // Called when an error happens during creation of the MediaDrmBridge Java
+  // object.
+  void OnCreateError(JNIEnv* env, jint j_error_code);
+
  private:
   friend class MediaDrmBridgeFactory;
   // For DeleteSoon() in DeleteOnCorrectThread().
   friend class base::DeleteHelper<MediaDrmBridge>;
 
-  static scoped_refptr<MediaDrmBridge> CreateInternal(
+  static CdmCreationResult CreateInternal(
       const std::vector<uint8_t>& scheme_uuid,
       const std::string& origin_id,
       SecurityLevel security_level,
@@ -383,6 +408,10 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   MediaCryptoContextImpl media_crypto_context_;
+
+  // Error recorded when creating MediaDrmBridge Java object. Only set if
+  // create() returns null.
+  MediaDrmCreateError last_create_error_ = MediaDrmCreateError::SUCCESS;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaDrmBridge> weak_factory_{this};

@@ -413,6 +413,15 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="CrOs: Insufficient GPU memory available."/>
   <int value="19" label="CrOs: Verified Access is disabled."/>
   <int value="20" label="CrOs: Remote factory creation failed."/>
+  <int value="21" label="Android: Illegal argument passed to MediaDrm."/>
+  <int value="22" label="Android: MediaDrm not initialized properly."/>
+  <int value="23" label="Android: Unable to set L1 security level."/>
+  <int value="24" label="Android: Unable to set L3 security level."/>
+  <int value="25" label="Android: Unable to set origin."/>
+  <int value="26" label="Android: Unable to create MediaCrypto session."/>
+  <int value="27" label="Android: Unable to start provisioning."/>
+  <int value="28" label="Android: Unable to create MediaCrypto object."/>
+  <int value="29" label="Android: Crypto scheme not supported."/>
 </enum>
 
 <enum name="CrosBeamformingDeviceState">

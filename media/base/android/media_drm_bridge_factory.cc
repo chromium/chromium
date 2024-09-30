@@ -102,18 +102,18 @@ void MediaDrmBridgeFactory::CreateMediaDrmBridge(const std::string& origin_id) {
   // Requires MediaCrypto so that it can be used by MediaCodec-based decoders.
   const bool requires_media_crypto = true;
 
-  media_drm_bridge_ = MediaDrmBridge::CreateInternal(
+  auto result = MediaDrmBridge::CreateInternal(
       scheme_uuid_, origin_id, security_level_, "User", requires_media_crypto,
       std::move(storage_), create_fetcher_cb_, session_message_cb_,
       session_closed_cb_, session_keys_change_cb_,
       session_expiration_update_cb_);
 
-  if (!media_drm_bridge_) {
-    std::move(cdm_created_cb_)
-        .Run(nullptr, CreateCdmStatus::kMediaDrmBridgeCreationFailed);
+  if (!result.has_value()) {
+    std::move(cdm_created_cb_).Run(nullptr, std::move(result).code());
     return;
   }
 
+  media_drm_bridge_ = std::move(result).value();
   media_drm_bridge_->SetMediaCryptoReadyCB(base::BindOnce(
       &MediaDrmBridgeFactory::OnMediaCryptoReady, weak_factory_.GetWeakPtr()));
 }

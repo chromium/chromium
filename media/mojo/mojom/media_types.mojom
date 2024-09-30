@@ -638,4 +638,13 @@ enum CreateCdmStatus {
   kInsufficientGpuResources,
   kCrOsVerifiedAccessDisabled,
   kCrOsRemoteFactoryCreationFailed,
+  kAndroidMediaDrmIllegalArgument,
+  kAndroidMediaDrmIllegalState,
+  kAndroidFailedL1SecurityLevel,
+  kAndroidFailedL3SecurityLevel,
+  kAndroidFailedSecurityOrigin,
+  kAndroidFailedMediaCryptoSession,
+  kAndroidFailedToStartProvisioning,
+  kAndroidFailedMediaCryptoCreate,
+  kAndroidUnsupportedMediaCryptoScheme,
 };
