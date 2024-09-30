@@ -728,8 +728,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that the user interface style is respected after a drag and drop.
-// TODO(crbug.com/368385383): Test flaky on iOS.
-- (void)DISABLED_testTraitCollection {
+- (void)testTraitCollection {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
   [ChromeEarlGrey openNewTab];
@@ -756,8 +755,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       [[GREYElementMatcherBlock alloc] initWithMatchesBlock:match
                                            descriptionBlock:describe];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          IdentifierForCellAtIndex(0))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              IdentifierForCellAtIndex(0)),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:matcher];
 }
 
