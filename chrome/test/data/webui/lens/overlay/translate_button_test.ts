@@ -68,8 +68,12 @@ suite('OverlayTranslateButton', function() {
   test('TranslateButtonClick', async () => {
     assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
 
+    const expectedTargetLanguage =
+        await testLanguageBrowserProxy.getTranslateTargetLanguage();
     const focusRegionEventPromise =
         eventToPromise('focus-region', document.body);
+    let translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
     // Clicking the translate button should focus the shimmer.
@@ -77,6 +81,13 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
 
+    // Translate mode state change event should have been fired.
+    let translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        expectedTargetLanguage);
 
     // By default, we should send a translation request for source "auto" and
     // target language as defined by the proxy.
@@ -84,8 +95,6 @@ suite('OverlayTranslateButton', function() {
         'issueTranslateFullPageRequest');
     const sourceLanguage = args[0];
     const targetLanguage = args[1];
-    const expectedTargetLanguage =
-        await testLanguageBrowserProxy.getTranslateTargetLanguage();
     assertEquals(sourceLanguage, 'auto');
     assertEquals(targetLanguage, expectedTargetLanguage);
 
@@ -96,12 +105,23 @@ suite('OverlayTranslateButton', function() {
     // translate mode request.
     const unfocusRegionEventPromise =
         eventToPromise('unfocus-region', document.body);
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
     overlayTranslateButtonElement.$.translateDisableButton.click();
     // Clicking the translate button again should unfocus the shimmer.
     await unfocusRegionEventPromise;
     const unfocusRegionEvent = await unfocusRegionEventPromise;
     assertEquals(
         unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    // Translate mode state change event should have been fired.
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertFalse(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        expectedTargetLanguage);
+
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
@@ -363,6 +383,8 @@ suite('OverlayTranslateButton', function() {
 
     const firstSourceLanguage = 'auto';
     const firstTargetLanguage = 'sw';
+    let translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
     let focusRegionEventPromise = eventToPromise('focus-region', document.body);
     callbackRouterRemote.setTranslateMode(
         firstSourceLanguage, firstTargetLanguage);
@@ -388,8 +410,18 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
 
+    // Translate mode state change event should have been fired.
+    let translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        firstTargetLanguage);
+
     const secondSourceLanguage = 'sw';
     const secondTargetLanguage = 'en';
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
     callbackRouterRemote.setTranslateMode(
         secondSourceLanguage, secondTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
@@ -402,12 +434,22 @@ suite('OverlayTranslateButton', function() {
         overlayTranslateButtonElement.$.targetLanguageButton.innerText,
         'English');
 
+    // Translate mode state change event should have been fired.
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        secondTargetLanguage);
+
     let unfocusRegionEventPromise =
         eventToPromise('unfocus-region', document.body);
-    // `setTextSelection` is called whenever there is a text selection
-    // (non-translate) to go back to via back button. This means the translate
-    // mode should be disabled.
-    callbackRouterRemote.setTextSelection(0, 0);
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    // `setTranslateMode` is called with empty languages when there is a
+    // non-translate selection to go back to via back button. This means the
+    // translate mode should be disabled.
+    callbackRouterRemote.setTranslateMode('', '');
     await waitAfterNextRender(overlayTranslateButtonElement);
     // Verify translate mode is disabled.
     assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
@@ -421,9 +463,19 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
 
+    // Translate mode state change event should have been fired.
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertFalse(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        secondTargetLanguage);
+
     const thirdSourceLanguage = 'en';
     const thirdTargetLanguage = 'sw';
     focusRegionEventPromise = eventToPromise('focus-region', document.body);
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
     callbackRouterRemote.setTranslateMode(
         thirdSourceLanguage, thirdTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
@@ -448,20 +500,18 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
 
+    // Translate mode state change event should have been fired.
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        thirdTargetLanguage);
+
     unfocusRegionEventPromise = eventToPromise('unfocus-region', document.body);
-    // `setPostRegionSelection` is called whenever there is a region selection
-    // to go back to via back button. This means the translate mode should be
-    // disabled.
-    callbackRouterRemote.setPostRegionSelection({
-      box: {
-        x: 0.5,
-        y: 0.5,
-        width: 1,
-        height: 1,
-      },
-      rotation: 0,
-      coordinateType: 0,
-    });
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    callbackRouterRemote.setTranslateMode('', '');
     await waitAfterNextRender(overlayTranslateButtonElement);
     // Verify translate mode is disabled.
     assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
@@ -475,13 +525,18 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
 
-    // Verify the call count of ending and starting translate requests.
+    // Translate mode state change event should have been fired.
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertFalse(translateModeStateChangeEvent.detail.translateModeEnabled);
+    assertEquals(
+        translateModeStateChangeEvent.detail.targetLanguage,
+        thirdTargetLanguage);
+
+    // Verify the call count of starting translate requests.
     assertEquals(
         3,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
-    assertEquals(
-        2,
-        testBrowserProxy.handler.getCallCount('issueEndTranslateModeRequest'));
   });
 
   test('SetTranslateModeToSameLanguages', async () => {

@@ -699,7 +699,6 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     initialization_data_->selected_region_bitmap_.reset();
     initialization_data_->selected_text_.reset();
     initialization_data_->additional_search_query_params_.clear();
-    initialization_data_->translate_options_.reset();
     selected_region_thumbnail_uri_.clear();
     lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     page_->ClearAllSelections();
@@ -761,6 +760,23 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
     side_panel_page_->SetBackArrowVisible(false);
   }
 
+  if (query.translate_options_.has_value()) {
+    page_->SetTranslateMode(query.translate_options_->source_language,
+                            query.translate_options_->target_language);
+    initialization_data_->translate_options_ = query.translate_options_.value();
+  } else {
+    // If we were previously in translate mode, we need to send a request to end
+    // translate mode.
+    if (initialization_data_->currently_loaded_search_query_->translate_options_
+            .has_value()) {
+      IssueEndTranslateModeRequest();
+      SetSidePanelIsLoadingResults(true);
+    }
+    // Disable translate mode by setting source and target languages to empty
+    // strings. This is a no-op if translate mode is already disabled.
+    page_->SetTranslateMode(std::string(), std::string());
+  }
+
   // Clear any active selections on the page and then re-add selections for this
   // query and update the selection, thumbnail and searchbox state.
   CHECK(page_);
@@ -813,12 +829,6 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
           selected_region_bitmap);
     }
     return;
-  }
-
-  if (query.translate_options_.has_value()) {
-    page_->SetTranslateMode(query.translate_options_->source_language,
-                            query.translate_options_->target_language);
-    initialization_data_->translate_options_ = query.translate_options_.value();
   }
 
   // Load the popped query URL in the results frame if it does not need to

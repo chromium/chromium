@@ -41,6 +41,7 @@ const SUPPORTED_TRANSLATION_LANGUAGES = new Set([
 export interface TranslateState {
   translateModeEnabled: boolean;
   targetLanguage: string;
+  shouldUnselectWords: boolean;
 }
 
 export interface TranslateButtonElement {
@@ -143,11 +144,7 @@ export class TranslateButtonElement extends PolymerElement {
     // Set up listener to listen to events from C++.
     this.listenerIds = [
       this.browserProxy.callbackRouter.setTranslateMode.addListener(
-          this.enableTranslateMode.bind(this)),
-      this.browserProxy.callbackRouter.setTextSelection.addListener(
-          this.disableTranslateMode.bind(this)),
-      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
-          this.disableTranslateMode.bind(this)),
+          this.setTranslateMode.bind(this)),
     ];
   }
 
@@ -234,6 +231,7 @@ export class TranslateButtonElement extends PolymerElement {
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
         targetLanguage: this.targetLanguage.code,
+        shouldUnselectWords: true,
       },
     }));
   }
@@ -269,6 +267,7 @@ export class TranslateButtonElement extends PolymerElement {
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
         targetLanguage: this.targetLanguage.code,
+        shouldUnselectWords: true,
       },
     }));
   }
@@ -281,7 +280,12 @@ export class TranslateButtonElement extends PolymerElement {
     }
   }
 
-  private enableTranslateMode(sourceLanguage: string, targetLanguage: string) {
+  private setTranslateMode(sourceLanguage: string, targetLanguage: string) {
+    if (sourceLanguage.length === 0 && targetLanguage.length === 0) {
+      this.disableTranslateMode();
+      return;
+    }
+
     const newSourceLanguage = sourceLanguage === 'auto' ?
         null :
         this.translateLanguageList.find(
@@ -316,6 +320,7 @@ export class TranslateButtonElement extends PolymerElement {
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
         targetLanguage: this.targetLanguage.code,
+        shouldUnselectWords: true,
       },
     }));
   }
@@ -327,13 +332,13 @@ export class TranslateButtonElement extends PolymerElement {
 
     this.isTranslateModeEnabled = false;
     unfocusShimmer(this, ShimmerControlRequester.TRANSLATE);
-    this.browserProxy.handler.issueEndTranslateModeRequest();
     this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
       bubbles: true,
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
         targetLanguage: this.targetLanguage.code,
+        shouldUnselectWords: false,
       },
     }));
   }

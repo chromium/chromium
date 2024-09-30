@@ -719,7 +719,9 @@ void LensOverlayQueryController::
         std::map<std::string, std::string> additional_search_query_params,
         std::optional<lens::ImageCrop> image_crop,
         lens::LensOverlayClientLogs client_logs) {
-  if (cluster_info_.has_value()) {
+  if (cluster_info_.has_value() &&
+      query_controller_state_ !=
+          QueryControllerState::kAwaitingFullImageResponse) {
     FetchInteractionRequestAndGenerateLensSearchUrl(
         request_index, std::move(region), query_text, object_id, selection_type,
         additional_search_query_params, image_crop, client_logs,
