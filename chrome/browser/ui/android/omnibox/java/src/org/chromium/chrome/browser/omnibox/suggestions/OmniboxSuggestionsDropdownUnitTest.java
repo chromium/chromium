@@ -338,12 +338,12 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onOmniboxSessionStateChange(true);
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
         assertEquals(600, mDropdown.getMeasuredWidth());
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 400, 0, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 400, 0, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         ShadowLooper.runUiThreadTasks();
         assertTrue(mDropdown.isLayoutRequested());
@@ -363,7 +363,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         int marginTop = 100;
         int height = 800 - marginTop;
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, height, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, height, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, height);
 
@@ -371,7 +371,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertNotNull(layoutParams);
         assertEquals(marginTop, layoutParams.topMargin);
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 0, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 0, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, height);
 
@@ -389,18 +389,74 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         int height = 400;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
 
         assertEquals(height, mDropdown.getMeasuredHeight());
 
         height = 300;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
 
         assertEquals(height, mDropdown.getMeasuredHeight());
+    }
+
+    @Test
+    public void testAlignmentProvider_bottomPaddingChange() {
+        mDropdown.setEmbedder(mEmbedder);
+        mDropdown.onOmniboxSessionStateChange(true);
+        mDropdown.setLayoutParams(
+                new LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        int originalPaddingTop = mDropdown.getPaddingTop();
+        int originalPaddingLeft = mDropdown.getPaddingLeft();
+        int originalPaddingRight = mDropdown.getPaddingRight();
+        int originalPaddingBottom = mDropdown.getPaddingBottom();
+
+        int bottomPadding = 40;
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, bottomPadding);
+        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
+
+        assertEquals(
+                "The new bottom padding should be layered on the original base bottom padding.",
+                originalPaddingBottom + bottomPadding,
+                mDropdown.getPaddingBottom());
+        assertEquals(
+                "A change in the bottom padding should not affect the top padding.",
+                originalPaddingTop,
+                mDropdown.getPaddingTop());
+        assertEquals(
+                "A change in the bottom padding should not affect the left padding.",
+                originalPaddingLeft,
+                mDropdown.getPaddingLeft());
+        assertEquals(
+                "A change in the bottom padding should not affect the right padding.",
+                originalPaddingRight,
+                mDropdown.getPaddingRight());
+
+        bottomPadding = 20;
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, bottomPadding);
+        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
+
+        assertEquals(
+                "The new bottom padding should be layered on the original base bottom padding.",
+                originalPaddingBottom + bottomPadding,
+                mDropdown.getPaddingBottom());
+        assertEquals(
+                "A change in the bottom padding should not affect the top padding.",
+                originalPaddingTop,
+                mDropdown.getPaddingTop());
+        assertEquals(
+                "A change in the bottom padding should not affect the left padding.",
+                originalPaddingLeft,
+                mDropdown.getPaddingLeft());
+        assertEquals(
+                "A change in the bottom padding should not affect the right padding.",
+                originalPaddingRight,
+                mDropdown.getPaddingRight());
     }
 
     @Test
@@ -411,7 +467,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown.onOmniboxSessionStateChange(true);
 
         mDropdown.setIsInLayout(true);
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
         mDropdown.layout(0, 0, 600, 800);

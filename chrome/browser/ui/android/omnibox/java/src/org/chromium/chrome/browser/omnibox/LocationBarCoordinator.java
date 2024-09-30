@@ -148,6 +148,13 @@ public class LocationBarCoordinator
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
+     * @param bottomWindowPaddingSupplier Supplier of the height of the bottom-most region of the
+     *     window that should be considered part of the window's height. This region is suitable for
+     *     rendering content, particularly to achieve a full-bleed visual effect, though it should
+     *     also be incorporated as bottom padding to ensure that such content can be fully scrolled
+     *     out of this region to be fully visible and interactable. This is used to ensure the
+     *     suggestions list draws edge to edge when appropriate. This should only be used when the
+     *     soft keyboard is not visible.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -183,7 +190,8 @@ public class LocationBarCoordinator
                             omniboxSuggestionsDropdownScrollListener,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             LocationBarEmbedderUiOverrides uiOverrides,
-            @Nullable View baseChromeLayout) {
+            @Nullable View baseChromeLayout,
+            Supplier<Integer> bottomWindowPaddingSupplier) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -202,7 +210,8 @@ public class LocationBarCoordinator
                         mLocationBarLayout,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         baseChromeLayout,
-                        deferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight);
+                        deferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
+                        bottomWindowPaddingSupplier);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead

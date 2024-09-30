@@ -44,6 +44,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final @NonNull View mAlignmentView;
     private final boolean mForcePhoneStyleOmnibox;
     private final Supplier<Integer> mKeyboardHeightSupplier;
+    private final Supplier<Integer> mBottomWindowPaddingSupplier;
     private final @NonNull Context mContext;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
     // Keeping it as a member lets us avoid allocating a temp array every time.
@@ -65,6 +66,14 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
+     * @param keyboardHeightSupplier Supplies the current height of the keyboard.
+     * @param bottomWindowPaddingSupplier Supplier of the height of the bottom-most region of the
+     *     window that should be considered part of the window's height. This region is suitable for
+     *     rendering content, particularly to achieve a full-bleed visual effect, though it should
+     *     also be incorporated as bottom padding to ensure that such content can be fully scrolled
+     *     out of this region to be fully visible and interactable. This is used to ensure the
+     *     suggestions list draws edge to edge when appropriate. This should only be used when the
+     *     soft keyboard is not visible.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
             @NonNull WindowAndroid windowAndroid,
@@ -72,12 +81,14 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             @NonNull View alignmentView,
             boolean forcePhoneStyleOmnibox,
             @Nullable View baseChromeLayout,
-            Supplier<Integer> keyboardHeightSupplier) {
+            Supplier<Integer> keyboardHeightSupplier,
+            Supplier<Integer> bottomWindowPaddingSupplier) {
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
         mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         mKeyboardHeightSupplier = keyboardHeightSupplier;
+        mBottomWindowPaddingSupplier = bottomWindowPaddingSupplier;
         mContext = mAnchorView.getContext();
         mContext.registerComponentCallbacks(this);
         Configuration configuration = mContext.getResources().getConfiguration();
@@ -265,6 +276,13 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
         }
 
+        int paddingBottom = 0;
+        // Apply extra bottom padding if the keyboard isn't showing.
+        if (keyboardHeight <= 0) {
+            paddingBottom = mBottomWindowPaddingSupplier.get();
+            windowHeight += paddingBottom;
+        }
+
         int minSpaceAboveWindowBottom =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
@@ -280,7 +298,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
         // the previous alignment value.
         OmniboxAlignment omniboxAlignment =
-                new OmniboxAlignment(left, top, width, height, paddingLeft, paddingRight);
+                new OmniboxAlignment(
+                        left, top, width, height, paddingLeft, paddingRight, paddingBottom);
         mOmniboxAlignmentSupplier.set(omniboxAlignment);
     }
 

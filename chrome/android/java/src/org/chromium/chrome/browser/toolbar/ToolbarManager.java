@@ -823,6 +823,13 @@ public class ToolbarManager
                     toolbarLayout instanceof OmniboxSuggestionsDropdownScrollListener
                             ? (OmniboxSuggestionsDropdownScrollListener) toolbarLayout
                             : null;
+
+            Supplier<Integer> bottomWindowPaddingSupplier =
+                    () ->
+                            mEdgeToEdgeControllerSupplier.get() != null
+                                    ? mEdgeToEdgeControllerSupplier.get().getBottomInsetPx()
+                                    : 0;
+
             LocationBarCoordinator locationBarCoordinator =
                     new LocationBarCoordinator(
                             mActivity.findViewById(R.id.location_bar),
@@ -859,7 +866,8 @@ public class ToolbarManager
                             scrollListener,
                             tabModelSelectorSupplier,
                             new LocationBarEmbedderUiOverrides(),
-                            baseChromeLayout);
+                            baseChromeLayout,
+                            bottomWindowPaddingSupplier);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
