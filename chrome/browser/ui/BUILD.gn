@@ -1058,41 +1058,13 @@ static_library("ui") {
       "confirm_bubble_model.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
-      "global_media_controls/cast_device_list_host.cc",
-      "global_media_controls/cast_device_list_host.h",
-      "global_media_controls/cast_media_notification_item.cc",
-      "global_media_controls/cast_media_notification_item.h",
-      "global_media_controls/cast_media_notification_producer.cc",
-      "global_media_controls/cast_media_notification_producer.h",
-      "global_media_controls/cast_media_session_controller.cc",
-      "global_media_controls/cast_media_session_controller.h",
-      "global_media_controls/live_translate_combobox_model.cc",
-      "global_media_controls/live_translate_combobox_model.h",
-      "global_media_controls/media_item_ui_device_selector_delegate.h",
-      "global_media_controls/media_item_ui_metrics.cc",
-      "global_media_controls/media_item_ui_metrics.h",
-      "global_media_controls/media_notification_device_monitor.cc",
-      "global_media_controls/media_notification_device_monitor.h",
-      "global_media_controls/media_notification_device_provider.h",
-      "global_media_controls/media_notification_device_provider_impl.cc",
-      "global_media_controls/media_notification_device_provider_impl.h",
+
+      # TODO(crbug.com/369756821): this file includes //c/b/ash/crosapi headers,
+      # and hence needs to depend on //c/b/ash/crosapi GN target. This causes a circular
+      # dependency that is not trivial to sort out.
+      # When crosapi code gets deleted during the lacros sunset, move this file to the
+      # appropriated build target.
       "global_media_controls/media_notification_service.cc",
-      "global_media_controls/media_notification_service.h",
-      "global_media_controls/media_notification_service_factory.cc",
-      "global_media_controls/media_notification_service_factory.h",
-      "global_media_controls/media_toolbar_button_controller.cc",
-      "global_media_controls/media_toolbar_button_controller.h",
-      "global_media_controls/media_toolbar_button_controller_delegate.cc",
-      "global_media_controls/media_toolbar_button_controller_delegate.h",
-      "global_media_controls/media_toolbar_button_observer.h",
-      "global_media_controls/presentation_request_notification_item.cc",
-      "global_media_controls/presentation_request_notification_item.h",
-      "global_media_controls/presentation_request_notification_producer.cc",
-      "global_media_controls/presentation_request_notification_producer.h",
-      "global_media_controls/supplemental_device_picker_item.cc",
-      "global_media_controls/supplemental_device_picker_item.h",
-      "global_media_controls/supplemental_device_picker_producer.cc",
-      "global_media_controls/supplemental_device_picker_producer.h",
       "hid/hid_chooser.cc",
       "hid/hid_chooser.h",
       "hid/hid_chooser_controller.cc",
@@ -1845,6 +1817,8 @@ static_library("ui") {
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/global_media_controls",
+      "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/permission_bubble",
@@ -1995,7 +1969,7 @@ static_library("ui") {
 
       # TODO(crbug.com/359593415): Remove allow_circular_includes_from.
       # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes
-      # //c/b/iu/tab_modal_confirm_dialog_delegate.h.
+      # //c/b/ui/tab_modal_confirm_dialog_delegate.h.
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/content_settings:impl",
@@ -2020,6 +1994,7 @@ static_library("ui") {
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/ui/webui/settings:impl",
+      "//chrome/browser/ui/global_media_controls:impl",
     ]
 
     if (is_mac) {
@@ -6091,8 +6066,6 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
-      "global_media_controls/test_helper.cc",
-      "global_media_controls/test_helper.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
       "passwords/credential_manager_dialog_controller_mock.h",
       "passwords/manage_passwords_ui_controller_mock.cc",

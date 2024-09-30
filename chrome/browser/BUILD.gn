@@ -1798,7 +1798,7 @@ static_library("browser") {
     "//chrome/browser/sync",
 
     # TODO(crbug.com/360599255): Remove this circular dependency when //c/b/content_settings
-    # get modularized.
+    # gets modularized.
     "//chrome/browser/ui/blocked_content:impl",
 
     "//chrome/browser/search_engine_choice:impl",
@@ -4242,6 +4242,8 @@ static_library("browser") {
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/global_media_controls",
+      "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
@@ -4384,6 +4386,10 @@ static_library("browser") {
       # //c/b/signin/identity_manager_factory.h.
       # Remove circular include entry when this directory gets modularized.
       "//chrome/browser/ui/download:impl",
+
+      # TODO(crbug.com/369756821): Remove this circular dependency when //c/b/feature_engagement
+      # gets modularized.
+      "//chrome/browser/ui/global_media_controls:impl",
 
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",

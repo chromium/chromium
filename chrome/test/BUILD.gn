@@ -7777,17 +7777,6 @@ test("unit_tests") {
       "../browser/ui/extensions/extensions_overrides/simple_overrides_unittest.cc",
       "../browser/ui/extensions/settings_api_bubble_helpers_unittest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_unittest.cc",
-      "../browser/ui/global_media_controls/cast_device_list_host_unittest.cc",
-      "../browser/ui/global_media_controls/cast_media_notification_item_unittest.cc",
-      "../browser/ui/global_media_controls/cast_media_notification_producer_unittest.cc",
-      "../browser/ui/global_media_controls/cast_media_session_controller_unittest.cc",
-      "../browser/ui/global_media_controls/media_notification_device_provider_impl_unittest.cc",
-      "../browser/ui/global_media_controls/media_notification_service_unittest.cc",
-      "../browser/ui/global_media_controls/media_toolbar_button_controller_unittest.cc",
-      "../browser/ui/global_media_controls/presentation_request_notification_item_unittest.cc",
-      "../browser/ui/global_media_controls/presentation_request_notification_producer_unittest.cc",
-      "../browser/ui/global_media_controls/supplemental_device_picker_item_unittest.cc",
-      "../browser/ui/global_media_controls/supplemental_device_picker_producer_unittest.cc",
       "../browser/ui/hid/hid_chooser_controller_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
       "../browser/ui/omnibox/chrome_omnibox_navigation_observer_unittest.cc",
@@ -8214,6 +8203,8 @@ test("unit_tests") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:unit_tests",
       "//chrome/browser/ui/global_error:unit_tests",
+      "//chrome/browser/ui/global_media_controls:test_support",
+      "//chrome/browser/ui/global_media_controls:unit_tests",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/hats:unit_tests",
       "//chrome/browser/ui/lens:unit_tests",
@@ -9389,10 +9380,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
-    sources += [ "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc" ]
-  }
-
   if (is_linux) {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
@@ -9973,6 +9960,7 @@ test("unit_tests") {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:test_support",
+      "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
@@ -11438,6 +11426,7 @@ if (!is_android && !is_chromeos_device) {
         deps += [
           "../browser/media/router:test_support",
           "../browser/ui/views:test_support",
+          "//chrome/browser/ui/global_media_controls",
           "//components/media_router/browser:test_support",
         ]
       }
