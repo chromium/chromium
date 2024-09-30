@@ -899,6 +899,8 @@ Node* DragController::DraggableNode(const LocalFrame* src,
         candidate_drag_type = kDragSourceActionDHTML;
         break;
       }
+      // TODO(crbug.com/369219144): Should this be
+      // DynamicTo<HTMLAnchorElementBase>?
       auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
       if (html_anchor_element && html_anchor_element->IsLiveLink()) {
         candidate_drag_type = kDragSourceActionLink;
@@ -984,6 +986,7 @@ bool DragController::PopulateDragDataTransfer(LocalFrame* src,
   DataTransfer* data_transfer = state.drag_data_transfer_.Get();
   Node* node = state.drag_src_.Get();
 
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
   if (html_anchor_element && html_anchor_element->IsLiveLink() &&
       !link_url.IsEmpty()) {

@@ -138,14 +138,14 @@ BuildProtocolPreloadingAttemptSource(
       BuildProtocolPreloadingAttemptKey(key, document);
 
   HeapHashSet<Member<SpeculationRuleSet>> unique_rule_sets;
-  HeapHashSet<Member<HTMLAnchorElement>> unique_anchors;
+  HeapHashSet<Member<HTMLAnchorElementBase>> unique_anchors;
   auto rule_set_ids = std::make_unique<protocol::Array<String>>();
   auto node_ids = std::make_unique<protocol::Array<int>>();
   for (SpeculationCandidate* candidate : candidates) {
     if (unique_rule_sets.insert(candidate->rule_set()).is_new_entry) {
       rule_set_ids->push_back(candidate->rule_set()->InspectorId());
     }
-    if (HTMLAnchorElement* anchor = candidate->anchor();
+    if (HTMLAnchorElementBase* anchor = candidate->anchor();
         anchor && unique_anchors.insert(anchor).is_new_entry) {
       node_ids->push_back(anchor->GetDomNodeId());
     }

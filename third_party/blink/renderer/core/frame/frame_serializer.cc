@@ -317,6 +317,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
 
     // Do not save ping attribute since anyway the ping will be blocked from
     // MHTML.
+    // TODO(crbug.com/369219144): Should this be IsA<HTMLAnchorElementBase>?
     if (IsA<HTMLAnchorElement>(element) &&
         attribute.LocalName() == html_names::kPingAttr) {
       return EmitChoice::kIgnore;

@@ -69,13 +69,14 @@ enum {
   kRelationTermsOfService = 0x00200000,
 };
 
-class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
-  DEFINE_WRAPPERTYPEINFO();
-
+// Base class for <a> and <area> (HTMLAnchorElement and HTMLAreaElement).
+// Note: If a new element needs to use this as a base, existing callsites and
+// features that use this class should be audited (to see if the new element
+// should also support these features).
+class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
+                                          public DOMURLUtils {
  public:
-  HTMLAnchorElement(Document& document);
-  HTMLAnchorElement(const QualifiedName&, Document&);
-  ~HTMLAnchorElement() override;
+  ~HTMLAnchorElementBase() override;
 
   KURL Href() const;
   void SetHref(const AtomicString&);
@@ -118,6 +119,8 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   void Trace(Visitor*) const override;
 
  protected:
+  HTMLAnchorElementBase(const QualifiedName& tag_name, Document&);
+
   void ParseAttribute(const AttributeModificationParams&) override;
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
@@ -128,8 +131,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   bool ShouldHaveFocusAppearance() const final;
   FocusableState IsFocusableState(
       UpdateBehavior update_behavior) const override;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior) const override;
   void DefaultEventHandler(Event&) final;
   bool HasActivationBehavior() const override;
   void SetActive(bool active) final;
@@ -153,7 +155,27 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   Member<RelList> rel_list_;
 };
 
-inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {
+class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  explicit HTMLAnchorElement(Document& document);
+};
+
+template <>
+struct DowncastTraits<HTMLAnchorElementBase> {
+  static bool AllowFrom(const Element& element) {
+    return element.HasTagName(html_names::kATag) ||
+           element.HasTagName(html_names::kAreaTag);
+  }
+
+  static bool AllowFrom(const Node& node) {
+    return node.IsHTMLElement() &&
+           IsA<HTMLAnchorElementBase>(UnsafeTo<HTMLElement>(node));
+  }
+};
+
+inline LinkHash HTMLAnchorElementBase::VisitedLinkHash() const {
   if (!cached_visited_link_hash_) {
     cached_visited_link_hash_ = blink::VisitedLinkHash(
         GetDocument().BaseURL(), FastGetAttribute(html_names::kHrefAttr));
@@ -161,7 +183,8 @@ inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {
   return cached_visited_link_hash_;
 }
 
-inline LinkHash HTMLAnchorElement::PartitionedVisitedLinkFingerprint() const {
+inline LinkHash HTMLAnchorElementBase::PartitionedVisitedLinkFingerprint()
+    const {
   if (!cached_visited_link_hash_) {
     // Obtain all three elements of the partition key.
     // (1) Link URL (Base and Relative)

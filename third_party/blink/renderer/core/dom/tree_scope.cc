@@ -459,6 +459,7 @@ Element* TreeScope::FindAnchorWithName(const String& name) {
     return nullptr;
   if (Element* element = getElementById(AtomicString(name)))
     return element;
+  // TODO(crbug.com/369219144): Should this be Traversal<HTMLAnchorElementBase>?
   for (HTMLAnchorElement& anchor :
        Traversal<HTMLAnchorElement>::StartsAfter(RootNode())) {
     if (RootNode().GetDocument().InQuirksMode()) {

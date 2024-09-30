@@ -2696,6 +2696,8 @@ void WebLocalFrameImpl::SendPings(const WebURL& destination_url) {
   DCHECK(GetFrame());
   if (Node* node = ContextMenuNodeInner()) {
     Element* anchor = node->EnclosingLinkEventParentOrSelf();
+    // TODO(crbug.com/369219144): Should this be
+    // DynamicTo<HTMLAnchorElementBase>?
     if (auto* html_anchor = DynamicTo<HTMLAnchorElement>(anchor))
       html_anchor->SendPings(destination_url);
   }

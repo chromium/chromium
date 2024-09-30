@@ -35,7 +35,7 @@ class Conjunction : public DocumentRulePredicate {
       : clauses_(std::move(clauses)) {}
   ~Conjunction() override = default;
 
-  bool Matches(const HTMLAnchorElement& el) const override {
+  bool Matches(const HTMLAnchorElementBase& el) const override {
     return base::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
@@ -85,7 +85,7 @@ class Disjunction : public DocumentRulePredicate {
       : clauses_(std::move(clauses)) {}
   ~Disjunction() override = default;
 
-  bool Matches(const HTMLAnchorElement& el) const override {
+  bool Matches(const HTMLAnchorElementBase& el) const override {
     return base::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
@@ -134,7 +134,7 @@ class Negation : public DocumentRulePredicate {
   explicit Negation(DocumentRulePredicate* clause) : clause_(clause) {}
   ~Negation() override = default;
 
-  bool Matches(const HTMLAnchorElement& el) const override {
+  bool Matches(const HTMLAnchorElementBase& el) const override {
     return !clause_->Matches(el);
   }
 
@@ -179,7 +179,7 @@ class URLPatternPredicate : public DocumentRulePredicate {
       : patterns_(std::move(patterns)), execution_context_(execution_context) {}
   ~URLPatternPredicate() override = default;
 
-  bool Matches(const HTMLAnchorElement& el) const override {
+  bool Matches(const HTMLAnchorElementBase& el) const override {
     // Let href be the result of running el’s href getter steps.
     const KURL href = el.HrefURL();
     // For each pattern of predicate’s patterns:
@@ -232,7 +232,7 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
   explicit CSSSelectorPredicate(HeapVector<Member<StyleRule>> style_rules)
       : style_rules_(std::move(style_rules)) {}
 
-  bool Matches(const HTMLAnchorElement& link) const override {
+  bool Matches(const HTMLAnchorElementBase& link) const override {
     DCHECK(!link.GetDocument().NeedsLayoutTreeUpdate());
     const ComputedStyle* computed_style = link.GetComputedStyle();
     DCHECK(computed_style);

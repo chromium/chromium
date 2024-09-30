@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class KURL;
 struct Referrer;
 class SpeculationRuleSet;
@@ -34,7 +34,7 @@ class CORE_EXPORT SpeculationCandidate
                        network::mojom::blink::NoVarySearchPtr no_vary_search,
                        mojom::blink::SpeculationInjectionType injection_type,
                        SpeculationRuleSet* rule_set,
-                       HTMLAnchorElement* anchor);
+                       HTMLAnchorElementBase* anchor);
   virtual ~SpeculationCandidate() = default;
 
   void Trace(Visitor* visitor) const;
@@ -50,7 +50,7 @@ class CORE_EXPORT SpeculationCandidate
   SpeculationRuleSet* rule_set() const { return rule_set_.Get(); }
   // Only set for candidates derived from a document rule (is null for
   // candidates derived from list rules).
-  HTMLAnchorElement* anchor() const { return anchor_.Get(); }
+  HTMLAnchorElementBase* anchor() const { return anchor_.Get(); }
 
  private:
   const KURL url_;
@@ -62,7 +62,7 @@ class CORE_EXPORT SpeculationCandidate
   const network::mojom::blink::NoVarySearchPtr no_vary_search_;
   const mojom::blink::SpeculationInjectionType injection_type_;
   const Member<SpeculationRuleSet> rule_set_;
-  const Member<HTMLAnchorElement> anchor_;
+  const Member<HTMLAnchorElementBase> anchor_;
 };
 
 }  // namespace blink

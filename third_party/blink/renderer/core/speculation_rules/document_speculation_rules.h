@@ -17,7 +17,7 @@
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class SpeculationCandidate;
 class SpeculationRuleLoader;
 
@@ -48,19 +48,19 @@ class CORE_EXPORT DocumentSpeculationRules
   void AddSpeculationRuleLoader(SpeculationRuleLoader*);
   void RemoveSpeculationRuleLoader(SpeculationRuleLoader*);
 
-  void LinkInserted(HTMLAnchorElement* link);
-  void LinkRemoved(HTMLAnchorElement* link);
-  void HrefAttributeChanged(HTMLAnchorElement* link,
+  void LinkInserted(HTMLAnchorElementBase* link);
+  void LinkRemoved(HTMLAnchorElementBase* link);
+  void HrefAttributeChanged(HTMLAnchorElementBase* link,
                             const AtomicString& old_value,
                             const AtomicString& new_value);
-  void ReferrerPolicyAttributeChanged(HTMLAnchorElement* link);
-  void RelAttributeChanged(HTMLAnchorElement* link);
-  void TargetAttributeChanged(HTMLAnchorElement* link);
+  void ReferrerPolicyAttributeChanged(HTMLAnchorElementBase* link);
+  void RelAttributeChanged(HTMLAnchorElementBase* link);
+  void TargetAttributeChanged(HTMLAnchorElementBase* link);
   void DocumentReferrerPolicyChanged();
   void DocumentBaseURLChanged();
   void DocumentBaseTargetChanged();
-  void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
-  void LinkGainedOrLostComputedStyle(HTMLAnchorElement* link);
+  void LinkMatchedSelectorsUpdated(HTMLAnchorElementBase* link);
+  void LinkGainedOrLostComputedStyle(HTMLAnchorElementBase* link);
   void DocumentStyleUpdated();
   void ChildStyleRecalcBlocked(Element* root);
   void DidStyleChildren(Element* root);
@@ -101,13 +101,13 @@ class CORE_EXPORT DocumentSpeculationRules
 
   // Helper methods that are used to deal with link/document attribute changes
   // that could invalidate the list of speculation candidates.
-  void LinkAttributeChanged(HTMLAnchorElement* link);
+  void LinkAttributeChanged(HTMLAnchorElementBase* link);
   void DocumentPropertyChanged();
 
   // Helper methods to modify |link_map_|.
-  void AddLink(HTMLAnchorElement* link);
-  void RemoveLink(HTMLAnchorElement* link);
-  void InvalidateLink(HTMLAnchorElement* link);
+  void AddLink(HTMLAnchorElementBase* link);
+  void RemoveLink(HTMLAnchorElementBase* link);
+  void InvalidateLink(HTMLAnchorElementBase* link);
   void InvalidateAllLinks();
 
   // Populates |selectors_| and notifies the StyleEngine.
@@ -154,15 +154,15 @@ class CORE_EXPORT DocumentSpeculationRules
   // TODO(crbug.com/1371522): Consider removing |unmatched_links_| and
   // re-traverse the document to find all links when a new ruleset is
   // added/removed.
-  HeapHashMap<Member<HTMLAnchorElement>,
+  HeapHashMap<Member<HTMLAnchorElementBase>,
               Member<HeapVector<Member<SpeculationCandidate>>>>
       matched_links_;
-  HeapHashSet<Member<HTMLAnchorElement>> unmatched_links_;
-  HeapHashSet<Member<HTMLAnchorElement>> pending_links_;
+  HeapHashSet<Member<HTMLAnchorElementBase>> unmatched_links_;
+  HeapHashSet<Member<HTMLAnchorElementBase>> pending_links_;
 
   // Links with ComputedStyle that wasn't updated after the most recent style
   // update (due to having a display-locked ancestor).
-  HeapHashSet<Member<HTMLAnchorElement>> stale_links_;
+  HeapHashSet<Member<HTMLAnchorElementBase>> stale_links_;
   HeapHashSet<Member<Element>> elements_blocking_child_style_recalc_;
 
   // Collects every CSS selector from every CSS selector document rule predicate

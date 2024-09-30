@@ -460,7 +460,7 @@ void AttributionSrcLoader::Register(
 std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     const KURL& navigation_url,
     Vector<KURL> attribution_src_urls,
-    HTMLAnchorElement* element,
+    HTMLAnchorElementBase* element,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
   if (!has_transient_user_activation) {
@@ -497,7 +497,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
 std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const AtomicString& attribution_src,
-    HTMLAnchorElement* element,
+    HTMLAnchorElementBase* element,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
   CHECK(!attribution_src.IsNull());

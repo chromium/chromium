@@ -21,7 +21,7 @@
 namespace blink {
 
 class Document;
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class IntersectionObserver;
 class IntersectionObserverEntry;
 class PointerEvent;
@@ -34,7 +34,7 @@ class PointerEvent;
 // Cross-origin iframes do not use any AnchorElementMetricsSender.
 //
 // The high level approach is:
-// 1) When HTMLAnchorElements are inserted into the DOM,
+// 1) When HTMLAnchorElementBases are inserted into the DOM,
 //    AnchorElementMetricsSender::AddAnchorElement is called and a reference to
 //    the element is stored. The first time this happens, the sender is created,
 //    which registers itself for lifecycle callbacks.
@@ -86,7 +86,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Report the link click to the browser process, so long as the anchor
   // is an HTTP(S) link.
   void MaybeReportClickedMetricsOnClick(
-      const HTMLAnchorElement& anchor_element);
+      const HTMLAnchorElementBase& anchor_element);
 
   // Report the on-hover event and anchor element pointer data to the browser
   // process.
@@ -94,8 +94,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
       AnchorId anchor_id,
       mojom::blink::AnchorElementPointerDataPtr mouse_data);
 
-  void AddAnchorElement(HTMLAnchorElement& element);
-  void RemoveAnchorElement(HTMLAnchorElement& element);
+  void AddAnchorElement(HTMLAnchorElementBase& element);
+  void RemoveAnchorElement(HTMLAnchorElementBase& element);
   void DocumentDetached(Document& document);
 
   void SetTickClockForTesting(const base::TickClock* clock);
@@ -109,7 +109,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   // Report the pointer event for the anchor element.
-  void MaybeReportAnchorElementPointerEvent(HTMLAnchorElement& element,
+  void MaybeReportAnchorElementPointerEvent(HTMLAnchorElementBase& element,
                                             const PointerEvent& pointer_event);
 
   // Record and send metrics to the browser process about the position of
@@ -134,11 +134,11 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   // Creates an AnchorElementEnteredViewportPtr for the given element and
   // enqueue it so that it gets reported after the next layout.
-  void EnqueueEnteredViewport(const HTMLAnchorElement& element);
+  void EnqueueEnteredViewport(const HTMLAnchorElementBase& element);
 
   // Creates an AnchorElementLeftViewportPtr for the given element and
   // enqueue it so that it gets reported after the next layout.
-  void EnqueueLeftViewport(const HTMLAnchorElement& element);
+  void EnqueueLeftViewport(const HTMLAnchorElementBase& element);
 
   // Checks how long it has passed since the last call and decides whether to
   // call or reschedule a future call to UpdateMetrics.
@@ -165,7 +165,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // layout, they will be used to populate `metrics_` and
   // `metrics_removed_anchors_`.
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
-  HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
+  HeapHashSet<WeakMember<HTMLAnchorElementBase>> anchor_elements_to_report_;
   WTF::Vector<AnchorId> removed_anchors_to_report_;
 
   // `metrics_` and `metrics_removed_anchors_` buffer metrics updates that are
@@ -201,7 +201,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   const base::TimeDelta intersection_observer_delay_;
 
   Member<IntersectionObserver> intersection_observer_;
-  HeapHashSet<WeakMember<const HTMLAnchorElement>> anchors_in_viewport_;
+  HeapHashSet<WeakMember<const HTMLAnchorElementBase>> anchors_in_viewport_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;

@@ -4529,9 +4529,7 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
     return;
   }
 
-  HTMLAnchorElement* link = HasTagName(html_names::kATag)
-                                ? To<HTMLAnchorElement>(this)
-                                : To<HTMLAreaElement>(this);
+  HTMLAnchorElementBase* link = To<HTMLAnchorElementBase>(this);
   auto* document_rules = DocumentSpeculationRules::FromIfExists(GetDocument());
   if (!document_rules) {
     return;

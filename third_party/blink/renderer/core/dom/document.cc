@@ -4560,6 +4560,7 @@ void Document::UpdateBaseURL() {
     // Base URL change changes any relative visited links.
     // FIXME: There are other URLs in the tree that would need to be
     // re-evaluated on dynamic base URL change. Style should be invalidated too.
+    // TODO(crbug.com/369219144): Should this be using HTMLAnchorElementBase?
     for (HTMLAnchorElement& anchor :
          Traversal<HTMLAnchorElement>::StartsAfter(*this))
       anchor.InvalidateCachedVisitedLinkHash();

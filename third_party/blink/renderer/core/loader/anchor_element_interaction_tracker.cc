@@ -252,7 +252,8 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     }
   }
 
-  HTMLAnchorElement* anchor = FirstAnchorElementIncludingSelf(target.ToNode());
+  HTMLAnchorElementBase* anchor =
+      FirstAnchorElementIncludingSelf(target.ToNode());
   if (!anchor) {
     return;
   }
@@ -304,7 +305,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
 }
 
 void AnchorElementInteractionTracker::OnClickEvent(
-    HTMLAnchorElement& anchor,
+    HTMLAnchorElementBase& anchor,
     const MouseEvent& click_event) {
   if (auto* sender =
           AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame())) {
@@ -404,18 +405,18 @@ void AnchorElementInteractionTracker::SetTaskRunnerForTesting(
   clock_ = clock;
 }
 
-HTMLAnchorElement*
+HTMLAnchorElementBase*
 AnchorElementInteractionTracker::FirstAnchorElementIncludingSelf(Node* node) {
-  HTMLAnchorElement* anchor = nullptr;
+  HTMLAnchorElementBase* anchor = nullptr;
   while (node && !anchor) {
-    anchor = DynamicTo<HTMLAnchorElement>(node);
+    anchor = DynamicTo<HTMLAnchorElementBase>(node);
     node = node->parentNode();
   }
   return anchor;
 }
 
 KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
-    const HTMLAnchorElement& anchor) {
+    const HTMLAnchorElementBase& anchor) {
   KURL url = anchor.Href();
   if (url.ProtocolIsInHTTPFamily()) {
     return url;

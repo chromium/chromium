@@ -181,11 +181,11 @@ interface AnchorElementMetricsHost {
   // This is called for all anchor elements.
   ReportAnchorElementClick(AnchorElementClick clicked);
 
-  // At each layout, HTMLAnchorElements that have been newly created (since the
+  // At each layout, anchor elements that have been newly created (since the
   // last layout) may be reported. Only elements with an HTTPS href attribute
   // that are 'visible' (they have non-empty bounding box, though they may not
   // be in the viewport) are reported. This reports various metrics about each
-  // element. New HTMLAnchorElements that are not visible after the first layout
+  // element. New anchor elements that are not visible after the first layout
   // since their creation will never be reported. This is not ideal, but allows
   // us to avoid keeping references to elements that may never become visible.
   // `removed_elements` contains the anchor ids of anchor elements that have

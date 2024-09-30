@@ -86,16 +86,6 @@ float GetBrowserControlsHeight(Document& document) {
   return 0.f;
 }
 
-HTMLAnchorElement* ToHTMLAnchorElement(Node* node) {
-  return IsA<HTMLAreaElement>(node) ? To<HTMLAreaElement>(node)
-                                    : To<HTMLAnchorElement>(node);
-}
-
-const HTMLAnchorElement* ToHTMLAnchorElement(const Node* node) {
-  return IsA<HTMLAreaElement>(node) ? To<HTMLAreaElement>(node)
-                                    : To<HTMLAnchorElement>(node);
-}
-
 }  // namespace
 
 // static
@@ -160,7 +150,7 @@ void AnchorElementMetricsSender::
 }
 
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
-    const HTMLAnchorElement& anchor_element) {
+    const HTMLAnchorElementBase& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   Document* top_document = GetSupplementable();
   CHECK(top_document);
@@ -180,7 +170,8 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
   metrics_host_->ReportAnchorElementClick(std::move(click));
 }
 
-void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
+void AnchorElementMetricsSender::AddAnchorElement(
+    HTMLAnchorElementBase& element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   if (!GetSupplementable()->GetFrame()) {
     return;
@@ -197,7 +188,7 @@ void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
 }
 
 void AnchorElementMetricsSender::RemoveAnchorElement(
-    HTMLAnchorElement& element) {
+    HTMLAnchorElementBase& element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
 
   auto it = anchor_elements_to_report_.find(&element);
@@ -260,7 +251,7 @@ void AnchorElementMetricsSender::DocumentDetached(Document& document) {
     return;
   }
   for (Element* element : *(document.links())) {
-    HTMLAnchorElement* anchor = ToHTMLAnchorElement(element);
+    HTMLAnchorElementBase* anchor = To<HTMLAnchorElementBase>(element);
     RemoveAnchorElement(*anchor);
   }
 }
@@ -375,7 +366,8 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
   for (const auto& entry : entries) {
     const Element* element = entry->target();
-    const HTMLAnchorElement& anchor_element = *ToHTMLAnchorElement(element);
+    const HTMLAnchorElementBase& anchor_element =
+        *To<HTMLAnchorElementBase>(element);
     if (!entry->isIntersecting()) {
       // The anchor is leaving the viewport.
       anchors_in_viewport_.erase(&anchor_element);
@@ -408,7 +400,7 @@ base::TimeTicks AnchorElementMetricsSender::NavigationStart() const {
 }
 
 void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
-    HTMLAnchorElement& element,
+    HTMLAnchorElementBase& element,
     const PointerEvent& pointer_event) {
   if (!AssociateInterface()) {
     return;
@@ -524,7 +516,7 @@ void AnchorElementMetricsSender::RecordPointerDown(
 }
 
 void AnchorElementMetricsSender::EnqueueLeftViewport(
-    const HTMLAnchorElement& element) {
+    const HTMLAnchorElementBase& element) {
   const auto anchor_id = AnchorElementId(element);
   auto it = anchor_elements_timing_stats_.find(anchor_id);
   CHECK(it != anchor_elements_timing_stats_.end(), base::NotFatalUntil::M130);
@@ -545,7 +537,7 @@ void AnchorElementMetricsSender::EnqueueLeftViewport(
 }
 
 void AnchorElementMetricsSender::EnqueueEnteredViewport(
-    const HTMLAnchorElement& element) {
+    const HTMLAnchorElementBase& element) {
   const auto anchor_id = AnchorElementId(element);
   auto it = anchor_elements_timing_stats_.find(anchor_id);
   CHECK(it != anchor_elements_timing_stats_.end(), base::NotFatalUntil::M130);
@@ -604,7 +596,7 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
   const float browser_controls_height =
       GetBrowserControlsHeight(*GetSupplementable());
 
-  for (const HTMLAnchorElement* anchor : anchors_in_viewport_) {
+  for (const HTMLAnchorElementBase* anchor : anchors_in_viewport_) {
     LocalFrame* frame = anchor->GetDocument().GetFrame();
     if (!frame) {
       continue;
@@ -662,7 +654,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   }
 
   for (const auto& member_element : anchor_elements_to_report_) {
-    HTMLAnchorElement& anchor_element = *member_element;
+    HTMLAnchorElementBase& anchor_element = *member_element;
 
     mojom::blink::AnchorElementMetricsPtr anchor_element_metrics =
         CreateAnchorElementMetrics(anchor_element);
@@ -686,8 +678,9 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       } else if (auto smallest_observed_anchor_it = observed_anchors_.begin();
                  smallest_observed_anchor_it->percent_area < percent_area) {
         should_observe = true;
-        HTMLAnchorElement* smallest_observed_anchor = ToHTMLAnchorElement(
-            DOMNodeIds::NodeForId(smallest_observed_anchor_it->dom_node_id));
+        HTMLAnchorElementBase* smallest_observed_anchor =
+            To<HTMLAnchorElementBase>(DOMNodeIds::NodeForId(
+                smallest_observed_anchor_it->dom_node_id));
         CHECK(smallest_observed_anchor);
         intersection_observer_->unobserve(smallest_observed_anchor);
         EnqueueLeftViewport(*smallest_observed_anchor);

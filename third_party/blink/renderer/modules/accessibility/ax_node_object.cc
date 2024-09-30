@@ -2688,6 +2688,7 @@ bool AXNodeObject::IsLinked() const {
     return false;
   }
 
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   if (auto* anchor = DynamicTo<HTMLAnchorElement>(AnchorElement())) {
     return !anchor->Href().IsEmpty();
   }
@@ -3381,6 +3382,7 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
   // submitted, and could also be overridden by a "formTarget" attribute on e.g.
   // a form's submit button. However, screen reader users have no need to know
   // to which target (browser context) a form would be submitted.
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   const auto* anchor = DynamicTo<HTMLAnchorElement>(GetNode());
   if (anchor) {
     const AtomicString self_value("_self");
