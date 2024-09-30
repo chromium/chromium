@@ -42,6 +42,7 @@
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/api/socket/udp_socket.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
@@ -131,6 +132,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   WebcamPrivateAPI::GetFactoryInstance();
 #endif
   WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt();
+  WriteQuotaChecker::GetFactoryInstance();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

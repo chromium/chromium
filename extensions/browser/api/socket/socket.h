@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -178,6 +179,21 @@ class Socket : public ApiResource {
   // Represents a hole punched in the system firewall for this socket.
   std::unique_ptr<AppFirewallHole> firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+template <>
+struct BrowserContextFactoryDependencies<ApiResourceManager<Socket>> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<ApiResourceManager<Socket>>* factory) {
+    // Base deps from BrowserContextFactoryDependencies<ApiResourceManager<T>.
+    factory->DependsOn(
+        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    factory->DependsOn(ExtensionRegistryFactory::GetInstance());
+    factory->DependsOn(ProcessManagerFactory::GetInstance());
+
+    // Extra deps for ApiResourceManager<Socket> service.
+    factory->DependsOn(WriteQuotaChecker::GetFactoryInstance());
+  }
 };
 
 }  //  namespace extensions

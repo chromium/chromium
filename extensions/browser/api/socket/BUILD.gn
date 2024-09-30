@@ -22,6 +22,8 @@ source_set("socket") {
     "tls_socket.h",
     "udp_socket.cc",
     "udp_socket.h",
+    "write_quota_checker.cc",
+    "write_quota_checker.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

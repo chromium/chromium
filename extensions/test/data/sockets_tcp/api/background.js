@@ -422,6 +422,41 @@ var testSecure = function () {
   }
 };  // testSecure()
 
+var testSendWriteQuota = function() {
+  createSocket();
+
+  function createSocket() {
+    console.log("createSocket");
+    chrome.sockets.tcp.create({
+      "name": "test",
+      "persistent": true,
+      "bufferSize": 104
+    }, onCreateComplete);
+  }
+
+  function onCreateComplete(socketInfo) {
+    console.log("onCreateComplete");
+    tcp_socketId = socketInfo.socketId;
+    chrome.test.assertTrue(tcp_socketId > 0, "failed to create socket");
+
+    string2ArrayBuffer(httpPost, function(arrayBuffer) {
+      chrome.sockets.tcp.send(tcp_socketId, arrayBuffer, onSendComplete);
+    });
+  }
+
+  function onSendComplete(sendInfo) {
+    console.log("onSendComplete: ", sendInfo,
+                ', lastError=', chrome.runtime.lastError);
+    if (chrome.runtime.lastError &&
+        chrome.runtime.lastError.message == "Exceeded write quota.") {
+      chrome.test.succeed();
+      return;
+    }
+
+    chrome.test.fail('Write quota not enforced');
+  }
+};  // testSendWriteQuota
+
 function waitForBlockingOperation() {
   if (++waitCount < 10) {
     setTimeout(waitForBlockingOperation, 1000);
@@ -450,6 +485,12 @@ var onMessageReply = function(message) {
       console.log("Running tests for HTTPS, server " +
           https_address + ":" + https_port);
       tests = tests.concat([testSecure]);
+    } else if (test_type == 'tcp_send_write_quota') {
+      tcp_address = parts[1];
+      tcp_port = parseInt(parts[2]);
+      console.log("Running tests for TCP, server " +
+          tcp_address + ":" + tcp_port);
+      tests = tests.concat([testSendWriteQuota]);
     } else {
       chrome.test.fail("Invalid test type: " + test_type);
     }

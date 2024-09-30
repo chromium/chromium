@@ -376,6 +376,48 @@ var testBroadcast = function() {
   }
 };
 
+var testSendWriteQuota = function() {
+  socketId = 0;
+  var localSocketId;
+
+  console.log("testSendWriteQuota");
+  setTimeout(waitForBlockingOperation, 1000);
+  chrome.sockets.udp.create({}, onCreate);
+
+  function onCreate(socketInfo) {
+    console.log("socket created: " + socketInfo.socketId);
+    localSocketId = socketId = socketInfo.socketId;
+    chrome.test.assertTrue(localSocketId > 0, "failed to create socket");
+
+    chrome.sockets.udp.bind(localSocketId, "0.0.0.0", 0, onBind);
+  }
+
+  function onBind(result) {
+    console.log("socket bound to local host");
+    chrome.test.assertEq(0, result, "Bind failed with error: " + result);
+    if (result < 0)
+      return;
+
+    string2ArrayBuffer(request, function(arrayBuffer) {
+      chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
+                              onSendComplete);
+    });
+  }
+
+  function onSendComplete(sendInfo) {
+    console.log("onSendComplete: ", sendInfo,
+                ', lastError=', chrome.runtime.lastError);
+    if (chrome.runtime.lastError &&
+        chrome.runtime.lastError.message == "Exceeded write quota.") {
+      chrome.test.succeed();
+      return;
+    }
+
+    chrome.test.fail('Write quota not enforced');
+  }
+};
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test driver
 //
@@ -390,6 +432,9 @@ var onMessageReply = function(message) {
   if (test_type == 'multicast') {
     console.log("Running multicast tests");
     chrome.test.runTests([ testMulticast ]);
+  } else if (test_type == 'udp_send_write_quota') {
+    console.log("Running UDP send write quota tests");
+    chrome.test.runTests([ testSendWriteQuota ]);
   } else {
     console.log("Running udp tests");
     chrome.test.runTests([testSocketCreation, testSending, testSetPaused,
