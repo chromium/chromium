@@ -472,7 +472,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
 
   InvokeResetAccelerator();
   ClickToConfirmButton();
+  WaitForConfirmationDialogToOpen();
   ClickResetButton();
+  WaitForConfirmationDialogToClose();
 
   EXPECT_EQ(
       0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());

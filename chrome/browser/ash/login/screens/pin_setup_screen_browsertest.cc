@@ -176,12 +176,7 @@ class PinSetupScreenTest : public OobeBaseTest {
 
   void TapSkipButton() { test::OobeJS().TapOnPath(kSkipButton); }
 
-  void TapNextButton() {
-    test::OobeJS().TapOnPath(kNextButton);
-    // Wait until the back button is visible to ensure that the UI is showing
-    // the 'confirmation' step.
-    test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
-  }
+  void TapNextButton() { test::OobeJS().TapOnPath(kNextButton); }
 
   void TapDoneButton() {
     test::OobeJS()
@@ -382,6 +377,9 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ManualSkipInFlow) {
 
   EnterPin();
   TapNextButton();
+  // Wait until the back button is visible to ensure that the UI is showing
+  // the 'confirmation' step.
+  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
 
   TapSkipButton();
   WaitForScreenExit();
@@ -396,6 +394,9 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
 
   EnterPin();
   TapNextButton();
+  // Wait until the back button is visible to ensure that the UI is showing
+  // the 'confirmation' step.
+  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
   EnterPin();
   TapNextButton();
 
