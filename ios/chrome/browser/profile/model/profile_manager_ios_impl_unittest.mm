@@ -6,6 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/scoped_observation.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/threading/thread_restrictions.h"
@@ -187,6 +188,8 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     return *profile_manager_.GetProfileAttributesStorage();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   // Returns the name of the loaded Profiles.
   std::set<std::string> GetLoadedProfileNames() {
     std::set<std::string> profile_names;
@@ -202,6 +205,7 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
   }
 
  private:
+  base::HistogramTester histogram_tester_;
   ScopedFeatureListWithState<state> scoped_feature_list_{kHideLegacyProfiles};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
@@ -667,6 +671,9 @@ TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide) {
   // are loaded.
   profile_manager().LoadProfiles();
 
+  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
   // Exactly one Profile must be loaded, it must be the last used Profile with
   // name `kIOSChromeInitialBrowserState`.
   EXPECT_EQ(GetLoadedProfileNames(),
@@ -706,6 +713,9 @@ TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide_AlreadyDone) {
 
   // Check that the profile is not marked as legacy but it is not loaded.
   profile_manager().LoadProfiles();
+
+  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
+              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
   // name `kIOSChromeInitialBrowserState`.
@@ -751,6 +761,9 @@ TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Keep) {
   // Check that the profile is not marked as legacy but it is not loaded.
   profile_manager().LoadProfiles();
 
+  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+
   // Exactly one Profile must be loaded, it must be the last used Profile with
   // name `kIOSChromeInitialBrowserState`.
   EXPECT_EQ(GetLoadedProfileNames(),
@@ -795,6 +808,9 @@ TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Restore) {
   // name `kIOSChromeInitialBrowserState`.
   EXPECT_EQ(GetLoadedProfileNames(),
             (std::set<std::string>{kIOSChromeInitialBrowserState}));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
+              testing::ElementsAre(base::Bucket(0, 1)));
 
   // The profile must now be visible in the ProfileAttributesStorageIOS.
   EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));

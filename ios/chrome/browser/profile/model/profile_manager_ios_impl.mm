@@ -14,7 +14,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
@@ -53,43 +53,43 @@ void RecordProfileSizeTask(const base::FilePath& path) {
 
   int64_t size = ComputeFilesSize(path, FILE_PATH_LITERAL("*"));
   int size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.TotalSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.TotalSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("History"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.HistorySize", size_MB);
+  base::UmaHistogramCounts10000("Profile.HistorySize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("History*"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.TotalHistorySize", size_MB);
+  base::UmaHistogramCounts10000("Profile.TotalHistorySize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Cookies"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.CookiesSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.CookiesSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Bookmarks"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.BookmarksSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.BookmarksSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Favicons"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.FaviconsSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.FaviconsSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Top Sites"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.TopSitesSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.TopSitesSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Visited Links"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.VisitedLinksSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.VisitedLinksSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Web Data"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.WebDataSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.WebDataSize", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Extension*"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.ExtensionSize", size_MB);
+  base::UmaHistogramCounts10000("Profile.ExtensionSize", size_MB);
 }
 
 // Returns whether `name` matches "TestProfile[0-9]+" regex which is the
@@ -242,6 +242,13 @@ void ProfileManagerIOSImpl::LoadProfiles() {
   } else {
     RestoreLegacyProfiles(profiles);
   }
+
+  // Record the number of legacy profiles.
+  base::UmaHistogramCounts100(
+      "Profile.LegacyProfilesCount",
+      static_cast<int>(
+          std::min(size_t{100},
+                   local_state_->GetDict(prefs::kLegacyProfileMap).size())));
 
   for (const std::string& name : profiles) {
     ProfileIOS* profile = CreateProfile(name);
