@@ -1941,7 +1941,12 @@ void CanvasResourceProvider::ClearOldUnusedResources() {
 
 scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
   if (canvas_resources_.empty()) {
-    RegisterUnusedResource(CreateResource());
+    scoped_refptr<CanvasResource> resource = CreateResource();
+    if (!resource) {
+      return nullptr;
+    }
+
+    RegisterUnusedResource(std::move(resource));
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_)
       max_inflight_resources_ = num_inflight_resources_;
