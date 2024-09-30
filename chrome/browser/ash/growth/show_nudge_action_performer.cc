@@ -355,7 +355,6 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
     nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
   }
 
-  bool is_nudge_anchor_view_parent = false;
   auto anchor = GetAnchorConfig(nudge_payload);
   if (anchor) {
     auto window_anchor_type = anchor->GetActiveAppWindowAnchorType();
@@ -385,15 +384,19 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       }
       nudge_data.SetAnchorView(anchor_view.value());
 
-      is_nudge_anchor_view_parent =
-          ash::features::IsGrowthCampaignsNudgeParentToAppWindow() &&
-          IsAnchorOnCaptionButtonContainer(window_anchor_type) &&
-          anchor_view.value();
-
-      // Set the nudge as part of the anchor window view hierarchy to keep the
-      // nudge from overlapping other views when the app window is behind.
-      if (is_nudge_anchor_view_parent) {
-        nudge_data.set_anchor_view_as_parent = true;
+      if (anchor_view.value()) {
+        if (IsAnchorOnCaptionButtonContainer(window_anchor_type)) {
+          // Set the nudge as part of the anchor window view hierarchy to keep
+          // the nudge from overlapping other views when the app window is
+          // behind.
+          if (ash::features::IsGrowthCampaignsNudgeParentToAppWindow()) {
+            nudge_data.set_anchor_view_as_parent = true;
+          }
+        } else {
+          // Nudge is anchored to shelf, set anchored_to_shelf flag to make
+          // the shelf visible when the nudge is shown.
+          nudge_data.anchored_to_shelf = true;
+        }
       }
     }
   }
@@ -442,7 +445,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
     // view when anchor's visibility changes. Observe the target widget
     // visibility or activation change and close the nudge to prevent the nudge
     // from showing on top of the other active view.
-    if (!is_nudge_anchor_view_parent) {
+    if (!nudge_data.set_anchor_view_as_parent) {
       auto* nudge =
           ash::Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
               kGrowthNudgeId);
