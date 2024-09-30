@@ -16,6 +16,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -363,6 +364,38 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
       const std::set<std::string>& render_urls,
       const std::set<std::string>& ad_component_render_urls,
       const CompressionGroupResultMap& compression_group_result_map);
+
+  // Code below this point is for use by the TrustedSignalsKVv2Manager, which
+  // gets KVv2 responses on a per-compression group basis through the
+  // mojom::TrustedSignalsCache API, instead of making network requests itself.
+
+  enum class SignalsType {
+    kBidding,
+    kScoring,
+  };
+
+  // A map of partition IDs to the result of parsing each partition.
+  using PartitionMap = std::map<int, scoped_refptr<TrustedSignals::Result>>;
+
+  // The result of trying to parse a compression group. Failures are global, so
+  // either there's a PartitionMap or a single global error string.
+  using PartitionMapOrError = base::expected<PartitionMap, std::string>;
+
+  // Parses a compression group. Unlike
+  // ParseBiddingSignalsFetchResultToResultMap(), parses all fields of all
+  // partitions, so if requests for the compression group arrive after it's
+  // already been parsed, there's no need to parse the data again.
+  //
+  // TODO(https://crbug.com/368241694): Consider only parsing the portion of the
+  // compression group that's needed, while keeping the rest around in case it's
+  // needed down the line. Parsing on a per-partition basis may be the best
+  // balance of practicality and compatibility in the case of multiple V8
+  // threads.
+  static PartitionMapOrError ParseEntireCompressionGroup(
+      AuctionV8Helper* v8_helper,
+      SignalsType signals_type,
+      mojom::TrustedSignalsCompressionScheme compression_scheme,
+      base::span<const uint8_t> compression_group_bytes);
 };
 
 }  // namespace auction_worklet
