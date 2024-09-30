@@ -855,6 +855,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
+        // TODO: crbug.com/343933167 - Stop suppressing the snackbar.
         SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
@@ -863,7 +864,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
-                () -> {});
+                () -> {},
+                /* suppressSnackbar= */ true);
     }
 
     private void onTurnOffSyncClicked() {
