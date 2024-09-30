@@ -63,7 +63,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -1069,8 +1068,6 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
       // PDF viewer extension can navigate to file URLs.
       extension->id() != extension_misc::kPdfExtensionId &&
       !util::AllowFileAccess(extension->id(), browser_context) &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kRestrictFileURLNavigation) &&
       !extensions::ExtensionManagementFactory::GetForBrowserContext(
            browser_context)
            ->IsFileUrlNavigationAllowed(extension->id())) {

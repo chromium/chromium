@@ -56,9 +56,6 @@ BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 
-// Controls the availability of navigation to file URLs.
-BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
-
 // If enabled, allows using the
 // `enterprise.reportingPrivate.reportDataMaskingEvent` API.
 BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent);
