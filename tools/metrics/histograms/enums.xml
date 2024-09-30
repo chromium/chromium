@@ -12379,10 +12379,12 @@ Called by update_permissions_policy_enum.py.-->
       label="elevation_service::Elevator::kErrorUnsupportedProtectionLevel"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
+  <int value="-2147174354" label="MSPR_E_UNABLE_TO_OPEN_DATA_STORE"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
   <int value="-2147172346" label="DRM_E_INVALID_LICENSE"/>
   <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
   <int value="-2147172333" label="DRM_E_LICENSE_NOT_FOUND"/>
+  <int value="-2147172325" label="DRM_E_FILEWRITEERROR"/>
   <int value="-2147171352" label="DRM_E_LOGICERR"/>
   <int value="-2147169008" label="DRM_E_TEE_INVALID_KEY_DATA"/>
   <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
