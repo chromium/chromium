@@ -352,6 +352,8 @@ void CloudServiceClient::UpdateRemoteAccessHost(
       host->mutable_tachyon_account_info()->set_account_id(std::move(parts[0]));
       host->mutable_tachyon_account_info()->set_registration_id(
           std::move(parts[1]));
+    } else {
+      LOG(WARNING) << "Invalid signaling_id provided: " << *signaling_id;
     }
   }
   if (offline_reason.has_value()) {

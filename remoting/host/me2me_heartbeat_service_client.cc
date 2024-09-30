@@ -33,10 +33,6 @@ void Me2MeHeartbeatServiceClient::SendFullHeartbeat(
     HeartbeatResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string host_offline_reason =
-      offline_reason ? (" host_offline_reason: " + *offline_reason) : "";
-  HOST_LOG << "Sending outgoing legacy heartbeat." << host_offline_reason;
-
   std::string os_name = GetHostOperatingSystemName();
   std::string os_version = GetHostOperatingSystemVersion();
 
