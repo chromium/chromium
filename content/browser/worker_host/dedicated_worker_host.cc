@@ -861,7 +861,7 @@ void DedicatedWorkerHost::BindPressureService(
 
   if (!pressure_service_) {
     pressure_service_ =
-        std::make_unique<PressureServiceForWorker<DedicatedWorkerHost>>(this);
+        std::make_unique<PressureServiceForDedicatedWorker>(this);
   }
 
   pressure_service_->BindReceiver(std::move(receiver));

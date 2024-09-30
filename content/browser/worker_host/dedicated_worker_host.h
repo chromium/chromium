@@ -56,7 +56,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-#include "content/browser/compute_pressure/pressure_service_for_worker.h"
+#include "content/browser/compute_pressure/pressure_service_for_dedicated_worker.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
@@ -231,7 +231,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  PressureServiceForWorker<DedicatedWorkerHost>* pressure_service() {
+  PressureServiceForDedicatedWorker* pressure_service() {
     return pressure_service_.get();
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
@@ -392,8 +392,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  std::unique_ptr<PressureServiceForWorker<DedicatedWorkerHost>>
-      pressure_service_;
+  std::unique_ptr<PressureServiceForDedicatedWorker> pressure_service_;
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Script request URL used, only for DevTools and tracing. Only set after
