@@ -33997,7 +33997,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="119" label="KeyboardLock"/>
   <int value="120" label="HTMLSearchElement"/>
   <int value="121" label="AsyncClipboard"/>
-  <int value="122" label="HTMLUnsafeMethods"/>
+  <int value="122" label="ParseHtmlUnsafe"/>
   <int value="123" label="ClipboardUnsanitizedFormats"/>
   <int value="124" label="Aborting"/>
   <int value="125" label="EditContext"/>
