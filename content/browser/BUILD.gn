@@ -1275,7 +1275,6 @@ source_set("browser") {
     "loader/url_loader_factory_utils.cc",
     "loader/url_loader_factory_utils.h",
     "loader/url_loader_throttles.cc",
-    "locks/lock_manager.cc",
     "locks/lock_manager.h",
     "log_console_message.cc",
     "log_console_message.h",

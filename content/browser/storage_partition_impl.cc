@@ -1329,7 +1329,7 @@ void StoragePartitionImpl::Initialize(
   dom_storage_context_ = DOMStorageContextWrapper::Create(
       this, browser_context_->GetSpecialStoragePolicy());
 
-  lock_manager_ = std::make_unique<LockManager>();
+  lock_manager_ = std::make_unique<LockManager<storage::BucketId>>();
 
   shared_storage_worklet_host_manager_ =
       std::make_unique<SharedStorageWorkletHostManager>();
@@ -1690,7 +1690,7 @@ StoragePartitionImpl::GetLocalStorageControl() {
   return GetDOMStorageContext()->GetLocalStorageControl();
 }
 
-LockManager* StoragePartitionImpl::GetLockManager() {
+LockManager<storage::BucketId>* StoragePartitionImpl::GetLockManager() {
   DCHECK(initialized_);
   return lock_manager_.get();
 }

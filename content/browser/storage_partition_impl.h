@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -27,6 +28,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -102,7 +104,6 @@ class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class InterestGroupManagerImpl;
-class LockManager;
 class NavigationStateKeepAlive;
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
@@ -188,7 +189,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::DatabaseTracker* GetDatabaseTracker() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
-  LockManager* GetLockManager();  // override; TODO: Add to interface
+  LockManager<storage::BucketId>*
+  GetLockManager();  // override; TODO: Add to interface
   // TODO(crbug.com/40185706): Add this method to the StoragePartition
   // interface, which would also require making SharedStorageWorkletHostManager
   // an interface accessible in //content/public/.
@@ -741,7 +743,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
-  std::unique_ptr<LockManager> lock_manager_;
+  std::unique_ptr<LockManager<storage::BucketId>> lock_manager_;
   std::unique_ptr<indexed_db::IndexedDBControlWrapper>
       indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
