@@ -16185,6 +16185,21 @@
             ]
         }
     ],
+    "PWAIconAndTitleInNativeNotificationsWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnablePWAIconAndTitleInNativeNotificationsWin",
+                    "enable_features": [
+                        "AppSpecificNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageAllocatorRetryOnCommitFailure": [
         {
             "platforms": [
