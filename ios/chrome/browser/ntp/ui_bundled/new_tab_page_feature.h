@@ -18,9 +18,6 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 // Feature flag to enable discofeed endpoint for the Discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
 
-// Feature flag to enable the sync promo on top of the discover feed.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
-
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
 // TODO(crbug.com/40799579): Remove this when it is fixed.
@@ -59,9 +56,6 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 // TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 
-// Parameter for the feed top sync promo's style.
-extern const char kDiscoverFeedTopSyncPromoStyle[];
-
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];
@@ -86,16 +80,6 @@ bool IsNTPViewHierarchyRepairEnabled();
 
 // Whether the sync promo should be shown on top of the feed.
 bool IsDiscoverFeedTopSyncPromoEnabled();
-
-// Returns the feed top sync promo's UI style.
-SigninPromoViewStyle GetTopOfFeedPromoStyle();
-
-// Whether the feed top sync promo should only be shown to users who previously
-// engaged with the feed.
-bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo();
-
-// Returns the number of impressions before autodismissing the feed sync promo.
-int FeedSyncPromoAutodismissCount();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);

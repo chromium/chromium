@@ -11789,25 +11789,6 @@
             ]
         }
     ],
-    "IOSFeedSyncPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Launched_Vertical_6Impressions",
-                    "params": {
-                        "DiscoverFeedTopSyncPromoStyle": "2",
-                        "autodismissImpressions": "6"
-                    },
-                    "enable_features": [
-                        "EnableDiscoverFeedTopSyncPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFollowUIUpdate": [
         {
             "platforms": [

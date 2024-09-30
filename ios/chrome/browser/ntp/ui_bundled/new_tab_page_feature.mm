@@ -13,10 +13,6 @@
 
 #pragma mark - Constants
 
-// The default number of impressions for the top-of-feed sync promo before it
-// should be auto-dismissed.
-const int kFeedSyncPromoDefaultAutodismissImpressions = 6;
-
 #pragma mark - Feature declarations
 
 BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
@@ -25,10 +21,6 @@ BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
 
 BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
              "EnableDiscoFeedEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
-             "EnableDiscoverFeedTopSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
@@ -63,13 +55,6 @@ const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
 const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
 
-// EnableDiscoverFeedTopSyncPromo parameters.
-const char kDiscoverFeedTopSyncPromoStyle[] = "DiscoverFeedTopSyncPromoStyle";
-const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
-    "autodismissImpressions";
-const char kDiscoverFeedTopSyncPromoIgnoreEngagementCondition[] =
-    "IgnoreFeedEngagementConditionForTopSyncPromo";
-
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
     "RefreshThresholdInSeconds";
@@ -95,43 +80,6 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
       GetApplicationContext()->GetVariationsService();
   return variations_service &&
          variations_service->GetStoredPermanentCountry() != "gb";
-}
-
-SigninPromoViewStyle GetTopOfFeedPromoStyle() {
-  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  SigninPromoViewStyle promoStyle =
-      static_cast<SigninPromoViewStyle>(base::GetFieldTrialParamByFeatureAsInt(
-          kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle,
-          SigninPromoViewStyleCompactVertical));
-  // Don't handle default to force a compile-time failure if a value is added to
-  // the enum without being handled here.
-  switch (promoStyle) {
-    case SigninPromoViewStyleStandard:
-    case SigninPromoViewStyleCompactHorizontal:
-    case SigninPromoViewStyleCompactVertical:
-    case SigninPromoViewStyleOnlyButton:
-      return promoStyle;
-  }
-  // If no compile-time error was triggered above, it likely means that the
-  // value was incorrectly set through Finch. In this case, return the default
-  // vertical style.
-  return SigninPromoViewStyleCompactVertical;
-}
-
-bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
-  if (IsDiscoverFeedTopSyncPromoEnabled()) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kEnableDiscoverFeedTopSyncPromo,
-        kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
-  }
-  return true;
-}
-
-int FeedSyncPromoAutodismissCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoAutodismissImpressions,
-      kFeedSyncPromoDefaultAutodismissImpressions);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {

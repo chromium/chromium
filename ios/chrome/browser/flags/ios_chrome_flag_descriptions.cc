@@ -372,12 +372,6 @@ const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[] =
 const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[] =
     "Shows the color icons, rather than the monochrome icons.";
 
-const char kEnableDiscoverFeedTopSyncPromoName[] =
-    "Enables the top of feed sync promo.";
-const char kEnableDiscoverFeedTopSyncPromoDescription[] =
-    "When enabled, a sync promotion will be presented to eligible users on top "
-    "of the feed cards.";
-
 const char kEnableFeedHeaderSettingsName[] =
     "Enables the feed header settings.";
 const char kEnableFeedHeaderSettingsDescription[] =

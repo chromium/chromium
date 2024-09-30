@@ -273,8 +273,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
     case SigninPromoViewStyleStandard:
       [self updateImageWithSize:kProfileImageHeightWidth];
       break;
-    case SigninPromoViewStyleCompactVertical:
-    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompact:
       [self updateImageWithSize:kProfileImageCompactHeightWidth];
       break;
     case SigninPromoViewStyleOnlyButton:
@@ -295,8 +294,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       // Standard Style should not call `setNonProfileImage`.
       DCHECK(NO);
       break;
-    case SigninPromoViewStyleCompactVertical:
-    case SigninPromoViewStyleCompactHorizontal: {
+    case SigninPromoViewStyleCompact: {
       [self updateImageWithSize:kNonProfileBackgroundImageCompactHeightWidth];
       // Declare a new image view to hold the non-profile image logo
       UIImageView* logoImageView = [[UIImageView alloc] init];
@@ -384,7 +382,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 
   // Customize UIButton based on SigninPromoViewStyle.
   switch (self.promoViewStyle) {
-    case SigninPromoViewStyleCompactVertical:
+    case SigninPromoViewStyleCompact:
       font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       attributes = @{NSFontAttributeName : font};
       attributedTitle = [[NSAttributedString alloc] initWithString:title
@@ -392,7 +390,6 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       buttonConfiguration.attributedTitle = attributedTitle;
       break;
     case SigninPromoViewStyleStandard:
-    case SigninPromoViewStyleCompactHorizontal:
     case SigninPromoViewStyleOnlyButton:
       font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       attributes = @{NSFontAttributeName : font};
@@ -634,48 +631,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       constraintsToActivate = self.standardLayoutConstraints;
       break;
     }
-    case SigninPromoViewStyleCompactHorizontal: {
-      // Lays out content for the horizontal compact view.
-      self.buttonVerticalStackView.alignment = UIStackViewAlignmentLeading;
-      self.buttonVerticalStackView.spacing =
-          kCompactHorizontalStyle.kButtonStackViewSubViewSpacing;
-      self.mainPromoStackView.alignment = UIStackViewAlignmentLeading;
-      self.mainPromoStackView.spacing =
-          kCompactHorizontalStyle.kMainPromoSubViewSpacing;
-      self.contentStackView.alignment = UIStackViewAlignmentTop;
-      self.contentStackView.axis = UILayoutConstraintAxisHorizontal;
-      self.contentStackView.spacing =
-          kCompactHorizontalStyle.kContentStackViewSubViewSpacing;
-      self.textVerticalStackView.alignment = UIStackViewAlignmentLeading;
-      self.textVerticalStackView.spacing =
-          kCompactHorizontalStyle.kTextStackViewSubViewSpacing;
-      self.textLabel.textAlignment = NSTextAlignmentNatural;
-      self.secondaryButton.hidden = YES;
-
-      // Configures fonts for the compact horizontal layout.
-      self.textLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
-
-      // In the Compact Horizontal style, the primary button is plain.
-      self.primaryButton.backgroundColor = nil;
-      self.primaryButton.layer.cornerRadius =
-          kCompactHorizontalStyle.kButtonCornerRadius;
-      self.primaryButton.clipsToBounds = NO;
-
-      UIButtonConfiguration* buttonConfiguration =
-          self.primaryButton.configuration;
-      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
-      self.primaryButton.configuration = buttonConfiguration;
-      constraintsToActivate = self.compactHorizontalLayoutConstraints;
-      break;
-    }
-    case SigninPromoViewStyleCompactVertical: {
+    case SigninPromoViewStyleCompact: {
       self.buttonVerticalStackView.alignment = UIStackViewAlignmentFill;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
       self.contentStackView.spacing =

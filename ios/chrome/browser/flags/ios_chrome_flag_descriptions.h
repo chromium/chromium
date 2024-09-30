@@ -311,11 +311,6 @@ extern const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[];
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 
-// Title and description for the flag to enable the sync promotion on top of the
-// discover feed.
-extern const char kEnableDiscoverFeedTopSyncPromoName[];
-extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
-
 // Title and description for the flag to modify the feed header settings.
 extern const char kEnableFeedHeaderSettingsName[];
 extern const char kEnableFeedHeaderSettingsDescription[];

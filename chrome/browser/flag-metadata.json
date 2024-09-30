@@ -3030,11 +3030,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "enable-discover-feed-top-sync-promo",
-    "owners": [ "adamta@chromium.org", "guiperez@chromium.org", "sczs@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-display-performance-mode",
     "owners": [
       "markyacoub@chromium.org",

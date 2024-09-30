@@ -78,8 +78,7 @@ using l10n_util::GetNSStringF;
       [self configureStandardSigninPromoView:signinPromoView];
       break;
     }
-    case SigninPromoViewStyleCompactHorizontal:
-    case SigninPromoViewStyleCompactVertical: {
+    case SigninPromoViewStyleCompact: {
       [self configureCompactPromoView:signinPromoView withStyle:promoViewStyle];
       break;
     }
@@ -144,8 +143,7 @@ using l10n_util::GetNSStringF;
     case SigninPromoViewStyleOnlyButton:
       // This function shouldn't be used for the non-compact promos.
       NOTREACHED();
-    case SigninPromoViewStyleCompactVertical:
-    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompact:
       [signinPromoView configurePrimaryButtonWithTitle:
                            GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)];
       switch (self.signinPromoViewMode) {

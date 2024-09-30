@@ -190,8 +190,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       case SigninPromoViewStyleStandard:
         title = GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
         break;
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical:
+      case SigninPromoViewStyleCompact:
         title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
         break;
       case SigninPromoViewStyleOnlyButton:
@@ -210,8 +209,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
-    if (style == SigninPromoViewStyleCompactVertical ||
-        style == SigninPromoViewStyleCompactHorizontal) {
+    if (style == SigninPromoViewStyleCompact) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
@@ -249,8 +247,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
         break;
       }
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical: {
+      case SigninPromoViewStyleCompact: {
         OCMExpect([signin_promo_view_
             configurePrimaryButtonWithTitle:
                 GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)]);
@@ -281,8 +278,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     switch (style) {
       case SigninPromoViewStyleStandard:
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical:
+      case SigninPromoViewStyleCompact:
         EXPECT_NE(nil, image_view_profile_image_);
         break;
       case SigninPromoViewStyleOnlyButton:
@@ -454,15 +450,6 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithColdAndWarm) {
 }
 
 // Tests the sign-in promo with and without account when the promo style is
-// compact horizontal.
-TEST_F(SigninPromoViewMediatorTest,
-       ConfigureCompactHorizontalSigninPromoViewWithColdAndWarm) {
-  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactHorizontal);
-  TestSigninPromoWithAccount(SigninPromoViewStyleCompactHorizontal);
-}
-
-// Tests the sign-in promo with and without account when the promo style is
 // SigninPromoViewStyleOnlyButton.
 TEST_F(SigninPromoViewMediatorTest,
        ConfigureOnlyButtonSigninPromoViewWithColdAndWarm) {
@@ -474,10 +461,10 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests the sign-in promo with and without account when the promo style is
 // compact vertical.
 TEST_F(SigninPromoViewMediatorTest,
-       ConfigureCompactVerticalSigninPromoViewWithColdAndWarm) {
+       ConfigureCompactSigninPromoViewWithColdAndWarm) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactVertical);
-  TestSigninPromoWithAccount(SigninPromoViewStyleCompactVertical);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompact);
+  TestSigninPromoWithAccount(SigninPromoViewStyleCompact);
 }
 
 // Tests the scenario with the sign-in promo with accounts on the device, and

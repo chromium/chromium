@@ -42,6 +42,11 @@ namespace {
 // Number of times the sign-in promo should be displayed until it is
 // automatically dismissed.
 constexpr int kAutomaticSigninPromoViewDismissCount = 20;
+
+// Number of times the top-of-feed sync promo is shown before being
+// automatically dismissed.
+constexpr int kFeedSyncPromoAutodismissCount = 6;
+
 // User defaults key to get the last logged impression of the top-of-feed promo.
 NSString* const kLastSigninImpressionTopOfFeedKey =
     @"last_signin_impression_top_of_feed";
@@ -759,7 +764,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     const int maxDisplayedCount =
         accessPoint ==
                 signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
-            ? FeedSyncPromoAutodismissCount()
+            ? kFeedSyncPromoAutodismissCount
             : kAutomaticSigninPromoViewDismissCount;
     const char* displayedCountPreferenceKey =
         DisplayedCountPreferenceKey(accessPoint);
@@ -775,8 +780,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (accessPoint ==
           signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
       (![[NSUserDefaults standardUserDefaults]
-           boolForKey:kEngagedWithFeedKey] ||
-       ShouldIgnoreFeedEngagementConditionForTopSyncPromo())) {
+          boolForKey:kEngagedWithFeedKey])) {
     return NO;
   }
 

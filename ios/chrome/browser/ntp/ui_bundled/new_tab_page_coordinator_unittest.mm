@@ -185,7 +185,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     std::vector<base::test::FeatureRef> enabled;
-    enabled.push_back(kEnableDiscoverFeedTopSyncPromo);
     enabled.push_back(kEnableWebChannels);
     std::vector<base::test::FeatureRef> disabled;
     scoped_feature_list_.InitWithFeatures(enabled, disabled);

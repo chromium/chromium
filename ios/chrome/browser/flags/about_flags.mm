@@ -201,22 +201,6 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
      nullptr},
 };
 
-// Uses int values from SigninPromoViewStyle enum.
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoStandard[] = {
-    {kDiscoverFeedTopSyncPromoStyle, "0"}};
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactHorizontal[] =
-    {{kDiscoverFeedTopSyncPromoStyle, "1"}};
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactVertical[] = {
-    {kDiscoverFeedTopSyncPromoStyle, "2"}};
-
-const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
-    {"Standard", kDiscoverFeedTopSyncPromoStandard,
-     std::size(kDiscoverFeedTopSyncPromoStandard), nullptr},
-    {"Compact Horizontal", kDiscoverFeedTopSyncPromoCompactHorizontal,
-     std::size(kDiscoverFeedTopSyncPromoCompactHorizontal), nullptr},
-    {"Compact Vertical", kDiscoverFeedTopSyncPromoCompactVertical,
-     std::size(kDiscoverFeedTopSyncPromoCompactVertical), nullptr}};
-
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
     {kContentPushNotificationsExperimentType, "1"}};
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
@@ -1111,13 +1095,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableDiscoverFeedDiscoFeedEndpoint)},
-    {"enable-discover-feed-top-sync-promo",
-     flag_descriptions::kEnableDiscoverFeedTopSyncPromoName,
-     flag_descriptions::kEnableDiscoverFeedTopSyncPromoDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
-                                    kDiscoverFeedTopSyncPromoVariations,
-                                    "EnableDiscoverFeedTopSyncPromo")},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
