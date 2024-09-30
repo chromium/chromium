@@ -606,10 +606,13 @@ main() {
   if [[ ${EUID} -eq 0 ]]; then
     readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
   else
-    # When non-root, omit dir times, since rsync can't update them if the
-    # directories are owned by a different user.
+    # When non-root, omit link and dir times, since rsync can't update them if
+    # the directories are owned by a different user. Also avoid --perms, since
+    # in some cases users can't change the permissions of files owned by other
+    # users.
     readonly RSYNC_FLAGS=\
-"--ignore-times --links --perms --recursive --times --omit-dir-times"
+"--ignore-times --links --no-perms --executability --chmod=u=rwX,go=rX\
+ --recursive"
   fi
 
   # It's difficult to get GOOGLE_CHROME_UPDATER_DEBUG set in the environment
