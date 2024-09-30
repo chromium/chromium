@@ -2526,8 +2526,16 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebAppOriginTextAccessibleProperties \
+  DISABLED_WebAppOriginTextAccessibleProperties
+#else
+#define MAYBE_WebAppOriginTextAccessibleProperties \
+  WebAppOriginTextAccessibleProperties
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       WebAppOriginTextAccessibleProperties) {
+                       MAYBE_WebAppOriginTextAccessibleProperties) {
   InstallAndLaunchWebApp();
   auto* origin_text = helper()->origin_text_view();
   ui::AXNodeData data;
