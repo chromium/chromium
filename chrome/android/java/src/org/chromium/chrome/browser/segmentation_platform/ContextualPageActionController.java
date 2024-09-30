@@ -124,6 +124,9 @@ public class ContextualPageActionController {
         if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
             mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         }
+        if (AdaptiveToolbarFeatures.isDiscountsPageActionEnabled()) {
+            mActionProviders.add(new DiscountsActionProvider(shoppingServiceSupplier));
+        }
     }
 
     /** Called on destroy. */
@@ -169,6 +172,9 @@ public class ContextualPageActionController {
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
                 ProcessedValue.fromFloat(signalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
+        inputContext.addEntry(
+                Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()

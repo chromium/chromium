@@ -23,6 +23,7 @@ public class SignalAccumulator {
     private Boolean mHasPriceTracking;
     private Boolean mHasReaderMode;
     private Boolean mHasPriceInsights;
+    private Boolean mHasDiscounts;
 
     // Whether the backends didn't respond within the time limit. Any further response from the
     // backends will be ignored.
@@ -111,6 +112,18 @@ public class SignalAccumulator {
         mHasPriceInsights = hasPriceInsights;
     }
 
+    /**
+     * @return Whether the page is discounts eligible. Default is false.
+     */
+    public Boolean hasDiscounts() {
+        return mHasDiscounts == null ? false : mHasDiscounts;
+    }
+
+    /** Called to set whether the page is discounts eligible. */
+    public void setHasDiscounts(Boolean hasDiscounts) {
+        mHasDiscounts = hasDiscounts;
+    }
+
     /** Central method invoked whenever a backend responds or time out happens. */
     private void proceedToNextStepIfReady() {
         boolean isReady = mHasTimedOut || hasAllSignals();
@@ -120,6 +133,9 @@ public class SignalAccumulator {
     }
 
     private boolean hasAllSignals() {
-        return mHasPriceTracking != null && mHasReaderMode != null && mHasPriceInsights != null;
+        return mHasPriceTracking != null
+                && mHasReaderMode != null
+                && mHasPriceInsights != null
+                && mHasDiscounts != null;
     }
 }
