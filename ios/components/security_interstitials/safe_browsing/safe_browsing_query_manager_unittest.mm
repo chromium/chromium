@@ -8,6 +8,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
@@ -146,6 +147,7 @@ class SafeBrowsingQueryManagerTest : public testing::TestWithParam<bool> {
         safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
         use_async_safe_browsing_);
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get(), &client_);
+    SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
     web_state_->SetBrowserState(browser_state_.get());
   }
@@ -232,15 +234,8 @@ TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   }
 
   // Start a URL check query for the unsafe URL and run the runloop until the
-  // result is received.  An UnsafeResource is stored before the query finishes
-  // to simulate the production behavior that adds a resource that will be used
-  // to populate the error page.
+  // result is received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
   RunSyncCallbacksThenAsyncCallbacks();
 }
 
@@ -261,15 +256,8 @@ TEST_P(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
                                          /*is_url_async_safe=*/false));
 
   // Start a URL check query for the unsafe URL and run the runloop until the
-  // results are received.  An UnsafeResource is stored before the query
-  // finishes to simulate the production behavior that adds a resource that will
-  // be used to populate the error page.
+  // results are received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
   RunSyncCallbacksThenAsyncCallbacks();
 }
 
@@ -290,15 +278,8 @@ TEST_P(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
                                          /*is_url_async_safe=*/false));
 
   // Start a URL check query for the unsafe URL and run the runloop until the
-  // results are received.  An UnsafeResource is stored before the query
-  // finishes to simulate the production behavior that adds a resource that will
-  // be used to populate the error page.
+  // results are received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
   RunSyncCallbacksThenAsyncCallbacks();
 }
 
@@ -327,17 +308,9 @@ TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   }
 
   // Start a URL check query for the unsafe URL and run the runloop until the
-  // result is received.  An UnsafeResource is stored before the query finishes
-  // to simulate the production behavior that adds a resource that will be used
-  // to populate the error page.
+  // result is received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
-  manager()->StoreUnsafeResource(resource);
   RunSyncCallbacksThenAsyncCallbacks();
 }
 
@@ -369,11 +342,6 @@ TEST_P(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   // once for each query.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
   RunSyncCallbacksThenAsyncCallbacks();
 }
 
@@ -425,6 +393,7 @@ class SafeBrowsingQueryManagerWebStateDestructionTest : public PlatformTest {
   SafeBrowsingQueryManagerWebStateDestructionTest() : http_method_("GET") {
     SafeBrowsingQueryManager::CreateForWebState(observer_.web_state(),
                                                 &client_);
+    SafeBrowsingUrlAllowList::CreateForWebState(observer_.web_state());
     manager()->AddObserver(&observer_);
   }
 
@@ -453,14 +422,7 @@ TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
 
   // Start a URL check query for the unsafe URL and run the runloop until the
-  // result is received. An UnsafeResource is stored before the query finishes
-  // to simulate the production behavior that adds a resource that will be used
-  // to populate the error page.
+  // result is received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  UnsafeResource resource;
-  resource.url = url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
 }

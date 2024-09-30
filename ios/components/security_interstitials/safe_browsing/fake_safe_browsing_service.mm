@@ -6,6 +6,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -13,23 +14,60 @@
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace {
 
+// This is used to vend a RepeatingCallback which runs the
+// NativeCheckUrlCallback on only the first run.
+class CheckUrlCallbackRunner {
+ public:
+  CheckUrlCallbackRunner(
+      safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
+          callback)
+      : callback_(std::move(callback)) {}
+  ~CheckUrlCallbackRunner() = default;
+
+  void MaybeRunCallback(
+      security_interstitials::UnsafeResource::UrlCheckResult result) {
+    if (callback_) {
+      std::move(callback_).Run(result.proceed, result.showed_interstitial,
+                               result.has_post_commit_interstitial_skipped,
+                               /*did_perform_url_real_time_check=*/
+                               safe_browsing::SafeBrowsingUrlCheckerImpl::
+                                   PerformedCheck::kHashDatabaseCheck);
+    }
+  }
+
+ private:
+  safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback callback_;
+};
+
 void RunCheckUrlCallback(
     const GURL& url,
     bool is_url_unsafe,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
-        callback) {
+    safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback callback,
+    const std::string& method,
+    scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate,
+    base::WeakPtr<web::WebState> web_state) {
   if (is_url_unsafe) {
-    std::move(callback).Run(
-        /*proceed=*/false,
-        /*showed_interstitial=*/true,
-        /*has_post_commit_interstitial_skipped=*/false,
-        /*did_perform_url_real_time_check=*/
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
-            kHashDatabaseCheck);
+    security_interstitials::UnsafeResource resource;
+    resource.url = url;
+    resource.threat_type =
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+    resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+    resource.callback = base::BindRepeating(
+        &CheckUrlCallbackRunner::MaybeRunCallback,
+        std::make_unique<CheckUrlCallbackRunner>(std::move(callback)));
+    resource.callback_sequence = base::SequencedTaskRunner::GetCurrentDefault();
+    resource.weak_web_state = web_state;
+
+    // Notify the `url_checker_delegate`, which will cause `callback` to
+    // be run asynchronously after the `UnsafeResource` has been saved.
+    url_checker_delegate->StartDisplayingBlockingPageHelper(
+        std::move(resource), method, net::HttpRequestHeaders(),
+        /*has_user_gesture=*/false);
     return;
   }
   std::move(callback).Run(/*proceed=*/true,
@@ -45,8 +83,9 @@ void RunCheckUrlCallback(
 class FakeSafeBrowsingUrlCheckerImpl
     : public safe_browsing::SafeBrowsingUrlCheckerImpl {
  public:
-  explicit FakeSafeBrowsingUrlCheckerImpl(
-      network::mojom::RequestDestination request_destination)
+  FakeSafeBrowsingUrlCheckerImpl(
+      network::mojom::RequestDestination request_destination,
+      base::WeakPtr<web::WebState> web_state)
       : SafeBrowsingUrlCheckerImpl(
             /*headers=*/net::HttpRequestHeaders(),
             /*load_flags=*/0,
@@ -55,7 +94,7 @@ class FakeSafeBrowsingUrlCheckerImpl
                 /*database_manager=*/nullptr,
                 /*client=*/nullptr), /*web_contents_getter=*/
             base::RepeatingCallback<content::WebContents*()>(),
-            base::WeakPtr<web::WebState>(),
+            web_state,
             /*render_process_id=*/
             security_interstitials::UnsafeResource::kNoRenderProcessId,
             /*render_frame_token=*/std::nullopt,
@@ -76,9 +115,10 @@ class FakeSafeBrowsingUrlCheckerImpl
 
   FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,
+      base::WeakPtr<web::WebState> web_state,
       FakeSafeBrowsingClient* client,
       bool is_async_check)
-      : FakeSafeBrowsingUrlCheckerImpl(request_destination) {
+      : FakeSafeBrowsingUrlCheckerImpl(request_destination, web_state) {
     client_ = client;
     is_async_check_ = is_async_check;
   }
@@ -94,13 +134,20 @@ class FakeSafeBrowsingUrlCheckerImpl
     if (client_) {
       if (is_async_check_) {
         client_->store_async_callback(base::BindOnce(
-            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
+            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback),
+            method, url_checker_delegate(), web_state()));
       } else {
         client_->store_sync_callback(base::BindOnce(
-            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
+            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback),
+            method, url_checker_delegate(), web_state()));
       }
     } else {
-      RunCheckUrlCallback(url, IsUrlUnsafe(url), std::move(callback));
+      // Always respond asynchronously to support tests in
+      // safe_browsing_tab_helper_unittest.mm
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&RunCheckUrlCallback, url, IsUrlUnsafe(url),
+                                    std::move(callback), method,
+                                    url_checker_delegate(), web_state()));
     }
   }
 
@@ -122,9 +169,11 @@ class FakeAsyncSafeBrowsingUrlCheckerImpl
  public:
   explicit FakeAsyncSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,
+      base::WeakPtr<web::WebState> web_state,
       FakeSafeBrowsingClient* client,
       bool is_async_check)
       : FakeSafeBrowsingUrlCheckerImpl(request_destination,
+                                       web_state,
                                        client,
                                        is_async_check) {}
 
@@ -166,7 +215,8 @@ FakeSafeBrowsingService::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
+  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(
+      request_destination, web_state->GetWeakPtr());
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -176,7 +226,7 @@ FakeSafeBrowsingService::CreateSyncChecker(
     SafeBrowsingClient* client) {
   auto* test_client = static_cast<FakeSafeBrowsingClient*>(client);
   return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(
-      request_destination, test_client,
+      request_destination, web_state->GetWeakPtr(), test_client,
       /*is_async_check=*/false);
 }
 
@@ -187,7 +237,7 @@ FakeSafeBrowsingService::CreateAsyncChecker(
     SafeBrowsingClient* client) {
   auto* test_client = static_cast<FakeSafeBrowsingClient*>(client);
   return std::make_unique<FakeAsyncSafeBrowsingUrlCheckerImpl>(
-      request_destination, test_client,
+      request_destination, web_state->GetWeakPtr(), test_client,
       /*is_async_check=*/true);
 }
 

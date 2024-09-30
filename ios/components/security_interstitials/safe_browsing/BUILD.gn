@@ -81,6 +81,7 @@ source_set("test_support") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/ios/browser:allow_list",
     "//ios/web/public",
     "//services/network:test_support",
     "//services/network/public/cpp",

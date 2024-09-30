@@ -149,17 +149,6 @@ class SafeBrowsingTabHelperTest
     web_state_.OnNavigationRedirected(&context);
   }
 
-  // Stores an UnsafeResource for `url` in the query manager.  It is expected
-  // that an UnsafeResource is stored before check completion for unsafe URLs
-  // that show an error page.
-  void StoreUnsafeResource(const GURL& url) {
-    security_interstitials::UnsafeResource resource;
-    resource.url = url;
-    resource.weak_web_state = web_state_.GetWeakPtr();
-    SafeBrowsingQueryManager::FromWebState(&web_state_)
-        ->StoreUnsafeResource(resource);
-  }
-
   // Helper function to run all async callbacks first then sync callbacks.
   void RunAsyncCallbacksThenSyncCallbacks() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -239,7 +228,6 @@ TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseAsyncQueryFirst) {
 TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponse) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
-  StoreUnsafeResource(url);
   RunSyncCallbacksThenAsyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -255,7 +243,6 @@ TEST_P(SafeBrowsingTabHelperTest,
           safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
     GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
     EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
-    StoreUnsafeResource(url);
     RunAsyncCallbacksThenSyncCallbacks();
 
     web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -283,7 +270,6 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeRequestAndResponseWithDifferingRef) {
   GURL request_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   GURL response_url("http://" + FakeSafeBrowsingService::kUnsafeHost + "#ref");
   EXPECT_TRUE(ShouldAllowRequestUrl(request_url).ShouldAllowNavigation());
-  StoreUnsafeResource(request_url);
   RunSyncCallbacksThenAsyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -316,7 +302,6 @@ TEST_P(SafeBrowsingTabHelperTest, MultipleRequestsSingleResponse) {
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  StoreUnsafeResource(url3);
   RunSyncCallbacksThenAsyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -330,7 +315,6 @@ TEST_P(SafeBrowsingTabHelperTest, RepeatedRequestsGetDistinctResponse) {
   // Compare the NSError objects.
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
-  StoreUnsafeResource(url);
   RunSyncCallbacksThenAsyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -438,7 +422,6 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainFirstRequestUnsafe) {
   GURL url2("http://chromium2.test");
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  StoreUnsafeResource(url1);
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
@@ -464,7 +447,6 @@ TEST_P(SafeBrowsingTabHelperTest,
     GURL url2("http://chromium2.test");
     GURL url3("http://chromium3.test");
     EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-    StoreUnsafeResource(url1);
     RunSyncCallbacksThenAsyncCallbacks();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
@@ -491,7 +473,6 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainMiddleRequestUnsafe) {
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
@@ -517,7 +498,6 @@ TEST_P(SafeBrowsingTabHelperTest,
     RunSyncCallbacksThenAsyncCallbacks();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-    StoreUnsafeResource(url2);
     RunSyncCallbacksThenAsyncCallbacks();
     SimulateMainFrameRedirect();
 
@@ -546,7 +526,6 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainFinalRequestUnsafe) {
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  StoreUnsafeResource(url3);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
@@ -572,7 +551,6 @@ TEST_P(SafeBrowsingTabHelperTest,
     SimulateMainFrameRedirect();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-    StoreUnsafeResource(url3);
     RunSyncCallbacksThenAsyncCallbacks();
     SimulateMainFrameRedirect();
 
@@ -589,16 +567,13 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainAllRequestsUnsafe) {
   GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
   GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost + "/3");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  StoreUnsafeResource(url1);
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  StoreUnsafeResource(url3);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
@@ -617,16 +592,13 @@ TEST_P(SafeBrowsingTabHelperTest,
     GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
     GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost + "/3");
     EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-    StoreUnsafeResource(url1);
     RunSyncCallbacksThenAsyncCallbacks();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-    StoreUnsafeResource(url2);
     RunSyncCallbacksThenAsyncCallbacks();
     SimulateMainFrameRedirect();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-    StoreUnsafeResource(url3);
     RunSyncCallbacksThenAsyncCallbacks();
     SimulateMainFrameRedirect();
 
@@ -644,11 +616,9 @@ TEST_P(SafeBrowsingTabHelperTest, ConsecutiveRequestsWithoutRedirect) {
   GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
   GURL url3("http://chromium.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  StoreUnsafeResource(url1);
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
@@ -667,11 +637,9 @@ TEST_P(SafeBrowsingTabHelperTest, InterruptedUnsafeRedirectChain) {
   GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  StoreUnsafeResource(url1);
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
@@ -695,11 +663,9 @@ TEST_P(SafeBrowsingTabHelperTest,
     GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
     GURL url3("http://chromium3.test");
     EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-    StoreUnsafeResource(url1);
     RunSyncCallbacksThenAsyncCallbacks();
 
     EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-    StoreUnsafeResource(url2);
     RunSyncCallbacksThenAsyncCallbacks();
     SimulateMainFrameRedirect();
 
@@ -736,7 +702,6 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectToSameSafeURL) {
 TEST_P(SafeBrowsingTabHelperTest, RedirectToSameUnsafeURL) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
-  StoreUnsafeResource(url);
   RunSyncCallbacksThenAsyncCallbacks();
 
   // Simulate the URL redirecting to itself multiple times before producing a
@@ -790,7 +755,6 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeRedirectChainWithRepeatedURL) {
   RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   base::RunLoop().RunUntilIdle();
   SimulateMainFrameRedirect();
 
@@ -799,7 +763,6 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeRedirectChainWithRepeatedURL) {
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  StoreUnsafeResource(url2);
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
@@ -833,7 +796,6 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeMainFrameRequestNotifiesClient) {
   GURL unsafe_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
 
   EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url).ShouldAllowNavigation());
-  StoreUnsafeResource(unsafe_url);
 
   // When `unsafe_url` is determined to be unsafe, the client should be
   // notified.
@@ -894,7 +856,6 @@ TEST_P(SafeBrowsingTabHelperTest,
     web::FakeNavigationContext context;
     context.SetHasCommitted(true);
     web_state_.OnNavigationFinished(&context);
-    StoreUnsafeResource(url);
 
     client_.run_async_callbacks();
     // TODO(crbug.com/359420122): Remove when clean up is complete.
@@ -936,7 +897,6 @@ TEST_P(SafeBrowsingTabHelperTest,
         ShouldAllowResponseUrl(url);
     EXPECT_TRUE(response_decision.ShouldAllowNavigation());
 
-    StoreUnsafeResource(url);
     client_.run_async_callbacks();
     // TODO(crbug.com/359420122): Remove when clean up is complete.
     base::RunLoop().RunUntilIdle();
