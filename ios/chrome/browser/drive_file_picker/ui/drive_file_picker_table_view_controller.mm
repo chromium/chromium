@@ -29,7 +29,11 @@
 
 namespace {
 
-constexpr CGFloat kCellIconCornerRadius = 10;
+constexpr CGFloat kCellDisabledAlpha = 0.4;
+constexpr CGFloat kCellImageDimension = 24.0;
+constexpr CGFloat kCellVerticalMarginsText = 12.0;
+constexpr CGFloat kCellVerticalMarginsTextAndSecondaryText = 8.0;
+constexpr CGFloat kCellTextToSecondaryTextVerticalPadding = 4.0;
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 constexpr CGFloat kTitleLogoSpacing = 3.0;
@@ -221,7 +225,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   self.tableView.dataSource = _diffableDataSource;
 
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  RegisterTableViewCell<UITableViewCell>(self.tableView);
 
   // Set up search header.
   UILabel* searchTitle = [[UILabel alloc] init];
@@ -491,8 +495,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 // Deques and sets up a cell for a drive item.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(NSString*)itemIdentifier {
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
+  UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
   DriveFilePickerItem* item =
       FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
   if (!item) {
@@ -503,51 +506,103 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     return cell;
   }
 
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  UIListContentConfiguration* contentConfiguration =
+      item.subtitle ? [UIListContentConfiguration subtitleCellConfiguration]
+                    : [UIListContentConfiguration cellConfiguration];
+
+  // Set up cell image.
+  if (!item.icon) {
+    [self.mutator fetchIconForDriveItem:itemIdentifier];
+  } else {
+    UIListContentImageProperties* imageProperties =
+        contentConfiguration.imageProperties;
+    contentConfiguration.image = item.icon;
+    imageProperties.reservedLayoutSize =
+        CGSizeMake(UIListContentImageStandardDimension,
+                   UIListContentImageStandardDimension);
+    imageProperties.maximumSize =
+        CGSize(kCellImageDimension, kCellImageDimension);
+    // Set image tint color.
+    if (item.icon.isSymbolImage) {
+      imageProperties.tintColor = [UIColor colorNamed:kGrey600Color];
+      imageProperties.cornerRadius = 0;
+    } else {
+      imageProperties.tintColor = nil;
+      imageProperties.cornerRadius = item.type == DriveItemType::kSharedDrive
+                                         ? kCellImageDimension / 2.0
+                                         : 0;
+    }
+  }
+
+  // Set up text.
+  UIListContentTextProperties* textProperties =
+      contentConfiguration.textProperties;
+  textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
+  textProperties.numberOfLines = 1;
+  textProperties.allowsDefaultTighteningForTruncation = YES;
+  UIFont* textFont = textProperties.font;
   if (item.titleRangeToEmphasize.location == NSNotFound) {
-    cell.textLabel.text = item.title;
+    contentConfiguration.text = item.title;
   } else {
     // If there is a range to emphasize in the title, use bold font for this
     // range.
     NSMutableAttributedString* attributedTitle =
         [[NSMutableAttributedString alloc] initWithString:item.title];
-    UIFontDescriptor* boldFontDescriptor = [cell.textLabel.font.fontDescriptor
+    UIFontDescriptor* boldFontDescriptor = [textFont.fontDescriptor
         fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    UIFont* boldFont =
-        [UIFont fontWithDescriptor:boldFontDescriptor
-                              size:cell.textLabel.font.pointSize];
+    UIFont* boldFont = [UIFont fontWithDescriptor:boldFontDescriptor
+                                             size:textFont.pointSize];
     [attributedTitle setAttributes:@{NSFontAttributeName : boldFont}
                              range:item.titleRangeToEmphasize];
-    cell.textLabel.attributedText = attributedTitle;
+    contentConfiguration.attributedText = attributedTitle;
   }
 
-  [cell setDetailText:item.subtitle];
-  [cell setTextLayoutConstraintAxis:item.subtitle
-                                        ? UILayoutConstraintAxisVertical
-                                        : UILayoutConstraintAxisHorizontal];
-
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-  if (!item.icon) {
-    [self.mutator fetchIconForDriveItem:itemIdentifier];
-  } else {
-    BOOL isSymbol = item.icon.isSymbolImage;
-    [cell setIconImage:item.icon
-              tintColor:isSymbol ? [UIColor colorNamed:kGrey600Color] : nil
-        backgroundColor:cell.backgroundColor
-           cornerRadius:kCellIconCornerRadius];
+  // Set up subtitle (secondary text).
+  if (item.subtitle) {
+    contentConfiguration.secondaryText = item.subtitle;
+    // Using primary color if the item is disabled so the final appearance after
+    // changing the content view's alpha value is similar to that of the main
+    // text.
+    contentConfiguration.secondaryTextProperties.color =
+        item.enabled ? [UIColor colorNamed:kTextSecondaryColor]
+                     : [UIColor colorNamed:kTextPrimaryColor];
+    contentConfiguration.secondaryTextProperties.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   }
 
+  // Set up layout.
+  NSDirectionalEdgeInsets directionalLayoutMargins =
+      contentConfiguration.directionalLayoutMargins;
+  directionalLayoutMargins.top = item.subtitle
+                                     ? kCellVerticalMarginsTextAndSecondaryText
+                                     : kCellVerticalMarginsText;
+  directionalLayoutMargins.bottom =
+      item.subtitle ? kCellVerticalMarginsTextAndSecondaryText
+                    : kCellVerticalMarginsText;
+  contentConfiguration.directionalLayoutMargins = directionalLayoutMargins;
+  contentConfiguration.textToSecondaryTextVerticalPadding =
+      kCellTextToSecondaryTextVerticalPadding;
+
+  cell.contentConfiguration = contentConfiguration;
+
+  // Set up background.
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration listGroupedCellConfiguration];
+  backgroundConfiguration.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  cell.backgroundConfiguration = backgroundConfiguration;
+
+  // Set other cell properties.
   if (item.type == DriveItemType::kFile) {
     cell.accessoryType = [itemIdentifier isEqual:_selectedIdentifier]
                              ? UITableViewCellAccessoryCheckmark
                              : UITableViewCellAccessoryNone;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.contentView.alpha = item.enabled ? 1.0 : kCellDisabledAlpha;
 
-  cell.userInteractionEnabled = item.enabled;
-  cell.textLabel.enabled = item.enabled;
-  cell.detailTextLabel.enabled = item.enabled;
   return cell;
 }
 

@@ -7,9 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+// This enumerates types of DriveFilePickerItem.
 enum class DriveItemType : NSUInteger {
-  kFolder,
+  // "Real" items which can be mapped to a corresponding `DriveItem`.
   kFile,
+  kFolder,
+  kSharedDrive,
+  // "Virtual" items which cannot be mapped to a corresponding `DriveItem`.
   kMyDrive,
   kSharedDrives,
   kComputers,
@@ -27,7 +31,7 @@ enum class DriveItemType : NSUInteger {
 // Drive item type (folder/file).
 @property(nonatomic, readonly) DriveItemType type;
 
-// Drive item icon.
+// Drive item image.
 @property(nonatomic, strong) UIImage* icon;
 
 // Drive item title.

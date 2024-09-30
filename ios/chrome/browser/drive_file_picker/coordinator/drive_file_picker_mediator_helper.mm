@@ -251,8 +251,8 @@ DriveListQuery CreateDriveListQuery(
 bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
                                         NSArray<UTType*>* accepted_types,
                                         BOOL ignore_accepted_types) {
-  // Folders can be selected so their contents can be inspected.
-  if (item.is_folder) {
+  // Folders and shared drives can be opened so their contents can be inspected.
+  if (item.is_folder || item.is_shared_drive) {
     return true;
   }
   // Non-downloadable files cannot be selected.
@@ -348,8 +348,10 @@ NSString* DriveFilePickerItemSubtitle(
   // Handling non-search items.
   switch (collection_type) {
     case DriveFilePickerCollectionType::kRoot:
-    case DriveFilePickerCollectionType::kSharedDrives:
       NOTREACHED_NORETURN();
+    case DriveFilePickerCollectionType::kSharedDrives:
+      // Shared drives do not have subtitles.
+      return nil;
     case DriveFilePickerCollectionType::kRecent:
       return DriveFilePickerItemSubtitleRecent(item);
     case DriveFilePickerCollectionType::kSharedWithMe:
@@ -374,6 +376,14 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     DriveItemsSortingType sorting_criteria,
     BOOL should_show_search_items,
     NSString* search_text) {
+  DriveItemType type;
+  if (item.is_folder) {
+    type = DriveItemType::kFolder;
+  } else if (item.is_shared_drive) {
+    type = DriveItemType::kSharedDrive;
+  } else {
+    type = DriveItemType::kFile;
+  }
   DriveFilePickerItem* drive_file_picker_item = [[DriveFilePickerItem alloc]
       initWithIdentifier:item.identifier
                    title:item.name
@@ -381,8 +391,7 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
                              item, collection_type, sorting_criteria,
                              should_show_search_items, search_text)
                     icon:nil
-                    type:(item.is_folder) ? DriveItemType::kFolder
-                                          : DriveItemType::kFile];
+                    type:type];
   return drive_file_picker_item;
 }
 

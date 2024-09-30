@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -35,6 +36,14 @@ namespace {
 constexpr base::TimeDelta kFetchItemsDelay = base::Seconds(0.5);
 // folder_identifier parameter for the My Drive view.
 NSString* kMyDriveFolderIdentifier = @"root";
+// Size to which shared drive images should be resized before going to consumer.
+constexpr CGFloat kSharedDriveBackgroundImageResizeDimension = 64.0;
+// Prefix of links to icons in the Drive third-party icon repository.
+NSString* kDriveIconRepositoryPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/";
+// Prefix of links to shared drive background images gallery.
+NSString* kSharedDriveBackgroundImageGalleryPrefix =
+    @"https://ssl.gstatic.com/team_drive_themes/";
 
 }  // namespace
 
@@ -173,7 +182,7 @@ NSString* kMyDriveFolderIdentifier = @"root";
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
   // If this is a real file, select and download it.
-  if (driveItem && !driveItem->is_folder) {
+  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive) {
     // Unfocusing the search bar so the confirmation button can become visible.
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:_searchText];
@@ -188,14 +197,14 @@ NSString* kMyDriveFolderIdentifier = @"root";
     return;
   }
 
-  // If the user tries to browse into a folder or collection while an item is
-  // already selected, clear the selection.
+  // If the user tries to browse into a folder or other type of collection while
+  // an item is already selected, clear the selection.
   if (_selectedIdentifier != nil) {
     [self clearSelection];
   }
 
-  if (driveItem && driveItem->is_folder) {
-    // If this is a real folder, then browse this folder.
+  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
+    // If this is a real folder or shared drive, then open it.
     [self.delegate
         browseDriveCollectionWithMediator:self
                                     title:driveItem->name
@@ -206,60 +215,56 @@ NSString* kMyDriveFolderIdentifier = @"root";
                           sortingCriteria:_sortingCriteria
                          sortingDirection:_sortingDirection];
     return;
-  } else if ([driveItemIdentifier
-                 isEqual:[DriveFilePickerItem myDriveItem].identifier]) {
-    DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
-    [self.delegate
-        browseDriveCollectionWithMediator:self
-                                    title:myDriveItem.title
-                           collectionType:DriveFilePickerCollectionType::kFolder
-                         folderIdentifier:kMyDriveFolderIdentifier
-                                   filter:_filter
-                      ignoreAcceptedTypes:_ignoreAcceptedTypes
-                          sortingCriteria:_sortingCriteria
-                         sortingDirection:_sortingDirection];
-  } else if ([driveItemIdentifier
-                 isEqual:[DriveFilePickerItem starredItem].identifier]) {
-    DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
-    [self.delegate
-        browseDriveCollectionWithMediator:self
-                                    title:starredItem.title
-                           collectionType:DriveFilePickerCollectionType::
-                                              kStarred
-                         folderIdentifier:nil
-                                   filter:_filter
-                      ignoreAcceptedTypes:_ignoreAcceptedTypes
-                          sortingCriteria:_sortingCriteria
-                         sortingDirection:_sortingDirection];
-  } else if ([driveItemIdentifier
-                 isEqual:[DriveFilePickerItem recentItem].identifier]) {
-    DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
-    [self.delegate
-        browseDriveCollectionWithMediator:self
-                                    title:recentItem.title
-                           collectionType:DriveFilePickerCollectionType::kRecent
-                         folderIdentifier:nil
-                                   filter:_filter
-                      ignoreAcceptedTypes:_ignoreAcceptedTypes
-                          sortingCriteria:_sortingCriteria
-                         sortingDirection:_sortingDirection];
-  } else if ([driveItemIdentifier
-                 isEqual:[DriveFilePickerItem sharedWithMeItem].identifier]) {
-    DriveFilePickerItem* sharedWithMeItem =
-        [DriveFilePickerItem sharedWithMeItem];
-    [self.delegate
-        browseDriveCollectionWithMediator:self
-                                    title:sharedWithMeItem.title
-                           collectionType:DriveFilePickerCollectionType::
-                                              kSharedWithMe
-                         folderIdentifier:nil
-                                   filter:_filter
-                      ignoreAcceptedTypes:_ignoreAcceptedTypes
-                          sortingCriteria:_sortingCriteria
-                         sortingDirection:_sortingDirection];
-  } else {
-    // TODO(crbug.com/344813593): Add support for Shared Drives.
   }
+
+  // Handle browsing to virtual collections.
+  DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
+  DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
+  DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
+  DriveFilePickerItem* sharedWithMeItem =
+      [DriveFilePickerItem sharedWithMeItem];
+  DriveFilePickerItem* sharedDrivesItem =
+      [DriveFilePickerItem sharedDrivesItem];
+
+  NSString* title;
+  DriveFilePickerCollectionType collectionType;
+  NSString* folderIdentifier;
+  if ([driveItemIdentifier isEqual:myDriveItem.identifier]) {
+    title = myDriveItem.title;
+    collectionType = DriveFilePickerCollectionType::kFolder;
+    folderIdentifier = kMyDriveFolderIdentifier;
+  } else if ([driveItemIdentifier isEqual:starredItem.identifier]) {
+    title = starredItem.title;
+    collectionType = DriveFilePickerCollectionType::kStarred;
+    folderIdentifier = nil;
+  } else if ([driveItemIdentifier isEqual:recentItem.identifier]) {
+    title = recentItem.title;
+    collectionType = DriveFilePickerCollectionType::kRecent;
+    folderIdentifier = nil;
+  } else if ([driveItemIdentifier isEqual:sharedWithMeItem.identifier]) {
+    title = sharedWithMeItem.title;
+    collectionType = DriveFilePickerCollectionType::kSharedWithMe;
+    folderIdentifier = nil;
+  } else if ([driveItemIdentifier isEqual:sharedDrivesItem.identifier]) {
+    title = sharedDrivesItem.title;
+    collectionType = DriveFilePickerCollectionType::kSharedDrives;
+    folderIdentifier = nil;
+  } else {
+    // TODO(crbug.com/344813593): Add support for Computers.
+    return;
+  }
+
+  // If the collection type is `kFolder`, then `folderIdentifier` should be set.
+  CHECK(collectionType != DriveFilePickerCollectionType::kFolder ||
+        folderIdentifier != nil);
+  [self.delegate browseDriveCollectionWithMediator:self
+                                             title:title
+                                    collectionType:collectionType
+                                  folderIdentifier:folderIdentifier
+                                            filter:_filter
+                               ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                   sortingCriteria:_sortingCriteria
+                                  sortingDirection:_sortingDirection];
 }
 
 - (void)loadFirstPage {
@@ -288,21 +293,37 @@ NSString* kMyDriveFolderIdentifier = @"root";
       FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
   CHECK(driveItem);
 
-  // By default drive api provides a 16 resolution icons, replacing 16 by 64 in
-  // the icon URLs provide better sized icons e.g.
-  // the URL https://drive-thirdparty.googleusercontent.com/16/type/video/mp4
-  // becomes https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
-  NSString* resizedIconLink =
-      [driveItem->icon_link stringByReplacingOccurrencesOfString:@"16"
-                                                      withString:@"64"];
-  GURL iconURL = GURL(base::SysNSStringToUTF16(resizedIconLink));
+  NSString* imageLink = nil;
+  if (driveItem->is_shared_drive) {
+    // If this is a shared drive, the background image link should be fetched.
+    imageLink = driveItem->background_image_link;
+  } else {
+    // Otherwise the icon link should be fetched.
+    // By default drive api provides a 16 resolution icons, replacing 16 by 64
+    // in the icon URLs provide better sized icons e.g. the URL
+    // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4 becomes
+    // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+    imageLink = driveItem->icon_link;
+    imageLink = [imageLink stringByReplacingOccurrencesOfString:@"16"
+                                                     withString:@"64"];
+  }
+
+  CHECK(imageLink);
+  if (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
+      ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
+    // If the image link is not a known source, it should not be fetched.
+    return;
+  }
+  GURL imageURL = GURL(base::SysNSStringToUTF16(imageLink));
   __weak __typeof(self) weakSelf = self;
   _imageFetcher->FetchImageData(
-      iconURL,
-      base::BindOnce(^(const std::string& imageData,
-                       const image_fetcher::RequestMetadata& metadata) {
-        [weakSelf updateDriveItem:itemIdentifier withImageData:imageData];
-      }),
+      imageURL,
+      base::BindOnce(
+          ^(__strong __typeof(self) strongSelf, const std::string& imageData,
+            const image_fetcher::RequestMetadata& metadata) {
+            [strongSelf updateDriveItem:itemIdentifier withImageData:imageData];
+          },
+          weakSelf),
       NO_TRAFFIC_ANNOTATION_YET);
 }
 
@@ -573,10 +594,18 @@ NSString* kMyDriveFolderIdentifier = @"root";
       _sortingDirection, _shouldShowSearchItems, _searchText, _pageToken);
 
   __weak __typeof(self) weakSelf = self;
-  _driveList->ListFiles(query, base::BindOnce(^(const DriveListResult& result) {
-                          [weakSelf handleListItemsResponse:result
-                                                   animated:animated];
-                        }));
+  if (_shouldShowSearchItems ||
+      _collectionType != DriveFilePickerCollectionType::kSharedDrives) {
+    _driveList->ListFiles(
+        query, base::BindOnce(^(const DriveListResult& result) {
+          [weakSelf handleListItemsResponse:result animated:animated];
+        }));
+  } else {
+    _driveList->ListSharedDrives(
+        query, base::BindOnce(^(const DriveListResult& result) {
+          [weakSelf handleListItemsResponse:result animated:animated];
+        }));
+  }
 }
 
 // Called as a completion of `_driveList->ListItems(...)`. Either replaces
@@ -612,6 +641,13 @@ NSString* kMyDriveFolderIdentifier = @"root";
     DriveFilePickerItem* filePickerItem =
         DriveItemToDriveFilePickerItem(item, _collectionType, _sortingCriteria,
                                        _shouldShowSearchItems, _searchText);
+    if (item.is_shared_drive &&
+        ![item.background_image_link
+            hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
+      // If a "shared drive" item background image link is not a link to a
+      // background image from the gallery, use a symbol instead.
+      filePickerItem.icon = [DriveFilePickerItem sharedDrivesItem].icon;
+    }
     filePickerItem.enabled = DriveFilePickerItemShouldBeEnabled(
         item, _acceptedTypes, _ignoreAcceptedTypes);
     // If the search text is not empty, emphasize the first match of the search
@@ -682,17 +718,24 @@ NSString* kMyDriveFolderIdentifier = @"root";
   if (!driveItem) {
     return;
   }
-  UIImage* driveIcon =
+  UIImage* image =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.data()
                                             length:imageData.size()]
                        scale:[UIScreen mainScreen].scale];
   // An early return if no drive icon is available, avoiding an infinite look in
   // the consumer.
-  if (!driveIcon) {
+  if (!image) {
     return;
   }
 
-  [self.consumer setIcon:driveIcon forItem:itemIdentifier];
+  if (driveItem->is_shared_drive) {
+    image = ResizeImage(image,
+                        CGSizeMake(kSharedDriveBackgroundImageResizeDimension,
+                                   kSharedDriveBackgroundImageResizeDimension),
+                        ProjectionMode::kFill, YES);
+  }
+
+  [self.consumer setIcon:image forItem:itemIdentifier];
 }
 
 @end
