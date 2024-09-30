@@ -2444,15 +2444,11 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
   DCHECK(IsBackForwardCacheEnabled());
   DCHECK(IsInPrimaryMainFrame());
 
-  if (base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    // Notifies the View that the page is stored in the `BackForwardCache`.
-    //
-    // We shouldn't BFCache a renderer without a View.
-    CHECK(GetView());
-    static_cast<RenderWidgetHostViewBase*>(GetView())
-        ->DidEnterBackForwardCache();
-  }
+  // Notifies the View that the page is stored in the `BackForwardCache`.
+  //
+  // We shouldn't BFCache a renderer without a View.
+  CHECK(GetView());
+  static_cast<RenderWidgetHostViewBase*>(GetView())->DidEnterBackForwardCache();
 
   // Cancel loading memory tracker if it hasn't already recorded loading
   // memory stats, as we would now be including stats from the navigation

@@ -604,10 +604,6 @@ class BFCachedRenderWidgetHostViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCacheRestoredPageHasNewLocalSurfaceId) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -673,10 +669,6 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     BFCachedRenderWidgetHostViewBrowserTest,
     BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -738,10 +730,6 @@ IN_PROC_BROWSER_TEST_F(
 // Same as above, except that the resize operation is a no-op.
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCachedPageNoopResizedWhileHiddenHasPreservedFallback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -809,10 +797,6 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCachedViewShouldNotBeEvicted) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -1950,11 +1934,6 @@ class RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest
     command_line->AppendSwitch(switches::kSitePerProcess);
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::test::FeatureRefAndParams must_enable(
-        /*feature=*/features::kInvalidateLocalSurfaceIdPreCommit,
-        /*params=*/std::map<std::string, std::string>());
-    enabled_features.push_back(std::move(must_enable));
-
     bool bfcache_enabled = GetParam();
     if (bfcache_enabled) {
       scoped_feature_list_.InitWithFeaturesAndParameters(

@@ -8308,8 +8308,6 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
     enabled_features.push_back(
         {blink::features::kViewTransitionOnNavigation, {{}}});
     enabled_features.push_back({blink::features::kPageSwapEvent, {{}}});
-    enabled_features.push_back(
-        {features::kInvalidateLocalSurfaceIdPreCommit, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());

@@ -342,13 +342,6 @@ BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
              "UseDisplaySDRMaxLuminanceNits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
-// navigated away. This flag serves as the kill-switch for the uncaught edge
-// cases in production.
-BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
-             "InvalidateLocalSurfaceIdPreCommit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // On mac, when the RenderWidgetHostViewMac is hidden, also hide the
 // DelegatedFrameHost. Among other things, it unlocks the compositor frames,
 // which can saves hundreds of MiB of memory with bfcache entries.
