@@ -49,9 +49,6 @@ class ProductSpecificationsEntryPointController
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
 
   // Registers an observer.
   void AddObserver(Observer* observer);
@@ -79,6 +76,10 @@ class ProductSpecificationsEntryPointController
 
   // ClusterManager::Observer
   void OnClusterFinishedForNavigation(const GURL& url) override;
+
+  // Gets called by CommerceUiTabHelper to be notified about any navigation
+  // events in this window that happens in `contents`.
+  void DidFinishNavigation(content::WebContents* contents);
 
   std::optional<EntryPointInfo> entry_point_info_for_testing() {
     return current_entry_point_info_;
