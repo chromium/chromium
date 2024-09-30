@@ -337,6 +337,17 @@ extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
+// Returns whether to use the new optimized request flow which makes a request
+// to get the cluster info prior to uploading any image or page content bytes.
+// This also decouples sending the images and page content bytes in the same
+// request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseOptimizedRequestFlow();
+
+// Returns the finch configured endpoint URL for the cluster info request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayClusterInfoEndpointUrl();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)

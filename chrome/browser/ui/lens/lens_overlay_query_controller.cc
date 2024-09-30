@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/base64url.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
@@ -59,7 +60,9 @@ namespace {
 
 // The name string for the header for variations information.
 constexpr char kClientDataHeader[] = "X-Client-Data";
-constexpr char kHttpMethod[] = "POST";
+constexpr char kHttpGetMethod[] = "GET";
+constexpr char kHttpPostMethod[] = "POST";
+constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
@@ -152,6 +155,21 @@ std::vector<std::string> CreateOAuthHeader(
   return headers;
 }
 
+std::vector<std::string> CreateVariationsHeaders(
+    variations::mojom::VariationsHeadersPtr variations) {
+  std::vector<std::string> headers;
+  if (variations.is_null()) {
+    return headers;
+  }
+
+  headers.push_back(kClientDataHeader);
+  // The endpoint is always a Google property.
+  headers.push_back(variations->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY));
+
+  return headers;
+}
+
 std::map<std::string, std::string> AddStartTimeQueryParam(
     std::map<std::string, std::string> additional_search_query_params) {
   int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
@@ -236,6 +254,13 @@ void LensOverlayQueryController::StartQueryFlow(
 
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
+
+  // If the optimized flow is enabled, request the cluster info prior to making
+  // the full image request.
+  if (lens::features::UseOptimizedRequestFlow()) {
+    FetchClusterInfoRequest();
+    return;
+  }
 
   PrepareAndFetchFullImageRequest();
 }
@@ -352,33 +377,11 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback fetched_response_callback) {
-  // Use OAuth if the flag is enabled and the user is logged in.
-  if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    signin::AccessTokenFetcher::TokenCallback token_callback =
-        base::BindOnce(&lens::CreateOAuthHeader)
-            .Then(base::BindOnce(&LensOverlayQueryController::FetchEndpoint,
-                                 weak_ptr_factory_.GetWeakPtr(), request_data,
-                                 std::move(fetcher_created_callback),
-                                 std::move(fetched_response_callback)));
-    signin::ScopeSet oauth_scopes;
-    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
-
-    // If an access token fetcher is already in flight, it is intentionally
-    // replaced by this newer one.
-    access_token_fetcher_ =
-        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-            kOAuthConsumerName, identity_manager_, oauth_scopes,
-            std::move(token_callback),
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-            signin::ConsentLevel::kSignin);
-    return;
-  }
-
-  // Fall back to fetching the endpoint directly using API key.
-  FetchEndpoint(request_data, std::move(fetcher_created_callback),
-                std::move(fetched_response_callback),
-                /*headers=*/std::vector<std::string>());
+  CreateOAuthHeadersAndContinue(
+      base::BindOnce(&LensOverlayQueryController::FetchEndpoint,
+                     weak_ptr_factory_.GetWeakPtr(), request_data,
+                     std::move(fetcher_created_callback),
+                     std::move(fetched_response_callback)));
 }
 
 void LensOverlayQueryController::PerformFetchRequest(
@@ -395,15 +398,8 @@ void LensOverlayQueryController::PerformFetchRequest(
   CHECK(request->SerializeToString(&request_string));
 
   // Get client experiment variations to include in the request.
-  std::vector<std::string> cors_exempt_headers;
-  variations::mojom::VariationsHeadersPtr variations =
-      variations_client_->GetVariationsHeaders();
-  if (!variations.is_null()) {
-    cors_exempt_headers.push_back(kClientDataHeader);
-    // The endpoint is always a Google property.
-    cors_exempt_headers.push_back(variations->headers_map.at(
-        variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-  }
+  std::vector<std::string> cors_exempt_headers =
+      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
 
   // Generate the URL to fetch to and include the server session id if present.
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
@@ -423,7 +419,7 @@ void LensOverlayQueryController::PerformFetchRequest(
               ? profile_->GetURLLoaderFactory().get()
               : g_browser_process->shared_url_loader_factory(),
           /*url=*/fetch_url,
-          /*http_method=*/kHttpMethod,
+          /*http_method=*/kHttpPostMethod,
           /*content_type=*/kContentType,
           base::Milliseconds(
               lens::features::GetLensOverlayServerRequestTimeout()),
@@ -462,7 +458,99 @@ LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
 LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
+void LensOverlayQueryController::FetchClusterInfoRequest() {
+  CHECK(query_controller_state_ == QueryControllerState::kOff);
+  query_controller_state_ = QueryControllerState::kAwaitingClusterInfoResponse;
+
+  CreateOAuthHeadersAndContinue(base::BindOnce(
+      &LensOverlayQueryController::PerformClusterInfoFetchRequest,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayQueryController::PerformClusterInfoFetchRequest(
+    std::vector<std::string> request_headers) {
+  // Add protobuf content type to the request headers.
+  request_headers.push_back(kContentTypeKey);
+  request_headers.push_back(kContentType);
+
+  // Get client experiment variations to include in the request.
+  std::vector<std::string> cors_exempt_headers =
+      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
+
+  // Generate the URL to fetch.
+  GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
+
+  // Create the EndpointFetcher, responsible for making the request using our
+  // given params. Store in class variable to keep endpoint fetcher alive until
+  // the request is made.
+  cluster_info_endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
+      /*url_loader_factory=*/profile_
+          ? profile_->GetURLLoaderFactory().get()
+          : g_browser_process->shared_url_loader_factory(),
+      /*url=*/fetch_url,
+      /*http_method=*/kHttpGetMethod,
+      /*content_type=*/kContentType,
+      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
+      /*post_data=*/"",
+      /*headers=*/request_headers,
+      /*cors_exempt_headers=*/cors_exempt_headers,
+      /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+      /*request_params=*/
+      EndpointFetcher::RequestParams::Builder()
+          .SetCredentialsMode(CredentialsMode::kInclude)
+          .Build());
+
+  // Finally, perform the request.
+  cluster_info_endpoint_fetcher_->PerformRequest(
+      base::BindOnce(
+          &LensOverlayQueryController::ClusterInfoFetchResponseHandler,
+          weak_ptr_factory_.GetWeakPtr()),
+      google_apis::GetAPIKey().c_str());
+}
+
+void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
+    std::unique_ptr<EndpointResponse> response) {
+  cluster_info_endpoint_fetcher_.reset();
+  query_controller_state_ = QueryControllerState::kReceivedClusterInfoResponse;
+
+  if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    // If there was an error with the cluster info request, we should still try
+    // and send the full image request as a fallback.
+    PrepareAndFetchFullImageRequest();
+    return;
+  }
+
+  lens::LensOverlayServerClusterInfoResponse server_response;
+  const std::string response_string = response->response;
+  bool parse_successful = server_response.ParseFromArray(
+      response_string.data(), response_string.size());
+  if (!parse_successful) {
+    // If there was an error with the cluster info request, we should still try
+    // and send the full image request as a fallback.
+    PrepareAndFetchFullImageRequest();
+    return;
+  }
+
+  // Store the cluster info.
+  cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
+  cluster_info_->set_server_session_id(server_response.server_session_id());
+  cluster_info_->set_search_session_id(server_response.search_session_id());
+
+  // Continue with the full image request which will use the session id from the
+  // cluster info we just received.
+  PrepareAndFetchFullImageRequest();
+}
+
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
+  if (query_controller_state_ ==
+      QueryControllerState::kAwaitingClusterInfoResponse) {
+    // If we are still waiting for the cluster info response, we can't send the
+    // full image request yet. Once the cluster info response is received,
+    // PrepareAndFetchFullImageRequest will be called again.
+    return;
+  }
+
+
   // There can be multiple full image requests that are called. For example,
   // when translate mode is enabled after opening the overlay or when turning
   // translate mode back off after enabling. Reset if there is one pending.
@@ -564,35 +652,11 @@ void LensOverlayQueryController::CreateOAuthHeadersAndTryPerformFullPageRequest(
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
 
-  // Use OAuth if the flag is enabled and the user is logged in.
-  if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // Create callback that uses the tokens to create the OAuth headers and pass
-    // the headers to FullImageRequestDataReady.
-    signin::AccessTokenFetcher::TokenCallback token_callback =
-        base::BindOnce(&lens::CreateOAuthHeader)
-            .Then(base::BindOnce(
-                static_cast<void (LensOverlayQueryController::*)(
-                    int, std::vector<std::string>)>(
-                    &LensOverlayQueryController::FullImageRequestDataReady),
-                weak_ptr_factory_.GetWeakPtr(), sequence_id));
-    signin::ScopeSet oauth_scopes;
-    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
-
-    // If an access token fetcher is already in flight, it is intentionally
-    // replaced by this newer one.
-    access_token_fetcher_ =
-        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-            kOAuthConsumerName, identity_manager_, oauth_scopes,
-            std::move(token_callback),
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-            signin::ConsentLevel::kSignin);
-    return;
-  }
-
-  // Supply no OAuth Headers which will fallback to directly using API key.
-  FullImageRequestDataReady(sequence_id,
-                            /*headers=*/std::vector<std::string>());
+  CreateOAuthHeadersAndContinue(base::BindOnce(
+      static_cast<void (LensOverlayQueryController::*)(
+          int, std::vector<std::string>)>(
+          &LensOverlayQueryController::FullImageRequestDataReady),
+      weak_ptr_factory_.GetWeakPtr(), sequence_id));
 }
 
 void LensOverlayQueryController::FullImageRequestDataReady(
@@ -768,6 +832,32 @@ LensOverlayQueryController::CreateClientContext() {
   }
 
   return context;
+}
+
+void LensOverlayQueryController::CreateOAuthHeadersAndContinue(
+    OAuthHeadersCreatedCallback callback) {
+  // Use OAuth if the flag is enabled and the user is logged in.
+  if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+
+    signin::AccessTokenFetcher::TokenCallback token_callback =
+        base::BindOnce(&lens::CreateOAuthHeader).Then(std::move(callback));
+    signin::ScopeSet oauth_scopes;
+    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
+
+    // If an access token fetcher is already in flight, it is intentionally
+    // replaced by this newer one.
+    access_token_fetcher_ =
+        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+            kOAuthConsumerName, identity_manager_, oauth_scopes,
+            std::move(token_callback),
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+            signin::ConsentLevel::kSignin);
+    return;
+  }
+
+  // Fall back to fetching the endpoint directly using API key.
+  std::move(callback).Run(std::vector<std::string>());
 }
 
 std::map<std::string, std::string>
@@ -1045,6 +1135,8 @@ LensOverlayQueryController::CreateInteractionRequest(
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoState() {
+  // TODO(b/365619835): Handle case where cluster info gets reset in the
+  // optimized flow.
   cluster_info_received_callback_.Reset();
   interaction_endpoint_fetcher_.reset();
   cluster_info_ = std::nullopt;
@@ -1071,15 +1163,10 @@ void LensOverlayQueryController::FetchEndpoint(
   access_token_fetcher_.reset();
   std::string request_data_string;
   CHECK(request_data.SerializeToString(&request_data_string));
-  std::vector<std::string> cors_exempt_headers;
-  variations::mojom::VariationsHeadersPtr variations =
-      variations_client_->GetVariationsHeaders();
-  if (!variations.is_null()) {
-    cors_exempt_headers.push_back(kClientDataHeader);
-    // The endpoint is always a Google property.
-    cors_exempt_headers.push_back(variations->headers_map.at(
-        variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-  }
+
+  // Get client experiment variations to include in the request.
+  std::vector<std::string> cors_exempt_headers =
+      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
 
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
   if (cluster_info_.has_value()) {
@@ -1096,7 +1183,7 @@ void LensOverlayQueryController::FetchEndpoint(
               ? profile_->GetURLLoaderFactory().get()
               : g_browser_process->shared_url_loader_factory(),
           /*url=*/fetch_url,
-          /*http_method=*/kHttpMethod,
+          /*http_method=*/kHttpPostMethod,
           /*content_type=*/kContentType,
           base::Milliseconds(
               lens::features::GetLensOverlayServerRequestTimeout()),

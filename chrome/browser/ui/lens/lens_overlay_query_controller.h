@@ -58,6 +58,10 @@ using LensOverlayInteractionResponseCallback =
 // Callback type alias for the thumbnail image creation.
 using LensOverlayThumbnailCreatedCallback =
     base::RepeatingCallback<void(const std::string&)>;
+// Callback type alias for the OAuth headers created.
+using OAuthHeadersCreatedCallback =
+    base::OnceCallback<void(std::vector<std::string>)>;
+
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController {
  public:
@@ -167,14 +171,20 @@ class LensOverlayQueryController {
     // StartQueryFlow has not been called and the query controller is
     // inactive.
     kOff = 0,
+    // StartQueryFlow has been called, but the cluster info has not been
+    // received so we cannot proceed to sending the full image request.
+    kAwaitingClusterInfoResponse = 1,
+    // The cluster info response has been received so we can proceed to sending
+    // the full image request.
+    kReceivedClusterInfoResponse = 2,
     // The full image response has not been received, or is no longer valid.
-    kAwaitingFullImageResponse = 1,
+    kAwaitingFullImageResponse = 3,
     // The full image response has been received and the query controller can
     // send interaction requests.
-    kReceivedFullImageResponse = 2,
+    kReceivedFullImageResponse = 4,
     // The full image response has been received and resulted in an error
     // response.
-    kReceivedFullImageErrorResponse = 3,
+    kReceivedFullImageErrorResponse = 5,
   };
 
   // Data class for constructing a fetch request to the Lens servers.
@@ -183,8 +193,7 @@ class LensOverlayQueryController {
   // not need to be set, but should be included if it is set, use std::optional.
   struct LensServerFetchRequest {
    public:
-    LensServerFetchRequest(int sequence_id,
-                           base::TimeTicks query_start_time);
+    LensServerFetchRequest(int sequence_id, base::TimeTicks query_start_time);
     ~LensServerFetchRequest();
 
     // The sequence ID of the request this data belongs to. Used for cancelling
@@ -201,6 +210,20 @@ class LensOverlayQueryController {
     // The headers to attach to the request.
     std::unique_ptr<std::vector<std::string>> request_headers_;
   };
+
+  // Makes a LensOverlayServerClusterInfoRequest to get the cluster info. Will
+  // continue to the FullImageRequest once a response is received.
+  void FetchClusterInfoRequest();
+
+  // Creates the endpoint fetcher and sends the cluster info request.
+  void PerformClusterInfoFetchRequest(std::vector<std::string> request_headers);
+
+  // Handles the response from the cluster info request. If a successful request
+  // was made, kicks off the full image request to use the retrieved server
+  // session id. If the request failed, the full image request will still be
+  // tried, just without the server session id.
+  void ClusterInfoFetchResponseHandler(
+      std::unique_ptr<EndpointResponse> response);
 
   // Processes the screenshot and fetches a full image request.
   void PrepareAndFetchFullImageRequest();
@@ -257,6 +280,11 @@ class LensOverlayQueryController {
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
+
+  // Fetches the OAuth headers and calls the callback with the headers. If the
+  // OAuth cannot be retrieve (like if the user is not logged in), the callback
+  // will be called with an empty vector.
+  void CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
 
   // Adds the visual search interaction log data param to the search query
   // params.
@@ -407,6 +435,9 @@ class LensOverlayQueryController {
   // The data for the full image request in progress. Is null if no full image
   // request has been made.
   std::unique_ptr<LensServerFetchRequest> latest_full_image_request_data_;
+
+  // The endpoint fetcher used for the cluster info request.
+  std::unique_ptr<EndpointFetcher> cluster_info_endpoint_fetcher_;
 
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;

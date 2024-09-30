@@ -261,6 +261,15 @@ constexpr base::FeatureParam<bool>
         &kLensOverlayContextualSearchbox,
         "use-video-context-for-multimodal-requests", false};
 
+constexpr base::FeatureParam<bool>
+    kUseOptimizedRequestFlow{
+        &kLensOverlayContextualSearchbox,
+        "use-optimized-request-flow", false};
+
+constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
+    &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
+    "https://lensfrontend-pa.googleapis.com/v1/gsessionid"};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -488,6 +497,14 @@ bool UseVideoContextForTextOnlyLensOverlayRequests() {
 
 bool UseVideoContextForMultimodalLensOverlayRequests() {
   return kUseVideoContextForMultimodalLensOverlayRequests.Get();
+}
+
+bool UseOptimizedRequestFlow() {
+  return kUseOptimizedRequestFlow.Get();
+}
+
+std::string GetLensOverlayClusterInfoEndpointUrl() {
+  return kLensOverlayClusterInfoEndpointUrl.Get();
 }
 
 bool UsePdfsAsContext() {
