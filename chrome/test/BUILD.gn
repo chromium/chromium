@@ -5531,7 +5531,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
-      "//chrome/browser/chromeos:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",

@@ -23,8 +23,11 @@ static_library("mahi") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
+    "//ash/constants",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/mahi",
     "//chrome/browser/content_extraction",
     "//chrome/browser/favicon",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
@@ -45,18 +48,6 @@ static_library("mahi") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//ash/constants",
-      "//chrome/browser/ash/mahi",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -75,10 +66,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -109,11 +96,4 @@ source_set("browser_tests") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
-  }
 }

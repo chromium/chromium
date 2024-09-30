@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
 
 source_set("common") {
   sources = [
@@ -159,35 +160,22 @@ source_set("unit_tests") {
     ":hardware_info_delegate",
     ":remote_probe_strategy",
     ":test_support",
+    "//ash/webui/shimless_rma/backend",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions:test_support",
+    "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/crosapi/cpp/telemetry:test_support",
     "//components/sync_preferences:test_support",
+    "//components/user_manager",
     "//content/public/browser",
     "//extensions/common",
     "//net",
     "//net:test_support",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/webui/shimless_rma/backend",
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/common/chromeos/extensions",
-      "//chromeos/ash/components/browser_context_helper",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
 }

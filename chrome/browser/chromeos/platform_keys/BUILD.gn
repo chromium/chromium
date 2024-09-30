@@ -25,6 +25,7 @@ static_library("platform_keys") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
@@ -39,12 +40,4 @@ static_library("platform_keys") {
     "//net",
     "//third_party/boringssl",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/profiles" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }

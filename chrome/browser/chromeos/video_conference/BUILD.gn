@@ -35,10 +35,6 @@ static_library("video_conference") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common:headers",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -66,8 +62,12 @@ source_set("browser_tests") {
 
   deps = [
     ":video_conference",
+    "//ash",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/video_conference",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
@@ -77,13 +77,4 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//ash/constants",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/video_conference",
-    ]
-  }
 }
