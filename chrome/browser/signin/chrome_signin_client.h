@@ -134,6 +134,9 @@ class ChromeSigninClient : public SigninClient {
   virtual std::optional<size_t> GetExtensionsCount();
 #endif
 
+  void RecordOpenTabCount(signin_metrics::AccessPoint access_point,
+                          signin::ConsentLevel consent_level);
+
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
