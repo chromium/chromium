@@ -1286,7 +1286,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
   }
 }
 
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
 CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     WKFullscreenState state) API_AVAILABLE(ios(16.0)) {
   switch (state) {
@@ -1303,7 +1302,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
       return CrFullscreenState::kNotInFullScreen;
   }
 }
-#endif  // defined (__IPHONE_16_0)
 
 #pragma mark - Security Helpers
 
@@ -1433,12 +1431,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     return;
 
   CrFullscreenState fullScreenState = CrFullscreenState::kNotInFullScreen;
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
   }
-#endif
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView
@@ -1614,7 +1610,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)fullscreenStateDidChange {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     CrFullscreenState fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
@@ -1625,7 +1620,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
         fullScreenState == CrFullscreenState::kInFullscreen;
     base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
   }
-#endif  // defined (__IPHONE_16_0)
 }
 
 #pragma mark - CRWWebViewHandlerDelegate

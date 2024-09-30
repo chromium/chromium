@@ -875,24 +875,8 @@ void DismissPaymentBottomSheet() {
 
   // As of Xcode 14 beta 2, tapping the keyboard does not dismiss the
   // accessory view popup.
-  bool systemDismissesView = true;
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  systemDismissesView = false;
-#endif  // defined(__IPHONE_16_0)
-
-  if (systemDismissesView) {
-    // Verify the credit card controller table view and the credit card icon is
-    // not visible.
-    [[EarlGrey
-        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-        assertWithMatcher:grey_notVisible()];
-    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
-        assertWithMatcher:grey_notVisible()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that, after switching fields, the content size of the table view didn't

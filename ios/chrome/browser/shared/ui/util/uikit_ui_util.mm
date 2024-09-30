@@ -374,23 +374,6 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
                                       attributes:@{NSFontAttributeName : font}];
 }
 
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-void RegisterEditMenuItem(UIMenuItem* item) {
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  NSArray<UIMenuItem*>* items = [menu menuItems];
-
-  for (UIMenuItem* existingItem in items) {
-    if ([existingItem action] == [item action]) {
-      return;
-    }
-  }
-
-  items = items ? [items arrayByAddingObject:item] : @[ item ];
-
-  [menu setMenuItems:items];
-}
-#endif
-
 UIView* ViewHierarchyRootForView(UIView* view) {
   if (view.window) {
     return view.window;

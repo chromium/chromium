@@ -129,13 +129,11 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   // Chrome uses Google-provided Safe Browsing.
   [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
 
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     if (GetWebClient()->EnableFullscreenAPI()) {
       [[configuration_ preferences] setElementFullscreenEnabled:YES];
     }
   }
-#endif  // defined(__IPHONE_16_0)
 
   [configuration_ setAllowsInlineMediaPlayback:YES];
   // setJavaScriptCanOpenWindowsAutomatically is required to support popups.

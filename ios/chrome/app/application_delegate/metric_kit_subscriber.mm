@@ -162,17 +162,13 @@ std::string HistogramPrefix(bool include_mismatch) {
 }
 
 + (void)createExtendedLaunchTask {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   [MXMetricManager extendLaunchMeasurementForTaskID:kMainLaunchTaskId
                                               error:nil];
-#endif
 }
 
 + (void)endExtendedLaunchTask {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   [MXMetricManager finishExtendedLaunchMeasurementForTaskID:kMainLaunchTaskId
                                                       error:nil];
-#endif
 }
 
 - (void)setEnabled:(BOOL)enable {
@@ -309,7 +305,6 @@ std::string HistogramPrefix(bool include_mismatch) {
   [self logStartupDurationMXHistogram:histogrammedTimeToFirstDraw
                        toUMAHistogram:prefix + "TimeToFirstDraw"];
 
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   MXHistogram* histogrammedOptimizedTimeToFirstDraw =
       payload.applicationLaunchMetrics.histogrammedOptimizedTimeToFirstDraw;
   [self logStartupDurationMXHistogram:histogrammedOptimizedTimeToFirstDraw
@@ -319,7 +314,6 @@ std::string HistogramPrefix(bool include_mismatch) {
       payload.applicationLaunchMetrics.histogrammedExtendedLaunch;
   [self logStartupDurationMXHistogram:histogrammedExtendedLaunch
                        toUMAHistogram:prefix + "ExtendedLaunch"];
-#endif
 
   MXHistogram* histogrammedApplicationHangTime =
       payload.applicationResponsivenessMetrics.histogrammedApplicationHangTime;

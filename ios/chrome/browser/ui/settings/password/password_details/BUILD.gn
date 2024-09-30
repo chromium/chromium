@@ -70,8 +70,6 @@ source_set("password_details_ui") {
     "credential_details.mm",
     "password_details_consumer.h",
     "password_details_handler.h",
-    "password_details_menu_item.h",
-    "password_details_menu_item.mm",
     "password_details_metrics_utils.h",
     "password_details_metrics_utils.mm",
     "password_details_table_view_constants.h",

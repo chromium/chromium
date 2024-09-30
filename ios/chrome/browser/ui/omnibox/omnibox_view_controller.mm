@@ -135,22 +135,6 @@ using base::UserMetricsAction;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  // Add Paste and Go option to the editing menu
-  RegisterEditMenuItem([[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
-             action:@selector(searchCopiedImage:)]);
-  RegisterEditMenuItem([[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS)
-             action:@selector(lensCopiedImage:)]);
-  RegisterEditMenuItem([[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
-             action:@selector(visitCopiedLink:)]);
-  RegisterEditMenuItem([[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
-             action:@selector(searchCopiedText:)]);
-#endif
 
   self.textField.placeholder = [self placeholderText];
 
@@ -234,20 +218,6 @@ using base::UserMetricsAction;
   if (_isTextfieldEditing == owns) {
     return;
   }
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  if (owns) {
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(menuControllerWillShow:)
-               name:UIMenuControllerWillShowMenuNotification
-             object:nil];
-  } else {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:self
-                  name:UIMenuControllerWillShowMenuNotification
-                object:nil];
-  }
-#endif
   _isTextfieldEditing = owns;
 }
 
@@ -640,28 +610,6 @@ using base::UserMetricsAction;
         [weakSelf onClipboardContentTypesReceived:matched_types];
       }));
 }
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-- (void)menuControllerWillShow:(NSNotification*)notification {
-  if (self.showingEditMenu || !self.isTextfieldEditing ||
-      !self.textField.window.isKeyWindow) {
-    return;
-  }
-
-  self.showingEditMenu = YES;
-
-  // Cancel original menu opening.
-  UIMenuController* menuController = [UIMenuController sharedMenuController];
-  [menuController hideMenu];
-
-  // Reset where it should open below text field and reopen it.
-  menuController.arrowDirection = UIMenuControllerArrowUp;
-
-  [menuController showMenuFromView:self.textField rect:self.textField.frame];
-
-  self.showingEditMenu = NO;
-}
-#endif
 
 - (void)pasteboardDidChange:(NSNotification*)notification {
   [self updateCachedClipboardState];

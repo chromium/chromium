@@ -141,30 +141,6 @@
   }
 }
 
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-#pragma mark - Link to Text methods
-
-- (void)addLinkToTextInEditMenu {
-  if (!base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
-    return;
-  }
-
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
-  UIMenuItem* menuItem =
-      [[UIMenuItem alloc] initWithTitle:title action:@selector(linkToText:)];
-  RegisterEditMenuItem(menuItem);
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  return [super canPerformAction:action withSender:sender];
-}
-
-- (void)linkToText:(UIMenuItem*)item {
-  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  DCHECK(self.linkToTextDelegate);
-  [self.linkToTextDelegate handleLinkToTextSelection];
-}
-#endif
 
 #pragma mark - Private
 

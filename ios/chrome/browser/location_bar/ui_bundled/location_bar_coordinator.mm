@@ -413,10 +413,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)focusOmnibox {
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  // Dismiss the edit menu.
-  [[UIMenuController sharedMenuController] hideMenu];
-#endif
 
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.

@@ -171,7 +171,6 @@ NSArray<WhatsNewItem*>* WhatsNewItemsFromFileAndKey(NSString* path,
 
 NSArray<NSString*>* loadInstructionsForPasswordInOtherApps(
     NSArray<NSString*>* instructions) {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   return @[
     l10n_util::GetNSString(
         IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1_IOS16),
@@ -180,9 +179,6 @@ NSArray<NSString*>* loadInstructionsForPasswordInOtherApps(
     l10n_util::GetNSString(
         IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2),
   ];
-#else
-  return instructions;
-#endif  // defined (__IPHONE_16_0)
 }
 
 }  // namespace

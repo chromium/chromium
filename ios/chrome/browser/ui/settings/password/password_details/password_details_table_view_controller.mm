@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+Testing.h"
@@ -742,19 +741,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       configurationWithIdentifier:[NSNumber numberWithInt:itemType]
                       sourcePoint:editMenuLocation];
   [self.interactionMenu presentEditMenuWithConfiguration:configuration];
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  else {
-    // TODO(crbug.com/40930648): Replace UIMenuController with
-    // UIEditMenuInteraction in iOS 16+.
-    UIMenuController* menu = [UIMenuController sharedMenuController];
-    if (![menu isMenuVisible]) {
-      menu.menuItems = [self menuItemsForItemType:itemType];
-
-      [menu showMenuFromView:tableView
-                        rect:[tableView rectForRowAtIndexPath:indexPath]];
-    }
-  }
-#endif
 }
 
 - (BOOL)tableView:(UITableView*)tableView
@@ -1537,34 +1523,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
 }
 
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-
-// Returns an array of UIMenuItems to display in a context menu on the site
-// cell.
-- (NSArray*)menuItemsForItemType:(NSInteger)itemType {
-  PasswordDetailsMenuItem* copyOption = [[PasswordDetailsMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_COPY_MENU_ITEM)
-             action:@selector(copyPasswordDetails:)];
-  copyOption.itemType = itemType;
-  return @[ copyOption ];
-}
-
-// Copies the password information to system pasteboard and shows a toast of
-// success/failure.
-- (void)copyPasswordDetails:(id)sender {
-  base::RecordAction(base::UserMetricsAction("MobilePasswordDetailsCopy"));
-
-  UIMenuController* menu =
-      base::apple::ObjCCastStrict<UIMenuController>(sender);
-  PasswordDetailsMenuItem* menuItem =
-      base::apple::ObjCCastStrict<PasswordDetailsMenuItem>(
-          menu.menuItems.firstObject);
-
-  [self copyPasswordDetailsHelper:menuItem.itemType];
-}
-
-#endif
-
 // A helper function that copies the password information to system pasteboard
 // and shows a toast of success/failure.
 - (void)copyPasswordDetailsHelper:(NSInteger)itemType {
@@ -1647,21 +1605,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self.view endEditing:YES];
   [self.handler dismissPasswordDetailsTableViewController];
 }
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-#pragma mark - UIResponder
-
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (action == @selector(copyPasswordDetails:)) {
-    return YES;
-  }
-  return NO;
-}
-#endif
 
 #pragma mark - Metrics
 
