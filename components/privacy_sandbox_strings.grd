@@ -467,14 +467,6 @@
         Learn more about how Google protects your data in our Privacy Policy.
       </message>
 
-      <!-- Privacy Guide -->
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL" desc="Text of the Tracking Protection label in the completion card of the 'Privacy Guide'." translateable="false">
-        Tracking Protection
-      </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_SUB_LABEL" desc="Text of the Tracking Protection sub-label in the completion card of the 'Privacy Guide'." translateable="false">
-        Manage your tracking protections to make your experience more private on the web
-      </message>
-
       <!--Privacy Guide - Ad Topics-->
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting
