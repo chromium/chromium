@@ -488,26 +488,4 @@ suite('AutoTabGroupsPageTest', () => {
     assertTrue(!!header);
     assertEquals(successString, header.textContent!.trim());
   });
-
-  test('Shows back button when declutter is enabled', async () => {
-    loadTimeData.overrideValues({
-      declutterEnabled: true,
-    });
-    await autoTabGroupsPageSetup();
-
-    const backButton =
-        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
-    assertTrue(!!backButton);
-  });
-
-  test('Hides back button when declutter is disabled', async () => {
-    loadTimeData.overrideValues({
-      declutterEnabled: false,
-    });
-    await autoTabGroupsPageSetup();
-
-    const backButton =
-        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
-    assertFalse(!!backButton);
-  });
 });

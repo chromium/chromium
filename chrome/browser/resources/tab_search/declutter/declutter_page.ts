@@ -37,9 +37,12 @@ export class DeclutterPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
     };
   }
+
+  showBackButton: boolean = false;
 
   protected staleTabDatas_: TabData[] = [];
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();

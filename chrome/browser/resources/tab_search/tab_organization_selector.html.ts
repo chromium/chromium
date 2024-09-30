@@ -32,12 +32,15 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 </div>
 
 <div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kAutoTabGroups}>
-  <auto-tab-groups-page @back-click="${this.onBackClick_}">
+  <auto-tab-groups-page ?show-back-button="${true}"
+      @back-click="${this.onBackClick_}">
   </auto-tab-groups-page>
 </div>
 
 <div ?hidden=${this.selectedState_ !== TabOrganizationFeature.kDeclutter}>
-  <declutter-page @back-click="${this.onBackClick_}"></declutter-page>
+  <declutter-page ?show-back-button="${true}"
+      @back-click="${this.onBackClick_}">
+  </declutter-page>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -10,8 +10,14 @@ export function getHtml(this: DeclutterPageElement) {
   return html`<!--_html_template_start_-->
   <div id="declutterPage">
     <div id="header">
-      <cr-icon-button iron-icon="cr:arrow-back" @click="${this.onBackClick_}">
-      </cr-icon-button>
+      ${
+      this.showBackButton ? html`
+        <cr-icon-button
+            iron-icon="cr:arrow-back"
+            @click="${this.onBackClick_}">
+        </cr-icon-button>
+      ` :
+                            ''}
       <div id="headerText">
         <div class="title">$i18n{declutterTitle}</div>
         <div class="subheading">$i18n{declutterBody}</div>

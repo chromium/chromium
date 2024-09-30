@@ -16,13 +16,13 @@ export function getHtml(this: AutoTabGroupsPageElement) {
         aria-live="polite"
         aria-relevant="all">
       ${
-      this.declutterEnabled_ ? html`
+      this.showBackButton ? html`
         <cr-icon-button class="back-button"
             iron-icon="cr:arrow-back"
             @click="${this.onBackClick_}">
         </cr-icon-button>
       ` :
-                               ''}
+                            ''}
       ${this.getTitle_()}
     </div>
     <auto-tab-groups-not-started id="notStarted"

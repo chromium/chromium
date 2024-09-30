@@ -46,15 +46,18 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      showBackButton: {type: Boolean},
+
       state_: {type: Number},
       session_: {type: Object},
       availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
       multiTabOrganization_: {type: Boolean},
-      declutterEnabled_: {type: Boolean},
       modelStrategy_: {type: Number, notify: true},
     };
   }
+
+  showBackButton: boolean = false;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -65,8 +68,6 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       loadTimeData.getBoolean('showTabOrganizationFRE');
   protected multiTabOrganization_: boolean =
       loadTimeData.getBoolean('multiTabOrganizationEnabled');
-  protected declutterEnabled_: boolean =
-      loadTimeData.getBoolean('declutterEnabled');
   protected modelStrategy_: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
@@ -118,7 +119,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     document.removeEventListener(
         'visibilitychange', this.documentVisibilityChangedListener_);
 
-    if (!this.session_) {
+    if (!this.session_ || this.session_.organizations.length === 0) {
       return;
     }
     if (this.multiTabOrganization_) {
