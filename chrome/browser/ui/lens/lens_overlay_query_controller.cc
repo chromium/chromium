@@ -255,13 +255,6 @@ void LensOverlayQueryController::StartQueryFlow(
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
 
-  // If the optimized flow is enabled, request the cluster info prior to making
-  // the full image request.
-  if (lens::features::UseOptimizedRequestFlow()) {
-    FetchClusterInfoRequest();
-    return;
-  }
-
   PrepareAndFetchFullImageRequest();
 }
 
@@ -459,7 +452,6 @@ LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
 void LensOverlayQueryController::FetchClusterInfoRequest() {
-  CHECK(query_controller_state_ == QueryControllerState::kOff);
   query_controller_state_ = QueryControllerState::kAwaitingClusterInfoResponse;
 
   CreateOAuthHeadersAndContinue(base::BindOnce(
@@ -550,6 +542,12 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
     return;
   }
 
+  // If the optimized flow is enabled, request the cluster info prior to making
+  // the full image request.
+  if (!cluster_info_ && lens::features::UseOptimizedRequestFlow()) {
+    FetchClusterInfoRequest();
+    return;
+  }
 
   // There can be multiple full image requests that are called. For example,
   // when translate mode is enabled after opening the overlay or when turning
@@ -839,7 +837,6 @@ void LensOverlayQueryController::CreateOAuthHeadersAndContinue(
   // Use OAuth if the flag is enabled and the user is logged in.
   if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-
     signin::AccessTokenFetcher::TokenCallback token_callback =
         base::BindOnce(&lens::CreateOAuthHeader).Then(std::move(callback));
     signin::ScopeSet oauth_scopes;
@@ -1135,8 +1132,6 @@ LensOverlayQueryController::CreateInteractionRequest(
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoState() {
-  // TODO(b/365619835): Handle case where cluster info gets reset in the
-  // optimized flow.
   cluster_info_received_callback_.Reset();
   interaction_endpoint_fetcher_.reset();
   cluster_info_ = std::nullopt;
