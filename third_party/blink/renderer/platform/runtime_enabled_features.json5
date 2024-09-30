@@ -1667,20 +1667,12 @@
     {
       // TODO(crbug.fom/41492947) This is the "old" version of getInnerHTML()
       // used for declarative shadow DOM, and this version is deprecated and
-      // currently being removed via Finch. The removal rollout plan is:
-      //   1. (July 29) Disable at 50% of Canary/Dev in M129.
-      //   2. (August 19) Disable at 50% of Canary/Dev/Beta, M129.
-      //   3. (September 16) Disable at 1% of Stable M129.
-      //   4. (September 23) Disable at 2% of Stable M129.
-      //   5. (September 30) Disable at 5% of Stable M129.
-      //   5.5. (September 30) Disable in code, M131, assuming no issues so far.
-      //   6. (October 7) Disable at 10% of Stable M129.
-      //   7. (October 14) Disable at 50% of Stable M129-M130 (Oct 15 stable release).
-      //   8. (October 21) Full disable via Finch, M129-130.
-      // In the meantime, replacement API is called `getHTML()` and that
-      // shipped in M125.
+      // currently being removed via Finch. It has been removed via Finch at
+      // 5+ percent of Stable users, and that ramp will continue. So this
+      // feature is now disabled by default in code, starting M131. This flag
+      // can be removed in M133, assuming no issues. In the meantime,
+      // replacement API is called `getHTML()` and that shipped in M125.
       name: "ElementGetInnerHTML",
-      status: "stable",
     },
     {
       name: "EnforceAnonymityExposure",

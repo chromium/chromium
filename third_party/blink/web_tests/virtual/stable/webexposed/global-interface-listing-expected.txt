@@ -2185,7 +2185,6 @@ interface Element : Node
     method getElementsByTagName
     method getElementsByTagNameNS
     method getHTML
-    method getInnerHTML
     method hasAttribute
     method hasAttributeNS
     method hasAttributes
@@ -8687,7 +8686,6 @@ interface ShadowRoot : DocumentFragment
     method elementsFromPoint
     method getAnimations
     method getHTML
-    method getInnerHTML
     method getSelection
     method setHTMLUnsafe
     setter adoptedStyleSheets
