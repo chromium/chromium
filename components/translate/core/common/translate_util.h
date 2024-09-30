@@ -14,10 +14,6 @@ namespace translate {
 // Controls whether the TFLite-based language detection is enabled.
 BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 
-// Controls whether the TFLite-based language detection is computed, but ignored
-// and the CLD3 version is used instead.
-BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
-
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
 
@@ -27,10 +23,6 @@ GURL GetTranslateSecurityOrigin();
 
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();
-
-// Return whether TFLite-based language detection is enabled, but the result is
-// ignored.
-bool IsTFLiteLanguageDetectionIgnoreEnabled();
 
 // Return the threshold used to determine if TFLite language detection model's
 // prediction is reliable.

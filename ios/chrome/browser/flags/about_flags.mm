@@ -1355,11 +1355,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     kFeedBackgroundRefreshVariations,
                                     "FeedBackgroundRefresh")},
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
-    {"enable-tflite-language-detection-ignore",
-     flag_descriptions::kTFLiteLanguageDetectionIgnoreName,
-     flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionIgnoreEnabled)},
     {"tab-grid-new-transitions", flag_descriptions::kTabGridNewTransitionsName,
      flag_descriptions::kTabGridNewTransitionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridNewTransitions)},

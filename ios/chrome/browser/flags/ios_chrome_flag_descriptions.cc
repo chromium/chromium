@@ -1070,12 +1070,6 @@ const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";
 
-const char kTFLiteLanguageDetectionIgnoreName[] =
-    "Ignore TFLite-based Language Detection";
-const char kTFLiteLanguageDetectionIgnoreDescription[] =
-    "Computes the TFLite language detection but ignore the result and uses the "
-    "CLD3 detection instead.";
-
 const char kThemeColorInTopToolbarName[] = "Top toolbar use page's theme color";
 const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "

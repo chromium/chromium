@@ -956,11 +956,6 @@ extern const char kTabGroupSyncDescription[];
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
-// Title and description for the flag to compute both TFLite and CLD3 detection
-// and ignore TFLite one.
-extern const char kTFLiteLanguageDetectionIgnoreName[];
-extern const char kTFLiteLanguageDetectionIgnoreDescription[];
-
 // Title and description for the flag to use the page's theme color in the
 // top toolbar.
 extern const char kThemeColorInTopToolbarName[];

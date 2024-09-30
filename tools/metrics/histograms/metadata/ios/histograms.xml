@@ -4842,16 +4842,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.Translate.PageLoad.LanguageDetectionComparison"
-    enum="LanguageDetectionComparison" expires_after="2023-03-24">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    When both CLD3 and TFLite language detection method are run, compare their
-    results.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Translate.PageLoad.LanguageDetectionMethod"
     enum="LanguageDetectionMethod" expires_after="2023-03-24">
   <owner>olivierrobin@chromium.org</owner>

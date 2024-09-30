@@ -4114,11 +4114,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-tflite-language-detection-ignore",
-    "owners": [ "mcrouse@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-tls13-early-data",
     "owners": [ "davidben@chromium.org", "svaldez@chromium.org", "bashi@chromium.org" ],
     "expiry_milestone": 160

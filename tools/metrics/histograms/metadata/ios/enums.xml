@@ -957,19 +957,11 @@ the generic promo launch. -->
   <int value="9" label="Search Passwords widget"/>
 </enum>
 
-<enum name="LanguageDetectionComparison">
-  <int value="0" label="Language detected by TFLite only (CLD3 failed)"/>
-  <int value="1" label="Language detected by CLD3 only (TFLite failed)"/>
-  <int value="2" label="No language detected (both model failed)"/>
-  <int value="3" label="Both model succeeded and agree"/>
-  <int value="4" label="Both model succeeded bug disagreed"/>
-</enum>
-
 <enum name="LanguageDetectionMethod">
   <int value="0" label="TFLite model"/>
   <int value="1" label="CLD3 (TFLite model unavailable)"/>
   <int value="2" label="CLD3 (TFLite model disabled)"/>
-  <int value="3" label="CLD3 (TFLite model run but is ignored)"/>
+  <int value="3" label="CLD3 (TFLite model run but is ignored) (deprecated)"/>
 </enum>
 
 <enum name="LinkToTextShouldOfferResult">

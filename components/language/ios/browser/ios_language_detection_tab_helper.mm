@@ -44,52 +44,9 @@ enum class LanguageDetectionMethod {
   kTFLiteModelUsed = 0,
   kTFLiteModelUnavailable = 1,
   kTFLiteModelDisabled = 2,
-  kTFLiteModelIgnored = 3,
-  kMaxValue = kTFLiteModelIgnored
+  kTFLiteModelIgnored_DEPRECATED = 3,
+  kMaxValue = kTFLiteModelIgnored_DEPRECATED
 };
-
-enum class LanguageDetectionComparison {
-  kTFLiteModelOnly = 0,
-  kCLD3ModelOnly = 1,
-  kBothModelFailed = 2,
-  kBothModelAgree = 3,
-  kBothModelDisagree = 4,
-  kMaxValue = kBothModelDisagree
-};
-
-void ComparePageLanguageDetection(const std::string& tflite_language,
-                                  const std::string& cld3_language) {
-  bool tflite_failed = tflite_language.empty() ||
-                       tflite_language == translate::kUnknownLanguageCode;
-  bool cld3_failed =
-      cld3_language.empty() || cld3_language == translate::kUnknownLanguageCode;
-
-  if (tflite_failed) {
-    if (cld3_failed) {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionComparison",
-          LanguageDetectionComparison::kBothModelFailed);
-    } else {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionComparison",
-          LanguageDetectionComparison::kCLD3ModelOnly);
-    }
-  } else {
-    if (cld3_failed) {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionComparison",
-          LanguageDetectionComparison::kTFLiteModelOnly);
-    } else if (cld3_language == tflite_language) {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionComparison",
-          LanguageDetectionComparison::kBothModelAgree);
-    } else {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionComparison",
-          LanguageDetectionComparison::kBothModelDisagree);
-    }
-  }
-}
 }  // namespace
 
 IOSLanguageDetectionTabHelper::IOSLanguageDetectionTabHelper(
@@ -233,23 +190,11 @@ std::string IOSLanguageDetectionTabHelper::DeterminePageLanguage(
         kTranslateLanguageDetectionTFLiteModelEvaluationDuration,
         timer.Elapsed());
 
-    if (!translate::IsTFLiteLanguageDetectionIgnoreEnabled()) {
-      *detection_model_version = language_detection_model_->GetModelVersion();
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionMethod",
-          LanguageDetectionMethod::kTFLiteModelUsed);
-      return tflite_language;
-    }
-
+    *detection_model_version = language_detection_model_->GetModelVersion();
     base::UmaHistogramEnumeration(
         "IOS.Translate.PageLoad.LanguageDetectionMethod",
-        LanguageDetectionMethod::kTFLiteModelIgnored);
-    std::string cld3_language = ::translate::DeterminePageLanguage(
-        code, html_lang, contents, model_detected_language, is_model_reliable,
-        model_reliability_score);
-
-    ComparePageLanguageDetection(tflite_language, cld3_language);
-    return cld3_language;
+        LanguageDetectionMethod::kTFLiteModelUsed);
+    return tflite_language;
   }
 
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
