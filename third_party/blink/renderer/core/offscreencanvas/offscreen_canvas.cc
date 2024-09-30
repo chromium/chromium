@@ -420,8 +420,10 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     probe::DidCreateOffscreenCanvasContext(this);
 
     CanvasContextCreationAttributesCore recomputed_attributes = attributes;
-    if (!allow_high_performance_power_preference_)
-      recomputed_attributes.power_preference = "low-power";
+    if (!allow_high_performance_power_preference_) {
+      recomputed_attributes.power_preference =
+          CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
+    }
 
     context_ = factory->Create(this, recomputed_attributes);
     if (context_) {
