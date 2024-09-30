@@ -121,6 +121,8 @@ dependencies {
 
     // Needed by androidx.datastore
     compile "com.squareup.okio:okio-jvm:3.9.0"
+    // Needed by androidx.appcompat -> androidx.cursoradaptor
+    compile "org.jspecify:jspecify:1.0.0"
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
     // Needed by androidx.benchmark

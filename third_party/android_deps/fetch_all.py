@@ -497,6 +497,7 @@ def _CopyJarFilesToCipd(android_deps_dir):
         logging.debug('mv [%s -> %s]', src_path, dst_path)
         if os.path.exists(dst_path):
             os.unlink(dst_path)
+        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
         shutil.move(src_path, dst_path)
 
 
