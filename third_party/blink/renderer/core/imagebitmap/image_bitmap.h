@@ -131,38 +131,17 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                                ExceptionState&) override;
 
   struct ParsedOptions {
-    // If true, then the final result should be flipped vertically. This happens
-    // in the space after `source_orientation` has been applied.
     bool flip_y = false;
     bool premultiply_alpha = true;
-    // TODO(crbug.com/40773069): This is based on the incorrect values and needs
-    // to be removed.
     bool should_scale_input = false;
     bool has_color_space_conversion = false;
     bool source_is_unpremul = false;
     bool orientation_from_image = true;
-    // TODO(crbug.com/40773069): The value of `resize_width`, `resize_height`,
-    // and `crop_rect` are computed incorrectly. Remove this when all code that
-    // uses it is removed.
     unsigned resize_width = 0;
     unsigned resize_height = 0;
     gfx::Rect crop_rect;
     cc::PaintFlags::FilterQuality resize_quality =
         cc::PaintFlags::FilterQuality::kLow;
-
-    // The filter quality specified by the options. This is always set, even
-    // if no resampling is needed.
-    cc::PaintFlags::FilterQuality filter_quality =
-        cc::PaintFlags::FilterQuality::kLow;
-
-    // The orientation of the source. This may be from the source or overridden.
-    class ImageOrientation source_orientation;
-
-    // The `source_size`, `source_rect`, and `dest_size` parameters are all in
-    // the space after the `source_orientation` has been applied.
-    gfx::Size source_size;
-    gfx::Rect source_rect;
-    gfx::Size dest_size;
   };
 
  private:
