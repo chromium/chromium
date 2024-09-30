@@ -44,12 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
-#include "components/supervised_user/core/browser/child_account_service.h"
-#endif
-
 namespace {
 
 static constexpr std::string_view kUmaReauthenticationHistogramName =
@@ -105,14 +99,6 @@ class SupervisedUserPendingStateNavigationTest
     kids_management_api_mock().AllowSubsequentClassifyUrl();
     supervision_mixin_.SignIn(
         supervised_user::SupervisionMixin::SignInMode::kSupervised);
-
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-    // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-    supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-        ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-        supervised_user::SupervisionMixin::GetExpectedAuthState(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised));
-#endif
 
     ASSERT_FALSE(
         identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(

@@ -63,12 +63,6 @@
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
-#include "components/supervised_user/core/browser/child_account_service.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 
 using content::NavigationController;
@@ -824,13 +818,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        TestBackButtonMainFrame) {
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-      ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-      supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
-#endif
-
   BlockHost(kExampleHost);
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
@@ -875,13 +862,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-      ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-      supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
-#endif
-
   // Classify url blocks the navigation to the target url.
   // No matching blocklist entry exists for the host of the target url.
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
@@ -915,13 +895,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListIsStrippedInRemoteApproval) {
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-      ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-      supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
-#endif
-
   // Manual parental blocklist entry blocks the navigation to the target url.
   BlockHost("*.example.*");
   kids_management_api_mock().AllowSubsequentClassifyUrl();
@@ -954,13 +927,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListForUnstripedHostSkipsStrippingInRemoteApproval) {
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-      ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-      supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
-#endif
-
   // Manual parental blocklist entry for the unstriped url blocks the
   // navigation to the target url.
   BlockHost(kExampleHost);
@@ -1010,13 +976,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        RememberAlreadyRequestedHosts) {
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
-  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
-      ChildAccountServiceFactory::GetForProfile(browser()->profile()),
-      supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
-#endif
-
   BlockHost(kExampleHost);
 
   GURL blocked_url = embedded_test_server()->GetURL(

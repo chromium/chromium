@@ -69,6 +69,7 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   ~SupervisionMixin() override;
 
   // InProcessBrowserTestMixin:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 

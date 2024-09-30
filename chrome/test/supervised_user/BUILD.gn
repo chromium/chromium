@@ -39,5 +39,9 @@ static_library("child_accounts") {
     "child_account_test_utils.cc",
     "child_account_test_utils.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//net:test_support",
+    "//services/network/public/cpp:cpp",
+    ]
 }

@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -23,10 +24,6 @@
 namespace supervised_user {
 
 namespace {
-
-std::string CreateResolverRule(std::string_view host, std::string_view target) {
-  return base::StrCat({"MAP ", host, " ", target});
-}
 
 std::vector<std::string> SplitHostList(std::string_view host_list) {
   return base::SplitString(host_list, ",", base::TRIM_WHITESPACE,
@@ -56,21 +53,13 @@ void EmbeddedTestServerSetupMixin::SetUp() {
 
 void EmbeddedTestServerSetupMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
-  CHECK(embedded_test_server_->Started());
+  base::ranges::for_each(
+      resolver_rules_map_host_list_, [&](const std::string& host) {
+        AddHostResolverRule(command_line, host, *embedded_test_server_);
+      });
 
-  std::string target = embedded_test_server_->host_port_pair().ToString();
-  std::vector<std::string> resolver_rules(resolver_rules_map_host_list_.size());
-
-  base::ranges::transform(resolver_rules_map_host_list_, resolver_rules.begin(),
-                          [&](const std::string& host) -> std::string {
-                            return CreateResolverRule(host, target);
-                          });
-
-  command_line->AppendSwitchASCII(
-      network::switches::kHostResolverRules,
-      base::JoinString(base::span<std::string>(resolver_rules), ", "));
-
-  LOG(INFO) << "Embedded test server is listening on " << target << ".";
+  LOG(INFO) << "Embedded test server is listening on "
+            << embedded_test_server_->host_port_pair().ToString() << ".";
   LOG(INFO) << "Following hosts will be mapped to it: ";
   for (const std::string& host_pattern : resolver_rules_map_host_list_) {
     LOG(INFO) << "\t" << host_pattern;
