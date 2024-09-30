@@ -2775,7 +2775,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     FrameData* frame) {
-  TRACE_EVENT(
+  TRACE_EVENT_BEGIN(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
       [&](perfetto::EventContext ctx) {
@@ -3032,6 +3032,20 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         base::StringPrintf("Compositing.%s.CompositorFrame.Quads", client_name),
         total_quad_count);
   }
+
+  // TODO(b/368050735): future-proof this event against early returns.
+  TRACE_EVENT_END("viz,benchmark,graphics.pipeline",
+                  perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
+                  [&](perfetto::EventContext ctx) {
+                    auto* event =
+                        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                    auto* data = event->set_chrome_graphics_pipeline();
+
+                    for (const ui::LatencyInfo& latency :
+                         compositor_frame.metadata.latency_info) {
+                      data->add_latency_ids(latency.trace_id());
+                    }
+                  });
 
   return compositor_frame;
 }

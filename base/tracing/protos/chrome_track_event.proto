@@ -1466,6 +1466,10 @@ message ChromeGraphicsPipeline {
   // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
   // Used with `STEP_SURFACE_AGGREGATION` only.
   repeated int64 aggregated_frames_ids = 8;
+
+  // List of LatencyInfo.trace_ids associated with this frame, which
+  // should allow us to match input to frame production.
+  repeated int64 latency_ids = 9;
 };
 
 message LibunwindstackUnwinder {

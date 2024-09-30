@@ -420,10 +420,10 @@ constexpr MessageInfo kLocalSurfaceId = {kLocalSurfaceIdIndices,
                                          kLocalSurfaceIdComplexMessages};
 
 // Proto Message: ChromeGraphicsPipeline
-constexpr int kChromeGraphicsPipelineIndices[] = {1, 2, 3, 4, 5, 6, 8, -1};
+constexpr int kChromeGraphicsPipelineIndices[] = {1, 2, 3, 4, 5, 6, 8, 9, -1};
 constexpr MessageInfo const* kChromeGraphicsPipelineComplexMessages[] = {
     nullptr, &kFrameSinkId, nullptr, &kLocalSurfaceId,
-    nullptr, nullptr,       nullptr};
+    nullptr, nullptr,       nullptr, nullptr};
 constexpr MessageInfo kChromeGraphicsPipeline = {
     kChromeGraphicsPipelineIndices, kChromeGraphicsPipelineComplexMessages};
 
