@@ -59,6 +59,7 @@
   "enable-network-logging-to-file",
   "enable-noscript-previews",
   "enable-offline-previews",
+  "enable-palm-suppression",
   "enable-parallel-downloading",
   "enable-perfetto-system-tracing",
   "enable-quic",

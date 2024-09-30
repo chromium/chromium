@@ -3715,8 +3715,8 @@
   {
     "name": "enable-palm-suppression",
     "owners": [ "robsc@chromium.org", "napper@chromium.org", "hcutts@chromium.org", "chromeos-tango@google.com" ],
-    // Added feature, for testing. expiry deep in future.
-    "expiry_milestone": 130
+    // Flag used to test no-full-palm suppression on screen.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-parallel-downloading",
