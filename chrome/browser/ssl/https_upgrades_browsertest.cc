@@ -2007,13 +2007,16 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        CancelTimeoutForFallbackNavigations) {
   net::EmbeddedTestServer http_server;
   net::EmbeddedTestServer https_server{net::EmbeddedTestServer::TYPE_HTTPS};
+
   // Make the HTTP server return a slow response.
   http_server.RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
+        // The HTTP load needs to be slower than the 1 second timeout configured
+        // by the the test.
         auto slow_http_response =
             std::make_unique<net::test_server::DelayedHttpResponse>(
-                base::Seconds(1));
+                base::Seconds(2));
         slow_http_response->set_content_type("text/html");
         slow_http_response->set_content("hello from http");
         return std::move(slow_http_response);
@@ -2021,10 +2024,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
 
-  // Set the timeout short enough, but not zero. We need to wait for the loads
-  // to finish for this test to work.
-  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(
-      base::Milliseconds(250));
+  // Set the timeout short enough, but not zero. We can't set it to zero
+  // because it'll cancel the HTTPS load with timeout instead of an error.
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::Seconds(1));
 
   HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server.port());
   HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server.port());
@@ -2078,10 +2080,11 @@ std::unique_ptr<net::test_server::HttpResponse> RedirectLoopResponse(
       GURL url(base::StringPrintf("http://a.com:%d/redirect", http_port));
       return RedirectResponseHandler(url, request);
     }
-    // Over http, it prints a slow hello.
+    // Over http, it prints a slow hello. This should delay longer than the
+    // HTTPS upgrade timeout which is set to 1 second.
     auto slow_http_response =
         std::make_unique<net::test_server::DelayedHttpResponse>(
-            base::Seconds(1));
+            base::Seconds(2));
     slow_http_response->set_content_type("text/html");
     slow_http_response->set_content("hello from http");
     return std::move(slow_http_response);
@@ -2114,10 +2117,11 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   net::EmbeddedTestServer redirect_server_https{
       net::EmbeddedTestServer::TYPE_HTTPS};
 
-  // Set the timeout short enough, but not zero. We need to wait for the loads
-  // to finish for this test to work.
-  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(
-      base::Milliseconds(250));
+  // Set the timeout short enough, but not zero. We can't set it to zero
+  // because it'll cancel the HTTPS load with timeout instead of an error.
+  // The HTTP load in this test needs to be slower than this timeout for the
+  // test to be meaningful.
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::Seconds(1));
 
   // We don't know the ports without starting the servers and we can't start
   // the servers without registering request handlers. Pass them as refs so
