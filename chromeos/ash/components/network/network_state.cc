@@ -465,11 +465,13 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
     // important (i.e. not a normal auto connect).
     connect_requested_ = true;
   }
+
+  // TODO(b/336931625): Polish the relationship between |shill_portal_state_|
+  // and |connection_state_|.
   if (shill_portal_state_ == PortalState::kUnknown &&
       connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   }
-  chrome_portal_state_ = PortalState::kUnknown;
 }
 
 bool NetworkState::IsManagedByPolicy() const {
@@ -528,14 +530,7 @@ bool NetworkState::IsNonShillCellularNetwork() const {
 }
 
 NetworkState::PortalState NetworkState::GetPortalState() const {
-  return chrome_portal_state_ != PortalState::kUnknown ? chrome_portal_state_
-                                                       : shill_portal_state_;
-}
-
-void NetworkState::SetChromePortalState(PortalState portal_state) {
-  CHECK(!features::IsRemoveDetectPortalFromChromeEnabled());
-
-  chrome_portal_state_ = portal_state;
+  return shill_portal_state_;
 }
 
 bool NetworkState::IsSecure() const {

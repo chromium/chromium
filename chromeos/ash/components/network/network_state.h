@@ -329,8 +329,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
-  void SetChromePortalState(PortalState portal_state);
-
   // Set to true if the network is a member of Manager.Services.
   bool visible_ = false;
 
@@ -402,8 +400,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string tether_carrier_;
   int battery_percentage_ = 0;
 
+  // TODO(b/336931625): Rename to portal_state_.
   PortalState shill_portal_state_ = PortalState::kUnknown;
-  PortalState chrome_portal_state_ = PortalState::kUnknown;
 
   // Whether the current device has already connected to the tether host device
   // providing the hotspot corresponding to this NetworkState.
