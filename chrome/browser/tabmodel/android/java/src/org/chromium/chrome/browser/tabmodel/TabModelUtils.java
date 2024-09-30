@@ -242,8 +242,8 @@ public class TabModelUtils {
      *
      * <p>Note that, unlike {@link #runOnTabStateInitialized(TabModelSelector, Callback)}, this
      * approach does not take care to ensure synchronous execution even when things are already
-     * satisfied. Depending on the input supplier type, this approach is likely to get gets stuck on
-     * the resulting post from adding the {@link OneShotCallback} observer.
+     * satisfied. Depending on the input supplier type, this approach is likely to get stuck on the
+     * resulting post from adding the {@link OneShotCallback} observer.
      *
      * @param tabModelSelectorSupplier A supplier of a maybe initialized tab model selector.
      * @return A oneshot supplier that will only be set when initialization is done.

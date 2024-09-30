@@ -61,6 +61,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.supplier.UnwrapObservableSupplier;
 import org.chromium.base.task.AsyncTask;
@@ -3752,13 +3753,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 () -> {
                     mRootUiCoordinator.getDataSharingTabManager().initiateJoinFlow(url);
                 };
-        TabModelUtils.runOnTabStateInitialized(
-                getTabModelSelectorSupplier().get(),
-                mCallbackController.makeCancelable(
-                        (tabModelSelectorReturn) -> {
-                            assert tabModelSelectorReturn == getTabModelSelectorSupplier().get();
-                            TabSwitcherUtils.navigateToTabSwitcher(
-                                    mLayoutManager, /* animate= */ false, showJoinFlowRunnable);
-                        }));
+
+        OneshotSupplier<TabModelSelector> wrappedSelector =
+                TabModelUtils.onInitializedTabModelSelector(getTabModelSelectorSupplier());
+
+        SupplierUtils.waitForAll(
+                () -> {
+                    TabSwitcherUtils.navigateToTabSwitcher(
+                            mLayoutManager, /* animate= */ false, showJoinFlowRunnable);
+                },
+                wrappedSelector,
+                mLayoutStateProviderSupplier);
     }
 }
