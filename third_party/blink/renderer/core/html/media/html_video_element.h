@@ -106,10 +106,13 @@ class CORE_EXPORT HTMLVideoElement final
   // StaticBitmapImage of the current VideoFrame. If `allow_accelerated_images`
   // is set to false a software backed CanvasResourceProvider will be used to
   // produce the StaticBitmapImage. If `size` is specified, the image will be
-  // scaled to it, otherwise the image will be in its natural size.
+  // scaled to it, otherwise the image will be in its natural size. If
+  // `reinterpret_as_srgb` is true, then reinterpret the video as thought it
+  // is in sRGB color space.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
       bool allow_accelerated_images = true,
-      std::optional<gfx::Size> size = std::nullopt);
+      std::optional<gfx::Size> size = std::nullopt,
+      bool reinterpret_as_srgb = false);
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(

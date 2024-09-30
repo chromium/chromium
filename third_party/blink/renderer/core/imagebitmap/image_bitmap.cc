@@ -648,7 +648,10 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
   // enable gpu backed imageBitmap with resize options.
   const bool allow_accelerated_images =
       !options->hasResizeWidth() && !options->hasResizeHeight();
-  auto input = video->CreateStaticBitmapImage(allow_accelerated_images);
+  auto input = video->CreateStaticBitmapImage(
+      allow_accelerated_images,
+      /*size=*/std::nullopt,
+      /*reinterpret_as_srgb=*/!parsed_options.has_color_space_conversion);
   if (!input)
     return;
 

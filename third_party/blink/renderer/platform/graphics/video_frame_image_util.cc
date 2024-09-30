@@ -133,7 +133,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect,
-    bool prefer_tagged_orientation) {
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb) {
   auto frame_sk_color_space = frame->CompatRGBColorSpace().ToSkColorSpace();
   if (!frame_sk_color_space) {
     frame_sk_color_space = SkColorSpace::MakeSRGB();
@@ -142,8 +143,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (allow_zero_copy_images && dest_rect.IsEmpty() &&
-      transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
+  if (allow_zero_copy_images && !reinterpret_video_as_srgb &&
+      dest_rect.IsEmpty() && transform == media::kNoTransformation &&
+      CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
     const SkImageInfo sk_image_info = SkImageInfo::Make(
@@ -231,7 +233,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
           final_dest_rect, video_renderer,
-          /*ignore_video_transformation=*/prefer_tagged_orientation)) {
+          /*ignore_video_transformation=*/prefer_tagged_orientation,
+          /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
     return nullptr;
   }
 
@@ -248,7 +251,8 @@ bool DrawVideoFrameIntoResourceProvider(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
     media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation) {
+    bool ignore_video_transformation,
+    bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
@@ -295,6 +299,7 @@ bool DrawVideoFrameIntoResourceProvider(
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
+  params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   video_renderer->Paint(frame.get(),
                         &resource_provider->Canvas(/*needs_will_draw*/ true),
                         media_flags, params, raster_context_provider);
