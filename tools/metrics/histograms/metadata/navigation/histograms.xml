@@ -79,7 +79,10 @@ chromium-metrics-reviews@google.com.
       summary="AgentSchedulingGroupHost::RemoveRoute()"/>
   <variant name="DocumentAssociatedDataDestructor"
       summary="DocumentAssociatedData destructor"/>
-  <variant name="Frame.SwapImpl" summary="Frame::SwapImpl()"/>
+  <variant name="Frame.SwapImpl.Local"
+      summary="Frame::SwapImpl() with LocalFrame"/>
+  <variant name="Frame.SwapImpl.Remote"
+      summary="Frame::SwapImpl() with RemoteFrame"/>
   <variant name="LocalFrame.DetachImpl.Remove"
       summary="LocalFrame::DetachImpl() for removal"/>
   <variant name="LocalFrame.DetachImpl.Swap"
@@ -93,10 +96,10 @@ chromium-metrics-reviews@google.com.
   <variant name="StartPendingDeletionOnSubtree.Detach"
       summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
                detaching"/>
-  <variant name="StartPendingDeletionOnSubtree.Loop.Detach"
+  <variant name="StartPendingDeletionOnSubtree.LoopDetach"
       summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
                swapping, children looping part"/>
-  <variant name="StartPendingDeletionOnSubtree.Loop.SwappedOut"
+  <variant name="StartPendingDeletionOnSubtree.LoopSwappedOut"
       summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
                detaching, children looping part"/>
   <variant name="StartPendingDeletionOnSubtree.SwappedOut"
