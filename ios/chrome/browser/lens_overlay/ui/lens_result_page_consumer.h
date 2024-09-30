@@ -13,6 +13,9 @@
 /// Sets `webView` in the consumer.
 - (void)setWebView:(UIView*)webView;
 
+/// Sets the visibility of the web view.
+- (void)setWebViewHidden:(BOOL)hidden;
+
 /// Sets the loading progress.
 /// This value is bound between 0 (meaning no progress) and 1 (meaning the page
 /// has fully loaded).

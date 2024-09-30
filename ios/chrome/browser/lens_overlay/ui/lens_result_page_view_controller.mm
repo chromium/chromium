@@ -86,6 +86,8 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   UIButton* _omniboxTapTarget;
   /// Loading progress bar.
   LensOverlayProgressBar* _progressBar;
+  /// Whether the web view should be hidden.
+  BOOL _webViewHidden;
 }
 
 - (instancetype)init {
@@ -258,6 +260,15 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 }
 #endif
 
+- (void)setWebViewHidden:(BOOL)hidden {
+  if (_webViewHidden == hidden) {
+    return;
+  }
+
+  _webViewHidden = hidden;
+  _webView.hidden = hidden;
+}
+
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   CHECK(!_editView, kLensOverlayNotFatalUntil);
   CHECK(editView, kLensOverlayNotFatalUntil);
@@ -326,6 +337,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
     [_webView removeFromSuperview];
   }
   _webView = webView;
+  _webView.hidden = _webViewHidden;
 
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
   if (!_webView || !self.webViewContainer) {

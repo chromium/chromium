@@ -146,7 +146,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _consumer = consumer;
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
-  [self.consumer setWebView:_webState->GetView()];
+  // Mark hidden until the first page has finished loading, preventing a
+  // momentary display of the web view's white background.
+  [_consumer setWebViewHidden:YES];
+  [_consumer setWebView:_webState->GetView()];
 }
 
 - (void)setWebStateDelegate:
@@ -181,6 +184,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   GURL latestLoadedURL = _webState->GetLastCommittedURL();
   BOOL latestURLValid = latestLoadedURL.is_valid();
   if (darkModeChanged && latestURLValid) {
+    // The web view is hidden until the page fully loads to prevent a brief
+    // flash of mixed dark and light UI elements.
+    [_consumer setWebViewHidden:YES];
     [self loadResultsURL:latestLoadedURL];
   }
 }
@@ -242,6 +248,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 }
 
 #pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  [_consumer setWebViewHidden:NO];
+}
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
