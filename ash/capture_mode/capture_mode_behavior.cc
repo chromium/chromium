@@ -22,7 +22,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/scanner/scanner_controller.h"
-#include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -35,7 +34,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -294,8 +292,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 // SunfishBehavior:
 // Implements the `CaptureModeBehavior` interface with behavior defined for the
 // sunfish capture mode.
-class SunfishBehavior : public CaptureModeBehavior,
-                        public ScannerSession::Observer {
+class SunfishBehavior : public CaptureModeBehavior {
  public:
   SunfishBehavior()
       : CaptureModeBehavior(
@@ -312,18 +309,13 @@ class SunfishBehavior : public CaptureModeBehavior,
   void AttachToSession() override {
     CaptureModeBehavior::AttachToSession();
     if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
-      scanner_session_ = scanner_controller->StartNewSession();
-      if (scanner_session_) {
-        scanner_session_observation_.Observe(scanner_session_);
-      }
+      scanner_controller->StartNewSession();
     }
   }
   void DetachFromSession() override {
     CaptureModeBehavior::DetachFromSession();
-    if (scanner_session_) {
-      scanner_session_observation_.Reset();
-      scanner_session_ = nullptr;
-      Shell::Get()->scanner_controller()->OnSessionUIClosed();
+    if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
+      scanner_controller->OnSessionUIClosed();
     }
   }
   bool ShouldShowUserNudge() const override { return false; }
@@ -354,23 +346,10 @@ class SunfishBehavior : public CaptureModeBehavior,
   }
   void OnEnterKeyPressed() override {}
 
-  // ScannerSession::Observer:
-  void OnScannerSessionDestroying() override {
-    scanner_session_observation_.Reset();
-    scanner_session_ = nullptr;
-  }
-
  private:
   // Controls the overlay shown on the capture region to indicate detected text,
   // translations, etc.
   CaptureRegionOverlayController capture_region_overlay_controller_;
-
-  // May hold an active Scanner session, to allow access to the Scanner feature.
-  raw_ptr<ScannerSession> scanner_session_;
-
-  // Used to observe the lifetime of `scanner_session_`.
-  base::ScopedObservation<ScannerSession, ScannerSession::Observer>
-      scanner_session_observation_{this};
 };
 
 }  // namespace
