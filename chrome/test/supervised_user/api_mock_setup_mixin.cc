@@ -4,6 +4,7 @@
 
 #include "chrome/test/supervised_user/api_mock_setup_mixin.h"
 
+#include <map>
 #include <string>
 #include <string_view>
 
@@ -87,8 +88,13 @@ void KidsManagementApiMockSetupMixin::SetUpCommandLine(
 
 void KidsManagementApiMockSetupMixin::SetUpOnMainThread() {
   embedded_test_server_.StartAcceptingConnections();
-  WaitUntilReady(test_base_, prefs::kSupervisedUserCustodianName,
-                 kSimpsonFamily.at(kidsmanagement::HEAD_OF_HOUSEHOLD));
+  CHECK_EQ(kSimpsonFamily.count(kidsmanagement::HEAD_OF_HOUSEHOLD),
+           std::size_t(1))
+      << "Expected single head of household";
+
+  WaitUntilReady(
+      test_base_, prefs::kSupervisedUserCustodianName,
+      kSimpsonFamily.find(kidsmanagement::HEAD_OF_HOUSEHOLD)->second);
 }
 
 void KidsManagementApiMockSetupMixin::TearDownOnMainThread() {

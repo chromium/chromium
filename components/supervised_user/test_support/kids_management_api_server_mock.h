@@ -23,7 +23,8 @@
 
 namespace supervised_user {
 
-extern const std::map<kidsmanagement::FamilyRole, std::string> kSimpsonFamily;
+extern const std::multimap<kidsmanagement::FamilyRole, std::string>
+    kSimpsonFamily;
 
 // Configures the scoped feature list so that the related feature is initialized
 // with right parameters to divert kids management api traffic to an http

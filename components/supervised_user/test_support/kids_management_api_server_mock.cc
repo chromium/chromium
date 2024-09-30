@@ -19,7 +19,7 @@
 
 namespace supervised_user {
 
-const std::map<kidsmanagement::FamilyRole, std::string> kSimpsonFamily = {
+const std::multimap<kidsmanagement::FamilyRole, std::string> kSimpsonFamily = {
     {kidsmanagement::HEAD_OF_HOUSEHOLD, "marge@gmail.com"},
     {kidsmanagement::PARENT, "homer@gmail.com"},
     {kidsmanagement::MEMBER, "abraham@gmail.com"},
