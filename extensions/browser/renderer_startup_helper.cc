@@ -358,8 +358,8 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
     // first batch of messages.
     std::vector<mojom::ExtensionLoadedParamsPtr> params;
     params.emplace_back(CreateExtensionLoadedParams(
-        extension, false /* no tab permissions */, browser_context_));
-
+        extension, /*include_tab_permissions=*/false,
+        process->GetBrowserContext()));
     mojom::Renderer* renderer = GetRenderer(process);
     if (renderer) {
       renderer->LoadExtensions(std::move(params));
