@@ -1211,7 +1211,8 @@
     "prefix": "block-cross-partition-blob-url-fetching",
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/FileAPI/BlobURL/cross-partition.tentative.https.html"],
+      "external/wpt/FileAPI/BlobURL/cross-partition.tentative.https.html",
+      "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.tentative.https.html"],
     "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching"],
     "expires": "Feb 4, 2025",
     "owners": ["janiceliu@chromium.org"]
