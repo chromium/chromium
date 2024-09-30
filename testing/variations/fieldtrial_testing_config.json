@@ -1342,6 +1342,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AudioSelectionImprovement"
+                    ],
+                    "disable_features": [
+                        "ResetAudioSelectionImprovementPref"
                     ]
                 }
             ]
