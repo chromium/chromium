@@ -274,10 +274,8 @@ mojom("mojom_shared_dictionary") {
 # As with mojom_ip_address, this is a separate target to avoid a circular
 # dependency, which comes from the fact that proxy_resolver service will use
 # this interface, and the network service uses the proxy_resolver service.
-# Separate from |mojom_ip_address| because a bunch of other consumers are
+# Separate from `mojom_ip_address` because a bunch of other consumers are
 # depending on that and don't need this.
-# This is not yet used by the proxy_resolver, but will be as a part of
-# crbug/1343856.
 mojom("mojom_network_anonymization_key") {
   generate_java = true
   sources = [ "network_anonymization_key.mojom" ]
