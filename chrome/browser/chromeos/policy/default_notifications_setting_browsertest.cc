@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/permissions/features.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,8 +31,6 @@ class DefaultNotificationsSettingBrowserTest
       public testing::WithParamInterface<int> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitAndDisableFeature(
-        permissions::features::kPermissionDedicatedCpssSetting);
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
 
     // Use param 0 to test the policy unset case.
@@ -95,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       "  querySelector('settings-main').shadowRoot."
       "  querySelector('settings-basic-page').shadowRoot."
       "  querySelector('settings-privacy-page').shadowRoot."
-      "  querySelectorAll('settings-collapse-radio-button');";
+      "  querySelectorAll('cr-radio-button');";
   std::string kGetRadiosChecked = kGetRadios +
                                   "let radiosChecked = [];"
                                   "radiosChecked.push(radios[0].checked);"
@@ -123,28 +120,28 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       // Policy not set.
       EXPECT_TRUE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_FALSE(radios_checked_list[2].GetBool());
+      EXPECT_TRUE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
       EXPECT_TRUE(radios_enabled_list[2].GetBool());
       break;
     case 1:
       // Allow sites to show desktop notifications.
-      EXPECT_TRUE(radios_checked_list[0].GetBool());
+      EXPECT_FALSE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
       EXPECT_FALSE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
-      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+      EXPECT_TRUE(radios_enabled_list[2].GetBool());
       break;
     case 2:
       // Don't allow sites to show desktop notifications.
       EXPECT_FALSE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_TRUE(radios_checked_list[2].GetBool());
-      EXPECT_FALSE(radios_enabled_list[0].GetBool());
-      EXPECT_FALSE(radios_enabled_list[1].GetBool());
-      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+      EXPECT_FALSE(radios_checked_list[2].GetBool());
+      EXPECT_TRUE(radios_enabled_list[0].GetBool());
+      EXPECT_TRUE(radios_enabled_list[1].GetBool());
+      EXPECT_TRUE(radios_enabled_list[2].GetBool());
       break;
     case 3:
       // Ask every time a site wants to show desktop notifications.
@@ -153,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       EXPECT_FALSE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
-      EXPECT_FALSE(radios_enabled_list[2].GetBool());
+      EXPECT_TRUE(radios_enabled_list[2].GetBool());
       break;
   }
 }

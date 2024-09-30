@@ -269,10 +269,6 @@ void AdaptiveQuietNotificationPermissionUiEnabler::
 
 void AdaptiveQuietNotificationPermissionUiEnabler::
     MigrateAdaptiveNotificationQuietingToCPSS() {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionDedicatedCpssSetting)) {
-    return;
-  }
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kDidMigrateAdaptiveNotifiationQuietingToCPSS)) {
     return;

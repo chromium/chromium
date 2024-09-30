@@ -328,13 +328,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      showDedicatedCpssSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('permissionDedicatedCpssSettings');
-        },
-      },
-
       // <if expr="chrome_root_store_cert_management_ui">
       enableCertManagementUIV2_: {
         type: Boolean,
@@ -404,7 +397,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SafetyHubBrowserProxyImpl.getInstance();
   private isNotificationAllowed_: boolean;
   private isLocationAllowed_: boolean;
-  private showDedicatedCpssSetting_: boolean;
   // <if expr="chrome_root_store_cert_management_ui">
   private enableCertManagementUIV2_: boolean;
   // </if>

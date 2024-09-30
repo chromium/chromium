@@ -15,7 +15,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -53,10 +52,6 @@ const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
 
 class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
  public:
-  PredictionSettingsPageBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{permissions::features::kPermissionDedicatedCpssSetting, {}}}, {});
-  }
 
   ~PredictionSettingsPageBrowserTest() override = default;
 
@@ -288,9 +283,6 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
             }))
         .Build();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,

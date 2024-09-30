@@ -66,10 +66,6 @@ BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
              "PermissionOnDeviceGeolocationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermissionDedicatedCpssSetting,
-             "PermissionDedicatedCpssSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionPredictionsV2,
              "PermissionPredictionsV2",
              base::FEATURE_ENABLED_BY_DEFAULT);

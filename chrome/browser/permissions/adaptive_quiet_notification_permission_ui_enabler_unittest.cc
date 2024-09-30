@@ -61,10 +61,6 @@ TEST_F(AdaptiveQuietNotificationPermissionUiEnablerTest,
       {false, std::nullopt, true, false},
   };
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      permissions::features::kPermissionDedicatedCpssSetting);
-
   auto* permission_ui_enabler =
       AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile());
 

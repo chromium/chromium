@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
-#include "chrome/browser/content_settings/generated_notification_pref.h"
 #include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
@@ -102,19 +101,12 @@ void GeneratedPrefs::CreatePrefs() {
       std::make_unique<GeneratedPasswordLeakDetectionPref>(profile_);
   prefs_[safe_browsing::kGeneratedSafeBrowsingPref] =
       std::make_unique<safe_browsing::GeneratedSafeBrowsingPref>(profile_);
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionDedicatedCpssSetting)) {
-    prefs_[content_settings::kGeneratedNotificationPref] = std::make_unique<
-        content_settings::GeneratedPermissionPromptingBehaviorPref>(
-        profile_, ContentSettingsType::NOTIFICATIONS);
-    prefs_[content_settings::kGeneratedGeolocationPref] = std::make_unique<
-        content_settings::GeneratedPermissionPromptingBehaviorPref>(
-        profile_, ContentSettingsType::GEOLOCATION);
-  } else {
-    prefs_[content_settings::kGeneratedNotificationPref] =
-        std::make_unique<content_settings::GeneratedNotificationPref>(profile_);
-    prefs_[content_settings::kGeneratedGeolocationPref] = nullptr;
-  }
+  prefs_[content_settings::kGeneratedNotificationPref] = std::make_unique<
+      content_settings::GeneratedPermissionPromptingBehaviorPref>(
+      profile_, ContentSettingsType::NOTIFICATIONS);
+  prefs_[content_settings::kGeneratedGeolocationPref] = std::make_unique<
+      content_settings::GeneratedPermissionPromptingBehaviorPref>(
+      profile_, ContentSettingsType::GEOLOCATION);
   prefs_[kGeneratedHttpsFirstModePref] =
       std::make_unique<GeneratedHttpsFirstModePref>(profile_);
 }

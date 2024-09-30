@@ -229,9 +229,6 @@ class SettingsSiteSettingsListElement extends
    * description changes.
    */
   private updateLocationLabel_() {
-    if (!loadTimeData.getBoolean('permissionDedicatedCpssSettings')) {
-      return;
-    }
     const state = this.getPref('generated.geolocation').value;
     const index = this.categoryList.map(e => e.id).indexOf(
         ContentSettingsTypes.GEOLOCATION);

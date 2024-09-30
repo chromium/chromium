@@ -3375,11 +3375,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions));
 
-  html_source->AddBoolean(
-      "permissionDedicatedCpssSettings",
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionDedicatedCpssSetting));
-
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");

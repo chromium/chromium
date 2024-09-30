@@ -52,8 +52,7 @@ bool PrefBasedQuietPermissionUiSelector::IsPermissionRequestSupported(
   if (request_type == permissions::RequestType::kNotifications) {
     return true;
   } else if (request_type == permissions::RequestType::kGeolocation) {
-    return base::FeatureList::IsEnabled(
-        permissions::features::kPermissionDedicatedCpssSetting);
+    return true;
   } else {
     return false;
   }

@@ -495,67 +495,52 @@
             $i18n{siteSettingsLocationDescription}
           </div>
           <div id="locationRadioGroup" class="radio-group">
-            <template is="dom-if" if="[[!showDedicatedCpssSetting_]]">
-              <settings-category-default-radio-group
-                  category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
-                  allow-option-label=
-                        "$i18n{siteSettingsLocationAllowed}"
-                  allow-option-icon="settings:location-on"
-                  block-option-label="$i18n{siteSettingsLocationBlocked}"
-                  block-option-sub-label=
-                      "$i18n{siteSettingsLocationBlockedSubLabel}"
-                  block-option-icon="privacy:location-off">
-              </settings-category-default-radio-group>
-            </template>
-
-            <template is="dom-if" if="[[showDedicatedCpssSetting_]]">
-              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-              <div id="geolocationSubHeading"
+            <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+            <div id="geolocationSubHeading"
                 class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
-              </div>
+            </div>
 
-              <cr-radio-group
-                  on-selected-changed="onLocationTopLevelRadioChanged_">
-                <cr-radio-button no-collapse
-                    name="location-ask-radio-button"
-                    checked$="[[isLocationAllowed_]]">
-                  <cr-icon icon="settings:location-on"></cr-icon>
-                  $i18n{siteSettingsLocationAllowed}
+            <cr-radio-group
+                on-selected-changed="onLocationTopLevelRadioChanged_">
+              <cr-radio-button no-collapse
+                  name="location-ask-radio-button"
+                  checked$="[[isLocationAllowed_]]">
+                <cr-icon icon="settings:location-on"></cr-icon>
+                $i18n{siteSettingsLocationAllowed}
+              </cr-radio-button>
+
+              <settings-radio-group
+                  pref="{{prefs.generated.geolocation}}"
+                  selectable-elements="cr-radio-button"
+                  hidden$="[[!isLocationAllowed_]]">
+                <cr-radio-button class="padded-radio-section"
+                    name="[[settingsStateEnum_.QUIET]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskQuiet}">
                 </cr-radio-button>
 
-                <settings-radio-group
-                    pref="{{prefs.generated.geolocation}}"
-                    selectable-elements="cr-radio-button"
-                    hidden$="[[!isLocationAllowed_]]">
-                  <cr-radio-button class="padded-radio-section"
-                      name="[[settingsStateEnum_.QUIET]]"
-                      pref="[[prefs.generated.geolocation]]"
-                      label="$i18n{siteSettingsLocationAskQuiet}">
-                  </cr-radio-button>
-
-                  <cr-radio-button class="padded-radio-section"
-                      name="[[settingsStateEnum_.CPSS]]"
-                      pref="[[prefs.generated.geolocation]]"
-                      label="$i18n{siteSettingsLocationAskCPSS}">
-                  </cr-radio-button>
-
-                  <cr-radio-button class="padded-radio-section"
-                      name="[[settingsStateEnum_.LOUD]]"
-                      pref="[[prefs.generated.geolocation]]"
-                      label="$i18n{siteSettingsLocationAskLoud}">
-                  </cr-radio-button>
-                </settings-radio-group>
-
-                <cr-radio-button class="two-line"
-                    name="location-block-radio-button"
-                    sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
-                    checked$="[[!isLocationAllowed_]]">
-                  <cr-icon icon="privacy:location-off"></cr-icon>
-                  $i18n{siteSettingsLocationBlocked}
+                <cr-radio-button class="padded-radio-section"
+                    name="[[settingsStateEnum_.CPSS]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskCPSS}">
                 </cr-radio-button>
-              </cr-radio-group>
-            </template>
+
+                <cr-radio-button class="padded-radio-section"
+                    name="[[settingsStateEnum_.LOUD]]"
+                    pref="[[prefs.generated.geolocation]]"
+                    label="$i18n{siteSettingsLocationAskLoud}">
+                </cr-radio-button>
+              </settings-radio-group>
+
+              <cr-radio-button class="two-line"
+                  name="location-block-radio-button"
+                  sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
+                  checked$="[[!isLocationAllowed_]]">
+                <cr-icon icon="privacy:location-off"></cr-icon>
+                $i18n{siteSettingsLocationBlocked}
+              </cr-radio-button>
+            </cr-radio-group>
           </div>
 
           <category-setting-exceptions
@@ -753,83 +738,51 @@
               $i18n{siteSettingsNotificationsDefaultBehaviorDescription}
             </div>
 
-            <template is="dom-if" if="[[!showDedicatedCpssSetting_]]">
+            <cr-radio-group
+                on-selected-changed="onNotificationTopLevelRadioChanged_">
+              <cr-radio-button
+                  id="notification-ask-radio-button"
+                  name="notification-ask-radio-button"
+                  checked$="[[isNotificationAllowed_]]">
+                <cr-icon icon="privacy:notifications"></cr-icon>
+                $i18n{siteSettingsNotificationsAskState}
+              </cr-radio-button>
+
               <settings-radio-group
                   pref="{{prefs.generated.notification}}"
-                  selectable-elements="settings-collapse-radio-button">
-                <settings-collapse-radio-button no-collapse
-                    name="[[settingsStateEnum_.LOUD]]"
-                    pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsAllowed}"
-                    icon="privacy:notifications">
-                </settings-collapse-radio-button>
-
-                <settings-collapse-radio-button no-collapse class="two-line"
+                  selectable-elements="cr-radio-button"
+                  hidden$="[[!isNotificationAllowed_]]">
+                <cr-radio-button class="padded-radio-section"
+                    id="notification-ask-quiet"
                     name="[[settingsStateEnum_.QUIET]]"
                     pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsPartial}"
-                    sub-label=
-                        "$i18n{siteSettingsNotificationsPartialSubLabel}"
-                    icon="privacy:notifications">
-                </settings-collapse-radio-button>
+                    label="$i18n{siteSettingsNotificationsAskQuiet}">
+                </cr-radio-button>
 
-                <settings-collapse-radio-button no-collapse class="two-line"
-                    name="[[settingsStateEnum_.BLOCK]]"
+                <cr-radio-button class="padded-radio-section"
+                    id="notification-ask-cpss"
+                    name="[[settingsStateEnum_.CPSS]]"
                     pref="[[prefs.generated.notification]]"
-                    label="$i18n{siteSettingsNotificationsBlocked}"
-                    sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    icon="privacy:notifications-off">
-                </settings-collapse-radio-button>
+                    label="$i18n{siteSettingsNotificationsAskCPSS}">
+                </cr-radio-button>
+
+                <cr-radio-button class="padded-radio-section"
+                    id="notification-ask-loud"
+                    name="[[settingsStateEnum_.LOUD]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsAskLoud}">
+                </cr-radio-button>
               </settings-radio-group>
-            </template>
 
-            <template is="dom-if" if="[[showDedicatedCpssSetting_]]">
-              <cr-radio-group
-                  on-selected-changed="onNotificationTopLevelRadioChanged_">
-                <cr-radio-button
-                    id="notification-ask-radio-button"
-                    name="notification-ask-radio-button"
-                    checked$="[[isNotificationAllowed_]]">
-                  <cr-icon icon="privacy:notifications"></cr-icon>
-                  $i18n{siteSettingsNotificationsAskState}
-                </cr-radio-button>
-
-                <settings-radio-group
-                    pref="{{prefs.generated.notification}}"
-                    selectable-elements="cr-radio-button"
-                    hidden$="[[!isNotificationAllowed_]]">
-                  <cr-radio-button class="padded-radio-section"
-                      id="notification-ask-quiet"
-                      name="[[settingsStateEnum_.QUIET]]"
-                      pref="[[prefs.generated.notification]]"
-                      label="$i18n{siteSettingsNotificationsAskQuiet}">
-                  </cr-radio-button>
-
-                  <cr-radio-button class="padded-radio-section"
-                      id="notification-ask-cpss"
-                      name="[[settingsStateEnum_.CPSS]]"
-                      pref="[[prefs.generated.notification]]"
-                      label="$i18n{siteSettingsNotificationsAskCPSS}">
-                  </cr-radio-button>
-
-                  <cr-radio-button class="padded-radio-section"
-                      id="notification-ask-loud"
-                      name="[[settingsStateEnum_.LOUD]]"
-                      pref="[[prefs.generated.notification]]"
-                      label="$i18n{siteSettingsNotificationsAskLoud}">
-                  </cr-radio-button>
-                </settings-radio-group>
-
-                <cr-radio-button class="two-line"
-                    id="notification-block"
-                    name="notification-block-radio-button"
-                    sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    checked$="[[!isNotificationAllowed_]]">
-                  <cr-icon icon="privacy:notifications-off"></cr-icon>
-                  $i18n{siteSettingsNotificationsBlocked}
-                </cr-radio-button>
-              </cr-radio-group>
-            </template>
+              <cr-radio-button class="two-line"
+                  id="notification-block"
+                  name="notification-block-radio-button"
+                  sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
+                  checked$="[[!isNotificationAllowed_]]">
+                <cr-icon icon="privacy:notifications-off"></cr-icon>
+                $i18n{siteSettingsNotificationsBlocked}
+              </cr-radio-button>
+            </cr-radio-group>
           </div>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
