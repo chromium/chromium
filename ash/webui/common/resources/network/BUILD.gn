@@ -33,7 +33,6 @@ js_type_check("closure_compile_module") {
     ":network_list_item",
     ":network_list_types",
     ":network_listener_behavior",
-    ":network_nameservers",
     ":network_password_input",
     ":network_property_list_mojo",
     ":network_proxy",
@@ -284,20 +283,6 @@ js_library("network_listener_behavior") {
   deps = [
     ":mojo_interface_provider",
     "//ash/webui/common/resources:assert",
-  ]
-}
-
-js_library("network_nameservers") {
-  deps = [
-    ":cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/policy/cr_policy_indicator_externs.js",
   ]
 }
 
