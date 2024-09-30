@@ -6,13 +6,15 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace service_manager {
 
 namespace {
 
-std::map<Manifest::ServiceName, const Manifest*> CreateManifestMap(
-    const std::vector<Manifest>& manifests) {
-  std::map<Manifest::ServiceName, const Manifest*> map;
+std::map<Manifest::ServiceName, raw_ptr<const Manifest, CtnExperimental>>
+CreateManifestMap(const std::vector<Manifest>& manifests) {
+  std::map<Manifest::ServiceName, raw_ptr<const Manifest, CtnExperimental>> map;
   for (const auto& manifest : manifests) {
     map[manifest.service_name] = &manifest;
     for (const auto& entry : CreateManifestMap(manifest.packaged_services))
@@ -21,9 +23,9 @@ std::map<Manifest::ServiceName, const Manifest*> CreateManifestMap(
   return map;
 }
 
-std::map<Manifest::ServiceName, const Manifest*> CreateParentManifestMap(
-    const std::vector<Manifest>& manifests) {
-  std::map<Manifest::ServiceName, const Manifest*> map;
+std::map<Manifest::ServiceName, raw_ptr<const Manifest, CtnExperimental>>
+CreateParentManifestMap(const std::vector<Manifest>& manifests) {
+  std::map<Manifest::ServiceName, raw_ptr<const Manifest, CtnExperimental>> map;
   for (const auto& parent : manifests) {
     for (const auto& child : parent.packaged_services)
       map[child.service_name] = &parent;

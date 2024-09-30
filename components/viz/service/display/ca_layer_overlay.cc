@@ -80,9 +80,11 @@ bool FilterOperationSupported(const cc::FilterOperation& operation) {
 gfx::CALayerResult FromRenderPassQuad(
     const DisplayResourceProvider* resource_provider,
     const AggregatedRenderPassDrawQuad* quad,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidate* ca_layer_overlay) {
   if (render_pass_backdrop_filters.count(quad->render_pass_id)) {
@@ -188,9 +190,11 @@ class CALayerOverlayProcessorInternal {
       const DisplayResourceProvider* resource_provider,
       const gfx::RectF& display_rect,
       const DrawQuad* quad,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+      const base::flat_map<AggregatedRenderPassId,
+                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
           render_pass_filters,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+      const base::flat_map<AggregatedRenderPassId,
+                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
           render_pass_backdrop_filters,
       OverlayCandidate* ca_layer_overlay,
       bool* skip,
@@ -351,9 +355,11 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,
     QuadList* quad_list,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidateList* ca_layer_overlays) const {
   bool failed = false;
@@ -401,9 +407,11 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     AggregatedRenderPass* render_pass,
     const DisplayResourceProvider* resource_provider,
     const gfx::RectF& display_rect,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidateList* ca_layer_overlays) {
   const QuadList& quad_list = render_pass->quad_list;
@@ -490,9 +498,11 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,
     const DrawQuad* quad,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     gfx::ProtectedVideoType protected_video_type,
     OverlayCandidateList* ca_layer_overlays) const {

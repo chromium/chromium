@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
@@ -66,12 +67,13 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // different threads.
   base::Lock cdm_services_lock_;
   // A map between CDM ID and MojoCdmService.
-  std::map<base::UnguessableToken, MojoCdmService*> cdm_services_
-      GUARDED_BY(cdm_services_lock_);
+  std::map<base::UnguessableToken, raw_ptr<MojoCdmService, CtnExperimental>>
+      cdm_services_ GUARDED_BY(cdm_services_lock_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A map between CDM ID and RemoteCdmContext.
-  std::map<base::UnguessableToken, chromeos::RemoteCdmContext*>
+  std::map<base::UnguessableToken,
+           raw_ptr<chromeos::RemoteCdmContext, CtnExperimental>>
       remote_cdm_contexts_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };

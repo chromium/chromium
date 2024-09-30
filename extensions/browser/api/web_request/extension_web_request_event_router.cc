@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -455,7 +456,8 @@ class CrossContextData {
 
  private:
   using CrossContextMap =
-      std::map<content::BrowserContext*, content::BrowserContext*>;
+      std::map<content::BrowserContext*,
+               raw_ptr<content::BrowserContext, CtnExperimental>>;
 
   // For each each on-the-record context that has an off-the-record context,
   // this bi-map contains an entry for both contexts where the value is the

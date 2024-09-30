@@ -10,6 +10,7 @@
 
 #include "base/at_exit.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/wayland/fuzzer/server_environment.h"
 
 namespace exo::wayland {
@@ -95,7 +96,7 @@ class ScopedWlcsServer {
       base::OnceCallback<void(ui::test::EventGenerator&)> invocation);
 
  private:
-  base::flat_map<int, wl_client*> fd_to_client_;
+  base::flat_map<int, raw_ptr<wl_client, CtnExperimental>> fd_to_client_;
 
   std::unique_ptr<ui::test::EventGenerator> evg_;
 };

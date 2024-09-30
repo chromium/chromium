@@ -181,7 +181,8 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost final
     // When a PepperFileIOHost calls OpenQuotaFile, we add the id and a
     // non-owning pointer to this map. CloseQuotaFile must be called when before
     // the host is destroyed.
-    typedef std::map<int32_t, PepperFileIOHost*> FileMap;
+    typedef std::map<int32_t, raw_ptr<PepperFileIOHost, CtnExperimental>>
+        FileMap;
     FileMap files_;
 
     // Thread that this object is constructed on.
@@ -228,7 +229,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost final
   // When a PepperFileIOHost calls OpenQuotaFile, we add the id and a non-owning
   // pointer to this map. CloseQuotaFile must be called when before the host is
   // destroyed.
-  typedef std::map<int32_t, PepperFileIOHost*> FileMap;
+  typedef std::map<int32_t, raw_ptr<PepperFileIOHost, CtnExperimental>> FileMap;
   FileMap files_;
   int64_t reserved_quota_;
   bool reserving_quota_;

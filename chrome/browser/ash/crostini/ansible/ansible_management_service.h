@@ -138,7 +138,8 @@ class AnsibleManagementService : public KeyedService,
 
   // We don't really need to know about these, but keeping them so we can access
   // for testing purposes.
-  std::map<guest_os::GuestId, views::Widget*> ui_elements_;
+  std::map<guest_os::GuestId, raw_ptr<views::Widget, CtnExperimental>>
+      ui_elements_;
 
   base::WeakPtrFactory<AnsibleManagementService> weak_ptr_factory_;
 };

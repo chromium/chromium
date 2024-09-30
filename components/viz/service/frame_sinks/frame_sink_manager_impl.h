@@ -505,7 +505,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // CompositorFrameSinkSupports get added to this map on creation and removed
   // on destruction.
-  base::flat_map<FrameSinkId, CompositorFrameSinkSupport*> support_map_;
+  base::flat_map<FrameSinkId,
+                 raw_ptr<CompositorFrameSinkSupport, CtnExperimental>>
+      support_map_;
 
   // [Root]CompositorFrameSinkImpls are owned in these maps.
   base::flat_map<FrameSinkId, std::unique_ptr<RootCompositorFrameSinkImpl>>

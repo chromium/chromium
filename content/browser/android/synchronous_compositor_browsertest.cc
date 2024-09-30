@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/android/synchronous_compositor.h"
+
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -71,7 +73,8 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
   }
 
  private:
-  std::map<viz::FrameSinkId, SynchronousCompositor*> compositor_map_;
+  std::map<viz::FrameSinkId, raw_ptr<SynchronousCompositor, CtnExperimental>>
+      compositor_map_;
 };
 
 class SynchronousCompositorBrowserTest : public ContentBrowserTest {

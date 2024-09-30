@@ -139,7 +139,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       foreign_sessions_;
   std::unique_ptr<sync_sessions::SyncedSession> local_session_;
-  std::map<std::string, const sessions::SessionTab*> session_to_tab_;
+  std::map<std::string, raw_ptr<const sessions::SessionTab, CtnExperimental>>
+      session_to_tab_;
 };
 
 AnnotatedNumericResult CreateResult(float val) {

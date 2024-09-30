@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -377,13 +378,16 @@ void MediaDialogView::TargetLanguageChanged() {
           target_language_combobox_->GetSelectedIndex().value());
 }
 
-const std::map<const std::string, global_media_controls::MediaItemUIView*>&
+const std::map<
+    const std::string,
+    raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>&
 MediaDialogView::GetItemsForTesting() const {
   return active_sessions_view_->items_for_testing();  // IN-TEST
 }
 
-const std::map<const std::string,
-               global_media_controls::MediaItemUIUpdatedView*>&
+const std::map<
+    const std::string,
+    raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
 MediaDialogView::GetUpdatedItemsForTesting() const {
   return active_sessions_view_->updated_items_for_testing();  // IN-TEST
 }

@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Nested OnApps calls are expected to be rare (but still dealt with
   // sensibly). In the typical case, OnApps should call DoOnApps exactly once,
   // and deltas_pending_ will stay empty.
-  std::map<std::string, App*> deltas_in_progress_;
+  std::map<std::string, raw_ptr<App, CtnExperimental>> deltas_in_progress_;
   std::vector<AppPtr> deltas_pending_;
 
   // Saves app types which will finish initialization, and OnAppTypeInitialized

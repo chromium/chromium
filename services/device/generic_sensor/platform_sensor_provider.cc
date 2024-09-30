@@ -114,7 +114,7 @@ scoped_refptr<PlatformSensor> PlatformSensorProvider::GetSensor(
 
   auto it = sensor_map_.find(type);
   if (it != sensor_map_.end()) {
-    return it->second;
+    return it->second.get();
   }
   return nullptr;
 }

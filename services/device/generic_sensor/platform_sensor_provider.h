@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -85,7 +86,8 @@ class PlatformSensorProvider {
 
   void FreeResourcesIfNeeded();
 
-  std::map<mojom::SensorType, PlatformSensor*> sensor_map_;
+  std::map<mojom::SensorType, raw_ptr<PlatformSensor, CtnExperimental>>
+      sensor_map_;
   std::map<mojom::SensorType, CallbackQueue> requests_map_;
   base::MappedReadOnlyRegion mapped_region_;
 };

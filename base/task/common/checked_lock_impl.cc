@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"

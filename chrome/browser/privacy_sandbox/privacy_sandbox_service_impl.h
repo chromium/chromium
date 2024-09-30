@@ -368,7 +368,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 #if !BUILDFLAG(IS_ANDROID)
   // A map of Browser windows which have an open Privacy Sandbox prompt,
   // to the Widget for that prompt.
-  std::map<Browser*, views::Widget*> browsers_to_open_prompts_;
+  std::map<Browser*, raw_ptr<views::Widget, CtnExperimental>>
+      browsers_to_open_prompts_;
 #endif
 
   // Fake implementation for current and blocked topics.

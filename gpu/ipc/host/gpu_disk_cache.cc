@@ -512,7 +512,7 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(
   if (handle_it != handle_to_path_map_.end()) {
     auto path_it = gpu_cache_map_.find(handle_it->second);
     if (path_it != gpu_cache_map_.end()) {
-      return path_it->second;
+      return path_it->second.get();
     }
   }
   return nullptr;
@@ -541,7 +541,7 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = gpu_cache_map_.find(path);
   if (iter != gpu_cache_map_.end())
-    return iter->second;
+    return iter->second.get();
 
   auto cache = base::WrapRefCounted(new GpuDiskCache(
       this, path, blob_loaded_cb, std::move(cache_destroyed_cb)));
@@ -608,7 +608,8 @@ void GpuDiskCacheFactory::ClearByPath(const base::FilePath& path,
     return;
   }
 
-  ClearByCache(iter->second, delete_begin, delete_end, std::move(callback));
+  ClearByCache(iter->second.get(), delete_begin, delete_end,
+               std::move(callback));
 }
 
 void GpuDiskCacheFactory::CacheCleared(GpuDiskCache* cache) {

@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_stdint.h"  // For int64_t on Windows.
 #include "ppapi/shared_impl/file_growth.h"
@@ -85,7 +86,8 @@ class CONTENT_EXPORT QuotaReservation
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<storage::QuotaReservation> quota_reservation_;
-  typedef std::map<int32_t, storage::OpenFileHandle*> FileMap;
+  typedef std::map<int32_t, raw_ptr<storage::OpenFileHandle, CtnExperimental>>
+      FileMap;
   FileMap files_;
 };
 

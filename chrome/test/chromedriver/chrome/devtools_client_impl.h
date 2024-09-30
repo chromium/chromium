@@ -220,7 +220,7 @@ class DevToolsClientImpl : public DevToolsClient {
   // deep. children_ holds child sessions - identified by their session id -
   // which send/receive messages via the socket_ of their parent.
   raw_ptr<DevToolsClient> parent_ = nullptr;
-  std::map<std::string, DevToolsClient*> children_;
+  std::map<std::string, raw_ptr<DevToolsClient, CtnExperimental>> children_;
   bool crashed_ = false;
   bool detached_ = false;
   // For the top-level session, this is the target id.

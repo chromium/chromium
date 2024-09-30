@@ -311,7 +311,8 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
 
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 
-  std::map<content::BrowserContext*, FakeDiceWebSigninInterceptorDelegate*>
+  std::map<content::BrowserContext*,
+           raw_ptr<FakeDiceWebSigninInterceptorDelegate, CtnExperimental>>
       interceptor_delegates_;
 };
 

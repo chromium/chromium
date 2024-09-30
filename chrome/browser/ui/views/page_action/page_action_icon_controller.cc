@@ -331,7 +331,7 @@ bool PageActionIconController::IsAnyIconVisible() const {
 
 bool PageActionIconController::ActivateFirstInactiveBubbleForAccessibility() {
   for (auto icon_item : page_action_icon_views_) {
-    auto* icon = icon_item.second;
+    auto* icon = icon_item.second.get();
     if (!icon->GetVisible() || !icon->GetBubble())
       continue;
 

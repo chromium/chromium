@@ -158,7 +158,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   class SimpleIterator;
   friend class SimpleIterator;
 
-  using EntryMap = std::unordered_map<uint64_t, SimpleEntryImpl*>;
+  using EntryMap =
+      std::unordered_map<uint64_t, raw_ptr<SimpleEntryImpl, CtnExperimental>>;
 
   class ActiveEntryProxy;
   friend class ActiveEntryProxy;

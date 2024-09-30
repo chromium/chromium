@@ -698,7 +698,8 @@ void Display::MaybeLogQuadsProperties(
 
   SkM44 color_matrix;
   // auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters;
   render_pass_filters[last_render_pass.id] = &(last_render_pass.filters);
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(

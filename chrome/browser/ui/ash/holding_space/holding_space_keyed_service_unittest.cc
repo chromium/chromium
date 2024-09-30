@@ -723,7 +723,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::map<Profile*, testing::NiceMock<MockDownloadManager>*>
+  std::map<Profile*,
+           raw_ptr<testing::NiceMock<MockDownloadManager>, CtnExperimental>>
       download_managers_;
   arc::ArcServiceManager arc_service_manager_;
   base::ScopedTempDir temp_dir_;

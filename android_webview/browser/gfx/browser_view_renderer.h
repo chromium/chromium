@@ -243,7 +243,9 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // A map from compositor's per-WebView unique ID to the compositor's raw
   // pointer. A raw pointer here is fine because the entry will be erased when
   // a compositor is destroyed.
-  std::map<viz::FrameSinkId, content::SynchronousCompositor*> compositor_map_;
+  std::map<viz::FrameSinkId,
+           raw_ptr<content::SynchronousCompositor, CtnExperimental>>
+      compositor_map_;
 
   bool is_paused_;
   bool view_visible_;

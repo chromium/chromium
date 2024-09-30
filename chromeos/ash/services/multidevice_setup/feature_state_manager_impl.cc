@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -197,7 +198,8 @@ std::unique_ptr<FeatureStateManager> FeatureStateManagerImpl::Factory::Create(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+    const base::flat_map<mojom::Feature,
+                         raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
         global_state_feature_managers,
     bool is_secondary_user) {
   if (test_factory_) {
@@ -226,7 +228,8 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+    const base::flat_map<mojom::Feature,
+                         raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
         global_state_feature_managers,
     bool is_secondary_user)
     : pref_service_(pref_service),

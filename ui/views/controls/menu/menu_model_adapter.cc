@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model.h"
@@ -242,16 +243,18 @@ bool MenuModelAdapter::IsItemChecked(int id) const {
 
 void MenuModelAdapter::WillShowMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
-  const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
-      menu_map_.find(menu);
+  const std::map<MenuItemView*,
+                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+      map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillShow();
 }
 
 void MenuModelAdapter::WillHideMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
-  const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
-      menu_map_.find(menu);
+  const std::map<MenuItemView*,
+                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+      map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillClose();
 }

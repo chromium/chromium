@@ -342,7 +342,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   std::unique_ptr<AuctionNetworkEventsProxy> auction_network_events_proxy_;
   std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
-  std::map<WorkletKey, WorkletOwner*> worklets_;
+  std::map<WorkletKey, raw_ptr<WorkletOwner, CtnExperimental>> worklets_;
 };
 
 }  // namespace content

@@ -59,7 +59,8 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
     return it->second;
   }
 
-  std::map<const PageNode*, SiteDataReader*> site_data_readers_;
+  std::map<const PageNode*, raw_ptr<SiteDataReader, CtnExperimental>>
+      site_data_readers_;
 };
 
 }  // namespace

@@ -800,7 +800,9 @@ class BASE_EXPORT FieldTrialList {
   static void ActivateFieldTrialEntryWhileLocked(FieldTrial* field_trial);
 
   // A map from FieldTrial names to the actual instances.
-  typedef std::map<std::string, FieldTrial*, std::less<>> RegistrationMap;
+  typedef std::
+      map<std::string, raw_ptr<FieldTrial, CtnExperimental>, std::less<>>
+          RegistrationMap;
 
   // Helper function should be called only while holding lock_.
   FieldTrial* PreLockedFind(std::string_view name)

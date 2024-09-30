@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
@@ -109,7 +110,7 @@ class MaxVoteAggregator : public VoteObserver {
 
     // Maps each voting channel to the HeapHandle to their associated vote in
     // |votes_|.
-    std::map<VoterId, base::HeapHandle*> heap_handles_;
+    std::map<VoterId, raw_ptr<base::HeapHandle, CtnExperimental>> heap_handles_;
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;

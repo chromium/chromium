@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLER_REGISTRY_H_
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -72,7 +73,8 @@ class ManifestHandlerRegistry {
   // to the backup base::flat_map, which we don't want, as that would
   // defeat the optimization of using small_map.
   static constexpr size_t kHandlerMax = 87;
-  using FallbackMap = base::flat_map<std::string, ManifestHandler*>;
+  using FallbackMap =
+      base::flat_map<std::string, raw_ptr<ManifestHandler, CtnExperimental>>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = base::flat_map<ManifestHandler*, int>;
   using ManifestHandlerPriorityMap =

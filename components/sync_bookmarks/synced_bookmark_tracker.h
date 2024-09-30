@@ -275,16 +275,17 @@ class SyncedBookmarkTracker {
       sync_id_to_entities_map_;
 
   // Index for efficient lookups by client tag hash.
-  std::unordered_map<syncer::ClientTagHash,
-                     const SyncedBookmarkTrackerEntity*,
-                     syncer::ClientTagHash::Hash>
+  std::unordered_map<
+      syncer::ClientTagHash,
+      raw_ptr<const SyncedBookmarkTrackerEntity, CtnExperimental>,
+      syncer::ClientTagHash::Hash>
       client_tag_hash_to_entities_map_;
 
   // A map of bookmark nodes to sync entities. It's keyed by the bookmark node
   // pointers which get assigned when loading the bookmark model. This map is
   // first initialized in the constructor.
   std::unordered_map<const bookmarks::BookmarkNode*,
-                     SyncedBookmarkTrackerEntity*>
+                     raw_ptr<SyncedBookmarkTrackerEntity, CtnExperimental>>
       bookmark_node_to_entities_map_;
 
   // A list of pending local bookmark deletions. They should be sent to the

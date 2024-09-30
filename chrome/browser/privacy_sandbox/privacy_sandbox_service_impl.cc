@@ -1440,7 +1440,7 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
   // not cross task boundaries.
   auto browsers_to_open_prompts_copy = browsers_to_open_prompts_;
   for (const auto& browser_prompt : browsers_to_open_prompts_copy) {
-    auto* prompt = browser_prompt.second;
+    auto* prompt = browser_prompt.second.get();
     CHECK(prompt);
     prompt->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }

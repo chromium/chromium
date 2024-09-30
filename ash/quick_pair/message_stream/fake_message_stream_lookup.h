@@ -5,11 +5,11 @@
 #ifndef ASH_QUICK_PAIR_MESSAGE_STREAM_FAKE_MESSAGE_STREAM_LOOKUP_H_
 #define ASH_QUICK_PAIR_MESSAGE_STREAM_FAKE_MESSAGE_STREAM_LOOKUP_H_
 
-#include "ash/quick_pair/message_stream/message_stream_lookup.h"
-
 #include <string>
 
+#include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -42,7 +42,8 @@ class FakeMessageStreamLookup : public MessageStreamLookup {
                                     MessageStream* message_stream);
 
  private:
-  base::flat_map<std::string, MessageStream*> message_streams_;
+  base::flat_map<std::string, raw_ptr<MessageStream, CtnExperimental>>
+      message_streams_;
   base::ObserverList<Observer> observers_;
 };
 

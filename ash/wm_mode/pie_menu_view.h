@@ -178,7 +178,8 @@ class ASH_EXPORT PieMenuView : public views::View {
   const raw_ptr<views::ImageButton> back_button_;
 
   // Maps all the buttons on all sub menu containers of this view by their IDs.
-  base::flat_map</*button_id=*/int, PieMenuButton*> buttons_by_id_;
+  base::flat_map</*button_id=*/int, raw_ptr<PieMenuButton, CtnExperimental>>
+      buttons_by_id_;
 };
 
 }  // namespace ash

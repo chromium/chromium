@@ -110,7 +110,7 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForSiteInfo(
     const SiteInfo& site_info) {
   auto i = site_instance_map_.find(site_info);
   if (i != site_instance_map_.end())
-    return i->second;
+    return i->second.get();
 
   scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
   instance->SetSite(site_info);
@@ -131,7 +131,7 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
   const SiteInfo site_info = ComputeSiteInfoForURL(url_info);
   auto i = site_instance_map_.find(site_info);
   if (i != site_instance_map_.end())
-    return i->second;
+    return i->second.get();
 
   // Check to see if we can use the default SiteInstance for sites that don't
   // need to be isolated in their own process.

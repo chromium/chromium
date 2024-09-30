@@ -67,7 +67,8 @@ class IqSender : public SignalStrategy::Listener {
       const jingle_xmpp::XmlElement* stanza) override;
 
  private:
-  typedef std::map<std::string, IqRequest*> IqRequestMap;
+  typedef std::map<std::string, raw_ptr<IqRequest, CtnExperimental>>
+      IqRequestMap;
   friend class IqRequest;
 
   // Helper function used to create iq stanzas.

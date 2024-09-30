@@ -190,7 +190,8 @@ class MessageSection : public views::BoxLayoutView {
   // Request access container
   raw_ptr<views::View> requests_access_container_;
   // A collection of all the extension entries in the request access container.
-  std::map<extensions::ExtensionId, views::View*> extension_entries_;
+  std::map<extensions::ExtensionId, raw_ptr<views::View, CtnExperimental>>
+      extension_entries_;
 
   // Callback for the buttons in the extension entries.
   base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;

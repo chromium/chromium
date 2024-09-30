@@ -138,7 +138,8 @@ class MockSurface : public ServerObject {
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> frame_callback_ = nullptr;
-  base::flat_map<wl_resource*, wl_resource*> linux_buffer_releases_;
+  base::flat_map<wl_resource*, raw_ptr<wl_resource, CtnExperimental>>
+      linux_buffer_releases_;
 
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> attached_buffer_ = nullptr;
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> prev_attached_buffer_ =

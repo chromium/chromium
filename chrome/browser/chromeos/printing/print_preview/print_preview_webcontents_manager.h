@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -89,7 +90,9 @@ class PrintPreviewWebcontentsManager
   content::WebContents* RemoveTokenMapping(const base::UnguessableToken& token);
 
   // Mapping a unique ID to its webcontents.
-  std::map<base::UnguessableToken, content::WebContents*> token_to_webcontents_;
+  std::map<base::UnguessableToken,
+           raw_ptr<content::WebContents, CtnExperimental>>
+      token_to_webcontents_;
 
   base::WeakPtrFactory<PrintPreviewWebcontentsManager> weak_ptr_factory_{this};
 };

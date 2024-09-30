@@ -431,7 +431,8 @@ class ProcessManager : public KeyedService,
   // extension URLRequest is constructed and then destroyed without ever
   // starting, we can receive a completion notification without a corresponding
   // start notification. In that case we want to avoid decrementing keepalive.
-  std::map<int, ExtensionHost*> pending_network_requests_;
+  std::map<int, raw_ptr<ExtensionHost, CtnExperimental>>
+      pending_network_requests_;
 
   // Observers of Service Worker RPH this ProcessManager manages.
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

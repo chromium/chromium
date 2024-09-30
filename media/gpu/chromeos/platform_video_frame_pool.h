@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -120,8 +121,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   base::circular_deque<scoped_refptr<FrameResource>> free_frames_
       GUARDED_BY(lock_);
   // Mapping from the frame's shared memory ID to the original frame.
-  std::map<gfx::GenericSharedMemoryId, FrameResource*> frames_in_use_
-      GUARDED_BY(lock_);
+  std::map<gfx::GenericSharedMemoryId, raw_ptr<FrameResource, CtnExperimental>>
+      frames_in_use_ GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.
   size_t max_num_frames_ GUARDED_BY(lock_) = 0;

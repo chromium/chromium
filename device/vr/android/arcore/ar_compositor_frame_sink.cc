@@ -255,7 +255,7 @@ void ArCompositorFrameSink::ReclaimResources(
 
     auto it = id_to_frame_map_.find(resource.id);
     CHECK(it != id_to_frame_map_.end(), base::NotFatalUntil::M130);
-    auto* rendering_frame = it->second;
+    auto* rendering_frame = it->second.get();
 
     // While we now know that this resource is associated with this frame, we
     // don't know which buffer it is associated with, and we need to ensure that

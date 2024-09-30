@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_SERVICE_IMPL_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -53,7 +54,8 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
 
  private:
   base::ObserverList<Observer> observers_;
-  base::flat_map<blink::DedicatedWorkerToken, DedicatedWorkerHost*>
+  base::flat_map<blink::DedicatedWorkerToken,
+                 raw_ptr<DedicatedWorkerHost, CtnExperimental>>
       dedicated_worker_hosts_;
 };
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -104,7 +105,8 @@ class CONTENT_EXPORT BatchedProxyIPCSender {
   // Maps the `RenderFrameProxyHost`'s `GlobalRoutingID` to the node in
   // `create_remote_children_params_` with the params to create the
   // corresponding proxy.
-  std::map<GlobalRoutingID, blink::mojom::CreateRemoteChildParams*>
+  std::map<GlobalRoutingID,
+           raw_ptr<blink::mojom::CreateRemoteChildParams, CtnExperimental>>
       proxy_to_child_params_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
@@ -125,7 +126,8 @@ BluetoothGattApplicationServiceProvider::
 
 void BluetoothGattApplicationServiceProvider::CreateAttributeServiceProviders(
     dbus::Bus* bus,
-    const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
+    const std::map<dbus::ObjectPath,
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
         services) {
   for (const auto& service : services) {
     service_providers_.push_back(
@@ -179,7 +181,8 @@ std::unique_ptr<BluetoothGattApplicationServiceProvider>
 BluetoothGattApplicationServiceProvider::Create(
     dbus::Bus* bus,
     const dbus::ObjectPath& object_path,
-    const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
+    const std::map<dbus::ObjectPath,
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
         services) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return base::WrapUnique(new BluetoothGattApplicationServiceProviderImpl(

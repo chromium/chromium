@@ -628,7 +628,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   friend class TemplateURLServiceTestUtil;
   friend class TemplateUrlServiceAndroid;
 
-  using GUIDToTURL = std::map<std::string, TemplateURL*>;
+  using GUIDToTURL =
+      std::map<std::string, raw_ptr<TemplateURL, CtnExperimental>>;
 
   // A mapping from keywords to the corresponding TemplateURLs.
   // This is a multimap, so the system can
@@ -638,7 +639,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // The values for any given keyword are not sorted. Users that want the best
   // value for each key must traverse through all matching items. The vast
   // majority of keywords should only have one item.
-  using KeywordToTURL = std::multimap<std::u16string, TemplateURL*>;
+  using KeywordToTURL =
+      std::multimap<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>;
 
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
@@ -906,7 +908,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Mapping from keyword to TemplateURLs created by the `SiteSearchSettings`
   // policy.
-  base::flat_map<std::u16string, TemplateURL*>
+  base::flat_map<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>
       enterprise_site_search_keyword_to_turl_;
 
   OwnedTemplateURLVector template_urls_;

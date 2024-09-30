@@ -366,7 +366,8 @@ class ContentSubresourceFilterThrottleManager
   // keeps track of the throttle that is carrying out that computation, so that
   // the result can be retrieved when the navigation is ready to commit. Keyed
   // by navigation id.
-  std::map<int64_t, ActivationStateComputingNavigationThrottle*>
+  std::map<int64_t,
+           raw_ptr<ActivationStateComputingNavigationThrottle, CtnExperimental>>
       ongoing_activation_throttles_;
 
   // The set of navigations that have passed through ReadyToCommitNavigation,

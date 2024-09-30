@@ -2035,7 +2035,7 @@ const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
   auto extension_iter = data_.regulatory_extensions.find(type);
   auto* extension = extension_iter == data_.regulatory_extensions.end()
                         ? nullptr
-                        : extension_iter->second;
+                        : extension_iter->second.get();
 
   DCHECK(extension == nullptr || extension->variant == type);
   return extension;

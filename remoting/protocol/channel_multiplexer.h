@@ -83,7 +83,7 @@ class ChannelMultiplexer : public StreamChannelFactory {
 
   // Channels are added to |channels_by_receive_id_| only after we receive
   // receive_id from the remote peer.
-  std::map<int, MuxChannel*> channels_by_receive_id_;
+  std::map<int, raw_ptr<MuxChannel, CtnExperimental>> channels_by_receive_id_;
 
   BufferedSocketWriter writer_;
   MessageReader reader_;

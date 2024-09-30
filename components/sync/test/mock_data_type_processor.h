@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
 
@@ -184,7 +185,8 @@ class MockDataTypeProcessor : public DataTypeProcessor {
 
   // Latest responses received, indexed by tag_hash.
   std::map<ClientTagHash, CommitResponseData> commit_response_items_;
-  std::map<ClientTagHash, const UpdateResponseData*> update_response_items_;
+  std::map<ClientTagHash, raw_ptr<const UpdateResponseData, CtnExperimental>>
+      update_response_items_;
 
   // The per-item state maps.
   std::map<ClientTagHash, int64_t> sequence_numbers_;

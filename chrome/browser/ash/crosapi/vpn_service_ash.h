@@ -157,7 +157,8 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   using StringToOwnedConfigurationMap =
       std::map<std::string, std::unique_ptr<VpnConfiguration>>;
-  using StringToConfigurationMap = std::map<std::string, VpnConfiguration*>;
+  using StringToConfigurationMap =
+      std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
 
   const extensions::ExtensionId& extension_id() const { return extension_id_; }
 

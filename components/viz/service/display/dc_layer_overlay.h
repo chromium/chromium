@@ -31,7 +31,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       public base::PowerStateObserver {
  public:
   using FilterOperationsMap =
-      base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
+      base::flat_map<AggregatedRenderPassId,
+                     raw_ptr<cc::FilterOperations, CtnExperimental>>;
   // When |skip_initialization_for_testing| is true, object will be isolated
   // for unit tests.
   explicit DCLayerOverlayProcessor(

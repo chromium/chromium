@@ -15,6 +15,7 @@
 
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
@@ -146,7 +147,8 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
 
   // Created sockets info
   uint32_t last_socket_id_;
-  using AndroidUsbSockets = std::map<uint32_t, AndroidUsbSocket*>;
+  using AndroidUsbSockets =
+      std::map<uint32_t, raw_ptr<AndroidUsbSocket, CtnExperimental>>;
   AndroidUsbSockets sockets_;
 
   // Outgoing bulk queue

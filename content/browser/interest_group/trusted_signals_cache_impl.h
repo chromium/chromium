@@ -535,7 +535,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // released, at which point any associated BiddingCacheEntries are destroyed,
   // and the CompressionGroupData removed from any associated Fetch, destroying
   // the Fetch if no longer needed.
-  std::map<base::UnguessableToken, CompressionGroupData*>
+  std::map<base::UnguessableToken,
+           raw_ptr<CompressionGroupData, CtnExperimental>>
       compression_group_data_map_;
 };
 

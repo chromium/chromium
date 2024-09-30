@@ -560,7 +560,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     int64_t generation_ = 0;
   };
 
-  using GroupMap = std::map<GroupId, Group*>;
+  using GroupMap = std::map<GroupId, raw_ptr<Group, CtnExperimental>>;
 
   struct CallbackResultPair {
     CallbackResultPair();

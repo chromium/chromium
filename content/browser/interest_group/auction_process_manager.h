@@ -317,7 +317,8 @@ class CONTENT_EXPORT AuctionProcessManager {
 
   // Contains running processes. Worklet processes are refcounted, and
   // automatically remove themselves from this list when destroyed.
-  using ProcessMap = std::map<url::Origin, WorkletProcess*>;
+  using ProcessMap =
+      std::map<url::Origin, raw_ptr<WorkletProcess, CtnExperimental>>;
 
   // Tries to reuse an existing process for `process_handle` or create a new
   // one. `process_handle`'s WorkletType and Origin must be populated. Respects

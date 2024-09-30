@@ -253,7 +253,8 @@ class MockDiskCache : public disk_cache::Backend {
   const std::vector<std::string>& GetExternalCacheHits() const;
 
  private:
-  using EntryMap = std::map<std::string, MockDiskEntry*>;
+  using EntryMap =
+      std::map<std::string, raw_ptr<MockDiskEntry, CtnExperimental>>;
   class NotImplementedIterator;
 
   void CallbackLater(base::OnceClosure callback);

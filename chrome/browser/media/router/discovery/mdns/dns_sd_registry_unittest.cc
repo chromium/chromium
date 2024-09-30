@@ -61,7 +61,8 @@ class TestDnsSdRegistry : public DnsSdRegistry {
   }
 
  private:
-  std::map<std::string, MockDnsSdDeviceLister*> listers_;
+  std::map<std::string, raw_ptr<MockDnsSdDeviceLister, CtnExperimental>>
+      listers_;
   // The last delegate used or NULL.
   raw_ptr<DnsSdDelegate> delegate_;
 };

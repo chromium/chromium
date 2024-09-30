@@ -128,7 +128,9 @@ class WaylandWindowManager {
 
   base::ObserverList<WaylandWindowObserver> observers_;
 
-  base::flat_map<gfx::AcceleratedWidget, WaylandWindow*> window_map_;
+  base::flat_map<gfx::AcceleratedWidget,
+                 raw_ptr<WaylandWindow, CtnExperimental>>
+      window_map_;
 
   // The cache of |primary_subsurface_| of the last closed WaylandWindow. This
   // will be destroyed lazily to make sure the window closing animation works

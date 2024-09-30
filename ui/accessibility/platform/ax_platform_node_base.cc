@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
@@ -76,7 +77,8 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
 }
 
 // Map from each AXPlatformNode's unique id to its instance.
-using UniqueIdMap = std::unordered_map<int32_t, AXPlatformNode*>;
+using UniqueIdMap =
+    std::unordered_map<int32_t, raw_ptr<AXPlatformNode, CtnExperimental>>;
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
 

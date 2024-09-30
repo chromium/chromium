@@ -166,7 +166,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   }
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
   base::flat_map<std::string, bool> urls_delayed_callback_;
-  base::flat_map<std::string, Client*> urls_client_;
+  base::flat_map<std::string, raw_ptr<Client, CtnExperimental>> urls_client_;
   base::flat_map<std::string, bool> urls_allowlist_match_;
   base::flat_map<std::string,
                  std::optional<SafeBrowsingDatabaseManager::

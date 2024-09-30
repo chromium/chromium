@@ -38,7 +38,8 @@ class SecureChannelFactory : public StreamChannelFactory {
   void CancelChannelCreation(const std::string& name) override;
 
  private:
-  typedef std::map<std::string, ChannelAuthenticator*> AuthenticatorMap;
+  typedef std::map<std::string, raw_ptr<ChannelAuthenticator, CtnExperimental>>
+      AuthenticatorMap;
 
   void OnBaseChannelCreated(const std::string& name,
                             ChannelCreatedCallback callback,

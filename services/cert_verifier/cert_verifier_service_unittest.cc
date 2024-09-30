@@ -149,7 +149,9 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
   CertVerifier::Observer* GetObserver() { return observer_; }
 
  private:
-  std::map<net::CertVerifier::RequestParams, DummyRequest*> dummy_requests_;
+  std::map<net::CertVerifier::RequestParams,
+           raw_ptr<DummyRequest, CtnExperimental>>
+      dummy_requests_;
   std::set<net::CertVerifier::RequestParams> sync_response_params_;
   std::set<net::CertVerifier::RequestParams> cancelled_requests_;
   // Keep WeakPtr's to all the DummyRequests in case we need to reset the

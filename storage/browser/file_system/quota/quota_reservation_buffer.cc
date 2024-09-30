@@ -40,10 +40,11 @@ std::unique_ptr<OpenFileHandle> QuotaReservationBuffer::GetOpenFileHandle(
     QuotaReservation* reservation,
     const base::FilePath& platform_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OpenFileHandleContext** open_file = &open_files_[platform_path];
-  if (!*open_file)
-    *open_file = new OpenFileHandleContext(platform_path, this);
-  return base::WrapUnique(new OpenFileHandle(reservation, *open_file));
+  auto& open_file = open_files_[platform_path];
+  if (!open_file) {
+    open_file = new OpenFileHandleContext(platform_path, this);
+  }
+  return base::WrapUnique(new OpenFileHandle(reservation, open_file));
 }
 
 void QuotaReservationBuffer::CommitFileGrowth(

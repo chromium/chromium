@@ -272,7 +272,7 @@ bool IsOccluded(
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
       auto render_pass_it = render_pass_filters.find(rpdq->render_pass_id);
       if (render_pass_it != render_pass_filters.end()) {
-        auto* filters = render_pass_it->second;
+        auto* filters = render_pass_it->second.get();
         overlap_rect = gfx::RectF(
             GetExpandedRectWithPixelMovingForegroundFilter(*rpdq, *filters));
         has_pixel_moving_filter = true;

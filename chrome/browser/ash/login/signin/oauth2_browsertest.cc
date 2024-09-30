@@ -485,7 +485,8 @@ class OAuth2Test : public OobeBaseTest {
 
  private:
   base::FilePath test_data_dir_;
-  std::map<std::string, RequestDeferrer*> request_deferers_;
+  std::map<std::string, raw_ptr<RequestDeferrer, CtnExperimental>>
+      request_deferers_;
 };
 
 class CookieReader {

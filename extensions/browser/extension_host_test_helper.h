@@ -134,7 +134,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // The set of all events this helper has seen and their corresponding
   // ExtensionHosts. ExtensionHosts are nulled out when they are destroyed, but
   // the events stay in the map.
-  std::map<HostEvent, ExtensionHost*> observed_events_;
+  std::map<HostEvent, raw_ptr<ExtensionHost, CtnExperimental>> observed_events_;
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>

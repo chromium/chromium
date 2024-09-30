@@ -430,7 +430,7 @@ class FakeClientConnectionParametersFactory
   }
 
   std::unordered_map<base::UnguessableToken,
-                     FakeClientConnectionParameters*,
+                     raw_ptr<FakeClientConnectionParameters, CtnExperimental>,
                      base::UnguessableTokenHash>&
   id_to_active_client_parameters_map() {
     return id_to_active_client_parameters_map_;
@@ -471,7 +471,7 @@ class FakeClientConnectionParametersFactory
   base::UnguessableToken last_created_instance_id_;
 
   std::unordered_map<base::UnguessableToken,
-                     FakeClientConnectionParameters*,
+                     raw_ptr<FakeClientConnectionParameters, CtnExperimental>,
                      base::UnguessableTokenHash>
       id_to_active_client_parameters_map_;
 

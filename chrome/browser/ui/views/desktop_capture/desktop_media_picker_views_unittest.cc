@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -257,7 +258,9 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   views::ScopedViewsTestHelper test_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
-  std::map<DesktopMediaList::Type, FakeDesktopMediaList*> media_lists_;
+  std::map<DesktopMediaList::Type,
+           raw_ptr<FakeDesktopMediaList, CtnExperimental>>
+      media_lists_;
   std::unique_ptr<DesktopMediaPickerViews> picker_views_;
   DesktopMediaPickerViewsTestApi test_api_;
   TestDialogObserver observer_;

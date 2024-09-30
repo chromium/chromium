@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -67,7 +69,8 @@ class ExternalPolicyDataFetcherTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ExternalPolicyDataFetcher> fetcher_;
 
-  std::map<int, ExternalPolicyDataFetcher::Job*> jobs_;  // Not owned.
+  std::map<int, raw_ptr<ExternalPolicyDataFetcher::Job, CtnExperimental>>
+      jobs_;  // Not owned.
 
   int callback_count_;
   int callback_job_index_;

@@ -102,7 +102,8 @@ class OfflineContentAggregator : public OfflineContentProvider,
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the
   // consumer as a single list.
-  using OfflineProviderMap = std::map<std::string, OfflineContentProvider*>;
+  using OfflineProviderMap =
+      std::map<std::string, raw_ptr<OfflineContentProvider, CtnExperimental>>;
   OfflineProviderMap providers_;
 
   // Used by GetAllItems and the corresponding callback.

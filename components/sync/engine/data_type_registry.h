@@ -28,8 +28,10 @@ class SyncEncryptionHandler;
 class DataTypeWorker;
 class UpdateHandler;
 
-using UpdateHandlerMap = std::map<DataType, UpdateHandler*>;
-using CommitContributorMap = std::map<DataType, CommitContributor*>;
+using UpdateHandlerMap =
+    std::map<DataType, raw_ptr<UpdateHandler, CtnExperimental>>;
+using CommitContributorMap =
+    std::map<DataType, raw_ptr<CommitContributor, CtnExperimental>>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.

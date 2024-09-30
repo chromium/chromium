@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 
 namespace content {
@@ -59,7 +60,7 @@ class SharingHandlerRegistryImpl : public SharingHandlerRegistry {
  private:
   std::vector<std::unique_ptr<SharingMessageHandler>> handlers_;
   std::map<components_sharing_message::SharingMessage::PayloadCase,
-           SharingMessageHandler*>
+           raw_ptr<SharingMessageHandler, CtnExperimental>>
       handler_map_;
   std::map<components_sharing_message::SharingMessage::PayloadCase,
            std::unique_ptr<SharingMessageHandler>>

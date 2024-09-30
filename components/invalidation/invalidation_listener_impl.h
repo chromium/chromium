@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -103,7 +104,7 @@ class InvalidationListenerImpl : public InvalidationListener,
 
   // Each observer is mapped to exactly one type.
   base::ObserverList<Observer, true> observers_;
-  std::map<std::string, Observer*> type_to_handler_;
+  std::map<std::string, raw_ptr<Observer, CtnExperimental>> type_to_handler_;
   std::map<std::string, DirectInvalidation> type_to_invalidation_cache_;
 
   // Calculates timeout until next registration attempt on failure.

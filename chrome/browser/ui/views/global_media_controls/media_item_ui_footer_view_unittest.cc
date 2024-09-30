@@ -129,7 +129,7 @@ TEST_F(MediaItemUIFooterViewTest, DevicesCanFit) {
                                SK_ColorRED, "device", device2_name);
   device2.set_tag(1);
 
-  std::map<int, DeviceEntryUI*> devices;
+  std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>> devices;
   devices[0] = &device1;
   devices[1] = &device2;
 
@@ -159,7 +159,7 @@ TEST_F(MediaItemUIFooterViewTest, OverflowButton) {
   AudioDeviceEntryView device(views::Button::PressedCallback(), SK_ColorRED,
                               SK_ColorRED, "device", device_name);
 
-  std::map<int, DeviceEntryUI*> devices;
+  std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>> devices;
   devices[0] = &device;
   devices[1] = &device;
 
@@ -187,7 +187,7 @@ TEST_F(MediaItemUIFooterViewTest, OverflowButtonFallback) {
   AudioDeviceEntryView device(views::Button::PressedCallback(), SK_ColorRED,
                               SK_ColorRED, "device", device_name);
 
-  std::map<int, DeviceEntryUI*> devices;
+  std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>> devices;
   devices[0] = &device;
   devices[1] = &device;
 

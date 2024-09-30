@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -349,7 +350,9 @@ class UserNoteUtilsTest
       token_to_test_id_;
   std::unordered_map<int, base::UnguessableToken> test_id_to_token_;
   std::unordered_map<content::RenderFrameHost*, FrameConfig> frame_to_config_;
-  std::unordered_map<FrameConfig, content::RenderFrameHost*, FrameConfigHash>
+  std::unordered_map<FrameConfig,
+                     raw_ptr<content::RenderFrameHost, CtnExperimental>,
+                     FrameConfigHash>
       config_to_frame_;
   std::vector<std::unique_ptr<content::WebContents>> web_contents_list_;
   std::unique_ptr<UserNoteService> note_service_;

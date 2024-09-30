@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_OOP_VIDEO_DECODER_H_
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -239,7 +240,8 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
   // least among all clients of media::GetNextGpuMemoryBufferId()).
   base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<FrameResource>>
       received_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_map<gfx::GenericSharedMemoryId, FrameResource*>
+  base::flat_map<gfx::GenericSharedMemoryId,
+                 raw_ptr<FrameResource, CtnExperimental>>
       generated_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

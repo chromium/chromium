@@ -341,7 +341,8 @@ class CHROME_DBUS_EXPORT ObjectManager final
 
   // Maps the name of an interface to the implementation class used for
   // instantiating PropertySet structures for that interface's properties.
-  typedef std::map<std::string, Interface*> InterfaceMap;
+  typedef std::map<std::string, raw_ptr<Interface, CtnExperimental>>
+      InterfaceMap;
   InterfaceMap interface_map_;
 
   // Each managed object consists of a ObjectProxy used to make calls
@@ -355,12 +356,14 @@ class CHROME_DBUS_EXPORT ObjectManager final
 
     // Maps the name of an interface to the specific PropertySet structure
     // of that interface's properties.
-    typedef std::map<const std::string, PropertySet*> PropertiesMap;
+    typedef std::map<const std::string, raw_ptr<PropertySet, CtnExperimental>>
+        PropertiesMap;
     PropertiesMap properties_map;
   };
 
   // Maps the object path of an object to the Object structure.
-  typedef std::map<const ObjectPath, Object*> ObjectMap;
+  typedef std::map<const ObjectPath, raw_ptr<Object, CtnExperimental>>
+      ObjectMap;
   ObjectMap object_map_;
 
   // Weak pointer factory for generating 'this' pointers that might live longer

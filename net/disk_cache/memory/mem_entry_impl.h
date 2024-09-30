@@ -146,7 +146,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
-  using EntryMap = std::map<int64_t, MemEntryImpl*>;
+  using EntryMap = std::map<int64_t, raw_ptr<MemEntryImpl, CtnExperimental>>;
 
   static const int kNumStreams = 3;
 

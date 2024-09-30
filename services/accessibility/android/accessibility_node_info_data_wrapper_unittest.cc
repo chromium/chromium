@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/grit/generated_resources.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
@@ -85,7 +86,8 @@ class AccessibilityNodeInfoDataWrapperTest
 
    private:
     int32_t node_root_id_ = -1;
-    std::map<int32_t, AccessibilityInfoDataWrapper*> wrapper_map_;
+    std::map<int32_t, raw_ptr<AccessibilityInfoDataWrapper, CtnExperimental>>
+        wrapper_map_;
     std::map<int32_t, int32_t> parent_map_;
   };
 

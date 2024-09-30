@@ -102,7 +102,8 @@ class WebContentsObserverConsistencyChecker
   void AddInputEventObserver(RenderFrameHost* render_frame_host);
   void RemoveInputEventObserver(RenderFrameHost* render_frame_host);
 
-  std::map<int64_t, RenderFrameHost*> ready_to_commit_hosts_;
+  std::map<int64_t, raw_ptr<RenderFrameHost, CtnExperimental>>
+      ready_to_commit_hosts_;
   std::set<GlobalRoutingID> current_hosts_;
   std::set<GlobalRoutingID> live_routes_;
   std::set<GlobalRoutingID> deleted_routes_;

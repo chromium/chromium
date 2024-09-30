@@ -81,7 +81,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   // Map of network guids and their corresponding list item views.
   using NetworkIdToViewMap =
-      base::flat_map<std::string, NetworkListNetworkItemView*>;
+      base::flat_map<std::string,
+                     raw_ptr<NetworkListNetworkItemView, CtnExperimental>>;
 
   // multidevice_setup::mojom::HostStatusObserver:
   void OnHostStatusChanged(

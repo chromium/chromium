@@ -18,6 +18,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -144,7 +145,8 @@ class PrefHashFilter final : public InterceptablePrefFilter {
 
   // A map from changed paths to their corresponding TrackedPreferences (which
   // aren't owned by this map).
-  using ChangedPathsMap = std::map<std::string, const TrackedPreference*>;
+  using ChangedPathsMap =
+      std::map<std::string, raw_ptr<const TrackedPreference, CtnExperimental>>;
 
   std::unique_ptr<PrefHashStore> pref_hash_store_;
 

@@ -266,7 +266,8 @@ void MirrorWindowController::UpdateWindow(
             ->compositor();
     gfx::Size mirror_size = source_compositor->size();
 
-    auto* mirroring_host_info = mirroring_host_info_map_[display_info.id()];
+    auto* mirroring_host_info =
+        mirroring_host_info_map_[display_info.id()].get();
 
     const bool should_undo_rotation = ShouldUndoRotationForMirror();
 

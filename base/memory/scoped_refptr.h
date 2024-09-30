@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
 template <class T>
@@ -156,6 +157,11 @@ scoped_refptr<T> MakeRefCounted(Args&&... args) {
 template <typename T>
 scoped_refptr<T> WrapRefCounted(T* t) {
   return scoped_refptr<T>(t);
+}
+
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+scoped_refptr<T> WrapRefCounted(const raw_ptr<T, Traits>& t) {
+  return scoped_refptr<T>(t.get());
 }
 
 }  // namespace base

@@ -142,8 +142,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
  private:
   friend class BookmarkMenuDelegateTest;
 
-  typedef std::map<int, const bookmarks::BookmarkNode*> MenuIDToNodeMap;
-  typedef std::map<const bookmarks::BookmarkNode*, views::MenuItemView*>
+  typedef std::map<int, raw_ptr<const bookmarks::BookmarkNode, CtnExperimental>>
+      MenuIDToNodeMap;
+  typedef std::map<const bookmarks::BookmarkNode*, raw_ptr<views::MenuItemView>>
       NodeToMenuMap;
 
   // Returns whether the menu should close id 'delete' is selected.

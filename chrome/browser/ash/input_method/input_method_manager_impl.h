@@ -323,7 +323,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   uint32_t features_enabled_state_;
 
   // The engine map from extension_id to an engine.
-  using EngineMap = std::map<std::string, TextInputMethod*>;
+  using EngineMap =
+      std::map<std::string, raw_ptr<TextInputMethod, CtnExperimental>>;
   using ProfileEngineMap = std::map<Profile*, EngineMap, ProfileCompare>;
   ProfileEngineMap engine_map_;
 

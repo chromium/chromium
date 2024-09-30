@@ -87,7 +87,9 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
   int overflowed_count_ = 0;
   std::vector<actions::ActionId> action_ids_ = {0, 1, 2};
   std::vector<std::unique_ptr<actions::ActionItem>> action_items_;
-  base::flat_map<actions::ActionId, actions::ActionItem*> kIdToItemMap_;
+  base::flat_map<actions::ActionId,
+                 raw_ptr<actions::ActionItem, CtnExperimental>>
+      kIdToItemMap_;
   base::flat_map<actions::ActionId, bool> kIdToOverflowedMap_;
   raw_ptr<views::View> container_view_;
 };

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
@@ -85,7 +86,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void OnDismiss() override;
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
-  std::map<content::WebContents*, infobars::InfoBar*> infobars_;
+  std::map<content::WebContents*, raw_ptr<infobars::InfoBar, CtnExperimental>>
+      infobars_;
 
   std::optional<CloseReason> user_initiated_info_bar_close_pending_;
 

@@ -185,7 +185,7 @@ bool DialRegistry::PruneExpiredDevices() {
   bool pruned_device = false;
   auto it = device_by_label_map_.begin();
   while (it != device_by_label_map_.end()) {
-    auto* device = it->second;
+    auto* device = it->second.get();
     if (IsDeviceExpired(*device)) {
       // Make a copy of the device ID here since |device| will be destroyed
       // during erase().

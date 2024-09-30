@@ -388,10 +388,10 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
               pair.second->GetViewAccessibility().GetCachedName());
   }
 
-  auto* card_number_button =
+  auto& card_number_button =
       GetBubbleViews()->fields_to_buttons_map_
           [VirtualCardManualFallbackBubbleField::kCardNumber];
-  auto* cardholder_name_button =
+  auto& cardholder_name_button =
       GetBubbleViews()->fields_to_buttons_map_
           [VirtualCardManualFallbackBubbleField::kCardholderName];
 

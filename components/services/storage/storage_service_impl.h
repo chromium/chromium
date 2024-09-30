@@ -10,6 +10,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -87,7 +88,8 @@ class StorageServiceImpl : public mojom::StorageService {
   // |partitions_|. The pointers stored here are not owned by this map and must
   // be removed when removed from |partitions_|. Only persistent partitions have
   // entries in this map.
-  std::map<base::FilePath, PartitionImpl*> persistent_partition_map_;
+  std::map<base::FilePath, raw_ptr<PartitionImpl, CtnExperimental>>
+      persistent_partition_map_;
 
   base::WeakPtrFactory<StorageServiceImpl> weak_ptr_factory_{this};
 };

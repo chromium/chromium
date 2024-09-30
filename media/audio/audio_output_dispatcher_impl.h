@@ -91,7 +91,9 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl
   // CloseIdleStreams().
   base::DelayTimer close_timer_;
 
-  typedef base::flat_map<AudioOutputProxy*, AudioOutputStream*> AudioStreamMap;
+  typedef base::flat_map<AudioOutputProxy*,
+                         raw_ptr<AudioOutputStream, CtnExperimental>>
+      AudioStreamMap;
   AudioStreamMap proxy_to_physical_map_;
 
   using AudioLogMap =

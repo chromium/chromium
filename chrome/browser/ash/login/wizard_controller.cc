@@ -3491,7 +3491,7 @@ bool WizardController::MaybeSetToPreviousScreen() {
     return false;
   }
   auto* old_current_screen = current_screen_.get();
-  auto* previous_screen = previous_screens_[current_screen_];
+  auto* previous_screen = previous_screens_[current_screen_].get();
 
   if (previous_screen->screen_id() == GaiaView::kScreenId) {
     wizard_context_->gaia_config.gaia_path =

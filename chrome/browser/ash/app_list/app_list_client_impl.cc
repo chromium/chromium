@@ -336,7 +336,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
                                      int event_flags,
                                      ash::AppListLaunchedFrom launched_from,
                                      bool is_above_the_fold) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
 
   // Pointless to notify the AppListModelUpdater of the activated item if the
   // |requested_model_updater| is not the current one, which means that the
@@ -387,7 +387,7 @@ void AppListClientImpl::GetContextMenuModel(
     const std::string& id,
     ash::AppListItemContext item_context,
     GetContextMenuModelCallback callback) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     std::move(callback).Run(nullptr);
@@ -754,7 +754,7 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     return;

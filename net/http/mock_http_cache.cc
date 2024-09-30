@@ -694,7 +694,7 @@ scoped_refptr<MockDiskEntry> MockDiskCache::GetDiskEntryRef(
   if (it == entries_.end()) {
     return nullptr;
   }
-  return it->second;
+  return it->second.get();
 }
 
 const std::vector<std::string>& MockDiskCache::GetExternalCacheHits() const {

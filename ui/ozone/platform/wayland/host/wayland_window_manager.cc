@@ -194,7 +194,7 @@ void WaylandWindowManager::AddWindow(gfx::AcceleratedWidget widget,
 }
 
 void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
-  auto* window = window_map_[widget];
+  auto* window = window_map_[widget].get();
   DCHECK(window);
 
   window_map_.erase(widget);
@@ -219,7 +219,7 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 
 void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
                                          WaylandSubsurface* subsurface) {
-  auto* window = window_map_[widget];
+  auto* window = window_map_[widget].get();
   DCHECK(window);
 
   observers_.Notify(&WaylandWindowObserver::OnSubsurfaceAdded, window,
@@ -228,7 +228,7 @@ void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
 
 void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
                                             WaylandSubsurface* subsurface) {
-  auto* window = window_map_[widget];
+  auto* window = window_map_[widget].get();
   DCHECK(window);
 
   observers_.Notify(&WaylandWindowObserver::OnSubsurfaceRemoved, window,

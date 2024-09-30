@@ -373,13 +373,16 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive
   // the drawn frame, so it is safe to store these pointers until the end of
   // DrawFrame().
-  base::flat_map<AggregatedRenderPassId, const DrawQuad*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<const DrawQuad, CtnExperimental>>
       render_pass_bypass_quads_;
 
   // A map from RenderPass id to the filters used when drawing the RenderPass.
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters_;
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_backdrop_filters_;
   base::flat_map<AggregatedRenderPassId, std::optional<gfx::RRectF>>
       render_pass_backdrop_filter_bounds_;

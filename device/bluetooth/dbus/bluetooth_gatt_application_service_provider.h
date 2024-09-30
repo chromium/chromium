@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -36,7 +37,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
   // object manager interface implemented by this application service provider.
   void CreateAttributeServiceProviders(
       dbus::Bus* bus,
-      const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
+      const std::map<dbus::ObjectPath,
+                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
           services);
 
   // Creates the instance where |bus| is the D-Bus bus connection to export the
@@ -48,7 +50,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
   static std::unique_ptr<BluetoothGattApplicationServiceProvider> Create(
       dbus::Bus* bus,
       const dbus::ObjectPath& object_path,
-      const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
+      const std::map<dbus::ObjectPath,
+                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
           services);
 
   void SendValueChanged(const dbus::ObjectPath& characteristic_path,

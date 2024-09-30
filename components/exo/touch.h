@@ -67,7 +67,8 @@ class Touch : public ui::EventHandler,
   raw_ptr<TouchStylusDelegate> stylus_delegate_ = nullptr;
 
   // Map of touch points to its focus surface.
-  base::flat_map<int, Surface*> touch_points_surface_map_;
+  base::flat_map<int, raw_ptr<Surface, CtnExperimental>>
+      touch_points_surface_map_;
 
   // Map of a touched surface to the count of touch pointers on that surface.
   base::flat_map<Surface*, int> surface_touch_count_map_;

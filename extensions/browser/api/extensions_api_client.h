@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -90,7 +91,8 @@ class ExtensionsAPIClient {
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
       SettingsChangedCallback observer,
-      std::map<settings_namespace::Namespace, ValueStoreCache*>* caches);
+      std::map<settings_namespace::Namespace,
+               raw_ptr<ValueStoreCache, CtnExperimental>>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
   // to |web_contents|.

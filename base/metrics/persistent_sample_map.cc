@@ -55,7 +55,9 @@ class IteratorTemplate : public SampleCountIterator {
   const I end_;
 };
 
-typedef std::map<HistogramBase::Sample, HistogramBase::Count*> SampleToCountMap;
+typedef std::map<HistogramBase::Sample,
+                 raw_ptr<HistogramBase::Count, CtnExperimental>>
+    SampleToCountMap;
 typedef IteratorTemplate<const SampleToCountMap,
                          SampleToCountMap::const_iterator>
     PersistentSampleMapIterator;

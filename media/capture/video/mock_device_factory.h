@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
@@ -28,7 +29,8 @@ class MockDeviceFactory : public media::VideoCaptureDeviceFactory {
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
  private:
-  std::map<media::VideoCaptureDeviceDescriptor, media::VideoCaptureDevice*>
+  std::map<media::VideoCaptureDeviceDescriptor,
+           raw_ptr<media::VideoCaptureDevice, CtnExperimental>>
       devices_;
 };
 

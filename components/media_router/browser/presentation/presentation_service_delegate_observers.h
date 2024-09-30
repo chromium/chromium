@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/presentation_service_delegate.h"
 
@@ -33,8 +34,9 @@ class PresentationServiceDelegateObservers {
   virtual void RemoveObserver(int render_process_id, int render_frame_id);
 
  private:
-  std::map<content::GlobalRenderFrameHostId,
-           content::PresentationServiceDelegate::Observer*>
+  std::map<
+      content::GlobalRenderFrameHostId,
+      raw_ptr<content::PresentationServiceDelegate::Observer, CtnExperimental>>
       observers_;
 };
 

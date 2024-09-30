@@ -121,8 +121,10 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
  private:
-  std::map<std::string_view, ipp_attribute_t*> supported_attributes_;
-  std::map<std::string_view, ipp_attribute_t*> default_attributes_;
+  std::map<std::string_view, raw_ptr<ipp_attribute_t, CtnExperimental>>
+      supported_attributes_;
+  std::map<std::string_view, raw_ptr<ipp_attribute_t, CtnExperimental>>
+      default_attributes_;
   std::map<LocalizationKey, std::string> localized_strings_;
   raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };

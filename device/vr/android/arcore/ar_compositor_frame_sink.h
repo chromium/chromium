@@ -154,7 +154,8 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // be two frames with outstanding resources at a time (though we also have a
   // max size to our swapchain), so we generally expect this to be ~4 items, but
   // it could be 2*Swapchain size in a worst case.
-  base::flat_map<viz::ResourceId, WebXrFrame*> id_to_frame_map_;
+  base::flat_map<viz::ResourceId, raw_ptr<WebXrFrame, CtnExperimental>>
+      id_to_frame_map_;
 
   base::OnceCallback<void(bool)> on_initialized_;
   BeginFrameCallback on_begin_frame_;

@@ -8,6 +8,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
 
@@ -65,8 +66,9 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   // view from this map when the corresponding device is found in |connected| or
   // |previously_connected|. Before returning, any view remaining in
   // |previous_views| is no longer needed and is deleted.
-  base::flat_map<std::string, BluetoothDeviceListItemView*> previous_views =
-      std::move(device_id_to_view_map_);
+  base::flat_map<std::string,
+                 raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>
+      previous_views = std::move(device_id_to_view_map_);
   device_id_to_view_map_.clear();
 
   // Since we re-use views when possible, we need to re-order them to match the
@@ -138,7 +140,9 @@ BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
 
 size_t BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     const PairedBluetoothDevicePropertiesPtrs& device_property_list,
-    base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
+    base::flat_map<std::string,
+                   raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>*
+        previous_views,
     size_t index) {
   DCHECK(previous_views);
 

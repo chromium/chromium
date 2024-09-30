@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -86,7 +87,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaReservationManager {
 
  private:
   using ReservationBufferByOriginAndType =
-      std::map<std::pair<url::Origin, FileSystemType>, QuotaReservationBuffer*>;
+      std::map<std::pair<url::Origin, FileSystemType>,
+               raw_ptr<QuotaReservationBuffer, CtnExperimental>>;
 
   friend class QuotaReservation;
   friend class QuotaReservationBuffer;

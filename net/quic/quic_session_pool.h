@@ -539,7 +539,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   friend class MockQuicSessionPool;
   friend class test::QuicSessionPoolPeer;
 
-  using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
+  using SessionMap =
+      std::map<QuicSessionKey,
+               raw_ptr<QuicChromiumClientSession, CtnExperimental>>;
   using SessionIdSet = std::set<std::unique_ptr<QuicChromiumClientSession>,
                                 base::UniquePtrComparator>;
   using AliasSet = std::set<QuicSessionAliasKey>;

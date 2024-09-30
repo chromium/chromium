@@ -133,7 +133,9 @@ class RenderFrameTracker : public content::WebContentsObserver {
   }
 
  private:
-  std::map<content::FrameTreeNodeId, content::RenderFrameHost*>
+  std::map<content::FrameTreeNodeId,
+           raw_ptr<content::RenderFrameHost, CtnExperimental>>
+
       render_frame_hosts_;
 };
 

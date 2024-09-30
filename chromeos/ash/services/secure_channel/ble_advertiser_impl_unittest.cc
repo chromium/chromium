@@ -47,7 +47,8 @@ class FakeErrorTolerantBleAdvertisementFactory
     return last_created_device_id_pair_;
   }
 
-  base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>&
+  base::flat_map<DeviceIdPair,
+                 raw_ptr<FakeErrorTolerantBleAdvertisement, CtnExperimental>>&
   device_id_pair_to_active_advertisement_map() {
     return device_id_pair_to_active_advertisement_map_;
   }
@@ -92,7 +93,8 @@ class FakeErrorTolerantBleAdvertisementFactory
   raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
 
   std::optional<DeviceIdPair> last_created_device_id_pair_;
-  base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>
+  base::flat_map<DeviceIdPair,
+                 raw_ptr<FakeErrorTolerantBleAdvertisement, CtnExperimental>>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
 };
@@ -167,7 +169,8 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
     auto* fake_advertisement =
         fake_advertisement_factory_
             ->device_id_pair_to_active_advertisement_map()
-                [expected_device_id_pair];
+                [expected_device_id_pair]
+            .get();
 
     EXPECT_NE(fake_advertisement->id(), last_fetched_advertisement_id_);
     last_fetched_advertisement_id_ = fake_advertisement->id();
@@ -182,8 +185,10 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
     EXPECT_FALSE(
         fake_timer_factory_->id_for_last_created_one_shot_timer().is_empty());
     auto* fake_timer =
-        fake_timer_factory_->id_to_active_one_shot_timer_map()
-            [fake_timer_factory_->id_for_last_created_one_shot_timer()];
+        fake_timer_factory_
+            ->id_to_active_one_shot_timer_map()
+                [fake_timer_factory_->id_for_last_created_one_shot_timer()]
+            .get();
 
     EXPECT_NE(fake_timer->id(), last_fetched_timer_id_);
     last_fetched_timer_id_ = fake_timer->id();

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -135,7 +136,8 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // List of DesktopEnvironment instances we've told the daemon process about.
-  typedef std::map<int, DesktopSessionProxy*> ActiveConnectionsList;
+  typedef std::map<int, raw_ptr<DesktopSessionProxy, CtnExperimental>>
+      ActiveConnectionsList;
   ActiveConnectionsList active_connections_;
 
   // Next desktop session ID. IDs are allocated sequentially starting from 0.

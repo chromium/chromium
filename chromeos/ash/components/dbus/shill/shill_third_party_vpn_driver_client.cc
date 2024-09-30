@@ -105,7 +105,7 @@ class ShillThirdPartyVpnDriverClientImpl
 
     base::WeakPtrFactory<HelperInfo> weak_ptr_factory_{this};
   };
-  using HelperMap = std::map<std::string, HelperInfo*>;
+  using HelperMap = std::map<std::string, raw_ptr<HelperInfo, CtnExperimental>>;
 
   static void OnPacketReceived(base::WeakPtr<HelperInfo> helper_info,
                                dbus::Signal* signal);

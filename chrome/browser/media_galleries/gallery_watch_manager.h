@@ -118,7 +118,8 @@ class GalleryWatchManager
 
   typedef std::map<WatchOwner, base::FilePath> WatchesMap;
   typedef std::map<base::FilePath, NotificationInfo> WatchedPaths;
-  typedef std::map<content::BrowserContext*, GalleryWatchManagerObserver*>
+  typedef std::map<content::BrowserContext*,
+                   raw_ptr<GalleryWatchManagerObserver, CtnExperimental>>
       ObserverMap;
   typedef std::map<content::BrowserContext*, base::CallbackListSubscription>
       BrowserContextSubscriptionMap;

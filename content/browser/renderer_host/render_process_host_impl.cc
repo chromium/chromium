@@ -375,7 +375,8 @@ std::ostream& operator<<(std::ostream& o,
 // site in process-per-site mode.  Each map is specific to a BrowserContext.
 class SiteProcessMap : public base::SupportsUserData::Data {
  public:
-  typedef std::map<SiteInfo, RenderProcessHost*> SiteToProcessMap;
+  typedef std::map<SiteInfo, raw_ptr<RenderProcessHost, CtnExperimental>>
+      SiteToProcessMap;
   SiteProcessMap() = default;
 
   void RegisterProcess(const SiteInfo& site_info, RenderProcessHost* process) {

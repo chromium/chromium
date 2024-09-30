@@ -65,7 +65,7 @@ void TabClusterUIClient::OnTabStripModelChanged(
       {
         auto* replace = change.GetReplace();
         DCHECK(base::Contains(contents_item_map_, replace->old_contents));
-        auto* item = contents_item_map_[replace->old_contents];
+        auto* item = contents_item_map_[replace->old_contents].get();
 
         item->Init(GenerateTabItemInfo(replace->new_contents));
         controller_->UpdateTabItem(item);
@@ -90,7 +90,7 @@ void TabClusterUIClient::TabChangedAt(content::WebContents* contents,
                                       int index,
                                       TabChangeType change_type) {
   DCHECK(base::Contains(contents_item_map_, contents));
-  auto* item = contents_item_map_[contents];
+  auto* item = contents_item_map_[contents].get();
   item->Init(GenerateTabItemInfo(contents));
   controller_->UpdateTabItem(item);
 }

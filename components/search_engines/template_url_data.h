@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -210,7 +211,8 @@ struct TemplateURLData {
   std::vector<std::string> alternate_urls;
 
   // A list of regulatory extensions, keyed by extension variant.
-  base::flat_map<RegulatoryExtensionType, const RegulatoryExtension*>
+  base::flat_map<RegulatoryExtensionType,
+                 raw_ptr<const RegulatoryExtension, CtnExperimental>>
       regulatory_extensions;
 
   // Whether a connection to |url_| should regularly be established when this is

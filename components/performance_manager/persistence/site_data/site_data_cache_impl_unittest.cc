@@ -77,7 +77,8 @@ class SiteDataCacheImplTest : public ::testing::Test {
     EXPECT_TRUE(writer_);
 
     ASSERT_FALSE(data_);
-    data_ = data_cache_->origin_data_map_for_testing().find(origin_)->second;
+    data_ =
+        data_cache_->origin_data_map_for_testing().find(origin_)->second.get();
     EXPECT_TRUE(data_);
 
     EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
@@ -98,7 +99,8 @@ class SiteDataCacheImplTest : public ::testing::Test {
     EXPECT_TRUE(writer2_);
 
     ASSERT_FALSE(data2_);
-    data2_ = data_cache_->origin_data_map_for_testing().find(origin2_)->second;
+    data2_ =
+        data_cache_->origin_data_map_for_testing().find(origin2_)->second.get();
     EXPECT_TRUE(data2_);
 
     EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,

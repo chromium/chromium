@@ -67,7 +67,8 @@ struct WaylandFrame {
   base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
 
-  base::flat_map<WaylandSurface*, WaylandBufferHandle*> submitted_buffers;
+  base::flat_map<WaylandSurface*, raw_ptr<WaylandBufferHandle, CtnExperimental>>
+      submitted_buffers;
 
   // An indicator that there are buffers destrotyed before frame playback. This
   // frame should be skipped.

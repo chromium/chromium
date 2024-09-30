@@ -80,7 +80,8 @@ class VirtualCardManualFallbackBubbleViews : public AutofillLocationBarBubble {
 
   // The map keeping the references to each button with card information text in
   // the bubble.
-  std::map<VirtualCardManualFallbackBubbleField, views::MdTextButton*>
+  std::map<VirtualCardManualFallbackBubbleField,
+           raw_ptr<views::MdTextButton, CtnExperimental>>
       fields_to_buttons_map_;
 
   base::WeakPtrFactory<VirtualCardManualFallbackBubbleViews> weak_ptr_factory_{

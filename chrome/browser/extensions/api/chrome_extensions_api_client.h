@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 
@@ -30,8 +31,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
       SettingsChangedCallback observer,
-      std::map<settings_namespace::Namespace, ValueStoreCache*>* caches)
-      override;
+      std::map<settings_namespace::Namespace,
+               raw_ptr<ValueStoreCache, CtnExperimental>>* caches) override;
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
       override;
   bool ShouldHideResponseHeader(const GURL& url,

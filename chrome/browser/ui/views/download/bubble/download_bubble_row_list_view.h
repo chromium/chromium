@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -65,7 +66,8 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
   void AddRow(const DownloadBubbleRowViewInfo& row_info);
 
   // Map of download item's ID to child view in the row list.
-  std::map<offline_items_collection::ContentId, DownloadBubbleRowView*>
+  std::map<offline_items_collection::ContentId,
+           raw_ptr<DownloadBubbleRowView, CtnExperimental>>
       rows_by_id_;
 
   base::WeakPtr<Browser> browser_;

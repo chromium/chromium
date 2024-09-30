@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -204,11 +205,12 @@ class MultideviceFeatureAccessManager {
   void OnFeatureSetupConnectionOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
-  base::flat_map<int, NotificationAccessSetupOperation*>
+  base::flat_map<int,
+                 raw_ptr<NotificationAccessSetupOperation, CtnExperimental>>
       id_to_notification_operation_map_;
-  base::flat_map<int, CombinedAccessSetupOperation*>
+  base::flat_map<int, raw_ptr<CombinedAccessSetupOperation, CtnExperimental>>
       id_to_combined_operation_map_;
-  base::flat_map<int, FeatureSetupConnectionOperation*>
+  base::flat_map<int, raw_ptr<FeatureSetupConnectionOperation, CtnExperimental>>
       id_to_connection_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<MultideviceFeatureAccessManager> weak_ptr_factory_{this};

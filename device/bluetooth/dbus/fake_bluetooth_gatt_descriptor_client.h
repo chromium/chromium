@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/object_path.h"
@@ -92,7 +93,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
 
     std::unique_ptr<Properties> properties;
   };
-  typedef std::map<dbus::ObjectPath, DescriptorData*> PropertiesMap;
+  typedef std::map<dbus::ObjectPath, raw_ptr<DescriptorData, CtnExperimental>>
+      PropertiesMap;
   PropertiesMap properties_;
 
   // List of observers interested in event notifications from us.

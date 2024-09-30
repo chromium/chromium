@@ -128,7 +128,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   class MemIterator;
   friend class MemIterator;
 
-  using EntryMap = std::unordered_map<std::string, MemEntryImpl*>;
+  using EntryMap =
+      std::unordered_map<std::string, raw_ptr<MemEntryImpl, CtnExperimental>>;
 
   // Deletes entries from the cache until the current size is below the limit.
   void EvictIfNeeded();

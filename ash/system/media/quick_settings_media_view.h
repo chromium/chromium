@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -59,7 +60,8 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
   // Helper functions for testing.
   PaginationModel* pagination_model_for_testing() { return &pagination_model_; }
-  std::map<const std::string, global_media_controls::MediaItemUIView*>
+  std::map<const std::string,
+           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
   items_for_testing() {
     return items_;
   }
@@ -75,7 +77,9 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
   raw_ptr<PaginationView> pagination_view_ = nullptr;
 
-  std::map<const std::string, global_media_controls::MediaItemUIView*> items_;
+  std::map<const std::string,
+           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
+      items_;
 };
 
 }  // namespace ash

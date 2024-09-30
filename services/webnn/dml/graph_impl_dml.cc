@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -606,7 +608,7 @@ ActivationOperatorDesc CreateOperatorDescForActivation(
 }
 
 std::optional<const Operation*> GetFusibleActivationFromOperation(
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     const Operation* operation) {
   const auto activation_iterator =
@@ -619,7 +621,7 @@ std::optional<const Operation*> GetFusibleActivationFromOperation(
 }
 
 std::optional<uint64_t> GetFusibleTransposeInputId(
-    const std::map<uint64_t, const Operation*>&
+    const std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>&
         output_id_to_fusible_transpose_map,
     uint64_t input_id) {
   const auto transpose_iterator =
@@ -1163,12 +1165,13 @@ struct GraphFusionInfo {
   // fused into preceding operations.
   // The key is the preceding operation which can support fusion. The value is
   // the standalone activation which can be fused into the preceding operation.
-  std::map<const Operation*, const Operation*>
+  std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>
       operation_to_fusible_standalone_activation_map;
 
   // A map of all transposes that can be fused into the following matmul using
   // transpose's output operand id as the key.
-  std::map<uint64_t, const Operation*> output_id_to_fusible_transpose_map;
+  std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
+      output_id_to_fusible_transpose_map;
 
   // A set of all operations in `mojom::GraphInfo` which can be fused into
   // another operation. No DirectML operator node will be created for operations
@@ -1191,7 +1194,8 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
 
   // A map of all fusible activations in `mojom::GraphInfo` using activation's
   // input operand id as the key.
-  std::map<uint64_t, const Operation*> input_id_to_activation_map;
+  std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
+      input_id_to_activation_map;
 
   // The case we're interested in includes a fusible base operation with exactly
   // one output edge, followed by a fusible activation operation:
@@ -1312,7 +1316,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
           input_id_to_activation_map.find(output_id);
       if (node_output_edge_counts[output_id] == 1 &&
           activation_iterator != input_id_to_activation_map.end()) {
-        const auto* activation = activation_iterator->second;
+        const auto* activation = activation_iterator->second.get();
         graph_fusion_info.fusible_operations_set.insert(activation);
         graph_fusion_info
             .operation_to_fusible_standalone_activation_map[operation.get()] =
@@ -1383,7 +1387,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
 void CreateOperatorNodeForBatchNormalization(
     const ContextProperties& context_properties,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
@@ -1622,7 +1626,7 @@ void CreateOperatorNodeForConv2d(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -1878,7 +1882,7 @@ void CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -3232,7 +3236,7 @@ void CreateOperatorNodeForGemm(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -3746,7 +3750,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     const ContextProperties& context_properties,
     const NormalizationPtr& normalization,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
@@ -4322,9 +4326,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const std::map<const Operation*, const Operation*>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
-    const std::map<uint64_t, const Operation*>&
+    const std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>&
         output_id_to_fusible_transpose_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {

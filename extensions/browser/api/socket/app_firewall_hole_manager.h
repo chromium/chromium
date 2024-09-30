@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/components/firewall_hole/firewall_hole.h"
@@ -90,7 +91,8 @@ class AppFirewallHoleManager : public KeyedService,
   raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       observation_{this};
-  std::multimap<std::string, AppFirewallHole*> tracked_holes_;
+  std::multimap<std::string, raw_ptr<AppFirewallHole, CtnExperimental>>
+      tracked_holes_;
 
   base::WeakPtrFactory<AppFirewallHoleManager> weak_factory_{this};
 };

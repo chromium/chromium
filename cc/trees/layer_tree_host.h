@@ -1076,10 +1076,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
   // Layer id to Layer map.
-  std::unordered_map<int, Layer*> layer_id_map_;
+  std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map_;
 
   // This is for layer tree mode only.
-  std::unordered_map<ElementId, Layer*, ElementIdHash> element_layers_map_;
+  std::unordered_map<ElementId, raw_ptr<Layer, CtnExperimental>, ElementIdHash>
+      element_layers_map_;
 
   bool in_paint_layer_contents_ = false;
 

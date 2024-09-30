@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -197,8 +198,8 @@ class ClearAllServiceWorkersHelper
       return;
     // Make a copy of live versions map because StopWorker() removes the version
     // from it when we were starting up and don't have a process yet.
-    const std::map<int64_t, ServiceWorkerVersion*> live_versions_copy =
-        context->GetLiveVersions();
+    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>
+        live_versions_copy = context->GetLiveVersions();
     for (const auto& version_itr : live_versions_copy) {
       ServiceWorkerVersion* version(version_itr.second);
       if (version->running_status() == blink::EmbeddedWorkerStatus::kStarting ||
@@ -225,7 +226,8 @@ class ClearAllServiceWorkersHelper
 };
 
 int GetWarmedUpServiceWorkerCount(
-    const std::map<int64_t, ServiceWorkerVersion*>& live_versions) {
+    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>&
+        live_versions) {
   return base::ranges::count_if(live_versions, [](const auto& iter) {
     ServiceWorkerVersion& service_worker_version = *iter.second;
     return service_worker_version.IsWarmingUp() ||
@@ -906,7 +908,7 @@ bool ServiceWorkerContextCore::IsValidRegisterRequest(
 scoped_refptr<ServiceWorkerRegistration>
 ServiceWorkerContextCore::GetLiveRegistration(int64_t id) {
   auto it = live_registrations_.find(id);
-  return (it != live_registrations_.end()) ? it->second : nullptr;
+  return (it != live_registrations_.end()) ? it->second.get() : nullptr;
 }
 
 void ServiceWorkerContextCore::AddLiveRegistration(
@@ -980,8 +982,8 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
 std::vector<ServiceWorkerRegistrationInfo>
 ServiceWorkerContextCore::GetAllLiveRegistrationInfo() {
   std::vector<ServiceWorkerRegistrationInfo> infos;
-  for (std::map<int64_t, ServiceWorkerRegistration*>::const_iterator iter =
-           live_registrations_.begin();
+  for (std::map<int64_t, raw_ptr<ServiceWorkerRegistration, CtnExperimental>>::
+           const_iterator iter = live_registrations_.begin();
        iter != live_registrations_.end(); ++iter) {
     infos.push_back(iter->second->GetInfo());
   }
@@ -991,8 +993,9 @@ ServiceWorkerContextCore::GetAllLiveRegistrationInfo() {
 std::vector<ServiceWorkerVersionInfo>
 ServiceWorkerContextCore::GetAllLiveVersionInfo() {
   std::vector<ServiceWorkerVersionInfo> infos;
-  for (std::map<int64_t, ServiceWorkerVersion*>::const_iterator iter =
-           live_versions_.begin();
+  for (std::map<int64_t,
+                raw_ptr<ServiceWorkerVersion, CtnExperimental>>::const_iterator
+           iter = live_versions_.begin();
        iter != live_versions_.end(); ++iter) {
     infos.push_back(iter->second->GetInfo());
   }

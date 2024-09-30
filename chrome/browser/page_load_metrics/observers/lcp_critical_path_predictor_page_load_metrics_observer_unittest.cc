@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
@@ -22,7 +23,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
@@ -231,7 +231,9 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
 
  private:
   page_load_metrics::mojom::PageLoadTiming timing_;
-  std::map<GURL, LcpCriticalPathPredictorPageLoadMetricsObserver*>
+  std::map<
+      GURL,
+      raw_ptr<LcpCriticalPathPredictorPageLoadMetricsObserver, CtnExperimental>>
       lcpp_observers_;
   int max_lcpp_histogram_buckets_;
 };

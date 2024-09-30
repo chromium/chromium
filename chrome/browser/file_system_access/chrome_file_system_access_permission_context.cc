@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -887,7 +888,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   }
 
   static void UpdateGrantPath(
-      std::map<base::FilePath, PermissionGrantImpl*>& grants,
+      std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
+          grants,
       const base::FilePath& old_path,
       const base::FilePath& new_path) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -907,7 +909,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     DCHECK_EQ(entry_it->second->GetActivePermissionStatus(),
               PermissionStatus::GRANTED);
 
-    auto* const grant_impl = entry_it->second;
+    auto* const grant_impl = entry_it->second.get();
     grant_impl->SetPath(new_path);
 
     // Update the permission grant's key in the map of active permissions.
@@ -1134,8 +1136,10 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
   // Raw pointers, owned collectively by all the handles that reference this
   // grant. When last reference goes away this state is cleared as well by
   // PermissionGrantDestroyed().
-  std::map<base::FilePath, PermissionGrantImpl*> read_grants;
-  std::map<base::FilePath, PermissionGrantImpl*> write_grants;
+  std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>
+      read_grants;
+  std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>
+      write_grants;
 
   PersistedGrantStatus persisted_grant_status = PersistedGrantStatus::kLoaded;
 
@@ -1289,7 +1293,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
   // operator[] might insert a new OriginState in |active_permissions_map_|,
   // but that is exactly what we want.
   auto& origin_state = active_permissions_map_[origin];
-  auto*& existing_grant = origin_state.read_grants[path];
+  auto& existing_grant = origin_state.read_grants[path];
   scoped_refptr<PermissionGrantImpl> grant;
 
   if (existing_grant && existing_grant->handle_type() != handle_type) {
@@ -1383,7 +1387,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
   // operator[] might insert a new OriginState in |active_permissions_map_|,
   // but that is exactly what we want.
   auto& origin_state = active_permissions_map_[origin];
-  auto*& existing_grant = origin_state.write_grants[path];
+  auto& existing_grant = origin_state.write_grants[path];
   scoped_refptr<PermissionGrantImpl> grant;
 
   if (existing_grant && existing_grant->handle_type() != handle_type) {
@@ -2498,7 +2502,7 @@ void ChromeFileSystemAccessPermissionContext::
                            ? HandleType::kDirectory
                            : HandleType::kFile;
     if (object_dict.FindBool(kPermissionReadableKey).value_or(false)) {
-      auto*& read_grant = it->second.read_grants[path];
+      auto& read_grant = it->second.read_grants[path];
       if (read_grant && read_grant->handle_type() == handle_type) {
         read_grant->SetStatus(
             PermissionStatus::GRANTED,
@@ -2506,7 +2510,7 @@ void ChromeFileSystemAccessPermissionContext::
       }
     }
     if (object_dict.FindBool(kPermissionWritableKey).value_or(false)) {
-      auto*& write_grant = it->second.write_grants[path];
+      auto& write_grant = it->second.write_grants[path];
       if (write_grant && write_grant->handle_type() == handle_type) {
         write_grant->SetStatus(
             PermissionStatus::GRANTED,

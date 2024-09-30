@@ -9,6 +9,7 @@
 
 #include "ash/webui/eche_app_ui/apps_access_setup_operation.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -101,7 +102,8 @@ class AppsAccessManager {
   void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
-  base::flat_map<int, AppsAccessSetupOperation*> id_to_operation_map_;
+  base::flat_map<int, raw_ptr<AppsAccessSetupOperation, CtnExperimental>>
+      id_to_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<AppsAccessManager> weak_ptr_factory_{this};
 };

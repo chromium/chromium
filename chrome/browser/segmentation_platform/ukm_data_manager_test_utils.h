@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
@@ -86,7 +87,8 @@ class UkmDataManagerTestUtils {
 
   std::unique_ptr<UkmDatabaseClient> owned_db_client_;
 
-  std::map<proto::SegmentId, MockDefaultModelProvider*> default_overrides_;
+  std::map<proto::SegmentId, raw_ptr<MockDefaultModelProvider, CtnExperimental>>
+      default_overrides_;
 
   base::WeakPtrFactory<UkmDataManagerTestUtils> weak_factory_{this};
 };
