@@ -16,7 +16,10 @@ class AutofillPredictionImprovementsManagerTestApi {
       AutofillPredictionImprovementsManager* manager)
       : manager_(CHECK_DEREF(manager)) {}
 
-  void SetCache(std::optional<autofill::FormData> cache) {
+  void SetCache(
+      std::optional<
+          AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
+          cache) {
     manager_->cache_ = cache;
   }
 

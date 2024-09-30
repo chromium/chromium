@@ -30,7 +30,10 @@ namespace {
 
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
+using PredictionsByGlobalId =
+    AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -40,9 +43,42 @@ using ::testing::Pair;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
+using ::testing::VariantWith;
 
 MATCHER_P(HasType, expected_type, "") {
-  EXPECT_THAT(arg, Field(&Suggestion::type, Eq(expected_type)));
+  EXPECT_THAT(arg,
+              Field("Suggestion::type", &Suggestion::type, Eq(expected_type)));
+  return true;
+}
+
+MATCHER(HasPredictionImprovementsPayload, "") {
+  EXPECT_THAT(
+      arg,
+      Field("Suggestion::payload", &Suggestion::payload,
+            ::testing::VariantWith<Suggestion::PredictionImprovementsPayload>(
+                _)));
+  return true;
+}
+
+MATCHER_P(HasValueToFill, expected_value_to_fill, "") {
+  EXPECT_THAT(arg, Field("Suggestion::payload", &Suggestion::payload,
+                         VariantWith<Suggestion::ValueToFill>(
+                             Suggestion::ValueToFill(expected_value_to_fill))));
+  return true;
+}
+
+MATCHER_P(HasMainText, expected_main_text, "") {
+  EXPECT_THAT(arg, Field("Suggestion::main_text", &Suggestion::main_text,
+                         Field("Suggestion::Text::value",
+                               &Suggestion::Text::value, expected_main_text)));
+  return true;
+}
+
+MATCHER_P(HasLabel, expected_label, "") {
+  EXPECT_THAT(arg, Field("Suggestion::labels", &Suggestion::labels,
+                         ElementsAre(ElementsAre(Field(
+                             "Suggestion::Text::value",
+                             &Suggestion::Text::value, expected_label)))));
   return true;
 }
 
@@ -239,8 +275,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
 
   manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
                                        update_suggestions_callback.Get());
+  const autofill::FormFieldData& filled_field = filled_form.fields().front();
   std::move(axtree_received_callback).Run({});
-  std::move(predictions_received_callback).Run(filled_form, "");
+  std::move(predictions_received_callback)
+      .Run(
+          PredictionsByGlobalId{{filled_field.global_id(),
+                                 {filled_field.value(), filled_field.label()}}},
+          "");
   base::test::RunUntil([this]() {
     return !test_api(*manager_).loading_suggestion_timer().IsRunning();
   });
@@ -257,7 +298,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
           .GetPayload<Suggestion::PredictionImprovementsPayload>();
-  const autofill::FormFieldData& filled_field = filled_form.fields().front();
   EXPECT_THAT(
       filling_payload.values_to_fill,
       ElementsAre(Pair(filled_field.global_id(), filled_field.value())));
@@ -329,7 +369,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetAddressSuggestions(suggestions_to_show);
-  test_api(*manager_).SetCache(form);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields().front().global_id(), {u"value", u"label"}}});
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       suggestions_to_show, form.fields().front(),
       /*should_add_trigger_suggestion=*/true));
@@ -352,7 +393,8 @@ TEST_F(
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(*manager_).SetCache(form);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields().front().global_id(), {u"value", u"label"}}});
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       address_suggestions, form.fields().front(),
       /*should_add_trigger_suggestion=*/true));
@@ -362,6 +404,65 @@ TEST_F(
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
+}
+
+// Tests that the filling suggestion incl. its children is created as expected.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       FillingSuggestionIsCreatedAsExpected) {
+  const std::u16string trigger_field_value = u"Jane";
+  const std::u16string trigger_field_label = u"First name";
+  const std::u16string select_field_value = u"33";
+  const std::u16string select_field_label = u"State";
+  const std::u16string select_field_option_text = u"North Carolina";
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST},
+                 {.role = autofill::ADDRESS_HOME_STATE,
+                  .heuristic_type = autofill::ADDRESS_HOME_STATE,
+                  .form_control_type = autofill::FormControlType::kSelectOne}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(),
+       {trigger_field_value, trigger_field_label}},
+      {form.fields()[1].global_id(),
+       {select_field_value, select_field_label, select_field_option_text}}});
+  std::vector<Suggestion> suggestions_to_show;
+
+  EXPECT_TRUE(
+      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
+                                       /*should_add_trigger_suggestion=*/true));
+
+  EXPECT_THAT(
+      suggestions_to_show,
+      ElementsAre(
+          AllOf(
+              HasType(SuggestionType::kFillPredictionImprovements),
+              HasPredictionImprovementsPayload(),
+              Field("Suggestion::children", &Suggestion::children,
+                    ElementsAre(
+                        AllOf(HasType(
+                                  SuggestionType::kFillPredictionImprovements),
+                              HasPredictionImprovementsPayload()),
+                        HasType(SuggestionType::kSeparator),
+                        AllOf(HasType(
+                                  SuggestionType::kFillPredictionImprovements),
+                              HasValueToFill(trigger_field_value),
+                              HasMainText(trigger_field_value),
+                              HasLabel(trigger_field_label)),
+                        AllOf(HasType(
+                                  SuggestionType::kFillPredictionImprovements),
+                              // For <select> elements expect both value to fill
+                              // and main text to be set to the option text, not
+                              // the value.
+                              HasValueToFill(select_field_option_text),
+                              HasMainText(select_field_option_text),
+                              HasLabel(select_field_label)),
+                        HasType(SuggestionType::kSeparator),
+                        HasType(SuggestionType::
+                                    kEditPredictionImprovementsInformation)))),
+          HasType(SuggestionType::kSeparator),
+          HasType(SuggestionType::kPredictionImprovementsDetails),
+          HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 class AutofillPredictionImprovementsManagerUserFeedbackTest

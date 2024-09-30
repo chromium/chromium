@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -101,17 +102,18 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
     return;
   }
 
-  FillFormDataWithResponse(form_data, maybe_response->form_data());
-  std::move(callback).Run(std::move(form_data),
-                          log_entry ? log_entry->model_execution_id() : "");
+  std::move(callback).Run(
+      ExtractPredictions(form_data, maybe_response->form_data()),
+      log_entry ? log_entry->model_execution_id() : "");
 }
 
 // static
-void AutofillPredictionImprovementsFillingEngineImpl::FillFormDataWithResponse(
-    autofill::FormData& form_data,
+AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId
+AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
+    const autofill::FormData& form_data,
     const optimization_guide::proto::FilledFormData& form_data_proto) {
-  std::vector<autofill::FormFieldData>& fields =
-      form_data.mutable_fields(/*pass_key=*/{});
+  std::vector<std::pair<autofill::FieldGlobalId, Prediction>> predictions;
+  const std::vector<autofill::FormFieldData>& fields = form_data.fields();
   for (const optimization_guide::proto::FilledFormFieldData&
            filled_form_field_proto : form_data_proto.filled_form_field_data()) {
     if (filled_form_field_proto.field_data().field_value().empty()) {
@@ -126,10 +128,40 @@ void AutofillPredictionImprovementsFillingEngineImpl::FillFormDataWithResponse(
                 filled_form_field_proto.field_data().field_label()),
             &autofill::FormFieldData::label);
         it != fields.end()) {
-      it->set_value(base::UTF8ToUTF16(
-          filled_form_field_proto.field_data().field_value()));
+      const autofill::FormFieldData& field = *it;
+      const std::u16string predicted_value =
+          base::UTF8ToUTF16(filled_form_field_proto.field_data().field_value());
+      std::optional<std::u16string> select_option_text = std::nullopt;
+
+      if (field.IsSelectOrSelectListElement()) {
+        // Reject the prediction if it equals the currently selected option.
+        if (field.selected_option().has_value() &&
+            field.selected_option()->value == predicted_value) {
+          continue;
+        }
+
+        // Ensure that the predicted value actually is one of the select
+        // options.
+        auto predicted_select_option_it = base::ranges::find(
+            field.options(), predicted_value, &autofill::SelectOption::value);
+        if (predicted_select_option_it == field.options().end()) {
+          continue;
+        }
+
+        // Sets `Prediction::select_option_text` below which will then be shown
+        // in the suggestion as the main text.
+        select_option_text = predicted_select_option_it->text;
+      }
+
+      predictions.emplace_back(
+          field.global_id(),
+          Prediction{
+              std::move(predicted_value),
+              field.label().empty() ? field.placeholder() : field.label(),
+              select_option_text});
     }
   }
+  return predictions;
 }
 
 }  // namespace autofill_prediction_improvements

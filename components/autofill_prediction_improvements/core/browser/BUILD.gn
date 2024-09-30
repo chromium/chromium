@@ -12,6 +12,7 @@ static_library("browser") {
     "autofill_prediction_improvements_client.h",
     "autofill_prediction_improvements_features.cc",
     "autofill_prediction_improvements_features.h",
+    "autofill_prediction_improvements_filling_engine.cc",
     "autofill_prediction_improvements_filling_engine.h",
     "autofill_prediction_improvements_filling_engine_impl.cc",
     "autofill_prediction_improvements_filling_engine_impl.h",

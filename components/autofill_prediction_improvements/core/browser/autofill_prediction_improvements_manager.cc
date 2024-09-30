@@ -62,16 +62,15 @@ constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
 // Returns a field-by-field filling suggestion for `filled_field`, meant to be
 // added to another suggestion's `autofill::Suggestion::children`.
 autofill::Suggestion CreateChildSuggestionForFilling(
-    const autofill::FormFieldData& filled_field) {
+    const AutofillPredictionImprovementsFillingEngine::Prediction& prediction) {
+  const std::u16string& value_to_fill = prediction.select_option_text
+                                            ? *prediction.select_option_text
+                                            : prediction.value;
   autofill::Suggestion child_suggestion(
-      filled_field.value(),
-      autofill::SuggestionType::kFillPredictionImprovements);
-  child_suggestion.payload =
-      autofill::Suggestion::ValueToFill(filled_field.value());
+      value_to_fill, autofill::SuggestionType::kFillPredictionImprovements);
+  child_suggestion.payload = autofill::Suggestion::ValueToFill(value_to_fill);
   child_suggestion.labels.emplace_back();
-  child_suggestion.labels.back().emplace_back(filled_field.label().empty()
-                                                  ? filled_field.placeholder()
-                                                  : filled_field.label());
+  child_suggestion.labels.back().emplace_back(prediction.label);
   return child_suggestion;
 }
 
@@ -199,15 +198,14 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   if (!cache_) {
     return {};
   }
-  const autofill::FormFieldData* filled_field =
-      (*cache_).FindFieldByGlobalId(field.global_id());
-  if (!filled_field) {
+  if (!(*cache_).contains(field.global_id())) {
     return {};
   }
-  const std::u16string predicted_value = filled_field->value();
+  const AutofillPredictionImprovementsFillingEngine::Prediction& prediction =
+      (*cache_).at(field.global_id());
 
   autofill::Suggestion suggestion(
-      predicted_value, autofill::SuggestionType::kFillPredictionImprovements);
+      prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
   suggestion.payload = payload;
@@ -226,18 +224,17 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
   }
   // Add the child suggestion for the triggering field on top.
-  suggestion.children.emplace_back(
-      CreateChildSuggestionForFilling(*filled_field));
+  suggestion.children.emplace_back(CreateChildSuggestionForFilling(prediction));
   // Then add child suggestions for all remaining, non-empty fields.
-  for (const auto& cached_field : (*cache_).fields()) {
+  for (const auto& [child_field_global_id, child_prediction] : (*cache_)) {
     // Only add a child suggestion if the field is not the triggering field and
     // the value to fill is not empty.
-    if (cached_field.global_id() == filled_field->global_id() ||
-        cached_field.value().empty()) {
+    if (child_field_global_id == field.global_id() ||
+        child_prediction.value.empty()) {
       continue;
     }
     suggestion.children.emplace_back(
-        CreateChildSuggestionForFilling(cached_field));
+        CreateChildSuggestionForFilling(child_prediction));
   }
   if (!suggestion.children.empty()) {
     suggestion.labels.emplace_back();
@@ -284,7 +281,7 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
   if (!cache_) {
     return false;
   }
-  return (*cache_).FindFieldByGlobalId(field.global_id());
+  return (*cache_).contains(field.global_id());
 }
 
 bool AutofillPredictionImprovementsManager::IsFormEligible(
@@ -350,10 +347,11 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTree(
 void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    base::expected<autofill::FormData, bool> prediction_improvements,
+    AutofillPredictionImprovementsFillingEngine::PredictionsOrError
+        predictions_or_error,
     std::optional<std::string> feedback_id) {
-  if (prediction_improvements.has_value()) {
-    cache_ = prediction_improvements.value();
+  if (predictions_or_error.has_value()) {
+    cache_ = predictions_or_error.value();
     feedback_id_ = feedback_id;
   }
 
@@ -362,7 +360,7 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
   // don't see a flickering UI.
   loading_suggestion_timer_.Start(
       FROM_HERE, kMinTimeToShowLoading,
-      prediction_improvements.has_value()
+      predictions_or_error.has_value()
           ? base::BindRepeating(
                 &AutofillPredictionImprovementsManager::UpdateSuggestions,
                 weak_ptr_factory_.GetWeakPtr(),
@@ -415,10 +413,10 @@ AutofillPredictionImprovementsManager::GetValuesToFill() {
     return {};
   }
   std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
-      values_to_fill((*cache_).fields().size());
-  for (size_t i = 0; i < (*cache_).fields().size(); i++) {
-    const autofill::FormFieldData& field = (*cache_).fields()[i];
-    values_to_fill[i] = {field.global_id(), field.value()};
+      values_to_fill((*cache_).size());
+  size_t i = 0;
+  for (const auto& [field_global_id, prediction] : (*cache_)) {
+    values_to_fill[i++] = {field_global_id, prediction.value};
   }
   return values_to_fill;
 }

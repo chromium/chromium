@@ -59,8 +59,8 @@ class AutofillPredictionImprovementsFillingEngineImpl
           execution_result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
-  static void FillFormDataWithResponse(
-      autofill::FormData& form_data,
+  static PredictionsByGlobalId ExtractPredictions(
+      const autofill::FormData& form_data,
       const optimization_guide::proto::FilledFormData& form_data_proto);
 
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_ =

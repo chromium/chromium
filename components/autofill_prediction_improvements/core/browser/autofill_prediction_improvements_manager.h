@@ -93,7 +93,8 @@ class AutofillPredictionImprovementsManager
   void OnReceivedPredictions(
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
-      base::expected<autofill::FormData, bool> prediction_improvements,
+      AutofillPredictionImprovementsFillingEngine::PredictionsOrError
+          predictions_or_error,
       std::optional<std::string> feedback_id);
 
   // Resets the state of this class.
@@ -130,8 +131,9 @@ class AutofillPredictionImprovementsManager
 
   // Most recently retrieved form with field values set to prediction
   // improvements.
-  // TODO(crbug.com/361414075): Set `cache_` and manage its lifecycle.
-  std::optional<autofill::FormData> cache_ = std::nullopt;
+  std::optional<
+      AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
+      cache_ = std::nullopt;
 
   // Address suggestions that will be shown as defined in
   // `CreateFillingSuggestions()` after prediction improvements was triggered.
