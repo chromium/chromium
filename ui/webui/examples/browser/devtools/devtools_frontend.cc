@@ -169,6 +169,9 @@ class DevToolsFrontend::AgentHostClient
     } else if (*method == "getPreferences") {
       SendMessageAck(request_id, base::Value(std::move(preferences_)));
       return;
+    } else if (*method == "getHostConfig") {
+      SendMessageAck(request_id, {});
+      return;
     } else if (*method == "setPreference") {
       if (params.size() < 2)
         return;
