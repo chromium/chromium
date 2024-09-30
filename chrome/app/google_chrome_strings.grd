@@ -1662,6 +1662,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
         To use and save Chrome data in your Google Account, enter your passphrase
       </message>
+      <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE" desc="Error message to resolve sync protocol error for out-of-date client.">
+        To use and save Chrome data in your Google Account, update Chrome
+      </message>
 
       <!-- Sync errors. Android uses native UI to handle Sync settings -->
       <if expr="not is_android">

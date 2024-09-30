@@ -412,6 +412,14 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
+  void SimulateUpgradeClientError() {
+    syncer::SyncStatus sync_status;
+    sync_status.sync_protocol_error.action = syncer::UPGRADE_CLIENT;
+    GetTestSyncService()->SetDetailedSyncStatus(true, sync_status);
+    GetTestSyncService()->FireStateChanged();
+    ASSERT_TRUE(GetTestSyncService()->RequiresClientUpgrade());
+  }
+
  private:
   void SetTestingFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -1620,6 +1628,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
   SimulatePassphraseError();
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
                                    IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
+                       UpgradeClientError) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+  SimulateUpgradeClientError();
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -140,6 +140,7 @@ enum class ButtonState {
   kShowIdentityName,
   kSigninPending,
   kSyncPaused,
+  kUpgradeClientError,
   kPassphraseError,
   // Catch-all for remaining errors in sync-the-feature or sync-the-transport.
   kSyncError,
@@ -984,6 +985,10 @@ class StateManager : public StateObserver,
               /*state_observer=*/*this, *profile, avatar_toolbar_button_.get());
 
       if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        states_[ButtonState::kUpgradeClientError] =
+            std::make_unique<SyncErrorStateProvider>(
+                /*state_observer=*/*this, *profile,
+                AvatarSyncErrorType::kUpgradeClientError);
         states_[ButtonState::kPassphraseError] =
             std::make_unique<SyncErrorStateProvider>(
                 /*state_observer=*/*this, *profile,
@@ -1357,6 +1362,10 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
+    case ButtonState::kUpgradeClientError:
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
+      text = l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
+      break;
     case ButtonState::kPassphraseError:
       color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
       text =
@@ -1438,6 +1447,7 @@ AvatarToolbarButtonDelegate::GetAccessibilityLabel() const {
     case ButtonState::kShowIdentityName:
     case ButtonState::kIncognitoProfile:
     case ButtonState::kManagement:
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
     case ButtonState::kSyncError:
     case ButtonState::kSyncPaused:
@@ -1482,6 +1492,7 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
           kColorAvatarButtonHighlightSyncErrorForeground);
     case ButtonState::kManagement:
     case ButtonState::kSigninPending:
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightNormalForeground);
@@ -1502,6 +1513,7 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
     case ButtonState::kShowIdentityName:
       return GetShortProfileName();
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
     case ButtonState::kSyncPaused:
     case ButtonState::kSyncError: {
@@ -1546,6 +1558,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
       case ButtonState::kManagement:
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
+      case ButtonState::kUpgradeClientError:
       case ButtonState::kPassphraseError:
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
@@ -1579,6 +1592,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
           GetProfileAvatarImage(icon_size), icon_size, icon_size,
           profiles::SHAPE_CIRCLE));
     case ButtonState::kPassphraseError:
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kSigninPending:
       // First shrink the icon from it's regular size in order to accommodate
       // for the dotted circle that is drawn around it in `PaintIcon()`.
@@ -1607,6 +1621,7 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kManagement:
     case ButtonState::kSigninPending:
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
     case ButtonState::kSyncPaused:
     case ButtonState::kSyncError:
@@ -1686,6 +1701,7 @@ void AvatarToolbarButtonDelegate::PaintIcon(
     case ButtonState::kSyncError:
       return;
     case ButtonState::kSigninPending:
+    case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
       // Paints the dotted circle around the shrunk icon (from
       // `GetAvatarIcon()`).

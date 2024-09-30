@@ -255,10 +255,15 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     // because the setup incomplete case is treated separately below. See the
     // comment in ShouldRequestSyncConfirmation() about dashboard resets.
 
-    if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
-        service->GetUserSettings()
-            ->IsPassphraseRequiredForPreferredDataTypes()) {
-      return AvatarSyncErrorType::kPassphraseError;
+    if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+      if (service->RequiresClientUpgrade()) {
+        return AvatarSyncErrorType::kUpgradeClientError;
+      }
+
+      if (service->GetUserSettings()
+              ->IsPassphraseRequiredForPreferredDataTypes()) {
+        return AvatarSyncErrorType::kPassphraseError;
+      }
     }
 
     return GetTrustedVaultError(service);
@@ -326,12 +331,20 @@ std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
             is_sync_feature_enabled
                 ? IDS_SYNC_STATUS_NEEDS_PASSWORD
                 : IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY);
+      } else {
+        return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
       }
-      [[fallthrough]];
+    case AvatarSyncErrorType::kUpgradeClientError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
+          !is_sync_feature_enabled) {
+        return l10n_util::GetStringUTF16(
+            IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE);
+      } else {
+        return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+      }
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
     case AvatarSyncErrorType::kManagedUserUnrecoverableError:
     case AvatarSyncErrorType::kUnrecoverableError:
-    case AvatarSyncErrorType::kUpgradeClientError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }
