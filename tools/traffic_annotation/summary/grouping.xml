@@ -261,7 +261,6 @@ after discussions on the right group.
       <annotation id="back_navigation_cache_query"/>
       <annotation id="cws_info_service"/>
       <annotation id="promise_app_service"/>
-      <annotation id="unified_state_determination_kill_switch"/>
       <annotation id="crash_file_uploader"/>
       <annotation id="glanceables_classroom_integration"/>
       <annotation id="promise_app_service_download_icon"/>

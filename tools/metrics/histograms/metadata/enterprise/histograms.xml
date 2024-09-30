@@ -3028,26 +3028,6 @@ chromium-metrics-reviews@google.com.
   <token key="State" variants="AutoEnrollmentStates"/>
 </histogram>
 
-<histogram
-    name="Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2025-02-02">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Network error code for unified state determination kill switch config
-    requests.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.StateDetermination.KillSwitchFetch.NumTries"
-    units="requests" expires_after="2025-02-02">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Number of tries for fetching unified state determination kill switch config.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.StateDetermination.OnFlex" enum="Boolean"
     expires_after="2025-02-02">
   <owner>sergiyb@google.com</owner>
