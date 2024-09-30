@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Class handling the communication with the C++ part of the reauthentication based on device lock.
@@ -25,7 +26,10 @@ public class ReauthenticatorBridge {
     private Callback<Boolean> mAuthResultCallback;
 
     private ReauthenticatorBridge(
-            Activity activity, Profile profile, @DeviceAuthSource int source) {
+            Activity activity,
+            Profile profile,
+            ModalDialogManager modalDialogManager,
+            @DeviceAuthSource int source) {
         mNativeReauthenticatorBridge =
                 ReauthenticatorBridgeJni.get().create(this, activity, profile, source);
     }
@@ -87,13 +91,32 @@ public class ReauthenticatorBridge {
     /**
      * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
      * DeviceAuthSource}.
+     *
+     * @param activity Used to display the biometric prompt and modal dialogs.
+     * @param profile The profile to which the device authenticator service belongs.
+     * @param modalDialogManager Used to display error dialogs during mandatory auth steps.
+     * @param source The feature invoking the authentication.
      */
     public static ReauthenticatorBridge create(
-            Activity activity, Profile profile, @DeviceAuthSource int source) {
+            Activity activity,
+            Profile profile,
+            ModalDialogManager modalDialogManager,
+            @DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
-        return new ReauthenticatorBridge(activity, profile, source);
+        return new ReauthenticatorBridge(activity, profile, modalDialogManager, source);
+    }
+
+    /**
+     * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
+     * DeviceAuthSource}.
+     *
+     * <p>// TODO(crbug.com/370467784) Remove once all callers have switched to the one above.
+     */
+    public static ReauthenticatorBridge create(
+            Activity activity, Profile profile, @DeviceAuthSource int source) {
+        return ReauthenticatorBridge.create(activity, profile, null, source);
     }
 
     /** For testing only. */
