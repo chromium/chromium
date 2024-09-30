@@ -26,10 +26,10 @@ class WhatsNewSceneAgentTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    std::unique_ptr<TestChromeBrowserState> browser_state_ =
-        TestChromeBrowserState::Builder().Build();
+    std::unique_ptr<TestProfileIOS> profile_ =
+        TestProfileIOS::Builder().Build();
     std::unique_ptr<Browser> browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+        std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     FakeStartupInformation* startup_information_ =
         [[FakeStartupInformation alloc] init];
     app_state_ =

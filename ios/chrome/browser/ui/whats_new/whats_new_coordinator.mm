@@ -65,8 +65,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 - (void)start {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   DCHECK(tracker);
   tracker->NotifyEvent(feature_engagement::events::kViewedWhatsNew);
 
