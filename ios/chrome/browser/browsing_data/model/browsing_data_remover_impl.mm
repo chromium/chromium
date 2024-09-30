@@ -460,7 +460,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     // Remove all HTTPS-Only Mode allowlist decisions.
     HttpsUpgradeService* https_upgrade_service =
-        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_);
+        HttpsUpgradeServiceFactory::GetForProfile(browser_state_);
     https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
   }
 

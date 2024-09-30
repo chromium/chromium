@@ -18,33 +18,33 @@
 @implementation HttpsUpgradeAppInterface
 
 + (void)setHTTPSPortForTesting:(int)HTTPSPort useFakeHTTPS:(bool)useFakeHTTPS {
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile())
       ->SetHttpsPortForTesting(HTTPSPort, useFakeHTTPS);
 
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetCurrentIncognitoBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetCurrentIncognitoProfile())
       ->SetHttpsPortForTesting(HTTPSPort, useFakeHTTPS);
 }
 
 + (void)setFallbackHttpPortForTesting:(int)HTTPPort {
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile())
       ->SetFallbackHttpPortForTesting(HTTPPort);
 
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetCurrentIncognitoBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetCurrentIncognitoProfile())
       ->SetFallbackHttpPortForTesting(HTTPPort);
 }
 
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds {
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile())
       ->SetFallbackDelayForTesting(
           base::Milliseconds(fallbackDelayInMilliseconds));
 
-  HttpsUpgradeServiceFactory::GetForBrowserState(
-      chrome_test_util::GetCurrentIncognitoBrowserState())
+  HttpsUpgradeServiceFactory::GetForProfile(
+      chrome_test_util::GetCurrentIncognitoProfile())
       ->SetFallbackDelayForTesting(
           base::Milliseconds(fallbackDelayInMilliseconds));
 }
@@ -66,8 +66,8 @@
 + (void)clearAllowlist {
   // Clear the persistent allowlist.
   HostContentSettingsMap::PatternSourcePredicate pattern_filter;
-  ios::HostContentSettingsMapFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState())
+  ios::HostContentSettingsMapFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile())
       ->ClearSettingsForOneType(ContentSettingsType::HTTP_ALLOWED);
   // Clear the temporary allowlist for incognito.
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();

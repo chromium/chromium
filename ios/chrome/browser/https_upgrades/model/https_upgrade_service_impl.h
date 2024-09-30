@@ -20,7 +20,7 @@
 // Decisions are scoped to the host.
 class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
  public:
-  explicit HttpsUpgradeServiceImpl(ChromeBrowserState* context);
+  explicit HttpsUpgradeServiceImpl(ProfileIOS* context);
   ~HttpsUpgradeServiceImpl() override;
 
   // HttpsUpgradeService methods:
@@ -30,7 +30,7 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
 
  private:
   std::unique_ptr<base::Clock> clock_;
-  raw_ptr<ChromeBrowserState> context_;
+  raw_ptr<ProfileIOS> context_;
   security_interstitials::HttpsOnlyModeAllowlist allowlist_;
 };
 

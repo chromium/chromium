@@ -26,8 +26,8 @@ class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({kHomeCustomization}, {});
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
 
     coordinator_ = [[HomeCustomizationCoordinator alloc]
@@ -39,7 +39,7 @@ class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   HomeCustomizationCoordinator* coordinator_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
 };

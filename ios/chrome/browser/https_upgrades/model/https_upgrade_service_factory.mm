@@ -19,12 +19,6 @@ HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForProfile(
 }
 
 // static
-HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 HttpsUpgradeServiceFactory* HttpsUpgradeServiceFactory::GetInstance() {
   static base::NoDestructor<HttpsUpgradeServiceFactory> instance;
   return instance.get();
@@ -43,7 +37,7 @@ std::unique_ptr<KeyedService>
 HttpsUpgradeServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return std::make_unique<HttpsUpgradeServiceImpl>(
-      ChromeBrowserState::FromBrowserState(context));
+      ProfileIOS::FromBrowserState(context));
 }
 
 web::BrowserState* HttpsUpgradeServiceFactory::GetBrowserStateToUse(

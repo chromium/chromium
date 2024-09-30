@@ -56,15 +56,15 @@ class HttpsOnlyModeUpgradeTabHelperTest
     : public testing::TestWithParam<HttpsUpgradesTestType> {
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(PrerenderServiceFactory::GetInstance(),
                               base::BindRepeating(&BuildFakePrerenderService));
     builder.AddTestingFactory(
         HttpsUpgradeServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeHttpsUpgradeService));
 
-    browser_state_ = std::move(builder).Build();
-    web_state_.SetBrowserState(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    web_state_.SetBrowserState(profile_.get());
 
     switch (GetParam()) {
       case HttpsUpgradesTestType::kNone:
@@ -76,8 +76,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
         break;
 
       case HttpsUpgradesTestType::kHttpsOnlyMode:
-        browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                               true);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
         scoped_feature_list_.InitWithFeatures(
             /*enabled_features=*/{security_interstitials::features::
                                       kHttpsOnlyMode},
@@ -94,8 +93,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
         break;
 
       case HttpsUpgradesTestType::kBoth:
-        browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                               true);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
         scoped_feature_list_
             .InitWithFeatures(/*enabled_features=*/
                               {security_interstitials::features::kHttpsOnlyMode,
@@ -106,9 +104,9 @@ class HttpsOnlyModeUpgradeTabHelperTest
     }
 
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-        &web_state_, browser_state_->GetPrefs(),
-        PrerenderServiceFactory::GetForProfile(browser_state_.get()),
-        HttpsUpgradeServiceFactory::GetForProfile(browser_state_.get()));
+        &web_state_, profile_->GetPrefs(),
+        PrerenderServiceFactory::GetForProfile(profile_.get()),
+        HttpsUpgradeServiceFactory::GetForProfile(profile_.get()));
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
   }
 
@@ -150,7 +148,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
   web::FakeWebState web_state_;
 
  private:
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -17,8 +17,6 @@
 class HttpsUpgradeServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static HttpsUpgradeService* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static HttpsUpgradeService* GetForBrowserState(ProfileIOS* profile);
   static HttpsUpgradeServiceFactory* GetInstance();
 
   HttpsUpgradeServiceFactory(const HttpsUpgradeServiceFactory&) = delete;

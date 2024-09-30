@@ -125,12 +125,12 @@ bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
 }
 
 int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(browser_state_)
       ->GetHttpsPortForTesting();
 }
 
 bool ChromeOmniboxClientIOS::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(browser_state_)
       ->IsUsingFakeHttpsForTesting();
 }
 

@@ -68,10 +68,10 @@ typedef void (^BlockWithViewController)(UIViewController*);
 class MiniMapCoordinatorTest : public PlatformTest {
  protected:
   MiniMapCoordinatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     mock_application_command_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     mock_application_settings_command_handler_ =
@@ -125,7 +125,7 @@ class MiniMapCoordinatorTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id<MiniMapMediatorDelegate> delegate_;
   std::unique_ptr<Browser> browser_;
   MiniMapCoordinator* coordinator_;
@@ -184,9 +184,8 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
   SetupCoordinator(YES, MiniMapMode::kMap);
@@ -221,8 +220,8 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsentGiven) {
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -249,9 +248,8 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
        web::features::kOneTapForMapsConsentModeIPHParam}};
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       web::features::kOneTapForMaps, feature_parameters);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -270,7 +268,7 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
   SetupCoordinator(YES, MiniMapMode::kMap);
   environment_.RunUntilIdle();
   EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
   EXPECT_OCMOCK_VERIFY(mini_map_controller);
 }
 
@@ -285,8 +283,8 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
        web::features::kOneTapForMapsConsentModeIPHParam}};
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       web::features::kOneTapForMaps, feature_parameters);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -310,9 +308,8 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -341,9 +338,8 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -373,9 +369,8 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 

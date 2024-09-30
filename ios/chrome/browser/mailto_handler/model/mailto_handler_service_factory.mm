@@ -47,10 +47,9 @@ MailtoHandlerServiceFactory::BuildServiceInstanceFor(
   MailtoHandlerConfiguration* configuration =
       [[MailtoHandlerConfiguration alloc] init];
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   configuration.authService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
 
   ApplicationContext* application_context = GetApplicationContext();
   configuration.localState = application_context->GetLocalState();

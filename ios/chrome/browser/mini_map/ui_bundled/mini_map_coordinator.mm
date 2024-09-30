@@ -79,7 +79,7 @@
 - (void)start {
   [super start];
 
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
@@ -243,8 +243,7 @@
     [self.mediator userOpenedURLFromMiniMap];
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
+                     inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
