@@ -94,6 +94,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
@@ -613,7 +614,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "enableAiSettingsPageRefresh",
-      base::FeatureList::IsEnabled(features::kAiSettingsPageRefresh));
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageRefresh));
 
   TryShowHatsSurveyWithTimeout();
 }

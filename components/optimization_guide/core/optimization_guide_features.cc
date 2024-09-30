@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -169,6 +168,13 @@ BASE_FEATURE(kTextSafetyRemoteFallback,
 BASE_FEATURE(kOnDeviceModelValidation,
              "OnDeviceModelValidation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Enable the "Synapse" refreshed AI settings page.
+BASE_FEATURE(kAiSettingsPageRefresh,
+             "AiSettingsPageRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.

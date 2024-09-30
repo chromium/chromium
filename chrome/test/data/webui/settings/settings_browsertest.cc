@@ -12,6 +12,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/compose/buildflags.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -162,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 class SettingsAiPageTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAiSettingsPageRefresh};
+      optimization_guide::features::kAiSettingsPageRefresh};
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, ExperimentalAdvancedPage) {

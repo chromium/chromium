@@ -32,13 +32,6 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enable revamp of AI settings page.
-BASE_FEATURE(kAiSettingsPageRefresh,
-             "AiSettingsPageRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
              "AppPreloadService",
