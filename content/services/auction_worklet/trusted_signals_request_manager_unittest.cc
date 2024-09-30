@@ -158,11 +158,78 @@ const char kKVv2BiddingBase2[] =
       }
     ])";
 
+const char kKVv2ScoringBase1[] =
+    R"([
+          {
+            "id": 0,
+            "keyGroupOutputs": [
+              {
+                "tags": [
+                  "renderUrls"
+                ],
+                "keyValues": {
+                  "https://bar.test/": {
+                    "value": "1"
+                  }
+                }
+              },
+              {
+                "tags": [
+                  "adComponentRenderUrls"
+                ],
+                "keyValues": {
+                  "https://barsub.test/": {
+                    "value": "2"
+                  },
+                  "https://foosub.test/": {
+                    "value": "[3]"
+                  }
+                }
+              }
+            ]
+          }
+        ])";
+
+const char kKVv2ScoringBase2[] =
+    R"([
+          {
+            "id": 0,
+            "keyGroupOutputs": [
+              {
+                "tags": [
+                  "renderUrls"
+                ],
+                "keyValues": {
+                  "https://baz.test/": {
+                    "value": "3"
+                  }
+                }
+              },
+              {
+                "tags": [
+                  "adComponentRenderUrls"
+                ],
+                "keyValues": {
+                  "https://bazsub.test/": {
+                    "value": "\"4\""
+                  },
+                  "https://foosub.test/": {
+                    "value": "[3]"
+                  }
+                }
+              }
+            ]
+          }
+        ])";
+
 const char kTopLevelOrigin[] = "https://publisher";
-const char kJoiningOriginFoo[] = "https://foo.test";
-const char kJoiningOriginBar[] = "https://bar.test";
+const char kJoiningOriginA[] = "https://origin-a.test";
+const char kJoiningOriginB[] = "https://origin-b.test";
+const char kOwnerOriginA[] = "https://owner-a.test";
+const char kOwnerOriginB[] = "https://owner-b.test";
 const char kTrustedKVv2SignalsHost[] = "a.test";
 const char kTrustedKVv2BiddingSignalsPath[] = "/bidder-signals";
+const char kTrustedKVv2ScoringSignalsPath[] = "/seller-signals";
 const uint8_t kKeyId = 0xAA;
 
 // These keys were randomly generated as follows:
@@ -2544,7 +2611,7 @@ class TrustedSignalsRequestManagerKVv2Test
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  url::Origin joining_origin_{url::Origin::Create(GURL(kJoiningOriginFoo))};
+  url::Origin joining_origin_{url::Origin::Create(GURL(kJoiningOriginA))};
   blink::mojom::InterestGroup::ExecutionMode execution_mode_{
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode};
 };
@@ -2623,18 +2690,36 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
         /*experiment_group_id=*/std::nullopt,
         "trusted_bidding_signals_slot_size_param=foo", CreateDefaultPublicKey(),
         v8_helper_.get());
+
+    scoring_request_manager_ = std::make_unique<TrustedSignalsRequestManager>(
+        TrustedSignalsRequestManager::Type::kScoringSignals,
+        url_loader_factory_.get(),
+        /*auction_network_events_handler=*/
+        auction_network_events_handler_.CreateRemote(),
+        /*automatically_send_requests=*/false,
+        url::Origin::Create(GURL(kTopLevelOrigin)), TrustedScoringSignalsUrl(),
+        /*experiment_group_id=*/std::nullopt,
+        /*trusted_bidding_signals_slot_size_param=*/"",
+        CreateDefaultPublicKey(), v8_helper_.get());
   }
 
   ~TrustedSignalsRequestManagerKVv2EmbeddedTest() override {
     // Wait until idle to ensure all requests have been observed within the
     // `auction_network_events_handler_`.
     task_environment_.RunUntilIdle();
+
     bidding_request_manager_.reset();
+    scoring_request_manager_.reset();
   }
 
   GURL TrustedBiddingSignalsUrl() const {
     return embedded_test_server_.GetURL(kTrustedKVv2SignalsHost,
                                         kTrustedKVv2BiddingSignalsPath);
+  }
+
+  GURL TrustedScoringSignalsUrl() const {
+    return embedded_test_server_.GetURL(kTrustedKVv2SignalsHost,
+                                        kTrustedKVv2ScoringSignalsPath);
   }
 
   // Fetch bidding signals and wait for completion. Return nullptr on failure.
@@ -2652,6 +2737,25 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
         base::BindOnce(&LoadSignalsCallback, &signals, &error_msg_,
                        run_loop.QuitClosure()));
     bidding_request_manager_->StartBatchedTrustedSignalsRequest();
+    run_loop.Run();
+    return signals;
+  }
+
+  // Fetches scoring signals and waits for completion. Returns nullptr on
+  // failure.
+  scoped_refptr<TrustedSignals::Result> FetchScoringSignals(
+      const GURL& render_url,
+      const std::vector<std::string>& ad_component_render_urls,
+      const url::Origin& bidder_owner_origin,
+      const url::Origin& bidder_joining_origin) {
+    scoped_refptr<TrustedSignals::Result> signals;
+    base::RunLoop run_loop;
+    auto request = scoring_request_manager_->RequestKVv2ScoringSignals(
+        render_url, ad_component_render_urls, bidder_owner_origin,
+        bidder_joining_origin,
+        base::BindOnce(&LoadSignalsCallback, &signals, &error_msg_,
+                       run_loop.QuitClosure()));
+    scoring_request_manager_->StartBatchedTrustedSignalsRequest();
     run_loop.Run();
     return signals;
   }
@@ -2688,6 +2792,39 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
     return result;
   }
 
+  // Returns the results of calling TrustedSignals::Result::GetScoringSignals()
+  // with the provided parameters. Returns value as a JSON std::string, for easy
+  // testing.
+  std::string ExtractScoringSignals(
+      TrustedSignals::Result* signals,
+      const GURL& render_url,
+      const std::vector<std::string>& ad_component_render_urls) {
+    base::RunLoop run_loop;
+
+    std::string result;
+    v8_helper_->v8_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+          v8::Isolate* isolate = v8_helper_->isolate();
+          // Could use the scratch context, but using a separate one more
+          // closely resembles actual use.
+          v8::Local<v8::Context> context = v8::Context::New(isolate);
+          v8::Context::Scope context_scope(context);
+
+          v8::Local<v8::Value> value = signals->GetScoringSignals(
+              v8_helper_.get(), context, render_url, ad_component_render_urls);
+
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
+              AuctionV8Helper::Result::kSuccess) {
+            result = "JSON extraction failed.";
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
   // Set the response status code.
   void SetResponseStatusCode(net::HttpStatusCode code) {
     base::AutoLock auto_lock(lock_);
@@ -2697,7 +2834,8 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
  protected:
   std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != kTrustedKVv2BiddingSignalsPath) {
+    if (request.relative_url != kTrustedKVv2BiddingSignalsPath &&
+        request.relative_url != kTrustedKVv2ScoringSignalsPath) {
       return nullptr;
     }
 
@@ -2735,43 +2873,90 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
         cbor::Reader::Read(base::span(cbor_bytes.value()));
     CHECK(request_body);
 
-    std::vector<std::string> interest_group_names;
-    for (const auto& partition :
-         request_body->GetMap().at(cbor::Value("partitions")).GetArray()) {
-      for (const auto& argument :
-           partition.GetMap().at(cbor::Value("arguments")).GetArray()) {
-        const cbor::Value::MapValue& argument_map = argument.GetMap();
-        if (argument_map.at(cbor::Value("tags")).GetArray().at(0).GetString() ==
-            "interestGroupNames") {
-          for (const auto& data :
-               argument_map.at(cbor::Value("data")).GetArray()) {
-            interest_group_names.emplace_back(std::move(data.GetString()));
+    cbor::Value::ArrayValue compression_groups;
+
+    if (request.relative_url == kTrustedKVv2BiddingSignalsPath) {
+      std::vector<std::string> interest_group_names;
+      for (const auto& partition :
+           request_body->GetMap().at(cbor::Value("partitions")).GetArray()) {
+        for (const auto& argument :
+             partition.GetMap().at(cbor::Value("arguments")).GetArray()) {
+          const cbor::Value::MapValue& argument_map = argument.GetMap();
+          if (argument_map.at(cbor::Value("tags"))
+                  .GetArray()
+                  .at(0)
+                  .GetString() == "interestGroupNames") {
+            for (const auto& data :
+                 argument_map.at(cbor::Value("data")).GetArray()) {
+              interest_group_names.emplace_back(std::move(data.GetString()));
+            }
           }
         }
       }
-    }
 
-    // Return different response based on `interest_group_names`.
-    int compression_group_id = 0;
-    cbor::Value::ArrayValue compression_groups;
-    for (const auto& name : interest_group_names) {
-      cbor::Value::MapValue compression_group;
-      compression_group.try_emplace(cbor::Value("compressionGroupId"),
-                                    cbor::Value(compression_group_id));
-      compression_group_id++;
+      // Return different response based on `interest_group_names`.
+      int compression_group_id = 0;
 
-      compression_group.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
-      if (name == "name1") {
-        compression_group.try_emplace(
-            cbor::Value("content"),
-            cbor::Value(test::ToCborVector(kKVv2BiddingBase1)));
-      } else if (name == "name2") {
-        compression_group.try_emplace(
-            cbor::Value("content"),
-            cbor::Value(test::ToCborVector(kKVv2BiddingBase2)));
+      for (const auto& name : interest_group_names) {
+        cbor::Value::MapValue compression_group;
+        compression_group.try_emplace(cbor::Value("compressionGroupId"),
+                                      cbor::Value(compression_group_id));
+        compression_group_id++;
+
+        if (name == "name1") {
+          compression_group.try_emplace(
+              cbor::Value("content"),
+              cbor::Value(test::ToCborVector(kKVv2BiddingBase1)));
+        } else if (name == "name2") {
+          compression_group.try_emplace(
+              cbor::Value("content"),
+              cbor::Value(test::ToCborVector(kKVv2BiddingBase2)));
+        }
+
+        compression_groups.emplace_back(std::move(compression_group));
+      }
+    } else {
+      std::vector<std::string> render_urls;
+      for (const auto& partition :
+           request_body->GetMap().at(cbor::Value("partitions")).GetArray()) {
+        for (const auto& argument :
+             partition.GetMap().at(cbor::Value("arguments")).GetArray()) {
+          const cbor::Value::MapValue& argument_map = argument.GetMap();
+          if (argument_map.at(cbor::Value("tags"))
+                  .GetArray()
+                  .at(0)
+                  .GetString() == "renderUrls") {
+            for (const auto& data :
+                 argument_map.at(cbor::Value("data")).GetArray()) {
+              render_urls.emplace_back(std::move(data.GetString()));
+            }
+          }
+        }
       }
 
-      compression_groups.emplace_back(std::move(compression_group));
+      // Return different response based on `render_urls`.
+      int compression_group_id = 0;
+
+      for (const auto& name : render_urls) {
+        cbor::Value::MapValue compression_group;
+
+        if (name == "https://bar.test/") {
+          compression_group.try_emplace(
+              cbor::Value("content"),
+              cbor::Value(test::ToCborVector(kKVv2ScoringBase1)));
+        } else if (name == "https://baz.test/") {
+          compression_group.try_emplace(
+              cbor::Value("content"),
+              cbor::Value(test::ToCborVector(kKVv2ScoringBase2)));
+        } else {
+          continue;
+        }
+
+        compression_group.try_emplace(cbor::Value("compressionGroupId"),
+                                      cbor::Value(compression_group_id));
+        compression_group_id++;
+        compression_groups.emplace_back(std::move(compression_group));
+      }
     }
 
     cbor::Value::MapValue body_map;
@@ -2816,9 +3001,12 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestAuctionNetworkEventsHandler auction_network_events_handler_;
   std::unique_ptr<TrustedSignalsRequestManager> bidding_request_manager_;
+  std::unique_ptr<TrustedSignalsRequestManager> scoring_request_manager_;
 
-  url::Origin joining_origin_foo_{url::Origin::Create(GURL(kJoiningOriginFoo))};
-  url::Origin joining_origin_bar_{url::Origin::Create(GURL(kJoiningOriginBar))};
+  url::Origin owner_origin_a_{url::Origin::Create(GURL(kOwnerOriginA))};
+  url::Origin owner_origin_b_{url::Origin::Create(GURL(kOwnerOriginB))};
+  url::Origin joining_origin_a_{url::Origin::Create(GURL(kJoiningOriginA))};
+  url::Origin joining_origin_b_{url::Origin::Create(GURL(kJoiningOriginB))};
   blink::mojom::InterestGroup::ExecutionMode execution_mode_{
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode};
 
@@ -2838,7 +3026,7 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
 TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, BiddingSignalsOneRequest) {
   const std::vector<std::string> kKeys{"key2", "key1"};
   scoped_refptr<TrustedSignals::Result> signals =
-      FetchBiddingSignals("name1", kKeys, joining_origin_foo_, execution_mode_);
+      FetchBiddingSignals("name1", kKeys, joining_origin_a_, execution_mode_);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
@@ -2848,10 +3036,6 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, BiddingSignalsOneRequest) {
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
 }
 
 // Use `kDefaultValue` as the execution mode when adding the signals, where the
@@ -2862,7 +3046,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals;
   std::optional<std::string> error_msg;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, {{"key1"}}, joining_origin_foo_,
+      {"name1"}, {{"key1"}}, joining_origin_a_,
       blink::mojom::InterestGroup::ExecutionMode::kDefaultValue,
       base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
                      run_loop.QuitClosure()));
@@ -2873,11 +3057,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   EXPECT_FALSE(signals);
   EXPECT_EQ(error_msg,
             "Failed to locate compression group \"0\" and "
-            "parition \"1\" in the result map.");
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
+            "partition \"1\" in the result map.");
 }
 
 // Build a request by adding two signals with isolation index compression group
@@ -2889,7 +3069,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, {{"key1"}}, joining_origin_foo_,
+      {"name1"}, {{"key1"}}, joining_origin_a_,
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
@@ -2898,7 +3078,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, {{"key2"}}, joining_origin_foo_,
+      {"name2"}, {{"key2"}}, joining_origin_a_,
       blink::mojom::InterestGroup::ExecutionMode::kDefaultValue,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
@@ -2919,11 +3099,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   EXPECT_FALSE(signals2);
   EXPECT_EQ(error_msg2,
             "Failed to locate compression group \"0\" and "
-            "parition \"1\" in the result map.");
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
+            "partition \"1\" in the result map.");
 }
 
 // Build a request by adding two signals with isolation index compression group
@@ -2935,7 +3111,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, {{"key1"}}, joining_origin_foo_,
+      {"name1"}, {{"key1"}}, joining_origin_a_,
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
@@ -2944,7 +3120,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, {{"key2"}}, joining_origin_bar_,
+      {"name2"}, {{"key2"}}, joining_origin_b_,
       blink::mojom::InterestGroup::ExecutionMode::kDefaultValue,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
@@ -2965,11 +3141,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   EXPECT_FALSE(signals2);
   EXPECT_EQ(error_msg2,
             "Failed to locate compression group \"1\" and "
-            "parition \"1\" in the result map.");
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
+            "partition \"1\" in the result map.");
 }
 
 TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
@@ -2977,7 +3149,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignals({"name1"},
                           /*trusted_bidding_signals_keys=*/std::nullopt,
-                          joining_origin_foo_, execution_mode_);
+                          joining_origin_a_, execution_mode_);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
   const auto priority_vector =
@@ -2998,7 +3170,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, kKeys1, joining_origin_foo_, execution_mode_,
+      {"name1"}, kKeys1, joining_origin_a_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -3006,7 +3178,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, kKeys2, joining_origin_bar_, execution_mode_,
+      {"name2"}, kKeys2, joining_origin_b_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -3041,7 +3213,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, {{"key1"}}, joining_origin_foo_, execution_mode_,
+      {"name1"}, {{"key1"}}, joining_origin_a_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -3049,7 +3221,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, {{"key2"}}, joining_origin_bar_, execution_mode_,
+      {"name2"}, {{"key2"}}, joining_origin_b_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -3067,10 +3239,6 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   run_loop2.Run();
   EXPECT_FALSE(signals2);
   EXPECT_EQ(kExpectedError, error_msg2);
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
@@ -3082,7 +3250,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
 
   // Note that these responses use different values for the shared key.
   scoped_refptr<TrustedSignals::Result> signals1 = FetchBiddingSignals(
-      {"name1"}, kKeys1, joining_origin_foo_, execution_mode_);
+      {"name1"}, kKeys1, joining_origin_a_, execution_mode_);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key1":1,"key2":[2]})",
@@ -3093,7 +3261,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
             *priority_vector);
 
   scoped_refptr<TrustedSignals::Result> signals2 = FetchBiddingSignals(
-      {"name2"}, kKeys2, joining_origin_foo_, execution_mode_);
+      {"name2"}, kKeys2, joining_origin_a_, execution_mode_);
   ASSERT_TRUE(signals2);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
@@ -3116,7 +3284,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, kKeys1, joining_origin_foo_, execution_mode_,
+      {"name1"}, kKeys1, joining_origin_a_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -3126,7 +3294,7 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, kKeys2, joining_origin_foo_, execution_mode_,
+      {"name2"}, kKeys2, joining_origin_a_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -3166,14 +3334,14 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, CancelOneRequest) {
   // The request for `key1` will be cancelled before the network request is
   // created.
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, kKeys1, joining_origin_foo_, execution_mode_,
+      {"name1"}, kKeys1, joining_origin_a_, execution_mode_,
       base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, kKeys2, joining_origin_foo_, execution_mode_,
+      {"name2"}, kKeys2, joining_origin_a_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -3200,14 +3368,14 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, CancelOneLiveRequest) {
   const std::vector<std::string> kKeys2{"key2"};
 
   auto request1 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name1"}, kKeys1, joining_origin_foo_, execution_mode_,
+      {"name1"}, kKeys1, joining_origin_a_, execution_mode_,
       base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_->RequestKVv2BiddingSignals(
-      {"name2"}, kKeys2, joining_origin_bar_, execution_mode_,
+      {"name2"}, kKeys2, joining_origin_b_, execution_mode_,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -3230,6 +3398,310 @@ TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, CancelOneLiveRequest) {
 
   // The callback of `request1` should not be invoked, since it was cancelled.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest, ScoringSignalsOneRequest) {
+  const GURL kRenderUrl = GURL("https://bar.test/");
+  const std::vector<std::string> kAdComponentRenderUrls{"https://barsub.test/",
+                                                        "https://foosub.test/"};
+
+  // URLs are currently added in lexical order.
+  scoped_refptr<TrustedSignals::Result> signals = FetchScoringSignals(
+      kRenderUrl, kAdComponentRenderUrls, owner_origin_a_, joining_origin_a_);
+
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(
+      R"({"renderURL":{"https://bar.test/":1},)"
+      R"("renderUrl":{"https://bar.test/":1},)"
+      R"("adComponentRenderURLs":{"https://barsub.test/":2,)"
+      R"("https://foosub.test/":[3]},)"
+      R"("adComponentRenderUrls":{"https://barsub.test/":2,)"
+      R"("https://foosub.test/":[3]}})",
+      ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+}
+
+// Use same owner and joining origins for both requests, where the
+// isolation indexes will be partition ID (0), compression group ID (0) and
+// partition ID (1), compression group ID (0).
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringSignalsMissingPartition) {
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://bar.test/"),
+      {"https://barsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://baz.test/"),
+      {"https://bazsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  ASSERT_TRUE(signals1);
+  EXPECT_FALSE(error_msg1.has_value());
+
+  run_loop2.Run();
+  ASSERT_FALSE(signals2);
+  EXPECT_TRUE(error_msg2.has_value());
+  EXPECT_EQ(error_msg2,
+            "Failed to locate compression group \"0\" and "
+            "partition \"1\" in the result map.");
+}
+
+// Use different owner and joining origins for all three requests, where the
+// isolation indexes will be partition ID (0), compression group ID (0),
+// partition ID (0), compression group ID (1) and partition ID (0), compression
+// group ID (2).
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringSignalsMissingCompressionGroup) {
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://bar.test/"),
+      {"https://barsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://baz.test/"),
+      {"https://bazsub.test/", "https://foosub.test/"}, owner_origin_b_,
+      joining_origin_b_,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  std::optional<std::string> error_msg3;
+  auto request3 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://qux.test/"),
+      {"https://quxsub.test/", "https://foosub.test/"},
+      url::Origin::Create(GURL("https://owner-c.test")),
+      url::Origin::Create(GURL("https://origin-c.test")),
+      base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                     run_loop3.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  ASSERT_TRUE(signals1);
+  EXPECT_FALSE(error_msg1.has_value());
+
+  run_loop2.Run();
+  ASSERT_TRUE(signals2);
+  EXPECT_FALSE(error_msg2.has_value());
+
+  run_loop3.Run();
+  ASSERT_FALSE(signals3);
+  EXPECT_TRUE(error_msg3.has_value());
+  EXPECT_EQ(error_msg3,
+            "Failed to locate compression group \"2\" and "
+            "partition \"0\" in the result map.");
+}
+
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringSignalsBatchedRequest) {
+  const GURL kRenderUrl1 = GURL("https://bar.test/");
+  const GURL kRenderUrl2 = GURL("https://baz.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://barsub.test/", "https://foosub.test/"};
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://bazsub.test/", "https://foosub.test/"};
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1, owner_origin_a_, joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2, owner_origin_b_, joining_origin_b_,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  ASSERT_TRUE(signals1);
+  EXPECT_FALSE(error_msg1.has_value());
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":1},)"
+            R"("renderUrl":{"https://bar.test/":1},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  ASSERT_TRUE(signals2);
+  EXPECT_FALSE(error_msg2.has_value());
+  EXPECT_EQ(R"({"renderURL":{"https://baz.test/":3},)"
+            R"("renderUrl":{"https://baz.test/":3},)"
+            R"("adComponentRenderURLs":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+}
+
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringSignalsBatchedRequestError) {
+  SetResponseStatusCode(net::HttpStatusCode::HTTP_NOT_FOUND);
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://bar.test/"),
+      {"https://barsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://baz.test/"),
+      {"https://bazsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  const std::string kExpectedError = base::StringPrintf(
+      "Failed to load %s HTTP status = 404 "
+      "Not Found.",
+      TrustedScoringSignalsUrl().spec().c_str());
+
+  run_loop1.Run();
+  EXPECT_FALSE(signals1);
+  EXPECT_EQ(kExpectedError, error_msg1);
+
+  run_loop2.Run();
+  EXPECT_FALSE(signals2);
+  EXPECT_EQ(kExpectedError, error_msg2);
+}
+
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringSignalsSequentialRequests) {
+  const GURL kRenderUrl1 = GURL("https://bar.test/");
+  const GURL kRenderUrl2 = GURL("https://baz.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://barsub.test/", "https://foosub.test/"};
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://bazsub.test/", "https://foosub.test/"};
+
+  scoped_refptr<TrustedSignals::Result> signals1 = FetchScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1, owner_origin_a_, joining_origin_a_);
+  ASSERT_TRUE(signals1);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":1},)"
+            R"("renderUrl":{"https://bar.test/":1},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  scoped_refptr<TrustedSignals::Result> signals2 = FetchScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2, owner_origin_b_, joining_origin_b_);
+  ASSERT_TRUE(signals2);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(R"({"renderURL":{"https://baz.test/":3},)"
+            R"("renderUrl":{"https://baz.test/":3},)"
+            R"("adComponentRenderURLs":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+}
+
+// Test the case where there are multiple network requests live at once.
+TEST_F(TrustedSignalsRequestManagerKVv2EmbeddedTest,
+       ScoringignalsSimultaneousNetworkRequests) {
+  const GURL kRenderUrl1 = GURL("https://bar.test/");
+  const GURL kRenderUrl2 = GURL("https://baz.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://barsub.test/", "https://foosub.test/"};
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://bazsub.test/", "https://foosub.test/"};
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://bar.test/"),
+      {"https://barsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_->RequestKVv2ScoringSignals(
+      GURL("https://baz.test/"),
+      {"https://bazsub.test/", "https://foosub.test/"}, owner_origin_a_,
+      joining_origin_a_,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  scoring_request_manager_->StartBatchedTrustedSignalsRequest();
+
+  base::RunLoop().RunUntilIdle();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":1},)"
+            R"("renderUrl":{"https://bar.test/":1},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":2,)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://baz.test/":3},)"
+            R"("renderUrl":{"https://baz.test/":3},)"
+            R"("adComponentRenderURLs":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://bazsub.test/":"4",)"
+            R"("https://foosub.test/":[3]}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
 }
 
 }  // namespace

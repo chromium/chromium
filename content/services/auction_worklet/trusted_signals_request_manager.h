@@ -128,16 +128,6 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
       int32_t max_trusted_bidding_signals_url_length,
       LoadSignalsCallback load_signals_callback);
 
-  // Like `RequestBiddingSignals()`, but for trusted bidding signals KVv2
-  // support. Requires `joining_origin` and `execution_mode` instead of
-  // `max_trusted_bidding_signals_url_length`.
-  std::unique_ptr<Request> RequestKVv2BiddingSignals(
-      const std::string& interest_group_name,
-      const std::optional<std::vector<std::string>>& keys,
-      const url::Origin& joining_origin,
-      blink::mojom::InterestGroup::ExecutionMode execution_mode,
-      LoadSignalsCallback load_signals_callback);
-
   // Queues a scoring signals request. Does not start a network request until
   // StartBatchedTrustedSignalsRequest() is invoked. `this` must be of Type
   // kScoringSignals.
@@ -149,6 +139,26 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
       const GURL& render_url,
       const std::vector<std::string>& ad_component_render_urls,
       int32_t max_trusted_scoring_signals_url_length,
+      LoadSignalsCallback load_signals_callback);
+
+  // Like `RequestBiddingSignals()`, but for trusted bidding signals KVv2
+  // support. Requires `joining_origin` and `execution_mode` instead of
+  // `max_trusted_bidding_signals_url_length`.
+  std::unique_ptr<Request> RequestKVv2BiddingSignals(
+      const std::string& interest_group_name,
+      const std::optional<std::vector<std::string>>& keys,
+      const url::Origin& joining_origin,
+      blink::mojom::InterestGroup::ExecutionMode execution_mode,
+      LoadSignalsCallback load_signals_callback);
+
+  // Like `RequestScoringSignals()`, but for trusted scoring signals KVv2
+  // support. Requires `bidder_owner_origin` and `bidder_joining_origin` instead
+  // of `max_trusted_scoring_signals_url_length`.
+  std::unique_ptr<Request> RequestKVv2ScoringSignals(
+      const GURL& render_url,
+      const std::vector<std::string>& ad_component_render_urls,
+      const url::Origin& bidder_owner_origin,
+      const url::Origin& bidder_joining_origin,
       LoadSignalsCallback load_signals_callback);
 
   // Starts a single TrustedSignals request for all currently queued
@@ -164,13 +174,24 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   class RequestImpl : public Request {
    public:
+    // Constructor for the BYOS version of trusted bidding signals, which builds
+    // a GET request with a limit set by max_trusted_bidding_signals_url_length.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
                 const std::string& interest_group_name,
                 std::set<std::string> bidder_keys,
                 int32_t max_trusted_bidding_signals_url_length,
                 LoadSignalsCallback load_signals_callback);
 
-    // Constructor for trusted bidding signals KVv2 support.
+    // Constructor for the BYOS version of trusted scoring signals, which builds
+    // a GET request with a limit set by max_trusted_scoring_signals_url_length.
+    RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
+                const GURL& render_url,
+                std::set<std::string> ad_component_render_urls,
+                int32_t max_trusted_scoring_signals_url_length,
+                LoadSignalsCallback load_signals_callback);
+
+    // Constructor for trusted bidding signals with KVv2 support, which builds a
+    // POST request.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
                 const std::string& interest_group_name,
                 std::set<std::string> bidder_keys,
@@ -178,10 +199,13 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
                 blink::mojom::InterestGroup::ExecutionMode execution_mode,
                 LoadSignalsCallback load_signals_callback);
 
+    // Constructor for trusted scoring signals with KVv2 support, which builds a
+    // POST request.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
                 const GURL& render_url,
                 std::set<std::string> ad_component_render_urls,
-                int32_t max_trusted_scoring_signals_url_length,
+                const url::Origin& bidder_owner_origin,
+                const url::Origin& bidder_joining_origin,
                 LoadSignalsCallback load_signals_callback);
 
     RequestImpl(RequestImpl&) = delete;
@@ -208,6 +232,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::optional<GURL> render_url_;
     // Stored as a std::set for simpler
     std::optional<std::set<std::string>> ad_component_render_urls_;
+    std::optional<url::Origin> bidder_owner_origin_;
+    std::optional<url::Origin> bidder_joining_origin_;
 
     size_t max_trusted_signals_url_length_;
 
@@ -222,11 +248,12 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // that request. nullptr otherwise.
     raw_ptr<BatchedTrustedSignalsRequest> batched_request_ = nullptr;
 
-    // When a request is added to TrustedBiddingSignalsKVv2RequestHelperBuilder,
-    // it returns the assigned partition ID and compression group ID for the
-    // request. These returned IDs are stored in the request to locate the
-    // correct compression group and partition in the response, avoiding the
-    // need to search the entire map.
+    // When a request is added to
+    // TrustedBiddingSignalsKVv2RequestHelperBuilder, it returns the assigned
+    // partition ID and compression group ID for the request. These returned
+    // IDs are stored in the request to locate the correct compression group
+    // and partition in the response, avoiding the need to search the entire
+    // map.
     std::optional<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex>
         kvv2_isolation_index_;
   };
