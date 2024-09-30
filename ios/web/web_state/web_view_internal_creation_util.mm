@@ -12,14 +12,6 @@
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
-// Allow usage of iOS 16.4's `inspectable` property on WKWebView in pre-16.4
-// SDK builds.
-#if !defined(__IPHONE_16_4) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_16_4
-@interface WKWebView (Additions)
-@property BOOL inspectable API_AVAILABLE(ios(16.4));
-@end
-#endif
-
 namespace web {
 
 namespace {
