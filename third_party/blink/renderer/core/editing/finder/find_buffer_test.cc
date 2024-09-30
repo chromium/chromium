@@ -509,18 +509,30 @@ INSTANTIATE_TEST_SUITE_P(Separators,
 
 TEST_P(FindBufferSeparatorTest, FindSeparatedElements) {
   SetBodyContent("a<" + GetParam() + ">a</" + GetParam() + ">a");
-  FindBuffer buffer(WholeDocumentRange());
-  EXPECT_EQ(0u, buffer.FindMatches("aa", kCaseInsensitive).CountForTesting());
+  {
+    FindBuffer buffer(WholeDocumentRange());
+    EXPECT_EQ(0u, buffer.FindMatches("aa", kCaseInsensitive).CountForTesting());
+  }
 
-  // TODO(crbug.com/40755728): Test with RubySupport::kEnabledForcefully.
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledForcefully);
+    EXPECT_EQ(0u, buffer.FindMatches("aa", kCaseInsensitive).CountForTesting());
+  }
 }
 
 TEST_P(FindBufferSeparatorTest, FindBRSeparatedElements) {
   SetBodyContent("a<br>a");
-  FindBuffer buffer(WholeDocumentRange());
-  EXPECT_EQ(1u, buffer.FindMatches("a\na", kCaseInsensitive).CountForTesting());
+  {
+    FindBuffer buffer(WholeDocumentRange());
+    EXPECT_EQ(1u,
+              buffer.FindMatches("a\na", kCaseInsensitive).CountForTesting());
+  }
 
-  // TODO(crbug.com/40755728): Test with RubySupport::kEnabledForcefully.
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledForcefully);
+    EXPECT_EQ(1u,
+              buffer.FindMatches("a\na", kCaseInsensitive).CountForTesting());
+  }
 }
 
 TEST_P(FindBufferParamTest, WhiteSpaceCollapsingPreWrap) {
