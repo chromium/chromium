@@ -66,7 +66,6 @@ webui_ts_library("build_ts") {
     "network/network_ip_config_test.js",
     "network/network_list_item_test.js",
     "network/network_list_test.js",
-    "network/network_nameservers_test.js",
     "network/network_password_input_test.js",
     "network/network_property_list_mojo_test.js",
     "network/network_proxy_exclusions_test.js",
