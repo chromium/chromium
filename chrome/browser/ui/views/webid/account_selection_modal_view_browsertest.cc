@@ -123,8 +123,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_FALSE(dialog()->GetCancelButton());
 
-    // Order: Brand icon, title, body
-    std::vector<std::string> expected_class_names = {"View", "Label", "Label"};
+    // Order: Brand icon, title and body for non loading UI.
+    std::vector<std::string> expected_class_names = {"View", "Label"};
+    bool is_loading_dialog =
+        !expect_visible_idp_icon && !expect_visible_combined_icons;
+    if (!is_loading_dialog) {
+      expected_class_names.push_back("Label");
+    }
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
@@ -204,11 +209,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       EXPECT_EQ(dialog()->GetInitiallyFocusedView(), title_view);
     }
 
-    // Check body text.
-    views::Label* body_view = static_cast<views::Label*>(header_children[2]);
-    ASSERT_TRUE(body_view);
-    EXPECT_EQ(body_view->GetText(), kBodySignIn);
-    EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
+    if (!is_loading_dialog) {
+      // Check body text.
+      views::Label* body_view = static_cast<views::Label*>(header_children[2]);
+      ASSERT_TRUE(body_view);
+      EXPECT_EQ(body_view->GetText(), kBodySignIn);
+      EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
+    }
 
     // After the first header check, the consecutive header checks do not
     // necessarily have to focus on the title.

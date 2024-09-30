@@ -138,8 +138,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Adds a progress bar at the top of the modal dialog.
   void AddProgressBar();
 
-  // Removes all child views and dangling pointers.
-  void RemoveNonHeaderChildViews();
+  // Removes all child views and dangling pointers and adjust header with
+  // progress bar and body label if needed.
+  void RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   // Removes `combined_icons_` and all its child views, if available.
   void MaybeRemoveCombinedIconsView();

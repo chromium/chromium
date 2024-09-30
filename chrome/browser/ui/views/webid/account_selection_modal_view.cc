@@ -377,12 +377,6 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
   SetLabelProperties(title_label_);
   title_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  // Add the body.
-  body_label_ = header->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-  SetLabelProperties(body_label_);
-  body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   return header;
 }
 
@@ -426,7 +420,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
     bool show_back_button,
     bool is_choose_an_account) {
   DCHECK(!show_back_button);
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   GURL idp_brand_icon_url = idp_list[0]->idp_metadata.brand_icon_url;
   // If `idp_brand_icon_url` is invalid, a globe icon is shown instead.
@@ -554,7 +548,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
 void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     bool show_back_button) {
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   const content::IdentityProviderData& idp_data = *account.identity_provider;
   GURL idp_brand_icon_url = idp_data.idp_metadata.brand_icon_url;
@@ -634,7 +628,7 @@ void AccountSelectionModalView::OnCombinedIconsFetched() {
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data) {
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   GURL idp_brand_icon_url = idp_data.idp_metadata.brand_icon_url;
   GURL rp_brand_icon_url = idp_data.client_metadata.brand_icon_url;
@@ -828,7 +822,8 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
   return title_label_;
 }
 
-void AccountSelectionModalView::RemoveNonHeaderChildViews() {
+void AccountSelectionModalView::
+    RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded() {
   // If removing progress bar, adjust the header margins so the rest of the
   // dialog doesn't get shifted when the progress bar is removed.
   if (has_progress_bar_) {
@@ -838,6 +833,16 @@ void AccountSelectionModalView::RemoveNonHeaderChildViews() {
             /*top=*/kDialogMargin, /*left=*/kDialogMargin,
             /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin));
     has_progress_bar_ = false;
+  }
+
+  // body_label_ does not apply to the loading modal so it's added to header
+  // here.
+  if (!body_label_) {
+    body_label_ = header_view_->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+    SetLabelProperties(body_label_);
+    body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
   // Make sure not to keep dangling pointers around first. We do not reset
