@@ -103,6 +103,7 @@ export class FaceGaze {
     chrome.accessibilityPrivate.openSettingsSubpage(
         FaceGaze.SETTINGS_PAGE_ROUTE);
 
+    this.bubbleController_.updateBubble('');
     this.webCamFaceLandmarker_.init();
   }
 
