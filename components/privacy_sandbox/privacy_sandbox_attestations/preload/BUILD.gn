@@ -14,3 +14,11 @@ copy("component") {
 
   outputs = [ "$root_out_dir/$privacy_sandbox_attestations_component/{{source_file_part}}" ]
 }
+
+if (is_mac) {
+  bundle_data("component_bundle") {
+    sources = privacy_sandbox_attestations_resources
+
+    outputs = [ "{{bundle_contents_dir}}/Libraries/$privacy_sandbox_attestations_component/{{source_file_part}}" ]
+  }
+}
