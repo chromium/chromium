@@ -86,6 +86,11 @@ class WebIdlSchemaTest(unittest.TestCase):
                 'someNumber': {
                     'name': 'someNumber',
                     'type': 'number'
+                },
+                'optionalBoolean': {
+                    'name': 'optionalBoolean',
+                    'type': 'boolean',
+                    'optional': True
                 }
             },
             'type': 'object'

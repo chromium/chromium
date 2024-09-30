@@ -8,6 +8,7 @@
 dictionary ExampleType {
   DOMString someString;
   double someNumber;
+  boolean? optionalBoolean;
 };
 
 interface TestWebIdl {

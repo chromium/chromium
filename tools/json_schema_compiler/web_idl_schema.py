@@ -113,11 +113,13 @@ class Type:
 
   def process(self) -> dict:
     properties = OrderedDict()
-    # TODO(crbug.com/340297705): Add support for optional/nullable types.
+    # TODO(crbug.com/340297705): Add support for optional types.
     # TODO(crbug.com/340297705): Add support for extended attributes on types.
     # TODO(crbug.com/340297705): Add processing of comments to descriptions on
     #                            types.
     properties['name'] = self.name
+    if self.node.GetProperty('NULLABLE'):
+      properties['optional'] = True
     # TODO(crbug.com/340297705): Add support for more types, including TypeRefs.
     basic_type = self.node.GetOneOf('PrimitiveType', 'StringType')
     if basic_type:
