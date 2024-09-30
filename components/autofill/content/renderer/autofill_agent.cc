@@ -781,7 +781,8 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->DidEndTextFieldEditing();
   }
-  password_autofill_agent_->ResetFocus(/*pass_key=*/{});
+  password_autofill_agent_->FocusedElementChangedWithCustomSemantics(
+      WebElement(), /*pass_key=*/{});
   if (password_generation_agent_) {
     password_generation_agent_->DidEndTextFieldEditing(element);
   }
@@ -1551,7 +1552,14 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     return;
   }
   if (WebElement focused_element = document.FocusedElement()) {
-    SendFocusedInputChangedNotificationToBrowser(focused_element);
+    password_autofill_agent_->FocusedElementChangedWithCustomSemantics(
+        focused_element,
+        /*pass_key=*/{});
+    if (auto input_element = focused_element.DynamicTo<WebInputElement>()) {
+      field_data_manager_->UpdateFieldDataMapWithNullValue(
+          form_util::GetFieldRendererId(input_element),
+          FieldPropertiesFlags::kHadFocus);
+    }
   }
 
   if (!config_.uses_keyboard_accessory_for_suggestions &&
@@ -1709,16 +1717,6 @@ void AutofillAgent::HandleFocusChangeComplete(
     ShowSuggestionsForContentEditable(
         focused_element,
         AutofillSuggestionTriggerSource::kContentEditableClicked);
-  }
-}
-
-void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
-    const WebElement& node) {
-  password_autofill_agent_->FocusedInputChanged(node, /*pass_key=*/{});
-  if (auto input_element = node.DynamicTo<WebInputElement>()) {
-    field_data_manager_->UpdateFieldDataMapWithNullValue(
-        form_util::GetFieldRendererId(input_element),
-        FieldPropertiesFlags::kHadFocus);
   }
 }
 

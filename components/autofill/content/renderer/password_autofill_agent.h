@@ -277,15 +277,18 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
 
   // Notifies the driver about focusing the node.
-  void FocusedInputChanged(const blink::WebNode& node,
-                           base::PassKey<AutofillAgent> pass_key) {
-    focus_state_notifier_.FocusedInputChanged(node);
-  }
-
-  // Notifies the password manager driver about removing the focus from the
-  // currently focused node (with no setting it to a new one).
-  void ResetFocus(base::PassKey<AutofillAgent> pass_key) {
-    focus_state_notifier_.ResetFocus();
+  //
+  // If `element` is null, notifies the password manager driver about removing
+  // the focus from the currently focused node (with no setting it to a new
+  // one).
+  //
+  // TODO: crbug.com/370301890 - Fire this in
+  // RenderFrameObserver::FocusedElementChanged() and remove the plumbing from
+  // AutofillAgent?
+  void FocusedElementChangedWithCustomSemantics(
+      const blink::WebElement& element,
+      base::PassKey<AutofillAgent> pass_key) {
+    focus_state_notifier_.FocusedElementChanged(element);
   }
 
  private:
@@ -305,7 +308,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     ~FocusStateNotifier();
 
     // Notifies the driver about focusing the node.
-    void FocusedInputChanged(const blink::WebNode& node);
+    void FocusedElementChanged(const blink::WebElement& element);
 
     // Notifies the password manager driver about removing the focus from the
     // currently focused node (with no setting it to a new one).

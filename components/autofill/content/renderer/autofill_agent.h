@@ -334,8 +334,6 @@ class AutofillAgent : public content::RenderFrameObserver,
                                    blink::WebDOMEvent event);
 
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
-  void SendFocusedInputChangedNotificationToBrowser(
-      const blink::WebElement& node);
 
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);

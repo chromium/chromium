@@ -693,23 +693,15 @@ PasswordAutofillAgent::FocusStateNotifier::FocusStateNotifier(
 
 PasswordAutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
 
-void PasswordAutofillAgent::FocusStateNotifier::FocusedInputChanged(
-    const WebNode& node) {
-  CHECK(node);
+void PasswordAutofillAgent::FocusStateNotifier::FocusedElementChanged(
+    const WebElement& element) {
   mojom::FocusedFieldType new_focused_field_type =
       mojom::FocusedFieldType::kUnknown;
   FieldRendererId new_focused_field_id = FieldRendererId();
-  if (auto form_control_element = node.DynamicTo<WebFormControlElement>()) {
+  if (auto form_control_element = element.DynamicTo<WebFormControlElement>()) {
     new_focused_field_type = GetFieldType(form_control_element);
     new_focused_field_id = form_util::GetFieldRendererId(form_control_element);
   }
-  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
-}
-
-void PasswordAutofillAgent::FocusStateNotifier::ResetFocus() {
-  FieldRendererId new_focused_field_id = FieldRendererId();
-  mojom::FocusedFieldType new_focused_field_type =
-      mojom::FocusedFieldType::kUnknown;
   NotifyIfChanged(new_focused_field_type, new_focused_field_id);
 }
 
