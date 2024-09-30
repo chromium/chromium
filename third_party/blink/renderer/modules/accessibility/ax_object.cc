@@ -2497,18 +2497,6 @@ void AXObject::SerializeComputedDetailsRelation(
     return;
   }
 
-  // Add details relation to <figure>, pointing at <figcaption>.
-  if (node_data->role == ax::mojom::blink::Role::kFigure) {
-    AXObject* fig_caption = GetChildFigcaption();
-    if (fig_caption) {
-      std::vector<int32_t> ids;
-      ids.push_back(GetChildFigcaption()->AXObjectID());
-      node_data->AddIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds, ids);
-      return;
-    }
-  }
-
   // Add aria-details for a popover invoker.
   // TODO(https://crbug.com/1426607) Support this for non-plain hint popovers.
   if (AXObject* popover = GetTargetPopoverForInvoker()) {
