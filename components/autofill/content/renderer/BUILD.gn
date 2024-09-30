@@ -119,6 +119,7 @@ source_set("browser_tests") {
     "a11y_utils_browsertest.cc",
     "autofill_agent_browsertest.cc",
     "autofill_agent_form_interaction_browsertest.cc",
+    "dom_label_browsertest.cc",
     "form_autofill_issues_browsertest.cc",
     "form_autofill_util_browsertest.cc",
     "form_cache_browsertest.cc",

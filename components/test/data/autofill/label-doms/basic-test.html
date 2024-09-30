@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .overlaying {
+        position: absolute;
+        left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <label>Nested input<input id=input1></label>
+    </div>
+    <div>
+      <label for=input2>Label for</label><input id=input2>
+    </div>
+    <div>
+      Preceding text node <input id=input3>
+    </div>
+    <div>
+      <input placeholder=placeholder id=input4>
+    </div>
+    <div>
+      <input id=input5>
+      <span class=overlaying>poor man's placeholder</span>
+    </div>
+    <div>
+      <input id=input6 aria-label=aria-label>
+    </div>
+    <div>
+      <div>
+        sibling/ancestor
+      </div>
+      <div>
+        <input id=input7>
+      </div>
+    </div>
+  </body>
+</html>

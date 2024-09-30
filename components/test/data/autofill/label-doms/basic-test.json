@@ -1,0 +1,29 @@
+[ {
+   "heuristic": "forId",
+   "label": "Nested input",
+   "name": "input1"
+}, {
+   "heuristic": "forId",
+   "label": "Label for",
+   "name": "input2"
+}, {
+   "heuristic": "combined",
+   "label": "Preceding text node",
+   "name": "input3"
+}, {
+   "heuristic": "placeholder",
+   "label": "placeholder",
+   "name": "input4"
+}, {
+   "heuristic": "overlayingLabel",
+   "label": "poor man's placeholder",
+   "name": "input5"
+}, {
+   "heuristic": "ariaLabel",
+   "label": "aria-label",
+   "name": "input6"
+}, {
+   "heuristic": "divTable",
+   "label": "sibling/ancestor",
+   "name": "input7"
+} ]
