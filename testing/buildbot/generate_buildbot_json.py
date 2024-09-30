@@ -152,17 +152,6 @@ class ScriptGenerator(BaseGenerator):
     return scripts
 
 
-class JUnitGenerator(BaseGenerator):
-  def generate(self, waterfall, tester_name, tester_config, input_tests):
-    scripts = []
-    for test_name, test_config in sorted(input_tests.items()):
-      test = self.bb_gen.generate_junit_test(
-        waterfall, tester_name, tester_config, test_name, test_config)
-      if test:
-        scripts.append(test)
-    return scripts
-
-
 class SkylabGenerator(BaseGenerator):
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     scripts = []
@@ -850,22 +839,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result = {k: result[k] for k in self._SCRIPT_FIELDS if k in result}
     return result
 
-  def generate_junit_test(self, waterfall, tester_name, tester_config,
-                          test_name, test_config):
-    if not self.should_run_on_tester(waterfall, tester_name, test_config):
-      return None
-    result = copy.deepcopy(test_config)
-    # Use test_name here instead of test['name'] because test['name'] will be
-    # modified with the variant identifier in a matrix compound suite
-    result.setdefault('test', test_name)
-    result = self.apply_common_transformations(waterfall,
-                                               tester_name,
-                                               tester_config,
-                                               result,
-                                               test_name,
-                                               swarmable=False)
-    return result
-
   def generate_skylab_test(self, waterfall, tester_name, tester_config,
                            test_name, test_config):
     if not self.should_run_on_tester(waterfall, tester_name, test_config):
@@ -1038,8 +1011,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         GTestGenerator(self),
         'isolated_scripts':
         IsolatedScriptTestGenerator(self),
-        'junit_tests':
-        JUnitGenerator(self),
         'scripts':
         ScriptGenerator(self),
         'skylab_tests':
