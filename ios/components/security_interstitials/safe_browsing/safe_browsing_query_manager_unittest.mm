@@ -370,7 +370,24 @@ class WebStateDestroyingQueryManagerObserver
       const SafeBrowsingQueryManager::Result& result,
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
       override {
+    ResetWebState();
+  }
+
+  void SafeBrowsingSyncQueryFinished(
+      const SafeBrowsingQueryManager::QueryData& query_data) override {
+    if (!reset_with_async_check_) {
+      ResetWebState();
+    }
+  }
+
+  void SafeBrowsingAsyncQueryFinished(
+      const SafeBrowsingQueryManager::QueryData& query_data) override {
+    ResetWebState();
+  }
+
+  void ResetWebState() {
     web_state_.reset();
+    was_observer_removed_ = true;
   }
 
   void SafeBrowsingQueryManagerDestroyed(
@@ -378,19 +395,30 @@ class WebStateDestroyingQueryManagerObserver
     manager->RemoveObserver(this);
   }
 
+  void EnsureWebStateResetsWithAsyncCheck() { reset_with_async_check_ = true; }
+
   web::WebState* web_state() { return web_state_.get(); }
+
+  bool was_observer_removed() { return was_observer_removed_; }
 
  private:
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
+  bool was_observer_removed_ = false;
+  bool reset_with_async_check_ = false;
 };
 }  // namespace
 
 // Test fixture for testing WebState destruction during a
 // SafeBrowsingQueryManager::Observer callback.
-class SafeBrowsingQueryManagerWebStateDestructionTest : public PlatformTest {
+class SafeBrowsingQueryManagerWebStateDestructionTest
+    : public testing::TestWithParam<bool> {
  protected:
-  SafeBrowsingQueryManagerWebStateDestructionTest() : http_method_("GET") {
+  SafeBrowsingQueryManagerWebStateDestructionTest()
+      : http_method_("GET"), use_async_safe_browsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
+        use_async_safe_browsing_);
     SafeBrowsingQueryManager::CreateForWebState(observer_.web_state(),
                                                 &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(observer_.web_state());
@@ -401,24 +429,49 @@ class SafeBrowsingQueryManagerWebStateDestructionTest : public PlatformTest {
     return SafeBrowsingQueryManager::FromWebState(observer_.web_state());
   }
 
+  // Helper function to run all sync callbacks first then async callbacks.
+  void RunSyncCallbacksThenAsyncCallbacks() {
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(^() {
+            client_.run_sync_callbacks();
+          }));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(^() {
+            client_.run_async_callbacks();
+          }));
+    }
+
+    // TODO(crbug.com/359420122): Remove when clean up is complete.
+    base::RunLoop().RunUntilIdle();
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   WebStateDestroyingQueryManagerObserver observer_;
   std::string http_method_;
   FakeSafeBrowsingClient client_;
+  bool use_async_safe_browsing_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(/* No Instantiation Name */,
+                         SafeBrowsingQueryManagerWebStateDestructionTest,
+                         testing::Bool());
+
 // Tests that a query for a safe URL doesn't cause a crash.
-TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
   GURL url("http://chromium.test");
   // Start a URL check query for the safe URL and run the runloop until the
   // result is received.
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
-  base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
+  EXPECT_TRUE(observer_.was_observer_removed());
 }
 
 // Tests that a query for an unsafe URL doesn't cause a crash.
-TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
 
   // Start a URL check query for the unsafe URL and run the runloop until the
