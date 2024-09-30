@@ -93,10 +93,6 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     local_state_.registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, true);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    local_state_.registry()->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderGuestModePrepopulatedId, 0);
-#endif
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -120,11 +116,7 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
       CHECK(!search_engine_choice_service_);
     }
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-        /*is_profile_eligible_for_dse_guest_propagation=*/false,
-#endif
-        variation_country_id);
+        pref_service_, &local_state_, variation_country_id);
   }
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
@@ -147,8 +139,6 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
 
     return CHECK_DEREF(search_engine_choice_service_.get());
   }
-  TestingPrefServiceSimple& local_state() { return local_state_; }
-
   base::HistogramTester histogram_tester_;
 
  private:
@@ -295,27 +285,6 @@ TEST_F(SearchEngineChoiceServiceTest,
             SearchEngineChoiceScreenConditions::kEligible);
 #endif
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SearchEngineChoiceServiceTest, GuestSessionDsePropagation) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
-
-  EXPECT_FALSE(local_state().HasPrefPath(
-      prefs::kDefaultSearchProviderGuestModePrepopulatedId));
-  EXPECT_FALSE(
-      search_engine_choice_service().ShouldPropagateDseBetweenGuestSessions());
-
-  constexpr int prepopulated_id = 1;
-  search_engine_choice_service().PropagateSearchEngineBetweenGuestSessions(
-      prepopulated_id);
-  EXPECT_EQ(local_state().GetInt64(
-                prefs::kDefaultSearchProviderGuestModePrepopulatedId),
-            prepopulated_id);
-  EXPECT_TRUE(
-      search_engine_choice_service().ShouldPropagateDseBetweenGuestSessions());
-}
-#endif
 
 // Test that the choice screen doesn't get displayed if the
 // 'DefaultSearchProviderEnabled' policy is set to true and the
@@ -1434,12 +1403,7 @@ class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
         metrics::prefs::kMetricsReportingEnabled, true);
 
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-        ,
-        /*is_profile_eligible_for_dse_guest_propagation=*/false
-#endif
-    );
+        pref_service_, &local_state_);
   }
 
   ~SearchEngineChoiceUtilsResourceIdsTest() override = default;
@@ -1505,11 +1469,7 @@ TEST_F(SearchEngineChoiceServiceWithVariationsTest, NoVariationsCountry) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSearchEngineChoiceCountry));
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(),
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      /*is_profile_eligible_for_dse_guest_propagation=*/false,
-#endif
-      country_codes::kCountryIDUnknown);
+      pref_service(), &local_state(), country_codes::kCountryIDUnknown);
 
   EXPECT_EQ(search_engine_choice_service.GetCountryId(),
             country_codes::GetCurrentCountryID());
@@ -1527,11 +1487,7 @@ TEST_F(SearchEngineChoiceServiceWithVariationsTest, WithVariationsCountry) {
   }
 
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(),
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      /*is_profile_eligible_for_dse_guest_propagation=*/false,
-#endif
-      variation_country_id);
+      pref_service(), &local_state(), variation_country_id);
 
   EXPECT_EQ(variation_country_id, search_engine_choice_service.GetCountryId());
 }
