@@ -2,8 +2,14 @@
 #dialog-container {
   width: 448px;
   max-height: 600px;
+
+  /* TODO(kdubbs): Add in the rest of the variable overrides here. */
+  --skw-color-primary: var(--color-sys-primary);
 }
 </style>
+
+<!-- Import stylesheet so it's inside the shadow DOM -->
+<link rel="stylesheet" href="data_sharing_sdk.css">
 
 <!-- Container that hosts flow dialogs. -->
 <div id="dialog-container"></div>

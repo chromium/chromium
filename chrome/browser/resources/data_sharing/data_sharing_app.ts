@@ -13,7 +13,6 @@ import './dummy_data_sharing_sdk.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
-
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './data_sharing_app.html.js';
@@ -85,11 +84,13 @@ export class DataSharingApp extends CustomElement {
     const groupId = params.get(UrlQueryParams.GROUP_ID);
     const tokenSecret = params.get(UrlQueryParams.TOKEN_SECRET);
     const tabGroupId = params.get(UrlQueryParams.TAB_GROUP_ID);
+    const parent = this.getRequiredElement('#dialog-container');
 
     switch (flow) {
       case FlowValues.SHARE:
         this.dataSharingSdk_
             .runInviteFlow({
+              parent,
               getShareLink: (params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
                     this.makeTabGroupShared(tabGroupId!, params.groupId);
@@ -103,7 +104,7 @@ export class DataSharingApp extends CustomElement {
       case FlowValues.JOIN:
         // group_id and token_secret cannot be null for join flow.
         this.dataSharingSdk_
-            .runJoinFlow({groupId: groupId!, tokenSecret: tokenSecret!})
+            .runJoinFlow({parent, groupId: groupId!, tokenSecret: tokenSecret!})
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
             });
@@ -112,6 +113,7 @@ export class DataSharingApp extends CustomElement {
         // group_id cannot be null for manage flow.
         this.dataSharingSdk_
             .runManageFlow({
+              parent,
               groupId: groupId!,
               getShareLink: (params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
