@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -199,15 +200,14 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
-    public void usesWebContentsCreatedWithWarmRenderer_basedOnParticularNetworkHandle() {
-        WebContents webContents = mock(WebContents.class);
+    public void propagatesTargetNetworkCorrectly_whenIntentDataProviderTargetsNetwork() {
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
-        when(env.webContentsFactory.createWebContentsWithWarmRenderer(
-                        any(), anyBoolean(), eq(TEST_TARGET_NETWORK)))
-                .thenReturn(webContents);
         env.reachNativeInit(mTabController);
-        verify(env.warmupManager, never()).takeSpareWebContents(env.isOffTheRecord, false);
-        assertEquals(webContents, env.webContentsCaptor.getValue());
+        verify(env.webContentsFactory, never())
+                .createWebContentsWithWarmRenderer(
+                        any(), anyBoolean(), not(eq(TEST_TARGET_NETWORK)));
+        verify(env.webContentsFactory)
+                .createWebContentsWithWarmRenderer(any(), anyBoolean(), eq(TEST_TARGET_NETWORK));
     }
 
     @Test

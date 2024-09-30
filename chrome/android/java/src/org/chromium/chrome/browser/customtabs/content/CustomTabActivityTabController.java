@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.NetId;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -497,13 +496,10 @@ public class CustomTabActivityTabController
             return webContents;
         }
 
-        // Check if any available target network specified via customTabsIntent before creating
-        // web contents, and we only use the spare web contents if the provided network is the
-        // default one.
+        // Multi-network CCT does not support spare web contents.
         // TODO: this check can be removed once the spare web contents can be created with a
         // particular target network as well, e.g. via {@link CustomTabsSession#mayLaunchUrl}.
-        long targetNetwork = mIntentDataProvider.getTargetNetwork();
-        if (targetNetwork == NetId.INVALID) {
+        if (!mIntentDataProvider.hasTargetNetwork()) {
             webContents =
                     mWarmupManager.takeSpareWebContents(
                             mIntentDataProvider.isOffTheRecord(), /* initiallyHidden= */ false);
@@ -518,12 +514,18 @@ public class CustomTabActivityTabController
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord()),
                 /* initiallyHidden= */ false,
-                targetNetwork);
+                mIntentDataProvider.getTargetNetwork());
     }
 
     private @Nullable WebContents takeAsyncWebContents() {
         // Async WebContents are not supported for Incognito/Ephemeral CCT.
         if (mIntentDataProvider.isOffTheRecord()) return null;
+        // Async WebContents are not supported for multi-network CCT. In this case it's better to
+        // always create WebContents from scratch, otherwise we might break the "WebContents
+        // associated with a CCT tab targeting a network will always have
+        // WebContents::GetTargetNetwork == that target network" invariant (see
+        // WebContentsImpl::CreateWithOpener for more info).
+        if (mIntentDataProvider.hasTargetNetwork()) return null;
         int assignedTabId = IntentHandler.getTabId(mIntent);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.get().remove(assignedTabId);
         if (asyncParams == null) return null;

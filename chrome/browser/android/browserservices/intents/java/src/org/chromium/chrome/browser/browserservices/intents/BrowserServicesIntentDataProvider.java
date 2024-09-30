@@ -647,11 +647,20 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * Return the target network that should be used from this intent, the default value to be used
-     * when a network has not been explicitly set via intent.
+     * Return the target network handle {@link android.net.Network#getNetworkHandle} that loads
+     * associated with this intent must use. Defaults to {@code NetId.INVALID}, in which case we let
+     * the underlying system make this choice.
      */
     public long getTargetNetwork() {
         return NetId.INVALID;
+    }
+
+    /**
+     * Return whether this intent has a target network. Certain optimizations or features are not
+     * support for tabs targeting a network. This helper is useful for handling those scenarios.
+     */
+    public boolean hasTargetNetwork() {
+        return getTargetNetwork() != NetId.INVALID;
     }
 
     /** Return {@code true} if the service was launched for authentication. */
