@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VECTOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VECTOR_H_
 
@@ -143,11 +138,6 @@ class WebVector {
   template <typename C>
   void Assign(const C& other) {
     data_.assign(other.begin(), other.end());
-  }
-
-  template <typename U>
-  void Assign(const U* values, size_t size) {
-    data_.assign(values, values + size);
   }
 
   size_t size() const { return data_.size(); }

@@ -309,8 +309,7 @@ WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(
   DummyExceptionStateForTesting exception_state;
   if (DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
           isolate, value.V8Value(), exception_state)) {
-    vector.Assign(reinterpret_cast<const unsigned char*>(buffer->Data()),
-                  buffer->ByteLength());
+    vector.Assign(buffer->ByteSpan());
   }
   return vector;
 }

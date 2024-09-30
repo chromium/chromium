@@ -57,7 +57,7 @@ TEST(WebVectorTest, Empty) {
   WebVector<int> vector;
   ASSERT_TRUE(vector.empty());
   int value = 1;
-  vector.Assign(&value, 1);
+  vector.Assign(base::span_from_ref(value));
   ASSERT_EQ(1u, vector.size());
   ASSERT_FALSE(vector.empty());
 }

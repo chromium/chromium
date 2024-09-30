@@ -285,7 +285,7 @@ class MediaControlsImplTest : public PageTestBase,
         AtomicString("https://example.com/foo.mp4"));
     test::RunPendingTasks();
     WebTimeRange time_range(0.0, duration);
-    WebMediaPlayer()->seekable_.Assign(&time_range, 1);
+    WebMediaPlayer()->seekable_.Assign(base::span_from_ref(time_range));
     MediaControls().MediaElement().DurationChanged(duration,
                                                    false /* requestSeek */);
     SimulateLoadedMetadata();

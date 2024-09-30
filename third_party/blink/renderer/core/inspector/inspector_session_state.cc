@@ -148,7 +148,7 @@ void InspectorAgentState::Serialize(const std::vector<uint8_t>& v,
   // We could CBOR encode this, but since we never look at the contents
   // anyway (except for decoding just below), we just cheat and use the
   // blob directly.
-  out->Assign(v.data(), v.size());
+  out->Assign(v);
 }
 
 /*static*/
