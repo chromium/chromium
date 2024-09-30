@@ -1634,9 +1634,7 @@ template <>
 inline content::WebContents* FromJniType<content::WebContents*>(
     JNIEnv* env,
     const JavaRef<jobject>& j_obj) {
-  content::WebContents* ret = content::WebContents::FromJavaWebContents(j_obj);
-  CHECK(ret);
-  return ret;
+  return content::WebContents::FromJavaWebContents(j_obj);
 }
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,

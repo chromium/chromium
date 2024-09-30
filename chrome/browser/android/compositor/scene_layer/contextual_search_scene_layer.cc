@@ -52,7 +52,6 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
 
 void ContextualSearchSceneLayer::CreateContextualSearchLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
@@ -68,7 +67,6 @@ ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {}
 
 void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     jint search_bar_background_resource_id,
     jint search_bar_background_color,
     jint search_context_resource_id,
@@ -90,7 +88,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat layout_height,
     jfloat base_page_brightness,
     jfloat base_page_offset,
-    const JavaParamRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     jboolean search_promo_visible,
     jfloat search_promo_height,
     jfloat search_promo_opacity,
@@ -119,7 +117,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat search_bar_border_height,
     jboolean quick_action_icon_visible,
     jboolean thumbnail_visible,
-    jstring j_thumbnail_url,
+    std::string& thumbnail_url,
     jfloat custom_image_visibility_percentage,
     jint bar_image_size,
     jint icon_color,
@@ -136,8 +134,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jint rounded_bar_top_resource_id,
     jint separator_line_color) {
   // Load the thumbnail if necessary.
-  std::string thumbnail_url =
-      base::android::ConvertJavaStringToUTF8(env, j_thumbnail_url);
   if (thumbnail_url != thumbnail_url_) {
     thumbnail_url_ = thumbnail_url;
     FetchThumbnail(profile);
@@ -146,9 +142,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
   // NOTE(pedrosimonetti): The WebContents might not exist at this time if
   // the Contextual Search Result has not been requested yet. In this case,
   // we'll pass NULL to Contextual Search's Layer Tree.
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-
   scoped_refptr<cc::slim::Layer> content_layer =
       web_contents ? web_contents->GetNativeView()->GetLayer() : nullptr;
 
@@ -251,7 +244,6 @@ void ContextualSearchSceneLayer::OnFetchComplete(const GURL& url,
 
 void ContextualSearchSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())
@@ -263,8 +255,7 @@ void ContextualSearchSceneLayer::SetContentTree(
   }
 }
 
-void ContextualSearchSceneLayer::HideTree(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jobj) {
+void ContextualSearchSceneLayer::HideTree(JNIEnv* env) {
   // TODO(mdjones): Create super class for this logic.
   if (contextual_search_layer_) {
     contextual_search_layer_->layer()->SetHideLayerAndSubtree(true);

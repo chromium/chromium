@@ -40,19 +40,15 @@ OverlayPanelContent::~OverlayPanelContent() {
   Java_OverlayPanelContent_clearNativePanelContentPtr(env, java_manager_);
 }
 
-void OverlayPanelContent::Destroy(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj) {
+void OverlayPanelContent::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void OverlayPanelContent::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     jint width,
     jint height) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
   web_contents->GetNativeView()->OnSizeChanged(width, height);
@@ -60,14 +56,8 @@ void OverlayPanelContent::OnPhysicalBackingSizeChanged(
 
 void OverlayPanelContent::SetWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     const JavaParamRef<jobject>& jweb_contents_delegate) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-
-  DCHECK(web_contents);
-
   // NOTE(pedrosimonetti): Takes ownership of the WebContents. This is to make
   // sure that the WebContens and the Compositor are in the same process.
   // TODO(pedrosimonetti): Confirm with dtrainor@ if the comment above
@@ -85,9 +75,7 @@ void OverlayPanelContent::SetWebContents(
   web_contents_->SetDelegate(web_contents_delegate_.get());
 }
 
-void OverlayPanelContent::DestroyWebContents(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+void OverlayPanelContent::DestroyWebContents(JNIEnv* env) {
   DCHECK(web_contents_.get());
   // At the time this is called we may be deeply nested in a callback from
   // WebContents. WebContents does not support being deleted from a callback
@@ -101,12 +89,8 @@ void OverlayPanelContent::DestroyWebContents(
 
 void OverlayPanelContent::SetInterceptNavigationDelegate(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& delegate,
-    const JavaParamRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+    content::WebContents* web_contents) {
   navigation_interception::InterceptNavigationDelegate::Associate(
       web_contents,
       std::make_unique<navigation_interception::InterceptNavigationDelegate>(
@@ -115,7 +99,6 @@ void OverlayPanelContent::SetInterceptNavigationDelegate(
 
 void OverlayPanelContent::UpdateBrowserControlsState(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean are_controls_hidden) {
   if (!web_contents_)
     return;

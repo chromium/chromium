@@ -22,6 +22,10 @@ class Layer;
 class SolidColorLayer;
 }  // namespace cc::slim
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace android {
 
 class ContextualSearchLayer;
@@ -44,12 +48,10 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   void CreateContextualSearchLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateContextualSearchLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
       jint search_bar_background_resource_id,
       jint search_bar_background_color,
       jint search_context_resource_id,
@@ -71,7 +73,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat layout_height,
       jfloat base_page_brightness,
       jfloat base_page_offset,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      content::WebContents* web_contents,
       jboolean search_promo_visible,
       jfloat search_promo_height,
       jfloat search_promo_opacity,
@@ -100,7 +102,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat search_bar_border_height,
       jboolean quick_action_icon_visible,
       jboolean thumbnail_visible,
-      jstring j_thumbnail_url,
+      std::string& thumbnail_url,
       jfloat custom_image_visibility_percentage,
       jint bar_image_size,
       jint icon_color,
@@ -124,12 +126,9 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   void SetContentTree(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jcontent_tree);
 
-  void HideTree(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  void HideTree(JNIEnv* env);
 
  private:
   void FetchThumbnail(Profile* profile);
