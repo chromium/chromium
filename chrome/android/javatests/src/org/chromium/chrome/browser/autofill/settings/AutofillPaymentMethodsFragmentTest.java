@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
@@ -40,6 +41,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -91,6 +94,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
+    @Mock private Callback<String> mServerIbanManageLinkOpenerCallback;
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
@@ -1232,6 +1236,51 @@ public class AutofillPaymentMethodsFragmentTest {
         Assert.assertNull(
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN})
+    public void testCustomUrlForServerIbanManagePage() throws Exception {
+        mAutofillTestHelper.addServerIban(VALID_SERVER_IBAN);
+
+        SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule
+                .getFragment()
+                .setServerIbanManageLinkOpenerCallbackForTesting(
+                        mServerIbanManageLinkOpenerCallback);
+        Preference ibanPreference = getFirstPaymentMethodPreference(settingsActivity);
+
+        ThreadUtils.runOnUiThreadBlocking(ibanPreference::performClick);
+
+        verify(mServerIbanManageLinkOpenerCallback)
+                .onResult(
+                        eq(
+                                "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                        + VALID_SERVER_IBAN.getInstrumentId()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN})
+    @CommandLineFlags.Add({ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT})
+    public void testCustomUrlForServerIbanManagePage_sandboxEnabled() throws Exception {
+        mAutofillTestHelper.addServerIban(VALID_SERVER_IBAN);
+
+        SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule
+                .getFragment()
+                .setServerIbanManageLinkOpenerCallbackForTesting(
+                        mServerIbanManageLinkOpenerCallback);
+        Preference ibanPreference = getFirstPaymentMethodPreference(settingsActivity);
+
+        ThreadUtils.runOnUiThreadBlocking(ibanPreference::performClick);
+
+        verify(mServerIbanManageLinkOpenerCallback)
+                .onResult(
+                        eq(
+                                "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                        + VALID_SERVER_IBAN.getInstrumentId()));
     }
 
     @Test
