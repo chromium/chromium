@@ -39,7 +39,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -60,7 +59,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
 public class ChoiceScreenRenderTest {
     public @ClassParameter static List<ParameterSet> params = new NightModeParams().getParameters();
 
@@ -89,6 +87,12 @@ public class ChoiceScreenRenderTest {
     @Before
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", "0");
+        FeatureList.setTestValues(testFeatures);
+
         mActivityTestRule.launchActivity(null);
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         mFakeDelegate =

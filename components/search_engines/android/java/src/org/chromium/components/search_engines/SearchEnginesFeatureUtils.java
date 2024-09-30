@@ -12,7 +12,7 @@ public final class SearchEnginesFeatureUtils {
 
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsBoolean(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend", true);
+                        SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend", false);
     }
 
     public static boolean clayBlockingIsDarkLaunch() {
@@ -30,7 +30,7 @@ public final class SearchEnginesFeatureUtils {
 
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsBoolean(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "enable_verbose_logging", true);
+                        SearchEnginesFeatures.CLAY_BLOCKING, "enable_verbose_logging", false);
     }
 
     /**
@@ -44,7 +44,7 @@ public final class SearchEnginesFeatureUtils {
 
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsInt(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", 0);
+                        SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", 60_000);
     }
 
     /**
