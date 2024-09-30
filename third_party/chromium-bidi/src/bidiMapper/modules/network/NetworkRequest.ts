@@ -249,9 +249,9 @@ export class NetworkRequest {
   get #statusCode(): number | undefined {
     return (
       this.#responseOverrides?.statusCode ??
-      this.#response.info?.status ??
+      this.#response.paused?.responseStatusCode ??
       this.#response.extraInfo?.statusCode ??
-      this.#response.paused?.responseStatusCode
+      this.#response.info?.status
     );
   }
 
