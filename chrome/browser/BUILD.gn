@@ -1974,6 +1974,7 @@ static_library("browser") {
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
+    "//chrome/browser/ui/startup:startup_tab",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",

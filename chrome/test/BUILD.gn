@@ -681,6 +681,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications",
       "//components/crx_file",
@@ -2004,6 +2005,7 @@ if (!is_android) {
       "//chrome/browser/ui/safety_hub:test_support",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:browser_tests",
+      "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts",
@@ -7999,6 +8001,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/webui/settings",
     ]
 
@@ -10963,6 +10966,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/views/bubble",
