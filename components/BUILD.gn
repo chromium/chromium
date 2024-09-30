@@ -1273,6 +1273,7 @@ if (is_android) {
       "//components/background_task_scheduler:components_background_task_scheduler_junit_tests",
       "//components/browser_ui/bottomsheet/android/internal:junit_tests",
       "//components/browser_ui/client_certificate/android:junit",
+      "//components/browser_ui/desktop_windowing/android:junit",
       "//components/browser_ui/media/android:junit",
       "//components/browser_ui/photo_picker/android:junit",
       "//components/browser_ui/settings/android:junit",

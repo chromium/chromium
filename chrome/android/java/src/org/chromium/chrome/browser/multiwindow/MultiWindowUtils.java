@@ -49,8 +49,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.display.DisplayAndroidManager;
 

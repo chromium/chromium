@@ -49,8 +49,8 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;

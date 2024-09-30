@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */

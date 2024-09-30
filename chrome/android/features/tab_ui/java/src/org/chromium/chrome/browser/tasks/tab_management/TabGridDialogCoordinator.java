@@ -45,10 +45,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.modaldialog.ModalDialogManager;

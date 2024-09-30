@@ -29,9 +29,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 
 /** Unit tests for {@link AppThemeColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)

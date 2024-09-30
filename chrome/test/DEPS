@@ -13,6 +13,7 @@ include_rules = [
   "+components/autofill/core",
   "+components/bookmarks/browser",
   "+components/bookmarks/common",
+  "+components/browser_ui/desktop_windowing/android",
   "+components/captive_portal",
   "+components/color",
   "+components/commerce/core",

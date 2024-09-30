@@ -19,6 +19,8 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 
 /** Unit tests for {@link AppHeaderUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)

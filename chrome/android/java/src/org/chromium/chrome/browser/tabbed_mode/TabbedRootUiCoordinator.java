@@ -129,7 +129,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -138,6 +137,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;

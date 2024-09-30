@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 

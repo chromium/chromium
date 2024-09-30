@@ -11,6 +11,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 
 /** Utility class for the desktop windowing feature implementation. */
 // TODO (crbug/328055199): Rename this to DesktopWindowUtils.

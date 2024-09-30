@@ -38,9 +38,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 

@@ -32,6 +32,7 @@ include_rules = [
   "+components/commerce/core",
   "+components/content_capture",
   "+components/content_settings",
+  "+components/browser_ui/desktop_windowing/android",
   "+components/download",
   "+components/embedder_support/android",
   "+components/external_intents/android",

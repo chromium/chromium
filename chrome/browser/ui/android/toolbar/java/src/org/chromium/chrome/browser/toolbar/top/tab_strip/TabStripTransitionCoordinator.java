@@ -23,10 +23,10 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.ui.util.TokenHolder;
 
 /** Class used to manage tab strip visibility and height updates. */

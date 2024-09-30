@@ -59,12 +59,12 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
