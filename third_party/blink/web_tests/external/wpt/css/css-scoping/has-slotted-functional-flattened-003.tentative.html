@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>:has-slotted(el) + :has-slotted(el) flattened through multiple slots</title>
+<title>:has-slotted(...) flattened through multiple slots, negative test: no children, but whitespace present</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/pull/10586">
 <link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
 <p>Test passes if there is a filled green square.</p>
@@ -9,23 +9,19 @@
         <div id="host">
             <template shadowrootmode="open">
                 <style>
-                    [name] {
+                slot {
                     display: block;
                     width: 100px;
                     height: 100px;
-                    background-color: red;
-                    }
-                    :has-slotted(div) + :has-slotted(div) {
                     background-color: green;
-                    }
+                }
+                :has-slotted(*) {
+                    background-color: red;
+                }
                 </style>
                 <slot></slot>
-                <slot name="after"></slot>
             </template>
-            <slot></slot>
-            <slot name="after" slot="after"></slot>
         </div>
+        <slot></slot>
     </template>
-    <div></div>
-    <div slot="after"></div>
 </div>

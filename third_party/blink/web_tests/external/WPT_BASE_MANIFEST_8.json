@@ -177201,84 +177201,6 @@
       ]
      ],
      "has-slotted-001.tentative.html": [
-      "9a9563287631b6544b9009b16200791424d5d868",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-002.tentative.html": [
-      "40b4edb3841684d29c6a058ccbea2da1c40893bb",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-003.tentative.html": [
-      "9565b1594c3ed71094f7cf826653f6c06f486a1d",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-004.tentative.html": [
-      "2d980e10051eb5a654771a9069eeb74f7f4f5890",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-005.tentative.html": [
-      "3de7c16f287cb6fc5681362f7def0252981bde24",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-006.tentative.html": [
-      "aea5c6b2a141fd297859635509bd976772cd1908",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-007.tentative.html": [
       "e750d97a180b5daa6eb0ac18e7178372eeaf96b6",
       [
        null,
@@ -177291,8 +177213,34 @@
        {}
       ]
      ],
+     "has-slotted-002.tentative.html": [
+      "729f105719b98ac791cf1f7ba9ceae88f38a4b4e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-003.tentative.html": [
+      "7578413ff3977094a5ffbcb151498a92ddc4c36d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "has-slotted-flattened-001.tentative.html": [
-      "f14bdbc776d639a5f52c9d69bf25882d601da876",
+      "0235f99e21f1c9ba0382e7a8936f8f1050a854fe",
       [
        null,
        [
@@ -177305,7 +177253,7 @@
       ]
      ],
      "has-slotted-flattened-002.tentative.html": [
-      "f72ff1de5aa298a2dac90d9a2a406029156a764e",
+      "bc14cad643ddd7cff7d64ce7467c7ab64ac03f6c",
       [
        null,
        [
@@ -177318,6 +177266,136 @@
       ]
      ],
      "has-slotted-flattened-003.tentative.html": [
+      "5f007fbd1b0fb4220a2214cb169c93a88dd2029a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-001.tentative.html": [
+      "9a9563287631b6544b9009b16200791424d5d868",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-002.tentative.html": [
+      "a67f788f78563382862dc722782ca186010b6c30",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-003.tentative.html": [
+      "9565b1594c3ed71094f7cf826653f6c06f486a1d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-004.tentative.html": [
+      "2d980e10051eb5a654771a9069eeb74f7f4f5890",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-005.tentative.html": [
+      "3de7c16f287cb6fc5681362f7def0252981bde24",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-006.tentative.html": [
+      "aea5c6b2a141fd297859635509bd976772cd1908",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-007.tentative.html": [
+      "d7e015056300ca81a5a38c2020c59332f9258d6c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-001.tentative.html": [
+      "f14bdbc776d639a5f52c9d69bf25882d601da876",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-002.tentative.html": [
+      "ff13ac70963c4fac875ba0202185d7320253b6ec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-003.tentative.html": [
       "bca81b971de20dd8e5174052623ad2da21ad11fc",
       [
        null,
@@ -177330,7 +177408,7 @@
        {}
       ]
      ],
-     "has-slotted-flattened-004.tentative.html": [
+     "has-slotted-functional-flattened-004.tentative.html": [
       "7b299d25baa36f23d6311ac1fd5981a50f9d6a5b",
       [
        null,
@@ -177343,7 +177421,7 @@
        {}
       ]
      ],
-     "has-slotted-flattened-005.tentative.html": [
+     "has-slotted-functional-flattened-005.tentative.html": [
       "7fccf604d8bcbf0f3452c3e8c79f2da24122b9b0",
       [
        null,
@@ -177356,21 +177434,8 @@
        {}
       ]
      ],
-     "has-slotted-flattened-006.tentative.html": [
-      "cfe415c7948cbd07622b870121b6c42ffa335eed",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-flattened-007.tentative.html": [
-      "0235f99e21f1c9ba0382e7a8936f8f1050a854fe",
+     "has-slotted-functional-flattened-006.tentative.html": [
+      "fd3dda69bc8a70300437ace996362431019d8329",
       [
        null,
        [
@@ -341835,6 +341900,30 @@
       "a446b39f4cba898e1c14f7c62b74456acba91901",
       []
      ],
+     "has-slotted-changing-001.tentative-expected.txt": [
+      "7b2e72e1fd51aee683f77efdc8b265ee41253d4e",
+      []
+     ],
+     "has-slotted-changing-002.tentative-expected.txt": [
+      "0b7fda639357a7627336e5206ad422ede4000eca",
+      []
+     ],
+     "has-slotted-functional-changing-001.tentative-expected.txt": [
+      "06421a19dcdc12bc98bf6eb6aa6b2f97b2ecc400",
+      []
+     ],
+     "has-slotted-functional-changing-002.tentative-expected.txt": [
+      "805e5333690d7e48ed1b12dff763a549a535fa89",
+      []
+     ],
+     "has-slotted-functional-changing-003.tentative-expected.txt": [
+      "0687500ebb2e267d851d6671f72c77b13e77f505",
+      []
+     ],
+     "has-slotted-functional-changing-004.tentative-expected.txt": [
+      "805e5333690d7e48ed1b12dff763a549a535fa89",
+      []
+     ],
      "keyframes-002-expected.txt": [
       "765775c5d7c5011c6d148252d1d8e0e6dca8c756",
       []
@@ -476423,6 +476512,60 @@
        {}
       ]
      ],
+     "has-slotted-changing-001.tentative.html": [
+      "f4c99cdb5dcc2c9576c079fe0dbd2c92829bfa20",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-changing-002.tentative.html": [
+      "98ad6019ab021df4f0d036529a16b2180f7cba6f",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-001.tentative.html": [
+      "209a47298e3554f59a0b02ae6f2d53a3aab20498",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-002.tentative.html": [
+      "36fafcb1dcc49b45d6380efdba33955ca294d34b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-003.tentative.html": [
+      "9914e452088066d860fd57edb80ec865fba3bcf8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-004.tentative.html": [
+      "669162050aab4ec3f32c778d78b3f9ab7dae7f2b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "host-context-parsing.html": [
       "56055ece63733e8c58c6add661566572356d67aa",
       [
@@ -602986,6 +603129,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "granted-selector.html": [
+       "3ce1ad728e0499365a7bdebec3cf95a702ff469c",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "invalid-css-properties.tentative.html": [
