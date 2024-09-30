@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_CONTROLLER_H_
 
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
 // Class that owns the FedCmAccountSelectionView, but is itself owned by
