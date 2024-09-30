@@ -5487,7 +5487,7 @@
       'optimization_guide-android-arm64': {
         'mixins': [
           'android',
-          'chrome-intelligence-swarming-pool',
+          'chrome-flame-fleet-pool',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_android_gtests',

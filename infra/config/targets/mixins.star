@@ -371,6 +371,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chrome-flame-fleet-pool",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "flame",
+            "device_os": "R",
+            "pool": "chrome.tests",
+            "os": "Android",
+        },
+    ),
+)
+
+targets.mixin(
     name = "chrome-intelligence-swarming-pool",
     swarming = targets.swarming(
         dimensions = {

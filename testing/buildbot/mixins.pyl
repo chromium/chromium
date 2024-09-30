@@ -106,6 +106,16 @@
       },
     },
   },
+  'chrome-flame-fleet-pool': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'flame',
+        'device_os': 'R',
+        'pool': 'chrome.tests',
+        'os': 'Android',
+      },
+    },
+  },
   'chrome-intelligence-swarming-pool': {
     'swarming': {
       'dimensions': {
