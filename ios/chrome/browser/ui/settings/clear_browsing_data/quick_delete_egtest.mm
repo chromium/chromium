@@ -510,8 +510,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_enabled()];
 }
 
-// Tests the selection time range for the browsing data deletion: the time range
-// selection is shown with the pref value and a new selection updates the pref.
+// Tests that the time range first shows the pref value but only updates the
+// pref when the user goes through with the deletion.
 - (void)testTimeRangeForDeletionSelection {
   // Set pref to the last hour.
   [ChromeEarlGrey
@@ -568,7 +568,17 @@ NSString* CapitalizeFirstLetter(NSString* string) {
               IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Confirm that the pref was saved with the new value of last 15 minutes.
+  // Confirm that the pref has not been changed.
+  GREYAssertEqual(
+      [ChromeEarlGrey userIntegerPref:browsing_data::prefs::kDeleteTimePeriod],
+      static_cast<int>(browsing_data::TimePeriod::LAST_HOUR),
+      @"Incorrect local pref value.");
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+
+  // Confirm that only after the user has gone through with the deletion, the
+  // pref has been saved with the new value of last 15 minutes.
   GREYAssertEqual(
       [ChromeEarlGrey userIntegerPref:browsing_data::prefs::kDeleteTimePeriod],
       static_cast<int>(browsing_data::TimePeriod::LAST_15_MINUTES),
@@ -1118,6 +1128,9 @@ NSString* CapitalizeFirstLetter(NSString* string) {
           PopupCellWithTimeRange(l10n_util::GetNSString(
               IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button so the time range pref is saved.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
 
   // Focus on the second window.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::

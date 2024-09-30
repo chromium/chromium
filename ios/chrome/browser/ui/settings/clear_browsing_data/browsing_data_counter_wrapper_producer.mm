@@ -30,12 +30,28 @@
   }
 
   PrefService* prefService = browserState->GetPrefs();
-  if (!prefService) {
-    return nullptr;
-  }
+  CHECK(prefService);
 
   return BrowsingDataCounterWrapper::CreateCounterWrapper(
       prefName, browserState, prefService, updateUiCallback);
+}
+
+- (std::unique_ptr<BrowsingDataCounterWrapper>)
+    createCounterWrapperWithPrefName:(std::string_view)prefName
+                           beginTime:(base::Time)beginTime
+                    updateUiCallback:
+                        (BrowsingDataCounterWrapper::UpdateUICallback)
+                            updateUiCallback {
+  ChromeBrowserState* browserState = _browserState.get();
+  if (!browserState) {
+    return nullptr;
+  }
+
+  PrefService* prefService = browserState->GetPrefs();
+  CHECK(prefService);
+
+  return BrowsingDataCounterWrapper::CreateCounterWrapper(
+      prefName, browserState, prefService, beginTime, updateUiCallback);
 }
 
 @end

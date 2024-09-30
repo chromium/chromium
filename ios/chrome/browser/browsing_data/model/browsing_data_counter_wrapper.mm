@@ -99,10 +99,34 @@ BrowsingDataCounterWrapper::CreateCounterWrapper(
                                      std::move(update_ui_callback)));
 }
 
+// static
+std::unique_ptr<BrowsingDataCounterWrapper>
+BrowsingDataCounterWrapper::CreateCounterWrapper(
+    std::string_view pref_name,
+    ChromeBrowserState* browser_state,
+    PrefService* pref_service,
+    base::Time begin_time,
+    UpdateUICallback update_ui_callback) {
+  std::unique_ptr<browsing_data::BrowsingDataCounter> counter =
+      CreateCounterForBrowserStateAndPref(browser_state, pref_name);
+  if (!counter) {
+    return nullptr;
+  }
+
+  return base::WrapUnique<BrowsingDataCounterWrapper>(
+      new BrowsingDataCounterWrapper(std::move(counter), pref_service,
+                                     begin_time,
+                                     std::move(update_ui_callback)));
+}
+
 BrowsingDataCounterWrapper::~BrowsingDataCounterWrapper() = default;
 
 void BrowsingDataCounterWrapper::RestartCounter() {
   counter_->Restart();
+}
+
+void BrowsingDataCounterWrapper::SetBeginTime(base::Time beginTime) {
+  counter_->SetBeginTime(beginTime);
 }
 
 BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
@@ -115,6 +139,21 @@ BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
   DCHECK(update_ui_callback_);
   counter_->Init(
       pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED,
+      base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
+                          base::Unretained(this)));
+}
+
+BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
+    std::unique_ptr<browsing_data::BrowsingDataCounter> counter,
+    PrefService* pref_service,
+    base::Time begin_time,
+    UpdateUICallback update_ui_callback)
+    : counter_(std::move(counter)),
+      update_ui_callback_(std::move(update_ui_callback)) {
+  DCHECK(counter_);
+  DCHECK(update_ui_callback_);
+  counter_->InitWithoutPeriodPref(
+      pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED, begin_time,
       base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
                           base::Unretained(this)));
 }

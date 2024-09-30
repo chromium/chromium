@@ -30,10 +30,52 @@
 namespace {
 
 using browsing_data::DeleteBrowsingDataDialogAction;
+using browsing_data::kDeleteBrowsingDataDialogHistogram;
+using browsing_data::TimePeriod;
 
 // Delay to observe when triggering further actions after browsing data removal
 // has completed so the progress UI state is not flashed.
 constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
+
+void RecordTimePeriodPrefChange(TimePeriod period) {
+  switch (period) {
+    case TimePeriod::LAST_15_MINUTES:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
+      break;
+    case TimePeriod::LAST_HOUR:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kLastHourSelected);
+      break;
+    case TimePeriod::LAST_DAY:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kLastDaySelected);
+      break;
+    case TimePeriod::LAST_WEEK:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kLastWeekSelected);
+      break;
+    case TimePeriod::FOUR_WEEKS:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kLastFourWeeksSelected);
+      break;
+    case TimePeriod::ALL_TIME:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kAllTimeSelected);
+      break;
+    case TimePeriod::OLDER_THAN_30_DAYS:
+      base::UmaHistogramEnumeration(
+          kDeleteBrowsingDataDialogHistogram,
+          DeleteBrowsingDataDialogAction::kOlderThan30DaysSelected);
+      break;
+  }
+}
 
 }  // namespace
 
@@ -46,6 +88,10 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
   raw_ptr<BrowsingDataRemover> _browsingDataRemover;
   raw_ptr<DiscoverFeedService> _discoverFeedService;
+
+  // The currently selected time range in the UI. Only saved into the
+  // `kDeleteTimePeriod` pref when the deletion is triggered.
+  browsing_data::TimePeriod _selectedTimeRange;
 
   // Summaries based on the results returned by `_counters`. If they're nil, it
   // means that the counter for the browsing data type in `_counters` has not
@@ -107,6 +153,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
+    _selectedTimeRange = static_cast<browsing_data::TimePeriod>(
+        _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+
     // Start observing preferences.
     [self observePreferences];
 
@@ -120,9 +169,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     return;
   }
   _consumer = consumer;
-  [_consumer
-      setTimeRange:static_cast<browsing_data::TimePeriod>(_prefs->GetInteger(
-                       browsing_data::prefs::kDeleteTimePeriod))];
+
+  [_consumer setTimeRange:_selectedTimeRange];
 
   BOOL shouldShowFooter =
       _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
@@ -161,18 +209,11 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 #pragma mark - QuickDeleteMutator
 
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
-  browsing_data::TimePeriod currentTimePeriod =
-      static_cast<browsing_data::TimePeriod>(
-          _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
-
-  if (currentTimePeriod == timeRange) {
+  if (_selectedTimeRange == timeRange) {
     return;
   }
 
-  browsing_data::RecordTimePeriodChange(timeRange);
-
-  _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
-                     static_cast<int>(timeRange));
+  _selectedTimeRange = timeRange;
 }
 
 - (void)triggerDeletion {
@@ -182,6 +223,11 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
   DUMP_WILL_BE_CHECK(!_deletionTriggered);
   _deletionTriggered = YES;
+
+  // Only update the time range pref on deletion.
+  _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                     static_cast<int>(_selectedTimeRange));
+  RecordTimePeriodPrefChange(_selectedTimeRange);
 
   [_consumer deletionInProgress];
 
@@ -228,10 +274,10 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     removeMask |= BrowsingDataRemoveMask::CLOSE_TABS;
   }
 
-  browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
-      _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
-  base::Time beginTime = browsing_data::CalculateBeginDeleteTime(timePeriod);
-  base::Time endTime = browsing_data::CalculateEndDeleteTime(timePeriod);
+  base::Time beginTime =
+      browsing_data::CalculateBeginDeleteTime(_selectedTimeRange);
+  base::Time endTime =
+      browsing_data::CalculateEndDeleteTime(_selectedTimeRange);
   BrowsingDataRemover::RemovalParams params{
       .show_activity_indicator =
           BrowsingDataRemover::ActivityIndicatorPolicy::kNoIndicator,
@@ -405,6 +451,11 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
+    _selectedTimeRange = static_cast<browsing_data::TimePeriod>(
+        _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+  }
+
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod ||
       preferenceName == browsing_data::prefs::kDeleteBrowsingHistory ||
       preferenceName == browsing_data::prefs::kCloseTabs ||
@@ -414,9 +465,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
       preferenceName == browsing_data::prefs::kDeleteFormData) {
     [self restartCounters];
     [self updateConsumerSelectionForPref:preferenceName];
-
     return;
   }
+
   DCHECK(false) << "Unxpected clear browsing data item type.";
 }
 
@@ -452,6 +503,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   __weak __typeof(self) weakSelf = self;
   std::unique_ptr<BrowsingDataCounterWrapper> counter = [_counterWrapperProducer
       createCounterWrapperWithPrefName:prefName
+                             beginTime:browsing_data::CalculateBeginDeleteTime(
+                                           _selectedTimeRange)
                       updateUiCallback:
                           base::BindRepeating(^(
                               const browsing_data::BrowsingDataCounter::Result&
@@ -464,8 +517,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   }
 }
 
-// Restarts the counters created in `createdCounters`. Restarting the counters
-// results on the browsing data summary being updated in the ViewController.
+// Restarts the counters created in `createdCounters` with `_selectedTimeRange`.
+// Restarting the counters results on the browsing data summary being updated in
+// the ViewController.
 - (void)restartCounters {
   _browsingHistorySummary = nil;
   _tabsSummary = nil;
@@ -480,7 +534,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   for (std::set<std::unique_ptr<BrowsingDataCounterWrapper>>::iterator it =
            _counters.begin();
        it != _counters.end(); ++it) {
-    (*it)->RestartCounter();
+    // Setting a new begin time, restarts the counter.
+    (*it)->SetBeginTime(
+        browsing_data::CalculateBeginDeleteTime(_selectedTimeRange));
   }
 }
 
@@ -730,10 +786,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 - (void)updateResultOnConsumer:
     (const browsing_data::BrowsingDataCounter::Result*)result {
   std::string prefName = result->source()->GetPrefName();
-  browsing_data::TimePeriod timeRange = static_cast<browsing_data::TimePeriod>(
-      _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
   NSString* summary =
-      quick_delete_util::GetCounterTextFromResult(*result, timeRange);
+      quick_delete_util::GetCounterTextFromResult(*result, _selectedTimeRange);
 
   if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
     [_consumer setHistorySummary:summary];
@@ -763,8 +817,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 
 - (void)updateConsumerSelectionForPref:(const std::string&)preferenceName {
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
-    [_consumer setTimeRange:static_cast<browsing_data::TimePeriod>(
-                                _prefs->GetInteger(preferenceName))];
+    [_consumer setTimeRange:_selectedTimeRange];
     // Maybe update cache summary.
     return;
   }
