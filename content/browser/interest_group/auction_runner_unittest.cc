@@ -17178,6 +17178,10 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetricsPerParticipant) {
                                                            /*value=*/95),
                             BuildPrivateAggregationRequest(/*bucket=*/60,
                                                            /*value=*/400)))));
+
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kAverageCodeFetchTime, 5);
 }
 
 TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
@@ -17474,6 +17478,30 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
                                                            /*value=*/0),
                             BuildPrivateAggregationRequest(/*bucket=*/61,
                                                            /*value=*/100)))));
+
+  // Things that are requested on 2 buyers, seller, plus 2 reporting occur
+  // 5 times; even if some of those reports are 0 because they're not computed
+  // for some clients.
+  //
+  // Those that are per-generateBid() occur 2 times.
+  //
+  // The list below is not exhaustive.
+  histogram_tester_->ExpectBucketCount(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount, 5);
+  histogram_tester_->ExpectBucketCount(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kPercentScriptsTimeout, 5);
+  histogram_tester_->ExpectBucketCount(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kRegularInterestGroupsUsed, 2);
+  histogram_tester_->ExpectBucketCount(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kPercentRegularInterestGroupQuotaUsed,
+      2);
+  histogram_tester_->ExpectBucketCount(
+      "Ads.InterestGroup.Auction.PABaseValueUsed",
+      auction_worklet::mojom::BaseValue::kBidRejectReason, 0);
 }
 
 TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {

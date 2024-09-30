@@ -10,6 +10,9 @@ import "third_party/blink/public/mojom/private_aggregation/private_aggregation_h
 
 // Indicates which value the browser should use to calculate the resulting
 // bucket or value.
+// Warning: this is used for UMA histograms, so values should not be
+// renumbered.
+// LINT.IfChange(BaseValue)
 enum BaseValue {
   kWinningBid = 0,
   kHighestScoringOtherBid = 1,
@@ -30,6 +33,7 @@ enum BaseValue {
   kInterestGroupStorageUsed = 14,
   kPercentInterestGroupStorageQuotaUsed = 15,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AdAuctionPABaseValue)
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`
 // should be Uint128. We need to support negative offset value, so adding a

@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -49,6 +50,8 @@ std::optional<double> GetBaseValue(
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings) {
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Auction.PABaseValueUsed",
+                                base_value);
   // The mojom API declaration should ensure base_value is one of these cases.
   switch (base_value) {
     case auction_worklet::mojom::BaseValue::kWinningBid:

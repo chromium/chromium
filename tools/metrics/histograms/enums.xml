@@ -293,6 +293,29 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="12" label="Voice to share"/>
 </enum>
 
+<!-- LINT.IfChange(AdAuctionPABaseValue) -->
+
+<enum name="AdAuctionPABaseValue">
+  <int value="0" label="kWinningBid"/>
+  <int value="1" label="kHighestScoringOtherBid"/>
+  <int value="2" label="kScriptRunTime"/>
+  <int value="3" label="kSignalsFetchTime"/>
+  <int value="4" label="kBidRejectReason"/>
+  <int value="5" label="kParticipatingInterestGroupCount"/>
+  <int value="6" label="kAverageCodeFetchTime"/>
+  <int value="7" label="kPercentScriptsTimeout"/>
+  <int value="8" label="kPercentInterestGroupsCumulativeTimeout"/>
+  <int value="9" label="kCumulativeBuyerTime"/>
+  <int value="10" label="kRegularInterestGroupsUsed"/>
+  <int value="11" label="kPercentRegularInterestGroupQuotaUsed"/>
+  <int value="12" label="kNegativeInterestGroupsUsed"/>
+  <int value="13" label="kPercentNegativeInterestGroupQuotaUsed"/>
+  <int value="14" label="kInterestGroupStorageUsed"/>
+  <int value="15" label="kPercentInterestGroupStorageQuotaUsed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/services/auction_worklet/public/mojom/private_aggregation_request.mojom:BaseValue) -->
+
 <enum name="AdditionalBidResult">
   <int value="0" label="Sent for Scoring"/>
   <int value="1" label="Negative Targeted"/>

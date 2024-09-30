@@ -1037,6 +1037,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.PABaseValueUsed"
+    enum="AdAuctionPABaseValue" expires_after="2025-03-26">
+  <owner>morlovich@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Counts instances each base value enum was used for Private Aggregation
+    contribution computations. Recorded every time the contribution's event has
+    been determined to have occurred and the base value occurred in either
+    bucket or value computation.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.ParseBaServerResponseDuration"
     units="ms" expires_after="2025-02-10">
   <owner>behamilton@google.com</owner>
