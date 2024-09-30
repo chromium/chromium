@@ -282,7 +282,7 @@ struct EnrollmentConfig {
 
   // Source of OOBE config, if the device has an OOBE configuration file and
   // that config influences enrollment.
-  OOBEConfigSource oobe_config_source;
+  OOBEConfigSource oobe_config_source = OOBEConfigSource::kNone;
 
  private:
   // Hold fields to be filled corresponding to ones in `EnrollmentConfig`.

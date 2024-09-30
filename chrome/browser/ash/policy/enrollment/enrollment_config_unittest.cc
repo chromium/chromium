@@ -369,7 +369,7 @@ TEST_F(EnrollmentConfigTest, GetDemoModeEnrollmentConfig) {
   EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
 }
 
-TEST_F(EnrollmentConfigTest, DISABLED_GetEffectivePrescribedEnrollmentConfig) {
+TEST_F(EnrollmentConfigTest, GetEffectivePrescribedEnrollmentConfig) {
   EnrollmentConfig config;
   config.mode = EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
   config.auth_mechanism =

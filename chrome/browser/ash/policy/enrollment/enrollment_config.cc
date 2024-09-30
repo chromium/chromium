@@ -214,11 +214,11 @@ EnrollmentConfig::Mode GetManualFallbackMode(
 }  // namespace
 
 struct EnrollmentConfig::PrescribedConfig {
-  EnrollmentConfig::Mode mode;
-  EnrollmentConfig::AuthMechanism auth_mechanism;
+  EnrollmentConfig::Mode mode = MODE_NONE;
+  EnrollmentConfig::AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
   std::string management_domain;
   std::string enrollment_token;
-  OOBEConfigSource oobe_config_source;
+  OOBEConfigSource oobe_config_source = OOBEConfigSource::kNone;
 
   static PrescribedConfig GetPrescribedConfig(
       PrefService* local_state,
@@ -348,9 +348,10 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
 }
 
 struct EnrollmentConfig::PrescribedLicense {
-  bool is_license_packaged_with_device;
-  EnrollmentConfig::AssignedUpgradeType assigned_upgrade_type;
-  LicenseType license_type;
+  bool is_license_packaged_with_device = false;
+  EnrollmentConfig::AssignedUpgradeType assigned_upgrade_type =
+      AssignedUpgradeType::kAssignedUpgradeTypeUnspecified;
+  LicenseType license_type = LicenseType::kNone;
 
   static PrescribedLicense GetPrescribedLicense(
       const base::Value::Dict& device_state);
