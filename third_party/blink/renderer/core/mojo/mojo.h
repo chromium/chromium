@@ -20,6 +20,7 @@ class MojoCreateMessagePipeResult;
 class MojoCreateSharedBufferResult;
 class MojoHandle;
 class ScriptState;
+class V8MojoScope;
 
 class CORE_EXPORT Mojo final : public ScriptWrappable,
                                public Supplementable<Mojo> {
@@ -62,7 +63,7 @@ class CORE_EXPORT Mojo final : public ScriptWrappable,
   static void bindInterface(ScriptState*,
                             const String& interface_name,
                             MojoHandle*,
-                            const String& scope,
+                            const V8MojoScope& scope,
                             ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override {
