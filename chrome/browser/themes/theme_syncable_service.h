@@ -143,6 +143,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
   // we're not on one.
   bool use_system_theme_by_default_;
 
+  // Tracks whether changes from the syncer are being processed.
+  bool processing_syncer_changes_ = false;
+
   // Captures the state of theme sync after initial data merge.
   std::optional<ThemeSyncState> startup_state_;
 

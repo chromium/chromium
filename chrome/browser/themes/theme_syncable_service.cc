@@ -271,7 +271,7 @@ ThemeSyncableService::~ThemeSyncableService() {
 }
 
 void ThemeSyncableService::OnThemeChanged() {
-  if (sync_processor_.get()) {
+  if (sync_processor_.get() && !processing_syncer_changes_) {
     sync_pb::ThemeSpecifics current_specifics;
     if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
       return;  // Current theme is unsyncable.
@@ -442,6 +442,8 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     DVLOG(1) << "Skip setting theme because specs are equal";
     return ThemeSyncState::kApplied;
   }
+
+  base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
   if (theme_specifics.use_custom_theme()) {
     // TODO(akalin): Figure out what to do about third-party themes
