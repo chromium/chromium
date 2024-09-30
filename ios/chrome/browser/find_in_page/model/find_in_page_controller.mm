@@ -147,11 +147,10 @@ NSString* gSearchTerm;
   self.findInPageModel.enabled = NO;
 
   if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
-    ChromeBrowserState* browserState =
-        ChromeBrowserState::FromBrowserState(_webState->GetBrowserState());
-    BOOL incognito = browserState->IsOffTheRecord();
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(browserState);
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+    BOOL incognito = profile->IsOffTheRecord();
+    BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
     Browser* browser = GetBrowserForTabWithId(
         browserList, _webState->GetUniqueIdentifier(), incognito);
