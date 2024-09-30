@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 
 # enable_pdf is not required. Some platforms may not have PDF enabled, but some
 # existing files still use the constants.
@@ -23,11 +24,16 @@ source_set("util") {
     "//base",
     "//content/public/common",
     "//extensions/buildflags",
+    "//pdf:buildflags",
     "//url",
   ]
 
   if (enable_extensions) {
     deps += [ "//extensions/common:common_constants" ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//pdf:features" ]
   }
 }
 

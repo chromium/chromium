@@ -123,8 +123,10 @@ const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 /**
  * The background color used for the regular viewer.
  */
+// LINT.IfChange(PdfBackgroundColor)
 const BACKGROUND_COLOR: number = 0xff525659;
 const CR23_BACKGROUND_COLOR: number = 0xff282828;
+// LINT.ThenChange(//components/pdf/common/pdf_util.cc:PdfBackgroundColor)
 
 export interface PdfViewerElement {
   $: {
