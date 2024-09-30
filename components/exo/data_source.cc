@@ -250,7 +250,7 @@ void DataSource::ReadData(const std::string& mime_type,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ReadDataOnWorkerThread, std::move(read_fd)),
       base::BindOnce(
           &DataSource::OnDataRead, read_data_weak_ptr_factory_.GetWeakPtr(),
