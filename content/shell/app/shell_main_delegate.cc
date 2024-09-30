@@ -256,13 +256,6 @@ bool ShellMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ShellMainDelegate::PreSandboxStartup() {
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  // Create an instance of the CPU class to parse /proc/cpuinfo and cache
-  // cpu_brand info.
-  base::CPU cpu_info;
-#endif
-
 // Disable platform crash handling and initialize the crash reporter, if
 // requested.
 // TODO(crbug.com/40188745): Implement crash reporter integration for Fuchsia.

@@ -1526,13 +1526,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
   SetUpInstallerPreferences(command_line);
 #endif
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  // Create an instance of the CPU class to parse /proc/cpuinfo and cache
-  // cpu_brand info.
-  base::CPU cpu_info;
-#endif
-
   // Initialize the user data dir for any process type that needs it.
   bool initialize_user_data_dir = chrome::ProcessNeedsProfileDir(process_type);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

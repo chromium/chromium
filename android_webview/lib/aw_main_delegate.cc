@@ -247,12 +247,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
 
 void AwMainDelegate::PreSandboxStartup() {
   TRACE_EVENT0("startup", "AwMainDelegate::PreSandboxStartup");
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // Create an instance of the CPU class to parse /proc/cpuinfo and cache
-  // cpu_brand info.
-  base::CPU cpu_info;
-#endif
-
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
