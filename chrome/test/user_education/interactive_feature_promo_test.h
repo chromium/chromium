@@ -103,8 +103,8 @@ class InteractiveFeaturePromoTestApi
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
 
   // Checks that the promo `iph_feature` is active.
-  [[nodiscard]] StepBuilder CheckPromoIsActive(
-      const base::Feature& iph_feature);
+  [[nodiscard]] StepBuilder CheckPromoIsActive(const base::Feature& iph_feature,
+                                               bool active = true);
 
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,

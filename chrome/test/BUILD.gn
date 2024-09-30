@@ -10435,6 +10435,8 @@ if (!is_android) {
       "base/web_ui_mocha_browser_test.h",
       "base/web_ui_test_data_source.cc",
       "base/web_ui_test_data_source.h",
+      "interaction/dom_message_observer.cc",
+      "interaction/dom_message_observer.h",
       "interaction/feature_engagement_initialized_observer.cc",
       "interaction/feature_engagement_initialized_observer.h",
       "interaction/interaction_test_util_browser.cc",
@@ -10879,7 +10881,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/sync/sync_passphrase_dialog_browsertest.cc",
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
         "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
-        "../browser/ui/views/web_apps/navigation_capturing_interactive_uitest.cc",
+        "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc",
       ]
     }
 

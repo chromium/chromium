@@ -205,14 +205,16 @@ InteractiveFeaturePromoTestApi::WaitForPromo(const base::Feature& iph_feature) {
 
 InteractiveFeaturePromoTestApi::StepBuilder
 InteractiveFeaturePromoTestApi::CheckPromoIsActive(
-    const base::Feature& iph_feature) {
-  return std::move(
-      CheckView(kBrowserViewElementId,
-                [&iph_feature](BrowserView* browser_view) {
-                  return browser_view->IsFeaturePromoActive(iph_feature);
-                })
-          .SetDescription(
-              base::StringPrintf("CheckPromoIsActive(%s)", iph_feature.name)));
+    const base::Feature& iph_feature,
+    bool active) {
+  return std::move(CheckView(
+                       kBrowserViewElementId,
+                       [&iph_feature](BrowserView* browser_view) {
+                         return browser_view->IsFeaturePromoActive(iph_feature);
+                       },
+                       active)
+                       .SetDescription(base::StringPrintf(
+                           "CheckPromoIsActive(%s)", iph_feature.name)));
 }
 
 InteractiveFeaturePromoTestApi::MultiStep
