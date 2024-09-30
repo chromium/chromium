@@ -51,6 +51,10 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
   GetFakePlusAddressService()->set_should_fail_to_reserve(shouldFailToReserve);
 }
 
++ (void)setShouldFailToConfirm:(BOOL)shouldFailToConfirm {
+  GetFakePlusAddressService()->set_should_fail_to_confirm(shouldFailToConfirm);
+}
+
 + (NSString*)primaryEmail {
   return base::SysUTF8ToNSString(
       *(GetFakePlusAddressService()->GetPrimaryEmail()));

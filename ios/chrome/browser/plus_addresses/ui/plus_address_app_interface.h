@@ -29,6 +29,9 @@
 // Setter to show reserve error states in `FakePlusAddressService` in tests.
 + (void)setShouldFailToReserve:(BOOL)shouldFailToReserve;
 
+// Setter to show confirm error states in `FakePlusAddressService` in tests.
++ (void)setShouldFailToConfirm:(BOOL)shouldFailToConfirm;
+
 // Returns the primary email from `FakePlusAddressService`.
 + (NSString*)primaryEmail;
 

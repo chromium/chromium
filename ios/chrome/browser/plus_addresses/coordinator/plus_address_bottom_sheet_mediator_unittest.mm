@@ -55,6 +55,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     mediator_ = [[PlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
          plusAddressSettingService:&plus_address_setting_service_
+                          delegate:nil
                          activeUrl:GURL(FakePlusAddressService::kFacet)
                   autofillCallback:base::DoNothing()
                          urlLoader:url_loader_

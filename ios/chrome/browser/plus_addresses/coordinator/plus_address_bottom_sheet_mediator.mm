@@ -33,12 +33,17 @@
   NSString* _reservedPlusAddress;
   raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
   BOOL _incognito;
+
+  // The delegate for this mediator.
+  __weak id<PlusAddressBottomSheetMediatorDelegate> _delegate;
 }
 
 - (instancetype)
     initWithPlusAddressService:(plus_addresses::PlusAddressService*)service
      plusAddressSettingService:
          (plus_addresses::PlusAddressSettingService*)plusAddressSettingService
+                      delegate:
+                          (id<PlusAddressBottomSheetMediatorDelegate>)delegate
                      activeUrl:(GURL)activeUrl
               autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader
@@ -50,6 +55,7 @@
   if (self) {
     _plusAddressService = service;
     _plusAddressSettingService = plusAddressSettingService;
+    _delegate = delegate;
     _mainFrameOrigin = url::Origin::Create(activeUrl);
     _autofillCallback = std::move(callback);
     _urlLoader = urlLoader;
@@ -70,9 +76,9 @@
       [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
                                           *maybePlusProfile->plus_address)];
     } else {
-      [weakSelf.consumer notifyError:plus_addresses::metrics::
-                                         PlusAddressModalCompletionStatus::
-                                             kReservePlusAddressError];
+      [weakSelf notifyError:plus_addresses::metrics::
+                                PlusAddressModalCompletionStatus::
+                                    kReservePlusAddressError];
     }
   });
   _plusAddressService->ReservePlusAddress(_mainFrameOrigin,
@@ -89,9 +95,9 @@
           [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
                                             *maybePlusProfile->plus_address)];
         } else {
-          [weakSelf.consumer notifyError:plus_addresses::metrics::
-                                             PlusAddressModalCompletionStatus::
-                                                 kConfirmPlusAddressError];
+          [weakSelf notifyError:plus_addresses::metrics::
+                                    PlusAddressModalCompletionStatus::
+                                        kConfirmPlusAddressError];
         }
       });
   _plusAddressService->ConfirmPlusAddress(
@@ -134,9 +140,9 @@
           [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
                                               *maybePlusProfile->plus_address)];
         } else {
-          [weakSelf.consumer notifyError:plus_addresses::metrics::
-                                             PlusAddressModalCompletionStatus::
-                                                 kReservePlusAddressError];
+          [weakSelf notifyError:plus_addresses::metrics::
+                                    PlusAddressModalCompletionStatus::
+                                        kReservePlusAddressError];
         }
       });
   _plusAddressService->RefreshPlusAddress(_mainFrameOrigin,
@@ -179,4 +185,16 @@
       return GURL(plus_addresses::features::kPlusAddressLearnMoreUrl.Get());
   }
 }
+
+// Informs both the `consumer` and `_delegate` to prepare to show the error
+// state.
+- (void)notifyError:
+    (plus_addresses::metrics::PlusAddressModalCompletionStatus)status {
+  [self.consumer notifyError:status];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+    [_delegate showErrorAlert];
+  }
+}
+
 @end

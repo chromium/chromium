@@ -8,27 +8,38 @@
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
+
+@interface PlusAddressBottomSheetCoordinator () <
+    PlusAddressBottomSheetMediatorDelegate>
+
+@end
 
 @implementation PlusAddressBottomSheetCoordinator {
   // The view controller responsible for display of the bottom sheet.
   PlusAddressBottomSheetViewController* _viewController;
   // A mediator that hides data operations from the view controller.
   PlusAddressBottomSheetMediator* _mediator;
+
+  // Alert coordinator used to show error alerts.
+  AlertCoordinator* _alertCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -49,6 +60,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   _mediator = [[PlusAddressBottomSheetMediator alloc]
       initWithPlusAddressService:plusAddressService
        plusAddressSettingService:plusAddressSettingService
+                        delegate:self
                        activeUrl:activeWebState->GetLastCommittedURL()
                 autofillCallback:bottomSheetTabHelper
                                      ->GetPendingPlusAddressFillCallback()
@@ -85,6 +97,22 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                                                completion:nil];
   _viewController = nil;
   _mediator = nil;
+}
+
+#pragma mark - PlusAddressBottomSheetMediatorDelegate
+
+- (void)showErrorAlert {
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
+                         message:
+                             l10n_util::GetNSString(
+                                 IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+
+  [_alertCoordinator start];
 }
 
 @end

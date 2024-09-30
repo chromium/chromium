@@ -278,23 +278,24 @@ UIImageView* BrandingImageView() {
 }
 
 - (void)notifyError:(PlusAddressModalCompletionStatus)status {
-  // With any error, whether during the reservation step or the confirmation
-  // step, disable submission of the modal.
   _bottomSheetErrorStatus = status;
-  self.primaryActionButton.enabled = NO;
-
-  _reservedPlusAddressTableView.hidden = YES;
-  [_reservedPlusAddressTableView reloadData];
-
-  _errorMessage.hidden = NO;
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
     self.isLoading = NO;
   } else {
+    // With any error, whether during the reservation step or the confirmation
+    // step, disable submission of the modal.
+    self.primaryActionButton.enabled = NO;
+
+    _reservedPlusAddressTableView.hidden = YES;
+    [_reservedPlusAddressTableView reloadData];
+
+    _errorMessage.hidden = NO;
+
     [_activityIndicator stopAnimating];
+    // Resize to accommodate error message.
+    [self expandBottomSheet];
   }
-  // Resize to accommodate error message.
-  [self expandBottomSheet];
 }
 
 #pragma mark - UITextViewDelegate

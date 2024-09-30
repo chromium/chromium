@@ -159,6 +159,14 @@
 	Plus address for <ph name="DOMAIN">$1<ex>foo.com</ex></ph>
     </message>
 
+    <!-- iOS Error State strings -->
+    <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS" desc="The title of the generic error alert." translateable="false">
+        Something Went Wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the generic error alert." translateable="false">
+	Try reloading the page or some lorem ipsum generic text
+    </message>
+
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum

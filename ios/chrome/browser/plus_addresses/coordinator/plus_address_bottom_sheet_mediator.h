@@ -19,6 +19,14 @@ class PlusAddressSettingService;
 @protocol PlusAddressBottomSheetConsumer;
 class UrlLoadingBrowserAgent;
 
+// Delegate for this mediator.
+@protocol PlusAddressBottomSheetMediatorDelegate
+
+// Shows alert with the mesage.
+- (void)showErrorAlert;
+
+@end
+
 // Mediator for the plus_addresses bottom sheet. It is responsible for service
 // interactions underlying the UI.
 @interface PlusAddressBottomSheetMediator
@@ -31,6 +39,8 @@ class UrlLoadingBrowserAgent;
     initWithPlusAddressService:(plus_addresses::PlusAddressService*)service
      plusAddressSettingService:
          (plus_addresses::PlusAddressSettingService*)plusAddressSettingService
+                      delegate:
+                          (id<PlusAddressBottomSheetMediatorDelegate>)delegate
                      activeUrl:(GURL)activeUrl
               autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader
