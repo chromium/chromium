@@ -26,35 +26,16 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kUAFullVersionList:
     case WebClientHintsType::kUABitness:
     case WebClientHintsType::kUAWoW64:
-      break;
     case WebClientHintsType::kUAFormFactors:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsFormFactors)) {
-        return true;
-      }
-      break;
     case WebClientHintsType::kPrefersColorScheme:
-      break;
     case WebClientHintsType::kViewportHeight:
-      if (!base::FeatureList::IsEnabled(
-              features::kViewportHeightClientHintHeader)) {
-        return true;
-      }
-      break;
     case WebClientHintsType::kDeviceMemory:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsDeviceMemory))
-        return true;
-      break;
     case WebClientHintsType::kDpr:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsDPR))
-        return true;
-      break;
     case WebClientHintsType::kResourceWidth:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsResourceWidth))
-        return true;
-      break;
     case WebClientHintsType::kViewportWidth:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsViewportWidth))
-        return true;
+    case WebClientHintsType::kSaveData:
+    case WebClientHintsType::kPrefersReducedMotion:
+    case WebClientHintsType::kPrefersReducedTransparency:
       break;
     case WebClientHintsType::kDeviceMemory_DEPRECATED:
       if (!base::FeatureList::IsEnabled(
@@ -78,15 +59,6 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
         return true;
       }
       break;
-    case WebClientHintsType::kSaveData:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsSaveData))
-        return true;
-      break;
-    case WebClientHintsType::kPrefersReducedMotion:
-      break;
-    case WebClientHintsType::kPrefersReducedTransparency:
-      return !base::FeatureList::IsEnabled(
-          features::kClientHintsPrefersReducedTransparency);
     default:
       break;
   }

@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_browser_context.h"
@@ -220,12 +219,6 @@ TEST_F(ClientHintsTest, DownlinkRandomized) {
 }
 
 TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kClientHintsFormFactors,
-       blink::features::kClientHintsPrefersReducedTransparency},
-      {});
-
   GURL url = GURL(ClientHintsTest::kOriginUrl);
   contents()->NavigateAndCommit(url);
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();

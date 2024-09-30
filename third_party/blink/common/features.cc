@@ -494,19 +494,9 @@ BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
              "CheckHTMLParserBudgetLessOften",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable `sec-ch-dpr` client hint.
-BASE_FEATURE(kClientHintsDPR,
-             "ClientHintsDPR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable legacy `dpr` client hint.
 BASE_FEATURE(kClientHintsDPR_DEPRECATED,
              "ClientHintsDPR_DEPRECATED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable `sec-ch-device-memory` client hint.
-BASE_FEATURE(kClientHintsDeviceMemory,
-             "ClientHintsDeviceMemory",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable legacy `device-memory` client hint.
@@ -514,34 +504,9 @@ BASE_FEATURE(kClientHintsDeviceMemory_DEPRECATED,
              "ClientHintsDeviceMemory_DEPRECATED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable `form-factors` client hint.
-BASE_FEATURE(kClientHintsFormFactors,
-             "ClientHintsFormFactors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable `sec-ch-prefers-reduced-transparency` client hint.
-BASE_FEATURE(kClientHintsPrefersReducedTransparency,
-             "ClientHintsPrefersReducedTransparency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable `sec-ch-width` client hint.
-BASE_FEATURE(kClientHintsResourceWidth,
-             "ClientHintsResourceWidth",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable legacy `width` client hint.
 BASE_FEATURE(kClientHintsResourceWidth_DEPRECATED,
              "ClientHintsResourceWidth_DEPRECATED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable `save-data` client hint.
-BASE_FEATURE(kClientHintsSaveData,
-             "ClientHintsSaveData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable `sec-ch-viewport-width` client hint.
-BASE_FEATURE(kClientHintsViewportWidth,
-             "ClientHintsViewportWidth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable `form-factor` client hint for XR devices.

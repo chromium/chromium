@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -47,7 +45,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -195,8 +192,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClientHintsFormFactors);
     // Do not create TestNavigationURLLoaderFactory as this tests creates
     // NavigationURLLoaders explicitly and TestNavigationURLLoaderFactory
     // interferes with that.
@@ -390,7 +385,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
   // NavigationURLLoaderImpl relies on the existence of the
   // |frame_tree_node->navigation_request()|.
   std::unique_ptr<NavigationSimulator> pending_navigation_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {

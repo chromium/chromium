@@ -82,9 +82,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(net::features::kThirdPartyStoragePartitioning),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(blink::features::kClientHintsFormFactors),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(blink::features::kPartitionedPopins),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 

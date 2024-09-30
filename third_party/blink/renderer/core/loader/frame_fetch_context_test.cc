@@ -584,7 +584,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
  public:
   FrameFetchContextHintsTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kClientHintsPrefersReducedTransparency,
     };
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam()) {
@@ -842,9 +841,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactors);
-
   // `Sec-CH-UA` is always sent for secure requests
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA", false, "");
@@ -1040,9 +1036,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorPrefersReducedTransparencyHint) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactors);
-
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");

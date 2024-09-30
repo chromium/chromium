@@ -247,12 +247,9 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
       MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
                         execution_context);
     } else if (hint == "formFactors") {
-      if (base::FeatureList::IsEnabled(
-              blink::features::kClientHintsFormFactors)) {
-        values->setFormFactors(form_factors_);
-        MaybeRecordMetric(record_identifiability, hint, form_factors_,
-                          execution_context);
-      }
+      values->setFormFactors(form_factors_);
+      MaybeRecordMetric(record_identifiability, hint, form_factors_,
+                        execution_context);
     }
   }
 
