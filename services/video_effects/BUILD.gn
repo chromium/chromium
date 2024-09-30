@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/video_effects/args.gni")
 import("//third_party/mediapipe/features.gni")
+
+assert(enable_video_effects,
+       "The Video Effects service requires enable_video_effects to be true.")
 
 source_set("service") {
   public = [
@@ -40,6 +44,18 @@ source_set("service") {
 
   if (build_with_mediapipe_lib) {
     deps += [ "//third_party/mediapipe" ]
+  }
+}
+
+if (is_linux) {
+  source_set("sandbox_hook") {
+    public = [ "video_effects_sandbox_hook_linux.h" ]
+    sources = [ "video_effects_sandbox_hook_linux.cc" ]
+    deps = [
+      "//sandbox/linux:sandbox",
+      "//sandbox/policy",
+      "//services/on_device_model/ml:ml_no_internal",
+    ]
   }
 }
 

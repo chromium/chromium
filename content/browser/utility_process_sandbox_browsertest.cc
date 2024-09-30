@@ -55,12 +55,6 @@ std::vector<Sandbox> GetSandboxTypesToTest() {
     if (t == Sandbox::kZygoteIntermediateSandbox)
       continue;
 #endif
-#if BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/361128453): Implement
-    if (t == Sandbox::kVideoEffects) {
-      continue;
-    }
-#endif
     types.push_back(t);
   }
   return types;
@@ -151,6 +145,9 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       case Sandbox::kScreenAI:
 #endif
+#if BUILDFLAG(IS_LINUX)
+      case Sandbox::kVideoEffects:
+#endif
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
@@ -161,9 +158,6 @@ class UtilityProcessSandboxBrowserTest
 
       case Sandbox::kGpu:
       case Sandbox::kRenderer:
-#if BUILDFLAG(IS_LINUX)
-      case Sandbox::kVideoEffects:
-#endif
       case Sandbox::kZygoteIntermediateSandbox:
         NOTREACHED_IN_MIGRATION();
         break;
