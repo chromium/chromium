@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
 
 namespace base::mac {
@@ -49,6 +50,13 @@ OSStatus ProcessIdIsSignedAndFulfillsRequirement_DoNotUse(
     SignatureValidationType validation_type =
         SignatureValidationType::DynamicAndStatic,
     std::string_view info_plist_xml = {});
+
+// Create a SecRequirementRef from a requirement string.
+//
+// Returns a null reference if the requirement string was invalid.
+BASE_EXPORT
+base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
+    std::string_view requirement_string);
 
 }  // namespace base::mac
 
