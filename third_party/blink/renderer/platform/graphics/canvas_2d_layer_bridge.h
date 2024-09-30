@@ -42,8 +42,6 @@
 
 namespace blink {
 
-class StaticBitmapImage;
-
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
   explicit Canvas2DLayerBridge(CanvasResourceHost* resource_host);
@@ -55,8 +53,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   void PageVisibilityChanged();
 
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
-
-  scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
 
   // The values of the enum entries must not change because they are used for
   // usage metrics histograms. New values can be added to the end.

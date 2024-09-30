@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -717,7 +718,24 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
   if (!IsPaintable())
     return nullptr;
-  return canvas()->GetCanvas2DLayerBridge()->NewImageSnapshot(reason);
+
+  Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
+
+  if (bridge->IsHibernating()) {
+    return UnacceleratedStaticBitmapImage::Create(
+        bridge->GetHibernationHandler().GetImage());
+  }
+
+  if (!Host()->IsResourceValid()) {
+    return nullptr;
+  }
+  // GetOrCreateResourceProvider needs to be called before FlushRecording, to
+  // make sure "hint" is properly taken into account.
+  if (!bridge->GetOrCreateResourceProvider()) {
+    return nullptr;
+  }
+  Host()->FlushRecording(reason);
+  return Host()->ResourceProvider()->Snapshot(reason);
 }
 
 ImageData* CanvasRenderingContext2D::getImageDataInternal(

@@ -285,23 +285,6 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
   }
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
-    FlushReason reason) {
-  if (IsHibernating()) {
-    return UnacceleratedStaticBitmapImage::Create(
-        hibernation_handler_.GetImage());
-  }
-  if (!resource_host_->IsResourceValid()) {
-    return nullptr;
-  }
-  // GetOrCreateResourceProvider needs to be called before FlushRecording, to
-  // make sure "hint" is properly taken into account.
-  if (!GetOrCreateResourceProvider())
-    return nullptr;
-  resource_host_->FlushRecording(reason);
-  return resource_host_->ResourceProvider()->Snapshot(reason);
-}
-
 void Canvas2DLayerBridge::Logger::ReportHibernationEvent(
     HibernationEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
