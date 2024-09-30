@@ -95,25 +95,30 @@ def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
 class Type:
   """Represents an IDL type and maps it to the corresponding python type.
 
-  Given a Type node representing the type of a dictionary member, function
-  parameter or return, converts it into a Python dictionary the JSON schema
-  compiler expects to see.
+  Given an IDLNode, looks for a Type node on it representing the type of a
+  dictionary member, function parameter or return and converts it into a Python
+  dictionary the JSON schema compiler expects.
 
   Attributes:
     node: The IDLNode that represents this type.
-    additional_properties: A dictionary of additional key value pairs to be
-      included on the resulting dictionary after processing.
+    name: The name of the node this type was on.
   """
 
-  def __init__(self, node: IDLNode, additional_properties: dict) -> None:
-    assert node.GetClass() == 'Type', node.GetLogLine(
-        'Attempted to process a "Type" node, but was passed a "%s" node.' %
-        (node.GetClass()))
-    self.node = node
-    self.additional_properties = additional_properties
+  def __init__(self, node: IDLNode) -> None:
+    type_node = node.GetOneOf('Type')
+    assert type_node is not None, type_node.GetLogLine(
+        'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
+    self.node = type_node
+    self.name = node.GetName()
 
   def process(self) -> dict:
-    properties = self.additional_properties
+    properties = OrderedDict()
+    # TODO(crbug.com/340297705): Add support for optional/nullable types.
+    # TODO(crbug.com/340297705): Add support for extended attributes on types.
+    # TODO(crbug.com/340297705): Add processing of comments to descriptions on
+    #                            types.
+    properties['name'] = self.name
+    # TODO(crbug.com/340297705): Add support for more types, including TypeRefs.
     basic_type = self.node.GetOneOf('PrimitiveType', 'StringType')
     if basic_type:
       name = basic_type.GetName()
@@ -159,8 +164,7 @@ class Operation:
     properties['name'] = self.node.GetName()
 
     # Return type processing.
-    type_node = self.node.GetOneOf('Type')
-    return_type = Type(type_node, {'name': self.node.GetName()}).process()
+    return_type = Type(self.node).process()
     if return_type is not None:
       properties['returns'] = return_type
 
@@ -182,8 +186,8 @@ class Dictionary:
 
   def process(self) -> dict:
     properties = OrderedDict()
-    # TODO(crbug.com/340297705): Add proper processing of the properties for
-    # types.
+    for property_node in self.node.GetListOf('Key'):
+      properties[property_node.GetName()] = Type(property_node).process()
 
     result = {
         'id': self.node.GetName(),

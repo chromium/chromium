@@ -73,14 +73,21 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
-  # TODO(crbug.com/340297705): Also check that the "properties" key is correctly
-  # added to the processed result.
   def testApiTypesOnNamespace(self):
     schema = self.idl_basics
     self.assertEqual(
         {
             'id': 'ExampleType',
-            'properties': {},
+            'properties': {
+                'someString': {
+                    'name': 'someString',
+                    'type': 'string'
+                },
+                'someNumber': {
+                    'name': 'someNumber',
+                    'type': 'number'
+                }
+            },
             'type': 'object'
         },
         getType(schema, 'ExampleType'),
