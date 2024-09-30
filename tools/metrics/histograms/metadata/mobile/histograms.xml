@@ -1229,7 +1229,8 @@ chromium-metrics-reviews@google.com.
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
     signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
     |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
-    impression of the NTP feed top section sign in promo.
+    impression of the NTP feed top section sign in promo. This histogram expired
+    by mistake between 2023-06-01 and 2024-09-16.
   </summary>
 </histogram>
 
