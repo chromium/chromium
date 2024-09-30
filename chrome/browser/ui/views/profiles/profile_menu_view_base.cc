@@ -632,8 +632,6 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
 
   // The |edit_button| is on the right and has fixed width.
   if (edit_button) {
-    edit_button->SetProperty(views::kBoxLayoutFlexKey,
-                             views::BoxLayoutFlexSpecification());
     views::View* edit_button_container =
         profile_background_container_->AddChildView(
             std::make_unique<views::View>());
@@ -642,8 +640,6 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
         views::BoxLayout::CrossAxisAlignment::kCenter,
         gfx::Insets::TLBR(0, 0, kHalfOfAvatarImageViewSize + kDefaultMargin,
                           0)));
-    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
-    edit_button_container->SetLayoutManagerUseConstrainedSpace(false);
     edit_button_container->AddChildView(std::move(edit_button));
   }
 }
@@ -690,7 +686,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     heading_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     heading_label->SetProperty(
         views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
     if (avatar_header_art.empty()) {
       heading_label->SetAutoColorReadabilityEnabled(false);
