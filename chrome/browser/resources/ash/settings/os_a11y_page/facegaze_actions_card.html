@@ -30,7 +30,6 @@
   </facegaze-actions-add-dialog>
 </template>
 
-<!-- TODO(b:341770753): Localize strings. -->
 <settings-card header-text="$i18n{faceGazeActionsSectionTitle}">
   <settings-toggle-button
       id="faceGazeActionsEnabledButton"
@@ -63,7 +62,7 @@
         <template is="dom-if" if="[[!item.gesture]]" restamp>
           <cros-chip
               type="input"
-              label="Assign a gesture"
+              label="$i18n{faceGazeActionsAssignGestureLabel}"
               on-click="onAssignGestureButtonClick_"
               disabled="[[disableConfigureControls_]]">
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
