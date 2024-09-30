@@ -332,6 +332,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                           IDS_CLEAR_BROWSING_DATA_CALCULATING))];
 }
 
+// Triggers the deletion from Quick Delete by tapping the delete data button and
+// waits for the deletion to be finished.
+- (void)triggerDeletionFromQuickDelete {
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+
+  // Wait for Quick Delete to disappear marking that the deletion has finished.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
+}
+
 - (void)signIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -628,7 +638,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
@@ -679,7 +689,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
@@ -715,7 +725,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the history entry was not deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
@@ -761,15 +771,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
-
-  // Check that Quick Delete is not opened.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_nil()];
 
   // Check that tab grid is shown. Quick Delete was opened from the three dot
   // menu, and as such the animation should be triggered and the tab grid should
@@ -825,15 +831,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_notNil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
-
-  // Check that Quick Delete is not opened.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
 
   // Quick Delete was opened from privacy settings, and as such no animation
   // should be triggered, and the privacy settings should still be visible by
@@ -893,7 +895,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tabs have been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -940,7 +942,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -988,7 +990,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the delete browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tabs have been closed in both windows.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -1127,7 +1129,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the tab has not been closed.
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
@@ -1162,7 +1164,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Assert that the Delete Browsing Data dialog metric is populated.
   ExpectClearBrowsingDataCookieOrCacheDeletedHistogram(
@@ -1226,7 +1228,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Assert that the Delete Browsing Data dialog metric is populated.
   ExpectClearBrowsingDataCookieOrCacheDeletedHistogram(
@@ -1293,7 +1295,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the stored password was removed.
   GREYAssertEqual(
@@ -1333,7 +1335,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                      kPasswordCount))] assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the stored password was not removed.
   GREYAssertEqual(
@@ -1368,7 +1370,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the stored card was removed.
   GREYAssertEqual(0, [AutofillAppInterface localCreditCount],
@@ -1403,7 +1405,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Check that the stored card was not removed.
   GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
@@ -1561,7 +1563,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1579,7 +1581,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1596,7 +1598,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }

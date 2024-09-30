@@ -37,6 +37,7 @@ using browsing_data::TimePeriod;
 // has completed so the progress UI state is not flashed.
 constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 
+// Records the Privacy.DeleteBrowsingData.Dialog histogram for `period`.
 void RecordTimePeriodPrefChange(TimePeriod period) {
   switch (period) {
     case TimePeriod::LAST_15_MINUTES:
@@ -75,6 +76,26 @@ void RecordTimePeriodPrefChange(TimePeriod period) {
           DeleteBrowsingDataDialogAction::kOlderThan30DaysSelected);
       break;
   }
+}
+
+// Record the UserDeletedCookieOrCacheFromDialog histogram.
+void RecordCookieOrCacheDeletedFromDialogHistogram(
+    BrowsingDataRemoveMask remove_mask) {
+  browsing_data::CookieOrCacheDeletionChoice choice;
+  if (IsRemoveDataMaskSet(remove_mask, BrowsingDataRemoveMask::REMOVE_CACHE)) {
+    choice =
+        IsRemoveDataMaskSet(remove_mask, BrowsingDataRemoveMask::REMOVE_COOKIES)
+            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
+            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
+  } else {
+    choice =
+        IsRemoveDataMaskSet(remove_mask, BrowsingDataRemoveMask::REMOVE_COOKIES)
+            ? browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies
+            : browsing_data::CookieOrCacheDeletionChoice::
+                  kNeitherCookiesNorCache;
+  }
+  base::UmaHistogramEnumeration(
+      "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice);
 }
 
 }  // namespace
@@ -333,21 +354,7 @@ void RecordTimePeriodPrefChange(TimePeriod period) {
                                         std::move(delayedCompletion), params);
   }
 
-  browsing_data::CookieOrCacheDeletionChoice choice;
-  if (IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_CACHE)) {
-    choice =
-        IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_COOKIES)
-            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
-            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
-  } else {
-    choice =
-        IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_COOKIES)
-            ? browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies
-            : browsing_data::CookieOrCacheDeletionChoice::
-                  kNeitherCookiesNorCache;
-  }
-  base::UmaHistogramEnumeration(
-      "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice);
+  RecordCookieOrCacheDeletedFromDialogHistogram(removeMask);
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
