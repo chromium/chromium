@@ -446,77 +446,6 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
 
-AutofillAgent::FocusStateNotifier::FocusStateNotifier(AutofillAgent* agent)
-    : agent_(CHECK_DEREF(agent)) {}
-
-AutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
-
-void AutofillAgent::FocusStateNotifier::FocusedInputChanged(
-    const WebNode& node) {
-  CHECK(node);
-  mojom::FocusedFieldType new_focused_field_type =
-      mojom::FocusedFieldType::kUnknown;
-  FieldRendererId new_focused_field_id = FieldRendererId();
-  if (auto form_control_element = node.DynamicTo<WebFormControlElement>()) {
-    new_focused_field_type = GetFieldType(form_control_element);
-    new_focused_field_id = form_util::GetFieldRendererId(form_control_element);
-  }
-  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
-}
-
-void AutofillAgent::FocusStateNotifier::ResetFocus() {
-  FieldRendererId new_focused_field_id = FieldRendererId();
-  mojom::FocusedFieldType new_focused_field_type =
-      mojom::FocusedFieldType::kUnknown;
-  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
-}
-
-mojom::FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
-    const WebFormControlElement& node) {
-  auto form_control_type = node.FormControlTypeForAutofill();
-  if (form_control_type == blink::mojom::FormControlType::kTextArea) {
-    return mojom::FocusedFieldType::kFillableTextArea;
-  }
-
-  WebInputElement input_element = node.DynamicTo<WebInputElement>();
-  if (!input_element || !input_element.IsTextField() ||
-      !form_util::IsElementEditable(input_element)) {
-    return mojom::FocusedFieldType::kUnfillableElement;
-  }
-
-  if (form_control_type == blink::mojom::FormControlType::kInputSearch) {
-    return mojom::FocusedFieldType::kFillableSearchField;
-  }
-  if (form_control_type == blink::mojom::FormControlType::kInputPassword) {
-    return mojom::FocusedFieldType::kFillablePasswordField;
-  }
-  if (agent_->password_autofill_agent_->IsUsernameInputField(input_element)) {
-    return mojom::FocusedFieldType::kFillableUsernameField;
-  }
-  if (form_util::IsWebauthnTaggedElement(node)) {
-    return mojom::FocusedFieldType::kFillableWebauthnTaggedField;
-  }
-  return mojom::FocusedFieldType::kFillableNonSearchField;
-}
-
-void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
-    mojom::FocusedFieldType new_focused_field_type,
-    FieldRendererId new_focused_field_id) {
-  // Forward the request if the focused field is different from the previous
-  // one.
-  if (focused_field_id_ == new_focused_field_id &&
-      focused_field_type_ == new_focused_field_type) {
-    return;
-  }
-
-  // TODO(crbug.com/40260756): Move FocusedInputChanged to AutofillDriver.
-  agent_->GetPasswordManagerDriver().FocusedInputChanged(
-      new_focused_field_id, new_focused_field_type);
-
-  focused_field_type_ = new_focused_field_type;
-  focused_field_id_ = new_focused_field_id;
-}
-
 AutofillAgent::AutofillAgent(
     content::RenderFrame* render_frame,
     Config config,
@@ -852,7 +781,7 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->DidEndTextFieldEditing();
   }
-  focus_state_notifier_.ResetFocus();
+  password_autofill_agent_->ResetFocus(/*pass_key=*/{});
   if (password_generation_agent_) {
     password_generation_agent_->DidEndTextFieldEditing(element);
   }
@@ -1785,7 +1714,7 @@ void AutofillAgent::HandleFocusChangeComplete(
 
 void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
     const WebElement& node) {
-  focus_state_notifier_.FocusedInputChanged(node);
+  password_autofill_agent_->FocusedInputChanged(node, /*pass_key=*/{});
   if (auto input_element = node.DynamicTo<WebInputElement>()) {
     field_data_manager_->UpdateFieldDataMapWithNullValue(
         form_util::GetFieldRendererId(input_element),
@@ -2149,11 +2078,6 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
         &autofill_driver_);
   }
   return autofill_driver_.get();
-}
-
-mojom::PasswordManagerDriver& AutofillAgent::GetPasswordManagerDriver() {
-  DCHECK(password_autofill_agent_);
-  return password_autofill_agent_->GetPasswordManagerDriver();
 }
 
 }  // namespace autofill

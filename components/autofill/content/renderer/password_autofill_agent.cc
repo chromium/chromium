@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -686,8 +687,76 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
   base::WeakPtrFactory<DeferringPasswordManagerDriver> weak_ptr_factory_{this};
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// PasswordAutofillAgent, public:
+PasswordAutofillAgent::FocusStateNotifier::FocusStateNotifier(
+    PasswordAutofillAgent* agent)
+    : agent_(CHECK_DEREF(agent)) {}
+
+PasswordAutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
+
+void PasswordAutofillAgent::FocusStateNotifier::FocusedInputChanged(
+    const WebNode& node) {
+  CHECK(node);
+  mojom::FocusedFieldType new_focused_field_type =
+      mojom::FocusedFieldType::kUnknown;
+  FieldRendererId new_focused_field_id = FieldRendererId();
+  if (auto form_control_element = node.DynamicTo<WebFormControlElement>()) {
+    new_focused_field_type = GetFieldType(form_control_element);
+    new_focused_field_id = form_util::GetFieldRendererId(form_control_element);
+  }
+  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
+}
+
+void PasswordAutofillAgent::FocusStateNotifier::ResetFocus() {
+  FieldRendererId new_focused_field_id = FieldRendererId();
+  mojom::FocusedFieldType new_focused_field_type =
+      mojom::FocusedFieldType::kUnknown;
+  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
+}
+
+mojom::FocusedFieldType PasswordAutofillAgent::FocusStateNotifier::GetFieldType(
+    const WebFormControlElement& node) {
+  auto form_control_type = node.FormControlTypeForAutofill();
+  if (form_control_type == blink::mojom::FormControlType::kTextArea) {
+    return mojom::FocusedFieldType::kFillableTextArea;
+  }
+
+  WebInputElement input_element = node.DynamicTo<WebInputElement>();
+  if (!input_element || !input_element.IsTextField() ||
+      !form_util::IsElementEditable(input_element)) {
+    return mojom::FocusedFieldType::kUnfillableElement;
+  }
+
+  if (form_control_type == blink::mojom::FormControlType::kInputSearch) {
+    return mojom::FocusedFieldType::kFillableSearchField;
+  }
+  if (form_control_type == blink::mojom::FormControlType::kInputPassword) {
+    return mojom::FocusedFieldType::kFillablePasswordField;
+  }
+  if (agent_->IsUsernameInputField(input_element)) {
+    return mojom::FocusedFieldType::kFillableUsernameField;
+  }
+  if (form_util::IsWebauthnTaggedElement(node)) {
+    return mojom::FocusedFieldType::kFillableWebauthnTaggedField;
+  }
+  return mojom::FocusedFieldType::kFillableNonSearchField;
+}
+
+void PasswordAutofillAgent::FocusStateNotifier::NotifyIfChanged(
+    mojom::FocusedFieldType new_focused_field_type,
+    FieldRendererId new_focused_field_id) {
+  // Forward the request if the focused field is different from the previous
+  // one.
+  if (focused_field_id_ == new_focused_field_id &&
+      focused_field_type_ == new_focused_field_type) {
+    return;
+  }
+
+  agent_->GetPasswordManagerDriver().FocusedInputChanged(
+      new_focused_field_id, new_focused_field_type);
+
+  focused_field_type_ = new_focused_field_type;
+  focused_field_id_ = new_focused_field_id;
+}
 
 PasswordAutofillAgent::PasswordAutofillAgent(
     content::RenderFrame* render_frame,
@@ -1707,9 +1776,6 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   if (cleared_all_password_fields)
     NotifyPasswordManagerAboutClearedForm(form);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// PasswordAutofillAgent, private:
 
 bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     const WebInputElement& element,

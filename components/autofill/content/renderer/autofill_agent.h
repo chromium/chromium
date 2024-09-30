@@ -156,7 +156,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // unsafe_autofill_driver() is nullptr if unsafe_render_frame() is nullptr and
   // the `autofill_driver_` has not been bound yet.
   mojom::AutofillDriver* unsafe_autofill_driver();
-  mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   CallTimerState GetCallTimerState(CallTimerState::CallSite call_site) const;
 
@@ -265,36 +264,6 @@ class AutofillAgent : public content::RenderFrameObserver,
  private:
   class DeferringAutofillDriver;
   friend class AutofillAgentTestApi;
-
-  // This class ensures that the driver will only receive notifications only
-  // when a focused field or its type (FocusedFieldType) change.
-  class FocusStateNotifier {
-   public:
-    // Creates a new notifier that uses the agent which owns it to access the
-    // real driver implementation.
-    explicit FocusStateNotifier(AutofillAgent* agent);
-
-    FocusStateNotifier(const FocusStateNotifier&) = delete;
-    FocusStateNotifier& operator=(const FocusStateNotifier&) = delete;
-
-    ~FocusStateNotifier();
-
-    // Notifies the driver about focusing the node.
-    void FocusedInputChanged(const blink::WebNode& node);
-    // Notifies the password manager driver about removing the focus from the
-    // currently focused node (with no setting it to a new one).
-    void ResetFocus();
-
-    mojom::FocusedFieldType GetFieldType(
-        const blink::WebFormControlElement& node);
-    void NotifyIfChanged(mojom::FocusedFieldType new_focused_field_type,
-                         FieldRendererId new_focused_field_id);
-
-    FieldRendererId focused_field_id_;
-    mojom::FocusedFieldType focused_field_type_ =
-        mojom::FocusedFieldType::kUnknown;
-    const raw_ref<AutofillAgent> agent_;
-  };
 
   // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
   // between OnDestruct() and ~AutofillAgent().
@@ -547,10 +516,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // by user, etc. (see FieldPropertiesMask).
   scoped_refptr<FieldDataManager> field_data_manager_ =
       base::MakeRefCounted<FieldDataManager>();
-
-  // This notifier is used to avoid sending redundant messages to the password
-  // manager driver mojo interface.
-  FocusStateNotifier focus_state_notifier_{this};
 
   // State for, and only for, HandleFocusChangeComplete().
   struct Caret {
