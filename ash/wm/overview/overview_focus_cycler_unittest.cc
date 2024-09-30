@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/split_view_setup_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -343,6 +344,37 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   // Tests that tabbing after dragging works as expected.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(item3->item_widget()->GetContentsView(), GetFocusedView());
+}
+
+// Tests that the locations of the overview focus ring are as expected when
+// tabbing through split view setup UI. This tests the case were splitview is
+// entered via snapping a window while already in overview. Regression test for
+// http://b/369539129 for more details.
+TEST_P(OverviewFocusCyclerTest, TabbingWithSplitview) {
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+
+  ToggleOverview();
+  SplitViewController::Get(Shell::GetPrimaryRootWindow())
+      ->SnapWindow(window1.get(), SnapPosition::kPrimary);
+
+  // Tab once to focus `item2`.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      GetOverviewItemForWindow(window2.get())->item_widget()->GetContentsView(),
+      GetFocusedView());
+
+  // Tab to the toast dismiss button and then the settings button.
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetSplitViewSetupView()->GetViewByID(
+                SplitViewSetupView::kDismissButtonIDForTest),
+            GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetSplitViewSetupView()->GetViewByID(
+                SplitViewSetupView::kSettingsButtonIDForTest),
+            GetFocusedView());
 }
 
 // ----------------------------------------------------------------------------

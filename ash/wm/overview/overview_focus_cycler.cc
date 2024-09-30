@@ -263,7 +263,9 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
 
   auto maybe_add_widget = [for_accessibility,
                            &traversable_widgets](views::Widget* widget) {
-    if (!widget ||
+    // The desks bar is invisible when in splitscreen. This is because of the
+    // high cost of creating and destroying it.
+    if (!widget || !widget->IsVisible() ||
         widget->GetNativeWindow()->layer()->GetTargetOpacity() == 0.f) {
       return;
     }
