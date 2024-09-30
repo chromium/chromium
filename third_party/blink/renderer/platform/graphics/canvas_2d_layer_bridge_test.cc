@@ -126,7 +126,7 @@ class Canvas2DLayerBridgeTest : public Test {
     // IsHibernating to propagate the value from Canvas2DLayerBridge, but
     // FakeCanvasResourceHost does not do this. This can be removed once
     // hibernation management is removed from Canvas2DLayerBridge.
-    host_->SetIsHibernating(bridge->IsHibernating());
+    host_->SetIsHibernating(bridge->GetHibernationHandler().IsHibernating());
 
     return Host()->GetRasterMode();
   }
@@ -293,7 +293,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 
   // Test exiting hibernation
@@ -308,7 +308,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 }
 
@@ -356,7 +356,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 
   // Test exiting hibernation
@@ -371,7 +371,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 }
 
@@ -406,7 +406,7 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 
   // Tear down the bridge while hibernating
@@ -494,7 +494,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(bridge->GetHibernationHandler().IsHibernating());
   EXPECT_TRUE(Host()->IsResourceValid());
 }
 
@@ -534,7 +534,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
       ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(bridge->GetHibernationHandler().IsHibernating());
 }
 
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
@@ -573,7 +573,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
   // CanvasResourceHost::IsHibernating to propagate to Canvas2DLayerBridge.
   // FakeCanvasResourceHost does not do this.  We will be able to remove this
   // one hibernation management is moved out of Canvas2DLayerBridge.
-  Host()->SetIsHibernating(bridge->IsHibernating());
+  Host()->SetIsHibernating(bridge->GetHibernationHandler().IsHibernating());
 
   // Test PrepareTransferableResource() while hibernating
   viz::TransferableResource resource;

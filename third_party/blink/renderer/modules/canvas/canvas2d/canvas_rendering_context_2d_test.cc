@@ -2204,7 +2204,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
 
   EXPECT_FALSE(handler.is_encoded());
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
   GetDocument().GetPage()->SetVisibilityState(
@@ -2213,7 +2213,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Hibernation is triggered asynchronously.
   EXPECT_FALSE(handler.is_encoded());
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.IsHibernating());
 
   // Run the task that initiates hibernation, which has been posted as an idle
   // task.
@@ -2222,7 +2222,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       ->StartIdlePeriodForTesting();
   blink::test::RunPendingTasks();
   EXPECT_FALSE(CanvasElement().ResourceProvider());
-  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(handler.IsHibernating());
 
   // Wait for encoding to complete on a background thread.
   run_loop.Run();
@@ -2233,7 +2233,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // That draw should have caused hibernation to end and the encoded canvas to
   // be dropped.
-  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
 }
 
@@ -2264,7 +2264,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
 
   ASSERT_FALSE(handler.is_encoded());
-  ASSERT_FALSE(bridge->IsHibernating());
+  ASSERT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
   GetDocument().GetPage()->SetVisibilityState(
@@ -2273,7 +2273,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Hibernation is triggered asynchronously.
   ASSERT_FALSE(handler.is_encoded());
-  ASSERT_FALSE(bridge->IsHibernating());
+  ASSERT_FALSE(handler.IsHibernating());
 
   // Run the task that initiates hibernation, which has been posted as an idle
   // task.
@@ -2283,7 +2283,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   blink::test::RunPendingTasks();
 
   ASSERT_FALSE(CanvasElement().ResourceProvider());
-  ASSERT_TRUE(bridge->IsHibernating());
+  ASSERT_TRUE(handler.IsHibernating());
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   // Wait for encoding to complete on a background thread.
@@ -2297,7 +2297,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // The action of taking the snapshot should not have impacted the state of
   // hibernation.
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
-  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(handler.IsHibernating());
   EXPECT_TRUE(handler.is_encoded());
 }
 
