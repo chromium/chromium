@@ -126,6 +126,18 @@ void HttpStreamPool::AttemptManager::StartJob(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  if (respect_limits == RespectLimits::kIgnore) {
+    respect_limits_ = RespectLimits::kIgnore;
+  }
+
+  if (!enable_ip_based_pooling) {
+    enable_ip_based_pooling_ = enable_ip_based_pooling;
+  }
+
+  if (!enable_alternative_services) {
+    enable_alternative_services_ = enable_alternative_services;
+  }
+
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
   DCHECK(!CanUseExistingQuicSession());
@@ -142,18 +154,6 @@ void HttpStreamPool::AttemptManager::StartJob(
         FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
-  }
-
-  if (respect_limits == RespectLimits::kIgnore) {
-    respect_limits_ = RespectLimits::kIgnore;
-  }
-
-  if (!enable_ip_based_pooling) {
-    enable_ip_based_pooling_ = enable_ip_based_pooling;
-  }
-
-  if (!enable_alternative_services) {
-    enable_alternative_services_ = enable_alternative_services;
   }
 
   MaybeChangeServiceEndpointRequestPriority();
