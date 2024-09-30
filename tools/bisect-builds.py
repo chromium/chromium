@@ -2067,11 +2067,18 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
 
   build_type_group = parser.add_mutually_exclusive_group()
   build_type_group.add_argument(
+      '-s',
+      dest='build_type',
+      action='store_const',
+      const='snapshot',
+      default='snapshot',
+      help='Bisect across Chromium snapshot archives (default).',
+  )
+  build_type_group.add_argument(
       '-r',
       dest='build_type',
       action='store_const',
       const='release',
-      default='snapshot',
       help='Bisect across release Chrome builds (internal only) instead of '
       'Chromium archives.',
   )
@@ -2269,9 +2276,15 @@ def ParseCommandLine(args=None):
       parser.error('Error: Missing required parameter: --archive')
 
   if opts.archive not in PATH_CONTEXT[opts.build_type]:
-    parser.error(
-        f'Bisecting on {opts.build_type} are only supported on these platforms '
-        f'(-a/--archive): {{{",".join(PATH_CONTEXT[opts.build_type].keys())}}}')
+    supported_build_types = [
+        "%s(%s)" % (b, BuildTypeToCommandLineArgument(b, omit_default=False))
+        for b, context in PATH_CONTEXT.items() if opts.archive in context
+    ]
+    parser.error(f'Bisecting on {opts.build_type} is only supported on these '
+                 'platforms (-a/--archive): '
+                 f'{{{",".join(PATH_CONTEXT[opts.build_type].keys())}}}\n'
+                 f'To bisect for {opts.archive}, please choose from '
+                 f'{", ".join(supported_build_types)}')
 
   if opts.signed and not (opts.archive.startswith('android-')
                           or opts.archive.startswith('ios')):
@@ -2312,6 +2325,23 @@ def ParseCommandLine(args=None):
   return opts
 
 
+def BuildTypeToCommandLineArgument(build_type, omit_default=True):
+  """Convert the build_type back to command line argument."""
+  if build_type == 'release':
+    return '-r'
+  elif build_type == 'official':
+    return '-o'
+  elif build_type == 'snapshot':
+    if not omit_default:
+      return '-s'
+    else:
+      return ''
+  elif build_type == 'asan':
+    return '--asan'
+  else:
+    raise ValueError(f'Unknown build type: {build_type}')
+
+
 def GenerateCommandLine(opts):
   """Generate a command line for bisect options.
 
@@ -2334,10 +2364,7 @@ def GenerateCommandLine(opts):
                                               action='store_true')
   _, remaining_args = parser_to_remove_known_options.parse_known_args()
   args = []
-  if opts.build_type == 'release':
-    args.append('-r')
-  elif opts.build_type == 'official':
-    args.append('-o')
+  args.append(BuildTypeToCommandLineArgument(opts.build_type))
   if opts.archive:
     args.extend(['-a', opts.archive])
   if opts.signed:

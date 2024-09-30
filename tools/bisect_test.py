@@ -1352,7 +1352,8 @@ class MaybeSwitchBuildTypeTest(BisectTestCase):
 
 class MethodTest(BisectTestCase):
 
-  def test_ParseCommandLine(self):
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine(self, mock_stderr):
     opts = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1', 'args1', 'args2 3', '-b', '2'])
     self.assertEqual(opts.build_type, 'snapshot')
@@ -1365,6 +1366,12 @@ class MethodTest(BisectTestCase):
     opts = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1', '--', 'args1', 'args2 3', '-b', '2'])
     self.assertEqual(opts.args, ['args1', 'args2 3', '-b', '2'])
+
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['-a', 'mac64', '-o', '-g', '1'])
+      self.assertRegexpMatches(
+          mock_stderr.getvalue(), r'To bisect for mac64, please choose from '
+          r'release(-r), snapshot(-s)')
 
   @patch("urllib.request.urlopen",
          side_effect=[
