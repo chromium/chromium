@@ -684,10 +684,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   CHECK(format.is_multi_plane());
   SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
-  // TODO(crbug.com/41380578): This should really default to rec709.
-  SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
-  color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
-                                &sk_yuv_color_space);
+  // TODO(crbug.com/368870063): Implement RGB matrix support in
+  // ToSkYUVColorSpace.
+  SkYUVColorSpace sk_yuv_color_space = kIdentity_SkYUVColorSpace;
+  if (color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
+    // TODO(crbug.com/41380578): This should really default to rec709.
+    sk_yuv_color_space = kRec601_SkYUVColorSpace;
+    color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                  &sk_yuv_color_space);
+  }
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
                        subsampling, sk_yuv_color_space);
   if (graphite_recorder_) {
