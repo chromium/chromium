@@ -238,7 +238,10 @@ ShoppingService::ShoppingService(
   }
 
   if (identity_manager && account_checker_) {
-    if (subscription_proto_db) {
+    if (subscription_proto_db &&
+        commerce::IsRegionLockedFeatureEnabled(
+            kShoppingList, kShoppingListRegionLaunched,
+            account_checker_->GetCountry(), account_checker_->GetLocale())) {
       subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
           identity_manager, url_loader_factory, subscription_proto_db,
           account_checker_.get());
