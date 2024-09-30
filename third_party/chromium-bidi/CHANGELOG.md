@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.7.1...chromium-bidi-v0.8.0) (2024-09-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 131.0.6724.0 ([#2622](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2622))
+
+### Features
+
+* `browsingContext.traverseHistory` only for top-level navigables ([#2627](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2627)) ([dd0dec5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dd0dec59f7bedfbca59c61155eb0c8bb216c7bee))
+* **chrome:** update the pinned browser version to 131.0.6724.0 ([#2622](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2622)) ([ff9658a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ff9658a3f80b8c612e41fcdcd5d5a054436ac333))
+
+
+### Bug Fixes
+
+* show correct log method ([#2644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2644)) ([4c66419](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4c66419b2ee6a34be894b92ed91bbbc75bea5a7b))
+
 ## [0.7.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.7.0...chromium-bidi-v0.7.1) (2024-09-16)
 
 
