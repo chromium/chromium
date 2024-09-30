@@ -62,6 +62,13 @@
   // The type of account error that is being displayed in the error section for
   // signed in accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
+
+  // Records the displayed primary account info by the view. Used to limit the
+  // view updates to only when one of these values is updated.
+  NSString* _primaryAccountDisplayedEmail;
+  NSString* _primaryAccountDisplayedUserFullName;
+  UIImage* _primaryAccountDisplayedAvatar;
+  BOOL _primaryAccountDisplayedManaged;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -94,8 +101,6 @@
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
-    _primaryIdentity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
     [self updateIdentities];
     _error = GetAccountErrorUIInfo(_syncService);
   }
@@ -390,7 +395,9 @@
   [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
                                    gaiaIDsToRemove:gaiaIDsToRemove];
   // In case the primary account information changed.
-  [self.consumer updatePrimaryAccount];
+  if ([self primaryAccountInfoChanged]) {
+    [self.consumer updatePrimaryAccount];
+  }
 }
 
 // Callback for signout.
@@ -432,6 +439,28 @@
     }
   }
   NOTREACHED();
+}
+
+// Updates the displayed values, and returns YES if the primary account info
+// changed from the displayed ones. Otherwise returns NO.
+- (BOOL)primaryAccountInfoChanged {
+  if (_primaryAccountDisplayedAvatar != self.primaryAccountAvatar ||
+      _primaryAccountDisplayedUserFullName != self.primaryAccountUserFullName ||
+      _primaryAccountDisplayedEmail != self.primaryAccountEmail ||
+      _primaryAccountDisplayedManaged !=
+          self.managementState.is_profile_managed()) {
+    [self recordPrimaryAccountDisplayedInfo];
+    return YES;
+  }
+  return NO;
+}
+
+// Records the displayed primary account info.
+- (void)recordPrimaryAccountDisplayedInfo {
+  _primaryAccountDisplayedEmail = self.primaryAccountEmail;
+  _primaryAccountDisplayedUserFullName = self.primaryAccountUserFullName;
+  _primaryAccountDisplayedAvatar = self.primaryAccountAvatar;
+  _primaryAccountDisplayedManaged = self.managementState.is_profile_managed();
 }
 
 @end

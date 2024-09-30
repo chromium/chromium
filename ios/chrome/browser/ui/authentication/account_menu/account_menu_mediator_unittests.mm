@@ -173,17 +173,22 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaID ]
                         gaiaIDsToRemove:@[]]);
-  OCMExpect([consumer_ updatePrimaryAccount]);
   fake_system_identity_manager_->AddIdentity(thirdIdentity);
 }
 
 // Checks that removing a secondary identity lead to updating the
 // consumer.
 TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
+  // Expectations due to ChromeAccountManagerServiceObserver updates.
+  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
+                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_ updatePrimaryAccount]);
+  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
+                                         gaiaIDsToRemove:@[]]);
+
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]]);
-  OCMExpect([consumer_ updatePrimaryAccount]);
   {
     base::RunLoop run_loop;
     base::RepeatingClosure closure = run_loop.QuitClosure();
@@ -310,7 +315,6 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
 
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
-  OCMExpect([consumer_ updatePrimaryAccount]);
   SigninCompletionInfo* signinCompletionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
   OCMExpect([delegate_ mediatorWantsToDismissTheView:mediator_]);

@@ -519,6 +519,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   [snapshot deleteItemsWithIdentifiers:accountsIdentifiersToRemove];
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
+
+  [self.tableView reloadData];
 }
 
 #pragma mark - UIResponder
