@@ -77,6 +77,11 @@ const base::FeatureParam<bool> kUseMlIntentClassifier(&kHistoryEmbeddings,
                                                       "UseMlIntentClassifier",
                                                       false);
 
+const base::FeatureParam<int> kMockIntentClassifierDelayMS(
+    &kHistoryEmbeddings,
+    "MockIntentClassifierDelayMS",
+    0);
+
 const base::FeatureParam<bool> kEnableAnswers(&kHistoryEmbeddings,
                                               "EnableAnswers",
                                               false);
@@ -88,6 +93,10 @@ const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
 const base::FeatureParam<double> kMlAnswererMinScore(&kHistoryEmbeddings,
                                                      "MlAnswererMinScore",
                                                      0.5);
+
+const base::FeatureParam<int> kMockAnswererDelayMS(&kHistoryEmbeddings,
+                                                   "MockAnswererDelayMS",
+                                                   0);
 
 const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
                                                        "EnableImagesForResults",

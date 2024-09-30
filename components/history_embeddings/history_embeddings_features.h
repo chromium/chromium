@@ -61,6 +61,10 @@ extern const base::FeatureParam<bool> kEnableIntentClassifier;
 // used).
 extern const base::FeatureParam<bool> kUseMlIntentClassifier;
 
+// Specifies the delay in milliseconds to use for the mock intent classifier for
+// local development.
+extern const base::FeatureParam<int> kMockIntentClassifierDelayMS;
+
 // Specifies whether to answer queries using an answerer (mock or ML). This
 // can be considered a toggle for v2 functionality.
 extern const base::FeatureParam<bool> kEnableAnswers;
@@ -70,6 +74,10 @@ extern const base::FeatureParam<bool> kUseMlAnswerer;
 
 // Specifies the min score for generated answer from the ML answerer.
 extern const base::FeatureParam<double> kMlAnswererMinScore;
+
+// Specifies the delay in milliseconds to use for the mock answerer for local
+// development.
+extern const base::FeatureParam<int> kMockAnswererDelayMS;
 
 // Specifies whether to show images in results for search results on the
 // chrome://history page.

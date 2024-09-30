@@ -5,6 +5,8 @@
 #include "components/history_embeddings/mock_answerer.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 
 namespace history_embeddings {
@@ -22,10 +24,12 @@ void MockAnswerer::ComputeAnswer(std::string query,
   optimization_guide::proto::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                AnswererResult{ComputeAnswerStatus::SUCCESS,
-                                               query, answer}));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          AnswererResult{ComputeAnswerStatus::SUCCESS, query, answer}),
+      base::Milliseconds(kMockAnswererDelayMS.Get()));
 }
 
 }  // namespace history_embeddings

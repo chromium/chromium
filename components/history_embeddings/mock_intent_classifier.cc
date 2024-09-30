@@ -6,6 +6,8 @@
 
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 
 namespace history_embeddings {
 
@@ -42,10 +44,11 @@ void MockIntentClassifier::ComputeQueryIntent(
       std::ranges::any_of(
           query_intent_indicating_words,
           [&](std::string_view start) { return query.starts_with(start); });
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ComputeIntentStatus::SUCCESS,
-                     is_query_answerable));
+                     is_query_answerable),
+      base::Milliseconds(kMockIntentClassifierDelayMS.Get()));
 }
 
 }  // namespace history_embeddings
