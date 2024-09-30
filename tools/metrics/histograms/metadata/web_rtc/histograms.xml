@@ -1530,15 +1530,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2025-03-01">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
   <summary>
     Measures whether the remote description contains a payload type collision
     that is not allowed by the IETFs BUNDLE specification. Enforcing this would
-    allow simplifying the statistics collector. Recorded for every remote
-    description.
+    allow simplifying the statistics collector, and fix issue
+    https://issues.webrtc.org/42224689. Recorded for every remote description.
+    Warning: this histogram was expired from 2024-06-30 to 2024-09-30; data may
+    be missing.
   </summary>
 </histogram>
 
