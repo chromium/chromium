@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -187,4 +189,49 @@ NSString* FormatElapsedTimeSinceLastSafetyCheck(
 
   return l10n_util::GetNSStringF(IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK,
                                  timestamp);
+}
+
+NSString* NameForSafetyCheckItemType(SafetyCheckItemType item_type) {
+  switch (item_type) {
+    case SafetyCheckItemType::kAllSafe:
+      return @"SafetyCheckItemType::kAllSafe";
+    case SafetyCheckItemType::kRunning:
+      return @"SafetyCheckItemType::kRunning";
+    case SafetyCheckItemType::kUpdateChrome:
+      return @"SafetyCheckItemType::kUpdateChrome";
+    case SafetyCheckItemType::kPassword:
+      return @"SafetyCheckItemType::kPassword";
+    case SafetyCheckItemType::kSafeBrowsing:
+      return @"SafetyCheckItemType::kSafeBrowsing";
+    case SafetyCheckItemType::kDefault:
+      return @"SafetyCheckItemType::kDefault";
+  }
+}
+
+SafetyCheckItemType SafetyCheckItemTypeForName(NSString* name) {
+  if ([name isEqualToString:@"SafetyCheckItemType::kAllSafe"]) {
+    return SafetyCheckItemType::kAllSafe;
+  }
+
+  if ([name isEqualToString:@"SafetyCheckItemType::kRunning"]) {
+    return SafetyCheckItemType::kRunning;
+  }
+
+  if ([name isEqualToString:@"SafetyCheckItemType::kUpdateChrome"]) {
+    return SafetyCheckItemType::kUpdateChrome;
+  }
+
+  if ([name isEqualToString:@"SafetyCheckItemType::kPassword"]) {
+    return SafetyCheckItemType::kPassword;
+  }
+
+  if ([name isEqualToString:@"SafetyCheckItemType::kSafeBrowsing"]) {
+    return SafetyCheckItemType::kSafeBrowsing;
+  }
+
+  if (![name isEqualToString:@"SafetyCheckItemType::kDefault"]) {
+    NOTREACHED();
+  }
+
+  return SafetyCheckItemType::kDefault;
 }
