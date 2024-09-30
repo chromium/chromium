@@ -557,6 +557,13 @@ bool IsValidShadowHostName(const AtomicString& local_name) {
   return shadow_root_tags.Contains(local_name);
 }
 
+const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
+  if (mode == V8ShadowRootMode::Enum::kOpen) {
+    return keywords::kOpen;
+  }
+  return keywords::kClosed;
+}
+
 }  // namespace
 
 Element::Element(const QualifiedName& tag_name,
@@ -5641,9 +5648,9 @@ const char* Element::ErrorMessageForAttachShadow(
       return "attachShadow() is disabled by disabledFeatures static field.";
     }
   }
-  if (EqualIgnoringASCIICase(mode, "open")) {
+  if (EqualIgnoringASCIICase(mode, keywords::kOpen)) {
     mode_out = ShadowRootMode::kOpen;
-  } else if (EqualIgnoringASCIICase(mode, "closed")) {
+  } else if (EqualIgnoringASCIICase(mode, keywords::kClosed)) {
     mode_out = ShadowRootMode::kClosed;
   } else {
     CHECK(for_declarative);
@@ -5672,7 +5679,8 @@ const char* Element::ErrorMessageForAttachShadow(
 ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                                   ExceptionState& exception_state) {
   DCHECK(shadow_root_init_dict->hasMode());
-  String mode_string = shadow_root_init_dict->mode();
+  String mode_string =
+      V8ShadowRootModeToString(shadow_root_init_dict->mode().AsEnum());
   bool serializable = shadow_root_init_dict->getSerializableOr(false);
   if (serializable) {
     UseCounter::Count(GetDocument(),
