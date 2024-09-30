@@ -1967,6 +1967,7 @@ fyi_mac_builder(
             "x64",
         ],
     ),
+    builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "deterministic|mac",
@@ -1986,6 +1987,7 @@ fyi_mac_builder(
             "x64",
         ],
     ),
+    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
