@@ -345,12 +345,13 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     host->set_version(*host_version);
   }
   if (signaling_id.has_value()) {
-    auto parts = base::SplitStringOnce(*signaling_id, kFtlResourceSeparator);
-    if (parts) {
-      host->mutable_tachyon_account_info()->set_account_id(
-          std::string(parts->first));
+    auto parts = base::SplitStringUsingSubstr(
+        *signaling_id, kFtlResourceSeparator, base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_ALL);
+    if (parts.size() == 2) {
+      host->mutable_tachyon_account_info()->set_account_id(std::move(parts[0]));
       host->mutable_tachyon_account_info()->set_registration_id(
-          std::string(parts->second));
+          std::move(parts[1]));
     }
   }
   if (offline_reason.has_value()) {
