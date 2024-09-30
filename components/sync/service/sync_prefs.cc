@@ -469,13 +469,13 @@ void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
       pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
       available_gaia_ids);
 
-  // TODO(crbug.com/337034860): This is not the right place for clearing
+  // TODO(crbug.com/368409110): This is not the right place for clearing
   // transport-data-related prefs - ideally there'd be an observer API for
   // "accounts on this device".
   SyncTransportDataPrefs::KeepAccountSettingsPrefsOnlyForUsers(
       pref_service_, available_gaia_ids);
 
-  // TODO(crbug.com/363927991): This is *absolutely* not the right place for
+  // TODO(crbug.com/368409110): This is *absolutely* not the right place for
   // clearing not-sync-related prefs. Move this elsewhere once signin code
   // provides an observer API for "accounts on this device".
   tab_groups::prefs::KeepAccountSettingsPrefsOnlyForUsers(pref_service_,

@@ -71,7 +71,7 @@ class SyncUserSettingsImplTest : public testing::Test,
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
-    // TODO(crbug.com/363927991): Necessary for a workaround in
+    // TODO(crbug.com/368409110): Necessary for a workaround in
     // SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
     pref_service_.registry()->RegisterDictionaryPref(
         tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,

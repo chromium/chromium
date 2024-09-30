@@ -47,14 +47,13 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-    // TODO(crbug.com/337034860): This is required due to a workaround in
-    // KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
+    // TODO(crbug.com/368409110): These prefs are required due to a workaround
+    // in KeepAccountSettingsPrefsOnlyForUsers(); see TODOs there.
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
-    // TODO(crbug.com/363927991): Similarly, necessary for a workaround in
-    // KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
     pref_service_.registry()->RegisterDictionaryPref(
         tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
         base::Value::Dict());
+
     // Pref is registered in signin internal `PrimaryAccountManager`.
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);
