@@ -239,10 +239,10 @@ using ProvisionGceInstanceRequest =
     google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceRequest;
 using ReauthorizeHostRequest =
     google::internal::remoting::cloud::v1alpha::ReauthorizeHostRequest;
+using RemoteAccessHost =
+    google::internal::remoting::cloud::v1alpha::RemoteAccessHost;
 using SendHeartbeatRequest =
     google::internal::remoting::cloud::v1alpha::SendHeartbeatRequest;
-using UpdateRemoteAccessHostRequest =
-    google::internal::remoting::cloud::v1alpha::UpdateRemoteAccessHostRequest;
 using VerifySessionTokenRequest =
     google::internal::remoting::cloud::v1alpha::VerifySessionTokenRequest;
 
@@ -338,8 +338,7 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     UpdateRemoteAccessHostCallback callback) {
   constexpr char path[] = "/v1alpha/access:updateRemoteAccessHost";
 
-  auto request = std::make_unique<UpdateRemoteAccessHostRequest>();
-  auto* host = request->mutable_remote_access_host();
+  auto host = std::make_unique<RemoteAccessHost>();
 
   host->set_directory_id(directory_id);
   if (host_version.has_value()) {
@@ -363,7 +362,7 @@ void CloudServiceClient::UpdateRemoteAccessHost(
   }
 
   ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPatchMethod, std::move(request),
+                 net::HttpRequestHeaders::kPatchMethod, std::move(host),
                  std::move(callback));
 }
 
