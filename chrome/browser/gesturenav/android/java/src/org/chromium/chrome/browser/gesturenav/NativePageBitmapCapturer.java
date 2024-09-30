@@ -88,7 +88,9 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         if (view.getWidth() == 0 || view.getHeight() == 0) return false;
         if (tab.getWebContents() == null
                 || tab.getWebContents().getViewAndroidDelegate() == null
-                || tab.getWebContents().getViewAndroidDelegate().getContainerView() == null) {
+                || tab.getWebContents().getViewAndroidDelegate().getContainerView() == null
+                || tab.getWebContents().getViewAndroidDelegate().getContainerView().getHeight()
+                        == 0) {
             return false;
         }
         return true;
