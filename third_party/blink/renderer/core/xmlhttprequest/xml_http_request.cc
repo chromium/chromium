@@ -299,12 +299,12 @@ XMLHttpRequest::State XMLHttpRequest::readyState() const {
 
 String XMLHttpRequest::responseText(ExceptionState& exception_state) {
   if (response_type_code_ != kResponseTypeDefault &&
-      response_type_code_ != kResponseTypeText) {
+      response_type_code_ != V8XMLHttpRequestResponseType::Enum::kText) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The value is only accessible if the "
                                       "object's 'responseType' is '' or 'text' "
                                       "(was '" +
-                                          responseType() + "').");
+                                          responseType().AsString() + "').");
     return String();
   }
   if (error_ || (state_ != kLoading && state_ != kDone))
@@ -340,12 +340,12 @@ void XMLHttpRequest::InitResponseDocument() {
 
 Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
   if (response_type_code_ != kResponseTypeDefault &&
-      response_type_code_ != kResponseTypeDocument) {
+      response_type_code_ != V8XMLHttpRequestResponseType::Enum::kDocument) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The value is only accessible if the "
                                       "object's 'responseType' is '' or "
                                       "'document' (was '" +
-                                          responseType() + "').");
+                                          responseType().AsString() + "').");
     return nullptr;
   }
 
@@ -374,7 +374,7 @@ Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
 v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
     v8::Isolate* isolate,
     ExceptionState& exception_state) {
-  DCHECK_EQ(response_type_code_, kResponseTypeJSON);
+  DCHECK_EQ(response_type_code_, V8XMLHttpRequestResponseType::Enum::kJson);
   DCHECK(!error_);
   DCHECK_EQ(state_, kDone);
   TryRethrowScope rethrow_scope(isolate, exception_state);
@@ -391,7 +391,7 @@ v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
 }
 
 Blob* XMLHttpRequest::ResponseBlob() {
-  DCHECK_EQ(response_type_code_, kResponseTypeBlob);
+  DCHECK_EQ(response_type_code_, V8XMLHttpRequestResponseType::Enum::kBlob);
   DCHECK(!error_);
   DCHECK_EQ(state_, kDone);
 
@@ -414,7 +414,8 @@ Blob* XMLHttpRequest::ResponseBlob() {
 }
 
 DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
-  DCHECK_EQ(response_type_code_, kResponseTypeArrayBuffer);
+  DCHECK_EQ(response_type_code_,
+            V8XMLHttpRequestResponseType::Enum::kArraybuffer);
   DCHECK(!error_);
   DCHECK_EQ(state_, kDone);
 
@@ -453,7 +454,7 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
   // The spec handles default or `text` responses as a special case, because
   // these cases are allowed to access the response while still loading.
   if (response_type_code_ == kResponseTypeDefault ||
-      response_type_code_ == kResponseTypeText) {
+      response_type_code_ == V8XMLHttpRequestResponseType::Enum::kText) {
     const auto& text = responseText(exception_state);
     if (exception_state.HadException()) {
       return ScriptValue();
@@ -467,9 +468,9 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
   }
 
   switch (response_type_code_) {
-    case kResponseTypeJSON:
+    case V8XMLHttpRequestResponseType::Enum::kJson:
       return ScriptValue(isolate, ResponseJSON(isolate, exception_state));
-    case kResponseTypeDocument: {
+    case V8XMLHttpRequestResponseType::Enum::kDocument: {
       Document* document = responseXML(exception_state);
       if (exception_state.HadException()) {
         return ScriptValue();
@@ -477,10 +478,10 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
       return ScriptValue(isolate, ToV8Traits<IDLNullable<Document>>::ToV8(
                                       script_state, document));
     }
-    case kResponseTypeBlob:
+    case V8XMLHttpRequestResponseType::Enum::kBlob:
       return ScriptValue(isolate,
                          ToV8Traits<Blob>::ToV8(script_state, ResponseBlob()));
-    case kResponseTypeArrayBuffer:
+    case V8XMLHttpRequestResponseType::Enum::kArraybuffer:
       return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMArrayBuffer>>::ToV8(
                                       script_state, ResponseArrayBuffer()));
     default:
@@ -515,8 +516,9 @@ void XMLHttpRequest::setTimeout(unsigned timeout,
     loader_->SetTimeout(timeout_);
 }
 
-void XMLHttpRequest::setResponseType(const String& response_type,
-                                     ExceptionState& exception_state) {
+void XMLHttpRequest::setResponseType(
+    const V8XMLHttpRequestResponseType& response_type,
+    ExceptionState& exception_state) {
   const bool is_window =
       GetExecutionContext() && GetExecutionContext()->IsWindow();
   // 1. If the current global object is not a Window object and the given value
@@ -545,39 +547,11 @@ void XMLHttpRequest::setResponseType(const String& response_type,
     return;
   }
 
-  if (response_type == "") {
-    response_type_code_ = kResponseTypeDefault;
-  } else if (response_type == "text") {
-    response_type_code_ = kResponseTypeText;
-  } else if (response_type == "json") {
-    response_type_code_ = kResponseTypeJSON;
-  } else if (response_type == "document") {
-    response_type_code_ = kResponseTypeDocument;
-  } else if (response_type == "blob") {
-    response_type_code_ = kResponseTypeBlob;
-  } else if (response_type == "arraybuffer") {
-    response_type_code_ = kResponseTypeArrayBuffer;
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
+  response_type_code_ = response_type.AsEnum();
 }
 
-String XMLHttpRequest::responseType() {
-  switch (response_type_code_) {
-    case kResponseTypeDefault:
-      return "";
-    case kResponseTypeText:
-      return "text";
-    case kResponseTypeJSON:
-      return "json";
-    case kResponseTypeDocument:
-      return "document";
-    case kResponseTypeBlob:
-      return "blob";
-    case kResponseTypeArrayBuffer:
-      return "arraybuffer";
-  }
-  return "";
+V8XMLHttpRequestResponseType XMLHttpRequest::responseType() {
+  return V8XMLHttpRequestResponseType(response_type_code_);
 }
 
 String XMLHttpRequest::responseURL() {
@@ -716,7 +690,7 @@ void XMLHttpRequest::open(const AtomicString& method,
     // Newer functionality is not available to synchronous requests in window
     // contexts, as a spec-mandated attempt to discourage synchronous XHR use.
     // responseType is one such piece of functionality.
-    if (response_type_code_ != kResponseTypeDefault) {
+    if (response_type_code_ != V8XMLHttpRequestResponseType::Enum::k) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
           "Synchronous requests from a document must not set a response type.");
@@ -1152,7 +1126,8 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   // blob directly, except for data: URLs, since those are loaded by
   // renderer side code, and don't support being downloaded to a blob.
   downloading_to_blob_ =
-      GetResponseTypeCode() == kResponseTypeBlob && !url_.ProtocolIsData();
+      GetResponseTypeCode() == V8XMLHttpRequestResponseType::Enum::kBlob &&
+      !url_.ProtocolIsData();
   if (downloading_to_blob_) {
     request.SetDownloadToBlob(true);
     resource_loader_options.data_buffering_policy = kDoNotBufferData;
@@ -1761,7 +1736,8 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
   if (state_ < kHeadersReceived)
     ChangeState(kHeadersReceived);
 
-  if (downloading_to_blob_ && response_type_code_ != kResponseTypeBlob &&
+  if (downloading_to_blob_ &&
+      response_type_code_ != V8XMLHttpRequestResponseType::Enum::kBlob &&
       response_blob_) {
     // In this case, we have sent the request with DownloadToBlob true,
     // but the user changed the response type after that. Hence we need to
@@ -1902,7 +1878,7 @@ void XMLHttpRequest::ParseDocumentChunk(base::span<const uint8_t> data) {
 }
 
 std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
-  if (response_type_code_ == kResponseTypeJSON) {
+  if (response_type_code_ == V8XMLHttpRequestResponseType::Enum::kJson) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::CreateUTF8Decode()));
   }
@@ -1927,19 +1903,19 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
       if (ResponseIsXML())
         return std::make_unique<TextResourceDecoder>(decoder_options_for_xml);
       [[fallthrough]];
-    case kResponseTypeText:
+    case V8XMLHttpRequestResponseType::Enum::kText:
       return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding()));
 
-    case kResponseTypeDocument:
+    case V8XMLHttpRequestResponseType::Enum::kDocument:
       if (ResponseIsHTML()) {
         return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
             TextResourceDecoderOptions::kHTMLContent, UTF8Encoding()));
       }
       return std::make_unique<TextResourceDecoder>(decoder_options_for_xml);
-    case kResponseTypeJSON:
-    case kResponseTypeBlob:
-    case kResponseTypeArrayBuffer:
+    case V8XMLHttpRequestResponseType::Enum::kJson:
+    case V8XMLHttpRequestResponseType::Enum::kBlob:
+    case V8XMLHttpRequestResponseType::Enum::kArraybuffer:
       NOTREACHED_IN_MIGRATION();
       break;
   }
@@ -1965,12 +1941,14 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
     return;
   }
 
-  if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
+  if (response_type_code_ == V8XMLHttpRequestResponseType::Enum::kDocument &&
+      ResponseIsHTML()) {
     ParseDocumentChunk(base::as_bytes(data));
   } else if (response_type_code_ == kResponseTypeDefault ||
-             response_type_code_ == kResponseTypeText ||
-             response_type_code_ == kResponseTypeJSON ||
-             response_type_code_ == kResponseTypeDocument) {
+             response_type_code_ == V8XMLHttpRequestResponseType::Enum::kText ||
+             response_type_code_ == V8XMLHttpRequestResponseType::Enum::kJson ||
+             response_type_code_ ==
+                 V8XMLHttpRequestResponseType::Enum::kDocument) {
     if (!decoder_)
       decoder_ = CreateDecoder();
 
@@ -1984,8 +1962,9 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
       }
       ReportMemoryUsageToV8();
     }
-  } else if (response_type_code_ == kResponseTypeArrayBuffer ||
-             response_type_code_ == kResponseTypeBlob) {
+  } else if (response_type_code_ ==
+                 V8XMLHttpRequestResponseType::Enum::kArraybuffer ||
+             response_type_code_ == V8XMLHttpRequestResponseType::Enum::kBlob) {
     // Buffer binary data.
     if (!binary_response_builder_)
       binary_response_builder_ = SharedBuffer::Create();

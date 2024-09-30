@@ -34,6 +34,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_xml_http_request_response_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_parser_client.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -104,15 +105,6 @@ class CORE_EXPORT XMLHttpRequest final
     kDone = 4
   };
 
-  enum ResponseTypeCode {
-    kResponseTypeDefault,
-    kResponseTypeText,
-    kResponseTypeJSON,
-    kResponseTypeDocument,
-    kResponseTypeBlob,
-    kResponseTypeArrayBuffer,
-  };
-
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
   ExecutionContext* GetExecutionContext() const override;
@@ -161,9 +153,11 @@ class CORE_EXPORT XMLHttpRequest final
     return static_cast<unsigned>(timeout_.InMilliseconds());
   }
   void setTimeout(unsigned timeout, ExceptionState&);
-  ResponseTypeCode GetResponseTypeCode() const { return response_type_code_; }
-  String responseType();
-  void setResponseType(const String&, ExceptionState&);
+  V8XMLHttpRequestResponseType::Enum GetResponseTypeCode() const {
+    return response_type_code_;
+  }
+  V8XMLHttpRequestResponseType responseType();
+  void setResponseType(const V8XMLHttpRequestResponseType&, ExceptionState&);
   String responseURL();
 
   // For Inspector.
@@ -351,9 +345,14 @@ class CORE_EXPORT XMLHttpRequest final
 
   Member<XMLHttpRequestProgressEventThrottle> progress_event_throttle_;
 
+  // V8XMLHttpRequestResponseType::Enum::k is the default value. For readability
+  // we alias it to kResponseTypeDefault.
+  static constexpr auto kResponseTypeDefault =
+      V8XMLHttpRequestResponseType::Enum::k;
+
   // An enum corresponding to the allowed string values for the responseType
   // attribute.
-  ResponseTypeCode response_type_code_ = kResponseTypeDefault;
+  V8XMLHttpRequestResponseType::Enum response_type_code_ = kResponseTypeDefault;
 
   // The DOMWrapperWorld in which the request initiated. Can be null.
   Member<const DOMWrapperWorld> world_;
