@@ -79,7 +79,11 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, &local_state_, country_codes::kCountryIDUnknown);
+          pref_service_, &local_state_,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+          /*is_profile_eligible_for_dse_guest_propagation=*/false,
+#endif
+          country_codes::kCountryIDUnknown);
 
   template_url_service_ = CreateService();
 }

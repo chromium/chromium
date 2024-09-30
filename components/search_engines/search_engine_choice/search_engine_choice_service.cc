@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -168,21 +169,36 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 
 }  // namespace
 
-SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
-                                                     PrefService* local_state,
-                                                     int variations_country_id)
+SearchEngineChoiceService::SearchEngineChoiceService(
+    PrefService& profile_prefs,
+    PrefService* local_state,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    bool is_profile_eligbile_for_dse_guest_propagation,
+#endif
+    int variations_country_id)
     : profile_prefs_(profile_prefs),
+      local_state_(local_state),
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+      is_profile_eligible_for_dse_guest_propagation_(
+          is_profile_eligbile_for_dse_guest_propagation),
+#endif
       variations_country_id_(variations_country_id) {
-  ProcessPendingChoiceScreenDisplayState(local_state);
+  ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
 }
 
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    bool is_profile_eligible_for_dse_guest_propagation,
+#endif
     variations::VariationsService* variations_service)
     : SearchEngineChoiceService(profile_prefs,
                                 local_state,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+                                is_profile_eligible_for_dse_guest_propagation,
+#endif
 #if BUILDFLAG(IS_FUCHSIA)
                                 // We can't add a dependency from Fuchsia to
                                 // `//components/variations/service`.
@@ -538,19 +554,18 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 }
 
-void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState(
-    PrefService* local_state) {
+void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
   if (!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
     return;
   }
 
-  if (!local_state) {
+  if (!local_state_) {
     // `g_browser_process->local_state()` is null in unit tests unless properly
     // set up.
     CHECK_IS_TEST();
   } else if (!SearchEngineChoiceMetricsServiceAccessor::
-                 IsMetricsReportingEnabled(local_state)) {
+                 IsMetricsReportingEnabled(local_state_)) {
     // The display state should not be cached when UMA is disabled.
 
     profile_prefs_->ClearPref(
@@ -647,6 +662,35 @@ void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool SearchEngineChoiceService::IsProfileEligibleForDseGuestPropagation()
+    const {
+  return base::FeatureList::IsEnabled(
+             switches::kSearchEngineChoiceGuestExperience) &&
+         is_profile_eligible_for_dse_guest_propagation_;
+}
+
+bool SearchEngineChoiceService::ShouldPropagateDseBetweenGuestSessions() const {
+  return base::FeatureList::IsEnabled(
+             switches::kSearchEngineChoiceGuestExperience) &&
+         local_state_->HasPrefPath(
+             prefs::kDefaultSearchProviderGuestModePrepopulatedId);
+}
+
+void SearchEngineChoiceService::PropagateSearchEngineBetweenGuestSessions(
+    int prepopulated_id) {
+  CHECK(prepopulated_id > 0 &&
+        prepopulated_id <=
+            TemplateURLPrepopulateData::kMaxPrepopulatedEngineID);
+  if (!base::FeatureList::IsEnabled(
+          switches::kSearchEngineChoiceGuestExperience)) {
+    return;
+  }
+  local_state_->SetInt64(prefs::kDefaultSearchProviderGuestModePrepopulatedId,
+                         prepopulated_id);
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(

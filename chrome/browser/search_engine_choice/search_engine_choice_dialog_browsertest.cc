@@ -134,10 +134,10 @@ webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
 class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
  public:
   explicit SearchEngineChoiceDialogBrowserTest(bool use_spy_service = true)
-      : use_spy_service_(use_spy_service) {
-  }
+      : use_spy_service_(use_spy_service) {}
 
-  SearchEngineChoiceDialogBrowserTest(const SearchEngineChoiceDialogBrowserTest&) = delete;
+  SearchEngineChoiceDialogBrowserTest(
+      const SearchEngineChoiceDialogBrowserTest&) = delete;
   SearchEngineChoiceDialogBrowserTest& operator=(
       const SearchEngineChoiceDialogBrowserTest&) = delete;
 
@@ -265,6 +265,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     profiles::SwitchToGuestProfile(browser_future.GetCallback());
     Browser* guest_browser = browser_future.Get();
     CHECK(guest_browser);
+    EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
     content::WebContents* ntp_contents =
         guest_browser->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(ntp_contents);
@@ -278,6 +279,8 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceGuestExperience};
   bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -676,6 +679,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   Browser* first_guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           first_guest_session->profile()));
@@ -703,6 +707,61 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   EXPECT_FALSE(second_service->IsShowingDialog(*second_guest_session));
+
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::
+          kUsingPersistedGuestSessionChoice,
+      0);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       PRE_SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
+  // Initial browser
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          guest_session->profile()));
+
+  // Complete the choice for the first guest profile and choose to save the
+  // choice between guest sessions.
+  first_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/true,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(first_service->IsShowingDialog(*guest_session));
+
+  CloseBrowserSynchronously(guest_session);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
+#if !BUILDFLAG(IS_MAC)
+  // This initial browser is sometimes missing on mac. We don't really need that
+  // browser, so if the guest browser works, then the test might still succeed.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+#endif
+
+  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+#endif
+  auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          guest_session->profile()));
+
+  // The search engine choice dialog doesn't get displayed for the second guest
+  // profile and the previously chosen default search engine is used.
+  EXPECT_FALSE(second_service->IsShowingDialog(*guest_session));
+  EXPECT_EQ(g_browser_process->local_state()->GetInt64(
+                prefs::kDefaultSearchProviderGuestModePrepopulatedId),
+            TemplateURLPrepopulateData::bing.id);
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::
+          kUsingPersistedGuestSessionChoice,
+      1);
 }
 #endif
 
