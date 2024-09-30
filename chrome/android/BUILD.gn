@@ -1037,6 +1037,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/device:java",
       "//chrome/browser/device:junit",
       "//chrome/browser/device_reauth/android:java",
+      "//chrome/browser/device_reauth/android:junit",
       "//chrome/browser/download/android:java",
       "//chrome/browser/download/android:junit_tests",
       "//chrome/browser/download/internal/android:junit",
