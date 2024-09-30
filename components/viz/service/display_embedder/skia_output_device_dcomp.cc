@@ -11,6 +11,7 @@
 #include "base/debug/alias.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -113,6 +114,12 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.number_of_buffers =
       gl::DirectCompositionRootSurfaceBufferCount();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDoubleBufferCompositing)) {
+    // Use switch "double-buffer-compositing" to force 1 |max_pending_swaps|
+    // when the feature |DCompTripleBufferRootSwapChain| is enabled.
+    capabilities_.number_of_buffers = 2;
+  }
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
     capabilities_.allowed_yuv_overlay_count = 2;
   }
@@ -126,7 +133,8 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           : OutputSurface::DCSupportLevel::kDCLayers;
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
-  capabilities_.pending_swap_params.max_pending_swaps = 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      capabilities_.number_of_buffers - 1;
   capabilities_.renderer_allocates_images = true;
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
   capabilities_.supports_non_backed_solid_color_overlays = true;
