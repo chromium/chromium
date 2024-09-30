@@ -186,8 +186,8 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // `OnAtomicUpdateFinished()`.
   virtual void OnAtomicUpdateStarting(
       AXTree* tree,
-      const base::flat_set<AXNodeID>& deleting_nodes,
-      const base::flat_set<AXNodeID>& reparenting_nodes) {}
+      const std::vector<AXNodeID>& deleting_nodes,
+      const std::vector<AXNodeID>& reparenting_nodes) {}
 
   // Called at the end of the update operation. Every node that was added
   // or changed will be included in |changes|, along with an enum indicating

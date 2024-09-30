@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -582,7 +581,7 @@ struct AXTreeUpdateState {
 
   // Returns (`deleting_node_ids`, `reparenting_node_ids`) that will happen as a
   // result of the next pending update.
-  std::tuple<base::flat_set<AXNodeID>, base::flat_set<AXNodeID>>
+  std::tuple<std::vector<AXNodeID>, std::vector<AXNodeID>>
   GetDeletingAndReparentingNodes() const {
     // TODO(crbug.com/367363880): Compute deleting | reparenting node ids during
     // AXTree::ComputePendingChanges.
@@ -600,9 +599,8 @@ struct AXTreeUpdateState {
       deleting_node_ids.push_back(node_id);
     }
 
-    return std::forward_as_tuple(
-        base::flat_set<AXNodeID>(std::move(deleting_node_ids)),
-        base::flat_set<AXNodeID>(std::move(reparenting_node_ids)));
+    return std::forward_as_tuple(std::move(deleting_node_ids),
+                                 std::move(reparenting_node_ids));
   }
 
   // Indicates the status for calculating what changes will occur during
@@ -890,10 +888,8 @@ void AXTree::Destroy() {
   deleting_node_ids.reserve(size());
   RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(*root_, deleting_node_ids);
 
-  base::flat_set<AXNodeID> deleting_node_ids_unique(
-      std::move(deleting_node_ids));
   for (AXTreeObserver& observer : observers_) {
-    observer.OnAtomicUpdateStarting(this, deleting_node_ids_unique, {});
+    observer.OnAtomicUpdateStarting(this, deleting_node_ids, {});
   }
 
   {

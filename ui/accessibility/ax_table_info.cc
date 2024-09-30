@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -691,10 +690,8 @@ void AXTableInfo::ClearExtraMacNodes() {
     }
   }
 
-  base::flat_set<AXNodeID> deleting_node_ids_unique(
-      std::move(deleting_node_ids));
   for (AXTreeObserver& observer : tree_->observers()) {
-    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids_unique, {});
+    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids, {});
   }
 
   {
@@ -708,7 +705,7 @@ void AXTableInfo::ClearExtraMacNodes() {
 
   }  // tree_update_in_progress.
 
-  for (AXNodeID deleted_id : deleting_node_ids_unique) {
+  for (AXNodeID deleted_id : deleting_node_ids) {
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeDeleted(tree_, deleted_id);
     }

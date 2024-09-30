@@ -1569,8 +1569,8 @@ void BrowserAccessibilityManager::OnNodeReparented(AXTree* tree, AXNode* node) {
 
 void BrowserAccessibilityManager::OnAtomicUpdateStarting(
     AXTree* tree,
-    const base::flat_set<AXNodeID>& deleted_node_ids,
-    const base::flat_set<AXNodeID>& reparented_node_ids) {
+    const std::vector<AXNodeID>& deleted_node_ids,
+    const std::vector<AXNodeID>& reparented_node_ids) {
   for (const auto& id : deleted_node_ids) {
     id_wrapper_map_.erase(id);
     popup_root_ids_.erase(id);
