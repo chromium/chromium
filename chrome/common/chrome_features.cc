@@ -766,6 +766,8 @@ BASE_FEATURE(kImmersiveFullscreenPWAs,
 // Slide tabs out of the way during the reveal of the close, minimize and
 // maximize (traffic lights) buttons. kImmersiveFullscreenTabs must be enabled
 // for this feature to have an effect.
+// If remote_cocoa::features::kFullscreenAlwaysShowTrafficLights is enabled,
+// this feature has no effect.
 BASE_FEATURE(kFullscreenAnimateTabs,
              "FullscreenAnimateTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);

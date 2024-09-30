@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -64,6 +65,12 @@ class ImmersiveModeFocusSearchMac : public views::FocusSearch {
  private:
   raw_ptr<BrowserView> browser_view_;
 };
+
+bool ShouldAnimateTabs() {
+  return base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs) &&
+         !base::FeatureList::IsEnabled(
+             remote_cocoa::features::kFullscreenAlwaysShowTrafficLights);
+}
 
 }  // namespace
 
@@ -236,10 +243,9 @@ gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
   // When tab animation is enabled, only inset by `kTabAlignmentInset`, this
   // keeps the tab strip aligned with the toolbar. The tab strip will slide out
   // of the way when the traffic lights appear.
-  int right_left_inset =
-      base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs)
-          ? kTabAlignmentInset
-          : kTabAlignmentInset + kTrafficLightsWidth;
+  int right_left_inset = ShouldAnimateTabs()
+                             ? kTabAlignmentInset
+                             : kTabAlignmentInset + kTrafficLightsWidth;
 
   // Without this +1 top inset the tabs sit 1px too high. I assume this is
   // because in fullscreen there is no resize handle.
@@ -469,8 +475,7 @@ void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
     browser_view_->InvalidateLayout();
   }
 
-  if (!base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs) ||
-      !tab_bounds_animator_.get()) {
+  if (!ShouldAnimateTabs() || !tab_bounds_animator_.get()) {
     return;
   }
 

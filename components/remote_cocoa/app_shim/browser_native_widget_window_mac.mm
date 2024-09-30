@@ -16,6 +16,10 @@
 @interface NSThemeFrame (PrivateBrowserNativeWidgetAPI)
 - (CGFloat)_titlebarHeight;
 - (void)setStyleMask:(NSUInteger)styleMask;
+- (void)setButtonRevealAmount:(double)amount;
+@property(readonly) NSView* closeButton;
+@property(readonly) NSView* minimizeButton;
+@property(readonly) NSView* zoomButton;
 @end
 
 @interface BrowserWindowFrame : NativeWidgetMacNSWindowTitledFrame
@@ -23,6 +27,7 @@
 
 @implementation BrowserWindowFrame {
   BOOL _inFullScreen;
+  BOOL _alwaysShowTrafficLights;
 }
 
 // NSThemeFrame overrides.
@@ -61,6 +66,36 @@
 
 - (BOOL)_shouldCenterTrafficLights {
   return YES;
+}
+
+- (void)setButtonRevealAmount:(double)amount {
+  // Don't override the reveal amount sent to `super`. `-[NSThemeFrame
+  // setButtonRevealAmount:]` performs layout operations in addition to
+  // adjusting the visibility of the traffic lights. The layout changes are
+  // desired and should be left intact.
+  [super setButtonRevealAmount:amount];
+  if (amount == 1.0) {
+    return;
+  }
+
+  [self maybeShowTrafficLights];
+}
+
+- (void)setAlwaysShowTrafficLights:(BOOL)alwaysShow {
+  _alwaysShowTrafficLights = alwaysShow;
+  [self maybeShowTrafficLights];
+}
+
+- (void)maybeShowTrafficLights {
+  if (!_alwaysShowTrafficLights ||
+      ![self respondsToSelector:@selector(closeButton)] ||
+      ![self respondsToSelector:@selector(minimizeButton)] ||
+      ![self respondsToSelector:@selector(zoomButton)]) {
+    return;
+  }
+  self.closeButton.alphaValue = 1.0;
+  self.minimizeButton.alphaValue = 1.0;
+  self.zoomButton.alphaValue = 1.0;
 }
 
 @end
@@ -122,6 +157,11 @@
   remote_cocoa::NativeWidgetNSWindowBridge* bridge = [self bridge];
   if (bridge)
     bridge->host()->OnFocusWindowToolbar();
+}
+
+- (void)setAlwaysShowTrafficLights:(BOOL)alwaysShow {
+  [base::apple::ObjCCastStrict<BrowserWindowFrame>(self.contentView.superview)
+      setAlwaysShowTrafficLights:alwaysShow];
 }
 
 @end

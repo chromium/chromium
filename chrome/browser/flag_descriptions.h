@@ -3322,6 +3322,9 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacFullscreenAnimateTabsName[];
 extern const char kMacFullscreenAnimateTabsDescription[];
 
+extern const char kFullscreenAlwaysShowTrafficLightsName[];
+extern const char kFullscreenAlwaysShowTrafficLightsDescription[];
+
 extern const char kMacImeLiveConversionFixName[];
 extern const char kMacImeLiveConversionFixDescription[];
 

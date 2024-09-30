@@ -3266,6 +3266,14 @@
     "expiry_milestone": 136
   },
   {
+    "name": "enable-fullscreen-always-show-traffic-lights",
+    "owners": [
+      "bur@chromium.org",
+      "chrome-mac-dev@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "enable-fullscreen-animate-tabs",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 131

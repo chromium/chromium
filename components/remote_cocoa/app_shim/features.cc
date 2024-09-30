@@ -21,4 +21,10 @@ BASE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation,
 BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
              "ImmersiveFullscreenOverlayWindowDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The close, minimize and maximize (traffic lights) buttons are always visible.
+// kImmersiveFullscreenTabs must be enabled for this feature to have an effect.
+BASE_FEATURE(kFullscreenAlwaysShowTrafficLights,
+             "FullscreenAlwaysShowTrafficLights",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

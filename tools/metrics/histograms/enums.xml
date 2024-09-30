@@ -19156,6 +19156,7 @@ from previous Chrome versions.
   <int value="-466047052" label="EnableRuntimeCountersTelemetry:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
+  <int value="-463661468" label="FullscreenAlwaysShowTrafficLights:disabled"/>
   <int value="-463161052" label="TearOffWebAppTabOpensWebAppWindow:enabled"/>
   <int value="-462877654" label="FilesMaterializedViews:enabled"/>
   <int value="-462554210"
@@ -22372,6 +22373,7 @@ from previous Chrome versions.
   <int value="859495772"
       label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>
   <int value="859869507" label="DesktopCaptureLacrosV2:disabled"/>
+  <int value="859872800" label="FullscreenAlwaysShowTrafficLights:enabled"/>
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="861351290" label="FontManagerEarlyInit:enabled"/>

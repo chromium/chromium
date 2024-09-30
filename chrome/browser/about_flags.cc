@@ -147,6 +147,7 @@
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/search/ntp_features.h"
@@ -5915,6 +5916,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacFullscreenAnimateTabsName,
      flag_descriptions::kMacFullscreenAnimateTabsDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kFullscreenAnimateTabs)},
+    {"enable-fullscreen-always-show-traffic-lights",
+     flag_descriptions::kFullscreenAlwaysShowTrafficLightsName,
+     flag_descriptions::kFullscreenAlwaysShowTrafficLightsDescription, kOsMac,
+     FEATURE_VALUE_TYPE(
+         remote_cocoa::features::kFullscreenAlwaysShowTrafficLights)},
 #endif  // BUILDFLAG(IS_MAC)
     {"enable-web-payments-experimental-features",
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,

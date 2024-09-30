@@ -3594,6 +3594,7 @@ static_library("ui") {
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
       "//components/remote_cocoa/app_shim",
+      "//components/remote_cocoa/app_shim:features",
       "//components/remote_cocoa/browser",
       "//device/fido/strings:strings_grit",
       "//extensions/components/native_app_window",

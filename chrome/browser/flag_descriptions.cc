@@ -5761,6 +5761,12 @@ const char kMacFullscreenAnimateTabsDescription[] =
     "Slide tabs out of the way during the reveal of the close, minimize and "
     "maximize (traffic lights) buttons.";
 
+const char kFullscreenAlwaysShowTrafficLightsName[] =
+    "Always Show Traffic Lights in Fullscreen";
+const char kFullscreenAlwaysShowTrafficLightsDescription[] =
+    "The close, minimize and maximize (traffic lights) buttons are always "
+    "shown in fullscreen.";
+
 const char kMacImeLiveConversionFixName[] = "Mac IME Live Conversion";
 const char kMacImeLiveConversionFixDescription[] =
     "A fix for the Live Conversion feature of Japanese IME.";

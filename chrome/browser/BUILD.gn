@@ -6620,6 +6620,7 @@ static_library("browser") {
       "//components/crash/core/app",
       "//components/metal_util",
       "//components/policy/core/common:common_constants",
+      "//components/remote_cocoa/app_shim:features",
       "//components/remote_cocoa/browser:browser",
       "//sandbox/mac:seatbelt",
       "//sandbox/policy",

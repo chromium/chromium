@@ -31,8 +31,6 @@ component("app_shim") {
     "context_menu_runner.h",
     "context_menu_runner.mm",
     "drag_drop_client.h",
-    "features.cc",
-    "features.h",
     "immersive_mode_controller_cocoa.h",
     "immersive_mode_controller_cocoa.mm",
     "immersive_mode_delegate_mac.h",
@@ -71,6 +69,7 @@ component("app_shim") {
   ]
   defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
   deps = [
+    ":features",
     "//base",
     "//base:i18n",
     "//components/crash/core/common",
@@ -96,9 +95,25 @@ component("app_shim") {
   ]
 }
 
+component("features") {
+  assert(is_mac)
+
+  defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+    "remote_cocoa_app_shim_export.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "native_widget_mac_overlay_nswindow_unittests.mm" ]
+  sources = [
+    "browser_native_widget_window_mac_unittests.mm",
+    "native_widget_mac_overlay_nswindow_unittests.mm",
+  ]
   deps = [
     ":app_shim",
     "//base",

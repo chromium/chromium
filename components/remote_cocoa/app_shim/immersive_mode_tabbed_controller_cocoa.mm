@@ -6,10 +6,22 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
+#import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "components/remote_cocoa/app_shim/features.h"
+
+namespace {
+void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kFullscreenAlwaysShowTrafficLights)) {
+    [base::apple::ObjCCast<BrowserNativeWidgetWindow>(browser_window)
+        setAlwaysShowTrafficLights:always_show ? YES : NO];
+  }
+}
+}  // namespace
 
 namespace remote_cocoa {
 
@@ -43,6 +55,7 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
 }
 
 ImmersiveModeTabbedControllerCocoa::~ImmersiveModeTabbedControllerCocoa() {
+  SetAlwaysShowTrafficLights(browser_window(), false);
   StopObservingChildWindows(tab_window_);
   browser_window().toolbar = nil;
   BridgedContentView* tab_content_view = tab_content_view_;
@@ -53,6 +66,8 @@ ImmersiveModeTabbedControllerCocoa::~ImmersiveModeTabbedControllerCocoa() {
 }
 
 void ImmersiveModeTabbedControllerCocoa::Init() {
+  SetAlwaysShowTrafficLights(browser_window(), true);
+
   ImmersiveModeControllerCocoa::Init();
   BridgedContentView* tab_content_view =
       base::apple::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
