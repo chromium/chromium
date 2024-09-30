@@ -310,9 +310,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     }
 
     case IBD::BAD_FLAGS_INFOBAR_DELEGATE:
-      chrome::ShowBadFlagsInfoBar(GetWebContents(),
-                                  IDS_BAD_FLAGS_WARNING_MESSAGE,
-                                  sandbox::policy::switches::kNoSandbox);
+      ShowBadFlagsInfoBar(GetWebContents(), IDS_BAD_FLAGS_WARNING_MESSAGE,
+                          sandbox::policy::switches::kNoSandbox);
       break;
 
     case IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE:

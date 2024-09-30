@@ -148,7 +148,7 @@ void AddInfoBarsIfNecessary(Browser* browser,
     infobars_shown = true;
 
     if (show_bad_flags_security_warnings) {
-      chrome::ShowBadFlagsPrompt(web_contents);
+      ShowBadFlagsPrompt(web_contents);
     }
 
     infobars::ContentInfoBarManager* infobar_manager =

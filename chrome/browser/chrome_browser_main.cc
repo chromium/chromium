@@ -1057,7 +1057,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  chrome::MaybeShowInvalidUserDataDirWarningDialog();
+  MaybeShowInvalidUserDataDirWarningDialog();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   DCHECK(!user_data_dir_.empty());

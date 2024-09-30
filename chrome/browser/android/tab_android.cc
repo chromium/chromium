@@ -352,7 +352,7 @@ void TabAndroid::InitWebContents(
   content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
 
   // Shows a warning notification for dangerous flags in about:flags.
-  chrome::ShowBadFlagsPrompt(web_contents());
+  ShowBadFlagsPrompt(web_contents());
 
   for (Observer& observer : observers_)
     observer.OnInitWebContents(this);

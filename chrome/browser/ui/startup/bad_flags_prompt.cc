@@ -60,8 +60,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
-namespace chrome {
-
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -256,9 +254,11 @@ void ShowBadFlagsInfoBar(content::WebContents* web_contents,
 }
 
 void MaybeShowInvalidUserDataDirWarningDialog() {
-  const base::FilePath& user_data_dir = GetInvalidSpecifiedUserDataDir();
-  if (user_data_dir.empty())
+  const base::FilePath& user_data_dir =
+      chrome::GetInvalidSpecifiedUserDataDir();
+  if (user_data_dir.empty()) {
     return;
+  }
 
   startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
 
@@ -271,7 +271,5 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
       IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY, user_data_dir.LossyDisplayName());
 
   // More complex dialogs cannot be shown before the earliest calls here.
-  ShowWarningMessageBox(nullptr, title, message);
+  chrome::ShowWarningMessageBox(nullptr, title, message);
 }
-
-}  // namespace chrome
