@@ -995,6 +995,12 @@ void DevToolsUIBindings::OnAidaConversationResponse(
         std::move(callback), stream_id, request,
         NetworkResourceLoader::GetNextExponentialBackoffDelay(delay),
         resource_request_or_error);
+  } else if (response_code == net::HTTP_UNAUTHORIZED) {
+    aida_client_->RemoveAccessToken();
+    aida_client_->PrepareRequestOrFail(base::BindOnce(
+        &DevToolsUIBindings::OnAidaConversationRequest, base::Unretained(this),
+        std::move(callback), stream_id, request,
+        NetworkResourceLoader::GetNextExponentialBackoffDelay(delay)));
   } else {
     base::UmaHistogramTimes("DevTools.AidaResponseTime",
                             base::TimeTicks::Now() - start_time);

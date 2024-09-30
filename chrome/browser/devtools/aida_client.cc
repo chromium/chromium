@@ -154,6 +154,10 @@ void AidaClient::OverrideAidaEndpointAndScopeForTesting(
   aida_scope_ = aida_scope;
 }
 
+void AidaClient::RemoveAccessToken() {
+  access_token_.clear();
+}
+
 void AidaClient::PrepareRequestOrFail(
     base::OnceCallback<
         void(absl::variant<network::ResourceRequest, std::string>)> callback) {
