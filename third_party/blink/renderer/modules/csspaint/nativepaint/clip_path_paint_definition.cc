@@ -309,7 +309,6 @@ PaintRecord ClipPathPaintDefinition::Paint(
       const auto& entry = animated_property_values.begin();
       progress = entry->second.float_value.value();
     } else {
-      CHECK(input->MainThreadProgress().has_value());
       progress = input->MainThreadProgress().value();
     }
 
@@ -393,8 +392,12 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       static_path = path.GetSkPath();
       break;
     }
-    default:
-      break;
+    case Timing::FillMode::BOTH:
+    case Timing::FillMode::BACKWARDS: {
+      Path path;
+      animated_shapes[0].get()->GetPath(path, reference_box, zoom);
+      static_path = path.GetSkPath();
+    }
   }
 
   node.GetLayoutObject()->GetMutableForPainting().EnsureId();
