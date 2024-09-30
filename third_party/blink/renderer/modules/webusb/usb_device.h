@@ -30,6 +30,7 @@ class USBInTransferResult;
 class USBIsochronousInTransferResult;
 class USBIsochronousOutTransferResult;
 class USBOutTransferResult;
+class V8USBDirection;
 
 class USBDevice : public ScriptWrappable,
                   public ExecutionContextLifecycleObserver {
@@ -102,7 +103,7 @@ class USBDevice : public ScriptWrappable,
       const DOMArrayPiece& optional_data,
       ExceptionState&);
   ScriptPromise<IDLUndefined> clearHalt(ScriptState*,
-                                        String direction,
+                                        const V8USBDirection& direction,
                                         uint8_t endpoint_number,
                                         ExceptionState&);
   ScriptPromise<USBInTransferResult> transferIn(ScriptState*,

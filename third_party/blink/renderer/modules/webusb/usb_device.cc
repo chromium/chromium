@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_usb_control_transfer_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_direction.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -100,18 +101,21 @@ bool CheckFatalTransferStatus(ScriptPromiseResolverBase* resolver,
   }
 }
 
-String ConvertTransferStatus(const UsbTransferStatus& status) {
+V8USBTransferStatus ConvertTransferStatus(const UsbTransferStatus& status) {
   switch (status) {
     case UsbTransferStatus::COMPLETED:
     case UsbTransferStatus::SHORT_PACKET:
-      return "ok";
+      return V8USBTransferStatus(V8USBTransferStatus::Enum::kOk);
     case UsbTransferStatus::STALLED:
-      return "stall";
+      return V8USBTransferStatus(V8USBTransferStatus::Enum::kStall);
     case UsbTransferStatus::BABBLE:
-      return "babble";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      return V8USBTransferStatus(V8USBTransferStatus::Enum::kBabble);
+    case UsbTransferStatus::TRANSFER_ERROR:
+    case UsbTransferStatus::PERMISSION_DENIED:
+    case UsbTransferStatus::TIMEOUT:
+    case UsbTransferStatus::CANCELLED:
+    case UsbTransferStatus::DISCONNECT:
+      NOTREACHED();
   }
 }
 
@@ -513,13 +517,15 @@ ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
 
 ScriptPromise<IDLUndefined> USBDevice::clearHalt(
     ScriptState* script_state,
-    String direction,
+    const V8USBDirection& direction,
     uint8_t endpoint_number,
     ExceptionState& exception_state) {
-  UsbTransferDirection mojo_direction = direction == "in"
-                                            ? UsbTransferDirection::INBOUND
-                                            : UsbTransferDirection::OUTBOUND;
-  EnsureEndpointAvailable(direction == "in", endpoint_number, exception_state);
+  UsbTransferDirection mojo_direction =
+      direction.AsEnum() == V8USBDirection::Enum::kIn
+          ? UsbTransferDirection::INBOUND
+          : UsbTransferDirection::OUTBOUND;
+  EnsureEndpointAvailable(mojo_direction == UsbTransferDirection::INBOUND,
+                          endpoint_number, exception_state);
   if (exception_state.HadException())
     return EmptyPromise();
 

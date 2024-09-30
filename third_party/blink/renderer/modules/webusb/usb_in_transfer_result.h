@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBUSB_USB_IN_TRANSFER_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBUSB_USB_IN_TRANSFER_RESULT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_transfer_status.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
@@ -19,28 +20,28 @@ class USBInTransferResult final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static USBInTransferResult* Create(const String& status,
+  static USBInTransferResult* Create(const V8USBTransferStatus& status,
                                      base::span<const uint8_t> data) {
     DOMDataView* data_view =
         DOMDataView::Create(DOMArrayBuffer::Create(data), 0, data.size());
     return MakeGarbageCollected<USBInTransferResult>(status, data_view);
   }
 
-  static USBInTransferResult* Create(const String& status) {
+  static USBInTransferResult* Create(const V8USBTransferStatus& status) {
     return MakeGarbageCollected<USBInTransferResult>(status, nullptr);
   }
 
-  static USBInTransferResult* Create(const String& status,
+  static USBInTransferResult* Create(const V8USBTransferStatus& status,
                                      NotShared<DOMDataView> data) {
     return MakeGarbageCollected<USBInTransferResult>(status, data.Get());
   }
 
-  USBInTransferResult(const String& status, DOMDataView* data)
+  USBInTransferResult(const V8USBTransferStatus& status, DOMDataView* data)
       : status_(status), data_(data) {}
 
   ~USBInTransferResult() override = default;
 
-  String status() const { return status_; }
+  V8USBTransferStatus status() const { return status_; }
   DOMDataView* data() const { return data_.Get(); }
 
   void Trace(Visitor* visitor) const override {
@@ -49,7 +50,7 @@ class USBInTransferResult final : public ScriptWrappable {
   }
 
  private:
-  const String status_;
+  const V8USBTransferStatus status_;
   const NotShared<DOMDataView> data_;
 };
 

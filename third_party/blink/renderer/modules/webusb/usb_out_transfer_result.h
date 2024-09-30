@@ -15,25 +15,26 @@ class USBOutTransferResult final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static USBOutTransferResult* Create(const String& status) {
+  static USBOutTransferResult* Create(const V8USBTransferStatus& status) {
     return MakeGarbageCollected<USBOutTransferResult>(status, 0);
   }
 
-  static USBOutTransferResult* Create(const String& status,
+  static USBOutTransferResult* Create(const V8USBTransferStatus& status,
                                       uint32_t bytes_written) {
     return MakeGarbageCollected<USBOutTransferResult>(status, bytes_written);
   }
 
-  USBOutTransferResult(const String& status, uint32_t bytes_written)
+  USBOutTransferResult(const V8USBTransferStatus& status,
+                       uint32_t bytes_written)
       : status_(status), bytes_written_(bytes_written) {}
 
   ~USBOutTransferResult() override = default;
 
-  String status() const { return status_; }
+  V8USBTransferStatus status() const { return status_; }
   uint32_t bytesWritten() const { return bytes_written_; }
 
  private:
-  const String status_;
+  const V8USBTransferStatus status_;
   const uint32_t bytes_written_;
 };
 
