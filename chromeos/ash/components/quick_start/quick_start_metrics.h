@@ -294,6 +294,8 @@ class QuickStartMetrics {
 
   static void RecordEstablishConnection(bool success, bool is_automatic_resume);
 
+  static void RecordSetupComplete();
+
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;

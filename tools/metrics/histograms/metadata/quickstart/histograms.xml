@@ -556,6 +556,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.SetupComplete" enum="BooleanOccurred"
+    expires_after="2025-09-27">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    When a user has successfully completed Quick Start. Recorded when the Quick
+    Start Setup Complete screen is shown.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WelcomeScreen.QuickStartButtonVisible"
     enum="Boolean" expires_after="2025-02-10">
   <owner>bhartmire@google.com</owner>

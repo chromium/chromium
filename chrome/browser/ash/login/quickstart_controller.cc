@@ -675,6 +675,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
       UpdateUiState(UiState::SETUP_COMPLETE);
       SavePhoneInstanceID();
       bootstrap_controller_->OnSetupComplete();
+      QuickStartMetrics::RecordSetupComplete();
       return;
     }
 

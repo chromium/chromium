@@ -143,6 +143,7 @@ constexpr const char kScreenClosedQSCreatingAccount[] =
     "QuickStart.ScreenClosed.QSCreatingAccount";
 constexpr const char kScreenClosedQSFallbackURL[] =
     "QuickStart.ScreenClosed.QSFallbackURL";
+constexpr const char kSetupCompleteHistogramName[] = "QuickStart.SetupComplete";
 constexpr const char kAbortFlowReasonHistogramName[] =
     "QuickStart.FlowAborted.Reason";
 constexpr const char kEntryPointHistogramName[] = "QuickStart.EntryPoint";
@@ -371,6 +372,11 @@ void QuickStartMetrics::RecordEstablishConnection(bool success,
     metrics::structured::StructuredMetricsClient::Record(std::move(
         cros_events::QuickStart_EstablishConnection().SetSuccess(success)));
   }
+}
+
+// static
+void QuickStartMetrics::RecordSetupComplete() {
+  base::UmaHistogramBoolean(kSetupCompleteHistogramName, true);
 }
 
 QuickStartMetrics::QuickStartMetrics() = default;

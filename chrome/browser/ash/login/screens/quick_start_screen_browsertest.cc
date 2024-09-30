@@ -67,6 +67,7 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
 constexpr char kSetupCompleteDialog[] = "setupCompleteDialog";
+constexpr char kSetupCompleteHistogram[] = "QuickStart.SetupComplete";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr char kViewDurationHistogram[] = ".ViewDuration";
 constexpr char kReasonHistogram[] = ".Reason";
@@ -1041,6 +1042,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kSetupCompleteDialogPath)
       ->Wait();
+  histogram_tester_.ExpectBucketCount(kSetupCompleteHistogram, true, 1);
 
   // Ensure that there is a SessionRefresher on the QuickStart screen keeping
   // the AuthSession alive.
