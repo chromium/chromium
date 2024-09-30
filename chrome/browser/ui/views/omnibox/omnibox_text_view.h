@@ -51,26 +51,31 @@ class OmniboxTextView : public views::View {
   // Returns the render text, or an empty string if there is none.
   const std::u16string& GetText() const;
 
-  // Sets the render text with default rendering for the given |new_text|. The
-  // |classifications| are used to style the text. An ImageLine incorporates
-  // both the text and the styling.
-  // |deemphasize| specifies whether to use a slightly smaller font than normal.
+  // Used for content/description separator & tail suggest ellipses.
   void SetText(const std::u16string& new_text);
+
+  // Used for standard suggestions.
   void SetTextWithStyling(const std::u16string& new_text,
-                          const ACMatchClassifications& classifications,
-                          bool deemphasize = false);
-  void SetTextWithStyling(const SuggestionAnswer::ImageLine& line,
-                          bool deemphasize);
-  // Sets the styling for FormattedString's FormattedStringFragments.
-  // |fragment_index| specifies where to start appending and styling text from.
-  void SetTextWithStyling(const omnibox::FormattedString& formatted_string,
-                          size_t fragment_index,
-                          const omnibox::AnswerType& answer_type);
-  // Sets |render_text_| to be multiline whenever necessary.
+                          const ACMatchClassifications& classifications);
+
+  // Used for search answers not using `RichAnswerTemplate` (e.g. because the
+  // feature is disabled).
+  void SetTextWithStyling(const SuggestionAnswer::ImageLine& line);
+
+  // Used for search answers using `RichAnswerTemplate`.
+  // Sets the styling for `FormattedString`'s `FormattedStringFragment`s.
+  // `fragment_index` specifies where to start appending and styling text from.
+  void AppendTextWithStyling(const omnibox::FormattedString& formatted_string,
+                             size_t fragment_index,
+                             const omnibox::AnswerType& answer_type);
+
+  // Used for suggestions using `RichAnswerTemplate`.
   void SetMultilineText(const omnibox::FormattedString& formatted_string,
                         const omnibox::AnswerType& answer_type);
 
-  // Adds the "additional" and "status" text from |line|, if any.
+  // Used for search answers not using `RichAnswerTemplate` (e.g. because the
+  // feature is disabled). Adds the "additional" and "status" text from |line|,
+  // if any.
   void AppendExtraText(const SuggestionAnswer::ImageLine& line);
 
   // Get the height of one line of text.  This is handy if the view might have
@@ -101,15 +106,10 @@ class OmniboxTextView : public views::View {
   // Font settings for this view.
   int font_height_ = 0;
 
-  // Whether to apply deemphasized font instead of primary omnibox font.
-  // TODO(orinj): Use a more general ChromeTextContext for flexibility, or
-  //   otherwise clean up & unify the different ways of selecting fonts &
-  //   styles.
-  // TODO(manukh): Confirm this is always false and remove.
-  bool use_deemphasized_font_ = false;
-
   // Whether to wrap lines if the width is too narrow for the whole string.
-  // TODO(manukh): Confirm this is always false and remove.
+  // TODO(crbug.com/370088101): Confirm this is always false and remove. If it's
+  //   needed, ensure it's set correctly in the `SetTextWithStyling()` and
+  //   related methods above.
   bool wrap_text_lines_ = false;
 
   // The primary data for this class.

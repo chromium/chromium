@@ -51,10 +51,10 @@ void ApplyCommonFontStyles(int context,
       details.weight = gfx::Font::Weight::BOLD;
       break;
     }
+    case CONTEXT_DEEMPHASIZED:
     case CONTEXT_OMNIBOX_PRIMARY:
     case CONTEXT_OMNIBOX_POPUP:
     case CONTEXT_OMNIBOX_SECTION_HEADER:
-    case CONTEXT_OMNIBOX_DEEMPHASIZED:
     case CONTEXT_OMNIBOX_POPUP_ROW_CHIP: {
       const bool is_touch_ui = ui::TouchUiController::Get()->touch_ui();
       int desired_font_size = is_touch_ui ? 15 : 14;
@@ -62,7 +62,7 @@ void ApplyCommonFontStyles(int context,
           GetFontSizeDeltaBoundedByAvailableHeight(
               LocationBarView::GetAvailableTextHeight(), desired_font_size);
       details.size_delta = omnibox_primary_delta;
-      if (context == CONTEXT_OMNIBOX_DEEMPHASIZED) {
+      if (context == CONTEXT_DEEMPHASIZED) {
         --details.size_delta;
       } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP) {
         details.size_delta -= 2;

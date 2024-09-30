@@ -34,7 +34,6 @@
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -341,7 +340,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
       match_.answer_template.has_value()) {
     omnibox::AnswerData answer_data = match_.answer_template->answers(0);
-    suggestion_view_->content()->SetTextWithStyling(
+    suggestion_view_->content()->AppendTextWithStyling(
         /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
         /*answer_type=*/match_.answer_type);
     // The subhead text may be multiline.
@@ -351,16 +350,10 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   } else if (match_.answer) {
     suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
     suggestion_view_->description()->SetTextWithStyling(
-        match_.answer->second_line(), false);
+        match_.answer->second_line());
   } else {
-    // Not all 2-line suggestions have deemphasized descriptions; specifically,
-    // calculator answers are 2-line but not deemphasized.
-    const bool deemphasize =
-        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
-        OmniboxMatchCellView::ShouldDisplayImage(match_) &&
-        !OmniboxFieldTrial::IsUniformRowHeightEnabled();
     suggestion_view_->description()->SetTextWithStyling(
-        match_.description, match_.description_class, deemphasize);
+        match_.description, match_.description_class);
   }
   button_row_->UpdateFromModel();
 

@@ -195,13 +195,12 @@ const std::u16string& OmniboxTextView::GetText() const {
 void OmniboxTextView::SetText(const std::u16string& new_text) {
   if (cached_classifications_) {
     cached_classifications_.reset();
-  } else if (GetText() == new_text && !use_deemphasized_font_) {
+  } else if (GetText() == new_text) {
     // Only exit early if |cached_classifications_| was empty,
     // i.e. the last time text was set was through this method.
     return;
   }
 
-  use_deemphasized_font_ = false;
   render_text_ = CreateRenderText(new_text);
 
   OnStyleChanged();
@@ -209,14 +208,10 @@ void OmniboxTextView::SetText(const std::u16string& new_text) {
 
 void OmniboxTextView::SetTextWithStyling(
     const std::u16string& new_text,
-    const ACMatchClassifications& classifications,
-    bool deemphasize) {
+    const ACMatchClassifications& classifications) {
   if (GetText() == new_text && cached_classifications_ &&
-      classifications == *cached_classifications_ &&
-      deemphasize == use_deemphasized_font_)
+      classifications == *cached_classifications_)
     return;
-
-  use_deemphasized_font_ = deemphasize;
 
   cached_classifications_ =
       std::make_unique<ACMatchClassifications>(classifications);
@@ -227,9 +222,7 @@ void OmniboxTextView::SetTextWithStyling(
 }
 
 void OmniboxTextView::SetTextWithStyling(
-    const SuggestionAnswer::ImageLine& line,
-    bool deemphasize) {
-  use_deemphasized_font_ = deemphasize;
+    const SuggestionAnswer::ImageLine& line) {
   cached_classifications_.reset();
   wrap_text_lines_ = line.num_text_lines() > 1;
   render_text_ = CreateRenderText(std::u16string());
@@ -253,11 +246,10 @@ void OmniboxTextView::SetTextWithStyling(
   OnStyleChanged();
 }
 
-void OmniboxTextView::SetTextWithStyling(
+void OmniboxTextView::AppendTextWithStyling(
     const omnibox::FormattedString& formatted_string,
     size_t fragment_index,
     const omnibox::AnswerType& answer_type) {
-  use_deemphasized_font_ = false;
   cached_classifications_.reset();
   wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
   for (size_t i = fragment_index;
@@ -286,7 +278,7 @@ void OmniboxTextView::SetMultilineText(
     render_text_->SetMultiline(true);
     render_text_->SetMaxLines(std::min(kMaxDisplayLines, kDefaultMaxNumLines));
   }
-  SetTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
+  AppendTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
@@ -353,9 +345,7 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
   render_text->SetCursorEnabled(false);
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
   const gfx::FontList& font = views::TypographyProvider::Get().GetFont(
-      (use_deemphasized_font_ ? CONTEXT_OMNIBOX_DEEMPHASIZED
-                              : CONTEXT_OMNIBOX_POPUP),
-      kTextStyle);
+      CONTEXT_OMNIBOX_POPUP, kTextStyle);
   render_text->SetFontList(font);
   render_text->SetText(text);
   return render_text;

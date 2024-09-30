@@ -35,6 +35,10 @@ enum ChromeTextContext {
   // Text of the number of tabs in the tab counter used in tablet mode.
   CONTEXT_TAB_COUNTER,
 
+  // Used in `ManagePasswordsDetailsView` error messages. It likely has little
+  // to no effect in terms of typography (font size, font weight, etc.).
+  CONTEXT_DEEMPHASIZED,
+
   // Text used in the following UI contexts:
   //   - Omnibox query row text entry
   //   - Location icon view in the Omnibox
@@ -52,16 +56,6 @@ enum ChromeTextContext {
 
   // Text in the suggestions section header in the omnibox dropdown.
   CONTEXT_OMNIBOX_SECTION_HEADER,
-
-  // Text used in the following UI contexts:
-  //   - Omnibox answer results
-  //   - Two-line entity suggestions (description)
-  //
-  // This context is also used in the following UI components, but likely has
-  // little to no effect in terms of typography (font size, font weight, etc.):
-  //   - Additional text view in the Omnibox
-  //   - Error messages in password manager (manage_passwords_details_view.cc)
-  CONTEXT_OMNIBOX_DEEMPHASIZED,
 
   // Text for suggestion row chips; e.g. the history embeddings chip.
   CONTEXT_OMNIBOX_POPUP_ROW_CHIP,

@@ -99,12 +99,11 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
       3 * ChromeLayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
       kIconSize;
-  // Use CONTEXT_OMNIBOX_DEEMPHASIZED to make the error message slightly
-  // smaller.
+  // Use `CONTEXT_DEEMPHASIZED` to make the error message slightly smaller.
   return views::Builder<views::Label>()
       .SetText(std::move(error_msg))
       .SetTextStyle(views::style::STYLE_HINT)
-      .SetTextContext(CONTEXT_OMNIBOX_DEEMPHASIZED)
+      .SetTextContext(CONTEXT_DEEMPHASIZED)
       .SetEnabledColorId(ui::kColorAlertHighSeverity)
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .SetVisible(false)
