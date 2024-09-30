@@ -473,4 +473,31 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!errorMessage);
     assertFalse(errorMessage.hidden);
   });
+
+  test('window focus uses new state', async function() {
+    const displayList =
+        productSpecificationsList.shadowRoot!.querySelector<HTMLElement>(
+            '#product-list-padding-container');
+
+    assertTrue(!!displayList);
+    assertFalse(displayList.hidden);
+
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+    await shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: false,
+            canLoadFullPageUi: true,
+            canManageSets: false,
+            canFetchData: false,
+            isAllowedForEnterprise: false,
+            isSignedIn: false,
+          },
+        }));
+    window.dispatchEvent(new Event('focus'));
+    await flushTasks();
+
+    assertTrue(!!displayList);
+    assertTrue(displayList.hidden);
+  });
 });

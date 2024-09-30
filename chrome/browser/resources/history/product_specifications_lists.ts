@@ -8,8 +8,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import type {PageCallbackRouter, ProductSpecificationsFeatureState, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -38,6 +38,25 @@ declare global {
     'item-menu-open': ItemMenuOpenEvent;
   }
 }
+
+function areStatesEqual(
+    firstState: ProductSpecificationsFeatureState|null,
+    secondState: ProductSpecificationsFeatureState|null) {
+  if (firstState === null) {
+    return secondState === null;
+  }
+  if (secondState === null) {
+    return false;
+  }
+  return firstState.isSyncingTabCompare === secondState.isSyncingTabCompare &&
+      firstState.canLoadFullPageUi === secondState.canLoadFullPageUi &&
+      firstState.canManageSets === secondState.canManageSets &&
+      firstState.canFetchData === secondState.canFetchData &&
+      firstState.isAllowedForEnterprise ===
+      secondState.isAllowedForEnterprise &&
+      firstState.isSignedIn === secondState.isSignedIn;
+}
+
 export class ProductSpecificationsListsElement extends PolymerElement {
   static get is() {
     return 'product-specifications-lists';
@@ -80,6 +99,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   private listenerIds_: number[] = [];
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState|
       null = null;
+  private boundFocusCallback_: () => void;
 
   constructor() {
     super();
@@ -101,27 +121,25 @@ export class ProductSpecificationsListsElement extends PolymerElement {
 
     // TODO(358131415): use listeners to update. Temporary workaround uses
     // window focus to update the feature state, to check signin.
-    window.addEventListener('focus', async () => {
-      const {state} =
-          await this.shoppingApi_.getProductSpecificationsFeatureState();
-      if (!state) {
-        return;
-      }
-      this.productSpecificationsFeatureState_ = state;
-    });
+    this.boundFocusCallback_ = this.getFeatureStateAndLoadSets_.bind(this);
+    window.addEventListener('focus', this.boundFocusCallback_);
+    this.getFeatureStateAndLoadSets_();
+  }
 
+  private async getFeatureStateAndLoadSets_() {
+    const previousState = this.productSpecificationsFeatureState_;
     const {state} =
         await this.shoppingApi_.getProductSpecificationsFeatureState();
-    if (!state) {
+    if (!state || areStatesEqual(previousState, state)) {
       return;
     }
-    this.productSpecificationsFeatureState_ = state;
-
+    // If the state changes, reload all sets.
     const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
     if (!sets) {
       return;
     }
     this.allItems_ = sets;
+    this.productSpecificationsFeatureState_ = state;
   }
 
   override disconnectedCallback() {
@@ -129,6 +147,9 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
     if (this.focusGrid_) {
       this.focusGrid_!.destroy();
+    }
+    if (this.boundFocusCallback_) {
+      window.removeEventListener('focus', this.boundFocusCallback_);
     }
   }
 

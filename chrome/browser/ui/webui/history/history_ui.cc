@@ -213,11 +213,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // Product specifications:
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  // Used to determine when the compare tab on history sidepanel is shown.
   source->AddBoolean("compareHistoryEnabled",
-                     commerce::CanManageProductSpecificationsSets(
-                         service->GetAccountChecker(),
-                         service->GetProductSpecificationsService()));
-
+                     commerce::CanLoadProductSpecificationsFullPageUi(
+                         service->GetAccountChecker()));
   return source;
 }
 
