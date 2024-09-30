@@ -35,8 +35,7 @@ IdleServiceFactory::~IdleServiceFactory() = default;
 
 std::unique_ptr<KeyedService> IdleServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<IdleService>(
-      ChromeBrowserState::FromBrowserState(context));
+  return std::make_unique<IdleService>(ProfileIOS::FromBrowserState(context));
 }
 
 void IdleServiceFactory::RegisterBrowserStatePrefs(

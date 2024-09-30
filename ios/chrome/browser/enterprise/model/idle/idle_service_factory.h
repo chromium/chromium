@@ -13,7 +13,7 @@
 namespace enterprise_idle {
 
 // Singleton that owns all IdleServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IdleServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   IdleServiceFactory(const BrowserStateKeyedServiceFactory&) = delete;

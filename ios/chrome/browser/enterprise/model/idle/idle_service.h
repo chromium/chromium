@@ -33,7 +33,7 @@ class IdleService : public KeyedService {
     virtual void OnApplicationWillEnterBackground() = 0;
   };
 
-  explicit IdleService(ChromeBrowserState* browser_state);
+  explicit IdleService(ProfileIOS* profile);
 
   IdleService(const IdleService&) = delete;
   IdleService& operator=(const IdleService&) = delete;
@@ -117,7 +117,7 @@ class IdleService : public KeyedService {
   ActionSet last_action_set_;
   bool idle_timeout_dialog_pending_{false};
   bool idle_timeout_snackbar_pending_{false};
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ActionRunner> action_runner_;
   PrefChangeRegistrar pref_change_registrar_;
   base::CancelableOnceCallback<void()> cancelable_actions_callback_;

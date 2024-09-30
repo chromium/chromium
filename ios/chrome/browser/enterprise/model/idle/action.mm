@@ -45,10 +45,8 @@ class CloseTabsAction : public Action {
   CloseTabsAction() : Action(static_cast<int>(ActionType::kCloseTabs)) {}
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state);
+  void Run(ProfileIOS* profile, Continuation continuation) override {
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
     for (Browser* browser :
          browser_list->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       CloseAllWebStates(*browser->GetWebStateList(),
@@ -66,10 +64,9 @@ class SignOutAction : public Action {
   SignOutAction() : Action(static_cast<int>(ActionType::kSignOut)) {}
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
+  void Run(ProfileIOS* profile, Continuation continuation) override {
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+        AuthenticationServiceFactory::GetForProfile(profile);
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
       signout_start_time_ = base::TimeTicks::Now();
@@ -119,7 +116,7 @@ class ClearBrowsingDataAction : public Action,
   void Run(ProfileIOS* profile, Continuation continuation) override {
     continuation_ = std::move(continuation);
     mask_ = GetRemoveMask();
-    browser_list_ = BrowserListFactory::GetForBrowserState(profile);
+    browser_list_ = BrowserListFactory::GetForProfile(profile);
 
     if (IsRemoveDataMaskSet(mask_, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
       // If browsing History will be cleared set the kLastClearBrowsingDataTime.
