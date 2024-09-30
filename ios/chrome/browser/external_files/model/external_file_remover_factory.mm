@@ -44,9 +44,7 @@ ExternalFileRemoverFactory::~ExternalFileRemoverFactory() {}
 std::unique_ptr<KeyedService>
 ExternalFileRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<ExternalFileRemoverImpl>(
-      browser_state,
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
+      profile, IOSChromeTabRestoreServiceFactory::GetForProfile(profile));
 }

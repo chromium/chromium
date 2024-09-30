@@ -27,7 +27,7 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // Creates an ExternalFileRemoverImpl to remove external documents not
   // referenced by the specified BrowserViewController. Use Remove to initiate
   // the removal.
-  ExternalFileRemoverImpl(ChromeBrowserState* browser_state,
+  ExternalFileRemoverImpl(ProfileIOS* profile,
                           sessions::TabRestoreService* tab_restore_service);
 
   ExternalFileRemoverImpl(const ExternalFileRemoverImpl&) = delete;
@@ -68,9 +68,9 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests_;
   // Pointer to the tab restore service.
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
-  // ChromeBrowserState used to get the referenced files. Must outlive this
+  // ProfileIOS used to get the referenced files. Must outlive this
   // object.
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure `Remove()` is not run when this object is destroyed.

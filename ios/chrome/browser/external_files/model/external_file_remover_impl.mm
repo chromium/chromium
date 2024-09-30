@@ -73,8 +73,7 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
   }
   // Do the same for the recently closed tabs.
   sessions::TabRestoreService* restore_service =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      IOSChromeTabRestoreServiceFactory::GetForProfile(browser->GetProfile());
   DCHECK(restore_service);
   for (const auto& entry : restore_service->entries()) {
     sessions::tab_restore::Tab* tab =
@@ -147,10 +146,10 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
 }  // namespace
 
 ExternalFileRemoverImpl::ExternalFileRemoverImpl(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     sessions::TabRestoreService* tab_restore_service)
     : tab_restore_service_(tab_restore_service),
-      browser_state_(browser_state),
+      profile_(profile),
       weak_ptr_factory_(this) {
   DCHECK(tab_restore_service_);
   tab_restore_service_->AddObserver(this);
@@ -240,10 +239,9 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Add files from all Browsers.
   NSMutableSet* referenced_external_files = [NSMutableSet set];
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   const BrowserList::BrowserType browser_types =
-      browser_state_->IsOffTheRecord()
+      profile_->IsOffTheRecord()
           ? BrowserList::BrowserType::kIncognito
           : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
@@ -255,7 +253,7 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   }
 
   bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+      ios::BookmarkModelFactory::GetForProfile(profile_);
   // Check if the bookmark model is loaded.
   if (!bookmark_model || !bookmark_model->loaded())
     return referenced_external_files;
