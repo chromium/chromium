@@ -377,7 +377,10 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
           ->AsyncCall(&DIPSStorage::WritePopup)
           .WithArgs(GetSiteForDIPS(opener_origin_), GetSiteForDIPS(popup_url),
                     access_id,
-                    /*popup_time=*/GetClock()->Now(), is_current_interaction)
+                    /*popup_time=*/GetClock()->Now(), is_current_interaction,
+                    /*is_authentication_interaction=*/
+                    false)
+          // TODO(b/40948689): use is_authentication_interaction in following CL
           .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
     }
 

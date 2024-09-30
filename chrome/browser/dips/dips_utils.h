@@ -138,6 +138,7 @@ struct PopupsStateValue {
   uint64_t access_id;
   base::Time last_popup_time;
   bool is_current_interaction;
+  bool is_authentication_interaction;
 };
 
 struct PopupWithTime {

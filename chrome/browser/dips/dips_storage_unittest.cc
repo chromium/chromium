@@ -666,15 +666,17 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
 
-  ASSERT_TRUE(storage_.WritePopup(site1, site2, /*access_id=*/1u,
-                                  base::Time::FromSecondsSinceUnixEpoch(2),
-                                  /*is_current_interaction=*/true));
+  ASSERT_TRUE(storage_.WritePopup(
+      site1, site2, /*access_id=*/1u, base::Time::FromSecondsSinceUnixEpoch(2),
+      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
   ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
                                   base::Time::FromSecondsSinceUnixEpoch(4),
-                                  /*is_current_interaction=*/true));
+                                  /*is_current_interaction=*/true,
+                                  /*is_authentication_interaction=*/false));
   ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
                                   base::Time::FromSecondsSinceUnixEpoch(6),
-                                  /*is_current_interaction=*/false));
+                                  /*is_current_interaction=*/false,
+                                  /*is_authentication_interaction=*/false));
 
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kHistory);
@@ -687,6 +689,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   EXPECT_EQ(popup1.value().last_popup_time,
             base::Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_TRUE(popup1.value().is_current_interaction);
+  EXPECT_TRUE(popup1.value().is_authentication_interaction);
 
   std::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
   ASSERT_FALSE(popup2.has_value());
@@ -697,6 +700,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   EXPECT_EQ(popup3.value().last_popup_time,
             base::Time::FromSecondsSinceUnixEpoch(6));
   EXPECT_FALSE(popup3.value().is_current_interaction);
+  EXPECT_FALSE(popup3.value().is_authentication_interaction);
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {

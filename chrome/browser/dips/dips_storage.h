@@ -41,7 +41,8 @@ class DIPSStorage {
                   const std::string& tracking_site,
                   const uint64_t access_id,
                   const base::Time& popup_time,
-                  bool is_current_interaction);
+                  bool is_current_interaction,
+                  bool is_authentication_interaction);
 
   void RemoveEvents(base::Time delete_begin,
                     base::Time delete_end,

@@ -569,3 +569,43 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV6ToV7) {
     EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), std::nullopt);
   }
 }
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV7ToV8) {
+  ASSERT_TRUE(LoadDatabase("v7.sql"));
+
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Verify pre-migration conditions.
+
+    ASSERT_EQ(GetDatabaseVersion(&db), 7);
+    ASSERT_EQ(GetDatabaseLastCompatibleVersion(&db), 6);
+
+    ASSERT_TRUE(db.DoesTableExist("config"));
+    ASSERT_TRUE(db.DoesColumnExist("config", "key"));
+    ASSERT_TRUE(db.DoesColumnExist("config", "int_value"));
+
+    ASSERT_EQ(GetPrepopulatedFromConfigTable(&db), std::nullopt);
+
+    // Migrate.
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 7, 6));
+
+    sql::Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    DIPSDatabaseMigrator migrator(&db, &meta_table);
+    ASSERT_TRUE(migrator.MigrateSchemaVersionFrom7To8());
+    ASSERT_TRUE(transaction.Commit());
+
+    // Verify post-migration conditions.
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 8);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 8);
+
+    ASSERT_TRUE(db.DoesColumnExist("popups", "is_authentication_interaction"));
+    ExpectAllEntriesInColumnToBeNull(&db, "popups",
+                                     "is_authentication_interaction");
+  }
+}

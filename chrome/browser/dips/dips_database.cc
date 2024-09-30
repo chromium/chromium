@@ -198,6 +198,7 @@ bool DIPSDatabase::InitTables() {
       "access_id INT64,"
       "last_popup_time INTEGER,"
       "is_current_interaction BOOLEAN,"
+      "is_authentication_interaction BOOLEAN,"
       "PRIMARY KEY (`opener_site`,`popup_site`)"
     ")";
   // clang-format on
@@ -393,7 +394,8 @@ bool DIPSDatabase::WritePopup(const std::string& opener_site,
                               const std::string& popup_site,
                               const uint64_t access_id,
                               const base::Time& popup_time,
-                              bool is_current_interaction) {
+                              bool is_current_interaction,
+                              bool is_authentication_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -405,8 +407,9 @@ bool DIPSDatabase::WritePopup(const std::string& opener_site,
       "popup_site,"
       "access_id,"
       "last_popup_time,"
-      "is_current_interaction"
-    ") VALUES(?,?,?,?,?)";
+      "is_current_interaction,"
+      "is_authentication_interaction"
+    ") VALUES(?,?,?,?,?,?)";
   // clang-format on
   DCHECK(db_->IsSQLValid(kWriteSql));
 
@@ -418,6 +421,7 @@ bool DIPSDatabase::WritePopup(const std::string& opener_site,
   statement.BindInt64(2, access_id);
   statement.BindTime(3, popup_time);
   statement.BindBool(4, is_current_interaction);
+  statement.BindBool(5, is_authentication_interaction);
 
   return statement.Run();
 }
@@ -538,7 +542,8 @@ std::optional<PopupsStateValue> DIPSDatabase::ReadPopup(
         "popup_site,"
         "access_id,"
         "last_popup_time, "
-        "is_current_interaction "
+        "is_current_interaction, "
+        "is_authentication_interaction "
         "FROM popups "
         "WHERE opener_site=? AND popup_site=?";
   // clang-format on
@@ -561,8 +566,10 @@ std::optional<PopupsStateValue> DIPSDatabase::ReadPopup(
   }
   bool is_current_interaction = statement.ColumnBool(4);
 
-  return PopupsStateValue{access_id, popup_time.value(),
-                          is_current_interaction};
+  bool is_authentication_interaction = statement.ColumnBool(5);
+
+  return PopupsStateValue{access_id, popup_time.value(), is_current_interaction,
+                          is_authentication_interaction};
 }
 
 std::vector<PopupWithTime> DIPSDatabase::ReadRecentPopupsWithInteraction(

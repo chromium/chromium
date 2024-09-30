@@ -400,9 +400,11 @@ TEST_P(DIPSDatabasePopupsTest, AddPopup) {
   uint64_t access_id = 123;
   base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
   bool is_current_interaction = true;
+  bool is_authentication_interaction = true;
 
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              is_current_interaction));
+                              is_current_interaction,
+                              is_authentication_interaction));
 
   auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
@@ -410,6 +412,8 @@ TEST_P(DIPSDatabasePopupsTest, AddPopup) {
   EXPECT_EQ(popups_state_value.value().last_popup_time, popup_time);
   EXPECT_EQ(popups_state_value.value().is_current_interaction,
             is_current_interaction);
+  EXPECT_EQ(popups_state_value.value().is_authentication_interaction,
+            is_authentication_interaction);
 }
 
 // Test updating entries in the `popups` table of the DIPSDatabase.
@@ -424,25 +428,28 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
   base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
 
   // Write the initial entry and verify it was added to the db.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, first_access_id,
-                              first_popup_time,
-                              /*is_current_interaction=*/true));
-  EXPECT_EQ(db_->ReadPopup(opener_site, popup_site)
-                .value_or(PopupsStateValue())
-                .last_popup_time,
+  EXPECT_TRUE(db_->WritePopup(
+      opener_site, popup_site, first_access_id, first_popup_time,
+      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
+  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
+  EXPECT_EQ(popups_state_value.value_or(PopupsStateValue()).last_popup_time,
             first_popup_time);
+  EXPECT_EQ(popups_state_value.value().is_authentication_interaction, true);
 
-  // Update the entry with a new popup time of t = 2.
+  // Update the entry with a new popup time of t = 2, is_current_interaction =
+  // false, and is_authentication_interaction = false.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, second_access_id,
                               second_popup_time,
-                              /*is_current_interaction=*/false));
+                              /*is_current_interaction=*/false,
+                              /*is_authentication_interaction=*/false));
 
   // Verify the new entry.
-  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
+  popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
   EXPECT_EQ(popups_state_value.value().access_id, second_access_id);
   EXPECT_EQ(popups_state_value.value().last_popup_time, second_popup_time);
   EXPECT_EQ(popups_state_value.value().is_current_interaction, false);
+  EXPECT_EQ(popups_state_value.value().is_authentication_interaction, false);
 }
 
 // Test deleting an entry from the `popups` table of the DIPSDatabase. An entry
@@ -458,7 +465,8 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
 
   // Write the popup to db, and verify.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by opener_site, and verify.
@@ -467,7 +475,8 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
 
   // Write the popup to db, and verify.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by popup_site, and verify.
@@ -484,14 +493,15 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
       GetSiteForDIPS(GURL("http://www.picasa.com/"));
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
-  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123,
-                              Time::FromSecondsSinceUnixEpoch(1),
-                              /*is_current_interaction=*/true));
+  EXPECT_TRUE(db_->WritePopup(
+      opener_site_1, popup_site,
+      /*access_id=*/123, Time::FromSecondsSinceUnixEpoch(1),
+      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
                               /*access_id=*/456,
                               Time::FromSecondsSinceUnixEpoch(2),
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
 
   // Verify that both sites are in the `popups` table.
   EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
@@ -522,13 +532,16 @@ TEST_P(DIPSDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
                               /*access_id=*/123, now - base::Seconds(10),
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
                               /*access_id=*/456, now - base::Seconds(10),
-                              /*is_current_interaction=*/false));
+                              /*is_current_interaction=*/false,
+                              /*is_authentication_interaction=*/false));
   EXPECT_TRUE(db_->WritePopup(opener_site_3, popup_site,
                               /*access_id=*/789, now - base::Seconds(30),
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
 
   // Verify that all three sites are in the `popups` table.
   EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
@@ -719,10 +732,12 @@ TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
 
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
                               /*access_id=*/123, first_popup_time,
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
                               /*access_id=*/456, second_popup_time,
-                              /*is_current_interaction=*/true));
+                              /*is_current_interaction=*/true,
+                              /*is_authentication_interaction=*/false));
 
   // Advance to just before the first popup expires.
   AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl - tiny_delta);
@@ -1194,7 +1209,8 @@ class DIPSDatabaseGarbageCollectionTest
     } else {
       ASSERT_TRUE(db_->WritePopup(site, "doubleclick.net", /*access_id=*/123,
                                   interaction_times->second,
-                                  /*is_current_interaction=*/true));
+                                  /*is_current_interaction=*/true,
+                                  /*is_authentication_interaction=*/false));
     }
   }
 
@@ -1227,7 +1243,8 @@ class DIPSDatabaseGarbageCollectionTest
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
                                     times[(i + 1) % 3],
-                                    /*is_current_interaction=*/true));
+                                    /*is_current_interaction=*/true,
+                                    /*is_authentication_interaction=*/false));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
@@ -1243,7 +1260,8 @@ class DIPSDatabaseGarbageCollectionTest
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
                                     times[(i + 1) % 3],
-                                    /*is_current_interaction=*/true));
+                                    /*is_current_interaction=*/true,
+                                    /*is_authentication_interaction=*/false));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
