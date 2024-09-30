@@ -33,10 +33,6 @@ const char* kNotLaunchedBoards[] = {
     // Chrome unittests have an empty board name.
     // TODO(b/369038879): Remove this after all unittests could pass with Floss.
     "",
-    // Wave 2
-    "GUYBRUSH",
-    // Wave 3
-    "BRASK", "PUFF",
     // Wave QCA
     "JACUZZI", "KUKUI", "STRONGBAD", "TROGDOR",
     // Wave RTL8822
