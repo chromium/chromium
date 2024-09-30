@@ -4188,9 +4188,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // A discard optimization that attempts a shutdown of the associated render
   // process. Shutdown may be reattempted if unsuccessful to give outstanding
-  // keep-alive requests a chance to resolve before timing out. `retries`
-  // tracks the number of shutdown reattempts.
-  void CleanupRenderProcessForDiscardIfPossible(int retries = 0);
+  // keep-alive requests a chance to resolve before timing out.
+  void CleanupRenderProcessForDiscardIfPossible();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
