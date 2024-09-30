@@ -805,17 +805,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                 @"Privacy.DeleteBrowsingData.Action histogram was not logged.");
 }
 
-// Tests that when Quick Delete is opened from Privacy Settings, from an iPhone
-// and tabs are selected as a data type, that the privacy settings are still
-// visible after the deletion. This test is only for iPhones. on iPads the
-// animation is still run.
-- (void)testTabsForDeletionFromPrivacySettingsForIphones {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped for iPads. In iPads, the tabs clsoure animation is ran even "
-        @"if Quick Delete is triggered on top of privacy settings.");
-  }
-
+// Tests that when Quick Delete is opened from Privacy Settings and tabs are
+// selected as a data type, that the privacy settings are still visible after
+// the deletion.
+- (void)testTabsForDeletionFromPrivacySettings {
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];
@@ -848,50 +841,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SETTINGS_PRIVACY_TITLE))]
       assertWithMatcher:grey_notNil()];
-}
-
-// Tests that when Quick Delete is opened from Privacy Settings, from an iPad
-// and tabs are selected as a data type, that the privacy settings are not
-// visible after the deletion. This test is only for iPads. on iPhones the
-// animation is not run.
-- (void)testTabsForDeletionFromPrivacySettingsForiPads {
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped for iPhones. In iPhones, the tabs clsoure animation is not "
-        @"run if Quick Delete is triggered on top of privacy settings.");
-  }
-
-  // Set pref to close tabs.
-  [ChromeEarlGrey setBoolValue:true
-                   forUserPref:browsing_data::prefs::kCloseTabs];
-
-  // Load page in tab.
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
-
-  [self openQuickDeleteFromPrivacySettings];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-
-  // Check that the tab has been closed.
-  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
-  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
-
-  // Check that Quick Delete is not opened.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
-
-  // Check that the privacy settings are not opened, since the animation was
-  // run.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:
-          grey_text(l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE))];
 }
 
 // Tests that inactive tabs are shown as a possible type to be deleted on the

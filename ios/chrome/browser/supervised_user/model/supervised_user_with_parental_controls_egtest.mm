@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/browsing_data/core/pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -141,11 +140,6 @@ static const char* kInterstitialFirstTimeBanner =
 }
 
 - (void)clearBrowsingData {
-  // Disable closing tabs as it's on by default in delete browsing data, so the
-  // tab closure animation is not run in iPads.
-  [ChromeEarlGrey setBoolValue:false
-                   forUserPref:browsing_data::prefs::kCloseTabs];
-
   // Clear the browsing data.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI

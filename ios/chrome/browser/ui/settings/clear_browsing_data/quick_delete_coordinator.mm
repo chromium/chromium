@@ -106,8 +106,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [self animateDismissalWithCompletion:nil];
   [self disconnect];
 }
 
@@ -200,7 +199,6 @@ using browsing_data::DeleteBrowsingDataDialogAction;
         BrowsingDataRemover::WebStatesReloadPolicy::kForceReload;
   }
 
-  UIWindow* window = _viewController.view.window;
   __weak QuickDeleteCoordinator* weakSelf = self;
   ProceduralBlock dismissCompletionBlock = ^() {
     [weakSelf animateTabsClosureWithBeginTime:beginTime
@@ -209,8 +207,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                        groups:tabGroupsWithTabsToClose
                               allInactiveTabs:allInactiveTabsWillClose
                           browsingDataRemover:browsingDataRemover
-                    browsingDataRemoverParams:params
-                                       window:window];
+                    browsingDataRemoverParams:params];
   };
 
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
@@ -218,20 +215,18 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   [applicationCommandsHandler
       displayTabGridInMode:TabGridOpeningMode::kRegular];
 
-  id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
   // Dismissal of the bottom sheet needs to be dispatched asyncronously so the
   // animation to the tab grid and the dismissal animation are not in conflict,
   // and as such avoiding jittering.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](id<QuickDeleteCommands> quickDeleteHandler,
-                        ProceduralBlock dismissCompletionBlock) {
-                       [quickDeleteHandler
-                           stopQuickDeleteForAnimationWithCompletion:
-                               dismissCompletionBlock];
-                     },
-                     quickDeleteHandler, dismissCompletionBlock));
+      FROM_HERE,
+      base::BindOnce(
+          [](__typeof(self) strongSelf,
+             ProceduralBlock dismissCompletionBlock) {
+            [strongSelf animateDismissalWithCompletion:dismissCompletionBlock];
+            [strongSelf disconnect];
+          },
+          weakSelf, dismissCompletionBlock));
 }
 
 - (void)blockOtherWindows {
@@ -267,12 +262,19 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 
 #pragma mark - Private
 
+// Dismisses the `_viewController` with animation. `completionBlock` is run when
+// the dismissal has completed.
+- (void)animateDismissalWithCompletion:(ProceduralBlock)completionBlock {
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completionBlock];
+}
+
 // Triggers the tabs closure animation on the tab grid for the WebStates in
 // `tabsToClose`, for the groups in `groupsWithTabsToClose`, and if
 // `animateAllInactiveTabs` is true, then for the inactive tabs banner. It also
 // closes all WebStates with a last navigation between [`beginTime`, `endTime`[
-// in all browsers through `browsingDataRemover` with `params` after the
-// animation has run. Finally, it re-enables user action for `window`.
+// in all browsers through `browsingDataRemover` after the animation has run.
 - (void)
     animateTabsClosureWithBeginTime:(base::Time)beginTime
                             endTime:(base::Time)endTime
@@ -282,8 +284,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                         tabGroupsWithTabsToClose
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
                 browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
-          browsingDataRemoverParams:(BrowsingDataRemover::RemovalParams)params
-                             window:(UIWindow*)window {
+          browsingDataRemoverParams:(BrowsingDataRemover::RemovalParams)params {
   base::OnceClosure onRemoverCompletion = base::BindOnce(
       [](UIWindow* window, std::unique_ptr<ScopedUIBlocker> uiBlocker) {
         uiBlocker.reset();
@@ -301,21 +302,25 @@ using browsing_data::DeleteBrowsingDataDialogAction;
         // rearrange.
         TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
       },
-      window, std::move(_windowUIBlocker));
+      self.baseViewController.view.window, std::move(_windowUIBlocker));
 
   base::OnceClosure onAnimationCompletion = base::BindOnce(
       &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
       beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
       std::move(onRemoverCompletion), params);
 
-  id<TabsAnimationCommands> tabsAnimationHandler = HandlerForProtocol(
+  id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
-  [tabsAnimationHandler
-      animateTabsClosureForTabs:activeTabsToClose
-                         groups:tabGroupsWithTabsToClose
-                allInactiveTabs:animateAllInactiveTabs
-              completionHandler:base::CallbackToBlock(
-                                    std::move(onAnimationCompletion))];
+
+  [handler animateTabsClosureForTabs:activeTabsToClose
+                              groups:tabGroupsWithTabsToClose
+                     allInactiveTabs:animateAllInactiveTabs
+                   completionHandler:base::CallbackToBlock(
+                                         std::move(onAnimationCompletion))];
+
+  // Shutdown this coordinator. We can do this right away since all the
+  // callbacks don't depend on this coordinator being alive.
+  [self dismissQuickDelete];
 }
 
 // Disconnects all instances.
