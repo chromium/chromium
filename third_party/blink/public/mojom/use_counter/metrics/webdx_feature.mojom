@@ -175,7 +175,7 @@ enum WebDXFeature {
   kHiddenUntilFoundAttribute = 117,
   kScheduler = 118,
   kKeyboardLock = 119,
-  kHTMLSearchElement = 120,
+  kSearch = 120,
   kAsyncClipboard = 121,
   kParseHtmlUnsafe = 122,
   kClipboardUnsanitizedFormats = 123,
