@@ -2003,7 +2003,7 @@
     {
       // crbug.com/40755728
       name: "FindRubyInPage",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FindTextInReadonlyTextInput",
