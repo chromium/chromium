@@ -784,6 +784,11 @@
           'shards': 110,
         },
       },
+      'linux-chromeos-dbg-oslogin': {
+        'swarming': {
+          'shards': 110,
+        },
+      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -1249,6 +1254,11 @@
         },
       },
       'linux-chromeos-dbg': {
+        'swarming': {
+          'shards': 16,
+        },
+      },
+      'linux-chromeos-dbg-oslogin': {
         'swarming': {
           'shards': 16,
         },
@@ -2215,6 +2225,11 @@
           'shards': 6,
         },
       },
+      'linux-chromeos-dbg-oslogin': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -2505,6 +2520,11 @@
         },
       },
       'linux-chromeos-dbg': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'linux-chromeos-dbg-oslogin': {
         'swarming': {
           'shards': 2,
         },
@@ -2814,6 +2834,7 @@
     'remove_from': [
       # pthreadpool is not built for ChromeOS currently.
       'linux-chromeos-dbg',
+      'linux-chromeos-dbg-oslogin',
       'linux-chromeos-rel',
     ],
   },
@@ -3292,6 +3313,11 @@
           'shards': 4,
         },
       },
+      'linux-chromeos-dbg-oslogin': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -3393,6 +3419,7 @@
   'wayland_client_perftests': {
     'remove_from': [
       'linux-chromeos-dbg',  # https://crbug.com/859307
+      'linux-chromeos-dbg-oslogin',
     ],
   },
   'web_engine_browsertests': {

@@ -38836,7 +38836,7 @@
             "pool": "chromium.tests.oslogin"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 110
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -39017,7 +39017,7 @@
             "pool": "chromium.tests.oslogin"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 16
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -39355,7 +39355,7 @@
             "pool": "chromium.tests.oslogin"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 6
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -39564,7 +39564,8 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.oslogin"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
@@ -39683,23 +39684,6 @@
         },
         "test": "printing_unittests",
         "test_id_prefix": "ninja://printing:printing_unittests/"
-      },
-      {
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "pthreadpool_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.oslogin"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "pthreadpool_unittests",
-        "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
       },
       {
         "merge": {
@@ -39937,7 +39921,8 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.oslogin"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "unit_tests",
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
@@ -40006,22 +39991,6 @@
         },
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "wayland_client_perftests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.oslogin"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "wayland_client_perftests",
-        "test_id_prefix": "ninja://components/exo/wayland:wayland_client_perftests/"
       },
       {
         "merge": {
