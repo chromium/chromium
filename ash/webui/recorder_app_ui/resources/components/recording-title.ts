@@ -230,7 +230,10 @@ export class RecordingTitle extends ReactiveLitElement {
 
   private onChangeTitle(ev: Event) {
     const target = assertInstanceof(ev.target, Textfield);
-    this.setTitle(target.value);
+    // Change title when the text field is not empty.
+    if (target.value !== '') {
+      this.setTitle(target.value);
+    }
   }
 
   private onSuggestTitle(ev: CustomEvent<string>) {
