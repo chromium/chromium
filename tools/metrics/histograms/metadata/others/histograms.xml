@@ -963,6 +963,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect"
+    units="owners" expires_after="2025-03-02">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of owner origins in a FLEDGE auction config (including in
+    componenent auctions) whose origins are cached in-memory from previous
+    auctions and joins. If the FLEDGE auction config has duplicate owners (e.g.
+    because an owner is participating in more than one component auction),
+    they're included in this number multiple times. Recorded when trying to
+    preconnect to these owners at the auction start (right before the
+    AuctionRunner is created).
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumOwnersWithInterestGroups"
     units="owners" expires_after="2025-03-02">
   <owner>mmenke@chromium.org</owner>

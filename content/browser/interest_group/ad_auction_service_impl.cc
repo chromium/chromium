@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -448,13 +449,16 @@ void AdAuctionServiceImpl::RunAdAuction(
   // on-device auction.
   if (base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
       !config.server_response.has_value()) {
-    PreconnectToBuyerOrigins(config);
+    size_t n_owners_cached = PreconnectToBuyerOrigins(config);
     for (const blink::AuctionConfig& component_config :
          config.non_shared_params.component_auctions) {
       if (!component_config.server_response.has_value()) {
-        PreconnectToBuyerOrigins(component_config);
+        n_owners_cached += PreconnectToBuyerOrigins(component_config);
       }
     }
+    base::UmaHistogramCounts100(
+        "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect",
+        n_owners_cached);
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
@@ -1248,11 +1252,12 @@ AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
       render_frame_host().GetPage());
 }
 
-void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
+size_t AdAuctionServiceImpl::PreconnectToBuyerOrigins(
     const blink::AuctionConfig& config) {
   if (!config.non_shared_params.interest_group_buyers) {
-    return;
+    return 0;
   }
+  size_t n_owners_cached = 0;
   for (const auto& buyer : *config.non_shared_params.interest_group_buyers) {
     std::optional<url::Origin> signals_origin;
     if (GetInterestGroupManager().GetCachedOwnerAndSignalsOrigins(
@@ -1261,6 +1266,7 @@ void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
           net::NetworkAnonymizationKey::CreateSameSite(
               net::SchemefulSite(buyer));
       PreconnectSocket(buyer.GetURL(), network_anonymization_key);
+      n_owners_cached += 1;
       if (signals_origin) {
         // We preconnect to the signals origin and not the full signals URL so
         // that we do not need to store the full URL in memory. Preconnecting
@@ -1270,6 +1276,7 @@ void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
       }
     }
   }
+  return n_owners_cached;
 }
 
 }  // namespace content

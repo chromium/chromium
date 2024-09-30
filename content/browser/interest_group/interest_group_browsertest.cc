@@ -25754,32 +25754,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
 
   content_browser_client_->AddToAllowList({signals_origin, owner_origin});
 
-  // Create the interest group we'll be using throughout the test.
-  GURL ad_url = owner_test_server->GetURL("a.test", "/echo?render_winner");
-  blink::InterestGroup interest_group =
-      blink::TestInterestGroupBuilder(
-          /*owner=*/url::Origin::Create(script_url),
-          /*name=*/"interest_group")
-          .SetBiddingUrl(script_url)
-          .SetTrustedBiddingSignalsUrl(trusted_bidding_signals_url)
-          .SetTrustedBiddingSignalsKeys({{"key1"}})
-          .SetAds({{{ad_url, std::nullopt}}})
-          .Build();
-
-  // Join the interest group with no ads so that when we run an auction, it will
-  // get filtered after it's loaded -- but we'll still preconnect to the server.
-  // This join will cache the bidding signals and owner origins.
-  blink::InterestGroup interest_group_without_ads = interest_group;
-  interest_group_without_ads.ads = std::nullopt;
-  AttachInterestGroupObserver();
-  manager_->JoinInterestGroup(interest_group_without_ads, joining_url);
-  WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
-                          interest_group_without_ads.owner, "interest_group"}});
-  std::optional<url::Origin> cached_signals_origin;
-  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
-      interest_group_without_ads.owner, cached_signals_origin));
-  EXPECT_EQ(cached_signals_origin, signals_origin);
-
   std::string config_template;
   if (UseConfigWithComponentAuction()) {
     config_template = R"({
@@ -25811,10 +25785,45 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                     "c.test", "/interest_group/decision_logic.js"),
                 owner_origin);
 
+  // We have no interest groups & nothing cached at this point.
   base::HistogramTester histogram_tester;
-  auto result = RunAuctionAndWait(auction_config);
+  auto result1 = RunAuctionAndWait(auction_config);
   histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
                                       AuctionResult::kNoInterestGroups, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 0, 1);
+
+  // Create the interest group we'll be using throughout the test.
+  GURL ad_url = owner_test_server->GetURL("a.test", "/echo?render_winner");
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(
+          /*owner=*/url::Origin::Create(script_url),
+          /*name=*/"interest_group")
+          .SetBiddingUrl(script_url)
+          .SetTrustedBiddingSignalsUrl(trusted_bidding_signals_url)
+          .SetTrustedBiddingSignalsKeys({{"key1"}})
+          .SetAds({{{ad_url, std::nullopt}}})
+          .Build();
+
+  // Join the interest group with no ads so that when we run an auction, it will
+  // get filtered after it's loaded -- but we'll still preconnect to the server.
+  // This join will cache the bidding signals and owner origins.
+  blink::InterestGroup interest_group_without_ads = interest_group;
+  interest_group_without_ads.ads = std::nullopt;
+  AttachInterestGroupObserver();
+  manager_->JoinInterestGroup(interest_group_without_ads, joining_url);
+  WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
+                          interest_group_without_ads.owner, "interest_group"}});
+  std::optional<url::Origin> cached_signals_origin;
+  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
+      interest_group_without_ads.owner, cached_signals_origin));
+  EXPECT_EQ(cached_signals_origin, signals_origin);
+
+  auto result2 = RunAuctionAndWait(auction_config);
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                      AuctionResult::kNoInterestGroups, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 1);
 
   // We've preconnected to each server but received no requests.
   owner_connection_listener.WaitForAcceptedSockets(1u);
@@ -25830,10 +25839,12 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
                           interest_group.owner, "interest_group"}});
 
-  auto result2 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 2);
+  auto result3 = RunAuctionAndWait(auction_config);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 3);
   histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result",
-                                     AuctionResult::kNoInterestGroups, 1);
+                                     AuctionResult::kNoInterestGroups, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 2);
 
   // We *did not* open any new connections. However, we've requested code and
   // signals, implying we've used the existing connections.
