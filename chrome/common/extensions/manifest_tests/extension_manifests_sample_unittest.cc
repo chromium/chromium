@@ -18,6 +18,13 @@ TEST_F(ChromeManifestTest, UnrecognizedKeyWarning) {
                            "Unrecognized manifest key 'unrecognized_key_1'.");
 }
 
+// Tests that known, ignored keys do not emit an unrecognized key warning.
+TEST_F(ChromeManifestTest, IgnoredUnrecognizedKeyNoWarning) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("ignored_unrecognized_key.json");
+  EXPECT_EQ(0u, extension->install_warnings().size());
+}
+
 // Tests that using the deprecated "plugins" key causes an install warning.
 TEST_F(ChromeManifestTest, DeprecatedPluginsKey) {
   LoadAndExpectWarning("deprecated_plugins_key.json",

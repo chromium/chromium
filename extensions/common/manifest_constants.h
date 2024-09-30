@@ -13,6 +13,18 @@ namespace extensions {
 // Keys used in JSON representation of extensions.
 namespace manifest_keys {
 
+// A list of keys that do not generate warnings when specified in the manifest,
+// despite the fact that they are not recognized by Chrome. Keys should be
+// added here if they are widely adopted but a developer is unlikely to expect
+// that it would do anything in Chrome, and so wouldn't benefit from a warning.
+inline constexpr const char* const kIgnoredUnrecognizedKeys[] = {
+    // This is used by non-Chromium browsers:
+    // https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings
+    "browser_specific_settings",
+    // This is part of the JSON schema definition:
+    // https://json-schema.org/understanding-json-schema/reference/schema#schema
+    "$schema"};
+
 inline constexpr char kAboutPage[] = "about_page";
 inline constexpr char kAction[] = "action";
 inline constexpr char kActionDefaultIcon[] = "default_icon";
