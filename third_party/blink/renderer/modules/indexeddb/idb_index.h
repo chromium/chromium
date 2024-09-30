@@ -67,11 +67,11 @@ class IDBIndex final : public ScriptWrappable {
 
   IDBRequest* openCursor(ScriptState*,
                          const ScriptValue& key,
-                         const String& direction,
+                         const V8IDBCursorDirection& direction,
                          ExceptionState&);
   IDBRequest* openKeyCursor(ScriptState*,
                             const ScriptValue& range,
-                            const String& direction,
+                            const V8IDBCursorDirection& direction,
                             ExceptionState&);
   IDBRequest* count(ScriptState*, const ScriptValue& range, ExceptionState&);
   IDBRequest* get(ScriptState*, const ScriptValue& key, ExceptionState&);

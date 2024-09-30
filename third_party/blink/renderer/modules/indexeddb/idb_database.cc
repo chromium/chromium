@@ -300,7 +300,7 @@ IDBObjectStore* IDBDatabase::createObjectStore(
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
     const V8UnionStringOrStringSequence* store_names,
-    const String& mode_string,
+    const V8IDBTransactionMode& v8_mode,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBDatabase::transaction");
@@ -355,11 +355,12 @@ IDBTransaction* IDBDatabase::transaction(
     object_store_ids.push_back(object_store_id);
   }
 
-  mojom::IDBTransactionMode mode = IDBTransaction::StringToMode(mode_string);
-  if (mode != mojom::IDBTransactionMode::ReadOnly &&
-      mode != mojom::IDBTransactionMode::ReadWrite) {
+  mojom::blink::IDBTransactionMode mode =
+      IDBTransaction::EnumToMode(v8_mode.AsEnum());
+  if (mode != mojom::blink::IDBTransactionMode::ReadOnly &&
+      mode != mojom::blink::IDBTransactionMode::ReadWrite) {
     exception_state.ThrowTypeError(
-        "The mode provided ('" + mode_string +
+        "The mode provided ('" + v8_mode.AsString() +
         "') is not one of 'readonly' or 'readwrite'.");
     return nullptr;
   }

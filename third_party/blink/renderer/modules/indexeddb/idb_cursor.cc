@@ -460,19 +460,18 @@ bool IDBCursor::IsDeleted() const {
 }
 
 // static
-mojom::IDBCursorDirection IDBCursor::StringToDirection(
-    const String& direction_string) {
-  if (direction_string == indexed_db_names::kNext)
-    return mojom::IDBCursorDirection::Next;
-  if (direction_string == indexed_db_names::kNextunique)
-    return mojom::IDBCursorDirection::NextNoDuplicate;
-  if (direction_string == indexed_db_names::kPrev)
-    return mojom::IDBCursorDirection::Prev;
-  if (direction_string == indexed_db_names::kPrevunique)
-    return mojom::IDBCursorDirection::PrevNoDuplicate;
-
-  NOTREACHED_IN_MIGRATION();
-  return mojom::IDBCursorDirection::Next;
+mojom::blink::IDBCursorDirection IDBCursor::V8EnumToDirection(
+    V8IDBCursorDirection::Enum mode) {
+  switch (mode) {
+    case V8IDBCursorDirection::Enum::kNext:
+      return mojom::blink::IDBCursorDirection::Next;
+    case V8IDBCursorDirection::Enum::kNextunique:
+      return mojom::blink::IDBCursorDirection::NextNoDuplicate;
+    case V8IDBCursorDirection::Enum::kPrev:
+      return mojom::blink::IDBCursorDirection::Prev;
+    case V8IDBCursorDirection::Enum::kPrevunique:
+      return mojom::blink::IDBCursorDirection::PrevNoDuplicate;
+  }
 }
 
 // static

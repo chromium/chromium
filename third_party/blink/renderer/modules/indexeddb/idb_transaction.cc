@@ -573,32 +573,29 @@ bool IDBTransaction::HasPendingActivity() const {
   return has_pending_activity_ && GetExecutionContext();
 }
 
-mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
-    const String& mode_string) {
-  if (mode_string == indexed_db_names::kReadonly)
-    return mojom::blink::IDBTransactionMode::ReadOnly;
-  if (mode_string == indexed_db_names::kReadwrite)
-    return mojom::blink::IDBTransactionMode::ReadWrite;
-  if (mode_string == indexed_db_names::kVersionchange)
-    return mojom::blink::IDBTransactionMode::VersionChange;
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::IDBTransactionMode::ReadOnly;
+mojom::blink::IDBTransactionMode IDBTransaction::EnumToMode(
+    V8IDBTransactionMode::Enum mode) {
+  switch (mode) {
+    case V8IDBTransactionMode::Enum::kReadonly:
+      return mojom::blink::IDBTransactionMode::ReadOnly;
+    case V8IDBTransactionMode::Enum::kReadwrite:
+      return mojom::blink::IDBTransactionMode::ReadWrite;
+    case V8IDBTransactionMode::Enum::kVersionchange:
+      return mojom::blink::IDBTransactionMode::VersionChange;
+  }
 }
 
-const String& IDBTransaction::mode() const {
+V8IDBTransactionMode IDBTransaction::mode() const {
   switch (mode_) {
     case mojom::blink::IDBTransactionMode::ReadOnly:
-      return indexed_db_names::kReadonly;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kReadonly);
 
     case mojom::blink::IDBTransactionMode::ReadWrite:
-      return indexed_db_names::kReadwrite;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kReadwrite);
 
     case mojom::blink::IDBTransactionMode::VersionChange:
-      return indexed_db_names::kVersionchange;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kVersionchange);
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return indexed_db_names::kReadonly;
 }
 
 const String& IDBTransaction::durability() const {

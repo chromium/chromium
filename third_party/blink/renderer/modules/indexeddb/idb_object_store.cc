@@ -974,7 +974,7 @@ void IDBObjectStore::deleteIndex(const String& name,
 
 IDBRequest* IDBObjectStore::openCursor(ScriptState* script_state,
                                        const ScriptValue& range,
-                                       const String& direction_string,
+                                       const V8IDBCursorDirection& v8_direction,
                                        ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBObjectStore::openCursorRequestSetup",
                "store_name", metadata_->name.Utf8());
@@ -994,7 +994,7 @@ IDBRequest* IDBObjectStore::openCursor(ScriptState* script_state,
   }
 
   mojom::IDBCursorDirection direction =
-      IDBCursor::StringToDirection(direction_string);
+      IDBCursor::V8EnumToDirection(v8_direction.AsEnum());
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
@@ -1024,10 +1024,11 @@ IDBRequest* IDBObjectStore::openCursor(ScriptState* script_state,
   return request;
 }
 
-IDBRequest* IDBObjectStore::openKeyCursor(ScriptState* script_state,
-                                          const ScriptValue& range,
-                                          const String& direction_string,
-                                          ExceptionState& exception_state) {
+IDBRequest* IDBObjectStore::openKeyCursor(
+    ScriptState* script_state,
+    const ScriptValue& range,
+    const V8IDBCursorDirection& v8_direction,
+    ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBObjectStore::openKeyCursorRequestSetup",
                "store_name", metadata_->name.Utf8());
   IDBRequest::AsyncTraceState metrics(
@@ -1046,7 +1047,7 @@ IDBRequest* IDBObjectStore::openKeyCursor(ScriptState* script_state,
   }
 
   mojom::IDBCursorDirection direction =
-      IDBCursor::StringToDirection(direction_string);
+      IDBCursor::V8EnumToDirection(v8_direction.AsEnum());
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())

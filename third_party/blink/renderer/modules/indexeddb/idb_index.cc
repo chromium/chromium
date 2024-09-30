@@ -115,7 +115,7 @@ void IDBIndex::RevertMetadata(scoped_refptr<IDBIndexMetadata> old_metadata) {
 
 IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
                                  const ScriptValue& range,
-                                 const String& direction_string,
+                                 const V8IDBCursorDirection& v8_direction,
                                  ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBIndex::openCursorRequestSetup", "index_name",
                metadata_->name.Utf8());
@@ -133,7 +133,7 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
     return nullptr;
   }
   mojom::blink::IDBCursorDirection direction =
-      IDBCursor::StringToDirection(direction_string);
+      IDBCursor::V8EnumToDirection(v8_direction.AsEnum());
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
@@ -198,7 +198,7 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
 
 IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
                                     const ScriptValue& range,
-                                    const String& direction_string,
+                                    const V8IDBCursorDirection& v8_direction,
                                     ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBIndex::openKeyCursorRequestSetup", "index_name",
                metadata_->name.Utf8());
@@ -216,7 +216,7 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
     return nullptr;
   }
   mojom::blink::IDBCursorDirection direction =
-      IDBCursor::StringToDirection(direction_string);
+      IDBCursor::V8EnumToDirection(v8_direction.AsEnum());
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())

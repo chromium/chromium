@@ -74,11 +74,11 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
 
   IDBRequest* openCursor(ScriptState*,
                          const ScriptValue& range,
-                         const String& direction,
+                         const V8IDBCursorDirection& direction,
                          ExceptionState&);
   IDBRequest* openKeyCursor(ScriptState*,
                             const ScriptValue& range,
-                            const String& direction,
+                            const V8IDBCursorDirection& direction,
                             ExceptionState&);
   IDBRequest* get(ScriptState*, const ScriptValue& key, ExceptionState&);
   IDBRequest* getKey(ScriptState*, const ScriptValue& key, ExceptionState&);

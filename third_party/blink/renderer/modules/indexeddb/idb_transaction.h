@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_mode.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -110,7 +111,8 @@ class MODULES_EXPORT IDBTransaction final
 
   void Trace(Visitor*) const override;
 
-  static mojom::blink::IDBTransactionMode StringToMode(const String&);
+  static mojom::blink::IDBTransactionMode EnumToMode(
+      V8IDBTransactionMode::Enum);
 
   int64_t Id() const { return id_; }
   bool IsActive() const { return state_ == kActive; }
@@ -128,7 +130,7 @@ class MODULES_EXPORT IDBTransaction final
   void IncrementNumErrorsHandled() { ++num_errors_handled_; }
 
   // Implement the IDBTransaction IDL
-  const String& mode() const;
+  V8IDBTransactionMode mode() const;
   const String& durability() const;
   DOMStringList* objectStoreNames() const;
   IDBDatabase& db() { return *database_; }

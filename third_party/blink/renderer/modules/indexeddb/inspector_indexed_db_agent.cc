@@ -417,8 +417,12 @@ IDBTransaction* TransactionForDatabase(
   IDBTransactionOptions* options =
       MakeGarbageCollected<IDBTransactionOptions>();
   options->setDurability("relaxed");
+  auto v8_mode = V8IDBTransactionMode::Create(mode);
+  if (!v8_mode) {
+    return nullptr;
+  }
   IDBTransaction* idb_transaction = idb_database->transaction(
-      script_state, scope, mode, options, exception_state);
+      script_state, scope, v8_mode.value(), options, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
