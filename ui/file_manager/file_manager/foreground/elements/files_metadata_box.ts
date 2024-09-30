@@ -82,10 +82,12 @@ interface Ifd {
                              // seconds.
   ];
   exif?: {
-    33437: ExifRationalData,  // Aperture.
-    33434: ExifRationalData,  // Exposure time.
-    37386: ExifRationalData,  // Focal length.
-    34855: ExifRationalData,  // ISO Speed.
+    [ExifTag.APERTURE]: ExifRationalData,
+    [ExifTag.EXPOSURE_TIME]: ExifRationalData,
+    [ExifTag.FOCAL_LENGTH]: ExifRationalData,
+    [ExifTag.ISO_SPEED]: ExifRationalData,
+    [ExifTag.DATETIME_ORIGINAL]: ExifData<string>,
+    [ExifTag.CREATE_DATETIME]: ExifData<string>,
   };
 }
 
@@ -317,6 +319,15 @@ export class FilesMetadataBox extends PolymerElement {
     }
 
     return result;
+  }
+
+  dateTaken(ifd: Ifd) {
+    // Exif has 2 fields that might contain the date.
+    const d1 = ifd?.exif?.[ExifTag.DATETIME_ORIGINAL]?.value;
+    const d2 = ifd?.exif?.[ExifTag.CREATE_DATETIME]?.value;
+    // From PIEX.
+    const d3 = ifd?.raw?.date;
+    return d1 ?? d2 ?? d3 ?? '';
   }
 
   private rawDeviceSettings_(raw: Ifd['raw']) {
