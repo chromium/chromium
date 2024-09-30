@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_CONCATENATE_H_
 
 #include <string.h>
+
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #ifndef WTFString_h
@@ -54,24 +56,14 @@ class StringTypeAdapter<char> {
   void WriteTo(UChar* destination) const { *destination = buffer_; }
 
  private:
-  const unsigned char buffer_;
+  const LChar buffer_;
 };
 
 template <>
-class StringTypeAdapter<LChar> {
-  DISALLOW_NEW();
-
+class StringTypeAdapter<LChar> : public StringTypeAdapter<char> {
  public:
-  explicit StringTypeAdapter<LChar>(LChar buffer) : buffer_(buffer) {}
-
-  unsigned length() const { return 1; }
-  bool Is8Bit() const { return true; }
-
-  void WriteTo(LChar* destination) const { *destination = buffer_; }
-  void WriteTo(UChar* destination) const { *destination = buffer_; }
-
- private:
-  const LChar buffer_;
+  explicit StringTypeAdapter<LChar>(LChar buffer)
+      : StringTypeAdapter<char>(buffer) {}
 };
 
 template <>
@@ -96,12 +88,13 @@ class StringTypeAdapter<UChar> {
 };
 
 template <>
-class WTF_EXPORT StringTypeAdapter<char*> {
+class WTF_EXPORT StringTypeAdapter<const char*> {
   DISALLOW_NEW();
 
  public:
-  explicit StringTypeAdapter<char*>(char* buffer)
-      : StringTypeAdapter(buffer, strlen(buffer)) {}
+  explicit StringTypeAdapter<const char*>(const char* buffer)
+      : StringTypeAdapter(reinterpret_cast<const LChar*>(buffer),
+                          strlen(buffer)) {}
 
   unsigned length() const { return length_; }
   bool Is8Bit() const { return true; }
@@ -110,28 +103,34 @@ class WTF_EXPORT StringTypeAdapter<char*> {
   void WriteTo(UChar* destination) const;
 
  private:
-  StringTypeAdapter(char* buffer, size_t length);
+  StringTypeAdapter(const LChar* buffer, size_t length);
 
-  const char* buffer_;
+  const LChar* buffer_;
   unsigned length_;
 };
 
 template <>
-class WTF_EXPORT StringTypeAdapter<LChar*> {
-  DISALLOW_NEW();
-
+class WTF_EXPORT StringTypeAdapter<const LChar*>
+    : StringTypeAdapter<const char*> {
  public:
-  explicit StringTypeAdapter<LChar*>(LChar* buffer);
+  explicit StringTypeAdapter<const LChar*>(const LChar* buffer)
+      : StringTypeAdapter<const char*>(reinterpret_cast<const char*>(buffer)) {}
+};
 
-  unsigned length() const { return length_; }
-  bool Is8Bit() const { return true; }
+template <>
+class WTF_EXPORT StringTypeAdapter<char*>
+    : public StringTypeAdapter<const char*> {
+ public:
+  explicit StringTypeAdapter<char*>(char* buffer)
+      : StringTypeAdapter<const char*>(buffer) {}
+};
 
-  void WriteTo(LChar* destination) const;
-  void WriteTo(UChar* destination) const;
-
- private:
-  const LChar* buffer_;
-  const unsigned length_;
+template <>
+class WTF_EXPORT StringTypeAdapter<LChar*>
+    : public StringTypeAdapter<const LChar*> {
+ public:
+  explicit StringTypeAdapter<LChar*>(LChar* buffer)
+      : StringTypeAdapter<const LChar*>(buffer) {}
 };
 
 template <>
@@ -144,47 +143,11 @@ class WTF_EXPORT StringTypeAdapter<const UChar*> {
   unsigned length() const { return length_; }
   bool Is8Bit() const { return false; }
 
-  void WriteTo(LChar*) const { CHECK(false); }
+  void WriteTo(LChar* destination) const { NOTREACHED(); }
   void WriteTo(UChar* destination) const;
 
  private:
   const UChar* buffer_;
-  const unsigned length_;
-};
-
-template <>
-class WTF_EXPORT StringTypeAdapter<const char*> {
-  DISALLOW_NEW();
-
- public:
-  explicit StringTypeAdapter<const char*>(const char* buffer);
-
-  unsigned length() const { return length_; }
-  bool Is8Bit() const { return true; }
-
-  void WriteTo(LChar* destination) const;
-  void WriteTo(UChar* destination) const;
-
- private:
-  const char* buffer_;
-  const unsigned length_;
-};
-
-template <>
-class WTF_EXPORT StringTypeAdapter<const LChar*> {
-  DISALLOW_NEW();
-
- public:
-  explicit StringTypeAdapter<const LChar*>(const LChar* buffer);
-
-  unsigned length() const { return length_; }
-  bool Is8Bit() const { return true; }
-
-  void WriteTo(LChar* destination) const;
-  void WriteTo(UChar* destination) const;
-
- private:
-  const LChar* buffer_;
   const unsigned length_;
 };
 
