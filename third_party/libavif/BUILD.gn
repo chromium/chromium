@@ -79,7 +79,11 @@ component("libavif_enc") {
   public = [ "src/include/avif/avif.h" ]
   public_configs = [ ":avif_public_config" ]
 
-  sources = libavif_decoder_sources + [ "src/src/write.c" ]
+  sources = libavif_decoder_sources + [
+              "src/src/colrconvert.c",
+              "src/src/gainmap.c",
+              "src/src/write.c",
+            ]
   testonly = true
 
   configs += [ ":avif_config" ]
