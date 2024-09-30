@@ -1195,6 +1195,9 @@
   <message name="IDS_FILE_BROWSER_METADATA_BOX_MODIFIED_BY" desc="Label for who modified the file.">
     Modified by
   </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_DATE_TAKEN" desc="Label for the date that the image/photo was taken.">
+    Date taken
+  </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_PAGE_COUNT" desc="Label for pdf page count.">
     Page count
   </message>
