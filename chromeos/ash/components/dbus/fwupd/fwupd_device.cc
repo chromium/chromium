@@ -8,8 +8,10 @@ namespace ash {
 
 FwupdDevice::FwupdDevice() = default;
 
-FwupdDevice::FwupdDevice(const std::string& id, const std::string& device_name)
-    : id(id), device_name(device_name) {}
+FwupdDevice::FwupdDevice(const std::string& id,
+                         const std::string& device_name,
+                         bool needs_reboot)
+    : id(id), device_name(device_name), needs_reboot(needs_reboot) {}
 
 FwupdDevice::FwupdDevice(const FwupdDevice& other) = default;
 FwupdDevice& FwupdDevice::operator=(const FwupdDevice& other) = default;

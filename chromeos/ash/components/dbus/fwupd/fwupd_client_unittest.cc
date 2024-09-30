@@ -31,8 +31,10 @@ using ::testing::Invoke;
 namespace {
 const char kFakeDeviceIdForTesting[] = "0123";
 const char kFakeDeviceNameForTesting[] = "Fake Device";
+const bool kFakeNeedsRebootForTesting = false;
 const char kFakeInternalDeviceIdForTesting[] = "4567";
 const char kFakeInternalDeviceNameForTesting[] = "Fake Internal Device";
+const bool kFakeInternalNeedsRebootForTesting = true;
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
@@ -332,7 +334,8 @@ class FwupdClientTest : public testing::Test {
 
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kFlagsKey);
-    dict_writer.AppendVariantOfUint64(kInternalDeviceFlag);
+    dict_writer.AppendVariantOfUint64(kInternalDeviceFlag |
+                                      kNeedsRebootDeviceFlag);
     device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);
@@ -345,7 +348,8 @@ class FwupdClientTest : public testing::Test {
     run_loop_.Quit();
 
     FwupdDeviceList expected_devices = {
-        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting)};
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting,
+                    kFakeNeedsRebootForTesting)};
     EXPECT_EQ(*devices, expected_devices);
   }
 
@@ -353,9 +357,11 @@ class FwupdClientTest : public testing::Test {
     run_loop_.Quit();
 
     FwupdDeviceList expected_devices = {
-        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting),
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting,
+                    kFakeNeedsRebootForTesting),
         FwupdDevice(kFakeInternalDeviceIdForTesting,
-                    kFakeInternalDeviceNameForTesting),
+                    kFakeInternalDeviceNameForTesting,
+                    kFakeInternalNeedsRebootForTesting),
     };
     EXPECT_EQ(*devices, expected_devices);
   }
