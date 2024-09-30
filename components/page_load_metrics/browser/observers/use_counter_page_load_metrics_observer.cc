@@ -466,6 +466,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8AbortController_Constructor, WebDXFeature::kAborting},
           {WebFeature::kV8AbortSignal_Abort_Method, WebDXFeature::kAborting},
           {WebFeature::kAbortSignalTimeout, WebDXFeature::kAborting},
+          {WebFeature::kEditContext, WebDXFeature::kEditContext},
       }};
 
   return *kMap;
