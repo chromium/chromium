@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/flags_ui/feature_entry.h"
@@ -301,6 +302,16 @@ bool IsTabOrganization() {
 BASE_FEATURE(kTabstripDeclutter,
              "TabstripDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterStaleThresholdDuration{
+        &kTabstripDeclutter, "stale_threshold_duration", base::Days(7)};
+
+const base::FeatureParam<base::TimeDelta> kTabstripDeclutterTimerInterval{
+    &kTabstripDeclutter, "declutter_timer_interval", base::Minutes(10)};
+
+const base::FeatureParam<base::TimeDelta> kTabstripDeclutterNudgeTimerInterval{
+    &kTabstripDeclutter, "nudge_timer_interval", base::Minutes(6 * 60)};
 
 bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);

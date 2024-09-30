@@ -44,17 +44,15 @@ class TabDeclutterController {
     return stale_tab_threshold_duration_;
   }
 
-  base::TimeDelta declutter_timer_interval_minutes() const {
-    return declutter_timer_interval_minutes_;
+  base::TimeDelta declutter_timer_interval() const {
+    return declutter_timer_interval_;
   }
 
   base::TimeTicks next_nudge_valid_time_ticks() const {
     return next_nudge_valid_time_ticks_;
   }
 
-  base::TimeDelta nudge_timer_interval_minutes() const {
-    return nudge_timer_interval_minutes_;
-  }
+  base::TimeDelta nudge_timer_interval() const { return nudge_timer_interval_; }
 
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
 
@@ -78,9 +76,9 @@ class TabDeclutterController {
   // Duration of inactivity after which a tab is considered stale.
   base::TimeDelta stale_tab_threshold_duration_;
   // Interval between a recomputation of stale tabs.
-  base::TimeDelta declutter_timer_interval_minutes_;
+  base::TimeDelta declutter_timer_interval_;
   // Interval after showing a nudge to prevent another nudge from being shown.
-  base::TimeDelta nudge_timer_interval_minutes_;
+  base::TimeDelta nudge_timer_interval_;
   // The timer that is responsible for calculating stale tabs on getting
   // triggered.
   std::unique_ptr<base::RepeatingTimer> declutter_timer_;

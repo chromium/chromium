@@ -214,6 +214,17 @@ BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
 BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);
 
+// Duration of inactivity after which a tab is considered stale for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterStaleThresholdDuration;
+// Interval between a recomputation of stale tabs for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterTimerInterval;
+// Default interval after showing a nudge to prevent another nudge from being
+// shown for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterNudgeTimerInterval;
+
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.
 extern const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod;

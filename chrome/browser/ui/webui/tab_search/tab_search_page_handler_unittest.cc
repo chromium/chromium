@@ -1015,7 +1015,7 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
   EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
 
   task_runner->FastForwardBy(
-      tab_declutter_controller()->declutter_timer_interval_minutes());
+      tab_declutter_controller()->declutter_timer_interval());
 }
 
 }  // namespace

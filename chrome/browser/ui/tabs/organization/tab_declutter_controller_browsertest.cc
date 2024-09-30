@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   browser()->tab_strip_model()->AddToNewGroup(std::vector<int>{2});
 
   task_runner->FastForwardBy(
-      tab_declutter_controller()->declutter_timer_interval_minutes());
+      tab_declutter_controller()->declutter_timer_interval());
 
   EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   // Move forward in time to simulate declutter timer triggering.
   task_runner->FastForwardBy(
-      tab_declutter_controller()->nudge_timer_interval_minutes());
+      tab_declutter_controller()->nudge_timer_interval());
 
   EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
@@ -198,14 +198,14 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   // Move forward in time to simulate declutter timer triggering.
   task_runner->FastForwardBy(
-      tab_declutter_controller()->nudge_timer_interval_minutes());
+      tab_declutter_controller()->nudge_timer_interval());
 
   EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 
   // Move forward in time to simulate declutter timer triggering.
   task_runner->FastForwardBy(
-      tab_declutter_controller()->nudge_timer_interval_minutes());
+      tab_declutter_controller()->nudge_timer_interval());
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 }
 
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   // Move forward in time to simulate declutter timer triggering.
   task_runner->FastForwardBy(
-      tab_declutter_controller()->nudge_timer_interval_minutes());
+      tab_declutter_controller()->nudge_timer_interval());
 
   EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   // Move forward in time to simulate declutter timer triggering.
   task_runner->FastForwardBy(
-      tab_declutter_controller()->nudge_timer_interval_minutes());
+      tab_declutter_controller()->nudge_timer_interval());
 
   EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   browser()->window()->Activate();
 
   base::TimeDelta initial_nudge_interval =
-      tab_declutter_controller()->nudge_timer_interval_minutes();
+      tab_declutter_controller()->nudge_timer_interval();
 
   // Move time forward by the initial nudge timer interval and check the next
   // valid nudge time.
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(initial_nudge_interval,
-            tab_declutter_controller()->nudge_timer_interval_minutes());
+            tab_declutter_controller()->nudge_timer_interval());
 
   TabSearchContainer* tab_search_container =
       BrowserView::GetBrowserViewForBrowser(browser())
@@ -298,11 +298,11 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   // After dismissal, the nudge interval should double.
-  EXPECT_EQ(tab_declutter_controller()->nudge_timer_interval_minutes(),
+  EXPECT_EQ(tab_declutter_controller()->nudge_timer_interval(),
             initial_nudge_interval * 2);
   EXPECT_EQ(tab_declutter_controller()->next_nudge_valid_time_ticks(),
             task_runner->GetMockTickClock()->NowTicks() +
-                tab_declutter_controller()->nudge_timer_interval_minutes());
+                tab_declutter_controller()->nudge_timer_interval());
 }
 
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   tab_declutter_controller()->ExcludeFromStaleTabs(tab_to_exclude);
 
   task_runner->FastForwardBy(
-      tab_declutter_controller()->declutter_timer_interval_minutes());
+      tab_declutter_controller()->declutter_timer_interval());
 
   EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
 
