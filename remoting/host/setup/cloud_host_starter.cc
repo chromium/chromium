@@ -81,7 +81,9 @@ CloudHostStarter::CloudHostStarter(
       cloud_service_client_(
           std::make_unique<CloudServiceClient>(api_key,
                                                /*oauth_token_getter=*/nullptr,
-                                               url_loader_factory)) {}
+                                               url_loader_factory)) {
+  params().api_key = api_key;
+}
 
 CloudHostStarter::~CloudHostStarter() = default;
 
