@@ -127,7 +127,6 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/process_requirement.h"
 #include "chrome/common/chrome_version.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -879,10 +878,6 @@ void RecordStartupMetrics() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   RecordChromeOSChannel();
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  base::mac::ProcessRequirement::MaybeGatherMetrics();
 #endif
 }
 
