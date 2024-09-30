@@ -59,6 +59,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -607,17 +608,24 @@ bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
   if (!authenticator || !GetPrefs()) {
     return false;
   }
-  bool can_authenticate =
-      authenticator->CanAuthenticateWithBiometricOrScreenLock();
+  device_reauth::BiometricStatus biometric_status =
+      authenticator->GetBiometricAvailabilityStatus();
   base::UmaHistogramBoolean(
       "PasswordManager.BiometricAuthPwdFillAndroid."
       "CanAuthenticateWithBiometricOrScreenLock",
-      can_authenticate);
-  return can_authenticate &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricTouchToFill) &&
-         GetPrefs()->GetBoolean(
-             password_manager::prefs::kBiometricAuthenticationBeforeFilling);
+      biometric_status != device_reauth::BiometricStatus::kUnavailable);
+  switch (biometric_status) {
+    case device_reauth::BiometricStatus::kRequired:
+      return true;
+    case device_reauth::BiometricStatus::kBiometricsAvailable:
+    case device_reauth::BiometricStatus::kOnlyLskfAvailable:
+      return base::FeatureList::IsEnabled(
+                 password_manager::features::kBiometricTouchToFill) &&
+             GetPrefs()->GetBoolean(password_manager::prefs::
+                                        kBiometricAuthenticationBeforeFilling);
+    case device_reauth::BiometricStatus::kUnavailable:
+      return false;
+  }
 #else
   return false;
 #endif

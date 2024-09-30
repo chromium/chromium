@@ -52,11 +52,13 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -140,6 +142,7 @@ using testing::UnorderedElementsAre;
 
 #if BUILDFLAG(IS_ANDROID)
 using base::android::BuildInfo;
+using device_reauth::BiometricStatus;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStoreInterface;
 #endif
@@ -853,14 +856,14 @@ TEST_F(ChromePasswordManagerClientTest,
     GTEST_SKIP();
   }
   device_reauth::MockDeviceAuthenticator authenticator;
-  ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
 
 // Test that authentication is not possible if the
-// `CanAuthenticateWithBiometrics` returns `false` when `kBiometricTouchToFill`
-// is enabled.
+// `GetBiometricAvailabilityStatus` returns `kUnavailable` when
+// `kBiometricTouchToFill` is enabled.
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidAuthDisabled) {
   // Authentication is always available for automotive.
@@ -871,8 +874,8 @@ TEST_F(ChromePasswordManagerClientTest,
   base::test::ScopedFeatureList enabled_features(
       password_manager::features::kBiometricTouchToFill);
   device_reauth::MockDeviceAuthenticator authenticator;
-  ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(false));
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kUnavailable));
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFillAndroid."
@@ -881,7 +884,7 @@ TEST_F(ChromePasswordManagerClientTest,
 }
 
 // Test that authentication is not possible if the
-// `CanAuthenticateWithBiometrics` returns `true`, but the
+// `GetBiometricAvailabilityStatus` returns `kBiometricsAvailable`, but the
 // `kBiometricReauthBeforePwdFilling` pref is set to false when
 // `kBiometricTouchToFill` is enabled.
 TEST_F(ChromePasswordManagerClientTest,
@@ -893,14 +896,14 @@ TEST_F(ChromePasswordManagerClientTest,
   base::test::ScopedFeatureList enabled_features(
       password_manager::features::kBiometricTouchToFill);
   device_reauth::MockDeviceAuthenticator authenticator;
-  ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
 
-// Test that authentication is possible if the `CanAuthenticateWithBiometrics`
-// returns `true` and the `kBiometricReauthBeforePwdFilling` pref is set to true
-// when `kBiometricTouchToFill` is enabled.
+// Test that authentication is possible if the `GetBiometricAvailabilityStatus`
+// returns `kOnlyLskfAvailable` and the `kBiometricReauthBeforePwdFilling`
+// pref is set to true when `kBiometricTouchToFill` is enabled.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   // Authentication is always available for automotive.
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
@@ -913,8 +916,8 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   device_reauth::MockDeviceAuthenticator authenticator;
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-  ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kOnlyLskfAvailable));
   EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFillAndroid."
@@ -922,8 +925,8 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
       true, 1);
 }
 
-// Test that authentication is possible if the `CanAuthenticateWithBiometrics`
-// returns `true` on auto regardless of the pref and flag value.
+// Test that authentication is possible if the `GetBiometricAvailabilityStatus`
+// returns `kBiometricsAvailable` on auto regardless of the pref and flag value.
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidAlwaysTrueOnAutomotive) {
   // Authentication is always available for automotive.
@@ -931,8 +934,23 @@ TEST_F(ChromePasswordManagerClientTest,
     GTEST_SKIP();
   }
   device_reauth::MockDeviceAuthenticator authenticator;
-  ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+}
+
+// Test that `IsReauthBeforeFillingRequired` always returns true for mandatory
+// biometric auth.
+TEST_F(ChromePasswordManagerClientTest, MandatoryBiometricEnabled) {
+  // Authentication is always available for automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList enabled_features(
+      password_manager::features::kBiometricAuthIdentityCheck);
+  device_reauth::MockDeviceAuthenticator authenticator;
+  ON_CALL(authenticator, GetBiometricAvailabilityStatus)
+      .WillByDefault(Return(BiometricStatus::kRequired));
   EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
 
