@@ -4575,7 +4575,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title when a user see the price history graph section in the price insights bottom sheet.">
         Price history across the web
       </message>
-      <message name="IDS_PRICE_HISTORY_CHART_CONTENT_DESCRIPTION" desc="Accessibility string that describes price history chart and its content action for a product.">
+      <message name="IDS_PRICE_HISTORY_CHART_CONTENT_DESCRIPTION" desc="Accessibility string that describes price history chart and its content action for a product." translateable="false">
         Price history graph for <ph name="PRODUCT_NAME">%s<ex>Nike Air Max</ex></ph>. Use two fingers to move left and right to explore prices over time.
       </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE" desc="The title when a user see the price history graph for multiple catalog in the price insights bottom sheet.">
