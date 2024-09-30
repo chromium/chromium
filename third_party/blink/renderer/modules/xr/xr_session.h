@@ -44,6 +44,7 @@ class ExceptionState;
 class HTMLCanvasElement;
 class ResizeObserver;
 class V8XRFrameRequestCallback;
+class V8XRReferenceSpaceType;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
@@ -182,7 +183,7 @@ class XRSession final : public EventTarget,
 
   ScriptPromise<XRReferenceSpace> requestReferenceSpace(
       ScriptState* script_state,
-      const String& type,
+      const V8XRReferenceSpaceType& type,
       ExceptionState&);
 
   // Helper, not IDL-exposed

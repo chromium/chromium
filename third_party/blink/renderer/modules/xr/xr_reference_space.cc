@@ -21,21 +21,20 @@ using ReferenceSpaceType = device::mojom::blink::XRReferenceSpaceType;
 // Rough estimate of avg human eye height in meters.
 const double kDefaultEmulationHeightMeters = -1.6;
 
-ReferenceSpaceType XRReferenceSpace::StringToReferenceSpaceType(
-    const String& reference_space_type) {
-  if (reference_space_type == "viewer") {
-    return ReferenceSpaceType::kViewer;
-  } else if (reference_space_type == "local") {
-    return ReferenceSpaceType::kLocal;
-  } else if (reference_space_type == "local-floor") {
-    return ReferenceSpaceType::kLocalFloor;
-  } else if (reference_space_type == "bounded-floor") {
-    return ReferenceSpaceType::kBoundedFloor;
-  } else if (reference_space_type == "unbounded") {
-    return ReferenceSpaceType::kUnbounded;
+ReferenceSpaceType XRReferenceSpace::V8EnumToReferenceSpaceType(
+    V8XRReferenceSpaceType::Enum reference_space_type) {
+  switch (reference_space_type) {
+    case V8XRReferenceSpaceType::Enum::kViewer:
+      return ReferenceSpaceType::kViewer;
+    case V8XRReferenceSpaceType::Enum::kLocal:
+      return ReferenceSpaceType::kLocal;
+    case V8XRReferenceSpaceType::Enum::kLocalFloor:
+      return ReferenceSpaceType::kLocalFloor;
+    case V8XRReferenceSpaceType::Enum::kBoundedFloor:
+      return ReferenceSpaceType::kBoundedFloor;
+    case V8XRReferenceSpaceType::Enum::kUnbounded:
+      return ReferenceSpaceType::kUnbounded;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ReferenceSpaceType::kViewer;
 }
 
 // origin offset starts as identity transform

@@ -18,6 +18,8 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_state_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reference_space_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_session_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_tracked_image_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -98,20 +100,16 @@ constexpr device::mojom::XRSessionFeature kDefaultInlineFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
 };
 
-device::mojom::blink::XRSessionMode stringToSessionMode(
-    const String& mode_string) {
-  if (mode_string == "inline") {
-    return device::mojom::blink::XRSessionMode::kInline;
+device::mojom::blink::XRSessionMode V8EnumToSessionMode(
+    V8XRSessionMode::Enum mode) {
+  switch (mode) {
+    case V8XRSessionMode::Enum::kInline:
+      return device::mojom::blink::XRSessionMode::kInline;
+    case V8XRSessionMode::Enum::kImmersiveVr:
+      return device::mojom::blink::XRSessionMode::kImmersiveVr;
+    case V8XRSessionMode::Enum::kImmersiveAr:
+      return device::mojom::blink::XRSessionMode::kImmersiveAr;
   }
-  if (mode_string == "immersive-vr") {
-    return device::mojom::blink::XRSessionMode::kImmersiveVr;
-  }
-  if (mode_string == "immersive-ar") {
-    return device::mojom::blink::XRSessionMode::kImmersiveAr;
-  }
-
-  NOTREACHED_IN_MIGRATION();  // Only strings in the enum are allowed by IDL.
-  return device::mojom::blink::XRSessionMode::kInline;
 }
 
 const char* SessionModeToString(device::mojom::blink::XRSessionMode mode) {
@@ -123,9 +121,6 @@ const char* SessionModeToString(device::mojom::blink::XRSessionMode mode) {
     case device::mojom::blink::XRSessionMode::kImmersiveAr:
       return "immersive-ar";
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return "";
 }
 
 device::mojom::XRDepthUsage ParseDepthUsage(const V8XRDepthUsage& usage) {
@@ -905,7 +900,7 @@ void XRSystem::SetFramesThrottled(const XRSession* session, bool throttled) {
 
 ScriptPromise<IDLUndefined> XRSystem::supportsSession(
     ScriptState* script_state,
-    const String& mode,
+    const V8XRSessionMode& mode,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
@@ -916,7 +911,7 @@ ScriptPromise<IDLUndefined> XRSystem::supportsSession(
 
 ScriptPromise<IDLBoolean> XRSystem::isSessionSupported(
     ScriptState* script_state,
-    const String& mode,
+    const V8XRSessionMode& mode,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
@@ -954,7 +949,7 @@ void XRSystem::AddWebXrInternalsMessage(const String& message) {
 }
 
 void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
-                                          const String& mode,
+                                          const V8XRSessionMode& mode,
                                           ExceptionState& exception_state,
                                           bool throw_on_unsupported) {
   if (!GetExecutionContext()) {
@@ -964,7 +959,8 @@ void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
     return;  // Promise will be rejected by generated bindings
   }
 
-  device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
+  device::mojom::blink::XRSessionMode session_mode =
+      V8EnumToSessionMode(mode.AsEnum());
   PendingSupportsSessionQuery* query =
       MakeGarbageCollected<PendingSupportsSessionQuery>(resolver, session_mode,
                                                         throw_on_unsupported);
@@ -1230,7 +1226,7 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
 
 ScriptPromise<XRSession> XRSystem::requestSession(
     ScriptState* script_state,
-    const String& mode,
+    const V8XRSessionMode& mode,
     XRSessionInit* session_init,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
@@ -1248,7 +1244,8 @@ ScriptPromise<XRSession> XRSystem::requestSession(
                             // bindings
   }
 
-  device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
+  device::mojom::blink::XRSessionMode session_mode =
+      V8EnumToSessionMode(mode.AsEnum());
 
   // If the request is for immersive-ar, ensure that feature is enabled.
   if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&

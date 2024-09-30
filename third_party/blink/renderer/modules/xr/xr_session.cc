@@ -651,9 +651,9 @@ ScriptPromise<IDLUndefined> XRSession::updateTargetFrameRate(
 
 ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
     ScriptState* script_state,
-    const String& type,
+    const V8XRReferenceSpaceType& type,
     ExceptionState& exception_state) {
-  DVLOG(2) << __func__ << ": type=" << type;
+  DVLOG(2) << __func__ << ": type=" << type.AsCStr();
 
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -662,7 +662,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
   }
 
   device::mojom::blink::XRReferenceSpaceType requested_type =
-      XRReferenceSpace::StringToReferenceSpaceType(type);
+      XRReferenceSpace::V8EnumToReferenceSpaceType(type.AsEnum());
 
   if (sensorless_session_ &&
       requested_type != device::mojom::blink::XRReferenceSpaceType::kViewer) {
@@ -686,7 +686,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
   }
 
   if (!IsFeatureEnabled(type_as_feature.value())) {
-    DVLOG(2) << __func__ << ": feature not enabled, type=" << type;
+    DVLOG(2) << __func__ << ": feature not enabled, type=" << type.AsCStr();
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kReferenceSpaceNotSupported);
     return EmptyPromise();
