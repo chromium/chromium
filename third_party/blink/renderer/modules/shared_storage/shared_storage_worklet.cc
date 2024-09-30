@@ -93,12 +93,6 @@ ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
     const String& module_url,
     const WorkletOptions* options,
     ExceptionState& exception_state) {
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return EmptyPromise();
-  }
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -116,6 +110,12 @@ void SharedStorageWorklet::AddModuleHelper(
     ExceptionState& exception_state,
     bool resolve_to_worklet,
     SharedStorageDataOrigin data_origin_type) {
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return;
+  }
+
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
