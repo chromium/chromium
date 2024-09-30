@@ -62,6 +62,7 @@ class PLATFORM_EXPORT ExceptionState {
   // Sets the function to create a DOMException. Must be called only once.
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
+  // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
   explicit ExceptionState(v8::Isolate* isolate)
       : context_(v8::ExceptionContext::kUnknown, nullptr, String()),
         isolate_(isolate) {}
@@ -161,31 +162,30 @@ class PLATFORM_EXPORT ExceptionState {
 
   const String& Message() const { return message_; }
 
-  virtual v8::Local<v8::Value> GetException() {
-    DCHECK(!exception_.IsEmpty());
-    return exception_.Get(isolate_);
+  v8::Local<v8::Value> GetException() {
+    return isolate_ ? exception_.Get(isolate_) : v8::Local<v8::Value>();
   }
 
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const { return context_; }
 
- protected:
-  // Methods for use by subclasses.
-  void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
+  ExceptionState& ReturnThis() { return *this; }
 
-  // Methods to be overridden by subclasses. These are not called directly by
-  // users of ExceptionState, but instead indirected via the non-virtual methods
-  // above in order to reduce binary size.
-  virtual void DoThrowDOMException(DOMExceptionCode, const String& message);
-  virtual void DoThrowSecurityError(
-      const String& sanitized_message,
-      const String& unsanitized_message = String());
-  virtual void DoThrowRangeError(const String& message);
-  virtual void DoThrowTypeError(const String& message);
-  virtual void DoThrowWasmCompileError(const String& message);
-  virtual void DoRethrowV8Exception(v8::Local<v8::Value>);
+ protected:
+  // Delegated constructor for NonThrowableExceptionState
+  enum ForNonthrowable { kNonthrowable };
+  ExceptionState(const char* file, int line, ForNonthrowable)
+      : context_(v8::ExceptionContext::kUnknown, nullptr, String()),
+        isolate_(nullptr) {
+#if DCHECK_IS_ON()
+    file_ = file;
+    line_ = line;
+    assert_no_exceptions_ = true;
+#endif
+  }
 
  private:
+  void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
   void PropagateException();
 
   // Since DOMException is defined in core/, we need a dependency injection in
@@ -202,6 +202,12 @@ class PLATFORM_EXPORT ExceptionState {
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
   bool thrown_via_v8_trycatch_ = false;
+
+#if DCHECK_IS_ON()
+  const char* file_ = "";
+  int line_ = 0;
+  bool assert_no_exceptions_ = false;
+#endif
 };
 
 // Syntactic sugar for creating an ExceptionState that will throw as soon as
@@ -225,25 +231,16 @@ class PassThroughException {
 // Should be used if an exception must not be thrown.
 class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
  public:
-  NonThrowableExceptionState();
-  NonThrowableExceptionState(const char*, int);
+  NonThrowableExceptionState(const char* file = "", int line = 0)
+      : ExceptionState(file, line, kNonthrowable) {}
+};
 
-  ExceptionState& ReturnThis() { return *this; }
-
- protected:
-  void DoThrowDOMException(DOMExceptionCode, const String& message) override;
-  void DoThrowTypeError(const String& message) override;
-  void DoThrowSecurityError(const String& sanitized_message,
-                            const String& unsanitized_message) override;
-  void DoThrowRangeError(const String& message) override;
-  void DoThrowWasmCompileError(const String& message) override;
-  void DoRethrowV8Exception(v8::Local<v8::Value>) override;
-
- private:
-  void ComplainAbout(const char* exception);
-
-  const char* file_;
-  const int line_;
+// DummyExceptionStateForTesting ignores all thrown exceptions. Syntactic sugar
+// for ExceptionState(nullptr)
+class PLATFORM_EXPORT DummyExceptionStateForTesting final
+    : public ExceptionState {
+ public:
+  DummyExceptionStateForTesting() : ExceptionState(nullptr) {}
 };
 
 class PLATFORM_EXPORT TryRethrowScope {
@@ -267,6 +264,13 @@ class PLATFORM_EXPORT TryRethrowScope {
   ExceptionState& exception_state_;
 };
 
+// Syntax sugar for ExceptionState(nullptr)
+// This can be used as a default value of an ExceptionState parameter like this:
+//
+//     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION);
+#define IGNORE_EXCEPTION (::blink::ExceptionState(nullptr).ReturnThis())
+#define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
+
 // Syntax sugar for NonThrowableExceptionState.
 // This can be used as a default value of an ExceptionState parameter like this:
 //
@@ -275,52 +279,8 @@ class PLATFORM_EXPORT TryRethrowScope {
 #define ASSERT_NO_EXCEPTION \
   (::blink::NonThrowableExceptionState(__FILE__, __LINE__).ReturnThis())
 #else
-#define ASSERT_NO_EXCEPTION \
-  (::blink::DummyExceptionStateForTesting().ReturnThis())
+#define ASSERT_NO_EXCEPTION IGNORE_EXCEPTION
 #endif
-
-// DummyExceptionStateForTesting ignores all thrown exceptions.
-// TODO(japhet/caseq): Rename this. It has some legitimate non-test usage.
-class PLATFORM_EXPORT DummyExceptionStateForTesting final
-    : public ExceptionState {
- public:
-  DummyExceptionStateForTesting()
-      : ExceptionState(nullptr,
-                       v8::ExceptionContext::kUnknown,
-                       nullptr,
-                       nullptr) {}
-
-  ExceptionState& ReturnThis() { return *this; }
-  v8::Local<v8::Value> GetException() override {
-    return v8::Local<v8::Value>();
-  }
-
- protected:
-  void DoThrowDOMException(DOMExceptionCode, const String& message) override;
-  void DoThrowTypeError(const String& message) override;
-  void DoThrowSecurityError(const String& sanitized_message,
-                            const String& unsanitized_message) override;
-  void DoThrowRangeError(const String& message) override;
-  void DoThrowWasmCompileError(const String& message) override;
-  void DoRethrowV8Exception(v8::Local<v8::Value>) override;
-
- private:
-  void DoThrowInternal(ESErrorType, const String& message);
-  void DoThrowInternal(DOMExceptionCode, const String& message);
-  void DoThrowInternal(ExceptionCode, const String& message);
-};
-
-// Syntax sugar for DummyExceptionStateForTesting.
-// This can be used as a default value of an ExceptionState parameter like this:
-//
-//     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION_FOR_TESTING);
-//
-// This is not strictly for testing - there are a few legitimate use cases for
-// ignore exceptions in delegated operations. But it should never be the default
-// to ignore exceptions.
-#define IGNORE_EXCEPTION (::blink::DummyExceptionStateForTesting().ReturnThis())
-#define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_STATE_H_
