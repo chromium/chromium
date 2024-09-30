@@ -103,7 +103,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gpu_switching_manager.h"
 #include "ui/native_theme/native_theme_features.h"
 #include "url/url_constants.h"
 
@@ -348,7 +347,6 @@ RenderViewHostImpl::RenderViewHostImpl(
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
 
   GetProcess()->AddObserver(this);
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 
   // New views may be created during RenderProcessHost::ProcessDied(), within a
   // brief window where the internal ChannelProxy is null. This ensures that the
@@ -360,9 +358,6 @@ RenderViewHostImpl::RenderViewHostImpl(
 
   if (!is_active())
     GetWidget()->UpdatePriority();
-
-  input_device_change_observer_ =
-      std::make_unique<InputDeviceChangeObserver>(this);
 
   bool initially_hidden = frame_tree_->delegate()->IsHidden();
   page_lifecycle_state_manager_ = std::make_unique<PageLifecycleStateManager>(
@@ -382,8 +377,6 @@ RenderViewHostImpl::~RenderViewHostImpl() {
 
   // Destroy the RenderWidgetHost.
   GetWidget()->ShutdownAndDestroyWidget(false);
-
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
 
   // Detach the routing ID as the object is going away.
   GetAgentSchedulingGroup().RemoveRoute(GetRoutingID());
@@ -918,10 +911,6 @@ void RenderViewHostImpl::SendRendererPreferencesToRenderer(
   }
 }
 
-void RenderViewHostImpl::OnHardwareConfigurationChanged() {
-  delegate_->RecomputeWebPreferencesSlow();
-}
-
 void RenderViewHostImpl::EnablePreferredSizeMode() {
   if (is_active()) {
     GetMainRenderFrameHost()
@@ -933,10 +922,6 @@ void RenderViewHostImpl::EnablePreferredSizeMode() {
 void RenderViewHostImpl::PostRenderViewReady() {
   GetProcess()->PostTaskWhenProcessIsReady(base::BindOnce(
       &RenderViewHostImpl::RenderViewReady, weak_factory_.GetWeakPtr()));
-}
-
-void RenderViewHostImpl::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
-  OnHardwareConfigurationChanged();
 }
 
 void RenderViewHostImpl::RenderViewReady() {

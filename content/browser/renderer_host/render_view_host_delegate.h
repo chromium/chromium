@@ -105,14 +105,6 @@ class RenderViewHostDelegate {
   // associated with this RenderViewHost.
   virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
 
-  // Triggers a total recomputation of WebPreferences by resetting the current
-  // cached WebPreferences to null and triggering the recomputation path for
-  // both the "slow" attributes (hardware configurations/things that require
-  // slow platform/device polling) which normally won't get recomputed after
-  // the first time we set it and "fast" attributes (which always gets
-  // recomputed).
-  virtual void RecomputeWebPreferencesSlow() {}
-
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
 
