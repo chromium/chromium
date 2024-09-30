@@ -822,6 +822,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
+    units="ms" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Measures latency for the dialog that blocks Chrome usage to require the
+    Android OS default apps choice to be completed. [Android only]
+
+    This value represents the time between when we showed the dialog and when we
+    received a response from the backend. The backend has the most accurate
+    information about whether the dialog needs to be shown, but we may show the
+    dialog based on less accurate signals to avoid surprising the user after
+    some potentially long delay into the task they started with Chrome. Recorded
+    for each browser session eligible to show the dialog, on startup.
+
+    If the status is received before the dialog is shown then 0 is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Search.OsDefaultsChoice.DelayFromObservationToFirstStatus"
+    units="ms" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    This value represents the time between when Chrome starts waiting on the
+    backend for a response and when the UI actually gets a response from the
+    backend. [Android only]
+
+    Recorded for each browser session that attempted to show the dialog and got
+    a backend response, on startup.
+
+    If the status is received before Chrome starts observing then 0 is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Search.OsDefaultsChoice.DialogStatusChange"
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    State of the dialog that blocks Chrome usage to require the Android OS
+    default apps choice to be completed, logged every time it changes. [Android
+    only]
+
+    The dialog itself is triggered shortly after startup when it is determined
+    that blocking the user is needed. Some status changes might be happening
+    while the dialog is not visible, for example when the feature is in the
+    &quot;dark launch&quot; mode. The &quot;Unknown&quot; value is logged when
+    the dialog is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Search.OsDefaultsChoice.DialogStatusOnAppOpen"
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Logs the status of the choice dialog (if it's shown) when Chrome is brought
+    to the foreground. [Android only].
+  </summary>
+</histogram>
+
 <histogram name="Search.PartnershipSearchPerformed" enum="SearchEntryPoint"
     expires_after="M85">
   <owner>yusufo@chromium.org</owner>

@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
@@ -60,6 +61,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                     if (model != mModel) return;
 
                     mMediator.onDialogAdded();
+                    RecordUserAction.record("OsDefaultsChoiceDialogShown");
                 }
 
                 @Override
@@ -69,6 +71,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                     // TODO(b/365100489): Look into moving this (and maybe action button click?) to
                     // the `ModalDialogProperties.CONTROLLER` instead.
                     mMediator.onDialogDismissed();
+                    RecordUserAction.record("OsDefaultsChoiceDialogClosed");
                 }
             };
 
@@ -165,6 +168,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             case DialogType.CHOICE_CONFIRM -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
                 mEmptyBackPressedCallback.remove();
+                RecordUserAction.record("OsDefaultsChoiceDialogUnblocked");
             }
             case DialogType.UNKNOWN -> throw new IllegalStateException();
         }
