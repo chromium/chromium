@@ -537,7 +537,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   gfx::HDRMetadata hdr_metadata;
   if (descriptor->hasToneMapping()) {
     if (descriptor->toneMapping()->hasMode()) {
-      switch (descriptor->toneMapping()->mode().AsEnum()) {
+      tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
+      switch (tone_mapping_mode_) {
         case V8GPUCanvasToneMappingMode::Enum::kStandard:
           break;
         case V8GPUCanvasToneMappingMode::Enum::kExtended:
@@ -610,6 +611,35 @@ void GPUCanvasContext::unconfigure() {
   alpha_clearer_ = nullptr;
   device_ = nullptr;
   configured_ = false;
+}
+
+GPUCanvasConfiguration* GPUCanvasContext::getConfiguration() {
+  if (!configured_) {
+    return nullptr;
+  }
+
+  GPUCanvasConfiguration* configuration = GPUCanvasConfiguration::Create();
+  configuration->setDevice(device_);
+  configuration->setFormat(FromDawnEnum(texture_descriptor_.format));
+  configuration->setUsage(static_cast<uint32_t>(texture_descriptor_.usage));
+
+  Vector<V8GPUTextureFormat> view_formats;
+  for (size_t i = 0; i < texture_descriptor_.viewFormatCount; ++i) {
+    std::optional<V8GPUTextureFormat> format =
+        V8GPUTextureFormat::Create(FromDawnEnum(view_formats_[i]));
+    CHECK(format.has_value());
+    view_formats.push_back(format.value());
+  }
+  configuration->setViewFormats(view_formats);
+
+  configuration->setColorSpace(PredefinedColorSpaceToV8(color_space_));
+  configuration->setAlphaMode(alpha_mode_);
+
+  GPUCanvasToneMapping* tone_mapping = GPUCanvasToneMapping::Create();
+  tone_mapping->setMode(tone_mapping_mode_);
+  configuration->setToneMapping(tone_mapping);
+
+  return configuration;
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
