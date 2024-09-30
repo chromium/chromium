@@ -35,7 +35,7 @@ export function tearDown() {
  * Returns the <xf-nudge> component in the DOM.
  */
 function getNudge(): XfNudge {
-  return document.querySelector('xf-nudge')! as XfNudge;
+  return document.querySelector<XfNudge>('xf-nudge')!;
 }
 
 /**

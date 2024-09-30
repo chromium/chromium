@@ -26,7 +26,7 @@ export function setUp() {
  * Returns the <xf-splitter> element.
  */
 function getSplitterElement(): XfSplitter {
-  return document.querySelector('xf-splitter')! as XfSplitter;
+  return document.querySelector<XfSplitter>('xf-splitter')!;
 }
 
 /**
@@ -34,7 +34,7 @@ function getSplitterElement(): XfSplitter {
  */
 function getSplitterDivElement(): HTMLDivElement {
   const splitter = getSplitterElement();
-  return splitter.shadowRoot!.querySelector('#splitter')! as HTMLDivElement;
+  return splitter.shadowRoot!.querySelector<HTMLDivElement>('#splitter')!;
 }
 
 function simulateMouseDown(element: HTMLElement, position: number) {

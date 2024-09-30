@@ -34,24 +34,24 @@ function getDialog(): XfDlpRestrictionDetailsDialog {
 
 /** Returns the block details span element of the dialog. */
 function getBlockDetails(): HTMLSpanElement {
-  const details = getDialog().shadowRoot!.querySelector('#block-details')! as
-      HTMLSpanElement;
+  const details =
+      getDialog().shadowRoot!.querySelector<HTMLSpanElement>('#block-details')!;
   assertNotEquals(details, null);
   return details;
 }
 
 /** Returns the warn details span element of the dialog. */
 function getWarnDetails(): HTMLSpanElement {
-  const details = getDialog().shadowRoot!.querySelector('#warn-details')! as
-      HTMLSpanElement;
+  const details =
+      getDialog().shadowRoot!.querySelector<HTMLSpanElement>('#warn-details')!;
   assertNotEquals(details, null);
   return details;
 }
 
 /** Returns the report details span element of the dialog. */
 function getReportDetails(): HTMLSpanElement {
-  const details = getDialog().shadowRoot!.querySelector('#report-details')! as
-      HTMLSpanElement;
+  const details = getDialog().shadowRoot!.querySelector<HTMLSpanElement>(
+      '#report-details')!;
   assertNotEquals(details, null);
   return details;
 }
@@ -68,8 +68,8 @@ function getDestinationsLabelForLevel(
   assertFalse(
       getDialog().shadowRoot!.querySelector(`#${level}-li-${
           destinations}`)!.hasAttribute('hidden'));
-  return getDialog().shadowRoot!.querySelector(`#${level}-${destinations}`)! as
-      HTMLLabelElement;
+  return getDialog().shadowRoot!.querySelector<HTMLLabelElement>(
+      `#${level}-${destinations}`)!;
 }
 
 /**
@@ -123,7 +123,7 @@ function getReportComponents() {
 /** Closes the dialog. */
 function close() {
   const crDialog =
-      getDialog().shadowRoot!.querySelector('#dialog') as CrDialogElement;
+      getDialog().shadowRoot!.querySelector<CrDialogElement>('#dialog')!;
   crDialog.close();
 }
 

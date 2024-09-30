@@ -208,7 +208,7 @@ export class XfBreadcrumb extends XfBase {
   private onTabkeyClose_(event: Event) {
     const detail = (event as CustomEvent).detail;
     if (!detail.shiftKey) {
-      (this.renderRoot.querySelector(':focus ~ button') as HTMLElement).focus();
+      (this.renderRoot.querySelector<HTMLElement>(':focus ~ button')!).focus();
     } else {  // button#first is left of the button[elider].
       this.$firstButton_.focus();
     }

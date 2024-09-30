@@ -273,10 +273,10 @@ export class SearchContainer extends EventTarget {
 
     // Text input element where the user enters the query.
     this.inputElement_ =
-        this.searchBox_.querySelector('cr-input') as CrInputElement;
+        this.searchBox_.querySelector<CrInputElement>('cr-input')!;
 
     // The button that allows the user to clear the query.
-    this.clearButton_ = this.searchBox_.querySelector('.clear') as HTMLElement;
+    this.clearButton_ = this.searchBox_.querySelector<HTMLElement>('.clear')!;
     // Hide clear button when created.
     this.updateClearButton_('');
 

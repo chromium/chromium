@@ -141,7 +141,7 @@ export class FileGrid extends Grid {
     if (!target) {
       return;
     }
-    const labelElement = target.querySelector('.filename-label') as HTMLElement;
+    const labelElement = target.querySelector<HTMLElement>('.filename-label')!;
     if (!labelElement) {
       return;
     }
