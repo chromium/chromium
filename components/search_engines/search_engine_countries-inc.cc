@@ -259,7 +259,7 @@ constexpr EngineAndTier engines_CY[] = {
 // Czech Republic
 constexpr EngineAndTier engines_CZ[] = {
     {SearchEngineTier::kTopEngines, &google},
-    {SearchEngineTier::kTopEngines, &seznam_cz},
+    {SearchEngineTier::kTopEngines, &seznam},
     {SearchEngineTier::kTopEngines, &bing},
     {SearchEngineTier::kTopEngines, &duckduckgo},
     {SearchEngineTier::kTopEngines, &ecosia},
@@ -967,7 +967,7 @@ constexpr EngineAndTier engines_SK[] = {
     {SearchEngineTier::kTopEngines, &google},
     {SearchEngineTier::kTopEngines, &duckduckgo},
     {SearchEngineTier::kTopEngines, &bing},
-    {SearchEngineTier::kTopEngines, &seznam_sk},
+    {SearchEngineTier::kTopEngines, &seznam},
     {SearchEngineTier::kTopEngines, &yahoo_emea},
     {SearchEngineTier::kRemainingEngines, &ecosia},
     {SearchEngineTier::kRemainingEngines, &qwant},

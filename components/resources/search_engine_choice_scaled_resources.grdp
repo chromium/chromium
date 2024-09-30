@@ -41,8 +41,7 @@
   <structure type="chrome_scaled_image" name="IDR_PRIVACYWALL_ORG_PNG" file="search_engine_choice/privacywall_org.png" />
   <structure type="chrome_scaled_image" name="IDR_QWANT_COM_PNG" file="search_engine_choice/qwant_com.png" />
   <structure type="chrome_scaled_image" name="IDR_SEARCH_BRAVE_COM_PNG" file="search_engine_choice/search_brave_com.png" />
-  <structure type="chrome_scaled_image" name="IDR_SEZNAM_CZ_PNG" file="search_engine_choice/seznam_cz.png" />
-  <structure type="chrome_scaled_image" name="IDR_SEZNAM_SK_PNG" file="search_engine_choice/seznam_cz.png" />
+  <structure type="chrome_scaled_image" name="IDR_SEZNAM_PNG" file="search_engine_choice/seznam_cz.png" />
   <structure type="chrome_scaled_image" name="IDR_SE_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_SG_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_TH_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />

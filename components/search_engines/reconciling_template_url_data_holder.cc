@@ -24,7 +24,19 @@ std::pair<std::u16string, bool>
 ReconcilingTemplateURLDataHolder::GetOrComputeKeyword() const {
   std::u16string keyword = search_engine_->keyword();
 
-  if (!search_engine_->created_from_play_api || keyword != u"yahoo.com") {
+  if (!search_engine_->created_from_play_api) {
+    return {std::move(keyword), false};
+  }
+
+  // Old Play API 'seznam.cz' and 'seznam.sk' have been consolidated to
+  // 'seznam'.
+  if (keyword.starts_with(u"seznam.")) {
+    return {u"seznam", true};
+  }
+
+  // Old Play API 'yahoo.com' entries are reconciled with country-specific
+  // definitions.
+  if (keyword != u"yahoo.com") {
     return {std::move(keyword), false};
   }
 

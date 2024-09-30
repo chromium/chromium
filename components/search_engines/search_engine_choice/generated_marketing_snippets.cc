@@ -48,10 +48,7 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::qwant.keyword) {
     return IDS_QWANT_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_cz.keyword) {
-    return IDS_SEZNAM_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_sk.keyword) {
+  if (engine_keyword == TemplateURLPrepopulateData::seznam.keyword) {
     return IDS_SEZNAM_SEARCH_DESCRIPTION;
   }
   if (engine_keyword == TemplateURLPrepopulateData::yahoo.keyword) {

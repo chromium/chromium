@@ -312,27 +312,9 @@
       ]
     },
 
-    "seznam_cz": {
+    "seznam": {
       "name": "Seznam.cz",
-      "keyword": "seznam.cz",
-      "favicon_url": "https://search.seznam.cz/favicon.ico",
-      "search_url": "https://search.seznam.cz/?q={searchTerms}",
-      "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
-      "new_tab_url": "https://search.seznam.cz/newtab",
-      "type": "SEARCH_ENGINE_SEZNAM",
-      "id": 25,
-      "regulatory_extensions": [
-        {
-          "variant": "RegulatoryExtensionType::kAndroidEEA",
-          "search_params": "sourceid=srch_ga_cs"
-        }
-      ]
-    },
-
-    // TODO(b/335397380): Remove this entry once b/322513019 is fixed.
-    "seznam_sk": {
-      "name": "Seznam.cz",
-      "keyword": "seznam.sk",
+      "keyword": "seznam",
       "favicon_url": "https://search.seznam.cz/favicon.ico",
       "search_url": "https://search.seznam.cz/?q={searchTerms}",
       "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",

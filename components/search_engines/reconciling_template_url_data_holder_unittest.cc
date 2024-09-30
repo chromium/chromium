@@ -64,7 +64,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
 }
 
 TEST_F(ReconcilingTemplateURLDataHolderTest,
-       GetOrComputeKeyword_Computed_EligibleFromPlay) {
+       GetOrComputeKeyword_Computed_EligibleFromPlay_Yahoo) {
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
   supplied_engine->created_from_play_api = true;
   supplied_engine->SetURL("https://de.yahoo.com");
@@ -74,6 +74,22 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   auto [keyword, is_generated] = holder_.GetOrComputeKeyword();
   ASSERT_EQ(keyword, u"de.yahoo.com");
   ASSERT_TRUE(is_generated);
+}
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       GetOrComputeKeyword_Computed_EligibleFromPlay_Seznam) {
+  const char* const variants[] = {"seznam.cz", "seznam.sk"};
+
+  for (const auto* variant : variants) {
+    auto supplied_engine = GenerateDummyTemplateURLData(variant);
+    supplied_engine->created_from_play_api = true;
+    holder_.SetSearchEngineBypassingReconciliationForTesting(
+        std::move(supplied_engine));
+
+    auto [keyword, is_generated] = holder_.GetOrComputeKeyword();
+    ASSERT_EQ(keyword, u"seznam");
+    ASSERT_TRUE(is_generated);
+  }
 }
 
 TEST_F(ReconcilingTemplateURLDataHolderTest,
