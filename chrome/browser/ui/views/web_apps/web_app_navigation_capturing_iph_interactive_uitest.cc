@@ -227,14 +227,8 @@ class WebAppNavigationCapturingIphUiTest
   web_app::OsIntegrationTestOverrideBlockingRegistration override_registration_;
 };
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownOnLinkLeftClick DISABLED_IPHShownOnLinkLeftClick
-#else
-#define MAYBE_IPHShownOnLinkLeftClick IPHShownOnLinkLeftClick
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_IPHShownOnLinkLeftClick) {
+                       IPHShownOnLinkLeftClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(OpenStartPage(),
                   TriggerAppLaunch(test::ClickMethod::kLeftClick,
@@ -243,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
-// Flaky on Mac http://crbug.com/366580804
+// Middle click does not work (consistently?) on Mac; see
+// http://crbug.com/366580804
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IPHShownOnLinkMiddleClick DISABLED_IPHShownOnLinkMiddleClick
 #else
@@ -259,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
-// Flaky on Mac http://crbug.com/366580804
+// Shift-click click does not work (consistently?) on Mac; see
+// http://crbug.com/366580804
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IPHShownOnLinkShiftClick DISABLED_IPHShownOnLinkShiftClick
 #else
@@ -276,14 +272,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownForFocusExisting DISABLED_IPHShownForFocusExisting
-#else
-#define MAYBE_IPHShownForFocusExisting IPHShownForFocusExisting
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_IPHShownForFocusExisting) {
+                       IPHShownForFocusExisting) {
   const webapps::AppId app_id = InstallTestWebApp(
       GetDestinationUrl(),
       blink::Manifest::LaunchHandler(
@@ -299,14 +289,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownOnAuxContext DISABLED_IPHShownOnAuxContext
-#else
-#define MAYBE_IPHShownOnAuxContext IPHShownOnAuxContext
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_IPHShownOnAuxContext) {
+                       IPHShownOnAuxContext) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
 
@@ -318,15 +302,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, false)));
 }
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClosingAppWindowMeasuresDismiss \
-  DISABLED_ClosingAppWindowMeasuresDismiss
-#else
-#define MAYBE_ClosingAppWindowMeasuresDismiss ClosingAppWindowMeasuresDismiss
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_ClosingAppWindowMeasuresDismiss) {
+                       ClosingAppWindowMeasuresDismiss) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
 
   RunTestSequence(
@@ -342,16 +319,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
       CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1));
 }
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AcceptingBubbleMeasuresUserAccept \
-  DISABLED_AcceptingBubbleMeasuresUserAccept
-#else
-#define MAYBE_AcceptingBubbleMeasuresUserAccept \
-  AcceptingBubbleMeasuresUserAccept
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_AcceptingBubbleMeasuresUserAccept) {
+                       AcceptingBubbleMeasuresUserAccept) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
@@ -366,15 +335,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
           CheckActionCount("LinkCapturingIPHAppBubbleAccepted", 1))));
 }
 
-// Flaky on Mac http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BubbleDismissMeasuresUserDismiss \
-  DISABLED_BubbleDismissMeasuresUserDismiss
-#else
-#define MAYBE_BubbleDismissMeasuresUserDismiss BubbleDismissMeasuresUserDismiss
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_BubbleDismissMeasuresUserDismiss) {
+                       BubbleDismissMeasuresUserDismiss) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
