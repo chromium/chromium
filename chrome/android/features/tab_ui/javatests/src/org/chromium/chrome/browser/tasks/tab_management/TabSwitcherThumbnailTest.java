@@ -57,7 +57,7 @@ public class TabSwitcherThumbnailTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailFetcher);
+        TabGridViewBinder.setThumbnailFetcherForTesting(mNullThumbnailFetcher);
     }
 
     @Test

@@ -249,7 +249,7 @@ class TabListViewBinder {
 
             Context context = view.getContext();
             Resources res = view.getResources();
-            int level = getCheckmarkLevel(res, isSelected);
+            int level = TabCardViewBinderUtils.getCheckmarkLevel(res, isSelected);
             ColorStateList backgroundColorStateList =
                     getBackgroundColorStateList(context, isSelected, isIncognito);
 
@@ -313,12 +313,6 @@ class TabListViewBinder {
         } else {
             colorIconView.setVisibility(View.GONE);
         }
-    }
-
-    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
-        return isSelected
-                ? res.getInteger(R.integer.list_item_level_selected)
-                : res.getInteger(R.integer.list_item_level_default);
     }
 
     private static ColorStateList getCheckedDrawableColorStateList(

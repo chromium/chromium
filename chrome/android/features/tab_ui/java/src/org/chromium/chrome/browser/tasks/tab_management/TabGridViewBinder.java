@@ -474,7 +474,9 @@ class TabGridViewBinder {
 
         Context context = rootView.getContext();
         Resources res = rootView.getResources();
-        actionButton.getBackground().setLevel(getCheckmarkLevel(res, isSelected));
+        actionButton
+                .getBackground()
+                .setLevel(TabCardViewBinderUtils.getCheckmarkLevel(res, isSelected));
         DrawableCompat.setTintList(
                 actionButton.getBackground().mutate(),
                 TabUiThemeProvider.getToggleActionButtonBackgroundTintList(
@@ -509,13 +511,7 @@ class TabGridViewBinder {
         labelView.setData(tabCardLabelData);
     }
 
-    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
-        return isSelected
-                ? res.getInteger(R.integer.list_item_level_selected)
-                : res.getInteger(R.integer.list_item_level_default);
-    }
-
-    static void setThumbnailFeatureForTesting(ThumbnailFetcher fetcher) {
+    static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
         ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }
