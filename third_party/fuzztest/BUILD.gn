@@ -151,7 +151,6 @@ if (use_centipede) {
     deps = [
       ":fuzztest_internal",
       "//third_party/abseil-cpp:absl_full",
-      "//third_party/boringssl",
     ]
     sources = [
       "src/centipede/analyze_corpora.cc",
@@ -330,12 +329,11 @@ source_set("common") {
     "src/common/remote_file.cc",
     "src/common/remote_file.h",
     "src/common/remote_file_oss.cc",
+    "src/common/sha1.cc",
+    "src/common/sha1.h",
   ]
 
-  deps = [
-    "//third_party/abseil-cpp:absl_full",
-    "//third_party/boringssl",
-  ]
+  deps = [ "//third_party/abseil-cpp:absl_full" ]
   public_configs = [ ":fuzztest_internal_config" ]
   configs -= fuzztest_remove_configs
   configs += fuzztest_add_configs
