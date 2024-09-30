@@ -52,8 +52,7 @@
 
 namespace {
 
-// The edge length of the favicon, answer icon, and entity backgrounds if the
-// kUniformRowHeight flag is enabled.
+// The edge length of the favicon, answer icon, and entity backgrounds.
 static constexpr int kUniformRowHeightIconSize = 28;
 
 // The gap between the left|right edge of the IPH background to the left|right
@@ -71,9 +70,7 @@ int GetAnswerImageSize() {
 
 // The edge length of the entity suggestions images.
 int GetEntityImageSize() {
-  return OmniboxFieldTrial::IsUniformRowHeightEnabled()
-             ? kUniformRowHeightIconSize
-             : 32;
+  return kUniformRowHeightIconSize;
 }
 
 // The radius of the rounded square backgrounds of icons, answers, and entities.
@@ -180,17 +177,15 @@ END_METADATA
 // OmniboxMatchCellView:
 
 // static
-void OmniboxMatchCellView::ComputeMatchMaxWidths(
-    int contents_width,
-    int separator_width,
-    int description_width,
-    int iph_link_width,
-    int available_width,
-    bool description_on_separate_line,
-    bool allow_shrinking_contents,
-    int* contents_max_width,
-    int* description_max_width,
-    int* iph_link_max_width) {
+void OmniboxMatchCellView::ComputeMatchMaxWidths(int contents_width,
+                                                 int separator_width,
+                                                 int description_width,
+                                                 int iph_link_width,
+                                                 int available_width,
+                                                 bool allow_shrinking_contents,
+                                                 int* contents_max_width,
+                                                 int* description_max_width,
+                                                 int* iph_link_max_width) {
   available_width = std::max(available_width, 0);
 
   // The IPH link is top priority.
@@ -200,9 +195,8 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(
   *contents_max_width = std::min(contents_width, available_width);
   *description_max_width = std::min(description_width, available_width);
 
-  // If the description is empty, or the contents and description are on
-  // separate lines, each can get the full available width.
-  if (!description_width || description_on_separate_line)
+  // If the description is empty, contents can get the full available width.
+  if (!description_width)
     return;
 
   // If we want to display the description, we need to reserve enough space for
@@ -274,13 +268,16 @@ bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
 
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
-  is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
-  is_iph_type_ = match.IsIPHSuggestion();
-  has_image_ = ShouldDisplayImage(match);
-  // Decide layout style once before Layout, while match data is available.
-  layout_style_ = has_image_ && !OmniboxFieldTrial::IsUniformRowHeightEnabled()
-                      ? LayoutStyle::TWO_LINE_SUGGESTION
-                      : LayoutStyle::ONE_LINE_SUGGESTION;
+  if (ShouldDisplayImage(match)) {
+    CHECK(AutocompleteMatch::IsSearchType(match.type));
+    layout_style_ = LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE;
+  } else if (AutocompleteMatch::IsSearchType(match.type)) {
+    layout_style_ = LayoutStyle::SEARCH_SUGGESTION;
+  } else if (match.IsIPHSuggestion()) {
+    layout_style_ = LayoutStyle::IPH_SUGGESTION;
+  } else {
+    layout_style_ = LayoutStyle::DEFAULT_NON_SEARCH_SUGGESTION;
+  }
 
   tail_suggest_ellipse_view_->SetVisible(
       !match.tail_suggest_common_prefix.empty());
@@ -290,18 +287,18 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : kColorOmniboxText);
 
   // Set up the separator.
-  separator_view_->SetSize(layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION ||
-                                   match.description.empty()
+  separator_view_->SetSize(match.description.empty()
                                ? gfx::Size()
                                : separator_view_->GetPreferredSize());
 
   // Set up the IPH link following the main IPH text.
   iph_link_view_->SetText(match.iph_link_text);
-  iph_link_view_->SetVisible(is_iph_type_);
+  iph_link_view_->SetVisible(layout_style_ == LayoutStyle::IPH_SUGGESTION);
 
   // Set up the small icon.
-  icon_view_->SetSize(has_image_ ? gfx::Size()
-                                 : icon_view_->GetPreferredSize());
+  icon_view_->SetSize(layout_style_ == LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE
+                          ? gfx::Size()
+                          : icon_view_->GetPreferredSize());
 
   // Used for non-weather answer images (e.g. calc answers).
   const auto apply_vector_icon = [=, this](const gfx::VectorIcon& vector_icon) {
@@ -334,10 +331,8 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
-    if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
-      separator_view_->SetSize(gfx::Size());
-    }
-  } else if (!has_image_) {
+    separator_view_->SetSize(gfx::Size());
+  } else if (layout_style_ != LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE) {
     answer_image_view_->SetImage(ui::ImageModel());
     answer_image_view_->SetSize(gfx::Size());
   } else {
@@ -456,7 +451,9 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
   // IPH text bounds should be centered within the IPH background when there's
   // no IPH icon. So make their `right_margin` equal to their text's x position.
   const int right_margin =
-      is_iph_type_ ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent : 7;
+      layout_style_ == LayoutStyle::IPH_SUGGESTION
+          ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent
+          : 7;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, right_margin);
 }
@@ -464,7 +461,6 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
 void OmniboxMatchCellView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
-  const bool two_line = layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION;
   const gfx::Rect child_area = GetContentsBounds();
   int x = child_area.x();
   int y = child_area.y();
@@ -473,66 +469,53 @@ void OmniboxMatchCellView::Layout(PassKey) {
 
   int image_x = GetImageIndent();
   views::ImageView* const image_view =
-      has_image_ ? answer_image_view_.get() : icon_view_.get();
+      layout_style_ == LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE
+          ? answer_image_view_.get()
+          : icon_view_.get();
   image_view->SetBounds(image_x, y, kImageBoundsWidth, row_height);
 
   const int text_indent = GetTextIndent() + tail_suggest_common_prefix_width_;
   x += text_indent;
   const int text_width = child_area.width() - text_indent;
 
-  if (two_line) {
-    if (description_view_->GetText().empty()) {
-      // This vertically centers content in the rare case that no description is
-      // provided.
-      content_view_->SetBounds(x, y, text_width, row_height);
-      description_view_->SetSize(gfx::Size());
-    } else {
-      content_view_->SetBounds(x, y, text_width,
-                               content_view_->GetLineHeight());
-      description_view_->SetBounds(
-          x, content_view_->bounds().bottom(), text_width,
-          description_view_->GetHeightForWidth(text_width));
-    }
-  } else {
-    int content_width = content_view_->GetPreferredSize().width();
-    int description_width = description_view_->GetPreferredSize().width();
-    const gfx::Size separator_size = separator_view_->GetPreferredSize();
-    int iph_link_width = iph_link_view_->GetPreferredSize().width();
-    ComputeMatchMaxWidths(
-        content_width, separator_size.width(), description_width,
-        iph_link_width, /*available_width=*/text_width,
-        /*description_on_separate_line=*/false, !is_search_type_,
-        &content_width, &description_width, &iph_link_width);
-    if (tail_suggest_ellipse_view_->GetVisible()) {
-      const int tail_suggest_ellipse_width =
-          tail_suggest_ellipse_view_->GetPreferredSize().width();
-      tail_suggest_ellipse_view_->SetBounds(x - tail_suggest_ellipse_width, y,
-                                            tail_suggest_ellipse_width,
-                                            row_height);
-    }
-    content_view_->SetBounds(x, y, content_width, row_height);
-    x += content_view_->width();
-    if (description_width) {
-      separator_view_->SetSize(separator_size);
-      separator_view_->SetBounds(x, y, separator_view_->width(), row_height);
-      x += separator_view_->width();
-      description_view_->SetBounds(x, y, description_width, row_height);
-      x += description_view_->width();
-    } else {
-      separator_view_->SetSize(gfx::Size());
-      description_view_->SetSize(gfx::Size());
-    }
-    iph_link_view_->SetBounds(x, y, iph_link_width, row_height);
+  int content_width = content_view_->GetPreferredSize().width();
+  int description_width = description_view_->GetPreferredSize().width();
+  const gfx::Size separator_size = separator_view_->GetPreferredSize();
+  int iph_link_width = iph_link_view_->GetPreferredSize().width();
+  ComputeMatchMaxWidths(
+      content_width, separator_size.width(), description_width, iph_link_width,
+      /*available_width=*/text_width,
+      /*allow_shrinking_contents=*/
+      layout_style_ != LayoutStyle::SEARCH_SUGGESTION &&
+          layout_style_ != LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE,
+      &content_width, &description_width, &iph_link_width);
+  if (tail_suggest_ellipse_view_->GetVisible()) {
+    const int tail_suggest_ellipse_width =
+        tail_suggest_ellipse_view_->GetPreferredSize().width();
+    tail_suggest_ellipse_view_->SetBounds(x - tail_suggest_ellipse_width, y,
+                                          tail_suggest_ellipse_width,
+                                          row_height);
   }
+  content_view_->SetBounds(x, y, content_width, row_height);
+  x += content_view_->width();
+  if (description_width) {
+    separator_view_->SetSize(separator_size);
+    separator_view_->SetBounds(x, y, separator_view_->width(), row_height);
+    x += separator_view_->width();
+    description_view_->SetBounds(x, y, description_width, row_height);
+    x += description_view_->width();
+  } else {
+    separator_view_->SetSize(gfx::Size());
+    description_view_->SetSize(gfx::Size());
+  }
+  iph_link_view_->SetBounds(x, y, iph_link_width, row_height);
 }
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  int height = GetEntityImageSize() +
-               2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
-  if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
-    height += description_view_->GetHeightForWidth(width() - GetTextIndent());
-  if (is_iph_type_) {
+  const int kMargin = 6;
+  int height = GetEntityImageSize() + 2 * kMargin;
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     height += 4;
   }
 
@@ -556,14 +539,14 @@ int OmniboxMatchCellView::GetImageIndent() const {
   // This number is independent of other layout numbers; i.e., it's not meant to
   // align with any other UI; it's just arbitrarily chosen by UX. Hence, it's
   // not derived from other matches' `indent` below.
-  if (is_iph_type_)
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION)
     return 2;
 
   // The entity, answer, and icon images are horizontally centered within their
   // bounds. So their center-line will be at `image_x+kImageBoundsWidth/2`. This
   // means their left x coordinate will depend on their actual sizes. Their
-  // widths depend on the state of `kSquareSuggestIcons`, its params, and
-  // `kUniformRowHeight`. This code guarantees when cr23_layout is true:
+  // widths depend on the state of `kSquareSuggestIcons` & its params. This code
+  // guarantees when cr23_layout is true:
   // a) Entities' left x coordinate is 16.
   // b) Entities, answers, and icons continue to be center-aligned.
   // c) Regardless of the state of those other features and their widths.
@@ -585,8 +568,10 @@ int OmniboxMatchCellView::GetTextIndent() const {
   // layout numbers; i.e., it's not meant to align with other UI; it's just
   // arbitrarily chosen by UX. Hence, it's not derived from other matches'
   // `indent` below.
-  if (is_iph_type_ && icon_view_->GetPreferredSize() == gfx::Size{})
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION &&
+      icon_view_->GetPreferredSize() == gfx::Size{}) {
     return kIphTextIndent;
+  }
 
   // For normal matches, the gap between the left edge of this view and the
   // left edge of its favicon or answer image.
@@ -597,7 +582,7 @@ int OmniboxMatchCellView::GetTextIndent() const {
   // to have inner padding, so the gap between the left edge of this
   // `OmniboxMatchCellView` and the IPH icon/text is actually larger than
   // `indent`.
-  if (is_iph_type_)
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION)
     indent -= kIphOffset;
 
   return indent;

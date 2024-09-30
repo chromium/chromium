@@ -45,10 +45,6 @@ constexpr int kInherit = INT_MIN;
 // entire font.
 static constexpr int kVerticalPadding = 3;
 
-// Dictionary and translation default number of lines for the FormattedString
-// subhead.
-constexpr size_t kDefaultMaxNumLines = 3;
-
 struct TextStyle {
   OmniboxPart part;
 
@@ -230,13 +226,10 @@ void OmniboxTextView::SetTextWithStyling(
   for (const SuggestionAnswer::TextField& text_field : line.text_fields())
     AppendText(text_field, std::u16string());
   if (!line.text_fields().empty()) {
-    const int kMaxDisplayLines =
-        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 1 : 3;
     const SuggestionAnswer::TextField& first_field = line.text_fields().front();
     if (first_field.has_num_lines() && first_field.num_lines() > 1) {
       render_text_->SetMultiline(true);
-      render_text_->SetMaxLines(
-          std::min(kMaxDisplayLines, first_field.num_lines()));
+      render_text_->SetMaxLines(1);
     }
   }
 
@@ -273,10 +266,8 @@ void OmniboxTextView::SetMultilineText(
   render_text_ = CreateRenderText(u"");
   if (formatted_string.fragments_size() > 0 &&
       AnswerHasDefinedMaxLines(answer_type)) {
-    const size_t kMaxDisplayLines =
-        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 1 : 3;
     render_text_->SetMultiline(true);
-    render_text_->SetMaxLines(std::min(kMaxDisplayLines, kDefaultMaxNumLines));
+    render_text_->SetMaxLines(1);
   }
   AppendTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
 }

@@ -6753,11 +6753,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-uniform-suggestion-height",
-    "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-zero-suggest-in-memory-caching",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130

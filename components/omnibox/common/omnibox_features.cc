@@ -289,13 +289,6 @@ BASE_FEATURE(kSquareSuggestIcons,
              "OmniboxSquareIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, forces omnibox suggestion rows to be uniformly sized.
-// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
-//   launching the rest of CR23 in m117.
-BASE_FEATURE(kUniformRowHeight,
-             "OmniboxUniformRowHeight",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, shows the omnibox suggestions popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup,
              "WebUIOmniboxPopup",

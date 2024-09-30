@@ -633,15 +633,6 @@ const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconWeather(
     "OmniboxSquareSuggestIconWeather",
     true);
 
-bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
-}
-
-const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
-    &omnibox::kUniformRowHeight,
-    "OmniboxRichSuggestionVerticalMargin",
-    6);
-
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
 }

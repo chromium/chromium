@@ -1845,18 +1845,6 @@ const FeatureEntry::FeatureVariation
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxUniformRowHeight36[] = {
-    {"OmniboxRichSuggestionVerticalMargin", "4"}};
-const FeatureEntry::FeatureParam kOmniboxUniformRowHeight40[] = {
-    {"OmniboxRichSuggestionVerticalMargin", "6"}};
-
-const FeatureEntry::FeatureVariation kOmniboxSuggestionHeightVariations[] = {
-    {"36px omnibox suggestions", kOmniboxUniformRowHeight36,
-     std::size(kOmniboxUniformRowHeight36), nullptr},
-    {"40px omnibox suggestions", kOmniboxUniformRowHeight40,
-     std::size(kOmniboxUniformRowHeight40), nullptr},
-};
-
 const FeatureEntry::FeatureParam kOmniboxFontSize12[] = {
     {"OmniboxFontSizeNonTouchUI", "12"}};
 const FeatureEntry::FeatureParam kOmniboxFontSize13[] = {
@@ -6539,12 +6527,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSquareSuggestionIconVariations,
                                     "OmniboxBundledExperimentV1")},
 
-    {"omnibox-uniform-suggestion-height",
-     flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightName,
-     flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kUniformRowHeight,
-                                    kOmniboxSuggestionHeightVariations,
-                                    "Uniform Omnibox Suggest Heights")},
     {"omnibox-cr23-action-chips",
      flag_descriptions::kOmniboxCR23ActionChipsName,
      flag_descriptions::kOmniboxCR23ActionChipsDescription, kOsDesktop,

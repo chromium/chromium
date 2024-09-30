@@ -1606,9 +1606,6 @@ extern const char kOmniboxShortcutBoostDescription[];
 extern const char kOmniboxShortcutExpandingName[];
 extern const char kOmniboxShortcutExpandingDescription[];
 
-extern const char kOmniboxSimplifiedUiUniformRowHeightName[];
-extern const char kOmniboxSimplifiedUiUniformRowHeightDescription[];
-
 extern const char kOmniboxSimplifiedUiSquareSuggestIconName[];
 extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 

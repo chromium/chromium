@@ -317,16 +317,6 @@ extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
 // Gray rounded rect background for weather icons.
 extern const base::FeatureParam<bool> kSquareSuggestIconWeather;
 
-// Omnibox UI simplification - uniform row heights.
-// Returns true if the feature to enable uniform row height is enabled.
-bool IsUniformRowHeightEnabled();
-
-// Specifies the row height in pixels for omnibox suggestions.
-extern const base::FeatureParam<int> kSuggestionRowHeight;
-// Specifies the vertical margin to use in one-line rich entity and answer
-// suggestions.
-extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
-
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();

@@ -42,11 +42,6 @@ class OmniboxMatchCellView : public views::View {
   // Computes the maximum width, in pixels, that can be allocated for the two
   // parts of an autocomplete result, i.e. the contents and the description.
   //
-  // When |description_on_separate_line| is true, the caller will be displaying
-  // two separate lines of text, so both contents and description can take up
-  // the full available width. Otherwise, the contents and description are
-  // assumed to be on the same line, with a separator between them.
-  //
   // When |allow_shrinking_contents| is true, and the contents and description
   // are together on a line without enough space for both, the code tries to
   // divide the available space equally between the two, unless this would make
@@ -57,7 +52,6 @@ class OmniboxMatchCellView : public views::View {
                                     int description_width,
                                     int iph_link_width,
                                     int available_width,
-                                    bool description_on_separate_line,
                                     bool allow_shrinking_contents,
                                     int* contents_max_width,
                                     int* description_max_width,
@@ -76,8 +70,6 @@ class OmniboxMatchCellView : public views::View {
 
   // Determines if `match` should display an answer, calculator, or entity
   // image.
-  // If #omnibox-uniform-suggestion-height experiment flag is disabled, also
-  // determines whether `match` should be displayed on 1 or 2 lines.
   static bool ShouldDisplayImage(const AutocompleteMatch& match);
 
   void OnMatchUpdate(const OmniboxResultView* result_view,
@@ -105,8 +97,10 @@ class OmniboxMatchCellView : public views::View {
 
  private:
   enum class LayoutStyle {
-    ONE_LINE_SUGGESTION,
-    TWO_LINE_SUGGESTION,
+    DEFAULT_NON_SEARCH_SUGGESTION,
+    SEARCH_SUGGESTION,
+    SEARCH_SUGGESTION_WITH_IMAGE,
+    IPH_SUGGESTION,
   };
 
   // How far to indent the icon, entity, or answer image from the left side of
@@ -123,10 +117,7 @@ class OmniboxMatchCellView : public views::View {
 
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
-  bool is_iph_type_ = false;
-  bool is_search_type_ = false;
-  bool has_image_ = false;
-  LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
+  LayoutStyle layout_style_ = LayoutStyle::DEFAULT_NON_SEARCH_SUGGESTION;
 
   // Weak pointers for easy reference.
   // An icon representing the type or content.

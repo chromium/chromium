@@ -846,16 +846,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
             continue;
         }
         if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-          if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
-            // If calculator results are going to be displayed on 1 line,
-            // keep everything in the match contents
-            match_contents = l10n_util::GetStringFUTF16(
-                IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE, query,
-                suggestion);
-          } else {
-            annotation = has_equals_prefix ? suggestion : match_contents;
-            match_contents = query;
-          }
+          match_contents = l10n_util::GetStringFUTF16(
+              IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE, query,
+              suggestion);
         }
       }
 

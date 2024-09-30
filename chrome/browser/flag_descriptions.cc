@@ -2801,11 +2801,6 @@ const char kOmniboxShortcutBoostName[] = "Omnibox shortcut boosting";
 const char kOmniboxShortcutBoostDescription[] =
     "Promote shortcuts to be default when available.";
 
-const char kOmniboxSimplifiedUiUniformRowHeightName[] =
-    "Omnibox Suggestion Row Height";
-const char kOmniboxSimplifiedUiUniformRowHeightDescription[] =
-    "Changes the row height of omnibox suggetions.";
-
 const char kOmniboxSimplifiedUiSquareSuggestIconName[] =
     "Omnibox Square Suggest Icons";
 const char kOmniboxSimplifiedUiSquareSuggestIconDescription[] =
