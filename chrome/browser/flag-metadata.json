@@ -856,12 +856,12 @@
   {
     "name": "autofill-for-unclassified-fields-available",
     "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-granular-filling-available",
     "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
