@@ -85,6 +85,14 @@ class AccessCodeCastSinkService : public KeyedService,
   // expiration occurs.
   static constexpr base::TimeDelta kExpirationDelay = base::Milliseconds(450);
 
+  // Upon network changes, we remove all saved devices, and then we attempt to
+  // add all saved devices again. In the case where a device is connectable
+  // both before and after the network change, we must wait for the device to
+  // fully be removed from media_router, or else the attempt to add it back will
+  // not be successful. This buffer gives us enough time to ensure the device is
+  // removed before we try to add it back.
+  static constexpr base::TimeDelta kNetworkChangeBuffer = base::Seconds(4);
+
   // This function manually calculates the duration till expiration and
   // overrides any existing expiration timers if the duration is zero. This
   // function exists largely for edge case scenarios with instant expiration
@@ -302,6 +310,8 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;
+
+  void ResetExpirationTimersAndInitAllStoredDevices();
 
   void OnDurationPrefChange();
   void OnEnabledPrefChange();

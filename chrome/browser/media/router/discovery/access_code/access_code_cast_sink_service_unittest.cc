@@ -64,6 +64,10 @@ using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 static constexpr base::TimeDelta kRemoveRouteDelay =
     AccessCodeCastSinkService::kExpirationDelay * 2;
 
+static constexpr base::TimeDelta kNetworkChangeDelay =
+    AccessCodeCastSinkService::kExpirationDelay +
+    AccessCodeCastSinkService::kNetworkChangeBuffer;
+
 class AccessCodeCastSinkServiceTest : public testing::Test {
  public:
   AccessCodeCastSinkServiceTest()
@@ -548,6 +552,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
 
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
+
   // 3 expiration timers should be set still.
   EXPECT_EQ(3u, current_session_expiration_timers().size());
 
@@ -598,7 +604,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   // Connect to a new network with different sinks.
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-  task_environment_.FastForwardBy(kRemoveRouteDelay);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
   task_environment_.AdvanceClock(base::Seconds(75));
 
   // 3 expiration timers should be set still.
@@ -721,6 +727,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersNetworkChange) {
   }
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   task_environment_.AdvanceClock(base::Seconds(100));
 
@@ -812,7 +819,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
 
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-  task_environment_.FastForwardBy(kRemoveRouteDelay);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should NOT now be removed from the media router since it was not
   // expired.
@@ -859,6 +866,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should now be removed from the media router.
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),

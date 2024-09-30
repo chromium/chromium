@@ -1026,6 +1026,17 @@ void AccessCodeCastSinkService::LogError(const std::string& log_message,
 void AccessCodeCastSinkService::OnNetworksChanged(
     const std::string& network_id) {
   RemoveAndDisconnectExistingSinksOnNetwork();
+  // TODO: b/370067417 - Investigate if it is possible to remove this delay by
+  // refactoring this file and/or media_router
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccessCodeCastSinkService::
+                         ResetExpirationTimersAndInitAllStoredDevices,
+                     GetWeakPtr()),
+      kExpirationDelay + kNetworkChangeBuffer);
+}
+
+void AccessCodeCastSinkService::ResetExpirationTimersAndInitAllStoredDevices() {
   ResetExpirationTimers();
   InitAllStoredDevices();
 }
