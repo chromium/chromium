@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {FreeformTab, QUERY, Query} from './constants.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {SeaPenPaths} from './sea_pen_router_element.js';
+import {SeaPenSamplePromptId} from './sea_pen_untranslated_constants.js';
 import {isPersonalizationApp} from './sea_pen_utils.js';
 
 const WALLPAPER_FREEFORM = 999;
@@ -20,7 +21,8 @@ const enum HistogramName {
   SEA_PEN_SUGGESTION_CLICKED = `Ash.SeaPen.Freeform.Suggestion.Clicked`,
   SEA_PEN_SUGGESTION_SHUFFLE_CLICKED =
       `Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked`,
-  SEA_PEN_SAMPLE_PROMPT_CLICKED = `Ash.SeaPen.Freeform.SamplePrompt.Clicked`,
+  SEA_PEN_SAMPLE_PROMPT_CLICKED =
+      `Ash.SeaPen.Freeform.SamplePrompt.SampleClicked`,
   SEA_PEN_SAMPLE_PROMPT_SHUFFLE_CLICKED =
       `Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked`,
   SEA_PEN_FREEFORM_TAB_CLICKED = `Ash.SeaPen.Freeform.Tab.Clicked`,
@@ -122,9 +124,10 @@ export function logSuggestionShuffleClicked() {
       HistogramName.SEA_PEN_SUGGESTION_SHUFFLE_CLICKED, true);
 }
 
-export function logSamplePromptClicked() {
-  chrome.metricsPrivate.recordBoolean(
-      HistogramName.SEA_PEN_SAMPLE_PROMPT_CLICKED, true);
+export function logSamplePromptClicked(id: SeaPenSamplePromptId) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.SEA_PEN_SAMPLE_PROMPT_CLICKED, id,
+      SeaPenSamplePromptId.MAX_VALUE);
 }
 
 export function logSamplePromptShuffleClicked() {

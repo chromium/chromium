@@ -8134,8 +8134,8 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="SeaPenApiType"/>
 </histogram>
 
-<histogram name="Ash.SeaPen.Freeform.SamplePrompt.Clicked"
-    enum="BooleanClicked" expires_after="2025-07-31">
+<histogram name="Ash.SeaPen.Freeform.SamplePrompt.SampleClicked"
+    enum="SeaPenSamplePromptId" expires_after="2025-07-31">
   <owner>ericamlee@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

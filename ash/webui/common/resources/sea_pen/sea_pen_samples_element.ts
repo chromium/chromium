@@ -65,7 +65,7 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
 
   private onClickSample_(e: WallpaperGridItemSelectedEvent&
                          {model: {sample: SeaPenSamplePrompt}}) {
-    logSamplePromptClicked();
+    logSamplePromptClicked(e.model.sample.id);
     this.dispatchEvent(new SeaPenSampleSelectedEvent(e.model.sample.prompt));
   }
 }

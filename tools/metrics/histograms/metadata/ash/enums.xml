@@ -1975,6 +1975,30 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="kSamplePrompts"/>
 </enum>
 
+<enum name="SeaPenSamplePromptId">
+  <int value="0" label="chrome spheres"/>
+  <int value="1" label="galaxy with spaceship"/>
+  <int value="2" label="cat riding unicorn"/>
+  <int value="3" label="animated flowers"/>
+  <int value="4" label="lily in rain"/>
+  <int value="5" label="colorful treehouse"/>
+  <int value="6" label="dalmation"/>
+  <int value="7" label="delorean"/>
+  <int value="8" label="black motorcycle"/>
+  <int value="9" label="spaceship over city"/>
+  <int value="10" label="cat on windowsill"/>
+  <int value="11" label="bioluminescent beach"/>
+  <int value="12" label="black sand dunes"/>
+  <int value="13" label="tree made of stars"/>
+  <int value="14" label="moon over lake"/>
+  <int value="15" label="marble arch"/>
+  <int value="16" label="steampunk spaceship"/>
+  <int value="17" label="white tiger"/>
+  <int value="18" label="anime path overlooking ocean"/>
+  <int value="19" label="papaver rhea stems"/>
+  <int value="20" label="meteor shower"/>
+</enum>
+
 <enum name="SeaPenTemplateId">
 <!-- Defined in ash/webui/common/mojom/sea_pen_generated.mojom -->
 
