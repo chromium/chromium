@@ -147,6 +147,8 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
       info->loading_state = lifecycle_unit->GetLoadingState();
       info->state = lifecycle_unit->GetState();
       resource_coordinator::DecisionDetails discard_details;
+      info->can_discard = lifecycle_unit->CanDiscard(
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE, &discard_details);
       info->cannot_discard_reasons = discard_details.GetFailureReasonStrings();
       info->discard_reason = lifecycle_unit->GetDiscardReason();
       info->discard_count = lifecycle_unit->GetDiscardCount();

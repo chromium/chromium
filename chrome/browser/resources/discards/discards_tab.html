@@ -212,6 +212,14 @@
                 </div>
               </div>
             </th>
+            <th data-sort-key="canDiscard" on-click="onSortClick">
+              <div class="header-cell-container">
+                <div>
+                  <div>Is</div>
+                  <div>Discardable</div>
+                </div>
+              </div>
+            </th>
             <th data-sort-key="discardCount" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
@@ -258,6 +266,14 @@
               <td>[[visibilityToString_(item.visibility)]]</td>
               <td>[[loadingStateToString_(item.loadingState)]]</td>
               <td>[[getLifeCycleState_(item)]]</td>
+              <td class="boolean-cell">
+                <div>[[boolToString_(item.canDiscard)]]</div>
+                <div is="action-link" class="tooltip-container"
+                  disabled$="[[!shouldShowCannotDiscardReason_(item)]]">
+                  [View Reason]
+                  <div class="tooltip">[[item.cannotDiscardReasons]]<div>
+                </div>
+              </td>
               <td>[[item.discardCount]]</td>
               <td class="boolean-cell">
                 <div>[[boolToString_(item.isAutoDiscardable)]]</div>

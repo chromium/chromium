@@ -356,6 +356,16 @@ class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /**
+   * Tests whether an item should show the reason why it cannot be discarded.
+   * @param item The item in question.
+   * @return true iff the item should show the reason why it cannot be
+   *     discarded.
+   */
+  private shouldShowCannotDiscardReason_(item: TabDiscardsInfo): boolean {
+    return !item.canDiscard && item.state !== LifecycleUnitState.DISCARDED;
+  }
+
+  /**
    * Event handler that toggles the auto discardable flag on an item.
    * @param e The event.
    */
