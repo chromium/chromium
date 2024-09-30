@@ -348,8 +348,10 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/common/interest_group/interest_group.cc',
-                  'third_party/blink/public/common/interest_group/interest_group.h'],
+        'paths': [
+            'third_party/blink/common/interest_group/interest_group.cc',
+            'third_party/blink/public/common/interest_group/interest_group.h'
+        ],
         'allowed': [
             # For hashing of k-anonymity keys
             'crypto::SHA256HashString',
@@ -373,7 +375,9 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/common/performance/performance_scenarios.cc'],
+        'paths': [
+            'third_party/blink/common/performance/performance_scenarios.cc',
+        ],
         'allowed': [
             # Used in both browser and renderer process so can't use Oilpan.
             'base::NoDestructor',
@@ -868,8 +872,9 @@ _CONFIG = [
         'allowed': ['base::BufferIterator'],
     },
     {
-        'paths':
-        ['third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h'],
+        'paths': [
+            'third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h'
+        ],
         'allowed': ['base::FastHash'],
     },
     {
@@ -985,7 +990,9 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/exported/web_form_control_element.cc'],
+        'paths': [
+            'third_party/blink/renderer/core/exported/web_form_control_element.cc'
+        ],
         'allowed': [
             'base::i18n::LEFT_TO_RIGHT',
             'base::i18n::RIGHT_TO_LEFT',
@@ -1060,8 +1067,10 @@ _CONFIG = [
         ]
     },
     {
-        'paths': ['third_party/blink/renderer/core/frame/visual_viewport.cc',
-                  'third_party/blink/renderer/core/frame/visual_viewport.h'],
+        'paths': [
+            'third_party/blink/renderer/core/frame/visual_viewport.cc',
+            'third_party/blink/renderer/core/frame/visual_viewport.h'
+        ],
         'allowed': [
             'cc::SolidColorScrollbarLayer',
         ],
@@ -1220,7 +1229,7 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.cc',
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h',
-            ],
+        ],
         'allowed': [
             'base::DelayedTaskHandle',
             # Temporarily added to generate the value of a crash key.
@@ -1436,7 +1445,7 @@ _CONFIG = [
             'gpu::Capabilities',
         ],
     },
-   {
+    {
         'paths': [
             'third_party/blink/renderer/core/html/media/',
         ],
@@ -1519,9 +1528,7 @@ _CONFIG = [
             # usage more broadly in Blink.
             'fidl::InterfaceHandle',
         ],
-        'inclass_allowed': [
-            'base::SequencedTaskRunner::GetCurrentDefault'
-        ]
+        'inclass_allowed': ['base::SequencedTaskRunner::GetCurrentDefault']
     },
     {
         'paths': [
@@ -2031,10 +2038,7 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/view_transition/',
         ],
-        'allowed': [
-            'base::flat_map',
-            'cc::ScopedPauseRendering'
-        ],
+        'allowed': ['base::flat_map', 'cc::ScopedPauseRendering'],
     },
     {
         'paths': [
@@ -2212,7 +2216,7 @@ _CONFIG = [
             'aggregation_service::.+',
         ]
     },
-     {
+    {
         'paths': [
             'third_party/blink/renderer/core/scheduler/',
             'third_party/blink/renderer/modules/shared_storage/',
@@ -2221,7 +2225,7 @@ _CONFIG = [
             _DISALLOW_CONTINUATION_DATA_[0],
         ]
     },
-     {
+    {
         'paths': [
             'third_party/blink/public/common/permissions_policy/permissions_policy.h',
         ],
