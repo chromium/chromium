@@ -47,17 +47,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Pointee;
 
-// Surprisingly, we don't have proto-comparators from gtest available. Remove
-// once they're available.
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
-
 // Wrapper class; introducing fluent aliases for test parameters.
 class TestCase {
  public:
