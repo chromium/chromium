@@ -169,7 +169,6 @@
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
@@ -995,11 +994,6 @@ void CrosapiAsh::BindSearchControllerFactory(
 void CrosapiAsh::BindSearchControllerRegistry(
     mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) {
   search_provider_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::REMOVED_0(
-    mojo::PendingReceiver<mojom::SelectFileDeprecated> receiver) {
-  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindSensorHalClient(

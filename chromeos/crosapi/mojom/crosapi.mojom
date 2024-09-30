@@ -102,7 +102,6 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
-import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/sharesheet.mojom";
 import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/speech_recognition.mojom";
@@ -661,10 +660,6 @@ interface Crosapi {
   // displays.
   // Added in M86.
   BindScreenManager@1(pending_receiver<ScreenManager> receiver);
-
-  // Deprecated.
-  // Added in M86.
-  REMOVED_0@0(pending_receiver<SelectFileDeprecated> receiver);
 
   // Binds the SensorHalClient interface for IIO sensors' data.
   // Added in M90.

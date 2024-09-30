@@ -110,7 +110,6 @@ mojom("mojom") {
     "resource_manager.mojom",
     "screen_ai_downloader.mojom",
     "screen_manager.mojom",
-    "select_file.mojom",
     "sharesheet.mojom",
     "smart_reader.mojom",
     "speech_recognition.mojom",

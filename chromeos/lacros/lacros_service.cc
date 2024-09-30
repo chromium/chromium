@@ -112,7 +112,6 @@
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
 #include "chromeos/crosapi/mojom/screen_ai_downloader.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
@@ -590,9 +589,6 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::ScreenManager,
                   &crosapi::mojom::Crosapi::BindScreenManager,
                   Crosapi::MethodMinVersions::kBindScreenManagerMinVersion>();
-  ConstructRemote<crosapi::mojom::SelectFile,
-                  &crosapi::mojom::Crosapi::BindSelectFile,
-                  Crosapi::MethodMinVersions::kBindSelectFileMinVersion>();
   ConstructRemote<
       crosapi::mojom::SearchControllerRegistry,
       &crosapi::mojom::Crosapi::BindSearchControllerRegistry,

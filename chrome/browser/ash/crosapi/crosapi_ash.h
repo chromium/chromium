@@ -400,8 +400,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingRemote<mojom::SearchControllerFactory> remote) override;
   void BindSearchControllerRegistry(
       mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) override;
-  void REMOVED_0(
-      mojo::PendingReceiver<mojom::SelectFileDeprecated> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
