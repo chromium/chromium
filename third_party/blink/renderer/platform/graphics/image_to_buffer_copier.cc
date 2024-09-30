@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -34,20 +35,11 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
 
     dest_image_size_ = size;
 
-    viz::SharedImageFormat color_buffer_format =
-        viz::SinglePlaneFormat::kRGBA_8888;
-#if BUILDFLAG(IS_MAC)
-    // For Mac, explicitly specify BGRA instead of RGBA so that IOSurface
-    // format matches shared image format. This is necessary for Graphite where
-    // IOSurfaces are always used to allow sharing between ANGLE and Dawn.
-    color_buffer_format = viz::SinglePlaneFormat::kBGRA_8888;
-#endif  // BUILDFLAG(IS_MAC)
-
     // We copy the contents of the source image into the destination SharedImage
     // via GL, followed by giving out the destination SharedImage's native
     // buffer handle to eventually be read by the display compositor.
     dest_shared_image_ = sii_->CreateSharedImage(
-        {color_buffer_format, size, gfx::ColorSpace(),
+        {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE, "ImageToBufferCopier"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);
@@ -71,7 +63,7 @@ ImageToBufferCopier::CopyImage(Image* image) {
   auto dest_scoped_si_access =
       dest_si_texture->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
 
-  GLenum target = dest_shared_image_->GetTextureTarget();
+  GLenum target = GL_TEXTURE_2D;
   {
     gl_->BindTexture(target, dest_scoped_si_access->texture_id());
     gl_->TexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -79,7 +71,7 @@ ImageToBufferCopier::CopyImage(Image* image) {
     gl_->TexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     gl_->TexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
-  gl_->BindTexture(target, 0);
+  gl_->BindTexture(GL_TEXTURE_2D, 0);
 
   // Bind the read framebuffer to our image.
   StaticBitmapImage* static_image = static_cast<StaticBitmapImage*>(image);
@@ -94,10 +86,9 @@ ImageToBufferCopier::CopyImage(Image* image) {
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
-  gl_->CopySubTextureCHROMIUM(source_texture_id, 0, target,
-                              dest_scoped_si_access->texture_id(), 0, 0, 0, 0,
-                              0, size.width(), size.height(),
-                              !static_image->IsOriginTopLeft(), false, false);
+  gl_->CopySubTextureCHROMIUM(
+      source_texture_id, 0, GL_TEXTURE_2D, dest_scoped_si_access->texture_id(),
+      0, 0, 0, 0, 0, size.width(), size.height(), false, false, false);
 
   // Cleanup the read framebuffer and texture.
   gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
