@@ -55,6 +55,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingJoinUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingManageUiConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/GroupMemberConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
     ]
