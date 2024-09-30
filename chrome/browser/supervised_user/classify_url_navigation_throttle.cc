@@ -217,6 +217,24 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
       break;
     }
     case SupervisedUserNavigationThrottle::kCancelWithInterstitial: {
+      CHECK(navigation_handle());
+// LINT.IfChange(cancel_with_interstitial)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      if (ShouldShowReAuthInterstitial(*navigation_handle(), is_main_frame)) {
+        // Show the re-authentication interstitial if the user signed out of
+        // the content area, as parent's approval requires authentication.
+        // This interstitial is only available on Linux/Mac/Windows as
+        // ChromeOS and Android have different re-auth mechanisms.
+        CancelDeferredNavigation(
+            content::NavigationThrottle::ThrottleCheckResult(
+                CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+                CreateReauthenticationInterstitial(
+                    *navigation_handle(),
+                    GetVerificationPurposeFromFilteringReason(result.reason))));
+        return;
+      }
+#endif
+      // LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_navigation_throttle.cc:cancel_with_interstitial)
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
       std::string interstitial_html =

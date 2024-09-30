@@ -201,26 +201,6 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   }
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-SupervisedUserVerificationPage::VerificationPurpose
-GetVerificationPurposeFromFilteringReason(
-    supervised_user::FilteringBehaviorReason reason) {
-  switch (reason) {
-    case supervised_user::FilteringBehaviorReason::DEFAULT:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          DEFAULT_BLOCKED_SITE;
-    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          SAFE_SITES_BLOCKED_SITE;
-    case supervised_user::FilteringBehaviorReason::MANUAL:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          MANUAL_BLOCKED_SITE;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-#endif
-
 void SupervisedUserNavigationThrottle::OnInterstitialResult(
     CallbackActions action,
     bool already_sent_request,
@@ -232,21 +212,10 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
     }
     case kCancelWithInterstitial: {
       CHECK(navigation_handle());
-      Profile* profile = Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext());
-
+// LINT.IfChange(cancel_with_interstitial)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      supervised_user::ChildAccountService* child_account_service =
-          ChildAccountServiceFactory::GetForProfile(profile);
-      if (base::FeatureList::IsEnabled(
-              supervised_user::
-                  kForceSupervisedUserReauthenticationForBlockedSites) &&
-          SupervisedUserVerificationPage::ShouldShowPage(
-              *child_account_service) &&
-          (is_main_frame ||
-           base::FeatureList::IsEnabled(
-               supervised_user::
-                   kAllowSupervisedUserReauthenticationForSubframes))) {
+      if (supervised_user::ShouldShowReAuthInterstitial(*navigation_handle(),
+                                                        is_main_frame)) {
         // Show the re-authentication interstitial if the user signed out of
         // the content area, as parent's approval requires authentication.
         // This interstitial is only available on Linux/Mac/Windows as
@@ -260,7 +229,9 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
         return;
       }
 #endif
-
+      // LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.cc:cancel_with_interstitial)
+      Profile* profile = Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
       std::string interstitial_html =
           supervised_user::SupervisedUserInterstitial::GetHTMLContents(
               SupervisedUserServiceFactory::GetForProfile(profile),
@@ -271,3 +242,41 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
     }
   }
 }
+
+namespace supervised_user {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+SupervisedUserVerificationPage::VerificationPurpose
+GetVerificationPurposeFromFilteringReason(FilteringBehaviorReason reason) {
+  switch (reason) {
+    case FilteringBehaviorReason::DEFAULT:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          DEFAULT_BLOCKED_SITE;
+    case FilteringBehaviorReason::ASYNC_CHECKER:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          SAFE_SITES_BLOCKED_SITE;
+    case FilteringBehaviorReason::MANUAL:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          MANUAL_BLOCKED_SITE;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle,
+                                  bool is_main_frame) {
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle.GetWebContents()->GetBrowserContext());
+  supervised_user::ChildAccountService* child_account_service =
+      ChildAccountServiceFactory::GetForProfile(profile);
+  return base::FeatureList::IsEnabled(
+             kForceSupervisedUserReauthenticationForBlockedSites) &&
+         SupervisedUserVerificationPage::ShouldShowPage(
+             *child_account_service) &&
+         (is_main_frame ||
+          base::FeatureList::IsEnabled(
+              supervised_user::
+                  kAllowSupervisedUserReauthenticationForSubframes));
+}
+
+#endif
+}  // namespace supervised_user
