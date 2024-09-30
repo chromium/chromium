@@ -82,6 +82,7 @@
 #endif
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
 #endif
@@ -850,6 +851,20 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
   }
 
+  InitializeDawnProcs();
+
+#if BUILDFLAG(IS_WIN)
+  // We need to create a D3D12Device to enable the access to D3D12 shader cache
+  // files on many GPU drivers before the launch of the GPU sandbox (otherwise
+  // such access will always be blocked by the GPU sandbox). To achieve this
+  // goal we create a Dawn instance and attempt to request an adapter for D3D12
+  // backend so that a D3D12Device will be saved in the Dawn instance.
+  // TODO(chromium:40700602): Fix WebGPU shader cache partitioning.
+  dawn_instance_for_d3d12_shader_cache_ =
+      gpu::DawnContextProvider::CreateDawnInstanceForD3D12ShaderCache(
+          gpu_preferences_);
+#endif
+
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
 
   if (!gpu_info_.sandboxed && !attempted_startsandbox) {
@@ -857,8 +872,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
   }
   UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
-
-  InitializeDawnProcs();
 
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
     if (!InitializeDawn()) {

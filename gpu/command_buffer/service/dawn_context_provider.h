@@ -33,6 +33,10 @@ class Context;
 
 namespace gpu {
 
+namespace webgpu {
+class DawnInstance;
+}  // namespace webgpu
+
 class DawnSharedContext;
 
 class GPU_GLES2_EXPORT DawnContextProvider {
@@ -60,6 +64,13 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   // the wgpu::Device/Adapter/Instance with `existing`.
   static std::unique_ptr<DawnContextProvider> CreateWithSharedDevice(
       const DawnContextProvider* existing);
+
+#if BUILDFLAG(IS_WIN)
+  // Create a DawnInstance and request a D3D12 adapter to initialize the access
+  // to D3D12 shader cache.
+  static std::unique_ptr<webgpu::DawnInstance>
+  CreateDawnInstanceForD3D12ShaderCache(const GpuPreferences& gpu_preferences);
+#endif
 
   static wgpu::BackendType GetDefaultBackendType();
   static bool DefaultForceFallbackAdapter();

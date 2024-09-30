@@ -361,6 +361,24 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
+  // Provided to wgpu::Device as logging callback.
+  static void LogInfo(WGPULoggingType type,
+                      char const* message,
+                      void* userdata) {
+    switch (static_cast<wgpu::LoggingType>(type)) {
+      case wgpu::LoggingType::Warning:
+        LOG(WARNING) << message;
+        break;
+      case wgpu::LoggingType::Error:
+        LOG(ERROR) << message;
+        SetDawnErrorCrashKey(message);
+        base::debug::DumpWithoutCrashing();
+        break;
+      default:
+        break;
+    }
+  }
+
  private:
   friend class base::RefCountedThreadSafe<DawnSharedContext>;
 
@@ -386,24 +404,6 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
     if (auto& caching_interface =
             static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
       caching_interface->StoreData(key, key_size, value, value_size);
-    }
-  }
-
-  // Provided to wgpu::Device as logging callback.
-  static void LogInfo(WGPULoggingType type,
-                      char const* message,
-                      void* userdata) {
-    switch (static_cast<wgpu::LoggingType>(type)) {
-      case wgpu::LoggingType::Warning:
-        LOG(WARNING) << message;
-        break;
-      case wgpu::LoggingType::Error:
-        LOG(ERROR) << message;
-        SetDawnErrorCrashKey(message);
-        base::debug::DumpWithoutCrashing();
-        break;
-      default:
-        break;
     }
   }
 
@@ -791,6 +791,29 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
   return base::WrapUnique(
       new DawnContextProvider(std::move(dawn_shared_context)));
 }
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<webgpu::DawnInstance>
+DawnContextProvider::CreateDawnInstanceForD3D12ShaderCache(
+    const GpuPreferences& gpu_preferences) {
+  std::unique_ptr<webgpu::DawnInstance> instance = webgpu::DawnInstance::Create(
+      nullptr, gpu_preferences, webgpu::SafetyLevel::kUnsafe,
+      &DawnSharedContext::LogInfo, nullptr);
+
+  // Request D3D12 adapters to initialize the access to D3D12 shader cache.
+  wgpu::RequestAdapterOptions adapter_options;
+  adapter_options.backendType = wgpu::BackendType::D3D12;
+  adapter_options.forceFallbackAdapter = false;
+  dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid;
+  if (GetANGLED3D11DeviceLUID(&adapter_options_luid.adapterLUID)) {
+    adapter_options.nextInChain = &adapter_options_luid;
+  }
+  adapter_options.compatibilityMode = false;
+  instance->EnumerateAdapters(&adapter_options);
+
+  return instance;
+}
+#endif
 
 std::unique_ptr<DawnContextProvider>
 DawnContextProvider::CreateWithSharedDevice(
