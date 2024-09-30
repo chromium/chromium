@@ -13,7 +13,10 @@ build_webui("build") {
     "experiment.ts",
     "app.ts",
   ]
-  css_files = [ "experiment.css" ]
+  css_files = [
+    "app.css",
+    "experiment.css",
+  ]
   html_to_wrapper_template = "detect"
 
   non_web_component_files = [ "flags_browser_proxy.ts" ]

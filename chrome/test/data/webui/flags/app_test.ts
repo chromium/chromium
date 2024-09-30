@@ -218,16 +218,20 @@ suite('FlagsAppTest', function() {
     return promise.then(() => {
       assertFalse(isVisible(app.getRequiredElement('.no-match')));
       const noMatchMsg: NodeListOf<HTMLElement> =
-          app.$all('.tab-content .no-match');
+          app.shadowRoot!.querySelectorAll('.tab-content .no-match');
       assertTrue(!!noMatchMsg[0]);
       assertEquals(
           2,
-          app.$all(`#tab-content-available flags-experiment:not(.hidden)`)
+          app.shadowRoot!
+              .querySelectorAll(
+                  `#tab-content-available flags-experiment:not(.hidden)`)
               .length);
       assertTrue(!!noMatchMsg[1]);
       assertEquals(
           1,
-          app.$all(`#tab-content-unavailable flags-experiment:not(.hidden)`)
+          app.shadowRoot!
+              .querySelectorAll(
+                  `#tab-content-unavailable flags-experiment:not(.hidden)`)
               .length);
     });
   });
@@ -238,16 +242,20 @@ suite('FlagsAppTest', function() {
     return promise.then(() => {
       assertTrue(isVisible(app.getRequiredElement('.no-match')));
       const noMatchMsg: NodeListOf<HTMLElement> =
-          app.$all('.tab-content .no-match');
+          app.shadowRoot!.querySelectorAll('.tab-content .no-match');
       assertTrue(!!noMatchMsg[0]);
       assertEquals(
           0,
-          app.$all(`#tab-content-available flags-experiment:not(.hidden)`)
+          app.shadowRoot!
+              .querySelectorAll(
+                  `#tab-content-available flags-experiment:not(.hidden)`)
               .length);
       assertTrue(!!noMatchMsg[1]);
       assertEquals(
           0,
-          app.$all(`#tab-content-unavailable flags-experiment:not(.hidden)`)
+          app.shadowRoot!
+              .querySelectorAll(
+                  `#tab-content-unavailable flags-experiment:not(.hidden)`)
               .length);
     });
   });

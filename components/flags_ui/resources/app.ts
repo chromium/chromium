@@ -10,13 +10,15 @@ import './strings.m.js';
 import './experiment.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {CustomElement, emptyHTML} from 'chrome://resources/js/custom_element.js';
+import {emptyHTML} from 'chrome://resources/js/custom_element.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {ExperimentElement as FlagsExperimentElement} from './experiment.js';
 import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
@@ -43,7 +45,8 @@ export class FlagSearch {
     this.flagsAppElement = el;
     this.searchBox =
         this.flagsAppElement.getRequiredElement<HTMLInputElement>('#search');
-    this.noMatchMsg = this.flagsAppElement.$all('.tab-content .no-match');
+    this.noMatchMsg = this.flagsAppElement.shadowRoot!.querySelectorAll(
+        '.tab-content .no-match');
   }
 
   /**
@@ -120,8 +123,9 @@ export class FlagSearch {
 
     // Available experiments
     const availableExperiments =
-        this.flagsAppElement.$all<FlagsExperimentElement>(
-            '#tab-content-available flags-experiment');
+        this.flagsAppElement.shadowRoot!
+            .querySelectorAll<FlagsExperimentElement>(
+                '#tab-content-available flags-experiment');
     assert(this.noMatchMsg[0]);
     this.noMatchMsg[0].classList.toggle(
         'hidden',
@@ -130,8 +134,9 @@ export class FlagSearch {
     // <if expr="not is_ios">
     // Unavailable experiments, which are undefined on iOS.
     const unavailableExperiments =
-        this.flagsAppElement.$all<FlagsExperimentElement>(
-            '#tab-content-unavailable flags-experiment');
+        this.flagsAppElement.shadowRoot!
+            .querySelectorAll<FlagsExperimentElement>(
+                '#tab-content-unavailable flags-experiment');
     assert(this.noMatchMsg[1]);
     this.noMatchMsg[1].classList.toggle(
         'hidden',
@@ -153,11 +158,12 @@ export class FlagSearch {
       return Promise.resolve();
     }
 
-    const selectedTab = this.flagsAppElement.tabs.find(
+    const selectedTab = this.flagsAppElement.getTabs().find(
         tab => tab.panelEl.classList.contains('selected'))!;
     const selectedTabId = selectedTab.panelEl.id;
     const queryString = `#${selectedTabId} flags-experiment:not(.hidden)`;
-    const total = this.flagsAppElement.$all(queryString).length;
+    const total =
+        this.flagsAppElement.shadowRoot!.querySelectorAll(queryString).length;
     if (total) {
       return this.flagsAppElement.announceStatus(
           total === 1 ?
@@ -185,43 +191,68 @@ export class FlagSearch {
   }
 }
 
-export class FlagsAppElement extends CustomElement {
+export class FlagsAppElement extends CrLitElement {
   static get is() {
     return 'flags-app';
   }
 
-  static override get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
-  private flagSearch: FlagSearch = new FlagSearch(this);
+  private flagSearch: FlagSearch|null = null;
   private lastChanged: HTMLElement|null = null;
   // <if expr="not is_ios">
   private lastFocused: HTMLElement|null = null;
-  private restartButton: HTMLButtonElement =
-      this.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
 
   // Whether the current URL is chrome://flags/deprecated. Only updated on
   // initial load.
   private isFlagsDeprecatedUrl_: boolean = false;
   // </if>
 
-  tabs: Tab[] = [
-    {
-      tabEl: this.getRequiredElement('#tab-available'),
-      panelEl: this.getRequiredElement('#tab-content-available'),
-    },
-    // <if expr="not is_ios">
-    {
-      tabEl: this.getRequiredElement('#tab-unavailable'),
-      panelEl: this.getRequiredElement('#tab-content-unavailable'),
-    },
-    // </if>
-  ];
+  getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K];
+  getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
+  getRequiredElement(query: string) {
+    const el = this.shadowRoot!.querySelector(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
+  }
 
-  connectedCallback() {
+  getTabs(): Tab[] {
+    return [
+      {
+        tabEl: this.getRequiredElement('#tab-available'),
+        panelEl: this.getRequiredElement('#tab-content-available'),
+      },
+      // <if expr="not is_ios">
+      {
+        tabEl: this.getRequiredElement('#tab-unavailable'),
+        panelEl: this.getRequiredElement('#tab-content-unavailable'),
+      },
+      // </if>
+    ];
+  }
+
+  // <if expr="not is_ios">
+  private getRestartButton(): HTMLButtonElement {
+    return this.getRequiredElement<HTMLButtonElement>(
+        '#experiment-restart-button');
+  }
+  // </if>
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.flagSearch = new FlagSearch(this);
+
     // <if expr="not is_ios">
     const pathname = new URL(window.location.href).pathname;
     this.isFlagsDeprecatedUrl_ =
@@ -250,7 +281,7 @@ export class FlagsAppElement extends CustomElement {
           loadTimeData.getString('deprecatedPageWarningExplanation');
       this.getRequiredElement<HTMLInputElement>('#search').placeholder =
           loadTimeData.getString('deprecatedSearchPlaceholder');
-      for (const element of this.$all('.no-match')) {
+      for (const element of this.shadowRoot!.querySelectorAll('.no-match')) {
         element.textContent = loadTimeData.getString('deprecatedNoResults');
       }
     }
@@ -262,6 +293,7 @@ export class FlagsAppElement extends CustomElement {
   }
 
   setSearchDebounceDelayMsForTesting(delay: number) {
+    assert(this.flagSearch);
     this.flagSearch.setSearchDebounceDelayMsForTesting(delay);
   }
 
@@ -288,7 +320,7 @@ export class FlagsAppElement extends CustomElement {
    * Toggles necessary attributes to display selected tab.
    */
   private selectTab(selectedTabEl: HTMLElement) {
-    for (const tab of this.tabs) {
+    for (const tab of this.getTabs()) {
       const isSelectedTab = tab.tabEl === selectedTabEl;
       tab.tabEl.classList.toggle('selected', isSelectedTab);
       tab.tabEl.setAttribute('aria-selected', String(isSelectedTab));
@@ -302,7 +334,7 @@ export class FlagsAppElement extends CustomElement {
    * that data. It expects an object structure like the above.
    * @param experimentalFeaturesData Information about all experiments.
    */
-  private render(experimentalFeaturesData: ExperimentalFeaturesData) {
+  private render_(experimentalFeaturesData: ExperimentalFeaturesData) {
     const defaultFeatures: Feature[] = [];
     const nonDefaultFeatures: Feature[] = [];
 
@@ -325,12 +357,12 @@ export class FlagsAppElement extends CustomElement {
     this.showRestartToast(experimentalFeaturesData.needsRestart);
 
     // <if expr="not is_ios">
-    this.restartButton.onclick = () =>
+    this.getRestartButton().onclick = () =>
         FlagsBrowserProxyImpl.getInstance().restartBrowser();
     // </if>
 
     // Tab panel selection.
-    for (const tab of this.tabs) {
+    for (const tab of this.getTabs()) {
       tab.tabEl.addEventListener('click', e => {
         e.preventDefault();
         this.selectTab(tab.tabEl);
@@ -368,7 +400,7 @@ export class FlagsAppElement extends CustomElement {
         e.preventDefault();
         // <if expr="not is_ios">
         this.lastFocused = this.lastChanged;
-        this.restartButton.focus();
+        this.getRestartButton().focus();
         // </if>
       }
     });
@@ -431,6 +463,7 @@ export class FlagsAppElement extends CustomElement {
   /** Reset all flags to their default values and refresh the UI. */
   private resetAllFlags() {
     FlagsBrowserProxyImpl.getInstance().resetAllFlags();
+    assert(this.flagSearch);
     this.flagSearch.clearSearch();
     this.announceStatus(loadTimeData.getString('reset-acknowledged'));
     this.showRestartToast(true);
@@ -482,7 +515,7 @@ export class FlagsAppElement extends CustomElement {
     this.getRequiredElement('#needs-restart').classList.toggle('show', show);
     // There is no restart button on iOS.
     // <if expr="not is_ios">
-    this.restartButton.disabled = !show;
+    this.getRestartButton().disabled = !show;
     // </if>
     if (show) {
       this.getRequiredElement('#needs-restart').setAttribute('role', 'alert');
@@ -496,7 +529,7 @@ export class FlagsAppElement extends CustomElement {
   private returnExperimentalFeatures(experimentalFeaturesData:
                                          ExperimentalFeaturesData) {
     const bodyContainer = this.getRequiredElement('#body-container');
-    this.render(experimentalFeaturesData);
+    this.render_(experimentalFeaturesData);
 
     if (experimentalFeaturesData.showBetaChannelPromotion) {
       this.getRequiredElement<HTMLSpanElement>('#channel-promo-beta').hidden =
@@ -512,18 +545,17 @@ export class FlagsAppElement extends CustomElement {
 
     bodyContainer.style.visibility = 'visible';
 
+    assert(this.flagSearch);
     this.flagSearch.init();
 
     // <if expr="chromeos_ash">
-    const ownerWarningDiv = this.$<HTMLParagraphElement>('#owner-warning');
-    if (ownerWarningDiv) {
-      ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
-    }
+    const ownerWarningDiv = this.getRequiredElement('#owner-warning');
+    ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
     // </if>
 
     // <if expr="chromeos_lacros or chromeos_ash">
-    const systemFlagsLinkDiv = this.$<HTMLElement>('#os-link-container');
-    if (systemFlagsLinkDiv && !experimentalFeaturesData.showSystemFlagsLink) {
+    const systemFlagsLinkDiv = this.getRequiredElement('#os-link-container');
+    if (!experimentalFeaturesData.showSystemFlagsLink) {
       systemFlagsLinkDiv.style.display = 'none';
     }
     // </if>
@@ -537,13 +569,13 @@ export class FlagsAppElement extends CustomElement {
    * in the list instead of going to the top of the page.
    */
   private setupRestartButton() {
-    this.restartButton.addEventListener('keydown', e => {
+    this.getRestartButton().addEventListener('keydown', e => {
       if (e.shiftKey && e.key === 'Tab' && this.lastFocused) {
         e.preventDefault();
         this.lastFocused.focus();
       }
     });
-    this.restartButton.addEventListener('blur', () => {
+    this.getRestartButton().addEventListener('blur', () => {
       this.lastFocused = null;
     });
   }
@@ -555,5 +587,8 @@ declare global {
     'flags-app': FlagsAppElement;
   }
 }
+
+// Exported as AppElement to be used by the auto-generated .html.ts file.
+export type AppElement = FlagsAppElement;
 
 customElements.define(FlagsAppElement.is, FlagsAppElement);
