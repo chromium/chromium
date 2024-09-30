@@ -94,7 +94,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         browser(),
         user_education::FeaturePromoSpecification::CreateForSnoozePromo(
             kFeaturePromoLifecycleTestPromo, kToolbarAppMenuButtonElementId,
-            IDS_TAB_GROUPS_NEW_GROUP_PROMO));
+            IDS_OK));
   }
 
   auto InBrowser(base::OnceCallback<void(Browser*)> callback) {
@@ -576,7 +576,7 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
         std::move(
             user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                 &kFeaturePromoLifecycleTestPromo,
-                kToolbarAppMenuButtonElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO)
+                kToolbarAppMenuButtonElementId, IDS_OK)
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kKeyedNotice)));
@@ -648,7 +648,7 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
         std::move(
             user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                 &kFeaturePromoLifecycleTestPromo,
-                kToolbarAppMenuButtonElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO)
+                kToolbarAppMenuButtonElementId, IDS_OK)
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kLegalNotice)));
@@ -657,8 +657,7 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
         std::move(
             user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                 &kFeaturePromoLifecycleTestPromo2,
-                kToolbarAppMenuButtonElementId,
-                IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP)
+                kToolbarAppMenuButtonElementId, IDS_CANCEL)
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kLegalNotice)));
@@ -666,13 +665,13 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
         browser(),
         user_education::FeaturePromoSpecification::CreateForLegacyPromo(
             &kFeaturePromoLifecycleTestPromo3, kToolbarAppMenuButtonElementId,
-            IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP));
+            IDS_CLEAR));
     RegisterTestFeature(
         browser(),
         std::move(
             user_education::FeaturePromoSpecification::CreateForCustomAction(
                 kFeaturePromoLifecycleTestAlert, kToolbarAppMenuButtonElementId,
-                IDS_TAB_GROUPS_NEW_GROUP_PROMO, IDS_OK, base::DoNothing())
+                IDS_OK, IDS_CLEAR, base::DoNothing())
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kActionableAlert)));
@@ -681,8 +680,8 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
         std::move(
             user_education::FeaturePromoSpecification::CreateForCustomAction(
                 kFeaturePromoLifecycleTestAlert2,
-                kToolbarAppMenuButtonElementId,
-                IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, IDS_OK, base::DoNothing())
+                kToolbarAppMenuButtonElementId, IDS_CANCEL, IDS_OK,
+                base::DoNothing())
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kActionableAlert)));
