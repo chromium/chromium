@@ -120,7 +120,7 @@ std::string GetTransportProtocol(const cricket::CandidatePair& candidate_pair) {
 }
 
 // Returns true if the selected candidate-pair indicates a relay connection.
-std::optional<bool> IsConnectionRelayed(
+bool IsConnectionRelayed(
     const cricket::CandidatePair& selected_candidate_pair) {
   const cricket::Candidate& local_candidate =
       selected_candidate_pair.local_candidate();
@@ -970,7 +970,6 @@ void WebrtcTransport::OnIceConnectionChange(
   if (!connected_ &&
       new_state == webrtc::PeerConnectionInterface::kIceConnectionConnected) {
     connected_ = true;
-    connection_relayed_.reset();
     close_after_disconnect_timer_.Stop();
     event_handler_->OnWebrtcTransportConnected();
   } else if (connected_ &&
@@ -1031,12 +1030,8 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
       IsConnectionRelayed(event.selected_candidate_pair);
   if (connection_relayed != connection_relayed_) {
     connection_relayed_ = connection_relayed;
-    if (connection_relayed_.has_value()) {
-      VLOG(0) << "Relay connection: "
-              << (*connection_relayed_ ? "true" : "false");
-    } else {
-      LOG(ERROR) << "Connection type unknown, treating as direct.";
-    }
+    VLOG(0) << "Relay connection: "
+            << (*connection_relayed_ ? "true" : "false");
 
     // The max-bitrate needs to be applied even for direct (non-TURN)
     // connections. Otherwise the video-sender b/w estimate is capped to a low
