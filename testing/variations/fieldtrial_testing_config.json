@@ -20180,7 +20180,6 @@
     "SafetyHub": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
@@ -20192,11 +20191,27 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "background-password-check-interval": "30d",
+                        "background-password-check-interval": "30d"
+                    },
+                    "enable_features": [
+                        "SafetyHub"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
                         "probability": "0.5",
                         "trigger_id": "BqU7h7abt0tK1KeaPYj0WkmwAz4h"
                     },
                     "enable_features": [
+                        "SafeHubFollowup",
                         "SafetyHub",
                         "SafetyHubAndroidSurvey"
                     ]
@@ -20227,21 +20242,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RecordPermissionExpirationTimestamps"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafetyHubFollowup": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafetyHubFollowup"
                     ]
                 }
             ]
