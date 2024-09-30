@@ -30357,6 +30357,37 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="OsDefaultsChoiceDialogClosed">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Recorded when a choice dialog to invite users to finish choosing their
+    default browser app and search engine choice from OS is closed. In rare
+    occassions this may be closed by the backend if the dialog is not required.
+  </description>
+</action>
+
+<action name="OsDefaultsChoiceDialogShown" not_user_triggered="true">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Recorded when a choice dialog to invite users to finish choosing their
+    default browser app and search engine choice from OS is shown.
+  </description>
+</action>
+
+<action name="OsDefaultsChoiceDialogUnblocked" not_user_triggered="true">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Recorded when a choice dialog to invite users to finish choosing their
+    default browser app and search engine choice from OS is unblocked.
+  </description>
+</action>
+
 <action name="OutdatedPluginInfobar.AllowThisTime">
   <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

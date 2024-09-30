@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -61,6 +62,9 @@ import java.lang.annotation.RetentionPolicy;
  * </ul>
  */
 class ChoiceDialogMediator {
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange
     @IntDef({
         DialogType.UNKNOWN,
         DialogType.LOADING,
@@ -73,7 +77,10 @@ class ChoiceDialogMediator {
         int LOADING = 1;
         int CHOICE_LAUNCH = 2;
         int CHOICE_CONFIRM = 3;
+        int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OsDefaultsChoiceDialogStatus)
 
     /** See {@link #startObserving}. */
     interface Delegate {
@@ -149,6 +156,10 @@ class ChoiceDialogMediator {
                     public void onResumeWithNative() {
                         searchEngineChoiceService.refreshDeviceChoiceRequiredNow(
                                 RefreshReason.APP_RESUME);
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Search.OsDefaultsChoice.DialogStatusOnAppOpen",
+                                mDialogType,
+                                DialogType.COUNT);
                     }
 
                     @Override
@@ -167,7 +178,7 @@ class ChoiceDialogMediator {
         mDelegate = delegate;
 
         mObservationStartedTimeMillis = System.currentTimeMillis();
-        mDialogType = DialogType.LOADING;
+        changeDialogType(DialogType.LOADING);
 
         if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
             // TODO(b/355186707): Temporary log to be removed after e2e validation.
@@ -212,7 +223,7 @@ class ChoiceDialogMediator {
 
         mLifecycleDispatcher.unregister(mActivityLifecycleObserver);
         mIsDeviceChoiceRequiredSupplier.removeObserver(mIsDeviceChoiceRequiredObserver);
-        mDialogType = DialogType.UNKNOWN;
+        changeDialogType(DialogType.UNKNOWN);
 
         delegate.onMediatorDestroyed();
         if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
@@ -282,10 +293,18 @@ class ChoiceDialogMediator {
                                 ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
                                 : "<N/A>");
             }
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
+                    wasDialogShown ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis : 0);
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
+                    mObservationStartedTimeMillis == null
+                            ? 0
+                            : mFirstServiceEventTimeMillis - mObservationStartedTimeMillis);
         }
 
         if (Boolean.TRUE.equals(isDeviceChoiceRequired) && !wasDialogDismissed) {
-            mDialogType = DialogType.CHOICE_LAUNCH;
+            changeDialogType(DialogType.CHOICE_LAUNCH);
             mDelegate.updateDialogType(DialogType.CHOICE_LAUNCH);
 
             if (!wasDialogShown) {
@@ -309,7 +328,7 @@ class ChoiceDialogMediator {
                     && (mDialogType == DialogType.LOADING
                             || mDialogType == DialogType.CHOICE_LAUNCH)) {
                 // This is the normal flow, showing confirmation after the choice has been made.
-                mDialogType = DialogType.CHOICE_CONFIRM;
+                changeDialogType(DialogType.CHOICE_CONFIRM);
                 mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM);
                 mSearchEngineChoiceService.notifyDeviceChoiceBlockCleared();
                 return;
@@ -364,8 +383,20 @@ class ChoiceDialogMediator {
 
                         mDelegate.dismissDialog();
                         destroy();
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
+                                dialogTimeoutMillis);
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
+                                dialogTimeoutMillis);
                     },
                     dialogTimeoutMillis);
         }
+    }
+
+    private void changeDialogType(@DialogType int type) {
+        mDialogType = type;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Search.OsDefaultsChoice.DialogStatusChange", type, DialogType.COUNT);
     }
 }

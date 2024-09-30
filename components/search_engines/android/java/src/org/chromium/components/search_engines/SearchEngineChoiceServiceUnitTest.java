@@ -66,6 +66,9 @@ public class SearchEngineChoiceServiceUnitTest {
         configureClayBlockingFeature(mIsClayBlockingEnabled, /* isDarkLaunchEnabled= */ false);
 
         doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();
+        doReturn(new ObservableSupplierImpl<>(false))
+                .when(mDelegate)
+                .getIsDeviceChoiceRequiredSupplier();
     }
 
     @Test
