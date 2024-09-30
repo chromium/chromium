@@ -73,6 +73,13 @@ class CORE_EXPORT FindBuffer {
   EphemeralRangeInFlatTree RangeFromBufferIndex(unsigned start_index,
                                                 unsigned end_index) const;
 
+  // Returns a position at which the next FindBuffer should start.
+  //
+  // This function returns the node next to the end node of the specified
+  // `range`. If the end position of the `range` points the middle of a Text
+  // node, this function skips a part of the Text after the position. Usually
+  // this behavior won't cause problems because we don't need to search text
+  // after the end position.
   PositionInFlatTree PositionAfterBlock() const {
     if (!node_after_block_)
       return PositionInFlatTree();

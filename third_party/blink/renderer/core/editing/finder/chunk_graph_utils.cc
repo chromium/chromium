@@ -83,32 +83,41 @@ class ChunkGraphBuilder {
     }
     // Used for checking if we reached a new block.
     const Node* last_added_text_node = nullptr;
-    const Node* next_start = nullptr;
+    // This is a std::optional because nullptr is a valid value.
+    std::optional<const Node*> next_start;
 
     parent_chunk_ = MakeGarbageCollected<CorpusChunk>();
     corpus_chunk_list_.push_back(parent_chunk_);
 
     while (node && node != just_after_block) {
       if (FindBuffer::ShouldIgnoreContents(*node)) {
+        const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
         if (end_node && (end_node == node ||
                          FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
           did_see_range_end_node = true;
+          if (!next_start) {
+            next_start = next;
+          }
         }
         if (std::optional<UChar> ch = FindBuffer::CharConstantForNode(*node)) {
           if (did_see_range_start_node && !did_see_range_end_node) {
             chunk_text_list_.push_back(TextOrChar(nullptr, *ch));
           }
         }
-        node = FlatTreeTraversal::NextSkippingChildren(*node);
+        node = next;
         continue;
       }
       const auto* style = node->GetComputedStyle();
       if (!style) {
+        const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
         if (end_node && (end_node == node ||
                          FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
           did_see_range_end_node = true;
+          if (!next_start) {
+            next_start = next;
+          }
         }
-        node = FlatTreeTraversal::NextSkippingChildren(*node);
+        node = next;
         continue;
       }
 
@@ -139,7 +148,9 @@ class ChunkGraphBuilder {
           if (depth_context_.empty() && ruby_depth_ == 0) {
             break;
           }
-          next_start = node;
+          if (!next_start) {
+            next_start = node;
+          }
         }
 
         if (IsA<Element>(*node)) {
@@ -162,8 +173,10 @@ class ChunkGraphBuilder {
 
       if (node == end_node) {
         did_see_range_end_node = true;
-        if (ruby_depth_ == 0) {
-          node = FlatTreeTraversal::Next(*node);
+        if (!next_start) {
+          next_start = FlatTreeTraversal::Next(*node);
+        }
+        if (depth_context_.empty() && ruby_depth_ == 0) {
           break;
         }
         // If the range ends inside a <ruby>, we need to continue analyzing the
@@ -197,7 +210,7 @@ class ChunkGraphBuilder {
     if (chunk_text_list_.size() > 0) {
       parent_chunk_->Link(PushChunk(String(kAnyLevel)));
     }
-    return next_start ? next_start : node;
+    return next_start.value_or(node);
   }
 
   const HeapVector<Member<CorpusChunk>>& ChunkList() const {

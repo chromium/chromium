@@ -1015,6 +1015,34 @@ TEST_F(FindBufferTest, RubyBuffersBasic) {
   EXPECT_EQ("__anno aft", ReplaceZero(buffer_list[1]));
 }
 
+TEST_P(FindBufferParamTest, RubyBuffersEndAtTextInRuby) {
+  SetBodyContent(
+      "<p id=p>before <ruby id=r>base<rt id=rt>anno</rt>base2</ruby> "
+      "after</p>");
+  FindBuffer buffer(
+      EphemeralRangeInFlatTree(
+          PositionInFlatTree(GetElementById("p"), 0),
+          PositionInFlatTree(GetElementById("rt")->firstChild(), 2)),
+      GetParam());
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(
+                *GetElementById("rt")->nextSibling()),
+            buffer.PositionAfterBlock());
+}
+
+TEST_P(FindBufferParamTest, RubyBuffersEndAtDisplayNoneTextInRuby) {
+  SetBodyContent(
+      "<p id=p>before <ruby id=r>base <span style='display:none' "
+      "id=none>text</span> base<rt>anno</ruby> after</p>");
+  FindBuffer buffer(
+      EphemeralRangeInFlatTree(
+          PositionInFlatTree(GetElementById("p"), 0),
+          PositionInFlatTree(GetElementById("none")->firstChild(), 2)),
+      GetParam());
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(
+                *GetElementById("none")->nextSibling()),
+            buffer.PositionAfterBlock());
+}
+
 TEST_F(FindBufferTest, RubyBuffersNoRt) {
   SetBodyContent("<p>before <rub>base</ruby> after</p>");
   FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
