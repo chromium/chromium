@@ -89,6 +89,7 @@ void ExpectModalTimeSample(
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:_fakeIdentity];
 
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [self loadPlusAddressEligiblePage];
 }
 

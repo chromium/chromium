@@ -123,10 +123,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(generator.GetSuggestions(
+                  /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, PasswordFormClassification(),
                   FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                  /*affiliated_profiles=*/{}),
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/std::nullopt)));
 }
@@ -143,10 +143,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(generator.GetSuggestions(
+                  /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, PasswordFormClassification(),
                   FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                  /*affiliated_profiles=*/{}),
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
               ElementsAre(IsCreateInlineSuggestion(
                   /*suggested_plus_address=*/base::UTF8ToUTF16(
                       *test::CreatePlusProfile().plus_address))));
@@ -218,10 +218,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(
       generator.GetSuggestions(
+          /*affiliated_plus_addresses=*/{},
           /*is_creation_enabled=*/true, PasswordFormClassification(),
           FormFieldData(),
-          AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          /*affiliated_profiles=*/{}),
+          AutofillSuggestionTriggerSource::kFormControlElementClicked),
       ElementsAre(AllOf(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
                         Field(&Suggestion::labels, IsEmpty()))));
 }
@@ -243,10 +243,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest, ProfileInLabel) {
       url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
 
   std::vector<Suggestion> suggestions = generator.GetSuggestions(
+      /*affiliated_plus_addresses=*/{},
       /*is_creation_enabled=*/true, PasswordFormClassification(),
       FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*affiliated_profiles=*/{});
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   ASSERT_EQ(suggestions.size(), 1u);
 
   if constexpr (BUILDFLAG(IS_ANDROID)) {

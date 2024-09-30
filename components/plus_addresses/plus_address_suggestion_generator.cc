@@ -122,16 +122,16 @@ PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
 
 std::vector<autofill::Suggestion>
 PlusAddressSuggestionGenerator::GetSuggestions(
+    const std::vector<std::string>& affiliated_plus_addresses,
     bool is_creation_enabled,
     const autofill::PasswordFormClassification& focused_form_classification,
     const autofill::FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
-    std::vector<PlusProfile> affiliated_profiles) {
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
 
-  if (affiliated_profiles.empty()) {
+  if (affiliated_plus_addresses.empty()) {
     // Do not offer creation if disabled.
     if (!is_creation_enabled) {
       return {};
@@ -150,9 +150,10 @@ PlusAddressSuggestionGenerator::GetSuggestions(
   }
 
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(affiliated_profiles.size());
-  for (const PlusProfile& profile : affiliated_profiles) {
-    std::u16string plus_address = base::UTF8ToUTF16(*profile.plus_address);
+  suggestions.reserve(affiliated_plus_addresses.size());
+  for (const std::string& affiliated_plus_addresse :
+       affiliated_plus_addresses) {
+    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_addresse);
     // Only suggest filling a plus address whose prefix matches the field's
     // value.
     if (trigger_source == kManualFallbackPlusAddresses ||

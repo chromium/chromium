@@ -35,9 +35,6 @@ struct Suggestion;
 // `AutofillClient`.
 class AutofillPlusAddressDelegate {
  public:
-  // Callback to return the list of plus address suggestions.
-  using GetSuggestionsCallback =
-      base::OnceCallback<void(std::vector<Suggestion>)>;
   // Describes interactions with Autofill suggestions for plus addresses.
   // The values are persisted to metrics, do not change them.
   enum class SuggestionEvent {
@@ -80,18 +77,19 @@ class AutofillPlusAddressDelegate {
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
-  // Returns the suggestions to show for the given origin and
-  // `focused_field_value`. If `trigger_source` indicates that this is a manual
-  // fallback (e.g. the suggestions were triggered from the context menu on
-  // Desktop), then `focused_field_value` is ignored. Otherwise, only
-  // suggestions whose prefix matches `focused_field_value` are shown.
-  virtual void GetSuggestions(
-      const url::Origin& last_committed_primary_main_frame_origin,
+  // Returns the suggestions to show for the given list of
+  // `plus_addresses`, `origin` and the `focused_field`. If
+  // `trigger_source` indicates that this is a manual fallback (e.g. the
+  // suggestions were triggered from the context menu on Desktop), then
+  // `focused_field` is ignored. Otherwise, only suggestions whose prefix
+  // matches `focused_field` are shown.
+  virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
+      const std::vector<std::string>& plus_addresses,
+      const url::Origin& origin,
       bool is_off_the_record,
       const PasswordFormClassification& focused_form_classification,
       const FormFieldData& focused_field,
-      AutofillSuggestionTriggerSource trigger_source,
-      GetSuggestionsCallback callback) = 0;
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.
