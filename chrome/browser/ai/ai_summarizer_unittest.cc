@@ -219,7 +219,7 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
@@ -229,8 +229,9 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   EXPECT_EQ(responder.result(), "Test output");
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }
 
 TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
@@ -256,15 +257,16 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", /*context=*/"",
                         responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }
 
 TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
@@ -294,7 +296,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   {
     MockStreamingResponder responder;
@@ -324,6 +326,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   }
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }

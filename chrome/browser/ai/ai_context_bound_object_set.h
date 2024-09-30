@@ -53,10 +53,6 @@ class AIContextBoundObjectSet {
   AIContextBoundObjectSet();
   // Remove the `AIContextBoundObject` from the set.
   virtual void RemoveContextBoundObject(AIContextBoundObject* object);
-  // This is called when all the AIContextBoundObject in the
-  // `context_bound_object_set_` get removed to clear the
-  // `AIContextBoundObjectSet` itself.
-  virtual void OnAllContextBoundObjectsRemoved() = 0;
 
   base::flat_set<std::unique_ptr<AIContextBoundObject>,
                  base::UniquePtrComparator>

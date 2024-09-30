@@ -63,6 +63,14 @@ AITestUtils::AITestBase::GetAIManagerRemote() {
   return ai_manager;
 }
 
+size_t AITestUtils::AITestBase::GetAIManagerReceiversSize() {
+  AIManagerKeyedService* ai_manager_keyed_service =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+          main_rfh()->GetBrowserContext());
+
+  return ai_manager_keyed_service->GetReceiversSizeForTesting();
+}
+
 void AITestUtils::AITestBase::ResetMockHost() {
   mock_host_.reset();
 }

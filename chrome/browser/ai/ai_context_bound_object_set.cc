@@ -41,11 +41,6 @@ class AIContextBoundObjectSetSupportsUserData
         host->GetUserData(kAIContextBoundObjectSetUserDataKey));
   }
 
- protected:
-  void OnAllContextBoundObjectsRemoved() override {
-    host_->RemoveUserData(kAIContextBoundObjectSetUserDataKey);
-  }
-
  private:
   raw_ptr<base::SupportsUserData> host_;
 };
@@ -62,11 +57,6 @@ class AIContextBoundObjectSetDocumentUserData
       content::RenderFrameHost* rfh)
       : content::DocumentUserData<AIContextBoundObjectSetDocumentUserData>(
             rfh) {}
-
-  void OnAllContextBoundObjectsRemoved() override {
-    // Note: `this` is deleted after this call
-    DeleteForCurrentDocument(&render_frame_host());
-  }
 
  private:
   friend DocumentUserData;
@@ -124,10 +114,6 @@ void AIContextBoundObjectSet::AddContextBoundObject(
 void AIContextBoundObjectSet::RemoveContextBoundObject(
     AIContextBoundObject* object) {
   context_bound_object_set_.erase(object);
-
-  if (context_bound_object_set_.empty()) {
-    OnAllContextBoundObjectsRemoved();
-  }
 }
 
 AIContextBoundObjectSet* AIContextBoundObjectSet::GetFromContext(

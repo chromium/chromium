@@ -16,8 +16,9 @@
 // The `AIContextBoundObject` will be owned by the `AIContextBoundObjectSet`
 // which is bound to the `BucketContext`. However, the `deletion_callback`
 // should be set to properly remove the `AIContextBoundObject` from
-// `AIContextBoundObjectSet` in case the connection is closed before the
-// `BucketContext` is destroyed.
+// `AIContextBoundObjectSet` in case the `AIContextBoundObject` is no longer
+// needed for the current context (e.g. the IPC connection is closed before the
+// `BucketContext` is destroyed).
 
 // The ownership chain of the relevant class is:
 // `BucketContext` (via `SupportsUserData` or `DocumentUserData`) --owns-->

@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
@@ -106,24 +107,46 @@ TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   mojo::Remote<blink::mojom::AIAssistant> mock_session;
-  // Initially the `AIUserDataSet` is empty.
+  // Initially the `AIContextBoundObjectSet` only contains the
+  // `AIManagerReceiverRemover`.
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())
           ->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
-  // After creating one `AIAssistant`, the `AIUserDataSet` contains 1
-  // element.
+  // After creating one `AIAssistant`, the `AIContextBoundObjectSet` contains 2
+  // elements.
   mock_remote->CreateAssistant(mock_session.BindNewPipeAndPassReceiver(),
                                /*sampling_params=*/nullptr,
                                /*system_prompt=*/std::nullopt,
                                /*initial_prompts=*/{}, callback.Get());
   run_loop.Run();
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
-  // After resetting the session, the `AIUserDataSet` becomes empty again and
-  // should be removed from the context.
+  // After resetting the session, the size of `AIContextBoundObjectSet` becomes
+  // 1 again and should be removed from the context.
   mock_session.reset();
-  task_environment()->RunUntilIdle();
-  ASSERT_FALSE(context_bound_objects);
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
+}
+
+// Tests that the receiver will be removed after the `ReceiverContext` is
+// destroyed.
+TEST_F(AIManagerKeyedServiceTest, ClearReceiverAfterResetHost) {
+  SetupMockOptimizationGuideKeyedService();
+
+  // Initially, the receiver set is empty.
+  ASSERT_EQ(0u, GetAIManagerReceiversSize());
+
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+  // After getting the `AIManager`, the receiver set contains 1 element.
+  ASSERT_EQ(1u, GetAIManagerReceiversSize());
+
+  // After resetting the host, the corresponding receivers should be cleared
+  // from the set.
+  ResetMockHost();
+  ASSERT_TRUE(base::test::RunUntil(
+      [this] { return GetAIManagerReceiversSize() == 0u; }));
 }

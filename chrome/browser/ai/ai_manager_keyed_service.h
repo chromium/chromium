@@ -40,6 +40,8 @@ class AIManagerKeyedService : public KeyedService,
       const AIAssistant::Context& context,
       CreateAssistantCallback callback);
 
+  size_t GetReceiversSizeForTesting() { return receivers_.size(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
                            NoUAFWithInvalidOnDeviceModelPath);
@@ -75,6 +77,8 @@ class AIManagerKeyedService : public KeyedService,
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
       optimization_guide::ModelBasedCapabilityKey capability,
       CanCreateAssistantCallback callback);
+
+  void RemoveReceiver(mojo::ReceiverId receiver_id);
 
   // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.

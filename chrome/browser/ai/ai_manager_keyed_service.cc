@@ -291,8 +291,30 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
  private:
   const AIContextBoundObjectSet::ReceiverContextRawRef context_;
   CreateOptionsPtrType options_;
-  CreateObjectCallback create_object_allback_;
   mojo::Remote<ClientRemoteInterface> client_remote_;
+};
+
+// The class is responsible for removing the receivers from the
+// `AIManagerKeyedService` when the corresponding receiver contexts are
+// destroyed.
+// TODO(crbug.com/367755363): To further improve this flow, we should implement
+// the factory interface per context, and they talk to the keyed service for
+// optimization guide integration. In this case, we don't have to maintain the
+// `ReceiverContext` any more.
+class AIManagerReceiverRemover : public AIContextBoundObject {
+ public:
+  explicit AIManagerReceiverRemover(base::OnceClosure remove_callback)
+      : remove_callback_(std::move(remove_callback)) {}
+  ~AIManagerReceiverRemover() override { std::move(remove_callback_).Run(); }
+
+  // `AIContextBoundObject` implementation.
+  // Unlike the other implementation of `AIContextBoundObject`, the remover is
+  // not a mojo interface implementation and the only case it should run the
+  // deletion callback is when the object itself is deleted.
+  void SetDeletionCallback(base::OnceClosure deletion_callback) override {}
+
+ private:
+  base::OnceClosure remove_callback_;
 };
 
 }  // namespace
@@ -301,12 +323,19 @@ AIManagerKeyedService::AIManagerKeyedService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-AIManagerKeyedService::~AIManagerKeyedService() {}
+AIManagerKeyedService::~AIManagerKeyedService() = default;
 
 void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver,
     AIContextBoundObjectSet::ReceiverContext context) {
-  receivers_.Add(this, std::move(receiver), context);
+  mojo::ReceiverId receiver_id =
+      receivers_.Add(this, std::move(receiver), context);
+  AIContextBoundObjectSet* context_bound_object_set =
+      AIContextBoundObjectSet::GetFromContext(context);
+  context_bound_object_set->AddContextBoundObject(
+      std::make_unique<AIManagerReceiverRemover>(
+          base::BindOnce(&AIManagerKeyedService::RemoveReceiver,
+                         weak_factory_.GetWeakPtr(), receiver_id)));
 }
 
 void AIManagerKeyedService::CanCreateAssistant(
@@ -534,4 +563,8 @@ void AIManagerKeyedService::OnModelPathValidationComplete(
         "Unable to create a session because the model path ('%s') is invalid.",
         model_path.c_str());
   }
+}
+
+void AIManagerKeyedService::RemoveReceiver(mojo::ReceiverId receiver_id) {
+  receivers_.Remove(receiver_id);
 }
