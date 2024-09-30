@@ -15672,6 +15672,7 @@ from previous Chrome versions.
   <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
   <int value="-1910061571" label="NtpOutlookCalendarModule:enabled"/>
+  <int value="-1910009033" label="JumpStartOmnibox:enabled"/>
   <int value="-1909983714" label="ExperimentalTabController:disabled"/>
   <int value="-1909702940" label="WebXRARModule:disabled"/>
   <int value="-1909356390"
@@ -19691,6 +19692,7 @@ from previous Chrome versions.
   <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
   <int value="-249443346" label="PhoneHubCallNotification:disabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
+  <int value="-248905552" label="JumpStartOmnibox:disabled"/>
   <int value="-248488262" label="MemorySaverModeAggressiveness:enabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>

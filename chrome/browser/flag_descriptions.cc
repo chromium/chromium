@@ -2443,6 +2443,12 @@ const char kJourneysZeroStateFilteringDescription[] =
     "Enables filtering of clusters in the zero state of the History Journeys "
     "WebUI.";
 
+const char kJumpStartOmniboxName[] = "Jump-start Omnibox";
+const char kJumpStartOmniboxDescription[] =
+    "Modifies cold- and warm start-up "
+    "process on low-end devices to reduce the time to active Omnibox, while "
+    "completing core systems initialization in the background.";
+
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[] =
     "Extract Related Searches from Prefetched ZPS Response";
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[] =

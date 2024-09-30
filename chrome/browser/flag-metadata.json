@@ -5574,6 +5574,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "jump-start-omnibox",
+    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "keyboard-and-pointer-lock-prompt",
     "owners": ["takumif@chromium.org", "muyaoxu@google.com"],
     "expiry_milestone": 140

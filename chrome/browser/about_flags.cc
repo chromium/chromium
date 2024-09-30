@@ -11837,6 +11837,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"jump-start-omnibox", flag_descriptions::kJumpStartOmniboxName,
+     flag_descriptions::kJumpStartOmniboxDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kJumpStartOmnibox)},
     {"retain-omnibox-on-focus", flag_descriptions::kRetainOmniboxOnFocusName,
      flag_descriptions::kRetainOmniboxOnFocusDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kRetainOmniboxOnFocus)},

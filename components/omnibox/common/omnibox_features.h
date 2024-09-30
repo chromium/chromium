@@ -161,6 +161,7 @@ BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
+BASE_DECLARE_FEATURE(kJumpStartOmnibox);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // `ShortcutsProvider` features.

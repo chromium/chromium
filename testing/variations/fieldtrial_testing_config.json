@@ -12778,6 +12778,21 @@
             ]
         }
     ],
+    "JumpStartOmnibox": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "JumpStartOmnibox"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeepAliveInBrowserMigration": [
         {
             "platforms": [

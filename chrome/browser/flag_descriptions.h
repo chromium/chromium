@@ -1383,6 +1383,9 @@ extern const char kJourneysShowAllClustersDescription[];
 extern const char kJourneysZeroStateFilteringName[];
 extern const char kJourneysZeroStateFilteringDescription[];
 
+extern const char kJumpStartOmniboxName[];
+extern const char kJumpStartOmniboxDescription[];
+
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 
