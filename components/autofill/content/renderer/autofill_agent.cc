@@ -473,7 +473,8 @@ void AutofillAgent::FocusStateNotifier::ResetFocus() {
 
 mojom::FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
     const WebFormControlElement& node) {
-  if (form_util::IsTextAreaElement(node.To<WebFormControlElement>())) {
+  auto form_control_type = node.FormControlTypeForAutofill();
+  if (form_control_type == blink::mojom::FormControlType::kTextArea) {
     return mojom::FocusedFieldType::kFillableTextArea;
   }
 
@@ -483,12 +484,10 @@ mojom::FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
     return mojom::FocusedFieldType::kUnfillableElement;
   }
 
-  if (input_element.FormControlTypeForAutofill() ==
-      blink::mojom::FormControlType::kInputSearch) {
+  if (form_control_type == blink::mojom::FormControlType::kInputSearch) {
     return mojom::FocusedFieldType::kFillableSearchField;
   }
-  if (input_element.FormControlTypeForAutofill() ==
-      blink::mojom::FormControlType::kInputPassword) {
+  if (form_control_type == blink::mojom::FormControlType::kInputPassword) {
     return mojom::FocusedFieldType::kFillablePasswordField;
   }
   if (agent_->password_autofill_agent_->IsUsernameInputField(input_element)) {
