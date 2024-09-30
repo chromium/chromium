@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -101,8 +102,11 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto ShowToast(ToastParams params) {
-    return Do(
-        [&]() { GetToastController()->MaybeShowToast(std::move(params)); });
+    return Do(base::BindOnce(
+        [](ToastController* toast_controller, ToastParams toast_params) {
+          toast_controller->MaybeShowToast(std::move(toast_params));
+        },
+        GetToastController(), std::move(params)));
   }
 
   auto FireToastCloseTimer() {
