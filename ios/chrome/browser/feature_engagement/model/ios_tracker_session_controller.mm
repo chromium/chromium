@@ -9,10 +9,6 @@ namespace {
 const base::TimeDelta kMaxSessionDuration = base::Minutes(60);
 }
 
-BASE_FEATURE(kFeatureEngagementSessionReset,
-             "FeatureEngagementSessionReset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 IOSTrackerSessionController::IOSTrackerSessionController(
     raw_ptr<base::Clock> clock)
     : clock_(clock),
@@ -22,9 +18,6 @@ IOSTrackerSessionController::IOSTrackerSessionController(
 IOSTrackerSessionController::~IOSTrackerSessionController() = default;
 
 bool IOSTrackerSessionController::ShouldResetSession() {
-  if (!base::FeatureList::IsEnabled(kFeatureEngagementSessionReset)) {
-    return false;
-  }
   const base::TimeDelta time_since_session_start =
       clock_->Now() - session_start_time_;
   if (time_since_session_start > max_session_duration_) {

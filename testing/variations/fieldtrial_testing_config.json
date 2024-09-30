@@ -11759,21 +11759,6 @@
             ]
         }
     ],
-    "IOSFeatureEngagementSessionReset": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FeatureEngagementSessionReset"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedCUI1Refinements": [
         {
             "platforms": [

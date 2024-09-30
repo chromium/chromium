@@ -25,8 +25,6 @@ class IOSTrackerSessionControllerTest : public PlatformTest {
 };
 
 IOSTrackerSessionControllerTest::IOSTrackerSessionControllerTest() {
-  scoped_feature_list_.InitWithFeatureState(kFeatureEngagementSessionReset,
-                                            true);
   clock_ = std::make_unique<base::SimpleTestClock>();
   clock_->SetNow(base::Time::Now());
   ios_tracker_session_controller_ =
@@ -43,17 +41,6 @@ TEST_F(IOSTrackerSessionControllerTest, TestShouldNotResetAfterInit) {
 // Tests that the session is not reset before max session duration has passed.
 TEST_F(IOSTrackerSessionControllerTest, TestShouldNotResetWithinMaxDuration) {
   clock_->Advance(kMaxSessionDuration - base::Seconds(1));
-  EXPECT_FALSE(ios_tracker_session_controller_->ShouldResetSession());
-}
-
-// Tests that the session is not reset when the feature is disabled, after the
-// max session duration has passed.
-TEST_F(IOSTrackerSessionControllerTest,
-       TestShouldNotResetAfterMaxDurationWhenFeatureDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatureState(kFeatureEngagementSessionReset,
-                                            false);
-  clock_->Advance(kMaxSessionDuration + base::Seconds(1));
   EXPECT_FALSE(ios_tracker_session_controller_->ShouldResetSession());
 }
 
