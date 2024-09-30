@@ -1778,6 +1778,9 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
 
   gfx::Rect bounds = observed_view->GetLocalBounds();
   overlay_view_->SetBoundsRect(bounds);
+  if(lens_overlay_blur_layer_delegate_) {
+    lens_overlay_blur_layer_delegate_->layer()->SetBounds(bounds);
+  }
 }
 
 void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
@@ -2079,10 +2082,6 @@ void LensOverlayController::AddBackgroundBlur() {
   }
 
   if (lens::features::GetLensOverlayUseCustomBlur()) {
-    overlay_view_->SetPaintToLayer();
-    ui::Layer* background_layer = overlay_view_->layer();
-    background_layer->SetFillsBoundsOpaquely(true);
-
     content::RenderWidgetHost* live_page_widget_host =
         tab_->GetContents()
             ->GetPrimaryMainFrame()
@@ -2092,7 +2091,13 @@ void LensOverlayController::AddBackgroundBlur() {
     // Create the blur delegate which will start blurring the background;
     lens_overlay_blur_layer_delegate_ =
         std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-            background_layer, live_page_widget_host);
+            live_page_widget_host);
+
+    // Add our blur layer to the view.
+    overlay_view_->SetPaintToLayer();
+    overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
+    lens_overlay_blur_layer_delegate_->layer()->SetBounds(
+        overlay_view_->layer()->bounds());
     return;
   }
 
