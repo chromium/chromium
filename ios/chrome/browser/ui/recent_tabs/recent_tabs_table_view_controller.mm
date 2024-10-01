@@ -180,7 +180,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
 // `self.browser`.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+@property(nonatomic, readonly) ProfileIOS* profile;
 // YES if this ViewController is being presented on incognito mode.
 @property(nonatomic, readonly, getter=isIncognito) BOOL incognito;
 // Convenience getter for `self.browser`'s WebStateList
@@ -238,14 +238,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)setBrowser:(Browser*)browser {
   _browser = browser;
   if (browser) {
-    ChromeBrowserState* browserState = browser->GetBrowserState();
+    ProfileIOS* profile = browser->GetProfile();
     // Some RecentTabs services depend on objects not present in the
-    // OffTheRecord BrowserState, in order to prevent crashes set
-    // `_browserState` to `browserState->OriginalChromeBrowserState`. While
+    // OffTheRecord profile, in order to prevent crashes set
+    // `_profile` to `profile->OriginalProfile`. While
     // doing this check if incognito or not so that pages are loaded
     // accordingly.
-    _browserState = browserState->GetOriginalChromeBrowserState();
-    _incognito = browserState->IsOffTheRecord();
+    _profile = profile->GetOriginalProfile();
+    _incognito = profile->IsOffTheRecord();
     _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
   } else {
     _syncObserver.reset();
@@ -269,8 +269,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (syncer::SyncService*)syncService {
-  DCHECK(_browserState);
-  return SyncServiceFactory::GetForBrowserState(_browserState);
+  DCHECK(_profile);
+  return SyncServiceFactory::GetForProfile(_profile);
 }
 
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
@@ -291,9 +291,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return YES;
   }
 
-  DCHECK(self.browserState);
+  DCHECK(self.profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   DCHECK(authService);
   // Return NO is sign-in is disabled by the BrowserSignin policy.
   return authService->GetServiceStatus() ==
@@ -603,7 +603,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Adds Other Devices Section and its header.
 - (void)addOtherDevicesSectionForState:(SessionsSyncUserState)state {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   const AuthenticationService::ServiceStatus authServiceStatus =
       authService->GetServiceStatus();
   // If sign-in is disabled through user Settings, do not show Other Devices
@@ -721,13 +721,13 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)addSigninPromoViewItem {
   // Init `_signinPromoViewMediator` if nil.
-  if (!self.signinPromoViewMediator && self.browserState) {
+  if (!self.signinPromoViewMediator && self.profile) {
     self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForBrowserState(self.browserState)
+                                          GetForProfile(self.profile)
                           authService:AuthenticationServiceFactory::
-                                          GetForBrowserState(self.browserState)
-                          prefService:self.browserState->GetPrefs()
+                                          GetForProfile(self.profile)
+                          prefService:self.profile->GetPrefs()
                           syncService:self.syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_RECENT_TABS
@@ -891,7 +891,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
 
   TabsSearchService* search_service =
-      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+      TabsSearchServiceFactory::GetForProfile(self.profile);
   __weak RecentTabsTableViewController* weakSelf = self;
   const std::u16string& search_terms =
       base::SysNSStringToUTF16(self.searchTerms);
@@ -975,7 +975,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 // Helper for removeSessionAtTableSectionWithIdentifier
 - (void)deleteSession:(std::string)sessionTag {
-  SessionSyncServiceFactory::GetForBrowserState(self.browserState)
+  SessionSyncServiceFactory::GetForProfile(self.profile)
       ->GetOpenTabsUIDelegate()
       ->DeleteForeignSession(sessionTag);
 }
@@ -1012,7 +1012,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // A manual item refresh is necessary when tab search is disabled or there
     // is no search term.
     sync_sessions::SessionSyncService* syncService =
-        SessionSyncServiceFactory::GetForBrowserState(self.browserState);
+        SessionSyncServiceFactory::GetForProfile(self.profile);
     auto syncedSessions =
         std::make_unique<synced_sessions::SyncedSessions>(syncService);
 
@@ -1231,7 +1231,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Update the history search result count once available.
   if (itemTypeSelected == ItemTypeSuggestedActionSearchHistory) {
     TabsSearchService* search_service =
-        TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+        TabsSearchServiceFactory::GetForProfile(self.profile);
     __weak TableViewTabsSearchSuggestedHistoryCell* weakCell =
         base::apple::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
             cell);
@@ -1519,7 +1519,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
 
   sync_sessions::OpenTabsUIDelegate* openTabs =
-      SessionSyncServiceFactory::GetForBrowserState(self.browserState)
+      SessionSyncServiceFactory::GetForProfile(self.profile)
           ->GetOpenTabsUIDelegate();
   const sessions::SessionTab* toLoad = nullptr;
   if (openTabs->GetForeignTab(distantTab->session_tag, distantTab->tab_id,
@@ -1544,7 +1544,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
     std::unique_ptr<web::WebState> web_state =
         session_util::CreateWebStateWithNavigationEntries(
-            self.browserState, toLoad->current_navigation_index,
+            self.profile, toLoad->current_navigation_index,
             toLoad->navigations);
     if (IsNTPWithoutHistory(currentWebState)) {
       self.webStateList->ReplaceWebStateAt(self.webStateList->active_index(),
@@ -1609,7 +1609,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
 
   const TemplateURL* defaultURL =
       templateURLService->GetDefaultSearchProvider();
@@ -1621,7 +1621,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   GURL searchUrl(defaultURL->url_ref().ReplaceSearchTerms(
       search_args, templateURLService->search_terms_data()));
 
-  web::WebState::CreateParams params(self.browserState);
+  web::WebState::CreateParams params(self.profile);
   auto webState = web::WebState::Create(params);
   web::WebState* webStatePtr = webState.get();
 
@@ -1882,7 +1882,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // ViewController.
 - (BOOL)shouldShowHistorySyncOnPromoAction {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+      AuthenticationServiceFactory::GetForProfile(_profile);
   // TODO(crbug.com/40276546): Delete the usage of ConsentLevel::kSync after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
@@ -1896,7 +1896,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:self.syncService
               authenticationService:authenticationService
-                        prefService:_browserState->GetPrefs()
+                        prefService:_profile->GetPrefs()
               isHistorySyncOptional:NO];
   return skipReason == HistorySyncSkipReason::kNone;
 }

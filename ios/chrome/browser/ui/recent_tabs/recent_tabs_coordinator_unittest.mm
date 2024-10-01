@@ -140,47 +140,43 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   void SetUp() override {
     BlockCleanupTest::SetUp();
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        ios::FaviconServiceFactory::GetInstance(),
-        ios::FaviconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
+                              ios::FaviconServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        ios::HistoryServiceFactory::GetInstance(),
-        ios::HistoryServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
 
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeSyncServiceFactory));
 
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
         base::BindRepeating(
             &BuildMockSessionSyncServiceForRecentTabsTableCoordinator));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(builder).Build();
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     FakeStartupInformation* startup_information_ =
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_];
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
   }
 
   void TearDown() override {
@@ -196,11 +192,10 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                       BOOL has_foreign_sessions) {
     SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =
         static_cast<SessionSyncServiceMockForRecentTabsTableCoordinator*>(
-            SessionSyncServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
+            SessionSyncServiceFactory::GetForProfile(profile_.get()));
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     if (!signed_in) {
       CHECK(!sync_enabled);
@@ -227,8 +222,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     if (signed_in) {
       AuthenticationService* authentication_service =
-          AuthenticationServiceFactory::GetForBrowserState(
-              chrome_browser_state_.get());
+          AuthenticationServiceFactory::GetForProfile(profile_.get());
 
       FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
 
@@ -297,7 +291,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
   testing::NiceMock<GlobalIdMapperMock> global_id_mapper_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   AppState* app_state_;
   SceneState* scene_state_;
@@ -313,7 +307,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   sessions::SessionTab open_tab_;
   std::vector<const sessions::SessionTab*> open_tabs_;
 
-  // Must be declared *after* `chrome_browser_state_` so it can outlive it.
+  // Must be declared *after* `profile_` so it can outlive it.
   RecentTabsCoordinator* coordinator_;
   id<ApplicationCommands> mock_application_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
