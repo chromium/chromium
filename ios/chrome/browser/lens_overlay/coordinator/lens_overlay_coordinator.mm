@@ -74,7 +74,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   }
 }
 
-const CGFloat kSelectionOffsetPadding = 50.0f;
+const CGFloat kSelectionOffsetPadding = 100.0f;
 
 NSString* const kCustomConsentSheetDetentIdentifier =
     @"kCustomConsentSheetDetentIdentifier";
@@ -333,6 +333,8 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)onContainerViewControllerPresented {
+  [self adjustSelectionOcclusionInsets];
+
   BOOL shouldShowConsentFlow =
       !self.termsOfServiceAccepted ||
       base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
@@ -447,17 +449,15 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)adjustSelectionOcclusionInsets {
-  if (!_resultViewController) {
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!sceneWindow) {
     return;
   }
 
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-  UIViewController* presentedViewController = sheet.presentedViewController;
   // Pad the offset by a small ammount to avoid having the bottom edge of the
   // selection overlapped over the sheet.
-  CGFloat sheetHeight = presentedViewController.view.frame.size.height;
-  CGFloat offsetNeeded = sheetHeight + kSelectionOffsetPadding;
+  CGFloat estimatedMediumDetentHeight = sceneWindow.frame.size.height / 2;
+  CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
 
   [_selectionViewController
       setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
@@ -876,7 +876,6 @@ const CGFloat kMenuSymbolSize = 18;
       presentViewController:_resultViewController
                    animated:YES
                  completion:^{
-                   [weakSelf adjustSelectionOcclusionInsets];
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting];
                  }];
