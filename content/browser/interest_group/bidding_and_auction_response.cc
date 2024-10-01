@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -231,7 +232,8 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get()) {
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
+      base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
     const base::Value::List* pagg_response =
         input_dict->FindList("paggResponse");
     if (pagg_response) {
