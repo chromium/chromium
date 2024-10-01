@@ -64,8 +64,10 @@ constexpr char kExtensionHasNoHostPermissionsForPatternError[] =
     "any of its host permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
     "Extension cannot remove a site access request that doesn't exist.";
-constexpr char kInvalidPatternError[] =
+constexpr char kAddRequestInvalidPatternError[] =
     "Extension cannot add a request with an invalid value for 'pattern'.";
+constexpr char kRemoveRequestInvalidPatternError[] =
+    "Extension cannot remove a request with an invalid value for 'pattern'.";
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
@@ -130,6 +132,12 @@ bool ValidateDocument(const std::string& document_id,
   }
 
   return true;
+}
+
+// Returns whether `pattern` was successfully parsed into `parsed_pattern`.
+bool ParsePattern(const std::string& pattern, URLPattern& parsed_pattern) {
+  parsed_pattern.SetValidSchemes(Extension::kValidHostPermissionSchemes);
+  return parsed_pattern.Parse(pattern) == URLPattern::ParseResult::kSuccess;
 }
 
 }  // namespace
@@ -575,10 +583,9 @@ PermissionsAddSiteAccessRequestFunction::Run() {
   std::optional<std::string> pattern_param = params->request.pattern;
   std::optional<URLPattern> pattern;
   if (pattern_param) {
-    URLPattern parsed_pattern(Extension::kValidHostPermissionSchemes);
-    if (parsed_pattern.Parse(*pattern_param) !=
-        URLPattern::ParseResult::kSuccess) {
-      return RespondNow(Error(kInvalidPatternError));
+    URLPattern parsed_pattern;
+    if (!ParsePattern(*pattern_param, parsed_pattern)) {
+      return RespondNow(Error(kAddRequestInvalidPatternError));
     }
     pattern = parsed_pattern;
   }
@@ -637,17 +644,17 @@ PermissionsRemoveSiteAccessRequestFunction::Run() {
   const std::optional<std::string>& document_id_param =
       params->request.document_id;
   std::optional<int> tab_id_param = params->request.tab_id;
-  // TODO(crbug.com/330588494): Add `pattern` parameter.
 
+  // Removal is invalid if it has both document and tab id.
   if ((!document_id_param && !tab_id_param) ||
       (document_id_param && tab_id_param)) {
     return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
   }
 
-  // Values to be computed for either tab id or document id.
   content::WebContents* web_contents = nullptr;
   int tab_id = -1;
 
+  // Removal is invalid if document or tab id are not valid.
   bool is_valid = false;
   std::string error;
   if (tab_id_param) {
@@ -668,10 +675,22 @@ PermissionsRemoveSiteAccessRequestFunction::Run() {
     return RespondNow(Error(error));
   }
 
+  // Removal is invalid if pattern provided cannot be parsed.
+  std::optional<std::string> pattern_param = params->request.pattern;
+  std::optional<URLPattern> pattern;
+  if (pattern_param) {
+    URLPattern parsed_pattern;
+    if (!ParsePattern(*pattern_param, parsed_pattern)) {
+      return RespondNow(Error(kRemoveRequestInvalidPatternError));
+    }
+    pattern = parsed_pattern;
+  }
+
   // Verify we properly retrieved the necessary information.
   DCHECK(web_contents);
   DCHECK_NE(tab_id, -1);
 
+  // TODO(crbug.com/330588494): Add pattern to request removal.
   bool is_removed = PermissionsManager::Get(browser_context())
                         ->RemoveSiteAccessRequest(tab_id, extension()->id());
   if (!is_removed) {

@@ -189,6 +189,11 @@
                 "type": "number",
                 "optional": true,
                 "description": "The id of the tab where site access request will be removed. This or `documentId` must be specified."
+              },
+              "pattern": {
+                "type": "string",
+                "optional": true,
+                "description": "The URL pattern where site access request will be removed. If provided, this must exactly match the pattern of an existing site access request."
               }
             }
           }

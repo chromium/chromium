@@ -68,5 +68,19 @@ chrome.test.runTests([
             `exist.`);
 
     chrome.test.succeed();
+  },
+
+  // Tests that an error is returned when the request to remove has an invalid
+  // pattern.
+  async function invalidPattern() {
+    let tab = await navigateTo('requested.com');
+
+    const request = {tabId: tab.id, pattern: 'invalid pattern'};
+    await chrome.test.assertPromiseRejects(
+        chrome.permissions.removeSiteAccessRequest(request),
+        `Error: Extension cannot remove a request with an invalid value for ` +
+            `'pattern'.`);
+
+    chrome.test.succeed();
   }
 ])
