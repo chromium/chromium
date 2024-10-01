@@ -535,4 +535,10 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkProxyElement.is]: NetworkProxyElement;
+  }
+}
+
 customElements.define(NetworkProxyElement.is, NetworkProxyElement);
