@@ -4,6 +4,7 @@
 
 #include "services/webnn/tflite/graph_builder_tflite.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <numeric>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/fixed_array.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -1260,8 +1262,7 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   // Create `tflite::Tensor` for the output operand of explicit padding operator
   // with the dimensions and data type.
   CHECK_EQ(input_tensor_info.dimensions.size(), 4u);
-  std::vector<int32_t> output_shape;
-  output_shape.reserve(padding_rank);
+  base::FixedArray<int32_t> output_shape(padding_rank);
   for (size_t i = 0; i < padding_rank; ++i) {
     auto checked_dimension =
         base::MakeCheckedNum<int32_t>(input_tensor_info.dimensions[i]);
@@ -1277,7 +1278,7 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
     if (!checked_dimension.IsValid()) {
       return base::unexpected("The input dimension or padding is too large.");
     }
-    output_shape.push_back(checked_dimension.ValueOrDie());
+    output_shape[i] = checked_dimension.ValueOrDie();
   }
 
   const int32_t output_tensor_index =
@@ -1324,10 +1325,9 @@ int32_t GraphBuilderTflite::InsertTransposeOperation(
   // the dimensions and tensor data type.
   const size_t input_rank = input_dimensions.size();
   CHECK_EQ(permutation.size(), input_rank);
-  std::vector<int32_t> output_shape;
-  output_shape.reserve(input_rank);
+  base::FixedArray<int32_t> output_shape(input_rank);
   for (size_t i = 0; i < input_rank; ++i) {
-    output_shape.push_back(input_dimensions[permutation[i]]);
+    output_shape[i] = input_dimensions[permutation[i]];
   }
   const int32_t output_tensor_index =
       SerializeTemporaryTensor(output_shape, input_tensor_type);
@@ -1526,12 +1526,12 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
 auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
     -> base::expected<OperatorOffset, std::string> {
   // TODO(crbug.com/369649350): Support float16 without dequantize operator.
-  std::vector<int32_t> operator_inputs_index;
-  operator_inputs_index.reserve(concat.input_operand_ids.size());
-  for (auto input_operand_id : concat.input_operand_ids) {
+  base::FixedArray<int32_t> operator_inputs_index(
+      concat.input_operand_ids.size());
+  for (size_t i = 0; i < concat.input_operand_ids.size(); ++i) {
     ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                     SerializeInputTensorInfo(input_operand_id));
-    operator_inputs_index.push_back(input_tensor_info.index);
+                     SerializeInputTensorInfo(concat.input_operand_ids[i]));
+    operator_inputs_index[i] = input_tensor_info.index;
   }
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(concat.output_operand_id));
@@ -2221,11 +2221,11 @@ auto GraphBuilderTflite::SerializeGruGate(
                                                hidden_size};
   const int32_t input_size = gru_cell.input_dimensions[1];
 
-  std::vector<::tflite::BuiltinOperator> activation_operator_codes;
-  activation_operator_codes.reserve(gru_cell.activations.size());
-  for (mojom::RecurrentNetworkActivation activation : gru_cell.activations) {
-    activation_operator_codes.push_back(
-        GetRecurrentNetworkActivation(activation));
+  base::FixedArray<::tflite::BuiltinOperator> activation_operator_codes(
+      gru_cell.activations.size());
+  for (size_t i = 0; i < gru_cell.activations.size(); ++i) {
+    activation_operator_codes[i] =
+        GetRecurrentNetworkActivation(gru_cell.activations[i]);
   }
 
   ::tflite::BuiltinOperator activation_code;
@@ -2522,11 +2522,11 @@ base::expected<int32_t, std::string> GraphBuilderTflite::SerializeLstmGate(
                                                hidden_size};
   const int32_t input_size = lstm_cell.input_dimensions[1];
 
-  std::vector<::tflite::BuiltinOperator> activation_operator_codes;
-  activation_operator_codes.reserve(lstm_cell.activations.size());
-  for (mojom::RecurrentNetworkActivation activation : lstm_cell.activations) {
-    activation_operator_codes.push_back(
-        GetRecurrentNetworkActivation(activation));
+  base::FixedArray<::tflite::BuiltinOperator> activation_operator_codes(
+      lstm_cell.activations.size());
+  for (size_t i = 0; i < lstm_cell.activations.size(); ++i) {
+    activation_operator_codes[i] =
+        GetRecurrentNetworkActivation(lstm_cell.activations[i]);
   }
 
   CHECK(lstm_cell.layout == mojom::LstmWeightLayout::kIofg ||
@@ -2728,11 +2728,10 @@ auto GraphBuilderTflite::SerializeSubGraphSliceSqueeze(
                               slice_starts, slice_sizes));
   operators_.emplace_back(operator_offset);
 
-  std::vector<int32_t> squeeze_output_shape;
-  squeeze_output_shape.reserve(slice_sizes.size());
+  base::FixedArray<int32_t> squeeze_output_shape(slice_sizes.size());
   for (size_t i = 0; i < slice_sizes.size(); ++i) {
     if (base::checked_cast<size_t>(squeeze_axis) != i) {
-      squeeze_output_shape.push_back(slice_sizes[i]);
+      squeeze_output_shape[i] = slice_sizes[i];
     }
   }
   const int32_t output_tensor_index =
@@ -2807,10 +2806,9 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
                          initial_hidden_cell_state_shape));
   }
 
-  std::vector<int32_t> cell_weight_tensor_indices;
-  cell_weight_tensor_indices.reserve(num_directions);
-  std::vector<int32_t> cell_recurrent_weight_tensor_indices;
-  cell_recurrent_weight_tensor_indices.reserve(num_directions);
+  base::FixedArray<int32_t> cell_weight_tensor_indices(num_directions);
+  base::FixedArray<int32_t> cell_recurrent_weight_tensor_indices(
+      num_directions);
   std::vector<int32_t> cell_bias_tensor_indices;
   cell_bias_tensor_indices.reserve(num_directions);
   std::vector<int32_t> cell_recurrent_bias_tensor_indices;
@@ -2857,7 +2855,7 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
                          /*slice_sizes=*/
                          std::array<int32_t, 3>({1, slice_height, input_size}),
                          /*squeeze_axis=*/0));
-    cell_weight_tensor_indices.push_back(cell_weight_tensor_index);
+    cell_weight_tensor_indices[slot] = cell_weight_tensor_index;
 
     ASSIGN_OR_RETURN(const int32_t cell_recurrent_weight_tensor_index,
                      SerializeSubGraphSliceSqueeze(
@@ -2866,8 +2864,8 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
                          /*slice_sizes=*/
                          std::array<int32_t, 3>({1, slice_height, hidden_size}),
                          /*squeeze_axis=*/0));
-    cell_recurrent_weight_tensor_indices.push_back(
-        cell_recurrent_weight_tensor_index);
+    cell_recurrent_weight_tensor_indices[slot] =
+        cell_recurrent_weight_tensor_index;
 
     if (recurrent_network.bias_operand_id) {
       ASSIGN_OR_RETURN(const int32_t cell_bias_tensor_index,
@@ -2910,8 +2908,7 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
 
   std::optional<int32_t> sequence_tensor_index;
   for (int32_t step = 0; step < recurrent_steps; ++step) {
-    std::vector<int32_t> current_hidden_tensor_indices;
-    current_hidden_tensor_indices.reserve(num_directions);
+    base::FixedArray<int32_t> current_hidden_tensor_indices(num_directions);
     std::vector<int32_t> lstm_current_cell_tensor_indices;
     if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
       lstm_current_cell_tensor_indices.reserve(num_directions);
@@ -2925,7 +2922,7 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
               /*slice_sizes=*/
               std::array<int32_t, 3>({1, batch_size, hidden_size}),
               /*squeeze_axis=*/0));
-      current_hidden_tensor_indices.push_back(cell_hidden_tensor_index);
+      current_hidden_tensor_indices[slot] = cell_hidden_tensor_index;
 
       if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
         ASSIGN_OR_RETURN(
@@ -3063,12 +3060,13 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
     }
   }
 
-  std::vector<int32_t> output_tensor_indices;
-  output_tensor_indices.reserve(recurrent_network.output_operand_ids.size());
-  for (auto operand_id : recurrent_network.output_operand_ids) {
-    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                     SerializeOutputTensorInfo(operand_id));
-    output_tensor_indices.push_back(output_tensor_info.index);
+  base::FixedArray<int32_t> output_tensor_indices(
+      recurrent_network.output_operand_ids.size());
+  for (size_t i = 0; i < recurrent_network.output_operand_ids.size(); ++i) {
+    ASSIGN_OR_RETURN(
+        const TensorInfo& output_tensor_info,
+        SerializeOutputTensorInfo(recurrent_network.output_operand_ids[i]));
+    output_tensor_indices[i] = output_tensor_info.index;
   }
   if (recurrent_network.return_sequence) {
     int32_t output_sequence_tensor_index;
@@ -3436,12 +3434,12 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
         SerializeInputTensorInfo(*lstm_cell.peephole_weight_operand_id));
     peephole_weight_tensor_index = peephole_weight_tensor_info.index;
   }
-  std::vector<int32_t> output_tensor_indices;
-  output_tensor_indices.reserve(lstm_cell.output_operand_ids.size());
-  for (auto operand_id : lstm_cell.output_operand_ids) {
-    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                     SerializeOutputTensorInfo(operand_id));
-    output_tensor_indices.push_back(output_tensor_info.index);
+  base::FixedArray<int32_t> output_tensor_indices(lstm_cell.output_operand_ids.size());
+  for (size_t i = 0; i < lstm_cell.output_operand_ids.size(); ++i) {
+    ASSIGN_OR_RETURN(
+        const TensorInfo& output_tensor_info,
+        SerializeOutputTensorInfo(lstm_cell.output_operand_ids[i]));
+    output_tensor_indices[i] = output_tensor_info.index;
   }
 
   CHECK_EQ(input_tensor_info.dimensions.size(), 2u);
@@ -3995,18 +3993,17 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
 
   // The number of starts and sizes are the same as input rank that is verified
   // in ValidateSliceAndInferOutput() function.
-  std::vector<int32_t> slice_starts;
-  slice_starts.reserve(slice.starts_and_sizes.size());
-  std::vector<int32_t> slice_sizes;
-  slice_sizes.reserve(slice.starts_and_sizes.size());
-  for (auto& start_and_size : slice.starts_and_sizes) {
+  base::FixedArray<int32_t> slice_starts(slice.starts_and_sizes.size());
+  base::FixedArray<int32_t> slice_sizes(slice.starts_and_sizes.size());
+  for (size_t i = 0; i < slice.starts_and_sizes.size(); ++i) {
+    const auto& start_and_size = slice.starts_and_sizes[i];
     auto checked_start = base::MakeCheckedNum<int32_t>(start_and_size->start);
     auto checked_size = base::MakeCheckedNum<int32_t>(start_and_size->size);
     if (!checked_start.IsValid() || !checked_size.IsValid()) {
       return base::unexpected("The start or size of slice is too large.");
     }
-    slice_starts.push_back(checked_start.ValueOrDie());
-    slice_sizes.push_back(checked_size.ValueOrDie());
+    slice_starts[i] = checked_start.ValueOrDie();
+    slice_sizes[i] = checked_size.ValueOrDie();
   }
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
@@ -4152,17 +4149,14 @@ auto GraphBuilderTflite::SerializeSplit(const mojom::Split& split)
   // Serialize the split sizes tensor that specifies the sizes of each output
   // tensor along the axis.
   const size_t outputs_size = split.output_operand_ids.size();
-  std::vector<int32_t> split_sizes;
-  split_sizes.reserve(outputs_size);
-  std::vector<int32_t> op_outputs;
-  op_outputs.reserve(outputs_size);
-  for (uint64_t output_id : split.output_operand_ids) {
+  base::FixedArray<int32_t> split_sizes(outputs_size);
+  base::FixedArray<int32_t> op_outputs(outputs_size);
+  for (size_t i = 0; i < outputs_size; ++i) {
     ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                     SerializeOutputTensorInfo(output_id));
+                     SerializeOutputTensorInfo(split.output_operand_ids[i]));
     CHECK_LT(split.axis, output_tensor_info.dimensions.size());
-    split_sizes.push_back(output_tensor_info.dimensions[split.axis]);
-
-    op_outputs.push_back(output_tensor_info.index);
+    split_sizes[i] = output_tensor_info.dimensions[split.axis];
+    op_outputs[i] = output_tensor_info.index;
   }
   const auto checked_split_size =
       base::MakeCheckedNum<int32_t>(split_sizes.size());
