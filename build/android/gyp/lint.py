@@ -42,6 +42,7 @@ _DISABLED_ALWAYS = [
     "VisibleForTests",  # Does not recognize "ForTesting" methods.
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
+    "NullSafeMutableLiveData",  # Broken. See b/370586513.
 ]
 
 _RES_ZIP_DIR = 'RESZIPS'
@@ -200,6 +201,7 @@ def _RunLint(custom_lint_jar_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
+             create_cache,
              warnings_as_errors=False):
   logging.info('Lint starting')
   if not cache_dir:
@@ -246,9 +248,16 @@ def _RunLint(custom_lint_jar_path,
       '--offline',
       '--quiet',  # Silences lint's "." progress updates.
       '--stacktrace',  # Prints full stacktraces for internal lint errors.
-      '--disable',
-      ','.join(_DISABLED_ALWAYS),
   ]
+
+  # Only disable for real runs since otherwise you get UnknownIssueId warnings
+  # when disabling custom lint checks since they are not passed during cache
+  # creation.
+  if not create_cache:
+    cmd += [
+        '--disable',
+        ','.join(_DISABLED_ALWAYS),
+    ]
 
   if not manifest_path:
     manifest_path = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
@@ -327,8 +336,19 @@ def _RunLint(custom_lint_jar_path,
   _WriteXmlFile(project_file_root, project_xml_path)
   cmd += ['--project', project_xml_path]
 
-  # This filter is necessary for JDK11.
-  stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
+  def stdout_filter(output):
+    filter_patterns = [
+        # This filter is necessary for JDK11.
+        'No issues found',
+        # Custom checks are not always available in every lint run so an
+        # UnknownIssueId warning is sometimes printed for custom checks in the
+        # _DISABLED_ALWAYS list.
+        r'\[UnknownIssueId\]',
+        # If all the warnings are filtered, we should not fail on the final
+        # summary line.
+        r'\d+ errors, \d+ warnings',
+    ]
+    return build_utils.FilterLines(output, '|'.join(filter_patterns))
 
   def stderr_filter(output):
     output = build_utils.FilterReflectiveAccessJavaWarnings(output)
@@ -522,6 +542,7 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
+           args.create_cache,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
   build_utils.Touch(args.stamp)
