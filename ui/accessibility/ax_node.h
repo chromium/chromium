@@ -270,6 +270,12 @@ class AX_EXPORT AXNode final {
                    const gfx::RectF& location,
                    gfx::Transform* transform);
 
+  // Update this node's scroll x and y. This is separate from |SetData| just
+  // because changing only the scroll info is common and should be more
+  // efficient than re-copying all of the data.
+  void SetScrollInfo(const int& scroll_x, const int& scroll_y);
+  void GetScrollInfo(int* scroll_x, int* scroll_y) const;
+
   // Set the index in parent, for example if siblings were inserted or deleted.
   void SetIndexInParent(size_t index_in_parent);
 

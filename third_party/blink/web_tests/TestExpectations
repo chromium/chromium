@@ -7070,7 +7070,6 @@ crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-new-wait-loop/external/wpt/
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326123178 accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326123298 virtual/third-party-cookie-phaseout-enabled/external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Pass Timeout ]
-crbug.com/40899204 accessibility/scroll-div-horiz-sends-notification.html [ Failure Pass Timeout ] # Flaky
 
 # Flaky tests: 2024-02-21
 crbug.com/40271908 virtual/fenced-frame-mparch/external/wpt/fenced-frame/navigate-ancestor-top-level-fenced-frame.https.html [ Failure Pass Timeout ] # Flaky

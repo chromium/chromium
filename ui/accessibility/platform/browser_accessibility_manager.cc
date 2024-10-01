@@ -655,22 +655,55 @@ void BrowserAccessibilityManager::OnLocationChanges(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnLocationChanges");
+  bool can_fire_events = CanFireEvents();
+  for (auto& change : changes.scroll_changes) {
+    BrowserAccessibility* obj = GetFromID(change.id);
+    if (!obj) {
+      continue;
+    }
+
+    AXNode* node = obj->node();
+    int old_scrollx, old_scrolly;
+    node->GetScrollInfo(&old_scrollx, &old_scrolly);
+    node->SetScrollInfo(change.scroll_x, change.scroll_y);
+
+    if (can_fire_events) {
+      if (change.scroll_x != old_scrollx) {
+        FireGeneratedEvent(
+            ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED,
+            node);
+      }
+      if (change.scroll_y != old_scrolly) {
+        FireGeneratedEvent(
+            ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED,
+            node);
+      }
+    }
+  }
+
   for (auto& change : changes.location_changes) {
     BrowserAccessibility* obj = GetFromID(change.id);
-    if (!obj)
+    if (!obj) {
       continue;
+    }
     AXNode* node = obj->node();
     node->SetLocation(change.new_location.offset_container_id,
                       change.new_location.bounds,
                       change.new_location.transform.get());
   }
+
   // Only send location change events when the page is not in back/forward
   // cache.
-  if (CanFireEvents()) {
+  if (can_fire_events && !changes.location_changes.empty()) {
     SendLocationChangeEvents(changes.location_changes);
   }
-  if (!location_change_callback_for_testing_.is_null())
+
+  // Only send location change callback when there's actually changed locations.
+  // Required for tests to detect location change that's not scrolling.
+  if (!location_change_callback_for_testing_.is_null() &&
+      !changes.location_changes.empty()) {
     location_change_callback_for_testing_.Run();
+  }
 }
 
 void BrowserAccessibilityManager::SendLocationChangeEvents(

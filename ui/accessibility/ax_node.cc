@@ -781,6 +781,16 @@ void AXNode::SetLocation(AXNodeID offset_container_id,
   }
 }
 
+void AXNode::SetScrollInfo(const int& scroll_x, const int& scroll_y) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_x);
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_y);
+}
+
+void AXNode::GetScrollInfo(int* scroll_x, int* scroll_y) const {
+  *scroll_x = GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  *scroll_y = GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
+}
+
 void AXNode::SetIndexInParent(size_t index_in_parent) {
   index_in_parent_ = index_in_parent;
 }

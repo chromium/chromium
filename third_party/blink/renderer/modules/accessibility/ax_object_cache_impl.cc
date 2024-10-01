@@ -759,7 +759,6 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kEditableTextContentChanged);
     DEBUG_STRING_CASE(kFocusableChanged);
     DEBUG_STRING_CASE(kIdChanged);
-    DEBUG_STRING_CASE(kMarkDirtyFromHandleScroll);
     DEBUG_STRING_CASE(kNodeIsAttached);
     DEBUG_STRING_CASE(kNodeGainedFocus);
     DEBUG_STRING_CASE(kNodeLostFocus);
@@ -1993,14 +1992,12 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
     }
     // Allow the new AXObject for the same node to be serialized correctly.
     nodes_with_pending_children_changed_.erase(obj_id);
-    nodes_with_pending_scroll_changed_.erase(obj_id);
     computed_node_mapping_.erase(obj_id);
   } else {
     // Non-DOM ids should never find their way into these maps.
     DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
     DCHECK(!computed_node_mapping_.Contains(obj_id));
     DCHECK(!nodes_with_pending_children_changed_.Contains(obj_id));
-    DCHECK(!nodes_with_pending_scroll_changed_.Contains(obj_id));
   }
 }
 
@@ -3242,7 +3239,6 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       CHECK(tree_update_callback_queue_main_.empty());
       CHECK(tree_update_callback_queue_popup_.empty());
       CHECK(nodes_with_pending_children_changed_.empty());
-      CHECK(nodes_with_pending_scroll_changed_.empty());
 
       {
         lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kFinalizingTree);
@@ -3258,7 +3254,6 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
         CHECK(tree_update_callback_queue_main_.empty());
         CHECK(tree_update_callback_queue_popup_.empty());
         CHECK(nodes_with_pending_children_changed_.empty());
-        CHECK(nodes_with_pending_scroll_changed_.empty());
 
         // Updating the tree did not add dirty objects.
         DUMP_WILL_BE_CHECK(!IsDirty());
@@ -3526,7 +3521,6 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   TreeUpdateCallbackQueue old_tree_update_callback_queue;
   GetTreeUpdateCallbackQueue(document).swap(old_tree_update_callback_queue);
   nodes_with_pending_children_changed_.clear();
-  nodes_with_pending_scroll_changed_.clear();
   last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   for (TreeUpdateParams* tree_update : old_tree_update_callback_queue) {
@@ -3746,9 +3740,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kIdChanged:
       // When the id attribute changes, the relations its in may also change.
       MaybeNewRelationTarget(*node, ax_object);
-      break;
-    case TreeUpdateReason::kMarkDirtyFromHandleScroll:
-      MarkAXObjectDirtyWithCleanLayout(Get(node));
       break;
     case TreeUpdateReason::kNodeGainedFocus:
       HandleNodeGainedFocusWithCleanLayout(node);
@@ -4793,7 +4784,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kDelayEventFromPostNotification:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:
-    case TreeUpdateReason::kMarkDirtyFromHandleScroll:
     case TreeUpdateReason::kNodeIsAttached:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
@@ -5274,7 +5264,12 @@ AXObjectCacheImpl::TakeLocationChangsForSerialization() {
       "Accessibility.Performance.TakeLocationChangsForSerialization");
 
   ui::AXLocationAndScrollUpdates changes;
+
+  // Reserve is just an optimization. The actual value doesn't have to be
+  // accurate but just an estimate. Assume the changes will always be half and
+  // half.
   changes.location_changes.reserve(changed_bounds_ids_.size());
+  changes.scroll_changes.reserve(changed_bounds_ids_.size());
 
   for (AXID changed_bounds_id : changed_bounds_ids_) {
     if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
@@ -5288,12 +5283,22 @@ AXObjectCacheImpl::TakeLocationChangsForSerialization() {
       ui::AXRelativeBounds new_location;
       bool clips_children;
       obj->PopulateAXRelativeBounds(new_location, &clips_children);
-      if (bounds->value == new_location) {
-        continue;
+      gfx::Point scroll_offset = obj->GetScrollOffset();
+
+      if (bounds->value.bounds != new_location) {
+        changes.location_changes.emplace_back(changed_bounds_id, new_location);
       }
 
-      cached_bounding_boxes_.Set(changed_bounds_id, new_location);
-      changes.location_changes.emplace_back(changed_bounds_id, new_location);
+      if (bounds->value.scroll_x != scroll_offset.x() ||
+          bounds->value.scroll_y != scroll_offset.y()) {
+        changes.scroll_changes.emplace_back(
+            changed_bounds_id, scroll_offset.x(), scroll_offset.y());
+      }
+
+      cached_bounding_boxes_.Set(
+          changed_bounds_id,
+          CachedLocationChange(new_location, scroll_offset.x(),
+                               scroll_offset.y()));
     }
   }
 
@@ -5359,7 +5364,8 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
                                               item.scroll_y));
   }
 
-  if (!location_and_scroll_changes->location_changes.empty()) {
+  if (!location_and_scroll_changes->location_changes.empty() ||
+      !location_and_scroll_changes->scroll_changes.empty()) {
     CHECK(reset_token_);
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
         std::move(location_and_scroll_changes), *reset_token_);
@@ -5929,13 +5935,15 @@ void AXObjectCacheImpl::InvalidateBoundingBox(const AXID& id) {
   changed_bounds_ids_.insert(id);
 }
 
-void AXObjectCacheImpl::SetCachedBoundingBox(
-    AXID id,
-    const ui::AXRelativeBounds& bounds) {
+void AXObjectCacheImpl::SetCachedBoundingBox(AXID id,
+                                             const ui::AXRelativeBounds& bounds,
+                                             const int scroll_x,
+                                             const int scroll_y) {
   // When a bounding box of a node is serialized, we store the last value for it
   // in cached_bounding_boxes_, to help with comparing if it really changed
   // or not when sending another serialization later.
-  cached_bounding_boxes_.Set(id, bounds);
+  cached_bounding_boxes_.Set(id,
+                             CachedLocationChange(bounds, scroll_x, scroll_y));
 }
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
@@ -5953,12 +5961,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    if (!nodes_with_pending_scroll_changed_.insert(node->GetDomNodeId())
-             .is_new_entry) {
-      return;
-    }
-
-    DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleScroll, node);
+    InvalidateBoundingBox(node->GetDomNodeId());
   }
 }
 

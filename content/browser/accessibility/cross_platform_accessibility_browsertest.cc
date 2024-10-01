@@ -621,6 +621,188 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       EnsureVerticalScrollSendScrollUpdatesOnly) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          .container {
+            padding: 100px;
+            height: 900px;
+            overflow: scroll;
+          }
+
+          .bigbutton {
+            display: block;
+            width: 600px;
+            height: 600px;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="container" class="container" role="group">
+          <button class="bigbutton">One</button>
+          <button class="bigbutton">Two</button>
+          <button class="bigbutton">Three</button>
+        </div>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "One");
+
+  const ui::BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+  const ui::BrowserAccessibility* container = root->PlatformGetChild(0);
+
+  EXPECT_EQ(ax::mojom::Role::kGroup, container->GetRole());
+  ASSERT_EQ(3U, container->PlatformChildCount());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY), 0);
+  EXPECT_FALSE(container->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_TRUE(container->PlatformGetChild(2)->IsOffscreen());
+
+  // Even though SCROLL_VERTICAL_POSITION_CHANGED looks like a Blink event, it
+  // is not actually fired by Blink. Its now fired in the browser process.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
+
+  // Ensure a normal serialization doesn't happen.
+  // When something like only locations change in a document. We want to avoid
+  // full-scale serialization as it's not required. A lightweight locations-only
+  // serialization already occurs. This check below ensures a full serialization
+  // doesn't occur. Marking objects as dirty is pretty expensive and in
+  // cases of scroll changes, we don't need it while we already know what
+  // changed.
+  bool received_event = false;
+  base::RunLoop run_loop;
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_impl->SetAccessibilityCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfhi, ax::mojom::Event event_type,
+          int event_target_id) {
+        received_event = true;
+        run_loop.Quit();
+      }));
+
+  // Scroll the container to a location and expect a scroll update with new
+  // scroll.
+  ExecuteScript("document.querySelector('#container').scrollTop = 900;");
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY), 900);
+  EXPECT_TRUE(container->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_FALSE(container->PlatformGetChild(2)->IsOffscreen());
+
+  // Since we're expecting NO calls, we need a timer to avoid waiting too long.
+  // Five seconds should be enough to fail on some builds. It's ok if test
+  // passes incorrectly on slow ones. Waiting for (30 seconds) will
+  // cost a lot of wait-time.
+  base::OneShotTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Milliseconds(5000),
+                   run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(received_event) << "Received accessibility event when scroll "
+                                  "changes shouldn't mark anything as dirty.";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       EnsureHorizontalScrollSendScrollUpdatesOnly) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          .container {
+            padding: 100px;
+            height: 900px;
+            overflow: scroll;
+          }
+
+          .inner {
+            width: 2000px;
+          }
+
+          .bigbutton {
+            display:inline-block;
+            width: 600px;
+            height: 600px;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="container" class="container">
+          <div class="inner">
+            <button class="bigbutton">One</button>
+            <button class="bigbutton">Two</button>
+            <button class="bigbutton">Three</button>
+          </div>
+        </div>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "One");
+
+  const ui::BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+  const ui::BrowserAccessibility* container = root->PlatformGetChild(0);
+
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, container->GetRole());
+  ASSERT_EQ(1U, container->PlatformChildCount());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX), 0);
+  const ui::BrowserAccessibility* parentOfItems =
+      container->PlatformGetChild(0);
+  EXPECT_FALSE(parentOfItems->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_TRUE(parentOfItems->PlatformGetChild(2)->IsOffscreen());
+
+  // Even though SCROLL_HORIZONTAL_POSITION_CHANGED looks like a Blink event, it
+  // is not actually fired by Blink. Its now fired in the browser process.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
+
+  // Ensure a normal serialization doesn't happen.
+  // When something like only locations change in a document. We want to avoid
+  // full-scale serialization as it's not required. A lightweight locations-only
+  // serialization already occurs. This check below ensures a full serialization
+  // doesn't occur. Marking objects as dirty is pretty expensive and in
+  // cases of scroll changes, we don't need it while we already know what
+  // changed.
+  bool received_event = false;
+  base::RunLoop run_loop;
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_impl->SetAccessibilityCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfhi, ax::mojom::Event event_type,
+          int event_target_id) {
+        received_event = true;
+        run_loop.Quit();
+      }));
+
+  // Scroll the container to a location and expect a scroll update with new
+  // scroll.
+  ExecuteScript("document.querySelector('#container').scrollLeft = 900;");
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX), 900);
+  EXPECT_TRUE(parentOfItems->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_FALSE(parentOfItems->PlatformGetChild(2)->IsOffscreen());
+
+  // Since we're expecting NO calls, we need a timer to avoid waiting too long.
+  // Five seconds should be enough to fail on some builds. It's ok if test
+  // passes incorrectly on slow ones. Waiting for (30 seconds) will
+  // cost a lot of wait-time.
+  base::OneShotTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Milliseconds(5000),
+                   run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(received_event) << "Received accessibility event when scroll "
+                                  "changes shouldn't mark anything as dirty.";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIframeAccessibility) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
