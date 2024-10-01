@@ -5404,8 +5404,13 @@
   },
   {
     "name": "ios-keyboard-accessory-upgrade",
-    "owners": [ "noemies@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
+    "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 135
+  },
+  {
+    "name": "ios-keyboard-accessory-upgrade-short-manual-fill-menu",
+    "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
+    "expiry_milestone": 137
   },
   {
     "name": "ios-large-fakebox",

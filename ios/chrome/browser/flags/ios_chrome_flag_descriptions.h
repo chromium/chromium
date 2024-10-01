@@ -470,6 +470,11 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
+// Title and description for the flag to enable the keyboard accessory upgrade
+// with a shorter manual fill menu.
+extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
+extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
+
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.
 extern const char kIOSPasswordBottomSheetAutofocusName[];

@@ -35,6 +35,10 @@ BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
              "IOSKeyboardAccessoryUpgrade",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu,
+             "IOSKeyboardAccessoryUpgradeShortManualFillMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyCheckMagicStack,
@@ -711,6 +715,12 @@ bool IsIOSLargeFakeboxEnabled() {
 bool IsKeyboardAccessoryUpgradeEnabled() {
   return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade) &&
          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+}
+
+bool IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled() {
+  return IsKeyboardAccessoryUpgradeEnabled() &&
+         base::FeatureList::IsEnabled(
+             kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
 }
 
 // Feature disabled by default.

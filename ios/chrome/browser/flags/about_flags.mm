@@ -1226,6 +1226,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSKeyboardAccessoryUpgradeName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgrade)},
+    {"ios-keyboard-accessory-upgrade-short-manual-fill-menu",
+     flag_descriptions::kIOSKeyboardAccessoryUpgradeShortManualFillMenuName,
+     flag_descriptions::
+         kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu)},
     {"ios-large-fakebox", flag_descriptions::kIOSLargeFakeboxName,
      flag_descriptions::kIOSLargeFakeboxDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSLargeFakebox)},

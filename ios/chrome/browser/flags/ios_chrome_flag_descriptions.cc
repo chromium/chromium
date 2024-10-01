@@ -551,6 +551,13 @@ const char kIOSKeyboardAccessoryUpgradeName[] =
 const char kIOSKeyboardAccessoryUpgradeDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented.";
 
+const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[] =
+    "Enable the keyboard accessory upgrade on iOS with a shorter manual fill "
+    "menu";
+const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[] =
+    "When enabled, the upgraded keyboard accessory UI will be presented with a "
+    "shorter manual fill menu.";
+
 const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
