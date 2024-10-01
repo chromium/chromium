@@ -1356,6 +1356,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-11|Mac-10.16"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1385,6 +1386,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-11|Mac-10.16"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3053,6 +3055,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-12"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3083,6 +3086,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-12"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -4752,6 +4756,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-13"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -4781,6 +4786,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-13"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -28773,6 +28779,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-14"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -28802,6 +28809,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
+            "gpu": null,
             "os": "Mac-14"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

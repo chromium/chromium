@@ -545,33 +545,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if substituted_array != original_args:
       test_config['args'] = self.maybe_fixup_args_array(substituted_array)
 
-  def dictionary_merge(self, a, b, path=None):
-    """http://stackoverflow.com/questions/7204805/
-        python-dictionaries-of-dictionaries-merge
-    merges b into a
-    """
-    if path is None:
-      path = []
-    for key in b:
-      if key not in a:
-        if b[key] is not None:
-          a[key] = b[key]
-        continue
-
-      if isinstance(a[key], dict) and isinstance(b[key], dict):
-        self.dictionary_merge(a[key], b[key], path + [str(key)])
-      elif a[key] == b[key]:
-        pass  # same leaf value
-      elif isinstance(a[key], list) and isinstance(b[key], list):
-        a[key] = a[key] + b[key]
-        if key.endswith('args'):
-          a[key] = self.maybe_fixup_args_array(a[key])
-      elif b[key] is None:
-        del a[key]
-      else:
-        a[key] = b[key]
-
-    return a
+  @staticmethod
+  def merge_swarming(swarming1, swarming2):
+    swarming2 = dict(swarming2)
+    if 'dimensions' in swarming2:
+      swarming1.setdefault('dimensions', {}).update(swarming2.pop('dimensions'))
+    if 'named_caches' in swarming2:
+      named_caches = swarming1.setdefault('named_caches', [])
+      named_caches.extend(swarming2.pop('named_caches'))
+    swarming1.update(swarming2)
 
   def clean_swarming_dictionary(self, swarming_dict):
     # Clean out redundant entries from a test's "swarming" dictionary.
@@ -593,7 +575,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     ):
       swarming = test.pop(key, None)
       if swarming and fn(builder):
-        self.dictionary_merge(test['swarming'], swarming)
+        self.merge_swarming(test['swarming'], swarming)
 
     for key, fn in (
         ('desktop_args', lambda cfg: not self.is_android(cfg)),
@@ -659,7 +641,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       test = self.apply_mixins(test, variant_mixins, mixins_to_ignore, builder)
 
     # Add any swarming or args from the builder
-    self.dictionary_merge(test['swarming'], builder.get('swarming', {}))
+    self.merge_swarming(test['swarming'], builder.get('swarming', {}))
     if supports_args:
       test.setdefault('args', []).extend(builder.get('args', []))
 
@@ -679,7 +661,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # test's specification.
     modifications = self.get_test_modifications(test, builder_name)
     if modifications:
-      test = self.dictionary_merge(test, modifications)
+      test = self.apply_mixin(modifications, test, builder)
 
     # Clean up the swarming entry or remove it if it's unnecessary
     if (swarming_dict := test.get('swarming')) is not None:
@@ -1407,20 +1389,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       new_test['description'] = '\n'.join(description)
 
     if 'swarming' in mixin:
-      swarming_mixin = mixin['swarming']
-      new_test.setdefault('swarming', {})
-      if 'dimensions' in swarming_mixin:
-        new_test['swarming'].setdefault('dimensions', {}).update(
-            swarming_mixin.pop('dimensions'))
-      if 'named_caches' in swarming_mixin:
-        new_test['swarming'].setdefault('named_caches', []).extend(
-            swarming_mixin['named_caches'])
-        del swarming_mixin['named_caches']
-      # python dict update doesn't do recursion at all. Just hard code the
-      # nested update we need (mixin['swarming'] shouldn't clobber
-      # test['swarming'], but should update it).
-      new_test['swarming'].update(swarming_mixin)
-      del mixin['swarming']
+      self.merge_swarming(new_test.setdefault('swarming', {}),
+                          mixin.pop('swarming'))
 
     for a in ('args', 'precommit_args', 'non_precommit_args'):
       if (value := mixin.pop(a, None)) is None:
