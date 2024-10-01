@@ -82,7 +82,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                         .getDimensionPixelSize(R.dimen.history_item_remove_button_lateral_padding),
                 getPaddingBottom());
 
-        findViewById(R.id.chip_description).setVisibility(View.VISIBLE);
         mChipView = findViewById(R.id.chip);
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
     }

@@ -1027,7 +1027,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         final int colorId = TabGroupColorId.BLUE;
         final int colorLayer = 1;
 
-        ImageView colorIconView = mTabListView.findViewById(R.id.icon);
+        ImageView colorIconView = mTabListView.findViewById(R.id.before_title_icon);
         assertNull(colorIconView.getBackground());
 
         mGridModel.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
@@ -1059,7 +1059,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         mGridModel.set(TabProperties.TAB_GROUP_COLOR_ID, colorId1);
 
-        ImageView colorIconView = mTabListView.findViewById(R.id.icon);
+        ImageView colorIconView = mTabListView.findViewById(R.id.before_title_icon);
         assertEquals(colorIconView.getVisibility(), View.VISIBLE);
         assertNotNull(colorIconView.getBackground());
 

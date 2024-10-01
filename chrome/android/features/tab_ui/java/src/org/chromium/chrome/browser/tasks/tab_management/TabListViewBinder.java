@@ -272,7 +272,7 @@ class TabListViewBinder {
     }
 
     private static void setTabGroupColorIcon(ViewGroup view, PropertyModel model) {
-        ImageView colorIconView = view.findViewById(R.id.icon);
+        ImageView colorIconView = view.findViewById(R.id.before_title_icon);
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             colorIconView.setVisibility(View.VISIBLE);
