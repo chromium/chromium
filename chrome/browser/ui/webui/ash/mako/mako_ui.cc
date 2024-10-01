@@ -60,10 +60,11 @@ bool MakoUntrustedUIConfig::IsWebUIEnabled(
 }
 
 bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
-  // With resizing support enabled, we should let web viewport resize according
-  // to dimension of web view rather than updating the dimension of web view
-  // based on inner web content.
-  return !base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport);
+  // With resizing support enabled or when lobster is enabled, we should let web
+  // viewport resize according to dimension of web view rather than updating the
+  // dimension of web view based on inner web content.
+  return !base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport) &&
+         !ash::features::IsLobsterEnabled();
 }
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
