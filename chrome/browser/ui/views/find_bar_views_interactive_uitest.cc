@@ -71,6 +71,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHttpRequest(
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kTextCopiedState);
+const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
+const ui::Accelerator ctrl_v_accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN);
 }  // namespace
 
 struct FindResultState {
@@ -685,60 +689,54 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
 }
 #endif
 
-// Flaky on Win. http://crbug.com/92467
-// Flaky on ChromeOS. http://crbug.com/118216
-// Flaky on linux aura. http://crbug.com/163931
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_PasteWithoutTextChange) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Make sure Chrome is in the foreground, otherwise sending input
-  // won't do anything and the test will hang.
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-
-  // First we navigate to any page.
-  GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Show the Find bar.
-  browser()->GetFindBarController()->Show();
-
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Search for "a".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_A, false, false, false, false));
-
-  // We should find "a" here.
-  EXPECT_EQ(u"a", GetFindBarText());
-
-  // Reload the page to clear the matching result.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-
-  // Focus the Find bar again to make sure the text is selected.
-  browser()->GetFindBarController()->Show();
-
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // "a" should be selected.
-  EXPECT_EQ(u"a", GetFindBarSelectedText());
-
-  // Press Ctrl-C to copy the content.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_C, true, false, false, false));
-
-  std::u16string str;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &str);
-
-  // Make sure the text is copied successfully.
-  EXPECT_EQ(u"a", str);
-
-  // Press Ctrl-V to paste the content back, it should start finding even if the
-  // content is not changed.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_V, true, false, false, false));
-  find_in_page::FindNotificationDetails details = WaitForFindResult();
-  EXPECT_TRUE(details.number_of_matches() > 0);
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
+  constexpr char16_t kSearchA[] = u"a";
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  RunTestSequence(
+      ObserveState(kFindResultState,
+                   [this]() {
+                     return find_in_page::FindTabHelper::FromWebContents(
+                         browser()->tab_strip_model()->GetActiveWebContents());
+                   }),
+      // Load page + open find bar.
+      Init(page_a), ShowFindBar(),
+      WaitForState(views::test::kCurrentFocusedViewId, FindBarView::kTextField),
+      // Search for "a".
+      EnterText(FindBarView::kTextField, kSearchA),
+      // We should find "a" here.
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kSearchA),
+      // Reload the page to clear the matching result.
+      PressButton(kReloadButtonElementId), WaitForWebContentsNavigation(kTabId),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   ContentsWebView::kContentsWebViewElementId),
+      // Focus the Find bar again to make sure the text is selected.
+      ShowFindBar(),
+      WaitForState(views::test::kCurrentFocusedViewId, FindBarView::kTextField),
+      // "a" should be selected.
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kSearchA),
+      // Press Ctrl-C to copy the content.
+      SendAccelerator(kTabId, ctrl_c_accelerator),
+      // Make sure the text is copied successfully.
+      PollState(
+          kTextCopiedState,
+          [&]() {
+            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+            std::u16string clipboard_text;
+            clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                /* data_dst = */ nullptr, &clipboard_text);
+            return base::EqualsASCII(clipboard_text, "a");
+          }),
+      WaitForState(kTextCopiedState, true),
+      // Press Ctrl-V to paste the content back, it should start finding even if
+      // the content is not changed.
+      SendAccelerator(kTabId, ctrl_v_accelerator),
+      WaitForState(
+          kFindResultState,
+          testing::Field(
+              &FindResultState::active_match_ordinal,
+              testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))));
 }
 
 // Slow flakiness on Linux. crbug.com/803743
