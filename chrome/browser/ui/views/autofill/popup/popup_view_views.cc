@@ -105,6 +105,8 @@ static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/41382463): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = 456;
 
+constexpr int kMaxPopupWithSearchBarHeight = 400;
+
 // Preferred position relative to the control sides of the sub-popup.
 constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSides = {
     views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight};
@@ -1165,6 +1167,13 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
     size = views::View::CalculatePreferredSize(
         views::SizeBounds(kAutofillPopupMaxWidth, {}));
     size.set_width(kAutofillPopupMaxWidth);
+  }
+
+  // This popup height limiting for popups with a search bar addresses a minor
+  // UX concern when a potentially long list makes the search bar appear far
+  // away from the field and thus less obvious what the search bar belongs to.
+  if (search_bar_) {
+    size.set_height(std::min(kMaxPopupWithSearchBarHeight, size.height()));
   }
 
   return size;

@@ -480,6 +480,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       PopupHeightIsLimitedWithSearchBarView) {
+  controller().set_suggestions({100, SuggestionType::kAddressEntry});
+  ShowAndVerifyUi(
+      /*popup_has_parent=*/false,
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
+                                         .no_results_message = u""});
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        SearchBarViewNoSuggestionsFound) {
   // This set imitates empty search result, it contains footer suggestions only.
   controller().set_suggestions(
