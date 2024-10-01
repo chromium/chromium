@@ -380,9 +380,8 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
         "The MediaRecorder's state is '" + StateToString(state_) + "'.");
     return;
   }
-  WriteData({}, /*last_in_slice=*/true,
-            base::Time::Now().InMillisecondsFSinceUnixEpoch(),
-            /*error_event=*/nullptr);
+
+  WriteData(/*data=*/{}, /*last_in_slice=*/true, /*error_event=*/nullptr);
 }
 
 bool MediaRecorder::isTypeSupported(ExecutionContext* context,
@@ -427,9 +426,8 @@ void MediaRecorder::ContextDestroyed() {
   if (blob_data_) {
     // Cache |blob_data_->length()| because of std::move in argument list.
     const uint64_t blob_data_length = blob_data_->length();
-    CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
-                        std::move(blob_data_), blob_data_length)),
-                    base::Time::Now().InMillisecondsFSinceUnixEpoch());
+    CreateBlobEvent(MakeGarbageCollected<Blob>(
+        BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
   }
 
   state_ = State::kInactive;
@@ -442,7 +440,6 @@ void MediaRecorder::ContextDestroyed() {
 
 void MediaRecorder::WriteData(base::span<const uint8_t> data,
                               bool last_in_slice,
-                              double timecode,
                               ErrorEvent* error_event) {
   if (!first_write_received_) {
     mime_type_ = recorder_handler_->ActualMimeType();
@@ -461,14 +458,14 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
   if (!data.empty()) {
     blob_data_->AppendBytes(data);
   }
+
   if (!last_in_slice)
     return;
 
   // Cache |blob_data_->length()| because of std::move in argument list.
   const uint64_t blob_data_length = blob_data_->length();
-  CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
-                      std::move(blob_data_), blob_data_length)),
-                  timecode);
+  CreateBlobEvent(MakeGarbageCollected<Blob>(
+      BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
 }
 
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
@@ -498,7 +495,16 @@ void MediaRecorder::OnStreamChanged(const String& message) {
   }
 }
 
-void MediaRecorder::CreateBlobEvent(Blob* blob, double timecode) {
+void MediaRecorder::CreateBlobEvent(Blob* blob) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  double timecode = 0;
+  if (!blob_event_first_chunk_timecode_.has_value()) {
+    blob_event_first_chunk_timecode_ = now;
+  } else {
+    timecode =
+        (now - blob_event_first_chunk_timecode_.value()).InMillisecondsF();
+  }
+
   ScheduleDispatchEvent(MakeGarbageCollected<BlobEvent>(
       event_type_names::kDataavailable, blob, timecode));
 }
@@ -519,8 +525,7 @@ void MediaRecorder::StopRecording(ErrorEvent* error_event) {
   state_ = State::kInactive;
 
   recorder_handler_->Stop();
-  WriteData({}, /*last_in_slice=*/true,
-            base::Time::Now().InMillisecondsFSinceUnixEpoch(), error_event);
+  WriteData(/*data=*/{}, /*last_in_slice=*/true, error_event);
   ScheduleDispatchEvent(Event::Create(event_type_names::kStop));
   first_write_received_ = false;
 }

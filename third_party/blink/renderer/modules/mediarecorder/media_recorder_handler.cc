@@ -944,21 +944,13 @@ void MediaRecorderHandler::WriteData(base::span<const uint8_t> data) {
   DVLOG(3) << __func__ << " " << data.size() << "B";
 
   const base::TimeTicks now = base::TimeTicks::Now();
-  // Non-buffered mode does not need to check timestamps.
-  if (timeslice_.is_zero()) {
-    recorder_->WriteData(data, /*last_in_slice=*/true,
-                         (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
-                         /*error_event=*/nullptr);
-    return;
-  }
-
-  const bool last_in_slice = now > slice_origin_timestamp_ + timeslice_;
+  const bool last_in_slice =
+      timeslice_.is_zero() ? true : now > slice_origin_timestamp_ + timeslice_;
   DVLOG_IF(1, last_in_slice) << "Slice finished @ " << now;
-  if (last_in_slice)
+  if (last_in_slice) {
     slice_origin_timestamp_ = now;
-  recorder_->WriteData(base::as_byte_span(data), last_in_slice,
-                       (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
-                       /*error_event=*/nullptr);
+  }
+  recorder_->WriteData(data, last_in_slice, /*error_event=*/nullptr);
 }
 
 void MediaRecorderHandler::UpdateTracksLiveAndEnabled() {

@@ -80,7 +80,6 @@ class MODULES_EXPORT MediaRecorder
 
   virtual void WriteData(base::span<const uint8_t> data,
                          bool last_in_slice,
-                         double timecode,
                          ErrorEvent* error_event);
   virtual void OnError(DOMExceptionCode code, const String& message);
 
@@ -97,7 +96,7 @@ class MODULES_EXPORT MediaRecorder
   void UpdateAudioBitrate(uint32_t bits_per_second);
 
  private:
-  void CreateBlobEvent(Blob* blob, double timecode);
+  void CreateBlobEvent(Blob* blob);
 
   void StopRecording(ErrorEvent* error_event);
   void ScheduleDispatchEvent(Event* event);
@@ -112,6 +111,7 @@ class MODULES_EXPORT MediaRecorder
   State state_ = State::kInactive;
   bool first_write_received_ = false;
   std::unique_ptr<BlobData> blob_data_;
+  std::optional<base::TimeTicks> blob_event_first_chunk_timecode_;
   Member<MediaRecorderHandler> recorder_handler_;
   HeapVector<Member<Event>> scheduled_events_;
 };

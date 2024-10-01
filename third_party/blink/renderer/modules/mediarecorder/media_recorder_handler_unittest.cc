@@ -164,9 +164,7 @@ class MockMediaRecorder : public MediaRecorder {
                       scope.GetExceptionState()) {}
   ~MockMediaRecorder() override = default;
 
-  MOCK_METHOD(void,
-              WriteData,
-              (base::span<const uint8_t>, bool, double, ErrorEvent*));
+  MOCK_METHOD(void, WriteData, (base::span<const uint8_t>, bool, ErrorEvent*));
   MOCK_METHOD(void, OnError, (DOMExceptionCode code, const String& message));
 };
 
@@ -596,11 +594,11 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
       base::RunLoop run_loop;
       // WriteData is called as many as fragments (`moof` box) in addition
       // to 3 times of `ftyp`, `moov`, `mfra` boxes.
-      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kMfraBoxSize)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kMfraBoxSize)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kMfraBoxSize)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kMfraBoxSize)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder, WriteData(SizeIs(kMfraBoxSize), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(kMfraBoxSize), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -617,11 +615,9 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
       base::RunLoop run_loop;
       // writeData() is pinged a number of times as the WebM header is written;
       // the last time it is called it has the encoded data.
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -634,11 +630,9 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
       base::RunLoop run_loop;
       // The second time around writeData() is called a number of times to write
       // the WebM frame header, and then is pinged with the encoded data.
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -654,19 +648,17 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
       base::RunLoop run_loop;
       // The second time around writeData() is called a number of times to write
       // the WebM frame header, and then is pinged with the encoded data.
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
       if (GetParam().encoder_supports_alpha) {
         EXPECT_CALL(*recorder,
-                    WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+                    WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
             .Times(AtLeast(1));
         EXPECT_CALL(*recorder,
-                    WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+                    WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
             .Times(1)
             .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
       }
@@ -715,11 +707,9 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
     base::RunLoop run_loop;
     // WriteData is called as many as fragments (`moof` box) in addition
     // to 2 times of `ftyp`, `moov` boxes (no 'mfra'box as it is audio only).
-    EXPECT_CALL(*recorder,
-                WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+    EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
         .Times(AtLeast(1));
-    EXPECT_CALL(*recorder,
-                WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+    EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
         .Times(2)
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -744,11 +734,9 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
       base::RunLoop run_loop;
       // writeData() is pinged a number of times as the WebM header is written;
       // the last time it is called it has the encoded data.
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -763,11 +751,9 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
       base::RunLoop run_loop;
       // The second time around writeData() is called a number of times to write
       // the WebM frame header, and then is pinged with the encoded data.
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Lt(kEncodedSizeThreshold)), _, _))
           .Times(AtLeast(1));
-      EXPECT_CALL(*recorder,
-                  WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+      EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -810,8 +796,7 @@ TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
     const size_t kEncodedSizeThreshold = 16;
     base::RunLoop run_loop;
     EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-    EXPECT_CALL(*recorder,
-                WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _, _))
+    EXPECT_CALL(*recorder, WriteData(SizeIs(Gt(kEncodedSizeThreshold)), _, _))
         .Times(1)
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -1656,7 +1641,7 @@ TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-    EXPECT_CALL(*recorder, WriteData(SizeIs(Ge(kFrameSize)), _, _, _))
+    EXPECT_CALL(*recorder, WriteData(SizeIs(Ge(kFrameSize)), _, _))
         .Times(1)
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
     OnVideoFrameForTesting(frame);
