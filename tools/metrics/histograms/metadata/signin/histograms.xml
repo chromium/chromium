@@ -1258,6 +1258,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IdentitySnackbarHadUserName" enum="BooleanAvailable"
+    expires_after="2025-10-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when the identity snackbar is displayed. It records whether the
+    name was available to display. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.BubbleDismissReason{Type}"
     enum="SigninInterceptionDismissReason" expires_after="2025-02-02">
   <owner>rsult@google.com</owner>
