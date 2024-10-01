@@ -120,6 +120,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:build_size_trybot",
+)
+
+build_recipe(
     name = "recipe:chrome_build/build_perf",
     bootstrappable = True,
 )

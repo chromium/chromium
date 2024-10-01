@@ -1,1 +1,2 @@
 ci/linux-gcc-rel
+try/build-size

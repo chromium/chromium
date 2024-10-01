@@ -777,6 +777,7 @@
     "win-asan-rel": "try/win-asan-rel/gn-args.json"
   },
   "tryserver.chromium.linux": {
+    "build-size": "try/build-size/gn-args.json",
     "chromeos-js-code-coverage": "try/chromeos-js-code-coverage/gn-args.json",
     "chromeos-js-coverage-rel": "try/chromeos-js-coverage-rel/gn-args.json",
     "gpu-fyi-try-linux-amd-rel": "try/gpu-fyi-try-linux-amd-rel/gn-args.json",

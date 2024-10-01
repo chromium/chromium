@@ -33,6 +33,38 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "build-size",
+    branch_selector = branches.selector.MAIN,
+    # TODO: crbug.com/370594503 - Add documents for build-size.
+    description_html = "Measures and prevents unexpected build growth. " +
+                       "See docs for details.",
+    executable = "recipe:build_size_trybot",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "remoteexec",
+            "dcheck_off",
+            "linux",
+            "x64",
+        ],
+    ),
+    # TODO: crbug.com/40190002 - Make builderful before productionizing.
+    builderless = True,
+    cores = 8,
+    contact_team_email = "build@chromium.org",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "chrome",
+            ],
+            "compile_targets": [
+                "chrome",
+            ],
+        },
+    },
+)
+
+try_.builder(
     name = "layout_test_leak_detection",
     mirrors = [
         "ci/WebKit Linux Leak",
