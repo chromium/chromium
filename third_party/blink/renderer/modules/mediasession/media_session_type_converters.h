@@ -15,9 +15,9 @@ namespace mojo {
 template <>
 struct TypeConverter<const blink::MediaSessionActionDetails*,
                      blink::mojom::blink::MediaSessionActionDetailsPtr> {
-  static const blink::MediaSessionActionDetails* ConvertWithActionName(
+  static const blink::MediaSessionActionDetails* ConvertWithV8Action(
       const blink::mojom::blink::MediaSessionActionDetailsPtr& details,
-      const WTF::AtomicString& action_name);
+      blink::V8MediaSessionAction::Enum action);
 };
 
 template <>

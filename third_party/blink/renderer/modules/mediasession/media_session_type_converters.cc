@@ -9,10 +9,9 @@ namespace mojo {
 const blink::MediaSessionActionDetails*
 TypeConverter<const blink::MediaSessionActionDetails*,
               blink::mojom::blink::MediaSessionActionDetailsPtr>::
-    ConvertWithActionName(
+    ConvertWithV8Action(
         const blink::mojom::blink::MediaSessionActionDetailsPtr& details,
-        const WTF::AtomicString& action_name) {
-  DCHECK(!action_name.empty());
+        blink::V8MediaSessionAction::Enum action) {
   blink::MediaSessionActionDetails* blink_details;
 
   if (details && details->is_seek_to()) {
@@ -24,7 +23,7 @@ TypeConverter<const blink::MediaSessionActionDetails*,
     blink_details = blink::MediaSessionActionDetails::Create();
   }
 
-  blink_details->setAction(action_name);
+  blink_details->setAction(action);
 
   return blink_details;
 }
