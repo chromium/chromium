@@ -32,6 +32,20 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Pair;
 
+void AddFieldToResponse(
+    optimization_guide::proto::FormsPredictionsResponse& response,
+    const std::string& label,
+    const std::string& normalized_label,
+    const std::string& value) {
+  optimization_guide::proto::FilledFormFieldData* filled_field =
+      response.mutable_form_data()->add_filled_form_field_data();
+  filled_field->mutable_field_data()->set_field_label(label);
+  filled_field->set_normalized_label(normalized_label);
+  optimization_guide::proto::PredictedValue* predicted_value =
+      filled_field->add_predicted_values();
+  predicted_value->set_value(value);
+}
+
 MATCHER_P(HasPrediction, expected_prediction, "") {
   EXPECT_THAT(arg, AllOf(Field("Prediction::value", &Prediction::value,
                                expected_prediction.value),
@@ -84,45 +98,16 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
 
   // Set up mock.
   optimization_guide::proto::FormsPredictionsResponse response;
-  optimization_guide::proto::FormFieldData* filled_field =
-      response.mutable_form_data()
-          ->add_filled_form_field_data()
-          ->mutable_field_data();
-  filled_field->set_field_label("label");
-  filled_field->set_field_value("value");
-  optimization_guide::proto::FormFieldData* empty_field =
-      response.mutable_form_data()
-          ->add_filled_form_field_data()
-          ->mutable_field_data();
-  empty_field->set_field_label("empty");
-  empty_field->set_field_value("");
-  optimization_guide::proto::FormFieldData* not_in_original_form_field =
-      response.mutable_form_data()
-          ->add_filled_form_field_data()
-          ->mutable_field_data();
-  not_in_original_form_field->set_field_label("notinform");
-  not_in_original_form_field->set_field_value("doesntmatter");
-  optimization_guide::proto::FormFieldData* filled_select_field =
-      response.mutable_form_data()
-          ->add_filled_form_field_data()
-          ->mutable_field_data();
-  filled_select_field->set_field_label("State");
-  filled_select_field->set_field_value("33");
-  optimization_guide::proto::FormFieldData* bad_response_select_field =
-      response.mutable_form_data()
-          ->add_filled_form_field_data()
-          ->mutable_field_data();
-  bad_response_select_field->set_field_label(
-      "Country Code - response not in select options, not filled");
-  bad_response_select_field->set_field_value("-2");
-  optimization_guide::proto::FormFieldData*
-      response_equals_selected_value_select_field =
-          response.mutable_form_data()
-              ->add_filled_form_field_data()
-              ->mutable_field_data();
-  response_equals_selected_value_select_field->set_field_label(
-      "Country - response equals selected value, not filled");
-  response_equals_selected_value_select_field->set_field_value("2");
+  AddFieldToResponse(response, "label", "normalized label", "value");
+  AddFieldToResponse(response, "empty", "", "");
+  AddFieldToResponse(response, "notinform", "", "doesntmatter");
+  AddFieldToResponse(response, "State", "", "33");
+  AddFieldToResponse(
+      response, "Country Code - response not in select options, not filled", "",
+      "-2");
+  AddFieldToResponse(response,
+                     "Country - response equals selected value, not filled", "",
+                     "2");
   optimization_guide::proto::Any any;
   any.set_type_url(response.GetTypeName());
   response.SerializeToString(any.mutable_value());
@@ -169,8 +154,12 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
       predictions_or_error.value(),
       ElementsAre(
           Pair(form.fields()[0].global_id(),
-               HasPrediction(Prediction(u"value", u"label"))),
+               // Also tests that Prediction::label is set to the normalized
+               // label if set and non-empty.
+               HasPrediction(Prediction(u"value", u"normalized label"))),
           Pair(form.fields()[3].global_id(),
+               // Also tests that Prediction::label falls back to the field
+               // label if the normalized label is not set or empty.
                HasPrediction(Prediction(u"33", u"State", u"North Carolina")))));
 }
 

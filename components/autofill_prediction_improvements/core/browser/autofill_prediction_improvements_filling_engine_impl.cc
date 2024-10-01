@@ -116,12 +116,14 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
   const std::vector<autofill::FormFieldData>& fields = form_data.fields();
   for (const optimization_guide::proto::FilledFormFieldData&
            filled_form_field_proto : form_data_proto.filled_form_field_data()) {
-    if (filled_form_field_proto.field_data().field_value().empty()) {
+    // Only the first predicted value is used at the moment.
+    if (filled_form_field_proto.predicted_values_size() == 0 ||
+        filled_form_field_proto.predicted_values()[0].value().empty()) {
       continue;
     }
 
-    // TODO: b/357098401 - Change it to look by renderer ID which is unique
-    // rather than label.
+    // TODO(crbug.com/357098401): Change it to look by renderer ID which is
+    // unique rather than label.
     if (auto it = base::ranges::find(
             fields,
             base::UTF8ToUTF16(
@@ -129,8 +131,8 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
             &autofill::FormFieldData::label);
         it != fields.end()) {
       const autofill::FormFieldData& field = *it;
-      const std::u16string predicted_value =
-          base::UTF8ToUTF16(filled_form_field_proto.field_data().field_value());
+      const std::u16string predicted_value = base::UTF8ToUTF16(
+          filled_form_field_proto.predicted_values()[0].value());
       std::optional<std::u16string> select_option_text = std::nullopt;
 
       if (field.IsSelectOrSelectListElement()) {
@@ -153,12 +155,14 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
         select_option_text = predicted_select_option_it->text;
       }
 
+      const std::u16string label =
+          filled_form_field_proto.normalized_label().empty()
+              ? (field.label().empty() ? field.placeholder() : field.label())
+              : base::UTF8ToUTF16(filled_form_field_proto.normalized_label());
+
       predictions.emplace_back(
-          field.global_id(),
-          Prediction{
-              std::move(predicted_value),
-              field.label().empty() ? field.placeholder() : field.label(),
-              select_option_text});
+          field.global_id(), Prediction{std::move(predicted_value),
+                                        std::move(label), select_option_text});
     }
   }
   return predictions;
