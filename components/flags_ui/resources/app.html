@@ -44,8 +44,7 @@
       <span class="blurb-warning">$i18n{page-warning}</span>
       <span>$i18n{page-warning-explanation}</span>
 <if expr="chromeos_ash">
-      <p id="owner-warning"
-          ?hidden="${!this.data.showOwnerWarning}">
+      <p id="owner-warning" ?hidden="${!this.data.showOwnerWarning}">
         $i18n{owner-warning}
       </p>
 </if>
@@ -102,7 +101,7 @@
             </flags-experiment>
           `)}
         </div>
-        <div class="no-match hidden" role="alert">$i18n{no-results}</div>
+        <div class="no-match" role="alert" hidden>$i18n{no-results}</div>
       </div>
 <if expr="not is_ios">
       <div id="tab-content-unavailable" class="tab-content"
@@ -114,7 +113,7 @@
             </flags-experiment>
           `)}
         </div>
-        <div class="no-match hidden" role="alert">$i18n{no-results}</div>
+        <div class="no-match" role="alert" hidden>$i18n{no-results}</div>
       </div>
 </if>
     </div>

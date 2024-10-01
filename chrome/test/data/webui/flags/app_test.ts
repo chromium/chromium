@@ -9,7 +9,7 @@ import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_brows
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
 
@@ -166,9 +166,9 @@ suite('FlagsAppTest', function() {
     await searchEventPromise;
     assertTrue(isVisible(clearSearch));
 
-    // The clear search button is pressed then search text is cleared and button
-    // is hidden
+    // The clear search button is hidden after clicked.
     clearSearch.click();
+    await microtasksFinished();
     assertEquals('', searchTextArea.value);
     assertFalse(isVisible(clearSearch));
   });
@@ -217,21 +217,21 @@ suite('FlagsAppTest', function() {
     searchBoxInput('available');
     return promise.then(() => {
       assertFalse(isVisible(app.getRequiredElement('.no-match')));
-      const noMatchMsg: NodeListOf<HTMLElement> =
-          app.shadowRoot!.querySelectorAll('.tab-content .no-match');
+      const noMatchMsg = app.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.tab-content .no-match');
       assertTrue(!!noMatchMsg[0]);
       assertEquals(
           2,
           app.shadowRoot!
               .querySelectorAll(
-                  `#tab-content-available flags-experiment:not(.hidden)`)
+                  `#tab-content-available flags-experiment:not([hidden])`)
               .length);
       assertTrue(!!noMatchMsg[1]);
       assertEquals(
           1,
           app.shadowRoot!
               .querySelectorAll(
-                  `#tab-content-unavailable flags-experiment:not(.hidden)`)
+                  `#tab-content-unavailable flags-experiment:not([hidden])`)
               .length);
     });
   });
@@ -241,21 +241,21 @@ suite('FlagsAppTest', function() {
     searchBoxInput('none');
     return promise.then(() => {
       assertTrue(isVisible(app.getRequiredElement('.no-match')));
-      const noMatchMsg: NodeListOf<HTMLElement> =
-          app.shadowRoot!.querySelectorAll('.tab-content .no-match');
+      const noMatchMsg = app.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.tab-content .no-match');
       assertTrue(!!noMatchMsg[0]);
       assertEquals(
           0,
           app.shadowRoot!
               .querySelectorAll(
-                  `#tab-content-available flags-experiment:not(.hidden)`)
+                  `#tab-content-available flags-experiment:not([hidden])`)
               .length);
       assertTrue(!!noMatchMsg[1]);
       assertEquals(
           0,
           app.shadowRoot!
               .querySelectorAll(
-                  `#tab-content-unavailable flags-experiment:not(.hidden)`)
+                  `#tab-content-unavailable flags-experiment:not([hidden])`)
               .length);
     });
   });

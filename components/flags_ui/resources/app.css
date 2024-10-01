@@ -171,8 +171,8 @@ button {
   /* csschecker-disable-line left-right */
 }
 
-.hidden {
-  display: none;
+[hidden] {
+  display: none !important;
 }
 
 .search-container {
@@ -225,12 +225,12 @@ button {
   outline: 0;
 }
 
-:host(.searching) .clear-search {
+:host([searching]) .clear-search {
   display: inline-block;
 }
 
-:host(.searching) .blurb-container,
-:host(.searching) #promos {
+:host([searching]) .blurb-container,
+:host([searching]) #promos {
   display: none;
 }
 
@@ -458,7 +458,7 @@ button.primary:-webkit-any(:active, :hover) {
     padding: 4px;
   }
 
-  :host(.searching) flags-experiment::part(body) {
+  :host([searching]) flags-experiment::part(body) {
     overflow: visible;
     white-space: normal;
   }

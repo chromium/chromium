@@ -31,82 +31,38 @@ interface Tab {
 
 
 /**
+ * Goes through all experiment text and highlights the relevant matches.
+ * Only the first instance of a match in each experiment text block is
+ * highlighted. This prevents the sea of yellow that happens using the
+ * global find in page search.
+ * @param experiments The list of elements to search on and highlight.
+ * @param searchTerm The query to search for.
+ * @return The number of matches found.
+ */
+async function highlightAllMatches(
+    experiments: NodeListOf<FlagsExperimentElement>,
+    searchTerm: string): Promise<number> {
+  let matches = 0;
+  // Not using for..of with async/await to spawn all searching in parallel.
+  await Promise.all(Array.from(experiments).map(async (experiment) => {
+    const hasMatch = await experiment.match(searchTerm);
+    matches += hasMatch ? 1 : 0;
+    experiment.hidden = !hasMatch;
+  }));
+  return matches;
+}
+
+/**
  * Handles in page searching. Matches against the experiment flag name.
  */
 class FlagSearch {
   private flagsAppElement: FlagsAppElement;
-  private initialized: boolean = false;
-  private noMatchMsg: NodeListOf<HTMLElement>;
   private searchIntervalId: number|null = null;
-  private searchBox: HTMLInputElement;
   // Delay in ms following a keypress, before a search is made.
   private searchDebounceDelayMs: number = 150;
 
   constructor(el: FlagsAppElement) {
     this.flagsAppElement = el;
-    this.searchBox =
-        this.flagsAppElement.getRequiredElement<HTMLInputElement>('#search');
-    this.noMatchMsg = this.flagsAppElement.shadowRoot!.querySelectorAll(
-        '.tab-content .no-match');
-  }
-
-  /**
-   * Initialises the in page search. Adds searchbox listeners and
-   * collates the text elements used for string matching.
-   */
-  init() {
-    if (this.initialized) {
-      return;
-    }
-
-    window.addEventListener('keyup', e => {
-      // Check for an active textarea inside a <flags-experiment>.
-      const activeElement = getDeepActiveElement();
-      if (activeElement && activeElement.nodeName === 'TEXTAREA') {
-        return;
-      }
-      switch (e.key) {
-        case '/':
-          this.searchBox.focus();
-          break;
-        case 'Escape':
-          this.searchBox.blur();
-          break;
-      }
-    });
-    this.searchBox.focus();
-    this.initialized = true;
-  }
-
-  /**
-   * Clears a search showing all experiments.
-   */
-  clearSearch() {
-    this.searchBox.value = '';
-    this.doSearch();
-    this.searchBox.focus();
-  }
-
-  /**
-   * Goes through all experiment text and highlights the relevant matches.
-   * Only the first instance of a match in each experiment text block is
-   * highlighted. This prevents the sea of yellow that happens using the
-   * global find in page search.
-   * @param experiments The list of elements to search on and highlight.
-   * @param searchTerm The query to search for.
-   * @return The number of matches found.
-   */
-  private async highlightAllMatches(
-      experiments: NodeListOf<FlagsExperimentElement>,
-      searchTerm: string): Promise<number> {
-    let matches = 0;
-    // Not using for..of with async/await to spawn all searching in parallel.
-    await Promise.all(Array.from(experiments).map(async (experiment) => {
-      const hasMatch = await experiment.match(searchTerm);
-      matches += hasMatch ? 1 : 0;
-      experiment.classList.toggle('hidden', !hasMatch);
-    }));
-    return matches;
   }
 
   /**
@@ -114,61 +70,8 @@ class FlagSearch {
    * permalink text.
    */
   async doSearch() {
-    const searchTerm = this.searchBox.value.trim().toLowerCase();
-
-    this.flagsAppElement.classList.toggle('searching', Boolean(searchTerm));
-
-    // Available experiments
-    const availableExperiments =
-        this.flagsAppElement.shadowRoot!
-            .querySelectorAll<FlagsExperimentElement>(
-                '#tab-content-available flags-experiment');
-    assert(this.noMatchMsg[0]);
-    this.noMatchMsg[0].classList.toggle(
-        'hidden',
-        await this.highlightAllMatches(availableExperiments, searchTerm) > 0);
-
-    // <if expr="not is_ios">
-    // Unavailable experiments, which are undefined on iOS.
-    const unavailableExperiments =
-        this.flagsAppElement.shadowRoot!
-            .querySelectorAll<FlagsExperimentElement>(
-                '#tab-content-unavailable flags-experiment');
-    assert(this.noMatchMsg[1]);
-    this.noMatchMsg[1].classList.toggle(
-        'hidden',
-        await this.highlightAllMatches(unavailableExperiments, searchTerm) > 0);
-    // </if>
-    await this.announceSearchResults();
-    this.flagsAppElement.dispatchEvent(
-        new Event('search-finished-for-testing', {
-          bubbles: true,
-          composed: true,
-        }));
-
+    await this.flagsAppElement.search();
     this.searchIntervalId = null;
-  }
-
-  private announceSearchResults(): Promise<void> {
-    const searchTerm = this.searchBox.value.trim().toLowerCase();
-    if (!searchTerm) {
-      return Promise.resolve();
-    }
-
-    const selectedTab = this.flagsAppElement.getTabs().find(
-        tab => tab.panelEl.classList.contains('selected'))!;
-    const selectedTabId = selectedTab.panelEl.id;
-    const queryString = `#${selectedTabId} flags-experiment:not(.hidden)`;
-    const total =
-        this.flagsAppElement.shadowRoot!.querySelectorAll(queryString).length;
-    if (total) {
-      return this.flagsAppElement.announceStatus(
-          total === 1 ?
-              loadTimeData.getStringF('searchResultsSingular', searchTerm) :
-              loadTimeData.getStringF(
-                  'searchResultsPlural', total, searchTerm));
-    }
-    return Promise.resolve();
   }
 
   /**
@@ -186,6 +89,12 @@ class FlagSearch {
   setSearchDebounceDelayMsForTesting(delay: number) {
     this.searchDebounceDelayMs = delay;
   }
+}
+
+export interface FlagsAppElement {
+  $: {
+    search: HTMLInputElement,
+  };
 }
 
 export class FlagsAppElement extends CrLitElement {
@@ -206,6 +115,11 @@ export class FlagsAppElement extends CrLitElement {
       data: {type: Object},
       defaultFeatures: {type: Array},
       nonDefaultFeatures: {type: Array},
+
+      searching: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -227,6 +141,7 @@ export class FlagsAppElement extends CrLitElement {
 
   protected defaultFeatures: Feature[] = [];
   protected nonDefaultFeatures: Feature[] = [];
+  protected searching: boolean = false;
 
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
@@ -239,6 +154,8 @@ export class FlagsAppElement extends CrLitElement {
   // initial load.
   private isFlagsDeprecatedUrl_: boolean = false;
   // </if>
+
+  private eventTracker_: EventTracker|null = null;
 
   getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
       HTMLElementTagNameMap[K];
@@ -271,7 +188,8 @@ export class FlagsAppElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.flagSearch = new FlagSearch(this);
-    this.flagSearch.init();
+
+    this.$.search.focus();
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -317,8 +235,6 @@ export class FlagsAppElement extends CrLitElement {
     this.requestExperimentalFeaturesData();
 
     FocusOutlineManager.forDocument(document);
-    // Update the highlighted flag when the hash changes.
-    window.addEventListener('hashchange', () => this.highlightReferencedFlag);
 
     // <if expr="not is_ios">
     if (this.isFlagsDeprecatedUrl_) {
@@ -330,13 +246,42 @@ export class FlagsAppElement extends CrLitElement {
       this.getRequiredElement('.blurb-warning').textContent = '';
       this.getRequiredElement('.blurb-warning + span').textContent =
           loadTimeData.getString('deprecatedPageWarningExplanation');
-      this.getRequiredElement<HTMLInputElement>('#search').placeholder =
+      this.$.search.placeholder =
           loadTimeData.getString('deprecatedSearchPlaceholder');
       for (const element of this.shadowRoot!.querySelectorAll('.no-match')) {
         element.textContent = loadTimeData.getString('deprecatedNoResults');
       }
     }
     // </if>
+
+    this.eventTracker_ = new EventTracker();
+
+    // Update the highlighted flag when the hash changes.
+    this.eventTracker_.add(
+        window, 'hashchange', () => this.highlightReferencedFlag());
+
+    this.eventTracker_.add(window, 'keyup', (e: KeyboardEvent) => {
+      // Check for an active textarea inside a <flags-experiment>.
+      const activeElement = getDeepActiveElement();
+      if (activeElement && activeElement.nodeName === 'TEXTAREA') {
+        return;
+      }
+      switch (e.key) {
+        case '/':
+          this.$.search.focus();
+          break;
+        case 'Escape':
+          this.$.search.blur();
+          break;
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.eventTracker_);
+    this.eventTracker_.removeAll();
+    this.eventTracker_ = null;
   }
 
   setAnnounceStatusDelayMsForTesting(delay: number) {
@@ -365,6 +310,65 @@ export class FlagsAppElement extends CrLitElement {
         resolve();
       }, this.announceStatusDelayMs);
     });
+  }
+
+  async search() {
+    const searchTerm = this.$.search.value.trim().toLowerCase();
+
+    this.searching = Boolean(searchTerm);
+
+    // Available experiments
+    const availableExperiments =
+        this.shadowRoot!.querySelectorAll<FlagsExperimentElement>(
+            '#tab-content-available flags-experiment');
+    const availableExperimentsHits =
+        await highlightAllMatches(availableExperiments, searchTerm);
+    let noMatchMsg =
+        this.getRequiredElement('#tab-content-available .no-match');
+    noMatchMsg.toggleAttribute('hidden', availableExperimentsHits > 0);
+
+    // <if expr="not is_ios">
+    // Unavailable experiments, which are undefined on iOS.
+    const unavailableExperiments =
+        this.shadowRoot!.querySelectorAll<FlagsExperimentElement>(
+            '#tab-content-unavailable flags-experiment');
+    const unavailableExperimentsHits =
+        await highlightAllMatches(unavailableExperiments, searchTerm);
+    noMatchMsg = this.getRequiredElement('#tab-content-unavailable .no-match');
+    noMatchMsg.toggleAttribute('hidden', unavailableExperimentsHits > 0);
+    // </if>
+
+    if (this.searching) {
+      // <if expr="is_ios">
+      await this.announceSearchResults(searchTerm, availableExperimentsHits);
+      // </if>
+      // <if expr="not is_ios">
+      const selectedTabContentId =
+          this.getRequiredElement('.tab-content.selected').id;
+      const hits = selectedTabContentId === 'tab-content-available' ?
+          availableExperimentsHits :
+          unavailableExperimentsHits;
+      await this.announceSearchResults(searchTerm, hits);
+      // </if>
+    }
+
+    await this.updateComplete;
+    this.dispatchEvent(new Event('search-finished-for-testing', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private announceSearchResults(searchTerm: string, total: number):
+      Promise<void> {
+    if (total) {
+      return this.announceStatus(
+          total === 1 ?
+              loadTimeData.getStringF('searchResultsSingular', searchTerm) :
+              loadTimeData.getStringF(
+                  'searchResultsPlural', total, searchTerm));
+    }
+    return Promise.resolve();
   }
 
   /**
@@ -448,6 +452,16 @@ export class FlagsAppElement extends CrLitElement {
     this.data = data;
   }
 
+  /**
+   * Clears a search showing all experiments.
+   */
+  private clearSearch() {
+    this.$.search.value = '';
+    assert(this.flagSearch);
+    this.flagSearch.doSearch();
+    this.$.search.focus();
+  }
+
   /** Reset all flags to their default values and refresh the UI. */
   protected async onResetAllClick_(e: Event) {
     this.lastChanged = e.target as HTMLElement;
@@ -458,8 +472,7 @@ export class FlagsAppElement extends CrLitElement {
     await this.requestExperimentalFeaturesData();
     await this.updateComplete;
 
-    assert(this.flagSearch);
-    this.flagSearch.clearSearch();
+    this.clearSearch();
   }
 
   protected onSearchInput_() {
@@ -468,8 +481,7 @@ export class FlagsAppElement extends CrLitElement {
   }
 
   protected onClearSearchClick_() {
-    assert(this.flagSearch);
-    this.flagSearch.clearSearch();
+    this.clearSearch();
   }
 
   protected onSelectChange_(e: Event) {
