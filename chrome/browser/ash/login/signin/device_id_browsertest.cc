@@ -13,11 +13,13 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -115,6 +117,10 @@ class DeviceIDTest : public OobeBaseTest,
                     const std::string& password,
                     const std::string& refresh_token,
                     const std::string& gaia_id) {
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        AccountId::FromUserEmail(user_id),
+        test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
     OobeScreenWaiter(GaiaView::kScreenId).Wait();
     // On a real device the first user would create the install attributes file,
     // emulate that, so the following users don't try to establish ownership.
@@ -135,6 +141,10 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   void SignInOffline(const std::string& user_id, const std::string& password) {
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        AccountId::FromUserEmail(user_id),
+        test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
     LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(user_id),
                                        FakeGaiaMixin::kFakeUserPassword,
                                        false /* check_if_submittable */);
@@ -197,6 +207,7 @@ class DeviceIDTest : public OobeBaseTest,
 
   std::unique_ptr<base::test::TestFuture<void>> user_removal_signal_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 };
 
 // Add the first user and check that device ID is consistent.

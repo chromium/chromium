@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
@@ -425,6 +426,9 @@ class CertStoreServiceTest
 
 CertStoreServiceTest::CertStoreServiceTest() : test_data_(GetParam()) {
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+  cryptohome_mixin_.ApplyAuthConfig(
+      affiliation_mixin_.account_id(),
+      ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
 void CertStoreServiceTest::SetUp() {

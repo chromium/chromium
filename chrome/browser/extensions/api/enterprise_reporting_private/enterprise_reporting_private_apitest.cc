@@ -69,6 +69,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -1042,6 +1043,9 @@ class EnterpriseReportingPrivateEnqueueRecordApiTest
   EnterpriseReportingPrivateEnqueueRecordApiTest() {
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    crypto_home_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
   }
 
   ~EnterpriseReportingPrivateEnqueueRecordApiTest() override = default;

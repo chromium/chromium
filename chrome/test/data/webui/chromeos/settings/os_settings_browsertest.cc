@@ -7,12 +7,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_names.h"
@@ -87,9 +92,29 @@ class OSSettingsRevampMochaTestWithExistingUser
 
   void SetUpOnMainThread() override {
     OSSettingsRevampMochaTest::SetUpOnMainThread();
-    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user_manager::StubAccountId()));
+    const auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
+        user_manager::StubAccountId());
+    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_id);
+    AddGaiaPassword(account_id, test::kGaiaPassword);
+  }
+
+  void AddGaiaPassword(const cryptohome::AccountIdentifier& account_id,
+                       std::string password) {
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
+
+    auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+    ash::Key key(std::move(password));
+    key.Transform(ash::Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                  SystemSaltGetter::ConvertRawSaltToHexString(
+                      FakeCryptohomeMiscClient::GetStubSystemSalt()));
+    auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
+    // Add the password key to the user.
+    FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+        account_id, auth_factor, auth_input);
   }
 };
 

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -56,6 +57,9 @@ PlatformKeysTestBase::PlatformKeysTestBase(
   // We log in without running browser.
   set_exit_when_last_browser_closes(false);
   cryptohome_mixin_.MarkUserAsExisting(account_id_);
+  cryptohome_mixin_.ApplyAuthConfig(
+      account_id_,
+      ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
 PlatformKeysTestBase::~PlatformKeysTestBase() {}

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -46,6 +47,9 @@ class UnaffiliatedArcAllowedTest
     set_exit_when_last_browser_closes(false);
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
     cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    cryptohome_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
   }
 
   UnaffiliatedArcAllowedTest(const UnaffiliatedArcAllowedTest&) = delete;

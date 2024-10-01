@@ -90,9 +90,7 @@ const std::string kCryptohomePublicMountLabel = "publicmount";
 // be kept in sync with the labels in cryptohome_key_constants.{cc,h}, which
 // cannot be included into this file because that would result in circular
 // dependencies.
-const std::string kCryptohomeGaiaKeyLabel = "gaia";
 const std::string kCryptohomeRecoveryKeyLabel = "recovery";
-const std::string kCryptohomeLocalPasswordKeyLabel = "local-password";
 
 template <typename ReplyType>
 void SetErrorWrapperToReply(ReplyType& reply, cryptohome::ErrorWrapper error) {
@@ -907,9 +905,9 @@ void FakeUserDataAuthClient::StartAuthSession(
   if (user_exists) {
     UserCryptohomeState& user_state = user_it->second;
 
-    // TODO(b/239422391): Some tests expect that kiosk or gaia keys exist
-    // for existing users, but don't set those keys up. Until those tests are
-    // fixed, we explicitly add keys here.
+    // TODO(b/239422391): Some tests expect that kiosk keys exist for existing
+    // users, but don't set those keys up. Until those tests are fixed, we
+    // explicitly add keys here.
     if (is_kiosk) {
       if (!user_state.auth_factors.contains(kCryptohomePublicMountLabel)) {
         LOG(ERROR) << "Listing kiosk key even though it was not set up";
@@ -917,14 +915,6 @@ void FakeUserDataAuthClient::StartAuthSession(
         FakeAuthFactor factor{KioskFactor()};
         user_state.auth_factors.insert(
             {kCryptohomeRecoveryKeyLabel, std::move(factor)});
-      };
-    } else {
-      if (!user_state.auth_factors.contains(kCryptohomeGaiaKeyLabel) &&
-          !user_state.auth_factors.contains(kCryptohomeLocalPasswordKeyLabel)) {
-        LOG(ERROR) << "Listing GAIA password key even though it was not set up";
-        FakeAuthFactor factor{PasswordFactor()};
-        user_state.auth_factors.insert(
-            {kCryptohomeGaiaKeyLabel, std::move(factor)});
       };
     }
 

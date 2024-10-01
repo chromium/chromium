@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -57,6 +58,15 @@ void CryptohomeMixin::ApplyAuthConfig(const AccountId& user,
   }
   if (config.factors.Has(ash::AshAuthFactor::kRecovery)) {
     AddRecoveryFactor(user);
+  }
+}
+
+void CryptohomeMixin::ApplyAuthConfigIfUserExists(
+    const AccountId& user,
+    const test::UserAuthConfig& config) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (known_user.UserExists(user)) {
+    ApplyAuthConfig(user, config);
   }
 }
 
