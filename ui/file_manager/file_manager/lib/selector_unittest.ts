@@ -139,7 +139,7 @@ export async function testSelectorController(done: () => void) {
   }
 
   // Silence unused var TS error.
-  console.info(!!XfTest);
+  console.log(!!XfTest);
 
   // Create test element and add it to the DOM, then wait for it to be ready on
   // the next event loop cycle.

@@ -14,7 +14,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {type ElementObject, type KeyModifiers, VolumeType} from '../../common/js/shared_types.js';
-import {debug} from '../../common/js/util.js';
 import type {MetadataKey} from '../../foreground/js/metadata/metadata_item.js';
 
 import {test} from './test_util_base.js';
@@ -1084,10 +1083,10 @@ test.util.executeTestMessage =
       if (test.util.async[request.func]) {
         args[test.util.async[request.func].length - 1] = function(
             ...innerArgs: any[]) {
-          debug('Received the result of ' + request.func);
+          console.debug('Received the result of ' + request.func);
           sendResponse.apply(null, innerArgs);
         };
-        debug('Waiting for the result of ' + request.func);
+        console.debug('Waiting for the result of ' + request.func);
         test.util.async[request.func].apply(null, args);
         return true;
       } else if (test.util.sync[request.func]) {

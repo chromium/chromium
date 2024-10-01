@@ -43,7 +43,7 @@ export class PanelItem extends HTMLElement {
   /**
    * Callback that signals events happening in the panel (e.g. click).
    */
-  private signal_: (clickedButton: string) => void = console.info;
+  private signal_: (clickedButton: string) => void = console.log;
 
   private updateSummaryPanel_: VoidCallback|null = null;
   private updateProgress_: VoidCallback|null = null;
@@ -349,7 +349,7 @@ export class PanelItem extends HTMLElement {
    */
   disconnectedCallback() {
     // Replace references to any signal callback.
-    this.signal_ = console.info;
+    this.signal_ = console.log;
   }
 
   /**
@@ -374,7 +374,7 @@ export class PanelItem extends HTMLElement {
    * Sets the callback that triggers signals from events on the panel.
    */
   set signalCallback(signal: (signal: string) => void) {
-    this.signal_ = signal || console.info;
+    this.signal_ = signal || console.log;
   }
 
   /**

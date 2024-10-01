@@ -207,7 +207,7 @@ export class MockMetrics {
   };
 
   call(apiName: string, args: any[]) {
-    console.info(apiName, args);
+    console.log(apiName, args);
     this.apiCalls[apiName] = this.apiCalls[apiName] || [];
     this.apiCalls[apiName]?.push(args);
     if (args.length > 0) {

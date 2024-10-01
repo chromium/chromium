@@ -227,7 +227,7 @@ export async function testUnresponsiveVolumeStartUp(done: VoidCallback) {
       (options: chrome.fileManagerPrivate.GetVolumeRootOptions,
        callback: DirectoryEntryCallback) => {
         if (options.volumeId === 'download:Downloads') {
-          console.info(`blocking the resolve for ${options.volumeId}`);
+          console.log(`blocking the resolve for ${options.volumeId}`);
           unblock = () => origGetVolumeRoot(options, callback);
           return;
         }

@@ -774,11 +774,11 @@ test.swaLoadTestUtils = async () => {
   const scriptUrl = 'background/js/runtime_loaded_test_util.js';
   try {
     if (!testUtilsLoaded) {
-      console.info('Loading ' + scriptUrl);
+      console.log('Loading ' + scriptUrl);
       testUtilsLoaded = new ScriptLoader(scriptUrl, {type: 'module'}).load();
     }
     await testUtilsLoaded;
-    console.info('Loaded ' + scriptUrl);
+    console.log('Loaded ' + scriptUrl);
     return true;
   } catch (error) {
     testUtilsLoaded = null;
