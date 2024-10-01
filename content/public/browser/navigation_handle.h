@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -75,6 +76,10 @@ class WebContents;
 // WebContentsObserver::DidFinishNavigation, just before the handle is
 // destroyed.
 class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ~NavigationHandle() override = default;
 
