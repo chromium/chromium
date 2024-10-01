@@ -528,8 +528,15 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
                "and run `tools/crates/run_gnrt.py vendor` again.")
 
 
-def RaiseErrorIfGitIsDirty():
+def IsGitDirty():
     if Git("status", "--porcelain"):
+        return True
+    else:
+        return False
+
+
+def RaiseErrorIfGitIsDirty():
+    if IsGitDirty():
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
 
@@ -563,11 +570,16 @@ def GitClUpload(*args):
         *args)
 
 
-def GitCommit(args, title):
-    Git("commit", "-m", title)
-    if args.upload:
-        print(f"  Running `git cl upload ...` ...")
-        GitClUpload("-m", title)
+def GitCommit(args, title, error_if_no_changes=True):
+    if IsGitDirty():
+        Git("commit", "-m", title)
+        if args.upload:
+            print(f"  Running `git cl upload ...` ...")
+            GitClUpload("-m", title)
+    else:
+        if error_if_no_changes:
+            raise RuntimeError(
+                f"The '%title' commit unexpectedly has no changes")
 
 
 def ResolveCrateNameToCrateId(crate_name):
@@ -694,7 +706,12 @@ def ManualUpdate(args):
             print(
                 f"WARNING: {old_target_dir} unexpectedly has less files "\
                 f"than {new_target_dir}")
-    GitCommit(args, "Removing //third_party/rust/.../<old_epoch>")
+    GitCommit(
+        args,
+        "Removing //third_party/rust/.../<old_epoch>",
+        # Just skip this commit when `manual` mode is used in
+        # a scenario that *only* performs minor version updates.
+        error_if_no_changes=False)
 
     # Fix up the target names
     print(f"  Updating the target name in BUILD.gn files...")
@@ -716,7 +733,12 @@ def ManualUpdate(args):
             with open(path, 'w') as file:
                 file.write(file_contents)
             Git("add", "--", path)
-    GitCommit(args, "Updating the target name in BUILD.gn files")
+    GitCommit(
+        args,
+        "Updating the target name in BUILD.gn files",
+        # Just skip this commit when `manual` mode is used in
+        # a scenario that *only* performs minor version updates.
+        error_if_no_changes=False)
 
 
 def main():
