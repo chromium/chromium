@@ -16,9 +16,9 @@ class AccountsInCookieJarInfo {
  public:
   AccountsInCookieJarInfo();
   AccountsInCookieJarInfo(
-      bool accounts_are_fresh_param,
-      const std::vector<gaia::ListedAccount>& signed_in_accounts_param,
-      const std::vector<gaia::ListedAccount>& signed_out_accounts_param);
+      bool accounts_are_fresh,
+      const std::vector<gaia::ListedAccount>& signed_in_accounts,
+      const std::vector<gaia::ListedAccount>& signed_out_accounts);
   AccountsInCookieJarInfo(const AccountsInCookieJarInfo& other);
   AccountsInCookieJarInfo& operator=(const AccountsInCookieJarInfo& other);
   ~AccountsInCookieJarInfo();

@@ -94,9 +94,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     account.id =
         CoreAccountId::FromGaiaId(base::SysNSStringToUTF8(identity.gaiaID));
     signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/true,
-        /*signed_in_accounts_param=*/{account},
-        /*signed_out_accounts_param=*/{});
+        /*accounts_are_fresh=*/true,
+        /*signed_in_accounts=*/{account},
+        /*signed_out_accounts=*/{});
     [(id<IdentityManagerObserverBridgeDelegate>)mediator
         onAccountsInCookieUpdated:cookie_jar_info
                             error:GoogleServiceAuthError(
@@ -105,9 +105,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 
   void SimulateCookieFetchError(ConsistencyPromoSigninMediator* mediator) {
     signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/false,
-        /*signed_in_accounts_param=*/{},
-        /*signed_out_accounts_param=*/{});
+        /*accounts_are_fresh=*/false,
+        /*signed_in_accounts=*/{},
+        /*signed_out_accounts=*/{});
     [(id<IdentityManagerObserverBridgeDelegate>)mediator
         onAccountsInCookieUpdated:cookie_jar_info
                             error:GoogleServiceAuthError(

@@ -263,7 +263,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
           listed_account.email = account.email;
           return listed_account;
         });
-    signin::AccountsInCookieJarInfo cookies(/*accounts_are_fresh_param=*/true,
+    signin::AccountsInCookieJarInfo cookies(/*accounts_are_fresh=*/true,
                                             signed_in_accounts, {});
     base::RunLoop run_loop;
     EXPECT_EQ(expected_cookie_jar_mismatch,

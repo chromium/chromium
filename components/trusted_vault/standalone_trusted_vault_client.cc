@@ -120,9 +120,9 @@ void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
   // TODO(crbug.com/40156992): remove this handler once tests can mimic
   // OnAccountInCookieUpdated() properly.
   UpdateAccountsInCookieJarInfoIfNeeded(
-      signin::AccountsInCookieJarInfo(/*accounts_are_fresh_param=*/true,
-                                      /*signed_in_accounts_param=*/{},
-                                      /*signed_out_accounts_param=*/{}));
+      signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true,
+                                      /*signed_in_accounts=*/{},
+                                      /*signed_out_accounts=*/{}));
   notify_keys_changed_callback_.Run();
 }
 

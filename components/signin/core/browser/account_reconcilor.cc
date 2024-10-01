@@ -508,9 +508,9 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   if (trigger_ == Trigger::kForcedReconcile) {
     OnAccountsInCookieUpdated(
         /*accounts_in_cookie_jar_info=*/signin::AccountsInCookieJarInfo(
-            /*accounts_are_fresh_param=*/true,
-            /*signed_in_accounts_param=*/{},
-            /*signed_out_accounts_param=*/{}),
+            /*accounts_are_fresh=*/true,
+            /*signed_in_accounts=*/{},
+            /*signed_out_accounts=*/{}),
         /*error=*/GoogleServiceAuthError(GoogleServiceAuthError::NONE));
     return;
   }

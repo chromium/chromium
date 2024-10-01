@@ -9,12 +9,12 @@ namespace signin {
 AccountsInCookieJarInfo::AccountsInCookieJarInfo() = default;
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo(
-    bool accounts_are_fresh_param,
-    const std::vector<gaia::ListedAccount>& signed_in_accounts_param,
-    const std::vector<gaia::ListedAccount>& signed_out_accounts_param)
-    : accounts_are_fresh_(accounts_are_fresh_param),
-      signed_in_accounts_(signed_in_accounts_param),
-      signed_out_accounts_(signed_out_accounts_param) {}
+    bool accounts_are_fresh,
+    const std::vector<gaia::ListedAccount>& signed_in_accounts,
+    const std::vector<gaia::ListedAccount>& signed_out_accounts)
+    : accounts_are_fresh_(accounts_are_fresh),
+      signed_in_accounts_(signed_in_accounts),
+      signed_out_accounts_(signed_out_accounts) {}
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo(
     const AccountsInCookieJarInfo& other) = default;
