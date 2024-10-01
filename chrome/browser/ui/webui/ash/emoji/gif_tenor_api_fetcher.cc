@@ -67,11 +67,20 @@ constexpr net::NetworkTrafficAnnotationTag kSearchTrafficAnnotation =
         trigger:
           "When a user opens the emoji picker and selects the GIF section, "
           "then type in a search query in the search bar."
+        internal {
+          contacts {
+              email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
         data:
           "Text a user has typed into a text field."
-          "Position of the next batch of GIFs, used for infiniate scroll."
+          "Position of the next batch of GIFs, used for infinite scroll."
           "Authentication to this API is done through Chrome's API key."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-09-30"
       }
       policy {
         cookies_allowed: NO
@@ -318,9 +327,18 @@ void GifTenorApiFetcher::FetchCategories(
           "(https://developers.google.com/tenor)."
         trigger:
           "When a user opens the emoji picker and select the GIF section."
+        internal {
+          contacts {
+              email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
         data:
           "None, (authentication to this API is done through Chrome's API key)."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-09-30"
       }
       policy {
         cookies_allowed: NO
@@ -407,10 +425,19 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
         trigger:
           "When a user opens the emoji picker and selects the GIF section, "
           "and the trending GIFs subcategory is active."
+        internal {
+          contacts {
+              email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
         data:
           "Position of the next batch of GIFs, used for infiniate scroll."
           "Authentication to this API is done through Chrome's API key."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-09-30"
       }
       policy {
         cookies_allowed: NO
@@ -495,10 +522,19 @@ void GifTenorApiFetcher::FetchGifsByIds(
         trigger:
           "When a user opens the emoji picker and selects the GIF section, "
           "and the recent GIFs subcategory is active."
+        internal {
+          contacts {
+              email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
         data:
           "The IDs of the GIFS saved in recent."
           "Authentication to this API is done through Chrome's API key."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-09-30"
       }
       policy {
         cookies_allowed: NO

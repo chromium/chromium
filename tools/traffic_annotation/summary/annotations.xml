@@ -361,13 +361,13 @@ Refer to README.md for content description and update process.
  <item id="network_diagnostics_routines" added_in_milestone="110" content_hash_code="0007b237" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/http_request_manager.cc" />
  <item id="trial_group_lookup" added_in_milestone="110" content_hash_code="047aeeca" os_list="chromeos" file_path="chromeos/ash/components/trial_group/trial_group_checker.cc" />
  <item id="wallpaper_drivefs_delegate" added_in_milestone="110" content_hash_code="01771f33" os_list="chromeos" file_path="chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.cc" />
- <item id="chromeos_emoji_picker_categories_fetcher" added_in_milestone="111" content_hash_code="081a9095" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
- <item id="chromeos_emoji_picker_featured_fetcher" added_in_milestone="111" content_hash_code="020b30c7" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
- <item id="chromeos_emoji_picker_search_fetcher" added_in_milestone="111" content_hash_code="035497ee" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
+ <item id="chromeos_emoji_picker_categories_fetcher" added_in_milestone="111" content_hash_code="02ee9118" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
+ <item id="chromeos_emoji_picker_featured_fetcher" added_in_milestone="111" content_hash_code="00482dd6" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
+ <item id="chromeos_emoji_picker_search_fetcher" added_in_milestone="111" content_hash_code="072cef01" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
  <item id="network_diagnostics_stun" added_in_milestone="111" content_hash_code="059bf138" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc" />
  <item id="network_diagnostics_tls" added_in_milestone="111" content_hash_code="0170b367" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/tls_prober.cc" />
  <item id="gstatic_fast_checkout_funnels" added_in_milestone="111" content_hash_code="0531d118" os_list="android" file_path="chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc" />
- <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="111" content_hash_code="06c44c7e" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
+ <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="111" content_hash_code="069ed9b2" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
  <item id="webapk_minter_install_request" added_in_milestone="111" content_hash_code="042fed33" os_list="chromeos" file_path="chrome/browser/apps/app_service/webapk/webapk_install_task.cc" />
  <item id="android_feedback_connectivity_checker" added_in_milestone="111" content_hash_code="0011753d" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java" />
  <item id="printer_config_fetch" added_in_milestone="111" content_hash_code="042f8883" os_list="chromeos" file_path="chromeos/printing/printer_config_cache.cc" />

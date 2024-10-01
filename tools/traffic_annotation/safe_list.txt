@@ -346,7 +346,6 @@ missing_new_fields,components/live_caption/live_translate_controller.cc
 missing_new_fields,net/proxy_resolution/win/windows_system_proxy_resolution_request.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
 missing_new_fields,chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.cc
-missing_new_fields,chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc
 missing_new_fields,chromeos/ash/components/trial_group/trial_group_checker.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
