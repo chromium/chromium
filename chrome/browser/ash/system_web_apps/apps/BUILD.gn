@@ -46,8 +46,6 @@ static_library("apps") {
     "os_flags_system_web_app_info.h",
     "os_settings_web_app_info.cc",
     "os_settings_web_app_info.h",
-    "os_url_handler_system_web_app_info.cc",
-    "os_url_handler_system_web_app_info.h",
     "print_management_web_app_info.cc",
     "print_management_web_app_info.h",
     "print_preview_cros_system_web_app_info.cc",

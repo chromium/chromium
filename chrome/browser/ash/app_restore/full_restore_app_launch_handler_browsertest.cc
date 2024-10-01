@@ -46,7 +46,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/browser_process.h"
@@ -2715,13 +2714,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest,
 class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     : public SystemWebAppIntegrationTest {
  public:
-  FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() {
-    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
-  }
-
-  ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override {
-    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
-  }
+  FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() = default;
+  ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     SystemWebAppIntegrationTest::SetUpOnMainThread();
@@ -2843,57 +2837,6 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
       window->GetProperty(::app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
-}
-
-// Ensure that Full Restore respects the override URL specified in a SWA's
-// AppLaunchParams if configured to do so.
-IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
-                       LaunchSWAWithRestoreOverrideURL) {
-  const auto swa_type = SystemWebAppType::OS_URL_HANDLER;
-  const auto override_url = GURL(chrome::kChromeUIVersionURL);
-
-  Browser* app_browser =
-      LaunchSystemWebAppWithOverrideURL(swa_type, override_url);
-  ASSERT_TRUE(app_browser);
-  ASSERT_NE(browser(), app_browser);
-
-  // Get the window id.
-  aura::Window* window = app_browser->window()->GetNativeWindow();
-  int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
-
-  AppLaunchInfoSaveWaiter::Wait();
-
-  // Create FullRestoreAppLaunchHandler.
-  auto app_launch_handler =
-      std::make_unique<FullRestoreAppLaunchHandler>(profile());
-
-  // Close app_browser so that the SWA can be relaunched.
-  web_app::CloseAndWait(app_browser);
-
-  ASSERT_FALSE(HasWindowInfo(window_id));
-
-  content::TestNavigationObserver navigation_observer(override_url);
-  navigation_observer.StartWatchingNewWebContents();
-  SetShouldRestore(app_launch_handler.get());
-  navigation_observer.Wait();
-
-  ASSERT_TRUE(HasWindowInfo(window_id));
-
-  // Get the restored browser for the system web app.
-  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
-  ASSERT_TRUE(restore_app_browser);
-  ASSERT_NE(browser(), restore_app_browser);
-
-  // Get the restore window id.
-  window = restore_app_browser->window()->GetNativeWindow();
-  int32_t restore_window_id =
-      window->GetProperty(::app_restore::kRestoreWindowIdKey);
-
-  EXPECT_EQ(window_id, restore_window_id);
-
-  EXPECT_EQ(override_url, restore_app_browser->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetLastCommittedURL());
 }
 
 // Verify that when the full restore doesn't start, the browser window of the

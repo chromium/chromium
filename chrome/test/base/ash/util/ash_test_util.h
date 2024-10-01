@@ -45,11 +45,6 @@ webapps::AppId CreateSystemWebApp(
     ash::SystemWebAppType app_type,
     std::optional<int32_t> window_id = std::nullopt);
 
-// Creates a OS URL handler system web with given `window_id` and
-// `override_url`.
-webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
-                                              int32_t window_id,
-                                              const GURL& override_url);
 // Creates a browser and tabs with given `urls`. The active tab is indicated by
 // `active_url_index`. The browser is not shown after creation.
 Browser* CreateBrowser(Profile* profile,

@@ -88,11 +88,8 @@ enum class SystemWebAppType {
   // will have a mock page.
   PROJECTOR = 20,
 
-  // OsUrlHandler is called by Lacros to show Ash internal chrome:// pages as
-  // applications to the user. Note that these pages are accessible to the user
-  // as os://<page> through search.
-  // contact: skuhne@google.com
-  OS_URL_HANDLER = 21,
+  // OsUrlHandler was removed.
+  // OS_URL_HANDLER = 21,
 
   // FIRMWARE UPDATE App is SWA that lets users update all their peripheral
   // firmwares in one place.

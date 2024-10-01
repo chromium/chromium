@@ -4376,7 +4376,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OSFeedback" label="OSFeedback"/>
   <suffix name="OsFlags" label="OsFlags"/>
   <suffix name="OSSettings" label="OS Settings"/>
-  <suffix name="OsUrlHandler" label="OsUrlHandler"/>
   <suffix name="Personalization" label="Personalization"/>
   <suffix name="PrintManagement" label="PrintManagement"/>
   <suffix name="PrintPreviewCrOS" label="Print Preview CrOS"/>

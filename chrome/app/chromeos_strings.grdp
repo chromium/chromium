@@ -6883,12 +6883,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Dictation sends your voice to Google to allow voice typing in any text field.
   </message>
 
-   <!-- Strings for OsUrlHandler applications -->
+   <!-- Strings for OsFlags -->
   <message name="IDS_OS_FLAGS_APP_NAME" translateable="false" desc="Name for the system flags app.">
     Flags
-  </message>
-  <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
-    ChromeOS-URLs
   </message>
 
   <!-- Theme Selection -->

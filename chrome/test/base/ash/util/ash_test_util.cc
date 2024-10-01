@@ -125,16 +125,6 @@ webapps::AppId CreateSystemWebApp(Profile* profile,
   return CreateSystemWebAppImpl(profile, std::move(params));
 }
 
-webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
-                                              int32_t window_id,
-                                              const GURL& override_url) {
-  apps::AppLaunchParams params =
-      GetAppLaunchParams(profile, ash::SystemWebAppType::OS_URL_HANDLER);
-  params.restore_id = window_id;
-  params.override_url = override_url;
-  return CreateSystemWebAppImpl(profile, std::move(params));
-}
-
 Browser* CreateBrowser(Profile* profile,
                        const std::vector<GURL>& urls,
                        std::optional<size_t> active_url_index) {

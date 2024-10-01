@@ -63,7 +63,6 @@ constexpr auto kSystemWebAppsMapping =
          {"os_feedback", ash::SystemWebAppType::OS_FEEDBACK},
          {"os_sanitize", ash::SystemWebAppType::OS_SANITIZE},
          {"projector", ash::SystemWebAppType::PROJECTOR},
-         {"os_url_handler", ash::SystemWebAppType::OS_URL_HANDLER},
          {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},
          {"os_flags", ash::SystemWebAppType::OS_FLAGS},
          {"vc_background", ash::SystemWebAppType::VC_BACKGROUND},
