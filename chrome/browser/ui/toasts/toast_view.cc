@@ -19,9 +19,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -143,10 +145,12 @@ void ToastView::Init() {
         close_button_callback_.Then(
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
                                 ToastCloseReason::kCloseButton)),
-        vector_icons::kCloseIcon,
-        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT) -
-            lp->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON).height(),
+        vector_icons::kCloseChromeRefreshIcon,
+        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
         ui::kColorToastForeground));
+    // Override the image button's border with the appropriate icon border size.
+    close_button_->SetBorder(views::CreateEmptyBorder(
+        lp->GetInsetsMetric(views::InsetsMetric::INSETS_ICON_BUTTON)));
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
     close_button_->SetProperty(views::kElementIdentifierKey, kToastCloseButton);
@@ -280,7 +284,7 @@ void ToastView::OnThemeChanged() {
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       *icon_, color_provider->GetColor(ui::kColorToastForeground),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIZE)));
+          DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,

@@ -172,7 +172,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 36;
     case DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT:
       return 24;
-    case DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIZE:
+    case DISTANCE_TOAST_BUBBLE_ICON_SIZE:
       return 20;
     case DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS:
       return 2;
