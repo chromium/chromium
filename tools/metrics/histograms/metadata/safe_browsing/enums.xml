@@ -663,6 +663,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
   <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
   <int value="9" label="GLOBAL_ALLOWLIST_NOT_READY"/>
+  <int value="10" label="FAMILIAR_LIKELY_PREVIOUSLY_UNFAMILIAR"/>
 </enum>
 
 <enum name="SiteFamiliarityHistoryHeuristicName">
@@ -670,6 +671,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="VISITED_MORE_THAN_A_DAY_AGO"/>
   <int value="2" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
   <int value="3" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+  <int value="4" label="VISITED_MORE_THAN_A_DAY_AGO_PREVIOUSLY_UNFAMILIAR"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">

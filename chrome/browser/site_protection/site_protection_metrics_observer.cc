@@ -140,6 +140,7 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
         SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo);
     metrics_data->most_strict_matched_history_heuristic =
         SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanFourHoursAgo;
+    metrics_data->last_visit_time = last_visit_result.last_visit;
 
     if (last_visit_result.last_visit < (base::Time::Now() - base::Days(1))) {
       OnGotVisitToOriginOlderThanADayAgo(std::move(metrics_data),
@@ -165,6 +166,7 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThanADayAgo(
         SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo);
     metrics_data->most_strict_matched_history_heuristic =
         SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo;
+    metrics_data->last_visit_time = last_visit_result.last_visit;
     OnKnowIfAnyVisitOlderThanADayAgo(std::move(metrics_data),
                                      /*has_visit_older_than_a_day_ago=*/true);
     return;
@@ -204,18 +206,20 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
       GURL last_committed_url = metrics_data->last_committed_url;
       database_manager->CheckUrlForHighConfidenceAllowlist(
           last_committed_url,
-          base::BindOnce(&SiteProtectionMetricsObserver::LogMetrics,
+          base::BindOnce(&SiteProtectionMetricsObserver::
+                             OnGotHighConfidenceAllowlistResult,
                          weak_factory_.GetWeakPtr(), std::move(metrics_data)));
       return;
     }
   }
 
-  LogMetrics(std::move(metrics_data),
-             /*url_on_safe_browsing_high_confidence_allowlist=*/false,
-             /*logging_details=*/std::nullopt);
+  OnGotHighConfidenceAllowlistResult(
+      std::move(metrics_data),
+      /*url_on_safe_browsing_high_confidence_allowlist=*/false,
+      /*logging_details=*/std::nullopt);
 }
 
-void SiteProtectionMetricsObserver::LogMetrics(
+void SiteProtectionMetricsObserver::OnGotHighConfidenceAllowlistResult(
     std::unique_ptr<MetricsData> metrics_data,
     bool url_on_safe_browsing_high_confidence_allowlist,
     std::optional<safe_browsing::SafeBrowsingDatabaseManager::
@@ -228,10 +232,95 @@ void SiteProtectionMetricsObserver::LogMetrics(
     url_on_safe_browsing_high_confidence_allowlist = false;
   }
   if (url_on_safe_browsing_high_confidence_allowlist) {
+    metrics_data->url_on_safe_browsing_high_confidence_allowlist = true;
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kGlobalAllowlistMatch);
   }
 
+  // Guess as to whether the site was previously categorized as unfamiliar.
+  //
+  // For the purpose of
+  // SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar an
+  // unfamiliar site is a site which is:
+  // - Not on the safe browsing high confidence allowlist
+  // AND
+  // - Wasn't visited more than 24 hours ago
+  // AND
+  // - Wasn't visited with a fresh profile which doesn't have any history
+  //   older than 24 hours.
+  //
+  // Assume that high confidence allowlist is stable and that if origin is
+  // currently on high confidence allowlist that it would have been previously
+  // on high confidence allowlist. Ignore site engagement score. Ignoring
+  // site engagement score is ok because the site engagement score is capped
+  // for site engagement all on the same day.
+  std::optional<base::Time> last_visit_time = metrics_data->last_visit_time;
+  if (!url_on_safe_browsing_high_confidence_allowlist && last_visit_time &&
+      *last_visit_time < (base::Time::Now() - base::Days(1))) {
+    url::Origin last_committed_origin = metrics_data->last_committed_origin;
+    history_service_->GetLastVisitToOrigin(
+        last_committed_origin, base::Time(), *last_visit_time - base::Days(1),
+        base::BindOnce(&SiteProtectionMetricsObserver::
+                           OnGotVisitToOriginOlderThanADayPriorToPreviousVisit,
+                       weak_factory_.GetWeakPtr(), std::move(metrics_data)),
+        &task_tracker_);
+    return;
+  }
+
+  LogMetrics(std::move(metrics_data));
+}
+
+void SiteProtectionMetricsObserver::
+    OnGotVisitToOriginOlderThanADayPriorToPreviousVisit(
+        std::unique_ptr<MetricsData> metrics_data,
+        history::HistoryLastVisitResult last_visit_result) {
+  if (!last_visit_result.success || last_visit_result.last_visit.is_null()) {
+    // Check whether
+    // SiteFamiliarityHistoryHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo
+    // heuristic would have matched the previous visit.
+    history::QueryOptions history_query_options;
+    history_query_options.end_time =
+        *metrics_data->last_visit_time - base::Days(1);
+    history_query_options.max_count = 1;
+    history_service_->QueryHistory(
+        u"", std::move(history_query_options),
+        base::BindOnce(&SiteProtectionMetricsObserver::
+                           OnGotVisitOlderThanADayPriorToPreviousVisit,
+                       weak_factory_.GetWeakPtr(), std::move(metrics_data)),
+        &task_tracker_);
+    return;
+  }
+
+  OnKnowIfSiteWasLikelyPreviouslyFamiliar(
+      std::move(metrics_data),
+      /*was_site_likely_previously_familiar=*/true);
+  return;
+}
+
+void SiteProtectionMetricsObserver::OnGotVisitOlderThanADayPriorToPreviousVisit(
+    std::unique_ptr<MetricsData> metrics_data,
+    history::QueryResults query_results) {
+  OnKnowIfSiteWasLikelyPreviouslyFamiliar(
+      std::move(metrics_data),
+      /*was_site_likely_previously_familiar=*/query_results.empty());
+}
+
+void SiteProtectionMetricsObserver::OnKnowIfSiteWasLikelyPreviouslyFamiliar(
+    std::unique_ptr<MetricsData> metrics_data,
+    bool was_site_likely_previously_familiar) {
+  if (!was_site_likely_previously_familiar) {
+    metrics_data->matched_heuristics.push_back(
+        SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar);
+    metrics_data->most_strict_matched_history_heuristic =
+        SiteFamiliarityHistoryHeuristicName::
+            kVisitedMoreThanADayAgoPreviouslyUnfamiliar;
+  }
+
+  LogMetrics(std::move(metrics_data));
+}
+
+void SiteProtectionMetricsObserver::LogMetrics(
+    std::unique_ptr<MetricsData> metrics_data) {
   bool no_heuristics_match = metrics_data->matched_heuristics.empty();
   if (no_heuristics_match) {
     metrics_data->matched_heuristics.push_back(
@@ -257,7 +346,7 @@ void SiteProtectionMetricsObserver::LogMetrics(
   ukm::builders::SiteFamiliarityHeuristicResult(metrics_data->ukm_source_id)
       .SetAnyHeuristicsMatch(!no_heuristics_match)
       .SetOnHighConfidenceAllowlist(
-          url_on_safe_browsing_high_confidence_allowlist)
+          metrics_data->url_on_safe_browsing_high_confidence_allowlist)
       .SetSiteEngagementScore(
           RoundSiteEngagementScoreForUkm(metrics_data->site_engagement_score))
       .SetSiteFamiliarityHistoryHeuristic(

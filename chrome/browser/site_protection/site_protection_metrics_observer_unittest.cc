@@ -184,6 +184,12 @@ class SiteProtectionMetricsObserverTest
     return values.size() == 1u ? values[0] : -1;
   }
 
+  int64_t GetUkmHistoryFamiliarityHeuristicValue(
+      ukm::TestUkmRecorder& ukm_recorder) {
+    return GetUkmFamiliarityHeuristicValue(ukm_recorder,
+                                           "SiteFamiliarityHistoryHeuristic");
+  }
+
   void NavigateAndCheckRecordedHeuristicUkm(const GURL& url,
                                             const std::string& metric_name,
                                             int64_t expected_value) {
@@ -222,8 +228,7 @@ TEST_F(SiteProtectionMetricsObserverTest, NoHistoryOlderThanADayAgo) {
       {SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo});
   EXPECT_EQ(static_cast<int>(SiteFamiliarityHistoryHeuristicName::
                                  kNoVisitsToAnySiteMoreThanADayAgo),
-            GetUkmFamiliarityHeuristicValue(ukm_recorder,
-                                            "SiteFamiliarityHistoryHeuristic"));
+            GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
 }
 
 // Test the histograms and UKM which are logged by SiteProtectionMetricsObserver
@@ -250,8 +255,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
          SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
     EXPECT_EQ(static_cast<int>(
                   SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo),
-              GetUkmFamiliarityHeuristicValue(
-                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 
   {
@@ -262,8 +266,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
     EXPECT_EQ(
         static_cast<int>(
             SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanFourHoursAgo),
-        GetUkmFamiliarityHeuristicValue(ukm_recorder,
-                                        "SiteFamiliarityHistoryHeuristic"));
+        GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 
   {
@@ -272,8 +275,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
         kUrlVisited1HourAgo, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
     EXPECT_EQ(static_cast<int>(
                   SiteFamiliarityHistoryHeuristicName::kNoHeuristicMatch),
-              GetUkmFamiliarityHeuristicValue(
-                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 }
 
@@ -381,6 +383,87 @@ TEST_F(SiteProtectionMetricsObserverTest, GlobalAllowlistMatch) {
     EXPECT_EQ(false, GetUkmFamiliarityHeuristicValue(
                          ukm_recorder, "OnHighConfidenceAllowlist"));
   }
+}
+
+// Test that SiteProtectionMetricsObserver logs the correct histograms and UKM
+// if the SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+// applies for the current visit to the site but the heuristic did not apply
+// to the previous visit to the site.
+TEST_F(SiteProtectionMetricsObserverTest, SiteFamiliarWasPreviouslyUnfamiliar) {
+  GURL kPageUrl("https://bar.com");
+  GURL kOtherUrl("https://baz.com");
+
+  base::Time now = base::Time::Now();
+  base::Time kPageVisitTime1 = now - base::Hours(25);
+  base::Time kPageVisitTime2 = kPageVisitTime1 - base::Hours(25);
+  base::Time kOtherVisitTime = kPageVisitTime2 - base::Hours(25);
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime1,
+                                             history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime,
+                                             history::SOURCE_BROWSED);
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kPageUrl,
+        {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+         SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo,
+         SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar});
+    EXPECT_EQ(static_cast<int>(SiteFamiliarityHistoryHeuristicName::
+                                   kVisitedMoreThanADayAgoPreviouslyUnfamiliar),
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
+  }
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime2,
+                                             history::SOURCE_BROWSED);
+
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kPageUrl, {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+                   SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
+    EXPECT_EQ(static_cast<int>(
+                  SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo),
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
+  }
+}
+
+// Test that SiteProtectionMetricsObserver logs the correct histograms
+// if:
+// - SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+//   applies for the current visit.
+// AND
+// -  SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+//   does not apply to the previous visit.
+// AND
+// - SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo
+//   applies to the previous visit.
+TEST_F(SiteProtectionMetricsObserverTest,
+       SiteFamiliarWasPreviouslyUnfamiliarDueToNoOldHistory) {
+  GURL kPageUrl("https://bar.com");
+  GURL kOtherUrl("https://baz.com");
+
+  base::Time now = base::Time::Now();
+  base::Time kPageVisitTime = now - base::Hours(25);
+  base::Time kOtherVisitTime1 = kPageVisitTime - base::Hours(1);
+  base::Time kOtherVisitTime2 = kOtherVisitTime1 - base::Hours(100);
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime,
+                                             history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime1,
+                                             history::SOURCE_BROWSED);
+
+  NavigateAndCheckRecordedHeuristicHistograms(
+      kPageUrl, {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+                 SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
+
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime2,
+                                             history::SOURCE_BROWSED);
+  NavigateAndCheckRecordedHeuristicHistograms(
+      kPageUrl,
+      {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+       SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo,
+       SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar});
 }
 
 // Test that SiteProtectionMetricsObserver logs whether any heuristics matched
