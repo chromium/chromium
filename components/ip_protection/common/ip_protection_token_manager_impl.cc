@@ -262,7 +262,9 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
     return;
   }
 
-  VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
+  VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size()
+          << " tokens for proxy "
+          << int(proxy_layer_);
   try_get_auth_tokens_after_ = base::Time();
 
   RemoveExpiredTokens();
