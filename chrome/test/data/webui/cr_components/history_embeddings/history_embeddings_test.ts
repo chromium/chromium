@@ -484,7 +484,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           '.answer-source');
       assertTrue(!!answerSource);
       assertFalse(answerSource.hidden);
-      assertEquals('http://answer.com', answerSource.getAttribute('href'));
+      assertEquals('http://answer.com/', answerSource.href);
 
       const answerUrlAndDate =
           answerSource.querySelector<HTMLElement>('.result-url')!.innerText;
@@ -494,6 +494,50 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           getFaviconForPageURL('http://answer.com', true),
           answerSource.querySelector<HTMLElement>(
                           '.favicon')!.style.backgroundImage);
+    });
+
+    test('GetsAnswerSourceUrl', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      function sendAnswerWithTextDirectives(directives: string[] = []) {
+        const resultWithAnswer = {
+          title: 'Website with answer',
+          url: {url: 'http://answer.com'},
+          urlForDisplay: 'Answer.com',
+          relativeTime: '2 months ago',
+          shortDateTime: 'Jan 2, 2022',
+          sourcePassage: 'Answer description',
+          lastUrlVisitTimestamp: 2000,
+          answerData: {answerTextDirectives: directives},
+        };
+
+        element.searchResultChangedForTesting({
+          query: 'some query',
+          answerStatus: AnswerStatus.kSuccess,
+          answer: 'some answer',
+          items: [...mockResults, resultWithAnswer],
+        });
+
+        return flushTasks();
+      }
+
+      const answerSource = element.shadowRoot!.querySelector<HTMLAnchorElement>(
+          '.answer-source');
+      assertTrue(!!answerSource);
+      await sendAnswerWithTextDirectives([]);
+      assertEquals('http://answer.com/', answerSource.href);
+
+      await sendAnswerWithTextDirectives(['start text']);
+      assertEquals(
+          'http://answer.com/#:~:text=start%20text', answerSource.href,
+          'should generate a link using the first directive');
+
+      await sendAnswerWithTextDirectives(['another start text', 'end text']);
+      assertEquals(
+          'http://answer.com/#:~:text=another%20start%20text',
+          answerSource.href, 'should ignore other directives');
     });
 
     test('DisplaysFavicons', async () => {

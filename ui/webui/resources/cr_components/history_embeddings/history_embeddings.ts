@@ -200,6 +200,20 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
+  private getAnswerSourceUrl_(): string|undefined {
+    if (!this.answerSource_) {
+      return undefined;
+    }
+    const sourceUrl = new URL(this.answerSource_.url.url);
+    const textDirectives = this.answerSource_.answerData?.answerTextDirectives;
+    if (textDirectives && textDirectives.length > 0) {
+      // Only the first directive is used for now until there's a way to show
+      // multiple links in the UI.
+      sourceUrl.hash = `:~:text=${encodeURIComponent(textDirectives[0])}`;
+    }
+    return sourceUrl.toString();
+  }
+
   private getFavicon_(item: SearchResultItem|undefined): string {
     return getFaviconForPageURL(
         item?.url.url || '', /*isSyncedUrlForHistoryUi=*/ true);

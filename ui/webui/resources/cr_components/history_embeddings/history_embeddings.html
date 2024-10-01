@@ -277,7 +277,7 @@ a {
         [[getAnswerOrError_(searchResult_.*)]]
       </div>
       <a class="answer-source" hidden="[[!answerSource_]]"
-          href="[[answerSource_.url.url]]" target="_blank">
+          href="[[getAnswerSourceUrl_(answerSource_)]]" target="_blank">
         <div>Source:</div>
         <div class="favicon"
             style$="background-image: [[getFavicon_(answerSource_)]]"></div>
