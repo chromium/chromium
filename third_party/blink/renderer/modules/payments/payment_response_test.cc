@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_complete.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
@@ -242,7 +243,8 @@ TEST(PaymentResponseTest, CompleteCalledWithSuccess) {
               Complete(scope.GetScriptState(), PaymentStateResolver::kSuccess,
                        testing::_));
 
-  output->complete(scope.GetScriptState(), "success",
+  output->complete(scope.GetScriptState(),
+                   V8PaymentComplete(V8PaymentComplete::Enum::kSuccess),
                    scope.GetExceptionState());
 }
 
@@ -263,7 +265,9 @@ TEST(PaymentResponseTest, CompleteCalledWithFailure) {
               Complete(scope.GetScriptState(), PaymentStateResolver::kFail,
                        testing::_));
 
-  output->complete(scope.GetScriptState(), "fail", scope.GetExceptionState());
+  output->complete(scope.GetScriptState(),
+                   V8PaymentComplete(V8PaymentComplete::Enum::kFail),
+                   scope.GetExceptionState());
 }
 
 TEST(PaymentResponseTest, JSONSerializerTest) {

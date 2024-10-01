@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_complete.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
@@ -145,16 +146,23 @@ ScriptValue PaymentResponse::details(ScriptState* script_state) const {
 
 ScriptPromise<IDLUndefined> PaymentResponse::complete(
     ScriptState* script_state,
-    const String& result,
+    const V8PaymentComplete& result,
     ExceptionState& exception_state) {
   VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
-          << "): complete(" << result << ")";
+          << "): complete(" << String(result) << ")";
   PaymentStateResolver::PaymentComplete converted_result =
       PaymentStateResolver::PaymentComplete::kUnknown;
-  if (result == "success")
-    converted_result = PaymentStateResolver::PaymentComplete::kSuccess;
-  else if (result == "fail")
-    converted_result = PaymentStateResolver::PaymentComplete::kFail;
+  switch (result.AsEnum()) {
+    case V8PaymentComplete::Enum::kUnknown:
+      converted_result = PaymentStateResolver::PaymentComplete::kUnknown;
+      break;
+    case V8PaymentComplete::Enum::kSuccess:
+      converted_result = PaymentStateResolver::PaymentComplete::kSuccess;
+      break;
+    case V8PaymentComplete::Enum::kFail:
+      converted_result = PaymentStateResolver::PaymentComplete::kFail;
+      break;
+  }
   return payment_state_resolver_->Complete(script_state, converted_result,
                                            exception_state);
 }

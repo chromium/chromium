@@ -25,6 +25,7 @@ class PaymentAddress;
 class PaymentStateResolver;
 class PaymentValidationErrors;
 class ScriptState;
+class V8PaymentComplete;
 
 class MODULES_EXPORT PaymentResponse final
     : public EventTarget,
@@ -61,7 +62,7 @@ class MODULES_EXPORT PaymentResponse final
   const String& payerPhone() const { return payer_phone_; }
 
   ScriptPromise<IDLUndefined> complete(ScriptState*,
-                                       const String& result,
+                                       const V8PaymentComplete& result,
                                        ExceptionState&);
   ScriptPromise<IDLUndefined> retry(ScriptState*,
                                     const PaymentValidationErrors*,
