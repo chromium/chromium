@@ -781,10 +781,10 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
       break;
   }
 
-  const bool shift = modifiers & ui_controls::AcceleratorState::kShift;
-  const bool alt = modifiers & ui_controls::AcceleratorState::kAlt;
-  const bool ctrl = modifiers & ui_controls::AcceleratorState::kControl;
-  const bool meta = modifiers & ui_controls::AcceleratorState::kCommand;
+  const bool shift = modifiers & ui_controls::kShift;
+  const bool alt = modifiers & ui_controls::kAlt;
+  const bool ctrl = modifiers & ui_controls::kControl;
+  const bool meta = modifiers & ui_controls::kCommand;
 
   auto b2s = [](bool b) { return b ? "true" : "false"; };
 

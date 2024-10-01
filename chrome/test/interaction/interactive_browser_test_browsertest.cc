@@ -32,6 +32,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithLinks[] = "/links.html";
 constexpr char kDocumentWithClickDetection[] = "/click.html";
@@ -584,19 +585,16 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ui_controls::LEFT,
                         ui_controls::MIDDLE,
                         ui_controls::RIGHT),
-        testing::Values(ui_controls::AcceleratorState::kNoAccelerator,
-                        ui_controls::AcceleratorState::kShift,
-                        ui_controls::AcceleratorState::kControl,
-                        ui_controls::AcceleratorState::kAlt,
-                        ui_controls::AcceleratorState::kCommand,
+        testing::Values(ui_controls::kNoAccelerator,
+                        ui_controls::kShift,
+                        ui_controls::kControl,
+                        ui_controls::kAlt,
+                        ui_controls::kCommand,
                         static_cast<ui_controls::AcceleratorState>(
-                            ui_controls::AcceleratorState::kAlt |
-                            ui_controls::AcceleratorState::kShift),
+                            ui_controls::kAlt | ui_controls::kShift),
                         static_cast<ui_controls::AcceleratorState>(
-                            ui_controls::AcceleratorState::kControl |
-                            ui_controls::AcceleratorState::kCommand |
-                            ui_controls::AcceleratorState::kAlt |
-                            ui_controls::AcceleratorState::kShift))),
+                            ui_controls::kControl | ui_controls::kCommand |
+                            ui_controls::kAlt | ui_controls::kShift))),
     [](const testing::TestParamInfo<ClickElementParams>& params) {
       std::ostringstream oss;
       switch (std::get<0>(params.param)) {
@@ -611,16 +609,16 @@ INSTANTIATE_TEST_SUITE_P(
           break;
       }
       const auto accel = std::get<1>(params.param);
-      if (accel & ui_controls::AcceleratorState::kControl) {
+      if (accel & ui_controls::kControl) {
         oss << "_Control";
       }
-      if (accel & ui_controls::AcceleratorState::kAlt) {
+      if (accel & ui_controls::kAlt) {
         oss << "_Alt";
       }
-      if (accel & ui_controls::AcceleratorState::kShift) {
+      if (accel & ui_controls::kShift) {
         oss << "_Shift";
       }
-      if (accel & ui_controls::AcceleratorState::kCommand) {
+      if (accel & ui_controls::kCommand) {
         oss << "_Meta";
       }
       return oss.str();
@@ -637,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestClickElementTest, ClickElement) {
       CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.button",
                       static_cast<int>(mouse_button)),
       CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.altKey",
-                      (modifier & ui_controls::AcceleratorState::kAlt) != 0),
+                      (modifier & ui_controls::kAlt) != 0),
       CheckJsResultAt(kWebContentsId, kButton,
                       "el => el.lastClickEvent.shiftKey",
                       (modifier & ui_controls::AcceleratorState::kShift) != 0),
@@ -657,6 +655,70 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestClickElementTest, ClickElement) {
                      y >= rect.top && y < rect.bottom;
             }
           )"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       ClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  ClickElement(kWebContentsId, kLink),
+                  WaitForWebContentsNavigation(kWebContentsId, url2));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       MiddleClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  InstrumentNextTab(kWebContents2Id),
+                  ClickElement(kWebContentsId, kLink, ui_controls::MIDDLE),
+                  WaitForWebContentsReady(kWebContents2Id, url2));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       ControlClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  InstrumentNextTab(kWebContents2Id),
+                  ClickElement(kWebContentsId, kLink, ui_controls::LEFT,
+#if BUILDFLAG(IS_MAC)
+                               ui_controls::kCommand
+#else
+                               ui_controls::kControl
+#endif
+                               ),
+                  WaitForWebContentsReady(kWebContents2Id, url2));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       ShiftClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      InstrumentNextTab(kWebContents2Id, AnyBrowser()),
+      ClickElement(kWebContentsId, kLink, ui_controls::LEFT,
+#if BUILDFLAG(IS_MAC)
+                   static_cast<ui_controls::AcceleratorState>(
+                       ui_controls::kCommand | ui_controls::kAlt)
+#else
+                   ui_controls::kShift
+#endif
+                       ),
+      InAnyContext(WaitForWebContentsReady(kWebContents2Id, url2)),
+      InSameContext(CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) { return browser_view->browser(); },
+          testing::Ne(browser()))));
 }
 
 // Parameter for WebUI coverage tests.

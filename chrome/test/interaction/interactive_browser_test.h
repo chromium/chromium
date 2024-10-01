@@ -371,8 +371,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier web_contents,
       const DeepQuery& where,
       ui_controls::MouseButton button = ui_controls::LEFT,
-      ui_controls::AcceleratorState modifiers =
-          ui_controls::AcceleratorState::kNoAccelerator);
+      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator);
 
  protected:
   explicit InteractiveBrowserTestApi(
