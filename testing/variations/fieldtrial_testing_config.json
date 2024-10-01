@@ -10067,6 +10067,23 @@
             ]
         }
     ],
+    "FetchListFamilyMembersWithCapability": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FetchListFamilyMembersWithCapability"
+                    ]
+                }
+            ]
+        }
+    ],
     "FindRegistrationImprovements": [
         {
             "platforms": [
