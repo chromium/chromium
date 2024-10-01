@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//components/omnibox/common",
     "//components/search_engines",
     "//components/search_engines:test_support",
+    "//components/variations:test_support",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
     "//ios/chrome/browser/lens_overlay/ui:view_controller",

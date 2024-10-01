@@ -22,7 +22,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -204,9 +206,15 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
   _isInflightRequestLensInitiated = YES;
   [_consumer setLoadingProgress:kProgressBarLensResponseReceived];
-  _webState->OpenURL(web::WebState::OpenURLParams(
-      URL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+
+  web::NavigationManager::WebLoadParams webParams =
+      web::NavigationManager::WebLoadParams(URL);
+
+  // Add variation headers.
+  webParams.extra_headers =
+      web_navigation_util::VariationHeadersForURL(URL, _isIncognito);
+
+  _webState->GetNavigationManager()->LoadURLWithParams(webParams);
 }
 
 - (void)handleSearchRequestStarted {

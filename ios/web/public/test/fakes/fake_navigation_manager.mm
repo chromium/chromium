@@ -51,6 +51,7 @@ void FakeNavigationManager::DiscardNonCommittedItems() {
 void FakeNavigationManager::LoadURLWithParams(
     const NavigationManager::WebLoadParams& params) {
   load_url_with_params_was_called_ = true;
+  load_URL_params_ = params;
 }
 
 void FakeNavigationManager::LoadIfNecessary() {
@@ -173,6 +174,11 @@ void FakeNavigationManager::SetBrowserState(web::BrowserState* browser_state) {
 
 bool FakeNavigationManager::LoadURLWithParamsWasCalled() {
   return load_url_with_params_was_called_;
+}
+
+std::optional<NavigationManager::WebLoadParams>
+FakeNavigationManager::GetLastLoadURLWithParams() {
+  return load_URL_params_;
 }
 
 bool FakeNavigationManager::LoadIfNecessaryWasCalled() {
