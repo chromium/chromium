@@ -6909,11 +6909,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "passpoint-settings",
-    "owners": [ "cros-networking@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "password-generation-soft-nudge",
     "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 133

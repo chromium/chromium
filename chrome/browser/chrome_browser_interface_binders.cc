@@ -1542,12 +1542,10 @@ void PopulateChromeWebUIFrameBinders(
       ash::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
       ash::ShimlessRMADialogUI>(map);
 
-  if (ash::features::IsPasspointSettingsEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        chromeos::connectivity::mojom::PasspointService,
-        ash::InternetDetailDialogUI, ash::NetworkUI,
-        ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::connectivity::mojom::PasspointService,
+      ash::InternetDetailDialogUI, ash::NetworkUI, ash::settings::OSSettingsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,

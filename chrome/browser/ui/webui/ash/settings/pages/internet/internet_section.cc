@@ -1156,8 +1156,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
   html_source->AddBoolean("isInstantHotspotRebrandEnabled",
                           ash::features::IsInstantHotspotRebrandEnabled());
-  html_source->AddBoolean("isPasspointSettingsEnabled",
-                          ash::features::IsPasspointSettingsEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);

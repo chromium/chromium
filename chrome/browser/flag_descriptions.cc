@@ -6590,11 +6590,6 @@ const char kEnableRFC8925Description[] =
     "Let ChromeOS DHCPv4 client voluntarily drop DHCPv4 lease and prefer to"
     "operate IPv6-only, if the network is also IPv6-only capable.";
 
-const char kPasspointSettingsName[] = "Enable Passpoint settings";
-const char kPasspointSettingsDescription[] =
-    "Enables displaying Passpoint subscription information in network "
-    "settings.";
-
 const char kEnableEdidBasedDisplayIdsName[] = "Enable EDID-based display IDs";
 const char kEnableEdidBasedDisplayIdsDescription[] =
     "When enabled, a display's ID will be produced by hashing certain values "
