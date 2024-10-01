@@ -15,9 +15,6 @@ class FollowService;
 // ProfileIOS.
 class FollowServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static FollowService* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static FollowService* GetForProfile(ProfileIOS* profile);
   static FollowServiceFactory* GetInstance();
 

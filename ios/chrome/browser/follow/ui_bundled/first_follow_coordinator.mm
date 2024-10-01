@@ -82,8 +82,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
   firstFollowViewController.actionHandler = self;
 
-  self.faviconLoader = IOSChromeFaviconLoaderFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  self.faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.browser->GetProfile());
 
   firstFollowViewController.modalPresentationStyle =
       UIModalPresentationPageSheet;
