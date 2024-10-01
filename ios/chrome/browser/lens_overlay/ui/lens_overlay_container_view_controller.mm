@@ -29,7 +29,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+  self.view.backgroundColor = [UIColor clearColor];
   self.view.accessibilityIdentifier = kLenscontainerViewAccessibilityIdentifier;
 
   if (!self.selectionViewController) {

@@ -76,6 +76,12 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 const CGFloat kSelectionOffsetPadding = 100.0f;
 
+// The expected number of animations happening at the same time when exiting.
+const int kExpectedExitAnimationCount = 2;
+
+// The duration of the dismiss animation when exiting the selection UI.
+const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
+
 NSString* const kCustomConsentSheetDetentIdentifier =
     @"kCustomConsentSheetDetentIdentifier";
 
@@ -138,6 +144,8 @@ const CGFloat kMenuSymbolSize = 18;
   BOOL _searchPerformedInSession;
   /// Whether the first interaction has been recorded.
   BOOL _firstInteractionRecorded;
+  /// Indicates the Lens Overlay is in the exit flow.
+  BOOL _isExiting;
 }
 
 #pragma mark - public
@@ -370,6 +378,12 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)destroyLensUI:(BOOL)animated
                reason:(lens::LensOverlayDismissalSource)dismissalSource {
+  if (_isExiting) {
+    return;
+  }
+
+  _isExiting = YES;
+
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
   [self recordDismissalMetrics:dismissalSource];
 
@@ -381,25 +395,101 @@ const CGFloat kMenuSymbolSize = 18;
     _associatedTabHelper = nil;
   }
 
+  if (!animated) {
+    [self exitWithoutAnimation];
+    return;
+  }
+
   // Taking the screenshot triggered fullscreen mode. Ensure it's reverted in
   // the cleanup process. Exiting fullscreen has to happen on destruction to
   // ensure a smooth transition back to the content.
-  __weak UIViewController* presentingViewController =
+  __weak __typeof(self) weakSelf = self;
+  __block int completionCount = 0;
+  void (^onAnimationFinished)() = ^{
+    completionCount++;
+    if (completionCount == kExpectedExitAnimationCount) {
+      [weakSelf dismissLensOverlayWithCompletion:^{
+        [weakSelf destroyViewControllersAndMediators];
+      }];
+    }
+  };
+
+  [self animateBottomSheetExitWithCompletion:onAnimationFinished];
+  [self animateSelectionUIExitWithCompletion:onAnimationFinished];
+}
+
+#pragma mark - Exit animations
+
+- (void)exitWithoutAnimation {
+  __weak __typeof(self) weakSelf = self;
+  void (^completion)() = ^{
+    [weakSelf exitFullscreenAnimated:NO];
+    [weakSelf destroyViewControllersAndMediators];
+  };
+
+  UIViewController* presentingViewController =
       _containerViewController.presentingViewController;
-  if (presentingViewController) {
-    __weak __typeof(self) weakSelf = self;
-    [_selectionViewController resetSelectionAreaToInitialPosition:^{
-      [presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:^{
-                               [weakSelf exitFullscreenAnimated:animated];
-                               [weakSelf destroyViewControllersAndMediators];
-                             }];
-    }];
-  } else {
-    [self exitFullscreenAnimated:NO];
-    [self destroyViewControllersAndMediators];
+
+  if (!presentingViewController) {
+    completion();
+    return;
   }
+
+  [presentingViewController dismissViewControllerAnimated:NO
+                                               completion:completion];
+}
+
+- (void)animateBottomSheetExitWithCompletion:(void (^)())completion {
+  UIViewController* presentedViewController =
+      _containerViewController.presentedViewController;
+  if (!presentedViewController) {
+    completion();
+    return;
+  }
+
+  [presentedViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           base::SequencedTaskRunner::GetCurrentDefault()
+                               ->PostTask(FROM_HERE,
+                                          base::BindOnce(completion));
+                         }];
+}
+
+- (void)animateSelectionUIExitWithCompletion:(void (^)())completion {
+  __weak __typeof(self) weakSelf = self;
+  [_selectionViewController resetSelectionAreaToInitialPosition:^{
+    [weakSelf exitFullscreenAnimated:YES];
+    [UIView animateWithDuration:kSelectionViewDismissAnimationDuration
+        animations:^{
+          __typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+          strongSelf->_selectionViewController.view.alpha = 0;
+        }
+        completion:^(BOOL status) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(completion));
+        }];
+  }];
+}
+
+- (void)dismissLensOverlayWithCompletion:(void (^)())completion {
+  UIViewController* presentingViewController =
+      _containerViewController.presentingViewController;
+  if (!presentingViewController) {
+    completion();
+    return;
+  }
+
+  [presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           base::SequencedTaskRunner::GetCurrentDefault()
+                               ->PostTask(FROM_HERE,
+                                          base::BindOnce(completion));
+                         }];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -712,6 +802,7 @@ const CGFloat kMenuSymbolSize = 18;
   _selectionViewController = nil;
   _mediator = nil;
   _consentViewController = nil;
+  _isExiting = NO;
 }
 
 // The tab helper for the active web state.
