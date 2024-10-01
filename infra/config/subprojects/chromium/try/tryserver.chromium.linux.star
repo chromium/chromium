@@ -43,6 +43,7 @@ try_.builder(
         configs = [
             "release_try_builder",
             "remoteexec",
+            "system_headers_in_deps",
             "dcheck_off",
             "linux",
             "x64",

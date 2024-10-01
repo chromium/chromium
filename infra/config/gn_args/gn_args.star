@@ -1257,6 +1257,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "system_headers_in_deps",
+    args = {
+        "system_headers_in_deps": True,
+    },
+)
+
+gn_args.config(
     name = "full_mte",
     args = {
         "use_full_mte": True,
