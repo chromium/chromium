@@ -338,7 +338,6 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/holding_space:browser_tests",
     "//chrome/browser/ui/ash/keyboard:browser_tests",
     "//chrome/browser/ui/ash/login:browser_tests",
-    "//chrome/browser/ui/ash/metrics:browser_tests",
     "//chrome/browser/ui/ash/network:browser_tests",
     "//chrome/browser/ui/ash/new_window:browser_tests",
     "//chrome/browser/ui/ash/picker:browser_tests",
