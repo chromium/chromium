@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_restoration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -120,9 +121,8 @@ SerializedScriptValue* History::StateInternal() const {
   return nullptr;
 }
 
-void History::setScrollRestoration(const String& value,
+void History::setScrollRestoration(const V8ScrollRestoration& value,
                                    ExceptionState& exception_state) {
-  DCHECK(value == "manual" || value == "auto");
   HistoryItem* item = GetHistoryItem();
   if (!item) {
     exception_state.ThrowSecurityError(
@@ -132,8 +132,9 @@ void History::setScrollRestoration(const String& value,
   }
 
   mojom::blink::ScrollRestorationType scroll_restoration =
-      value == "manual" ? mojom::blink::ScrollRestorationType::kManual
-                        : mojom::blink::ScrollRestorationType::kAuto;
+      value.AsEnum() == V8ScrollRestoration::Enum::kManual
+          ? mojom::blink::ScrollRestorationType::kManual
+          : mojom::blink::ScrollRestorationType::kAuto;
   if (scroll_restoration == ScrollRestorationInternal())
     return;
 
@@ -141,17 +142,19 @@ void History::setScrollRestoration(const String& value,
   DomWindow()->GetFrame()->Client()->DidUpdateCurrentHistoryItem();
 }
 
-String History::scrollRestoration(ExceptionState& exception_state) {
+V8ScrollRestoration History::scrollRestoration(
+    ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
         "fully active");
-    return "auto";
+    return V8ScrollRestoration(V8ScrollRestoration::Enum::kAuto);
   }
-  return ScrollRestorationInternal() ==
-                 mojom::blink::ScrollRestorationType::kManual
-             ? "manual"
-             : "auto";
+  return V8ScrollRestoration(
+      ScrollRestorationInternal() ==
+              mojom::blink::ScrollRestorationType::kManual
+          ? V8ScrollRestoration::Enum::kManual
+          : V8ScrollRestoration::Enum::kAuto);
 }
 
 mojom::blink::ScrollRestorationType History::ScrollRestorationInternal() const {
