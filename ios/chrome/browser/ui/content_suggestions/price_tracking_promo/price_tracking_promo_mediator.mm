@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -84,8 +85,8 @@
 #pragma mark - Public
 
 - (void)disableModule {
-  // TODO(crbug.com/361404422) implement response to
-  // user choosing to disable module.
+  _prefService->SetBoolean(kPriceTrackingPromoDisabled, true);
+  [self.delegate removePriceTrackingPromo];
 }
 
 #pragma mark - PriceTrackingPromoCommands

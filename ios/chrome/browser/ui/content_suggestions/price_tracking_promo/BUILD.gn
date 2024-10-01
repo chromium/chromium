@@ -10,6 +10,8 @@ source_set("price_tracking_promo") {
     "price_tracking_promo_item.mm",
     "price_tracking_promo_mediator.h",
     "price_tracking_promo_mediator.mm",
+    "price_tracking_promo_prefs.h",
+    "price_tracking_promo_prefs.mm",
     "price_tracking_promo_view.h",
     "price_tracking_promo_view.mm",
   ]
