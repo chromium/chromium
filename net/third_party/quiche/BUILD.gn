@@ -880,13 +880,14 @@ component("blind_sign_auth") {
   defines = [ "IS_QUICHE_IMPL" ]
 }
 
+# Do not depend on this target from outside the component. Depend on
+# :blind_sign_auth instead.
 proto_library("blind_sign_auth_proto") {
   visibility = [
     ":blind_sign_auth",
     ":blind_sign_auth_test_support",
     ":quiche",
     ":quiche_tests",
-    "//components/ip_protection/*",
   ]
 
   sources = protobuf_blind_sign_auth
