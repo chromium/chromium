@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -410,9 +411,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // We always display the toggle, but the toggle is only enabled when Autofill credit
         // card is enabled AND the device supports biometric auth or screen lock. If either of
         // these is not met, we will grey out the toggle.
+        // `getBiometricAvailabilityStatus` also checks if screen lock is available and returns
+        // `ONLY_LSKF_AVAILABLE` if it is.
         boolean enableReauthSwitch =
                 personalDataManager.isAutofillPaymentMethodsEnabled()
-                        && mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock();
+                        && (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                                != BiometricStatus.UNAVAILABLE);
         mandatoryReauthSwitch.setEnabled(enableReauthSwitch);
         mandatoryReauthSwitch.setOnPreferenceChangeListener(this::onMandatoryReauthSwitchToggled);
         getPreferenceScreen().addPreference(mandatoryReauthSwitch);

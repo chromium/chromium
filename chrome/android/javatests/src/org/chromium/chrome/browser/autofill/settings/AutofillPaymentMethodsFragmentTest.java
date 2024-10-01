@@ -51,6 +51,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -518,7 +519,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -554,8 +556,8 @@ public class AutofillPaymentMethodsFragmentTest {
     public void testMandatoryReauthToggle_disabledWhenBothBiometricAndScreenLockAreDisabled()
             throws Exception {
         // Simulate the user can't authenticate with neither biometric nor screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(false);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.UNAVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -574,8 +576,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can't authenticate with neither biometric nor screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(false);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.UNAVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -603,7 +605,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.ONLY_LSKF_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -640,7 +643,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -681,7 +685,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.ONLY_LSKF_AVAILABLE);
         var editCardReauthHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -727,7 +732,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         var editCardReauthHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -772,7 +778,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         var editCardReauthHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -814,7 +821,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.ONLY_LSKF_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -849,7 +857,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -892,7 +901,8 @@ public class AutofillPaymentMethodsFragmentTest {
                             .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
                 });
         // Simulate the user can authenticate with biometric or screen lock.
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
