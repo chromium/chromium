@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.lens;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -23,11 +24,17 @@ public class LensController {
     }
 
     public LensController() {
-        mDelegate = new LensControllerDelegateImpl();
+        LensControllerDelegate delegate =
+                ServiceLoaderUtil.maybeCreate(LensControllerDelegate.class);
+        if (delegate == null) {
+            delegate = new LensControllerDelegate();
+        }
+        mDelegate = delegate;
     }
 
     /**
      * Whether the Lens SDK is available.
+     *
      * @return Whether the Lens SDK is available.
      */
     public boolean isSdkAvailable() {

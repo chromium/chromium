@@ -18,8 +18,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets. The
- * correct version of {@link LensControllerDelegateImpl} will be determined at compile time via
- * build rules.
+ * correct implementation of {@link LensControllerDelegate} will be determined at compile time via
+ * {@link ServiceLoaderUtil}.
  */
 public class LensControllerDelegate {
     /**

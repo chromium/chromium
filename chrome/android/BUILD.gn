@@ -293,7 +293,6 @@ if (current_toolchain == default_toolchain) {
   java_group("delegate_public_impl_java") {
     deps = [
       "//chrome/android/modules/readaloud/public:provider_public_java",
-      "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/locale:delegate_public_impl_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_impl_java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
@@ -1067,7 +1066,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/incognito:java",
       "//chrome/browser/language/android:java",
       "//chrome/browser/language/android:junit",
-      "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/lens:java",
       "//chrome/browser/loading_modal/android:junit",
       "//chrome/browser/locale:java",
