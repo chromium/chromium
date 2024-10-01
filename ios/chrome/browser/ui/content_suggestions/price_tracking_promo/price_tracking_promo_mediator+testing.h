@@ -26,6 +26,8 @@ class ShoppingService;
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting;
 
+- (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_PRICE_TRACKING_PROMO_MEDIATOR_TESTING_H_

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator+testing.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -61,6 +62,8 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:shopping_service_.get()
+                  bookmarkModel:nil
+                   imageFetcher:nil
                     prefService:&pref_service_
         pushNotificationService:push_notification_service_.get()
           authenticationService:auth_service_];
@@ -130,6 +133,8 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
 
 // Resets card and fetches most recent subscription, if available.
 TEST_F(PriceTrackingPromoMediatorTest, TestReset) {
+  PriceTrackingPromoItem* item = [[PriceTrackingPromoItem alloc] init];
+  [mediator() setPriceTrackingPromoItemForTesting:item];
   EXPECT_NE(nil, mediator().priceTrackingPromoItemForTesting);
   [mediator() reset];
   EXPECT_EQ(nil, mediator().priceTrackingPromoItemForTesting);

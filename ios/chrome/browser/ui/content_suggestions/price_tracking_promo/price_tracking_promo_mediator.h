@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace commerce {
 class ShoppingService;
@@ -40,6 +45,9 @@ class AuthenticationService;
 // Default initializer.
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)shoppingService
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+               imageFetcher:
+                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                 prefService:(PrefService*)prefService
     pushNotificationService:(PushNotificationService*)pushNotificationService
       authenticationService:(AuthenticationService*)authenticationService

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -56,20 +57,15 @@ const CGFloat kSeparatorHeight = 0.5;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    [self constructView];
     self.isAccessibilityElement = YES;
   }
   return self;
 }
 
 - (void)configureView:(PriceTrackingPromoItem*)config {
-}
-
-- (void)constructView {
-  [self createSubviews];
-}
-
-- (void)createSubviews {
+  if (!config) {
+    return;
+  }
   if (!(self.subviews.count == 0)) {
     return;
   }
@@ -98,6 +94,8 @@ const CGFloat kSeparatorHeight = 0.5;
   _descriptionLabel.text = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_DESCRIPTION);
 
+  // TODO(crbug.com/361106168) use product image from most recent subscription
+  // if available.
   _fallbackProductImageView = [[UIImageView alloc] init];
   _fallbackProductImageView.image = CustomSymbolWithPointSize(
       kDownTrendSymbol, kProductImageFallbackPointSize);
