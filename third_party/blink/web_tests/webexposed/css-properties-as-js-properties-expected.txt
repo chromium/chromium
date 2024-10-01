@@ -236,7 +236,6 @@ initialLetter
 initialValue
 inlineSize
 inset
-insetArea
 insetBlock
 insetBlockEnd
 insetBlockStart

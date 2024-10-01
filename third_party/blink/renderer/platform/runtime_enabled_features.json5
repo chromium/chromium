@@ -1042,10 +1042,9 @@
     {
       // The `inset-area` CSS property has been renamed to `position-area`. This
       // feature (CSSInsetAreaProperty) enables the old `inset-area` property.
-      // This is enabled by default for now, but deprecated in M129. The plan is
-      // to disable it starting in M131.
+      // This was deprecated in M129, and disabled by default in M131. Assuming
+      // no issues, this flag can be removed in M133.
       name: "CSSInsetAreaProperty",
-      status: "stable",
     },
     {
       // https://chromestatus.com/feature/6289894144212992
