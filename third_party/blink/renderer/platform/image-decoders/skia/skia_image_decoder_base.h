@@ -81,6 +81,10 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   int prior_frame_ = SkCodec::kNoFrame;
   base::flat_set<wtf_size_t> decode_failed_frames_;
 
+  // Offset inside `segment_stream_` where `this` decoder should start decoding
+  // an image.  This is useful in scenarios where we want an `SkCodec` to decode
+  // an image embedded in a middle of another data stream - one specific example
+  // is PNG images embedded inside ICO or BMP images.
   const wtf_size_t reading_offset_ = 0;
 };
 
