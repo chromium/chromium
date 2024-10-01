@@ -336,13 +336,6 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
       GetFlagEntry(feature::kCastCoreIsRemoteControlMode,
                    config_.extra_features(), /*default_value=*/false);
   params->enabled_for_dev = IsEnabledForDev();
-#if BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
-  // cast_receiver::ApplicationControlsImpl constructs an instance of
-  // url_rewrite::UrlRequestRewriteRulesManager. CastWebContentsImpl should NOT
-  // construct its own instance, or UrlRequestRulesReceiver will crash when a
-  // second mojo connection is attempted.
-  params->enable_url_rewrite_rules = false;
-#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
   params->enable_touch_input = IsTouchInputAllowed();
   params->log_js_console_messages =
       GetFlagEntry(feature::kCastCoreLogJsConsoleMessages,
@@ -353,6 +346,17 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
   params->force_720p_resolution =
       GetFlagEntry(feature::kCastCoreForce720p, config_.extra_features(),
                    /*default_value=*/false);
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
+  // Starboard-based (linux) cast receivers may not render their UI at 720p, so
+  // we need to scale to the proper resolution. For example, a 4k TV may render
+  // the window at 1920x1080, so a scaling factor of 1.5 is necessary for a 720p
+  // app. Setting this to true would remove the scaling factor in
+  // CastWebViewDefault::CastWebViewDefault (calling
+  // OverridePrimaryDisplaySettings with a scaling factor of 1). As a result,
+  // certain apps (e.g. Fandango at Home) would only cover part of the TV
+  // screen.
+  params->force_720p_resolution = false;
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
   params->turn_on_screen =
       GetFlagEntry(feature::kCastCoreTurnOnScreen, config_.extra_features(),
                    /*default_value=*/false);
