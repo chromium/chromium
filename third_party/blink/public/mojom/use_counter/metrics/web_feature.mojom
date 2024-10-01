@@ -4483,6 +4483,7 @@ enum WebFeature {
   kHTMLUnsafeMethods = 5109,
   kV8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter = 5110,
   kMaxInterStageShaderComponentsRequiredLimit = 5111,
+  kShowPickerSelect = 5112,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

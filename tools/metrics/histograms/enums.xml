@@ -11002,6 +11002,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5110"
       label="V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter"/>
   <int value="5111" label="MaxInterStageShaderComponentsRequiredLimit"/>
+  <int value="5112" label="ShowPickerSelect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34038,6 +34039,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="124" label="Aborting"/>
   <int value="125" label="EditContext"/>
   <int value="126" label="PaintOrder"/>
+  <int value="127" label="ShowPickerSelect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
