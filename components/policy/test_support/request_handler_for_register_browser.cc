@@ -69,8 +69,7 @@ RequestHandlerForRegisterBrowserOrPolicyAgent::HandleRequest(
                                    client_info.allowed_policy_types.end()));
   client_storage()->RegisterClient(std::move(client_info));
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 RequestHandlerForRegisterBrowserOrPolicyAgent::

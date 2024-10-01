@@ -50,8 +50,7 @@ RequestHandlerForDeviceInitialEnrollmentState::HandleRequest(
           .mutable_device_initial_enrollment_state_response();
   state_response->set_initial_enrollment_mode(state->initial_enrollment_mode);
   state_response->set_management_domain(state->management_domain);
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

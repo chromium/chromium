@@ -5,6 +5,7 @@
 #include "components/policy/test_support/request_handler_for_client_cert_provisioning.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -139,8 +140,7 @@ RequestHandlerForClientCertProvisioning::HandleRequest(
                               "Invalid request parameter");
   }
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

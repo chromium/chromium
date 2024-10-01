@@ -53,8 +53,7 @@ RequestHandlerForDeviceStateRetrieval::HandleRequest(
     device_state_retrieval_response->set_restore_mode(
         device_state.restore_mode);
   }
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy
