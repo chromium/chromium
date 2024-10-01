@@ -525,7 +525,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
-          worklet_info_.experiment_group_id);
+          worklet_info_.experiment_group_id, /*public_key=*/nullptr);
       seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
           &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
       break;

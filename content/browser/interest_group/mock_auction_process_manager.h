@@ -471,7 +471,8 @@ class MockAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override;
 
   // Set the expected timeout for an interest group with the specified name,
   // when it's received by a bidder worklet's FinishGenerateBid() method. Must

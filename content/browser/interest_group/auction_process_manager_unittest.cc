@@ -107,7 +107,8 @@ class TestAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      std::optional<uint16_t> experiment_id) override {
+      std::optional<uint16_t> experiment_id,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override {
     NOTREACHED_IN_MIGRATION();
   }
 

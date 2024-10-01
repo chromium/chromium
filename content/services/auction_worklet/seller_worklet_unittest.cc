@@ -30,9 +30,12 @@
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "components/cbor/writer.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -45,6 +48,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,6 +84,20 @@ const char kTrustedScoringSignalsResponse[] = R"(
     }
   }
 )";
+
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
+
+const uint8_t kKeyId = 0xFF;
 
 // Creates a seller script with scoreAd() returning the specified expression.
 // Allows using scoreAd() arguments, arbitrary values, incorrect types, etc.
@@ -263,6 +281,7 @@ class SellerWorkletTest : public testing::Test {
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/false);
     experiment_group_id_ = std::nullopt;
+    public_key_ = nullptr;
     browser_signals_other_seller_.reset();
     component_expect_bid_currency_ = std::nullopt;
     browser_signal_interest_group_owner_ =
@@ -779,6 +798,7 @@ class SellerWorkletTest : public testing::Test {
         auction_network_events_handler_.CreateRemote(), decision_logic_url_,
         trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
+        public_key_ ? public_key_.Clone() : nullptr,
         base::BindRepeating(&SellerWorkletTest::GetNextThreadIndex,
                             base::Unretained(this)));
 
@@ -866,6 +886,7 @@ class SellerWorkletTest : public testing::Test {
   url::Origin top_window_origin_;
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   std::optional<uint16_t> experiment_group_id_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
@@ -6118,6 +6139,171 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/true);
   }
+}
+
+class SellerWorkletKVv2Test : public SellerWorkletTest {
+ public:
+  SellerWorkletKVv2Test() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kFledgeTrustedSignalsKVv2Support}, {});
+
+    public_key_ = mojom::TrustedSignalsPublicKey::New(
+        std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                    sizeof(kTestPublicKey)),
+        kKeyId);
+  }
+
+ protected:
+  static std::string GenerateResponseBody(
+      const std::string& request_body,
+      const std::string& response_json_content) {
+    // Decrypt the request.
+    auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+        kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+        EVP_HPKE_AES_256_GCM);
+    CHECK(response_key_config.ok()) << response_key_config.status();
+
+    auto ohttp_gateway =
+        quiche::ObliviousHttpGateway::Create(
+            std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                        sizeof(kTestPrivateKey)),
+            response_key_config.value())
+            .value();
+
+    auto received_request = ohttp_gateway.DecryptObliviousHttpRequest(
+        request_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
+    CHECK(received_request.ok()) << received_request.status();
+
+    // Build response body.
+    cbor::Value::MapValue compression_group;
+    compression_group.try_emplace(cbor::Value("compressionGroupId"),
+                                  cbor::Value(0));
+    compression_group.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
+    compression_group.try_emplace(
+        cbor::Value("content"),
+        cbor::Value(test::ToCborVector(response_json_content)));
+
+    cbor::Value::ArrayValue compression_groups;
+    compression_groups.emplace_back(std::move(compression_group));
+
+    cbor::Value::MapValue body_map;
+    body_map.try_emplace(cbor::Value("compressionGroups"),
+                         cbor::Value(std::move(compression_groups)));
+
+    cbor::Value body_value(std::move(body_map));
+    std::optional<std::vector<uint8_t>> maybe_body_bytes =
+        cbor::Writer::Write(body_value);
+    CHECK(maybe_body_bytes);
+
+    std::string response_body = test::CreateKVv2ResponseBody(
+        base::as_string_view(maybe_body_bytes.value()));
+    auto response_context =
+        std::move(received_request).value().ReleaseContext();
+
+    // Encrypt the response body.
+    auto maybe_response = ohttp_gateway.CreateObliviousHttpResponse(
+        response_body, response_context,
+        kTrustedSignalsKVv2EncryptionResponseMediaType);
+    CHECK(maybe_response.ok()) << maybe_response.status();
+
+    return maybe_response->EncapsulateAndSerialize();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SellerWorkletKVv2Test, ScoreAdTrustedScoringSignals) {
+  const char kJson[] =
+      R"([{
+          "id": 0,
+          "dataVersion": 101,
+          "keyGroupOutputs": [
+            {
+              "tags": [
+                "renderUrls"
+              ],
+              "keyValues": {
+                "https://bar.test/": {
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "tags": [
+                "adComponentRenderUrls"
+              ],
+              "keyValues": {
+                "https://barsub.test/": {
+                  "value": "2"
+                },
+                "https://foosub.test/": {
+                  "value": "[3]"
+                }
+              }
+            }
+          ]
+        }])";
+
+  const char kValidate[] = R"(
+    const expected = '{"renderURL":{"https://bar.test/":1},' +
+    '"renderUrl":{"https://bar.test/":1},"adComponentRenderURLs":' +
+    '{"https://barsub.test/":2,"https://foosub.test/":[3]},' +
+    '"adComponentRenderUrls":{"https://barsub.test/":2,' +
+    '"https://foosub.test/":[3]}}'
+    const actual = JSON.stringify(trustedScoringSignals);
+    if (actual === expected)
+      return 2;
+    throw actual + "!" + expected;
+  )";
+
+  const base::TimeDelta kDelay = base::Milliseconds(135);
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  browser_signal_render_url_ = GURL("https://bar.test/");
+  browser_signal_ad_components_ = {GURL("https://barsub.test/"),
+                                   GURL("https://foosub.test/")};
+
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript(/*raw_return_value=*/"1", kValidate));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/2,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/101,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/kDelay,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+  task_environment_.FastForwardBy(kDelay);
+
+  // Decrypt request and encrypt response.
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  const network::ResourceRequest* pending_request;
+  ASSERT_TRUE(url_loader_factory_.IsPending(
+      trusted_scoring_signals_url_->spec(), &pending_request));
+
+  std::string request_body =
+      std::string(pending_request->request_body->elements()
+                      ->at(0)
+                      .As<network::DataElementBytes>()
+                      .AsStringPiece());
+  std::string response_body = GenerateResponseBody(request_body, kJson);
+  std::string headers =
+      base::StringPrintf("%s\nContent-Type: %s", kAllowFledgeHeader,
+                         "message/ad-auction-trusted-signals-request");
+  AddResponse(&url_loader_factory_, trusted_scoring_signals_url_.value(),
+              kAdAuctionTrustedSignalsMimeType,
+              /*charset=*/std::nullopt, response_body, headers);
+
+  run_loop.Run();
 }
 
 class SellerWorkletTwoThreadsSharedStorageAPIEnabledTest

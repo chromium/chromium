@@ -88,7 +88,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key) override;
 
   // Returns an index in the seller thread pool, where the corresponding V8
   // thread will be used to execute the next task.

@@ -172,5 +172,6 @@ interface AuctionWorkletService {
       url.mojom.Url? trusted_scoring_signals_url,
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
-      uint16? experiment_group_id);
+      uint16? experiment_group_id,
+      TrustedSignalsPublicKey? public_key);
 };

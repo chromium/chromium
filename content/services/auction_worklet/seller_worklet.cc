@@ -432,6 +432,7 @@ SellerWorklet::SellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
+    mojom::TrustedSignalsPublicKeyPtr public_key,
     GetNextThreadIndexCallback get_next_thread_index_callback)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
@@ -475,7 +476,7 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 /*public_key=*/nullptr,
+                 std::move(public_key),
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
@@ -553,6 +554,7 @@ void SellerWorklet::ScoreAd(
   score_ad_task->component_expect_bid_currency = component_expect_bid_currency;
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
+  score_ad_task->bidder_joining_origin = bidder_joining_origin;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
   score_ad_task->browser_signal_selected_buyer_and_seller_reporting_id =
       browser_signal_selected_buyer_and_seller_reporting_id;
@@ -2012,14 +2014,29 @@ void SellerWorklet::StartFetchingSignalsForTask(
             SignalsOriginRelation::kSameOriginSignals ||
         trusted_signals_relation_ ==
             SignalsOriginRelation::kPermittedCrossOriginSignals);
-  score_ad_task->trusted_scoring_signals_request =
-      trusted_signals_request_manager_->RequestScoringSignals(
-          score_ad_task->browser_signal_render_url,
-          score_ad_task->browser_signal_ad_components,
-          score_ad_task->auction_ad_config_non_shared_params
-              .max_trusted_scoring_signals_url_length,
-          base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
-                         base::Unretained(this), score_ad_task));
+
+  if (trusted_signals_request_manager_->HasPublicKey()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kFledgeTrustedSignalsKVv2Support));
+
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestKVv2ScoringSignals(
+            score_ad_task->browser_signal_render_url,
+            score_ad_task->browser_signal_ad_components,
+            score_ad_task->browser_signal_interest_group_owner,
+            score_ad_task->bidder_joining_origin,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  } else {
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestScoringSignals(
+            score_ad_task->browser_signal_render_url,
+            score_ad_task->browser_signal_ad_components,
+            score_ad_task->auction_ad_config_non_shared_params
+                .max_trusted_scoring_signals_url_length,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  }
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(

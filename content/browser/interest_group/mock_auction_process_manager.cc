@@ -641,7 +641,8 @@ void MockAuctionProcessManager::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
         permissions_policy_state,
-    std::optional<uint16_t> experiment_group_id) {
+    std::optional<uint16_t> experiment_group_id,
+    auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) {
   EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
   // Make sure this request came over the right pipe.

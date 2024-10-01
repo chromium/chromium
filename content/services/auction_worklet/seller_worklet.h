@@ -101,6 +101,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key,
       GetNextThreadIndexCallback next_thread_index_callback);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
@@ -201,6 +202,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     std::optional<blink::AdCurrency> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
+    url::Origin bidder_joining_origin;
     GURL browser_signal_render_url;
     std::optional<std::string>
         browser_signal_selected_buyer_and_seller_reporting_id;
@@ -607,6 +609,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   const GURL script_source_url_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.
