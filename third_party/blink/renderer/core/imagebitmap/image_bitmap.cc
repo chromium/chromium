@@ -232,6 +232,31 @@ SkImageInfo GetSkImageInfo(const scoped_refptr<Image>& input) {
   return input->PaintImageForCurrentFrame().GetSkImageInfo();
 }
 
+void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
+  uint8_t* data = reinterpret_cast<uint8_t*>(pm.writable_addr());
+  const size_t row_bytes = pm.rowBytes();
+  const size_t pixel_bytes = pm.info().bytesPerPixel();
+  if (horizontal) {
+    for (int i = 0; i < pm.height() - 1; i++) {
+      for (int j = 0; j < pm.width() / 2; j++) {
+        size_t first_element = i * row_bytes + j * pixel_bytes;
+        size_t last_element = i * row_bytes + (j + 1) * pixel_bytes;
+        size_t bottom_element = (i + 1) * row_bytes - (j + 1) * pixel_bytes;
+        std::swap_ranges(&data[first_element], &data[last_element],
+                         &data[bottom_element]);
+      }
+    }
+  } else {
+    for (int i = 0; i < pm.height() / 2; i++) {
+      size_t top_first_element = i * row_bytes;
+      size_t top_last_element = (i + 1) * row_bytes;
+      size_t bottom_first_element = (pm.height() - 1 - i) * row_bytes;
+      std::swap_ranges(&data[top_first_element], &data[top_last_element],
+                       &data[bottom_first_element]);
+    }
+  }
+}
+
 static inline bool ShouldAvoidPremul(
     const ImageBitmap::ParsedOptions& options) {
   return options.source_is_unpremul && !options.premultiply_alpha;
@@ -263,6 +288,99 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 
   return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
                                                       kShouldInitialize);
+}
+
+// Perform the requested transformations on the CPU.
+scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
+    scoped_refptr<StaticBitmapImage> source,
+    const ImageBitmap::ParsedOptions& options) {
+  auto source_paint_image = source->PaintImageForCurrentFrame();
+  auto source_info = source->GetSkImageInfo();
+
+  // Compute the unoriented source and dest rects and sizes.
+  SkIRect source_rect;
+  SkIRect source_rect_valid;
+  SkISize dest_size;
+  options.ComputeSubsetParameters(source_rect, source_rect_valid, dest_size);
+
+  // Let `bm` be the image that we're manipulating step-by-step.
+  SkBitmap bm;
+
+  // Allocate the cropped source image.
+  {
+    SkAlphaType bm_alpha_type = source_info.alphaType();
+    if (bm_alpha_type != kOpaque_SkAlphaType) {
+      if (options.premultiply_alpha) {
+        bm_alpha_type = kPremul_SkAlphaType;
+      } else {
+        bm_alpha_type = kUnpremul_SkAlphaType;
+      }
+    }
+    const auto bm_info = source_info.makeDimensions(source_rect.size())
+                             .makeAlphaType(bm_alpha_type);
+    if (!bm.tryAllocPixels(bm_info)) {
+      return nullptr;
+    }
+  }
+
+  // Populate the cropped image by calling `readPixels`. This can also do alpha
+  // conversion.
+  {
+    // Let `pm_valid_rect` be the intersection of `source_rect` with
+    // `source_size`. It will be a subset of `bm`, and we wil read into it.
+    SkIRect pm_valid_rect = SkIRect::MakeXYWH(
+        source_rect_valid.x() - source_rect.x(),
+        source_rect_valid.y() - source_rect.y(), source_rect_valid.width(),
+        source_rect_valid.height());
+    SkPixmap pm_valid;
+    if (!source_rect_valid.isEmpty() &&
+        !bm.pixmap().extractSubset(&pm_valid, pm_valid_rect)) {
+      NOTREACHED();
+    }
+    if (!source_rect_valid.isEmpty()) {
+      if (!source_paint_image.readPixels(
+              pm_valid.info(), pm_valid.writable_addr(), pm_valid.rowBytes(),
+              source_rect_valid.x(), source_rect_valid.y())) {
+        return nullptr;
+      }
+    }
+  }
+
+  // Apply scaling.
+  if (bm.dimensions() != dest_size) {
+    SkBitmap bm_scaled;
+    if (!bm_scaled.tryAllocPixels(bm.info().makeDimensions(dest_size))) {
+      return nullptr;
+    }
+    bm.pixmap().scalePixels(bm_scaled.pixmap(), options.sampling);
+    bm = bm_scaled;
+  }
+
+  // Apply vertical flip by using a different ImageOrientation.
+  if (options.flip_y) {
+    SkPixmap pm = bm.pixmap();
+    FlipSkPixmapInPlace(pm, options.source_orientation.UsesWidthAsHeight());
+  }
+
+  // Create the resulting SkImage.
+  bm.setImmutable();
+  auto dest_image = bm.asImage();
+  ;
+
+  // Strip the color space if requested.
+  if (!options.has_color_space_conversion) {
+    dest_image = dest_image->reinterpretColorSpace(SkColorSpace::MakeSRGB());
+  }
+
+  // Return the result.
+  auto dest_paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(source_paint_image.stable_id())
+          .set_image(std::move(dest_image),
+                     source_paint_image.GetContentIdForFrame(0u))
+          .TakePaintImage();
+  return UnacceleratedStaticBitmapImage::Create(std::move(dest_paint_image),
+                                                options.source_orientation);
 }
 
 // Perform all transformations using a blit, which will result in a new
@@ -546,19 +664,22 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   const bool needs_resize = options.source_rect.size() != options.dest_size;
   const bool needs_strip_orientation = !options.orientation_from_image;
   const bool needs_strip_color_space = !options.has_color_space_conversion;
+  const bool needs_alpha_change =
+      options.source_is_unpremul != (!options.premultiply_alpha);
 
-  // If we just aren't doing anything, just return the original.
+  // If we aren't doing anything, just return the original.
   if (!needs_flip && !needs_crop && !needs_resize && !needs_strip_orientation &&
-      !needs_strip_color_space) {
+      !needs_strip_color_space && !needs_alpha_change) {
     return source;
   }
 
-  // Using a blit will premultiply content, so if preserving unmultiplied alpha
-  // is required then use the software path (which needs to be updated).
-  if (options.MustPreserveUnpremulValues()) {
-    return nullptr;
+  // Using a blit will premultiply content, so if unpremultiplied results are
+  // requested, fall back to software. The test ImageBitmapTest.AvoidGPUReadback
+  // expects this, even if the source had premultiplied alpha (in which case we
+  // are falling back to the CPU for no increased precision).
+  if (!options.premultiply_alpha) {
+    return ApplyTransformsFromOptionsSoftware(source, options);
   }
-
   return ApplyTransformsFromOptionsWithBlit(source, options);
 }
 
@@ -774,10 +895,6 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
       std::move(paint_image), input->CurrentFrameOrientation());
 
   image_ = ApplyTransformsFromOptions(static_input, parsed_options);
-  if (!image_) {
-    image_ = CropImageAndApplyColorSpaceConversion(std::move(static_input),
-                                                   parsed_options);
-  }
   if (!image_)
     return;
 
@@ -991,8 +1108,7 @@ ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
-  image_ =
-      CropImageAndApplyColorSpaceConversion(std::move(image), parsed_options);
+  image_ = ApplyTransformsFromOptions(image, parsed_options);
   if (!image_)
     return;
 
