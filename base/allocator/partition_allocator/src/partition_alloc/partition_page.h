@@ -173,8 +173,7 @@ struct SlotSpanMetadata<MetadataKind::kReadOnly>
       : SlotSpanMetadataBase<MetadataKind::kReadOnly>(b) {}
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
   // pa_tcache_inspect needs the copy constructor.
-  SlotSpanMetadata<MetadataKind::kReadOnly>(
-      const SlotSpanMetadata<MetadataKind::kReadOnly>&) = default;
+  SlotSpanMetadata(const SlotSpanMetadata<MetadataKind::kReadOnly>&) = default;
 
   // Public API
   // Pointer/address manipulation functions. These must be static as the input
