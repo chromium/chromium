@@ -7,13 +7,11 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -31,8 +29,6 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
@@ -69,15 +65,10 @@ constexpr char kPasswordKey[] = "password";
 constexpr char kGaiaIdKey[] = "gaiaId";
 constexpr char kIsAvailableInArcKey[] = "isAvailableInArc";
 constexpr char kSecondaryAccount1Email[] = "secondary1@gmail.com";
-constexpr char kSecondaryAccount2Email[] = "secondary2@gmail.com";
-constexpr char kSecondaryAccount3Email[] = "secondary3@gmail.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
 constexpr char kGetDeviceIdMessage[] = "getDeviceId";
-constexpr char kMakeAvailableInArcMessage[] = "makeAvailableInArc";
-constexpr char kGetAccountsNotAvailableInArcMessage[] =
-    "getAccountsNotAvailableInArc";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
 constexpr char kToSVersion[] = "12345678";
@@ -510,213 +501,4 @@ INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
                          InlineLoginHandlerTest,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
                                            GetChildDeviceAccountInfo()));
-
-class InlineLoginHandlerTestWithArcRestrictions
-    : public InlineLoginHandlerTest {
- public:
-  InlineLoginHandlerTestWithArcRestrictions() {
-    auto lacros = ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(
-        ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    feature_list_.InitWithFeatures(/*enabled=*/lacros, /*disabled=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
-  ~InlineLoginHandlerTestWithArcRestrictions() override = default;
-
-  void SetUpOnMainThread() override {
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    InlineLoginHandlerTest::SetUpOnMainThread();
-    // In-session account addition happens when `AccountAppsAvailability` is
-    // already initialized.
-    EXPECT_TRUE(AccountAppsAvailabilityFactory::GetForProfile(profile())
-                    ->IsInitialized());
-  }
-
-  void AddAccount(const std::string& email, bool is_available_in_arc) {
-    account_manager::MockAccountManagerFacadeObserver observer;
-    base::ScopedObservation<account_manager::AccountManagerFacade,
-                            account_manager::AccountManagerFacade::Observer>
-        observation{&observer};
-    observation.Observe(
-        ::GetAccountManagerFacade(profile()->GetPath().value()));
-    auto* account_apps_availability =
-        AccountAppsAvailabilityFactory::GetForProfile(profile());
-
-    base::test::TestFuture<void> future;
-    EXPECT_CALL(observer, OnAccountUpserted(AccountEmailEq(email)))
-        .WillOnce(testing::DoAll(
-            base::test::RunOnceClosure(future.GetCallback()),
-            [account_apps_availability,
-             is_available_in_arc](const account_manager::Account& account) {
-              account_apps_availability->SetIsAccountAvailableInArc(
-                  account, is_available_in_arc);
-            }));
-    identity_test_env()->MakeAccountAvailable(email);
-    EXPECT_TRUE(future.Wait());
-  }
-
-  bool ValuesListContainAccount(const base::Value::List& values,
-                                const std::string& email) {
-    return ValuesListGetAccount(values, email).has_value();
-  }
-
-  std::optional<base::Value> ValuesListGetAccount(
-      const base::Value::List& values,
-      const std::string& email) {
-    for (const base::Value& value : values) {
-      const std::string* email_val = value.GetDict().FindString("email");
-      EXPECT_TRUE(email_val != nullptr);
-      if (*email_val == email)
-        return value.Clone();
-    }
-    return std::nullopt;
-  }
-
-  const base::Value::List& CallGetAccountsNotAvailableInArc() {
-    // Call "getAccountsNotAvailableInArc".
-    base::Value::List args;
-    args.Append(kHandleFunctionName);
-    web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage, args);
-    base::RunLoop().RunUntilIdle();
-
-    const content::TestWebUI::CallData& call_data =
-        *web_ui()->call_data().back();
-    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-    EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
-    EXPECT_TRUE(call_data.arg2()->GetBool());
-
-    // Get results from JS callback.
-    return call_data.arg3()->GetList();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       NewAccountAdditionSuccess) {
-  account_manager::MockAccountManagerFacadeObserver observer;
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation{&observer};
-  account_manager_facade_observation.Observe(
-      ::GetAccountManagerFacade(profile()->GetPath().value()));
-
-  MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<AccountAppsAvailability,
-                          AccountAppsAvailability::Observer>
-      apps_availability_observation{&apps_availability_observer};
-  apps_availability_observation.Observe(
-      AccountAppsAvailabilityFactory::GetForProfile(profile()));
-
-  // Call "completeLogin".
-  base::Value::List args;
-  args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
-
-  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-    // Consent logging is required for secondary accounts.
-    CompleteConsentLogForChildUser(kSecondaryAccount1Email);
-  }
-
-  // Wait until account is added.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(observer,
-              OnAccountUpserted(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
-  EXPECT_TRUE(future.Wait());
-
-  // Make sure that account was added to ARC.
-  base::test::TestFuture<void> future2;
-  EXPECT_CALL(apps_availability_observer,
-              OnAccountAvailableInArc(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunOnceClosure(future2.GetCallback()));
-  EXPECT_TRUE(future2.Wait());
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       PrimaryReauthenticationSuccess) {
-  account_manager::MockAccountManagerFacadeObserver observer;
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation{&observer};
-  account_manager_facade_observation.Observe(
-      ::GetAccountManagerFacade(profile()->GetPath().value()));
-
-  MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<AccountAppsAvailability,
-                          AccountAppsAvailability::Observer>
-      apps_availability_observation{&apps_availability_observer};
-  apps_availability_observation.Observe(
-      AccountAppsAvailabilityFactory::GetForProfile(profile()));
-
-  // Call "completeLogin".
-  base::Value::List args;
-  args.Append(GetCompleteLoginArgs(GetDeviceAccountInfo().email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
-
-  // Wait until account is added.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(observer,
-              OnAccountUpserted(AccountEmailEq(GetDeviceAccountInfo().email)))
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
-  EXPECT_TRUE(future.Wait());
-
-  // Make sure that ARC availability didn't change for account.
-  EXPECT_CALL(apps_availability_observer, OnAccountAvailableInArc).Times(0);
-  EXPECT_CALL(apps_availability_observer, OnAccountUnavailableInArc).Times(0);
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       GetAccountsNotAvailableInArc) {
-  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
-  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
-  AddAccount(kSecondaryAccount3Email, /*is_available_in_arc=*/false);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result = CallGetAccountsNotAvailableInArc();
-  // Two accounts are not available in ARC.
-  EXPECT_EQ(2u, result.size());
-  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       MakeAvailableInArc) {
-  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
-  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result = CallGetAccountsNotAvailableInArc();
-  // One account is not available in ARC.
-  EXPECT_EQ(1u, result.size());
-  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
-
-  // Call "makeAvailableInArc".
-  base::Value::List args_1;
-  args_1.Append(ValuesListGetAccount(result, kSecondaryAccount2Email).value());
-  web_ui()->HandleReceivedMessage(kMakeAvailableInArcMessage, args_1);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result_1 = CallGetAccountsNotAvailableInArc();
-  // Zero accounts are not available in ARC.
-  EXPECT_EQ(0u, result_1.size());
-}
-
-INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestWithArcRestrictionsSuite,
-                         InlineLoginHandlerTestWithArcRestrictions,
-                         ::testing::Values(GetGaiaDeviceAccountInfo(),
-                                           GetChildDeviceAccountInfo()));
-
 }  // namespace ash

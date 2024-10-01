@@ -10,25 +10,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif
-
 TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
   {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Forcibly set ash-chrome as the primary browser.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {}, ash::standalone_browser::GetFeatureRefs());
-#endif
     EXPECT_FALSE(StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
         base::CommandLine(base::CommandLine::NO_PROGRAM)));
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -36,28 +19,4 @@ TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
     EXPECT_TRUE(
         StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-    // Check what happens if lacros-chrome becomes the primary browser.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        ash::standalone_browser::GetFeatureRefs(), {});
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    auto* primary_user =
-        fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
-    fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
-                                    primary_user->username_hash(),
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
-    auto scoped_user_manager =
-        std::make_unique<user_manager::ScopedUserManager>(
-            std::move(fake_user_manager));
-    EXPECT_TRUE(StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
-        base::CommandLine(base::CommandLine::NO_PROGRAM)));
-  }
-#endif
 }

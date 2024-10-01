@@ -31,7 +31,6 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -65,7 +64,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -130,7 +128,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -159,7 +156,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -1471,78 +1467,6 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests for Lacros integration. Exists as a separate class because the feature
-// must be initialized before ChromeShelfControllerTestBase::SetUp().
-class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
- public:
-  ChromeShelfControllerLacrosTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-  ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
-      delete;
-  ChromeShelfControllerLacrosTest& operator=(
-      const ChromeShelfControllerLacrosTest&) = delete;
-  ~ChromeShelfControllerLacrosTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    // Creates profile().
-    ChromeShelfControllerTestBase::SetUp();
-
-    ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
-    proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile());
-    ASSERT_TRUE(proxy_);
-  }
-
-  void TearDown() override {
-    proxy_ = nullptr;
-    chrome_app_shelf_item_ = nullptr;
-    ChromeShelfControllerTestBase::TearDown();
-  }
-
-  void AddChromeAppItem(const std::string& app_id, aura::Window* window) {
-    ash::ShelfItem item;
-    item.id = ash::ShelfID(app_id);
-    item.type = ash::TYPE_APP;
-    auto delegate =
-        std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
-            ash::ShelfID(kDummyAppId), window);
-    chrome_app_shelf_item_ = delegate.get();
-    ash::ShelfModel::Get()->Add(item, std::move(delegate));
-  }
-
-  // Verify instance for `window`. If `state` is not destroyed, verify `app_id`
-  // and `state`. Otherwise, verify there is no instance for `app_id` and
-  // `window`.
-  void VerifyInstance(const std::string& app_id,
-                      aura::Window* window,
-                      apps::InstanceState state) {
-    if (state != apps::InstanceState::kDestroyed) {
-      EXPECT_EQ(app_id, proxy_->InstanceRegistry().GetShelfId(window).app_id);
-      EXPECT_EQ(state, proxy_->InstanceRegistry().GetState(window));
-    } else {
-      EXPECT_FALSE(proxy_->InstanceRegistry().Exists(window));
-    }
-  }
-
-  StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item() {
-    return chrome_app_shelf_item_;
-  }
-
-  apps::AppServiceProxy* proxy() { return proxy_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
-  raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
-      chrome_app_shelf_item_ = nullptr;
-};
-
 // A V1 windowed application.
 class V1App : public TestBrowserWindow {
  public:
@@ -1616,13 +1540,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     : public ChromeShelfControllerTestBase {
  protected:
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
-    // Lacros (standalone browser) is disabled since Lacros does not support the
-    // ChromeOS Legacy multi profile feature. `kMediaRouter` is disabled because
-    // it has unmet dependencies and is unrelated to this unit test.
-    auto disabled_features = ash::standalone_browser::GetFeatureRefs();
-    disabled_features.push_back(media_router::kMediaRouter);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, disabled_features);
+    // `kMediaRouter` is disabled because it has unmet dependencies and is
+    // unrelated to this unit test.
+    scoped_feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
   }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =
@@ -1919,146 +1839,6 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
   AddWebApp(web_app::kGmailAppId);
   EXPECT_EQ("Chrome, Gmail, Calendar, Messages, Youtube, App1",
             GetPinnedAppStatus());
-}
-
-TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
-  InitShelfController();
-  std::string lacros_app_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
-  EXPECT_EQ(lacros_app_name, GetPinnedAppStatus());
-}
-
-// Checks that AppService instance is updated appropriately for one Chrome app
-// window.
-TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindow) {
-  InitShelfController();
-
-  auto window = std::make_unique<aura::Window>(nullptr);
-  window->Init(ui::LAYER_NOT_DRAWN);
-  AddChromeAppItem(kDummyAppId, window.get());
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Set window visibility as true.
-  window->Show();
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set window as activated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window.get(), nullptr);
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-
-  // Set window as inactivated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      nullptr, window.get());
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set window visibility as false.
-  window->Hide();
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Remove window.
-  window.reset();
-  VerifyInstance(kDummyAppId, window.get(), apps::InstanceState::kDestroyed);
-}
-
-// Checks that AppService instance is updated appropriately for multiple Chrome
-// app windows.
-TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindows) {
-  InitShelfController();
-
-  auto window1 = std::make_unique<aura::Window>(nullptr);
-  window1->Init(ui::LAYER_NOT_DRAWN);
-  auto window2 = std::make_unique<aura::Window>(nullptr);
-  window2->Init(ui::LAYER_NOT_DRAWN);
-  AddChromeAppItem(kDummyAppId, window1.get());
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Add `window2`.
-  window2->Show();
-  chrome_app_shelf_item()->StartTrackingInstance(window2.get());
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set `window2` as activated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window2.get(), window1.get());
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Set `window1` as visible and activated.
-  window2->Hide();
-  window1->Show();
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window1.get(), window2.get());
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Remove `window1`.
-  window1.reset();
-  VerifyInstance(kDummyAppId, window1.get(), apps::InstanceState::kDestroyed);
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-  EXPECT_TRUE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
-
-  // Remove `window2`.
-  window2.reset();
-  VerifyInstance(kDummyAppId, window2.get(), apps::InstanceState::kDestroyed);
-  EXPECT_FALSE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
-}
-
-// Regression test for crash. crbug.com/1296949
-TEST_F(ChromeShelfControllerLacrosTest, WithoutAppService) {
-  Profile* const controller_profile = profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(),
-      /*create_if_needed=*/true);
-  EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-      controller_profile));
-
-  ash::ShelfModel model;
-  ChromeShelfController(controller_profile, &model).Init();
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {

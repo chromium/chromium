@@ -22,16 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_table.h"
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 namespace chrome {
@@ -179,7 +170,8 @@ TEST(AcceleratorTableTest, DontUseKeysWithUnstablePositions) {
     }
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#else
 
 // A test fixture for testing GetAcceleratorList().
 class GetAcceleratorListTest : public ::testing::Test {
@@ -195,70 +187,7 @@ class GetAcceleratorListTest : public ::testing::Test {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Verify that the shortcuts for DevTools are disabled in LacrosOnly by default.
-TEST_F(GetAcceleratorListTest, DevToolsAreDisabledInLacrosOnlyByDefault) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-  auto* primary_user =
-      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
-  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
-                                  primary_user->username_hash(),
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
-  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  ASSERT_FALSE(crosapi::browser_util::IsAshDevToolEnabled());
-
-  std::vector<AcceleratorMapping> list = GetAcceleratorList();
-
-  // Verify there is no mapping that is associated to IDC_DEV_TOOLS_TOGGLE.
-  auto iter = std::find_if(list.begin(), list.end(), [](auto mapping) {
-    return mapping.command_id == IDC_DEV_TOOLS_TOGGLE;
-  });
-  EXPECT_EQ(iter, list.end());
-}
-
-// Verify that the shortcuts for DevTools are enabled in LacrosOnly if the flag
-// is enabled.
-TEST_F(GetAcceleratorListTest, DevToolsAreEnebledInLacrosOnlyIfFlagIsEnabled) {
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled =
-      ash::standalone_browser::GetFeatureRefs();
-  enabled.push_back(ash::features::kAllowDevtoolsInSystemUI);
-  features.InitWithFeatures(enabled, {});
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-  auto* primary_user =
-      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
-  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
-                                  primary_user->username_hash(),
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
-  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  ASSERT_TRUE(crosapi::browser_util::IsAshDevToolEnabled());
-
-  // Verify there is a mapping that is associated to IDC_DEV_TOOLS_TOGGLE.
-  std::vector<AcceleratorMapping> list = GetAcceleratorList();
-  auto iter = std::find_if(list.begin(), list.end(), [](auto mapping) {
-    return mapping.command_id == IDC_DEV_TOOLS_TOGGLE;
-  });
-  EXPECT_NE(iter, list.end());
-}
-
-#else
 
 // Verify that the shortcuts for DevTools are enabled.
 TEST_F(GetAcceleratorListTest, DevToolsAreEnabled) {

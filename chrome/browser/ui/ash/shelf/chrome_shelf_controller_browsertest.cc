@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -42,7 +41,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
@@ -323,12 +321,7 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
 
 class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
-  ShelfAppBrowserTest() {
-    // TODO(crbug.com/40201067): Update expectations to support Lacros.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
-  }
+  ShelfAppBrowserTest() = default;
   ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
   ~ShelfAppBrowserTest() override {}
@@ -645,56 +638,6 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, UnpinRunning) {
   CloseAppWindow(window);
   --item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-}
-
-class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
- protected:
-  UnpinnedBrowserShortcutTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-  UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
-  UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
-      delete;
-  ~UnpinnedBrowserShortcutTest() override = default;
-
-  ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kNoStartupWindow);
-  }
-
-  void SetUpOnMainThread() override {
-    controller_ = ChromeShelfController::instance();
-    ASSERT_TRUE(controller_);
-    extensions::ExtensionBrowserTest::SetUpOnMainThread();
-  }
-
-  raw_ptr<ChromeShelfController, DanglingUntriaged> controller_ = nullptr;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
-  DCHECK(web_app::IsWebAppsCrosapiEnabled());
-
-  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
-  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(
-                    ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
-  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_APP));
-
-  CreateBrowser(profile());
-
-  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
-  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(
-                    ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
-  EXPECT_NE(-1, shelf_model()->GetItemIndexForType(ash::TYPE_APP));
 }
 
 // Test that we can launch a platform app with more than one window.
