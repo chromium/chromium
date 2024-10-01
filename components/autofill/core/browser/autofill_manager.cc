@@ -185,9 +185,6 @@ void AutofillManager::OnLanguageDetermined(
   }
 
   NotifyObservers(&Observer::OnBeforeLanguageDetermined);
-  LanguageCode lang(details.adopted_language);
-  for (auto& [form_id, form_structure] : form_structures_)
-    form_structure->set_current_page_language(lang);
 
   struct AsyncContext {
     AsyncContext(
@@ -204,52 +201,73 @@ void AutofillManager::OnLanguageDetermined(
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
-  // To be run on a different task (must not access global or member
-  // variables).
-  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
-  // variable. To be fixed.
-  auto RunHeuristics = [](AsyncContext context) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Autofill.Timing.OnLanguageDetermined.RunHeuristics");
-    for (auto& [id, form_structure] : context.form_structures) {
-      form_structure->DetermineHeuristicTypes(
-          context.country_code,
-          /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
-    }
-    return context;
-  };
-
-  // To be run on the main thread (accesses member variables).
-  auto UpdateCache = [](base::WeakPtr<AutofillManager> self,
-                        AsyncContext context) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Autofill.Timing.OnLanguageDetermined.UpdateCache");
+  // If parsing is currently going on, `form_structures_` can be empty. The
+  // following task is executed on the main thread after all ongoing parsing
+  // tasks and their responses (updating the cache) have completed.
+  auto reparse_forms = [](const translate::LanguageDetectionDetails& details,
+                          base::WeakPtr<AutofillManager> self) {
     if (!self) {
       return;
     }
-    if (context.log_manager && self->log_manager_) {
-      context.log_manager->Flush(*self->log_manager_);
-    }
-    for (auto& [id, form_structure] : context.form_structures) {
-      self->form_structures_[id] = std::move(form_structure);
-      self->NotifyObservers(
-          &Observer::OnFieldTypesDetermined, id,
-          Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
-    }
-    self->NotifyObservers(&Observer::OnAfterLanguageDetermined);
-  };
 
-  // Transfers ownership of the cached `form_structures_` to the worker task,
-  // which will eventually move them back into `form_structures_`. This means
-  // `AutofillManager::form_structures_` is empty for a brief period of time.
-  auto form_structures = std::exchange(form_structures_, {});
-  parsing_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          RunHeuristics,
-          AsyncContext(std::move(form_structures),
-                       client().GetVariationConfigCountryCode(), log_manager_)),
-      base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr()));
+    LanguageCode lang(details.adopted_language);
+    for (auto& [form_id, form_structure] : self->form_structures_) {
+      form_structure->set_current_page_language(lang);
+    }
+
+    // To be run on a different task (must not access global or member
+    // variables).
+    // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a
+    // member variable. To be fixed.
+    auto RunHeuristics = [](AsyncContext context) {
+      SCOPED_UMA_HISTOGRAM_TIMER(
+          "Autofill.Timing.OnLanguageDetermined.RunHeuristics");
+      for (auto& [id, form_structure] : context.form_structures) {
+        form_structure->DetermineHeuristicTypes(
+            context.country_code,
+            /*form_interactions_ukm_logger=*/nullptr,
+            context.log_manager.get());
+      }
+      return context;
+    };
+
+    // To be run on the main thread (accesses member variables).
+    auto UpdateCache = [](base::WeakPtr<AutofillManager> self,
+                          AsyncContext context) {
+      SCOPED_UMA_HISTOGRAM_TIMER(
+          "Autofill.Timing.OnLanguageDetermined.UpdateCache");
+      if (!self) {
+        return;
+      }
+      if (context.log_manager && self->log_manager_) {
+        context.log_manager->Flush(*self->log_manager_);
+      }
+      for (auto& [id, form_structure] : context.form_structures) {
+        self->form_structures_[id] = std::move(form_structure);
+        self->NotifyObservers(
+            &Observer::OnFieldTypesDetermined, id,
+            Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+      }
+      self->NotifyObservers(&Observer::OnAfterLanguageDetermined);
+    };
+
+    // Transfers ownership of the cached `form_structures_` to the worker task,
+    // which will eventually move them back into `form_structures_`. This means
+    // `AutofillManager::form_structures_` is empty for a brief period of time.
+    auto form_structures = std::exchange(self->form_structures_, {});
+    self->parsing_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            RunHeuristics,
+            AsyncContext(std::move(form_structures),
+                         self->client().GetVariationConfigCountryCode(),
+                         self->log_manager_)),
+        base::BindOnce(UpdateCache, self));
+  };
+  parsing_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(),
+      base::BindOnce(reparse_forms, details,
+                     parsing_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutofillManager::OnTranslateDriverDestroyed(
