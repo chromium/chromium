@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -112,6 +113,9 @@ class InformedRestoreTest : public InProcessBrowserTest {
  public:
   InformedRestoreTest() {
     set_launch_browser_for_testing(nullptr);
+
+    feature_list_.InitWithFeatures(
+        {features::kForestFeature, features::kSanitize}, {});
   }
   InformedRestoreTest(const InformedRestoreTest&) = delete;
   InformedRestoreTest& operator=(const InformedRestoreTest&) = delete;
@@ -132,7 +136,7 @@ class InformedRestoreTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Creates 2 browser windows that will be restored in the main test.
@@ -745,6 +749,36 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
       ->MaybeShowInformedRestoreOnboarding(
           /*restore_on=*/true);
   EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
+}
+
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_Sanitized) {
+  // The restore pref setting is 'Ask every time' by default.
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
+            prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
+  prefs->SetBoolean(settings::prefs::kSanitizeCompleted, true);
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CreateBrowser(profile);
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Tests that when the previous session was sanitized, we do not show any
+// informed restore UI.
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Sanitized) {
+  auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
+  EXPECT_FALSE(onboarding_dialog);
+
+  // The informed restore dialog is built based on the values in this data
+  // structure. Test that it is null since we aren't planning on showing the
+  // dialog if the previous session was sanitized.
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->informed_restore_controller()->contents_data();
+  EXPECT_FALSE(contents_data);
 }
 
 }  // namespace ash::full_restore

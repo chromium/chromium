@@ -88,6 +88,11 @@ class FullRestoreService : public KeyedService,
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
 
+  // If the last session was sanitized, skip showing any full restore UI. It is
+  // a static function since the pref gets reset before a `FullRestoreService`
+  // is created.
+  static void SetLastSessionSanitized();
+
   FullRestoreAppLaunchHandler* app_launch_handler() {
     return app_launch_handler_.get();
   }

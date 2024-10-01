@@ -31,6 +31,7 @@
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
@@ -472,6 +473,11 @@ void ChromeBrowserMainExtraPartsAsh::CheckIfSanitizeCompleted() {
       prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
     prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
     prefs->CommitPendingWrite();
+
+    // Blocks full restore UI from showing up. `FullRestoreService` object is
+    // not created yet, so we use this static function.
+    ash::full_restore::FullRestoreService::SetLastSessionSanitized();
+
     ash::SystemAppLaunchParams params;
     params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
     params.launch_source = apps::LaunchSource::kUnknown;

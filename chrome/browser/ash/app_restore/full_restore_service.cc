@@ -156,6 +156,9 @@ CollectRestoreIDsForNormalBrowserWindows(
 
 bool g_restore_for_testing = true;
 
+// If true, do not show any full restore UI.
+bool g_last_session_sanitized = false;
+
 const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
 const char kRestoreNotificationId[] = "restore_notification";
 
@@ -276,6 +279,11 @@ FullRestoreService::~FullRestoreService() {
   if (auto* session_controller = SessionController::Get()) {
     session_controller->RemoveObserver(this);
   }
+}
+
+// static
+void FullRestoreService::SetLastSessionSanitized() {
+  g_last_session_sanitized = true;
 }
 
 void FullRestoreService::Init(bool& show_notification) {
@@ -640,6 +648,10 @@ void FullRestoreService::InitInformedRestoreContentsData(
 void FullRestoreService::MaybeShowRestoreNotification(
     InformedRestoreContentsData::DialogType dialog_type,
     bool& show_notification) {
+  if (g_last_session_sanitized) {
+    return;
+  }
+
   if (!app_launch_handler_) {
     return;
   }
