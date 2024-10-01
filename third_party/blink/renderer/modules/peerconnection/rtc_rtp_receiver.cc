@@ -234,13 +234,14 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
   transport_ = transport;
 }
 
-String RTCRtpReceiver::TransceiverDirection() {
+V8RTCRtpTransceiverDirection RTCRtpReceiver::TransceiverDirection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // `transceiver_` is always initialized to a valid value.
   return transceiver_->direction();
 }
 
-String RTCRtpReceiver::TransceiverCurrentDirection() {
+std::optional<V8RTCRtpTransceiverDirection>
+RTCRtpReceiver::TransceiverCurrentDirection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // `transceiver_` is always initialized to a valid value.
   return transceiver_->currentDirection();

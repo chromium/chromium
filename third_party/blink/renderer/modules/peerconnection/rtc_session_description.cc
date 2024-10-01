@@ -44,7 +44,7 @@ RTCSessionDescription* RTCSessionDescription::Create(
     const RTCSessionDescriptionInit* description_init_dict) {
   String type;
   if (description_init_dict->hasType())
-    type = description_init_dict->type();
+    type = String(description_init_dict->type());
   else
     UseCounter::Count(context, WebFeature::kRTCSessionDescriptionInitNoType);
 

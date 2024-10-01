@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binary_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -87,8 +88,8 @@ class MODULES_EXPORT RTCDataChannel final
   unsigned bufferedAmountLowThreshold() const;
   void setBufferedAmountLowThreshold(unsigned);
 
-  String binaryType() const;
-  void setBinaryType(const String&, ExceptionState&);
+  V8BinaryType binaryType() const;
+  void setBinaryType(const V8BinaryType&);
 
   String priority() const;
 
@@ -197,8 +198,7 @@ class MODULES_EXPORT RTCDataChannel final
   webrtc::DataChannelInterface::DataState state_ =
       webrtc::DataChannelInterface::kConnecting;
 
-  enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-  BinaryType binary_type_ = kBinaryTypeArrayBuffer;
+  V8BinaryType::Enum binary_type_ = V8BinaryType::Enum::kArraybuffer;
 
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);

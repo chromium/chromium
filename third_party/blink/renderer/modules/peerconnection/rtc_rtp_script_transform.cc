@@ -55,8 +55,15 @@ Event* CreateRTCTransformEvent(
   return event;
 }
 
-bool IsValidReceiverDirection(const String& direction) {
-  return (direction == "sendrecv" || direction == "recvonly");
+bool IsValidReceiverDirection(
+    std::optional<V8RTCRtpTransceiverDirection> direction) {
+  if (!direction.has_value()) {
+    return false;
+  }
+  return direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kSendrecv ||
+         direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kRecvonly;
 }
 
 }  // namespace
