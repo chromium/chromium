@@ -182,15 +182,15 @@
 
 - (void)onPriceTrackedBookarksReceived:
     (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
-  const power_bookmarks::ShoppingSpecifics* most_recent =
-      [self getMostRecentBookmarkSpecifics:subscriptions];
-  if (!most_recent) {
+  if (subscriptions.empty()) {
     return;
   }
+  GURL most_recent_subscription_product_url =
+      [self getMostRecentSubscriptionProductUrl:subscriptions];
   __weak PriceTrackingPromoMediator* weakSelf = self;
   // There is a subscription but no image url - the price tracking promo
   // will be displayed but with the fallback image.
-  if (!most_recent->has_image_url()) {
+  if (most_recent_subscription_product_url.is_empty()) {
     _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
     _priceTrackingPromoItem.commandHandler = self;
     [self.delegate newSubscriptionAvailable];
@@ -198,7 +198,7 @@
     // If we have an image, fetch it and display the price tracking promo
     // with that image.
     _imageFetcher->FetchImageData(
-        GURL(most_recent->image_url()),
+        most_recent_subscription_product_url,
         base::BindOnce(^(const std::string& imageData,
                          const image_fetcher::RequestMetadata& metadata) {
           PriceTrackingPromoMediator* strongSelf = weakSelf;
@@ -211,9 +211,10 @@
   }
 }
 
-- (const power_bookmarks::ShoppingSpecifics*)getMostRecentBookmarkSpecifics:
+- (GURL)getMostRecentSubscriptionProductUrl:
     (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
-  const power_bookmarks::ShoppingSpecifics* most_recent = nil;
+  GURL most_recent_subscription_product_url;
+  int64_t most_recent_subscription_time = 0;
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
@@ -222,12 +223,14 @@
     }
     const power_bookmarks::ShoppingSpecifics specifics =
         meta->shopping_specifics();
-    if (!most_recent || specifics.last_subscription_change_time() >
-                            most_recent->last_subscription_change_time()) {
-      most_recent = &specifics;
+    if (most_recent_subscription_product_url.is_empty() ||
+        most_recent_subscription_time <
+            specifics.last_subscription_change_time()) {
+      most_recent_subscription_product_url = GURL(meta->lead_image().url());
+      most_recent_subscription_time = specifics.last_subscription_change_time();
     }
   }
-  return most_recent;
+  return most_recent_subscription_product_url;
 }
 
 - (void)onImageFetchedResult:(const std::string&)imageData {
