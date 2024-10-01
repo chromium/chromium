@@ -5145,7 +5145,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Login.ArcUiAvailableAfterLogin.Duration" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5195,8 +5195,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.LoggedInStateChanged" units="ms"
     expires_after="2025-03-30">
-  <owner>alemate@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time from the OnAuthSuccess Chrome OS cryptohome login event and
@@ -5369,6 +5369,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsCreated" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5381,6 +5382,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsPresented"
     units="ms" expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     The duration of how long it took for all pixels of expected restored windows
@@ -5394,6 +5396,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsShown" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5406,6 +5409,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.{RestoreMode}.AllShelfIconsLoaded" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5417,6 +5421,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.{RestoreMode}.ArcUiAvailableAfterLogin"
     units="ms" expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5429,6 +5434,7 @@ chromium-metrics-reviews@google.com.
     name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Duration.{TabletOrClamshellMode}"
     units="ms" expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     The duration of how long it took to finish all animations applied during the
@@ -5443,6 +5449,7 @@ chromium-metrics-reviews@google.com.
     name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Jank.{TabletOrClamshellMode}"
     units="%" expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Jank metrics of all animations applied during the login process. This
@@ -5456,6 +5463,7 @@ chromium-metrics-reviews@google.com.
     name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Smoothness.{TabletOrClamshellMode}"
     units="%" expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Relative smoothness of all animations applied during the login process. 100%
@@ -5468,6 +5476,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.{RestoreMode}.ShelfLoginAnimationEnd" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     The duration of how long it took to load all the shelf icons of restored
@@ -5479,6 +5488,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.{RestoreMode}.TotalDuration" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.org</owner>
   <summary>
     Time between when sign-in authentication is started and when post login
@@ -5490,7 +5500,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginSessionRestore.AllBrowserWindowsCreated" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5501,7 +5511,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginSessionRestore.AllBrowserWindowsPresented" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     The duration of how long it took for all pixels of expected restored windows
@@ -5513,7 +5523,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginSessionRestore.AllBrowserWindowsShown" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5524,7 +5534,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginSessionRestore.AllShelfIconsLoaded" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time between primary user logged in (i.e. a successful cryptohome mount) and
@@ -5535,7 +5545,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginSessionRestore.ShelfLoginAnimationEnd" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     The duration of how long it took to load all the shelf icons of restored

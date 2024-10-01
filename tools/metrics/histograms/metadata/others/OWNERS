@@ -21,3 +21,5 @@ olivierli@chromium.org
 bzielinski@google.com
 # For Ads.InterestGroup.* histograms:
 orrb@google.com
+# For BootTime.Login* histograms:
+junis@google.com

@@ -2444,9 +2444,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="BootTime.Login2" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS login. -->
 
-  <owner>rsorokin@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-oac@chromium.org</owner>
   <summary>
     Time from the moment sign in authentication is started until the post login
@@ -2457,8 +2457,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="BootTime.Login3" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS login. -->
 
-  <owner>alemate@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Chrome OS: The time it takes from when sign-in authentication ends to when
@@ -2480,6 +2480,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>xiyuan@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Chrome OS: The time it takes from when sign-in authentication ends to when
