@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">ইন্টারনেটে কানেক্ট আছেন কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="3594280220611906414"><ph name="APN_NAME" />-এর সহজে ব্যবহার করার নাম হল <ph name="USER_FRIENDLY_APN_NAME" /></translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
-<translation id="3600063043775287169">Chromebook অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে। সব সাউন্ড আপনি রেকর্ড করতে চান তা নিশ্চিত করুন।</translation>
 <translation id="3600339377155080675">স্ক্রিন শেয়ার করার বোতাম</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3603829704940252505">অবতার</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="6127426868813166163">সাদা</translation>
+<translation id="613049107179582049">Chromebook-এর অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">সাইবারপাঙ্ক</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>

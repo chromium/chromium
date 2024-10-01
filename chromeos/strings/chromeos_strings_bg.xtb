@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Проверете дали имате връзка с интернет и опитайте отново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е лесното за използване име на <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
-<translation id="3600063043775287169">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство. Уверете се, че искате да записвате всички звуци.</translation>
 <translation id="3600339377155080675">Дублиране на екрана</translation>
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="6127426868813166163">бяло</translation>
+<translation id="613049107179582049">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство</translation>
 <translation id="6136285399872347291">изтриване назад</translation>
 <translation id="6137614725462089991">киберпънк</translation>
 <translation id="6137767437444130246">Потребителски сертификат</translation>

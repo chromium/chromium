@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Provjerite jeste li povezani s internetom i pokušajte ponovno.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je naziv prilagođen korisnicima za aplikaciju <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
-<translation id="3600063043775287169">Kad je zvuk Chromebooka uključen, Snimač bilježi sve zvukove koji se reproduciraju na ovom uređaju. Provjerite želite li snimiti sve zvukove.</translation>
 <translation id="3600339377155080675">Zrcaljenje zaslona</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Na mreži</translation>
 <translation id="6122277663991249694">Usluga načina unosa Chrome OS-a</translation>
 <translation id="6127426868813166163">bijela</translation>
+<translation id="613049107179582049">Kad je zvuk Chromebooka uključen, Snimač bilježi sve zvukove koji se reproduciraju na ovom uređaju</translation>
 <translation id="6136285399872347291">brisanje unatrag</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Korisnički certifikat</translation>

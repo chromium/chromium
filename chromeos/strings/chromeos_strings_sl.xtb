@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Zagotovite, da imate vzpostavljeno internetno povezavo, in poskusite znova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uporabniku prijazno ime za <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
-<translation id="3600063043775287169">Ko je zvok Chromebooka vklopljen, snemalnik posname ves zvok, ki se predvaja v tej napravi. Preverite, ali želite snemati vse zvoke.</translation>
 <translation id="3600339377155080675">Zrcaljenje zaslona</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6122277663991249694">Storitev načina vnosa v okolju Chrome OS</translation>
 <translation id="6127426868813166163">bele</translation>
+<translation id="613049107179582049">Ko je zvok Chromebooka vklopljen, snemalnik posname ves zvok, ki se predvaja v tej napravi</translation>
 <translation id="6136285399872347291">vračalka</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>

@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Verifică dacă te-ai conectat la internet și încearcă din nou.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> este numele ușor de folosit pentru <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
-<translation id="3600063043775287169">Când Conținutul audio de pe Chromebook este activat, Recorder înregistrează tot conținutul audio redat pe acest dispozitiv. Asigură-te că vrei să înregistrezi toate sunetele.</translation>
 <translation id="3600339377155080675">Oglindirea ecranului</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Serviciul metodei de introducere a textului din sistemul de operare Chrome</translation>
 <translation id="6127426868813166163">alb</translation>
+<translation id="613049107179582049">Când Conținutul audio de pe Chromebook este activat, Recorder înregistrează tot conținutul audio redat pe acest dispozitiv</translation>
 <translation id="6136285399872347291">șterge un caracter</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificat de utilizator</translation>

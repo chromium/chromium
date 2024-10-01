@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Та интернэтэд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> нь <ph name="APN_NAME" />-д зориулсан хэрэглэгчид-ээлтэй нэр юм.</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
-<translation id="3600063043775287169">Chromebook-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ. Та бүх дуу чимээг бичих хүсэлтэй байгаа эсэхээ баталгаажуулна уу.</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS-н оруулах аргын үйлчилгээ</translation>
 <translation id="6127426868813166163">цагаан</translation>
+<translation id="613049107179582049">Chromebook-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ</translation>
 <translation id="6136285399872347291">устгах</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>

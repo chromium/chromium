@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">צריך לוודא שיש חיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> הוא השם הידידותי-למשתמש של <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
-<translation id="3600063043775287169">‏כשהאודיו של Chromebook מופעל, מכשיר ההקלטה מקליט את כל האודיו שמופעל במכשיר הזה. כדאי לוודא שרוצים להקליט את כל הצלילים.</translation>
 <translation id="3600339377155080675">שיקוף מסך</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3603829704940252505">דמות</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
 <translation id="6127426868813166163">בצבע לבן</translation>
+<translation id="613049107179582049">‏כשהאודיו של Chromebook מופעל, מכשיר ההקלטה מקליט את כל האודיו שמושמע במכשיר הזה</translation>
 <translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137614725462089991">סייברפאנק</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>

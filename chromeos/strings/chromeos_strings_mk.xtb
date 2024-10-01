@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Погрижете се да бидете поврзани на интернет, па обидете се повторно.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е име лесно за користење за <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
-<translation id="3600063043775287169">Кога е вклучено аудиото на Chromebook, „Диктафон“ го снима секое аудио што се пушта на уредов. Потврдете дека сакате да се снимаат сите звуци.</translation>
 <translation id="3600339377155080675">Отсликување на екранот</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Онлајн</translation>
 <translation id="6122277663991249694">Услуга за методи за внесување во Chrome OS</translation>
 <translation id="6127426868813166163">бела</translation>
+<translation id="613049107179582049">Кога е вклучено аудиото на Chromebook, „Диктафон“ го снима секое аудио што се пушта на уредов</translation>
 <translation id="6136285399872347291">бриши</translation>
 <translation id="6137614725462089991">сајберпанк</translation>
 <translation id="6137767437444130246">Сертификат на корисник</translation>

@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">तुम्ही इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> हे <ph name="APN_NAME" /> चे वापरकर्त्यासाठी अनुकूल नाव आहे.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
-<translation id="3600063043775287169">Chromebook ऑडिओ सुरू असताना, रेकॉर्डर या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते. तुम्हाला सर्व आवाज रेकॉर्ड करायचे आहेत याची खात्री करा.</translation>
 <translation id="3600339377155080675">स्क्रीन मिरर करा</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3603829704940252505">अवतार</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS इनपुट पद्धत सेवा</translation>
 <translation id="6127426868813166163">पांढरे</translation>
+<translation id="613049107179582049">Chromebook चा ऑडिओ सुरू असतो, तेव्हा Recorder या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">सायबरपंक</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>

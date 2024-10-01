@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uživatelsky přívětivý název pro <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
-<translation id="3600063043775287169">Když je zvuk Chromebooku zapnutý, zaznamenává Diktafon veškerý zvuk přehrávaný na tomto zařízení. Ujistěte se, že chcete nahrávat všechny zvuky.</translation>
 <translation id="3600339377155080675">Zrcadlení obrazovky</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Služba metod zadávání systému ChromeOS</translation>
 <translation id="6127426868813166163">bílá</translation>
+<translation id="613049107179582049">Když je zapnutý zvuk Chromebooku, zaznamenává Diktafon veškerý zvuk přehrávaný na tomhle zařízení</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>

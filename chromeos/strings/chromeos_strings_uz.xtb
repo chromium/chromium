@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Internetga ulanganingizni tekshiring va qayta urining.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> <ph name="APN_NAME" /> uchun qulay nom.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
-<translation id="3600063043775287169">Chromebook audio parametri yoqilsa, Diktofon qurilmada ijro etilayotgan barcha tovushlarni yozib oladi. Hammasi yozilishiga diqqat qiling.</translation>
 <translation id="3600339377155080675">Ekran aksi</translation>
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122277663991249694">ChromeOS matn kiritish xizmati</translation>
 <translation id="6127426868813166163">oq</translation>
+<translation id="613049107179582049">Chromebook audio parametri yoqilsa, Diktofon qurilmada ijro etilayotgan barcha tovushlarni yozib oladi</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">kiberpank</translation>
 <translation id="6137767437444130246">Foydalanuvchi sertifikati</translation>

@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Переконайтеся, що пристрій підключено до Інтернету, і повторіть спробу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> – зручна назва для додатка <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
-<translation id="3600063043775287169">Якщо на пристрої Chromebook увімкнено аудіо, Диктофон записуватиме всі звуки, які на ньому відтворюються. Переконайтеся, що ви хочете записувати всі звуки.</translation>
 <translation id="3600339377155080675">Дзеркалювання екрана</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Сервіс методів введення в ОС Chrome</translation>
 <translation id="6127426868813166163">білий</translation>
+<translation id="613049107179582049">Якщо на пристрої Chromebook увімкнено аудіо, Диктофон записуватиме всі звуки, які на ньому відтворюються</translation>
 <translation id="6136285399872347291">видалити перед курсором</translation>
 <translation id="6137614725462089991">кіберпанк</translation>
 <translation id="6137767437444130246">Сертифікат користувача</translation>

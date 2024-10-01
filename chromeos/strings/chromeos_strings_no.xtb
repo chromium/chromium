@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Sjekk at du er koblet til internett, og prøv på nytt.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> er det brukervennlige navnet på <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
-<translation id="3600063043775287169">Når Chromebook-lyd er på, tar Opptaker opp all lyd som spilles av på denne enheten. Forsikre deg om at du vil ta opp alle lyder.</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6122277663991249694">Tjeneste for ChromeOS-inndatametode</translation>
 <translation id="6127426868813166163">hvit</translation>
+<translation id="613049107179582049">Når Chromebook-lyd er på, tar Lydopptaker opp all lyd som spilles av på denne enheten</translation>
 <translation id="6136285399872347291">tilbake</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Brukersertifikat</translation>

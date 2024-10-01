@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">पक्का करें कि आपका डिवाइस, इंटरनेट से कनेक्ट हो. इसके बाद, फिर से कोशिश करें.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />, उपयोगकर्ता के लिए <ph name="APN_NAME" /> का आसान नाम है.</translation>
 <translation id="3595596368722241419">बैटरी पूरी चार्ज है</translation>
-<translation id="3600063043775287169">Chromebook का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो रिकॉर्ड करता है. पक्का करें कि सभी आवाज़ें रिकॉर्ड करनी हैं.</translation>
 <translation id="3600339377155080675">स्क्रीन शेयर करने वाला बटन</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
 <translation id="3603829704940252505">अवतार</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS के इनपुट के तरीके से जुड़ी सेवा</translation>
 <translation id="6127426868813166163">सफ़ेद</translation>
+<translation id="613049107179582049">Chromebook का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो को रिकॉर्ड करता है</translation>
 <translation id="6136285399872347291">बैकस्पेस</translation>
 <translation id="6137614725462089991">सायबरपंक</translation>
 <translation id="6137767437444130246">उपयोगकर्ता प्रमाणपत्र</translation>

@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Achte darauf, dass du mit dem Internet verbunden bist, und versuche es noch einmal.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ ist der nutzerfreundliche Name für „<ph name="APN_NAME" />“.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
-<translation id="3600063043775287169">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet. Prüfe, ob du alle Audioinhalte aufzeichnen möchtest.</translation>
 <translation id="3600339377155080675">Display spiegeln</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="6127426868813166163">weiß</translation>
+<translation id="613049107179582049">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet</translation>
 <translation id="6136285399872347291">Letztes Zeichen löschen</translation>
 <translation id="6137614725462089991">Cyberpunk</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>

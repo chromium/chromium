@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Comprueba que tengas conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> es el nombre de <ph name="APN_NAME" /> fácil de usar.</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
-<translation id="3600063043775287169">Cuando el audio de Chromebook está activado, Grabadora captura todo el audio que se reproduce en este dispositivo. Asegúrate de que quieres grabar todos los sonidos.</translation>
 <translation id="3600339377155080675">Proyectar pantalla</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servicio de método de introducción de texto de ChromeOS</translation>
 <translation id="6127426868813166163">blanco</translation>
+<translation id="613049107179582049">Cuando el audio de Chromebook está activado, Grabadora captura todo el audio que se reproduce en este dispositivo</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6137614725462089991">ciberpunk</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>

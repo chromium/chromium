@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Βεβαιωθείτε ότι είστε συνδεδεμένοι στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="3594280220611906414">Το <ph name="USER_FRIENDLY_APN_NAME" /> είναι το φιλικό προς τον χρήστη όνομα για την εφαρμογή <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
-<translation id="3600063043775287169">Όταν ο ήχος του Chromebook είναι ενεργοποιημένος, η Εγγραφή καταγράφει όλο τον ήχο που αναπαράγεται σε αυτή τη συσκευή. Βεβαιωθείτε ότι θέλετε να εγγράψετε όλους τους ήχους.</translation>
 <translation id="3600339377155080675">Κατοπτρισμός οθόνης</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
 <translation id="6122277663991249694">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="6127426868813166163">λευκό</translation>
+<translation id="613049107179582049">Όταν ο ήχος του Chromebook είναι ενεργοποιημένος, η Εγγραφή καταγράφει όλο τον ήχο που αναπαράγεται σε αυτή τη συσκευή</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">κυβερνοπάνκ</translation>
 <translation id="6137767437444130246">Πιστοποιητικό χρήστη</translation>

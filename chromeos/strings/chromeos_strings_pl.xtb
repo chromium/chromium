@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Upewnij się, że masz połączenie z internetem, i spróbuj ponownie.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> to przyjazna dla użytkownika nazwa aplikacji <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
-<translation id="3600063043775287169">Gdy dźwięk na Chromebooku jest włączony, Dyktafon rejestruje cały dźwięk odtwarzany na tym urządzeniu. Zastanów się, czy chcesz nagrywać wszystkie dźwięki.</translation>
 <translation id="3600339377155080675">Odbicie lustrzane ekranu</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3603829704940252505">Awatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Usługa metod wprowadzania w Chrome OS</translation>
 <translation id="6127426868813166163">biały</translation>
+<translation id="613049107179582049">Gdy dźwięk na Chromebooku jest włączony, Dyktafon rejestruje cały dźwięk odtwarzany na tym urządzeniu</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>

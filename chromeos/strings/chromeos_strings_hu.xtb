@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">Ellenőrizze, hogy csatlakozik-e az internethez, majd próbálkozzon újra.</translation>
 <translation id="3594280220611906414">A(z) <ph name="USER_FRIENDLY_APN_NAME" /> a(z) <ph name="APN_NAME" /> felhasználóbarát neve.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
-<translation id="3600063043775287169">Amikor be van kapcsolva A Chromebook hangja beállítás, a Hangfelvevő az eszközön lejátszott összes hangot rögzíti. Győződjön meg arról, hogy az összes hangot rögzíteni szeretné.</translation>
 <translation id="3600339377155080675">Képernyőtükrözés</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">ChromeOS beviteli módszere szolgáltatás</translation>
 <translation id="6127426868813166163">fehér</translation>
+<translation id="613049107179582049">Amikor be van kapcsolva A Chromebook hangja beállítás, a Hangfelvevő az eszközön lejátszott összes hangot rögzíti.</translation>
 <translation id="6136285399872347291">törlés</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>

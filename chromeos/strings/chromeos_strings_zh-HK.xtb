@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">請確保已連接互聯網，然後再試一次。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> 係 <ph name="APN_NAME" /> 較多人認識嘅名稱。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
-<translation id="3600063043775287169">開啟 Chromebook 音訊後，「錄音機」會錄下此裝置播放的所有音訊。請確保你想錄下所有聲音。</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">在線</translation>
 <translation id="6122277663991249694">Chrome OS 輸入方法服務</translation>
 <translation id="6127426868813166163">白色</translation>
+<translation id="613049107179582049">開啟 Chromebook 音訊後，「錄音機」會錄下此裝置播放的所有音訊</translation>
 <translation id="6136285399872347291">退格</translation>
 <translation id="6137614725462089991">數碼龐克</translation>
 <translation id="6137767437444130246">使用者憑證</translation>

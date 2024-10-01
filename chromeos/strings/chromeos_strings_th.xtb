@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">ตรวจสอบว่าคุณได้เชื่อมต่ออินเทอร์เน็ตแล้ว และลองอีกครั้ง</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> คือชื่อที่เรียกง่ายของ <ph name="APN_NAME" /></translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
-<translation id="3600063043775287169">เมื่อเสียง Chromebook เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้ ตรวจสอบว่าคุณต้องการบันทึกเสียงทั้งหมด</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3603829704940252505">รูปโปรไฟล์</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">ออนไลน์</translation>
 <translation id="6122277663991249694">บริการวิธีการป้อนข้อมูลของ Chrome OS</translation>
 <translation id="6127426868813166163">ขาว</translation>
+<translation id="613049107179582049">เมื่อเสียง Chromebook เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้</translation>
 <translation id="6136285399872347291">ลบถอยหลัง</translation>
 <translation id="6137614725462089991">ไซเบอร์พังก์</translation>
 <translation id="6137767437444130246">ใบรับรองของผู้ใช้</translation>

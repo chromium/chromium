@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">يُرجى التأكّد من اتصالك بالإنترنت وإعادة المحاولة.</translation>
 <translation id="3594280220611906414">‫"<ph name="USER_FRIENDLY_APN_NAME" />" هو اسم سهل الاستخدام لـ "<ph name="APN_NAME" />".</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
-<translation id="3600063043775287169">‏عندما يكون صوت جهاز Chromebook مفعّلاً، يسجِّل تطبيق "المسجّلة الذكية" كل الأصوات الذي يتم تشغيلها على هذا الجهاز. يُرجى التأكّد من أنّك تريد تسجيل كل الأصوات.</translation>
 <translation id="3600339377155080675">النسخ المطابق لمحتوى الشاشة</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3603829704940252505">الصورة الرمزية</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">متصل</translation>
 <translation id="6122277663991249694">‏خدمة أساليب الإدخال لنظام التشغيل Chrome</translation>
 <translation id="6127426868813166163">أبيض</translation>
+<translation id="613049107179582049">‏عندما يكون صوت جهاز Chromebook مفعّلاً، يسجِّل تطبيق "المسجّلة الذكية" كل الأصوات الذي يتم تشغيلها على هذا الجهاز</translation>
 <translation id="6136285399872347291">مسافة للخلف</translation>
 <translation id="6137614725462089991">الخيال العلمي المستقبلي</translation>
 <translation id="6137767437444130246">شهادة المستخدم</translation>

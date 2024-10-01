@@ -512,7 +512,6 @@
 <translation id="3588034708467091142">یقینی بنائیں کہ آپ انٹرنیٹ سے منسلک ہیں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> <ph name="APN_NAME" /> کے لیے صارف دوست نام ہے۔</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
-<translation id="3600063043775287169">‏‫Chromebook آڈیو آن ہونے پر، ریکارڈر اس آلے پر چلنے والی تمام آڈیوز کو کیپچر کرتا ہے۔ یہ یقینی بنائیں کہ آپ تمام آوازوں کو ریکارڈ کرنا چاہتے ہیں۔</translation>
 <translation id="3600339377155080675">اسکرین مرر</translation>
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3603829704940252505">اوتار</translation>
@@ -1016,6 +1015,7 @@
 <translation id="6122191549521593678">آن لائن</translation>
 <translation id="6122277663991249694">‏ChromeOS اندراج کے طریقہ کی سروس</translation>
 <translation id="6127426868813166163">سفید</translation>
+<translation id="613049107179582049">‏‫Chromebook آڈیو آن ہونے پر، ریکارڈر اس آلے پر چلنے والی تمام آڈیوز کو کیپچر کرتا ہے</translation>
 <translation id="6136285399872347291">بیک اسپیس</translation>
 <translation id="6137614725462089991">سائبر پنک</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
