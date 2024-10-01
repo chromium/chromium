@@ -43,7 +43,7 @@ constexpr int kAesInitializationVectorLength = 16;
 
 // Encrypts |data| with AES key |raw_key|. Returns whether the encryption was
 // successful, in which case |*result| will be set to the encrypted data.
-bool EncryptData(const std::vector<char> data,
+bool EncryptData(const std::vector<char>& data,
                  const std::string& raw_key,
                  std::string* result) {
   std::string initialization_vector(kAesInitializationVectorLength, ' ');
@@ -56,7 +56,7 @@ bool EncryptData(const std::vector<char> data,
   if (!encryptor.Init(key.get(), crypto::Encryptor::CBC, initialization_vector))
     return false;
 
-  return encryptor.Encrypt(std::string(data.data(), data.size()), result);
+  return encryptor.Encrypt(std::string_view(data.data(), data.size()), result);
 }
 
 // Decrypts |data| content using AES key |raw_key|. Returns the operation result
