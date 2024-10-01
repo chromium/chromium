@@ -58,6 +58,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -469,6 +470,11 @@ bool ExtensionDevToolsClientHost::Attach() {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kSilentDebuggerExtensionAPI)) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kSilentDebuggerExtensionAPI)) {
     return true;
   }
 
