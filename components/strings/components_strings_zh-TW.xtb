@@ -860,7 +860,7 @@
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定和使用</translation>
 <translation id="2533649878691950253">系統已禁止這個網站取得你的精確位置資訊，因為你通常不允許這麼做</translation>
-<translation id="253493526287553278">查看促銷代碼詳情</translation>
+<translation id="253493526287553278">查看優惠碼詳情</translation>
 <translation id="2535585790302968248">開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
 <translation id="2536110899380797252">新增地址</translation>
@@ -1355,7 +1355,7 @@
 <translation id="3478033058537426179">依群組分類</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3484560055331845446">為避免失去 Google 帳戶存取權，Chrome 建議你立即變更密碼。系統會要求你登入帳戶。</translation>
-<translation id="3484861421501147767">提醒：可使用已儲存的促銷代碼</translation>
+<translation id="3484861421501147767">提醒：可使用已儲存的優惠碼</translation>
 <translation id="3486406746948052912">止汗劑、香體露與身體噴霧</translation>
 <translation id="3487845404393360112">紙匣 4</translation>
 <translation id="3493660662684070951">卡車、貨車與運動型多用途車</translation>
@@ -4138,7 +4138,7 @@
 <translation id="8554010658308662631">載入更多</translation>
 <translation id="8554181323880688938">貴重物品</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重設權限}other{重設權限}}</translation>
-<translation id="8555010941760982128">結帳時請使用這個促銷代碼</translation>
+<translation id="8555010941760982128">結帳時請使用這個優惠碼</translation>
 <translation id="8556297087315686325">網路監控與管理</translation>
 <translation id="8557066899867184262">信用卡驗證碼位於信用卡背面。</translation>
 <translation id="8558347880669160417">這次允許使用相機和麥克風</translation>

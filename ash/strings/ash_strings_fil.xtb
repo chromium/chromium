@@ -634,7 +634,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3265032511221679826">I-on ang access sa eksaktong lokasyon?</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
 <translation id="3271554781793662131">Maghanap para ilagay</translation>
-<translation id="3273040715184276344">Naka-off ang Caps Lock</translation>
 <translation id="3274634049061007184">Tingnan ang mga app ng iyong telepono</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Kasalukuyang hindi sinusuportahan ang mga Linux app.</translation>
@@ -1469,6 +1468,7 @@ Walang nakakonektang device.</translation>
 <translation id="598407983968395253">Gamitin ang template</translation>
 <translation id="5986723678596105470">Sumali gamit ang Google Meet</translation>
 <translation id="598882571027504733">Para makuha ang update, i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
+<translation id="5990992855591814753">Tuloy lang sa ginagawa mo gamit ang mga naka-personalize na playlist para sa pag-focus. Kunin ang YouTube Music at YouTube, na walang ad, at may 3 buwang YouTube Premium na libre. May mga nalalapat na tuntunin.</translation>
 <translation id="5998374579424866922">I-off ang mga kontrol ng laro</translation>
 <translation id="6000279412553873020">Mga key, button, at higit pa</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1951,7 +1951,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7670953955701272011">Buksan ang petsang ito sa Google Calendar</translation>
 <translation id="7671610481353807627">Pinagbukod-bukod ang mga app ayon sa kulay</translation>
 <translation id="7672095158465655885">Nakakonekta sa <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">Naka-on ang Caps Lock</translation>
 <translation id="7682351277038250258">I-paste ang content mula sa clipboard bilang plain text</translation>
 <translation id="7684531502177797067">Nakatakda ang input ng camera sa <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Binuksan mo</translation>

@@ -634,7 +634,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3265032511221679826">Activer l'accès à la position exacte?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3271554781793662131">Rechercher pour insérer</translation>
-<translation id="3273040715184276344">Verrouillage des majuscules désactivé</translation>
 <translation id="3274634049061007184">Affichez les applications de votre téléphone</translation>
 <translation id="3289364673986435196">Menu de l'interrupteur</translation>
 <translation id="3289544412142055976">Les applications Linux ne sont pas prises en charge actuellement</translation>
@@ -1951,7 +1950,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
 <translation id="7671610481353807627">Les applications sont triées par couleur</translation>
 <translation id="7672095158465655885">Connecté à <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">Verrouillage des majuscules activé</translation>
 <translation id="7682351277038250258">Coller le contenu du presse-papiers en tant que texte brut</translation>
 <translation id="7684531502177797067">Caméra <ph name="CAMERA_NAME" /> activée.</translation>
 <translation id="7687172143976244806">Vous avez ouvert</translation>

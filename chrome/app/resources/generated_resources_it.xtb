@@ -272,6 +272,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1187722533808055681">Riattivazioni</translation>
 <translation id="1188807932851744811">Log non caricato.</translation>
 <translation id="1190086046506744802">Molto larga</translation>
+<translation id="1190155014618058972">Crea una combinazione di tasti personalizzata</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Accesso a un file memorizzato sul computer}other{Accesso a # file memorizzati sul computer}}</translation>
 <translation id="1190706173655543975">Criteri delle applicazioni Microsoft</translation>
 <translation id="1191353342579061195">Scegli il tema più adatto alle tue esigenze. Per cambiare tema, sfondo, salvaschermo e altro ancora, fai clic con il pulsante destro del mouse sul desktop.</translation>
@@ -1130,6 +1131,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1794212650797661990">Nascondi password per <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Invia feedback per aiutarci a risolvere questo problema.</translation>
 <translation id="1795214765651529549">Usa classico</translation>
+<translation id="1795438342141780114">Riporta il cursore al centro</translation>
 <translation id="1795668164971917185">La prossima volta che Google Navigazione sicura rileva un download sospetto, lo analizzerà automaticamente come parte della <ph name="LINK" /> che hai scelto</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
@@ -1814,6 +1816,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2278562042389100163">Apri finestra browser</translation>
 <translation id="2278668501808246459">Avvio del gestore di container</translation>
 <translation id="2280486287150724112">Margine destro</translation>
+<translation id="228059581448666199">Fai clic con il tasto sinistro del mouse</translation>
 <translation id="2281863813036651454">Clic con il tasto sinistro del mouse</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
 <translation id="228293613124499805">La maggior parte dei siti che visiti probabilmente salva dati sul dispositivo, spesso per migliorare la tua esperienza salvando le tue preferenze o le informazioni che condividi con i siti stessi. Ti consigliamo di mantenere questa impostazione attiva.</translation>
@@ -3198,7 +3201,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3275778913554317645">Apri come finestra</translation>
 <translation id="3277214528693754078">Naviga con il cursore di testo (navigazione con cursore)</translation>
 <translation id="3277594800340743211">Ombra grande</translation>
-<translation id="3277784185056747463">Password del dispositivo o password dell'Account Google</translation>
 <translation id="3278001907972365362">I tuoi Account Google richiedono la tua attenzione</translation>
 <translation id="3279092821516760512">I contatti selezionati possono condividere contenuti con te quando sono nelle vicinanze. I trasferimenti non inizieranno finché non accetti.</translation>
 <translation id="3279230909244266691">Questa procedura potrebbe richiedere alcuni minuti. Avvio della macchina virtuale in corso.</translation>
@@ -4708,6 +4710,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4359408040881008151">Installata a causa di estensioni dipendenti.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
 <translation id="4359809482106103048">Riepilogo sulla sicurezza</translation>
+<translation id="4360738659108163902">Fai clic con il tasto destro del mouse</translation>
 <translation id="4361142739114356624">La chiave privata per il certificato client manca o non è valida</translation>
 <translation id="4361745360460842907">Apri in una scheda</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> è l'account predefinito sul tuo <ph name="DEVICE_TYPE" /></translation>
@@ -5336,6 +5339,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="482952334869563894">Dispositivi USB del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Installazione dell'aggiornamento del sistema operativo in corso</translation>
 <translation id="4831226137013573603">disattivazione dell'audio del microfono</translation>
+<translation id="483262387981411190">Metti in pausa o riprendi il controllo del volto</translation>
 <translation id="4833683849865011483">1 stampante trovata sul server di stampa</translation>
 <translation id="4835598628985424375">Protendi insieme le labbra</translation>
 <translation id="4835677468087803981">Nascondi il PIN</translation>
@@ -5896,6 +5900,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5240931875940563122">Accedi con uno smartphone Android</translation>
 <translation id="5242724311594467048">Attivare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Riprova tra qualche istante</translation>
+<translation id="5243752692914402705">Quando attivi la modalità di scorrimento, muovi la testa nella direzione in cui vuoi scorrere</translation>
 <translation id="5244234799035360187">OneDrive comparirà ora nell'app File</translation>
 <translation id="5244466461749935369">Mantieni per ora</translation>
 <translation id="5244474230056479698">Sincronizzazione con <ph name="EMAIL" /></translation>
@@ -6645,6 +6650,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5805697420284793859">Gestione finestre</translation>
 <translation id="5806447147478173900">Spazio di archiviazione totale usato dai siti visualizzati: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valore predefinito)</translation>
+<translation id="5807774529265708172">Mostra o nascondi la tastiera sullo schermo</translation>
 <translation id="5809835394668218762">Altre azioni per <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">Il PIN deve contenere 6 cifre</translation>
 <translation id="5810809306422959727">Questo account non è idoneo per la funzionalità Controllo genitori</translation>
@@ -6838,6 +6844,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5945002094477276055">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare a Google Navigazione sicura per la scansione?</translation>
 <translation id="5945363896952315544">Impossibile memorizzare altre impronte sul token di sicurezza. Per aggiungere una nuova impronta, devi prima eliminarne una esistente.</translation>
 <translation id="5946591249682680882">ID report <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Fai doppio clic con il tasto sinistro del mouse</translation>
 <translation id="5948476936444935795">Annulla importazione</translation>
 <translation id="5948536763493709626">Collega una tastiera o un mouse oppure continua la configurazione usando il touchscreen. Se usi dispositivi Bluetooth, assicurati che siano pronti per essere accoppiati.</translation>
 <translation id="5949544233750246342">Impossibile analizzare il file</translation>
@@ -9589,6 +9596,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7958828865373988933">Se vuoi creare una passkey per <ph name="APP_NAME" /> su un token di sicurezza USB, inserisci il token e toccalo ora</translation>
 <translation id="7959074893852789871">Il file conteneva più certificati, alcuni dei quali non sono stati importati:</translation>
 <translation id="7959665254555683862">Nuova scheda di navigazione in incognito</translation>
+<translation id="7960540720012720106">Apri la panoramica delle finestre</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7963001036288347286">Accelerazione del touchpad</translation>
 <translation id="7963513503134856713">Finestra spostata a destra</translation>
@@ -9668,6 +9676,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8014154204619229810">Lo strumento di aggiornamento è in esecuzione. Aggiorna tra un minuto per ricontrollare.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> non riesce a tornare alla versione precedente installata. Prova a eseguire il Powerwash del dispositivo.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{1 file copiato}other{{NUM_OF_FILES} file copiati}}</translation>
+<translation id="8017004049696748317">Avvia o interrompi la dettatura</translation>
 <translation id="8017176852978888182">Directory condivise di Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Scorciatoia modificata</translation>
@@ -9682,6 +9691,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8025291188699172126">Informazioni sugli aggiornamenti</translation>
 <translation id="8026471514777758216">Tutti i tuoi dispositivi</translation>
 <translation id="8026784703228858744">Salva i tuoi preferiti e altro ancora con la sincronizzazione</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitato 0 giorni fa}=1{Visitato 1 giorno fa}other{Visitato # giorni fa}}</translation>
 <translation id="8028060951694135607">Recupero chiavi Microsoft</translation>
 <translation id="8028803902702117856">Download in corso di <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Dimensioni</translation>

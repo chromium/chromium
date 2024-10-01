@@ -634,7 +634,6 @@
 <translation id="3265032511221679826">开启确切位置信息访问权限？</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3271554781793662131">搜索即可插入</translation>
-<translation id="3273040715184276344">大写锁定模式已关闭</translation>
 <translation id="3274634049061007184">查看手机中的应用</translation>
 <translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
@@ -1950,7 +1949,6 @@
 <translation id="7670953955701272011">在 Google 日历中打开此日期</translation>
 <translation id="7671610481353807627">应用已按颜色排序</translation>
 <translation id="7672095158465655885">已连接到网络“<ph name="NAME" />”，<ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">大写锁定模式已开启</translation>
 <translation id="7682351277038250258">以纯文本形式粘贴剪贴板中的内容</translation>
 <translation id="7684531502177797067">相机输入已设为“<ph name="CAMERA_NAME" />”。</translation>
 <translation id="7687172143976244806">您打开过</translation>

@@ -204,6 +204,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1957557050935255529">PDF se učitava…</translation>
 <translation id="1959679933317802873">Čeka se sadržaj</translation>
 <translation id="1960290143419248813">Chrome ažuriranja više nisu podržana za ovu verziju Android-a</translation>
+<translation id="1963056249988316027">Provera identiteta je uključena i ne može da potvrdi da ste to vi</translation>
 <translation id="1963976881984600709">Standardna zaštita</translation>
 <translation id="1966710179511230534">Ažurirajte podatke za prijavljivanje.</translation>
 <translation id="1969037871259811890">Brisanjem podataka pregledanja ne odjavljujete se sa Google naloga. Da biste to uradili, <ph name="BEGIN_LINK1" />odjavite se iz Chrome-a<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{i još 1 sajt}one{i još # sajt}few{i još # sajta}other{i još # sajtova}}</translation>
 <translation id="3631987586758005671">Deli se sa: <ph name="DEVICE_NAME" /></translation>
+<translation id="363484704507524488">Proverom identiteta možete da upravljate u podešavanjima zaštite od krađe. <ph name="BEGIN_LINK" />Idi u podešavanja<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>
 <translation id="363596933471559332">Automatski se prijavljujte na veb-sajtove pomoću sačuvanih akreditiva. Kada je ova funkcija isključena, tražićemo vam da se verifikujete pre svakog prijavljivanja na veb-sajt.</translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
@@ -1036,6 +1038,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="587735546353481577">Da biste pratili sajt, idite na njega, otvorite Chrome meni i dodirnite Prati.</translation>
 <translation id="5879072387416556377">Dobijajte bolje predloge</translation>
+<translation id="5883855034004058011">Biometrija nije uspela previše puta. Zaključajte i otključajte uređaj da biste probali ponovo.</translation>
 <translation id="5885378508678660271">Obaveštenja <ph name="SEPARATOR" /> Chrome je uklonio ove dozvole jer je ovaj sajt opasan</translation>
 <translation id="5895834791314695851">Lozinke će možda uskoro prestati da rade na ovom uređaju. Da biste nastavili da koristite lozinke, ažurirajte Google Play usluge. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nijedna tabela sa pristupnim ključevima nije zatvorena</translation>

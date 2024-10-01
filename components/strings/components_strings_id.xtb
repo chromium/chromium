@@ -3409,6 +3409,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operasi Bisnis</translation>
 <translation id="7244061187185055290">Jelaskan dengan singkat apa yang Anda telusuri</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> manfaat kartu</translation>
 <translation id="7251437084390964440">Konfigurasi jaringan tidak mematuhi standar ONC. Sebagian konfigurasi mungkin tidak diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Administrator Anda menyatakan: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7255540419660272073">Tombol tidak suka, tekan Enter untuk membuka formulir guna mengirim masukan mendetail tentang alasan Anda tidak menyukai, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3476,6 +3477,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7390545607259442187">Konfirmasi Kartu</translation>
 <translation id="7392089738299859607">Perbarui Alamat</translation>
 <translation id="7393161616326137353">Game Petualangan</translation>
+<translation id="7393475648162498734">Tampilkan reward dan manfaat yang tersedia untuk kartu Anda saat checkout</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
 <translation id="7399616692258236448">Permintaan lokasi otomatis diblokir untuk semua situs kecuali situs yang Anda izinkan</translation>
 <translation id="7399802613464275309">Pemeriksaan Keamanan</translation>
@@ -4489,6 +4491,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="939736085109172342">Folder baru</translation>
 <translation id="940524522703752213">Proses upload file Anda ke <ph name="CLOUD_PROVIDER" /> akan dimulai dalam <ph name="MINUTES" /> menit</translation>
 <translation id="944540589955480312">Gunakan sandi dan kunci sandi yang disimpan di Akun Google Anda</translation>
+<translation id="944578681290094302">Tampilkan reward dan manfaat yang tersedia untuk kartu Anda saat checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pelajari manfaat kartu<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah.</translation>
 <translation id="945855313015696284">Periksa info di bawah dan hapus kartu apa pun yang tidak valid</translation>
 <translation id="94613679163347541">Bandingkan <ph name="CATEGORY" />?</translation>

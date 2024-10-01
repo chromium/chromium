@@ -333,6 +333,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5761096224651992291">Niste skoro posećivali sajt. Chromium je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" /></translation>
 <translation id="5800158606660203929">Prilagodite i kontrolišite Chromium. Podesite Chromium kao podrazumevani pregledač.</translation>
 <translation id="5809516625706423866">Povezivanje sa internetom nije uspelo. Nije ovlašćen pristup (HTTP 401). Proverite konfiguraciju proksija.</translation>
+<translation id="5821520528363214608">Da biste koristili i čuvali Chromium podatke na Google nalogu, ažurirajte Chromium</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5871205389137001634">Kliknite da biste napustili pretragu slika</translation>
 <translation id="5883558403894052917">Chromium je otkrio malver u ovim stavkama:</translation>
@@ -493,6 +494,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7686590090926151193">Chromium nije podrazumevani pregledač</translation>
 <translation id="7689606757190482937">Sinhronizujte i personalizujte Chromium na svim uređajima</translation>
 <translation id="7699779824407626136">Ažuriranje za Chromium</translation>
+<translation id="77283119132245232">Pruža usluge praćenja sistema za <ph name="BROWSER_NAME" />. Ako je ova usluga onemogućena, tragovi učinka koje napravi pregledač neće sadržati događaje u celom sistemu, poput promene konteksta i pripremljenih događaja sa nitima.</translation>
 <translation id="7745317241717453663">Ovim ćete izbrisati podatke pregledanja sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Program za instalaciju nije mogao da napravi privremeni direktorijum. Proverite da li imate slobodnog prostora na disku, kao i dozvolu da instalirate softver.</translation>
 <translation id="7786760609782648049">Ubrzajte Chromium</translation>

@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Padidinkite arba sumažinkite tekstą ir vaizdus visose svetainėse, kuriose lankotės</translation>
 <translation id="1984937141057606926">Leidžiama (išskyrus trečiąsias šalis)</translation>
 <translation id="1985247341569771101">Įjungus svetainėse gali būti naudojami įrenginio judesio jutikliai. Išjungus svetainėse negalima naudoti judesio jutiklių.</translation>
+<translation id="1985716030964443178">Bus iš naujo nustatytas numatytasis visų sąraše esančių svetainių mastelis</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="1994173015038366702">Svetainės URL</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2678468611080193228">Pabandykite laikinai leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
+<translation id="2682367912565197520">Ištrinti išsaugotą mastelio lygį</translation>
 <translation id="2683434792633810741">Ištrinti ir nustatyti iš naujo?</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2717722538473713889">El. pašto adresai</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Visos svetainės su domenu <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Neleisti svetainėms žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
+<translation id="4419929467120297501">„Chrome“ neleidžia svetainėms naudoti trečiųjų šalių slapukų, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="443552056913301231">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, iš naujo nustatyti visi<ph name="ORIGIN" /> leidimai</translation>
 <translation id="4468959413250150279">Konkrečios svetainės garso išjungimas.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Keisti mastelį</translation>
 <translation id="4807122856660838973">Įjunkite Saugų naršymą</translation>
 <translation id="4811450222531576619">Sužinokite apie jo šaltinį ir temą</translation>
+<translation id="4816495437032298535">Išsaugotas svetainių mastelis</translation>
 <translation id="4836046166855586901">Klausti, kai svetainė nori žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="483914009762354899">Įtraukti visas šio domeno svetaines</translation>
 <translation id="4883854917563148705">Tvarkomų nustatymų negalima nustatyti iš naujo</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, taip pat bus iš naujo nustatyti visi <ph name="DOMAIN" /> ir jame esančių svetainių leidimai</translation>
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
+<translation id="5292915569214461965">Užblokavote svetaines, kad nebūtų naudojami trečiųjų šalių slapukai, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Įjungus svetainėse gali būti prašoma naudoti apie jus išsaugotą informaciją. Išjungus svetainėse negali būti prašoma naudoti apie jus išsaugotos informacijos.</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5301954838959518834">Gerai, supratau</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Pasirinkite <ph name="SITE_NAME" /> parinktį</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6818926723028410516">Pasirinkite elementus</translation>
+<translation id="6837658163275294267">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą, siekiant stebėti jus, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6864395892908308021">Šis įrenginys negali nuskaityti ALR</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Leidžiama medija</translation>
 <translation id="783819812427904514">Įjungti vaizdo įrašo garsą</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
+<translation id="7881140103901777395">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą. Tačiau trečiųjų šalių slapukai leidžiami šioje svetainėje, nes jie priklauso nuo jų teikiamų pagrindinių paslaugų.\n\nApsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
 <translation id="789180354981963912">Blokuoti trečiųjų šalių slapukus inkognito režimu:</translation>
 <translation id="7940722705963108451">Priminti</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Įjungus svetainėse gali būti prašoma ieškoti „Bluetooth“ įrenginių. Išjungus svetainėse negalima ieškoti „Bluetooth“ įrenginių.</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>
+<translation id="8737426583868847403">Čia bus rodomos svetainės, kurioms išsaugote tinkintą mastelio lygį</translation>
 <translation id="8751914237388039244">Pasirinkti vaizdą</translation>
 <translation id="8800034312320686233">Neveikia svetainė?</translation>
 <translation id="8801436777607969138">Blokuoti „JavaScript“ konkrečioje svetainėje.</translation>

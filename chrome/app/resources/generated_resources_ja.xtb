@@ -329,7 +329,9 @@
 <translation id="1227660082540388410">パスキーの編集</translation>
 <translation id="1227993798763400520">キャストできませんでした。もう一度お試しください。</translation>
 <translation id="1230417814058465809">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
+<translation id="1230961867057865279">ページが <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="1231426483209637778">次回 <ph name="DEVICE_TYPE" /> を使用するときにご利用のネットワークが表示されます。</translation>
+<translation id="1231489110997683307">ページが <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="1231572247662419826">サイトがマウス入力の取得と使用を要求できるようにする</translation>
 <translation id="1232569758102978740">無題</translation>
 <translation id="1233497634904001272">リクエストを完了するには、セキュリティ キーをもう一度タップしてください。</translation>
@@ -3188,7 +3190,6 @@
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
 <translation id="3277594800340743211">大きいシャドウ</translation>
-<translation id="3277784185056747463">デバイスのパスワードまたは Google アカウントのパスワード</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
 <translation id="3279092821516760512">近くにいる連絡先のうち、選択した人があなたと共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
@@ -8525,6 +8526,7 @@
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
 <translation id="7214047272988222011">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="721490496276866468">パスワードをインポート</translation>
+<translation id="7217208603285112910">選択内容が <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
 <translation id="7219473482981809164">ダウンロード可能なプロファイルが複数見つかりました。続行する前に、ダウンロードするプロファイルを選択してください。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{脆弱なパスワードはありません}=1{脆弱なパスワード: 1 件}other{脆弱なパスワード: {NUM_WEAK} 件}}</translation>
@@ -10085,6 +10087,7 @@
 <translation id="8325413836429495820">クリップボードの読み取りを許可しないサイト</translation>
 <translation id="8326478304147373412">PKCS #7、証明書チェーン</translation>
 <translation id="8327386430364625757">数字フォント</translation>
+<translation id="8327490658947427005">選択内容が <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="8327676037044516220">権限とコンテンツの設定</translation>
 <translation id="8328228852664998535">続行すると、パスワードやパスキーなどのデータが <ph name="BRAND" /> から完全に削除されます。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>

@@ -3409,6 +3409,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">事業運営</translation>
 <translation id="7244061187185055290">検索する内容を表す単語をいくつか入力</translation>
+<translation id="7250174481516136841">カードのメリットの<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">ネットワーク設定が ONC 標準に準拠していません。設定の一部がインポートされない可能性があります。
 詳細:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@
 <translation id="7390545607259442187">カードの確認</translation>
 <translation id="7392089738299859607">住所を更新</translation>
 <translation id="7393161616326137353">アドベンチャー ゲーム</translation>
+<translation id="7393475648162498734">購入手続きの際にカードでご利用いただける特典とメリットを表示します</translation>
 <translation id="739728382607845710">支払いハンドラのアイコン</translation>
 <translation id="7399616692258236448">許可したサイト以外の位置情報リクエストが自動的にブロックされます</translation>
 <translation id="7399802613464275309">安全チェック</translation>
@@ -4494,6 +4496,7 @@
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは <ph name="MINUTES" /> 分後に開始されます</translation>
 <translation id="944540589955480312">Google アカウントに保存したパスワードとパスキーを使用</translation>
+<translation id="944578681290094302">購入手続きの際にカードでご利用いただける特典とメリットを表示します。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />カードのメリットの詳細<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="94613679163347541">「<ph name="CATEGORY" />」を比較しますか？</translation>

@@ -3409,6 +3409,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Virksomhedsdrift</translation>
 <translation id="7244061187185055290">Beskriv med få ord, hvad du leder efter</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om kortfordele</translation>
 <translation id="7251437084390964440">Netværkskonfigurationen overholder ikke ONC-standarden. Dele af konfiguration kan muligvis ikke importeres.
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@ Yderligere oplysninger:
 <translation id="7390545607259442187">Bekræft kort</translation>
 <translation id="7392089738299859607">Opdater adresse</translation>
 <translation id="7393161616326137353">Adventurespil</translation>
+<translation id="7393475648162498734">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler</translation>
 <translation id="739728382607845710">Ikon for betalingshandler</translation>
 <translation id="7399616692258236448">Lokationsanmodninger blokeres automatisk for alle websites undtagen dem, hvor du har givet tilladelse</translation>
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
@@ -4494,6 +4496,7 @@ Yderligere oplysninger:
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="940524522703752213">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om <ph name="MINUTES" /> minutter</translation>
 <translation id="944540589955480312">Brug de adgangskoder og adgangsnøgler, der er gemt på din Google-konto</translation>
+<translation id="944578681290094302">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Få flere oplysninger om kortfordele<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du browser.</translation>
 <translation id="945855313015696284">Se oplysningerne nedenfor, og slet eventuelle ugyldige kort</translation>
 <translation id="94613679163347541">Vil du sammenligne <ph name="CATEGORY" />?</translation>

@@ -634,7 +634,6 @@
 <translation id="3265032511221679826">കൃത്യമായ ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="3269597722229482060">വലത് ക്ലിക്ക്</translation>
 <translation id="3271554781793662131">ഉൾപ്പെടുത്താൻ, തിരയുക</translation>
-<translation id="3273040715184276344">ക്യാപ്‌സ് ലോക്ക് ഓഫാണ്</translation>
 <translation id="3274634049061007184">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുക</translation>
 <translation id="3289364673986435196">പവർ മെനു</translation>
 <translation id="3289544412142055976">Linux ആപ്പുകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
@@ -1953,7 +1952,6 @@
 <translation id="7670953955701272011">Google Calendar-ൽ ഈ തീയതി തുറക്കുക</translation>
 <translation id="7671610481353807627">നിറം അനുസരിച്ച് ആപ്പുകൾ അടുക്കിയിരിക്കുന്നു</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റ് ചെയ്‌തു, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">ക്യാപ്‌സ് ലോക്ക് ഓണാണ്</translation>
 <translation id="7682351277038250258">ക്ലിപ്‌ബോർഡിൽ നിന്നുള്ള ഉള്ളടക്കം പ്ലെയിൻ ടെക്‌സ്റ്റ് ആയി ഒട്ടിക്കുക</translation>
 <translation id="7684531502177797067">ക്യാമറാ ഇൻപുട്ട് ആയി <ph name="CAMERA_NAME" /> സജ്ജീകരിച്ചു.</translation>
 <translation id="7687172143976244806">നിങ്ങൾ തുറന്നത്</translation>

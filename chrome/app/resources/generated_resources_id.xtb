@@ -329,7 +329,9 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1227660082540388410">Edit kunci sandi</translation>
 <translation id="1227993798763400520">Gagal mentransmisikan. Coba lagi.</translation>
 <translation id="1230417814058465809">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan perlindungan yang ditingkatkan.</translation>
+<translation id="1230961867057865279">Halaman Tidak dalam Bahasa <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Kami akan mengingat jaringan saat Anda kembali menggunakan <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Halaman tidak dalam bahasa <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Situs dapat meminta untuk merekam dan menggunakan input mouse Anda</translation>
 <translation id="1232569758102978740">Tanpa Judul</translation>
 <translation id="1233497634904001272">Sentuh kunci keamanan sekali lagi untuk menyelesaikan permintaan.</translation>
@@ -3209,7 +3211,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3275778913554317645">Buka sebagai jendela</translation>
 <translation id="3277214528693754078">Navigasi dengan kursor teks (penjelajahan dengan keyboard)</translation>
 <translation id="3277594800340743211">Bayangan besar</translation>
-<translation id="3277784185056747463">Sandi perangkat atau sandi Akun Google</translation>
 <translation id="3278001907972365362">Ada yang perlu diperhatikan di Akun Google Anda</translation>
 <translation id="3279092821516760512">Kontak yang dipilih dapat berbagi dengan Anda saat berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="3279230909244266691">Proses ini dapat memerlukan waktu beberapa menit. Memulai mesin virtual.</translation>
@@ -8555,6 +8556,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7212097698621322584">Masukkan PIN saat ini untuk mengubahnya. Jika tidak mengetahui PIN Anda, reset kunci keamanan, lalu buat PIN baru.</translation>
 <translation id="7214047272988222011">Diizinkan – <ph name="PERMISSION_DETAILS" />. Aktifkan <ph name="LINK_BEGIN" />akses kamera sistem<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Impor sandi</translation>
+<translation id="7217208603285112910">Pilihan tidak dalam bahasa <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
 <translation id="7219473482981809164">Kami menemukan beberapa profil yang tersedia untuk didownload. Pilih salah satu yang ingin Anda download sebelum melanjutkan.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Tidak ada sandi lemah}=1{1 sandi lemah}other{{NUM_WEAK} sandi lemah}}</translation>
@@ -10116,6 +10118,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>
 <translation id="8327386430364625757">Font matematika</translation>
+<translation id="8327490658947427005">Pilihan Tidak dalam Bahasa <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Izin dan setelan konten</translation>
 <translation id="8328228852664998535">Jika Anda melanjutkan, sandi, kunci sandi, dan data Anda lainnya akan dihapus secara permanen dari <ph name="BRAND" />. Akun apa pun yang Anda buat untuk situs atau aplikasi tidak akan dihapus.</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>

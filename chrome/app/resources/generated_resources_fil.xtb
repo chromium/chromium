@@ -330,7 +330,9 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1227660082540388410">I-edit ang passkey</translation>
 <translation id="1227993798763400520">Hindi na-cast. Pakisubukan ulit.</translation>
 <translation id="1230417814058465809">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang pinahusay na proteksyon.</translation>
+<translation id="1230961867057865279">Hindi Nakasalin sa <ph name="LANGUAGE" /> ang Page</translation>
 <translation id="1231426483209637778">Tatandaan namin ang iyong network sa susunod na gamitin mo ang <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Hindi nakasalin sa <ph name="LANGUAGE" /> ang page</translation>
 <translation id="1231572247662419826">Puwedeng hilingin ng mga site na i-capture at gamitin ang input ng iyong mouse</translation>
 <translation id="1232569758102978740">Walang pamagat</translation>
 <translation id="1233497634904001272">Pindutin ulit ang iyong security key para kumpletuhin ang kahilingan.</translation>
@@ -3210,7 +3212,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3275778913554317645">Buksan bilang window</translation>
 <translation id="3277214528693754078">Mag-navigate gamit ang cursor ng text (caret browsing)</translation>
 <translation id="3277594800340743211">Malaking shadow</translation>
-<translation id="3277784185056747463">Password ng device o password ng Google Account</translation>
 <translation id="3278001907972365362">Nangangailangan ng pansin ang iyong (mga) Google Account</translation>
 <translation id="3279092821516760512">Makakapagbahagi sa iyo ang mga piling contact kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>
 <translation id="3279230909244266691">Maaaring abutin nang ilang minuto ang prosesong ito. Sinisimulan ang virtual machine.</translation>
@@ -8558,6 +8559,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7212097698621322584">Ilagay ang kasalukuyan mong PIN para palitan ito. Kung hindi mo alam ang iyong PIN, kakailanganin mong i-reset ang security key, pagkatapos ay gumawa ng bagong PIN.</translation>
 <translation id="7214047272988222011">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang <ph name="LINK_BEGIN" />access sa camera ng system<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Mag-import ng mga password</translation>
+<translation id="7217208603285112910">Hindi nakasalin sa <ph name="LANGUAGE" /> ang seleksyon</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
 <translation id="7219473482981809164">Marami kaming nakitang profile na available na i-download. Piliin ang mga profile na gusto mong i-download bago magpatuloy.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Walang mahinang password}=1{1 mahinang password}one{{NUM_WEAK} mahinang password}other{{NUM_WEAK} na mahinang password}}</translation>
@@ -10120,6 +10122,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8325413836429495820">Hindi pinapayagang tingnan ang iyong clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
 <translation id="8327386430364625757">Mathematical na font</translation>
+<translation id="8327490658947427005">Hindi Nakasalin sa <ph name="LANGUAGE" /> ang Seleksyon</translation>
 <translation id="8327676037044516220">Mga pahintulot at setting ng content</translation>
 <translation id="8328228852664998535">Kung magpapatuloy ka, permanenteng made-delete ang iyong mga password, passkey, at iba pang data sa <ph name="BRAND" />. Hindi made-delete ang anumang account na ginawa mo para sa mga site o app.</translation>
 <translation id="8328777765163860529">Isara Lahat</translation>

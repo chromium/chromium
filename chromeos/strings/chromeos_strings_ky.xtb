@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">Окшош:</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толук</translation>
+<translation id="5140788690559353412">Мектеп аккаунтуңузга кирүү мүмкүнчүлүгүнөн айрылганда, Gmail, Документтер, Слайддар жана башкалар сыяктуу электрондук почтага жана Google Drive файлдарына кире албай каласыз.</translation>
 <translation id="5142961317498132443">Аныктыгын текшерүү</translation>
 <translation id="5144311987923128508">Ырастоо баскычы эми өчүрүлдү</translation>
 <translation id="5144887194300568405">Котормону көчүрүү</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) HTTP күтүү убакыты</translation>
 <translation id="6078323886959318429">Кыска жол кошуу</translation>
 <translation id="6091080061796993741">сары</translation>
+<translation id="6093853427925392522">Мектеп аккаунтуңузга кирүү мүмкүнчүлүгүнөн айрылып калганга чейин андагы маалыматты жеке аккаунтуңузга жылдыруу үчүн Google'дун Content Transfer колдонмосун пайдаланыңыз.</translation>
 <translation id="6104112872696127344">Скандоо токтотулду</translation>
 <translation id="6106186594183574873">Бүтүрүү үчүн эски сырсөзүңүздү киргизиңиз</translation>
 <translation id="6108689792487843350">Шлюз жеткиликсиз</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1537,6 +1540,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> боюнча башка аракеттер</translation>
 <translation id="86356131183441916">Ачык кызгылт көгүш</translation>
 <translation id="8647595191512746911">Аудионун транскрипциясы</translation>
+<translation id="8650852232143958317">Gmail жана Google Drive файлдарын жаныңызга алыңыз</translation>
 <translation id="8651481478098336970">үнүн басуу</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">URL дарегин бөлүшүү:</translation>

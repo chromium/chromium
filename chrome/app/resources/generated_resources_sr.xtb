@@ -13,6 +13,7 @@
 <translation id="1005671386794704751">Розе</translation>
 <translation id="1005919400326853998">Прикажите детаље сертификата за <ph name="CERT_NAME" /> у новом дијалогу</translation>
 <translation id="1006033052970139968">Приступ микрофону је дозвољен за апликације, веб-сајтове са дозволом за микрофон и системске услуге</translation>
+<translation id="1006471148601930095">Није пронађен ниједан читач паметних картица.</translation>
 <translation id="1006873397406093306">Овај додатак може да чита и мења податке на сајтовима. Можете да контролишете којим сајтовима додатак може да приступа.</translation>
 <translation id="1007057452468855774">Укључите Google Play продавницу</translation>
 <translation id="1008186147501209563">Извези обележиваче</translation>
@@ -2427,6 +2428,7 @@
 <translation id="2710101514844343743">Подаци о коришћењу и дијагностички подаци</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> је сада откључан</translation>
+<translation id="2710676967944965821">Желите да ресетујете све дозволе за читаче паметних картица?</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Тамна позадина</translation>
@@ -3199,7 +3201,6 @@
 <translation id="3275778913554317645">Отвори као прозор</translation>
 <translation id="3277214528693754078">Крећите се помоћу курсора за текст (навигација курсором)</translation>
 <translation id="3277594800340743211">Велика сенка</translation>
-<translation id="3277784185056747463">Лозинка уређаја или лозинка за Google налог</translation>
 <translation id="3278001907972365362">Треба да проверите Google налоге</translation>
 <translation id="3279092821516760512">Изабрани контакти могу да деле са вама када сте у близини. Преноси неће започети док не прихватите.</translation>
 <translation id="3279230909244266691">Ово може да потраје пар минута. Покреће се виртуелна машина.</translation>
@@ -6865,6 +6866,7 @@
 <translation id="5958836583172610505">Синхронизација је укључена</translation>
 <translation id="5959471481388474538">Мрежа није доступна</translation>
 <translation id="5959982036207776176">Лупа прати реч која се чита помоћу услуге Изаберите за говор</translation>
+<translation id="5961545272769624207">Додели покрет</translation>
 <translation id="5963413905009737549">Одељак</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (највише <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све ({COUNT}) у &amp;новом прозору}few{Отвори све ({COUNT}) у &amp;новом прозору}other{Отвори све ({COUNT}) у &amp;новом прозору}}</translation>

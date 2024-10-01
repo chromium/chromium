@@ -3409,6 +3409,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operaciones comerciales</translation>
 <translation id="7244061187185055290">Describe brevemente lo que estás buscando</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre las ventajas de las tarjetas</translation>
 <translation id="7251437084390964440">La configuración de red no cumple el estándar ONC. Es posible que no se importen algunas partes de la configuración.
 Más información:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@ Más información:
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
 <translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
+<translation id="7393475648162498734">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra</translation>
 <translation id="739728382607845710">Icono del controlador de pagos</translation>
 <translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto los que permitas</translation>
 <translation id="7399802613464275309">Comprobación de seguridad</translation>
@@ -4493,6 +4495,7 @@ Más información:
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940524522703752213">La subida de archivos a <ph name="CLOUD_PROVIDER" /> empezará dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="944540589955480312">Usar contraseñas y llaves de acceso guardadas en tu cuenta de Google</translation>
+<translation id="944578681290094302">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información sobre las ventajas de las tarjetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome impide que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
 <translation id="945855313015696284">Comprueba la información que aparece a continuación y elimina las tarjetas no válidas</translation>
 <translation id="94613679163347541">¿Comparar <ph name="CATEGORY" />?</translation>

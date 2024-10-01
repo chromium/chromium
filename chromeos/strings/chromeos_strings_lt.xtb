@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">Panašūs:</translation>
 <translation id="5130848777448318809">poniai</translation>
 <translation id="5137451382116112100">Viso ekrano režimas</translation>
+<translation id="5140788690559353412">Praradę prieigą prie mokyklos paskyros nebegalėsite pasiekti susietų el. pašto ir „Google“ disko failų, pvz., „Gmail“, Dokumentų, Skaidrių ir kt.</translation>
 <translation id="5142961317498132443">Autentifikavimas</translation>
 <translation id="5144311987923128508">Mygtukas „Patvirtinti“ dabar išjungtas</translation>
 <translation id="5144887194300568405">Kopijuoti vertimą</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(„Android“) HTTP delsa</translation>
 <translation id="6078323886959318429">Pridėti spartųjį klavišą</translation>
 <translation id="6091080061796993741">geltonos spalvos</translation>
+<translation id="6093853427925392522">Įsitikinkite, kad naudojate „Google“ turinio perkėlimo programą, kad perkeltumėte mokyklos paskyros duomenis į asmeninę paskyrą, kol nepraradote prieigos.</translation>
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
+<translation id="7141470099673912333">Turinio perkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1537,6 +1540,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8626489604350149811">Daugiau veiksmų („<ph name="APN_NAME" />“)</translation>
 <translation id="86356131183441916">Šviesiai violetinė</translation>
 <translation id="8647595191512746911">Garso įrašo transkribavimas</translation>
+<translation id="8650852232143958317">Turėkite „Gmail“ ir „Google“ disko failus su savimi</translation>
 <translation id="8651481478098336970">garsumo nutildymas</translation>
 <translation id="8655295600908251630">Kanalas</translation>
 <translation id="8655828773034788261">Bendrinti URL:</translation>

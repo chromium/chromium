@@ -3409,6 +3409,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Shughuli za Biashara</translation>
 <translation id="7244061187185055290">Kwa maneno machache, elezea unachotafuta</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu manufaa ya kadi</translation>
 <translation id="7251437084390964440">Mipangilio ya mtandao haitii kiwango cha ONC. Huenda baadhi ya mipangilio haitapakiwa. Maelezo ya ziada: <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Msimamizi wako anasema: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7255540419660272073">Kitufe cha halinipendezi, bonyeza Enter ili ufungue fomu ya kutuma maoni ya kina kuhusu kwa nini hupendi, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3476,6 +3477,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7390545607259442187">Thibitisha Kadi</translation>
 <translation id="7392089738299859607">Sasisha Anwani</translation>
 <translation id="7393161616326137353">Michezo ya Matukio ya Kusisimua</translation>
+<translation id="7393475648162498734">Onyesha zawadi na manufaa yanayopatikana kwenye kadi zako unapolipa</translation>
 <translation id="739728382607845710">Aikoni ya kidhibiti cha malipo</translation>
 <translation id="7399616692258236448">Maombi ya kufikia data ya mahali ulipo yanazuiwa kiotomatiki kwenye tovuti zote isipokuwa zile unazoruhusu</translation>
 <translation id="7399802613464275309">Angalizo la Usalama</translation>
@@ -4490,6 +4492,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="939736085109172342">Folda mpya</translation>
 <translation id="940524522703752213">Mchakato wa kupakia faili yako kwenye <ph name="CLOUD_PROVIDER" /> utaanza baada ya dakika <ph name="MINUTES" /></translation>
 <translation id="944540589955480312">Tumia manenosiri na funguo za siri zilizohifadhiwa kwenye Akaunti yako ya Google</translation>
+<translation id="944578681290094302">Onyesha zawadi na manufaa yanayopatikana kwenye kadi zako unapolipa. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pata maelezo kuhusu manufaa ya kadi<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome huzuia tovuti ili zisitumie vidakuzi vya wahusika wengine kukufuatilia unapovinjari.</translation>
 <translation id="945855313015696284">Angalia maelezo yaliyo hapa chini na ufute kadi zozote ambazo si sahihi</translation>
 <translation id="94613679163347541">Ungependa kulinganisha <ph name="CATEGORY" />?</translation>

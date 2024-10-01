@@ -13,6 +13,7 @@
 <translation id="1005671386794704751">Roze</translation>
 <translation id="1005919400326853998">Prikažite detalje sertifikata za <ph name="CERT_NAME" /> u novom dijalogu</translation>
 <translation id="1006033052970139968">Pristup mikrofonu je dozvoljen za aplikacije, veb-sajtove sa dozvolom za mikrofon i sistemske usluge</translation>
+<translation id="1006471148601930095">Nije pronađen nijedan čitač pametnih kartica.</translation>
 <translation id="1006873397406093306">Ovaj dodatak može da čita i menja podatke na sajtovima. Možete da kontrolišete kojim sajtovima dodatak može da pristupa.</translation>
 <translation id="1007057452468855774">Uključite Google Play prodavnicu</translation>
 <translation id="1008186147501209563">Izvezi obeleživače</translation>
@@ -2427,6 +2428,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2710101514844343743">Podaci o korišćenju i dijagnostički podaci</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> je sada otključan</translation>
+<translation id="2710676967944965821">Želite da resetujete sve dozvole za čitače pametnih kartica?</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
@@ -3199,7 +3201,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3275778913554317645">Otvori kao prozor</translation>
 <translation id="3277214528693754078">Krećite se pomoću kursora za tekst (navigacija kursorom)</translation>
 <translation id="3277594800340743211">Velika senka</translation>
-<translation id="3277784185056747463">Lozinka uređaja ili lozinka za Google nalog</translation>
 <translation id="3278001907972365362">Treba da proverite Google naloge</translation>
 <translation id="3279092821516760512">Izabrani kontakti mogu da dele sa vama kada ste u blizini. Prenosi neće započeti dok ne prihvatite.</translation>
 <translation id="3279230909244266691">Ovo može da potraje par minuta. Pokreće se virtuelna mašina.</translation>
@@ -6865,6 +6866,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5958836583172610505">Sinhronizacija je uključena</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="5959982036207776176">Lupa prati reč koja se čita pomoću usluge Izaberite za govor</translation>
+<translation id="5961545272769624207">Dodeli pokret</translation>
 <translation id="5963413905009737549">Odeljak</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (najviše <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>

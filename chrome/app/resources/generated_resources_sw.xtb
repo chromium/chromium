@@ -329,7 +329,9 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1227660082540388410">Badilisha ufunguo wa siri</translation>
 <translation id="1227993798763400520">Imeshindwa kutuma. Tafadhali jaribu tena.</translation>
 <translation id="1230417814058465809">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama ulioboreshwa.</translation>
+<translation id="1230961867057865279">Ukurasa Haupatikani kwa <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Tutakumbuka mtandao wako wakati mwingine utakapotumia <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Ukurasa haupatikani kwa <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Tovuti zinaweza kuomba zinase na zitumie data uliyoweka ukitumia kipanya</translation>
 <translation id="1232569758102978740">Hakina Jina</translation>
 <translation id="1233497634904001272">Gusa tena ufunguo wako wa usalama ili ukamilishe ombi.</translation>
@@ -3206,7 +3208,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3275778913554317645">Fungua kama dirisha</translation>
 <translation id="3277214528693754078">Sogeza kwa kutumia kiteuzi cha maandishi (kuvinjari kwa kutumia kibodi)</translation>
 <translation id="3277594800340743211">Kihariri cha kivuli kikubwa</translation>
-<translation id="3277784185056747463">Nenosiri la kifaa au nenosiri la Akaunti ya Google</translation>
 <translation id="3278001907972365362">Unahitaji kukagua Akaunti zako za Google</translation>
 <translation id="3279092821516760512">Unaowasiliana nao uliochagua wanaweza kushiriki nawe wakiwa karibu. Uhamishaji hautaanza hadi utakapokubali.</translation>
 <translation id="3279230909244266691">Huenda mchakato ukachukua dakika kadhaa. Inaanzisha kompyuta iliyo mbali.</translation>
@@ -8550,6 +8551,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7212097698621322584">Weka PIN yako ya sasa ili uibadilishe. Ikiwa hujui PIN yako, utahitaji kubadilisha ufunguo wako wa usalama, kisha uunde PIN mpya.</translation>
 <translation id="7214047272988222011">Umeruhusu – <ph name="PERMISSION_DETAILS" />. Washa <ph name="LINK_BEGIN" />ufikiaji wa kamera ya kifaa<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Pakia manenosiri</translation>
+<translation id="7217208603285112910">Maudhui uliyochagua hayapatikani kwa <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Je, ungependa kufuta data ya tovuti?</translation>
 <translation id="7219473482981809164">Tumepata wasifu kadhaa unaoweza kupakua. Chagua wasifu ambao ungependa kupakua kabla ya kuendelea.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Hamna manenosiri dhaifu}=1{Nenosiri moja dhaifu}other{Manenosiri {NUM_WEAK} dhaifu}}</translation>
@@ -10113,6 +10115,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8325413836429495820">Zisizoruhusiwa kuona ubao wako wa kunakili</translation>
 <translation id="8326478304147373412">PKCS #7, msururu wa vyeti</translation>
 <translation id="8327386430364625757">Fonti ya kihisabati</translation>
+<translation id="8327490658947427005">Maudhui Uliyochagua Hayapatikani kwa <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Mipangilio ya maudhui na ruhusa</translation>
 <translation id="8328228852664998535">Ikiwa utaendelea, maneno siri, funguo za siri na data yako nyingine zitafutwa kabisa kwenye <ph name="BRAND" />. Akaunti zozote ulizofungua kwenye tovuti au programu hazitafutwa.</translation>
 <translation id="8328777765163860529">Funga Vyote</translation>

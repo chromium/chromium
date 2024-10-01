@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Tăng hoặc giảm kích thước văn bản và hình ảnh cho tất cả trang web bạn truy cập</translation>
 <translation id="1984937141057606926">Được cho phép, ngoại trừ cookie của bên thứ ba</translation>
 <translation id="1985247341569771101">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cảm biến chuyển động trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cảm biến chuyển động.</translation>
+<translation id="1985716030964443178">Thao tác này sẽ đặt lại tất cả các trang web trong danh sách của bạn về mức thu phóng mặc định</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="1994173015038366702">URL của trang web</translation>
 <translation id="2004697686368036666">Các tính năng trên một số trang web có thể không hoạt động</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2678468611080193228">Hãy thử tạm thời cho phép cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động cao hơn</translation>
+<translation id="2682367912565197520">Xoá mức thu phóng đã lưu</translation>
 <translation id="2683434792633810741">Xoá và đặt lại?</translation>
 <translation id="2713106313042589954">Tắt máy ảnh</translation>
 <translation id="2717722538473713889">Địa chỉ email</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
+<translation id="4419929467120297501">Chrome cấm các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="443552056913301231">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Tắt âm thanh trên một trang web cụ thể.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4807122856660838973">Bật tính năng Duyệt web an toàn</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
+<translation id="4816495437032298535">Mức thu phóng đã lưu cho các trang web</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="483914009762354899">Bao gồm tất cả trang web thuộc miền này</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="DOMAIN" /> cũng như mọi trang web thuộc miền này</translation>
 <translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
+<translation id="5292915569214461965">Bạn đã cấm các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn.</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
+<translation id="6837658163275294267">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Sử dụng Chrome theo mặc định</translation>
 <translation id="6840760312327750441">Để nhóm các thẻ, hãy chạm và giữ một thẻ. Sau đó, kéo thẻ đó lên một thẻ khác.</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Đang phát nội dung nghe nhìn</translation>
 <translation id="783819812427904514">Bật tiếng video</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
+<translation id="7881140103901777395">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba. Tuy nhiên, trang web này được phép sử dụng cookie của bên thứ ba để cung cấp các dịch vụ cơ bản dựa trên loại cookie này.\n\nHãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở Chế độ ẩn danh:</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tìm thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể tìm thiết bị Bluetooth.</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>
+<translation id="8737426583868847403">Các trang web mà bạn lưu mức thu phóng tuỳ chỉnh sẽ xuất hiện tại đây</translation>
 <translation id="8751914237388039244">Chọn hình ảnh</translation>
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>
 <translation id="8801436777607969138">Chặn JavaScript cho một trang web cụ thể.</translation>

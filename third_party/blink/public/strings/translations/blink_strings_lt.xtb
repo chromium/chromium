@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Vertė turi būti <ph name="MINIMUM_DATE_OR_TIME" /> ar vėlesnė data.</translation>
 <translation id="2761667185364618470">Jei norite tęsti, pažymėkite šį laukelį.</translation>
 <translation id="2908441821576996758">Įveskite kableliais atskirtą el. pašto adresų sąrašą.</translation>
+<translation id="2940013921954129954">Tiksli vietovė leidžiama</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Įveskite tinkamą vertę. Laukas užpildytas nevisiškai arba įvesta netinkama data.</translation>
 <translation id="310520048233152454">Įveskite URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Prasta atkūrimo kokybė</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6820355525329141109">Nepavyko įkelti papildinio.</translation>
+<translation id="688706781007114099">Naudoti vietovę</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Pailginkite šį tekstą iki <ph name="MIN_CHARACTERS" /> simb. ar daugiau (šiuo metu naudojate 1 simbolį).</translation>
 <translation id="709897737746224366">Priderinkite reikalaujamą formatą.</translation>

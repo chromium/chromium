@@ -4960,6 +4960,16 @@ None（なし）に設定するか未設定のままにした場合、ARC アプ
 
           注: <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> が指定されている場合はこのポリシーより優先されます。</translation>
 <translation id="4945419595339133946">システム情報（Chrome OS のバージョン、デバイスのシリアル番号など）をログイン画面に常に表示するかどうかを指定します。このポリシーを true に設定した場合、システム情報は強制的に表示されます。このポリシーを false に設定した場合、システム情報は強制的に非表示になります。このポリシーを設定しない場合、デフォルトの動作（Canary、Dev チャンネルでは表示）が適用されます。ユーザーは、特定の操作（Alt+V など）で表示と非表示を切り替えることができます。</translation>
+<translation id="4946124666877421935">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
+
+      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と、6 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます。<ph name="CUSTOM_NAME_LABEL" /> と <ph name="FALLBACK_APP_NAME_LABEL" /> の両方が設定されている場合、後者は無視されます）、<ph name="OVERRIDE_APP_NAME_LABEL" />（<ph name="PRODUCT_OS_NAME" /> バージョン 99 以降および他のすべてのデスクトップ オペレーティング システムのバージョン 112 以降では、すべてのウェブアプリと PWA のアプリ名を完全にオーバーライドできます）、<ph name="CUSTOM_ICON_LABEL" />（<ph name="PRODUCT_OS_NAME" /> バージョン 99 以降および他のすべてのデスクトップ オペレーティング システムのバージョン 112 以降では、インストールされたアプリのアプリアイコンをオーバーライドできます。アイコンは正方形でサイズを 1 MB 以内とし、jpeg、png、gif、webp、ico のいずれかの形式にする必要があります。
+     ハッシュ値は SHA256 ハッシュのアイコン ファイルとします。アプリのインストール時にアイコンを使用できるように、<ph name="URL_LABEL" /> には認証なしでアクセスできるようにする必要があります。
+
+　　　　　<ph name="INSTALL_AS_SHORTCUT_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 107 以降）です。有効にすると、デスクトップ ブラウザの GUI で [ショートカットを作成...] オプションを使用した場合と同様に、指定した <ph name="URL_LABEL" /> がショートカットとしてインストールされます。
+      なお、ショートカットとしてインストールした場合、<ph name="URL_LABEL" /> のマニフェストが変更されても、ショートカットは更新されません。
+      無効にするか未設定のままにした場合、指定した <ph name="URL_LABEL" /> のウェブアプリは通常どおりインストールされます。
+
+      <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Android が起動している場合、ユーザーのログアウト時に再起動します。</translation>
 <translation id="4950447493143157880">組み込みの DNS クライアントを使用しない</translation>

@@ -5162,6 +5162,54 @@ Si se establece esta política, controlará la presentación de contenido promoc
       Si se le asigna el valor false, se forzará que no aparezca la información del sistema.
       Si no se establece la política, tendrá efecto el comportamiento predeterminado (solo se mostrará en Canary y en el canal
       para desarrolladores). Los usuarios pueden cambiar la visibilidad con operaciones específicas (por ejemplo, pulsando Alt + V).</translation>
+<translation id="4946124666877421935">Si se establece esta política, se especifica una lista de aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, y qué usuarios no podrán desinstalarlas ni desactivarlas.
+
+      Cada elemento de la lista de esta política es un objeto con un miembro obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
+
+      y 6 miembros opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una pestaña nueva)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (selecciona True si quieres crear accesos directos del escritorio
+      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      te permite anular el nombre de la aplicación si no es una
+      aplicación web progresiva (PWA), o el nombre de la aplicación instalada
+      temporalmente si es una PWA, pero se requiere autenticación para que la
+      instalación pueda completarse. Si se proporcionan tanto
+      <ph name="CUSTOM_NAME_LABEL" /> como
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      esta última se ignorará.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      A partir de la versión 99
+      de <ph name="PRODUCT_OS_NAME" /> y de la versión 112 en el resto de los sistemas operativos para ordenadores, te permite anular
+      de forma permanente el nombre de todas las aplicaciones web y PWAs.
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      A partir de la versión 99
+      de <ph name="PRODUCT_OS_NAME" /> y de la versión 112 en el resto de los sistemas operativos para ordenadores,
+      te permite anular el icono de las aplicaciones instaladas. Los iconos deben ser cuadrados,
+       con un tamaño máximo de 1 MB, y deben tener uno de los siguientes formatos: jpeg, png, gif, webp o ico.
+      El valor de hash debe ser el hash SHA256 del archivo de icono. Se debe poder acceder a <ph name="URL_LABEL" />
+      sin autenticación para que el icono se pueda usar
+      al instalar la aplicación.
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      A partir de la versión 107
+      de <ph name="PRODUCT_NAME" />. Si se habilita esta política, la <ph name="URL_LABEL" /> especificada
+      se instalará como un acceso directo, igual que si se hiciera mediante la opción "Crear acceso directo..."
+      de la GUI del navegador para ordenadores.
+      Ten en cuenta que, si se instala como acceso directo, no se actualizará si
+      cambia el archivo de manifiesto de <ph name="URL_LABEL" />.
+      Si esta política se inhabilita o no se establece, la aplicación web de la
+      <ph name="URL_LABEL" /> especificada se instalará de forma normal.
+
+      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Reiniciar al cerrar sesión si se ha iniciado Android.</translation>
 <translation id="4950447493143157880">No usar nunca el cliente DNS integrado</translation>

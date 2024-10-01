@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Ingrandisci o riduci testo e immagini per tutti i siti visitati</translation>
 <translation id="1984937141057606926">Consentiti, tranne i cookie di terze parti</translation>
 <translation id="1985247341569771101">Quando l'opzione è attiva, i siti possono usare i sensori di movimento del dispositivo. Quando l'opzione non è attiva, i siti non possono utilizzare i sensori di movimento.</translation>
+<translation id="1985716030964443178">Questa operazione ripristinerà lo zoom predefinito per tutti i siti nell'elenco</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1994173015038366702">URL sito</translation>
 <translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2678468611080193228">Prova a consentire temporaneamente i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino.</translation>
+<translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Tutti i siti in <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impedisci ai siti di sapere quando usi attivamente questo dispositivo</translation>
 <translation id="4412992751769744546">Consenti cookie di terze parti</translation>
+<translation id="4419929467120297501">Chrome impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="443552056913301231">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Disattiva l'audio per un sito specifico.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Attiva Navigazione sicura</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
+<translation id="4816495437032298535">Zoom salvato per i siti</translation>
 <translation id="4836046166855586901">Chiedi conferma quando un sito vuole sapere quando usi attivamente questo dispositivo</translation>
 <translation id="483914009762354899">Includi tutti i siti di questo dominio</translation>
 <translation id="4883854917563148705">Le impostazioni gestite non possono essere reimpostate</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="DOMAIN" /> e per tutti i siti secondari</translation>
 <translation id="5264323282659631142">Rimuovi "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Trascina dall'alto e tocca il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
+<translation id="5292915569214461965">Hai impedito ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Quando l'opzione è attiva, i siti possono chiedere di utilizzare le informazioni su di te che hanno salvato. Quando l'opzione è disattivata, i siti non possono chiederti di usare le informazioni su di te che hanno salvato.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Seleziona un'opzione per <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
+<translation id="6837658163275294267">Chrome limita l'utilizzo dei cookie di terze parti per il monitoraggio della tua navigazione per la maggior parte dei siti. Vai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Usa Chrome per impostazione predefinita</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Riproduzione media</translation>
 <translation id="783819812427904514">Riattiva audio video</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
+<translation id="7881140103901777395">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su di questi cookie per fornire servizi di base.\n\nVai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
 <translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="7940722705963108451">Ricordami</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Quando l'opzione è attiva, i siti potrebbero chiedere di cercare dispositivi Bluetooth. Quando l'opzione è disattivata, i siti non possono cercare dispositivi Bluetooth.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>
+<translation id="8737426583868847403">I siti per i quali salvi un livello di zoom personalizzato verranno visualizzati qui</translation>
 <translation id="8751914237388039244">Seleziona un'immagine</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8801436777607969138">Blocca JavaScript per un sito specifico.</translation>

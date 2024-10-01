@@ -3410,6 +3410,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">کاروباری آپریشنز</translation>
 <translation id="7244061187185055290">چند الفاظ میں اس چیز کی وضاحت کریں جسے آپ تلاش کر رہے ہیں</translation>
+<translation id="7250174481516136841">کارڈ کے فوائد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">‏نیٹ ورک کنفیگریشن ONC معیار کی تعمیل نہیں کرتی ہے۔ کنفیگریشن کے حصوں کو درآمد نہیں کیا جا سکتا ہے۔
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
@@ -3479,6 +3480,7 @@
 <translation id="7390545607259442187">کارڈ کی توثیق کریں</translation>
 <translation id="7392089738299859607">پتہ اپ ڈیٹ کریں</translation>
 <translation id="7393161616326137353">ایڈونچر گیمز</translation>
+<translation id="7393475648162498734">چیک آؤٹ کے وقت دکھائیں کہ آپ کے کارڈز کے لیے کون سے انعامات اور فوائد دستیاب ہیں</translation>
 <translation id="739728382607845710">ادائیگی ہینڈلر کا آئیکن</translation>
 <translation id="7399616692258236448">مقام کی درخواستیں تمام سائٹس کے لیے خودکار طور پر مسدود ہو جاتی ہیں سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="7399802613464275309">سیفٹی چیک</translation>
@@ -4494,6 +4496,7 @@
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="940524522703752213"><ph name="MINUTES" /> منٹ میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
 <translation id="944540589955480312">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈز اور پاس کیز استعمال کریں</translation>
+<translation id="944578681290094302">چیک آؤٹ کے وقت دکھائیں کہ آپ کے کارڈز کے لیے کون سے انعامات اور فوائد دستیاب ہیں <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />کارڈ کے فوائد کے بارے میں جانیں<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">‏Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔</translation>
 <translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> کا موازنہ کریں؟</translation>

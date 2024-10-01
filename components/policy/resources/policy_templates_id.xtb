@@ -5368,6 +5368,54 @@ Menyetel kebijakan ini akan mengontrol tampilan konten promosi, termasuk halaman
       Jika kebijakan disetel ke salah (false), informasi sistem akan disembunyikan secara otomatis.
       Jika kebijakan tidak disetel, perilaku default (yang ditampilkan untuk saluran Canary/Dev)
       akan berlaku. Pengguna dapat mengubah visibilitas menggunakan operasi tertentu (misalnya, Alt-V).</translation>
+<translation id="4946124666877421935">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
+
+      Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
+      <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal)
+
+      dan 6 elemen opsional:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (untuk cara aplikasi web terbuka—tab baru adalah default)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Mulai versi 90 <ph name="PRODUCT_NAME" />,
+      memungkinkan Anda mengganti nama aplikasi jika aplikasi bukan
+      Progressive Web App (PWA), atau mengganti nama aplikasi yang diinstal
+      sementara jika aplikasi adalah PWA, tetapi memerlukan autentikasi sebelum
+      penginstalan dapat diselesaikan. Jika
+      <ph name="CUSTOM_NAME_LABEL" /> dan
+      <ph name="FALLBACK_APP_NAME_LABEL" /> tersedia,
+      yang kedua akan diabaikan).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Mulai versi 99 <ph name="PRODUCT_OS_NAME" />,
+      dan versi 112 di semua sistem operasi desktop lain, memungkinkan Anda
+      secara permanen mengganti nama aplikasi untuk semua aplikasi web dan PWA).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Mulai versi 99 <ph name="PRODUCT_OS_NAME" />,
+      dan versi 112 di semua sistem operasi desktop lain, memungkinkan Anda
+      mengganti ikon aplikasi yang diinstal. Ikon harus berbentuk persegi,
+      berukuran maksimal 1 MB, dan dalam salah satu format berikut: jpeg, png, gif, webp, ico.
+      Nilai hash file ikon harus hash SHA256. <ph name="URL_LABEL" />
+      harus dapat diakses tanpa autentikasi untuk memastikan ikon dapat digunakan
+      saat aplikasi diinstal.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (Mulai versi 107 <ph name="PRODUCT_NAME" />
+      ). Jika diaktifkan, <ph name="URL_LABEL" />
+      yang disediakan akan diinstal sebagai pintasan, seolah-olah dilakukan melalui opsi "Buat Pintasan..."
+      di GUI browser desktop.
+      Perlu diperhatikan bahwa jika diinstal sebagai pintasan, URL tersebut tidak akan diupdate jika
+      manifes pada <ph name="URL_LABEL" /> berubah.
+      Jika dinonaktifkan atau tidak disetel, aplikasi web di
+      <ph name="URL_LABEL" /> yang disediakan akan diinstal secara normal.
+
+      Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke panel aplikasi <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Penerima Cast</translation>
 <translation id="494924690085329212">Reboot saat pengguna logout jika Android telah dimulai.</translation>
 <translation id="4950447493143157880">Jangan pernah gunakan klien DNS standar</translation>
