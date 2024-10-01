@@ -1718,8 +1718,14 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // Tests that prefetched response can be served to prerender client
 // successfully.
+// TODO(crbug.com/370067813): enable the flaky test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchPrerenderActivated DISABLED_FetchPrerenderActivated
+#else
+#define MAYBE_FetchPrerenderActivated FetchPrerenderActivated
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       FetchPrerenderActivated) {
+                       MAYBE_FetchPrerenderActivated) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
