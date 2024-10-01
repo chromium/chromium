@@ -77,8 +77,9 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -201,7 +202,7 @@ import java.util.stream.Collectors;
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabListMediatorUnitTest {
-
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mMocker = new JniMocker();
 
     private static final String TAB1_TITLE = "Tab1";
@@ -362,7 +363,6 @@ public class TabListMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMocker.mock(
                 OptimizationGuideBridgeFactoryJni.TEST_HOOKS,

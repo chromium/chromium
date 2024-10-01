@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -69,7 +68,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -989,10 +987,7 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
 
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
-
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
-        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         TabUiUtils.startShareTabGroupFlow(
                 mActivity,
@@ -1082,7 +1077,8 @@ public class TabGridDialogMediator
             String originalTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                    mActivity.getResources()
+                    mActivity
+                            .getResources()
                             .getQuantityString(
                                     R.plurals.accessibility_dialog_back_button,
                                     tabsCount,
