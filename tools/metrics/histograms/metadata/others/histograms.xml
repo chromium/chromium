@@ -10260,6 +10260,19 @@ regressions. -->
   <token key="WebUIName" variants="TopChromeWebUIName"/>
 </histogram>
 
+<histogram name="WebUI.TopChrome.RequestToLCP{WebUIName}" units="ms"
+    expires_after="2025-01-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    Measures the time elapsed from the initiation of a WebUI request to its
+    largest contentful paint. This metric applies to the main frame documents of
+    top-chrome WebUI pages, such as side-panel content. The request initiation
+    is marked by the call to WebUIContentsPreloadManager::Request().
+  </summary>
+  <token key="WebUIName" variants="TopChromeWebUIName"/>
+</histogram>
+
 <histogram name="WebUI.WebUIURLLoaderFactory.URLRequestLoadTime" units="ms"
     expires_after="2022-10-30">
   <owner>dpapad@chromium.org</owner>
