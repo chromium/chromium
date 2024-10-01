@@ -17,6 +17,9 @@ namespace autofill::payments {
 
 using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
+#if BUILDFLAG(IS_ANDROID)
+using device_reauth::BiometricStatus;
+#endif
 
 MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
     : client_(client) {
@@ -142,8 +145,15 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // If the device authenticator is not present or we can not authenticate with
   // biometric or screen lock, there will be no way to re-auth if the user
   // enrolls, so return that we should not offer mandatory re-auth opt-in.
-  if (!device_authenticator_ ||
-      !device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
+  bool is_auth_available =
+      device_authenticator_ &&
+#if BUILDFLAG(IS_ANDROID)
+      device_authenticator_->GetBiometricAvailabilityStatus() !=
+          BiometricStatus::kUnavailable;
+#else
+      device_authenticator_->CanAuthenticateWithBiometricOrScreenLock();
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!is_auth_available) {
     LogMandatoryReauthOfferOptInDecision(
         MandatoryReauthOfferOptInDecision::kNoSupportedReauthMethod);
     return false;
@@ -275,6 +285,17 @@ MandatoryReauthManager::GetAuthenticationMethod() {
   if (!device_authenticator_) {
     return MandatoryReauthAuthenticationMethod::kUnknown;
   }
+#if BUILDFLAG(IS_ANDROID)
+  switch (device_authenticator_->GetBiometricAvailabilityStatus()) {
+    case BiometricStatus::kRequired:
+    case BiometricStatus::kBiometricsAvailable:
+      return MandatoryReauthAuthenticationMethod::kBiometric;
+    case BiometricStatus::kOnlyLskfAvailable:
+      return MandatoryReauthAuthenticationMethod::kScreenLock;
+    case BiometricStatus::kUnavailable:
+      return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
+  }
+#else
   // Order matters here.
   if (device_authenticator_->CanAuthenticateWithBiometrics()) {
     return MandatoryReauthAuthenticationMethod::kBiometric;
@@ -283,6 +304,7 @@ MandatoryReauthManager::GetAuthenticationMethod() {
     return MandatoryReauthAuthenticationMethod::kScreenLock;
   }
   return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill::payments

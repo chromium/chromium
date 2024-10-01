@@ -1377,6 +1377,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
+    "//components/device_reauth:device_reauth",
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
     "//components/history/core/browser",
