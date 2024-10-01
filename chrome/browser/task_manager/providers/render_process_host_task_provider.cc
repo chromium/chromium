@@ -110,18 +110,14 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  if (is_updating_) {
-    DeleteTask(host->GetID());
-    host_observation_.RemoveObservation(host);
-  }
+  DeleteTask(host->GetID());
+  host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  if (is_updating_) {
-    DeleteTask(host->GetID());
-    host_observation_.RemoveObservation(host);
-  }
+  DeleteTask(host->GetID());
+  host_observation_.RemoveObservation(host);
 }
 
 }  // namespace task_manager
