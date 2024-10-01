@@ -348,6 +348,10 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/common/indexeddb/indexeddb_key.cc'],
+        'allowed': ['base::HexEncode'],
+    },
+    {
         'paths': [
             'third_party/blink/common/interest_group/interest_group.cc',
             'third_party/blink/public/common/interest_group/interest_group.h'

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h"
 
 #include <utility>
@@ -109,9 +104,9 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::Read(
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kBinary: {
-      ArrayDataView<uint8_t> bytes;
-      data.GetBinaryDataView(&bytes);
-      std::string binary(bytes.data(), bytes.data() + bytes.size());
+      ArrayDataView<uint8_t> byte_view;
+      data.GetBinaryDataView(&byte_view);
+      std::string binary(base::as_string_view(byte_view));
       *out = blink::IndexedDBKey(std::move(binary));
       return true;
     }
