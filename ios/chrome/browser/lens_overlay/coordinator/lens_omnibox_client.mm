@@ -237,7 +237,7 @@ void LensOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  [delegate_ omniboxDidAcceptText:text
+  [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
                  thumbnailRemoved:thumbnail_removed_in_session_];
 }

@@ -83,9 +83,10 @@ TEST_F(LensOmniboxClientTest, AutocompleteAccept) {
   AutocompleteMatch match{/*provider=*/nullptr, /*relevance=*/1000,
                           /*deletable=*/false,
                           /*type=*/AutocompleteMatchType::SEARCH_SUGGEST};
+  match.fill_into_edit = input_text;
   match.destination_url = GURL("https://www.google.com/search?q=search+terms");
 
-  OCMExpect([mock_delegate_ omniboxDidAcceptText:input_text
+  OCMExpect([mock_delegate_ omniboxDidAcceptText:match.fill_into_edit
                                   destinationURL:match.destination_url
                                 thumbnailRemoved:NO]);
   UseAutocompleteMatch(input_text, match);
