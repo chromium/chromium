@@ -38,10 +38,11 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Tab observer that tracks and sends engagement signal via the CCT service connection. The
  * engagement signal includes:
+ *
  * <ul>
- *    <li>User scrolling direction; </li>
- *    <li>Max scroll percent on a specific tab;</li>
- *    <li>Whether user had interaction with any tab when CCT closes.</li>
+ *   <li>User scrolling direction;
+ *   <li>Max scroll percent on a specific tab;
+ *   <li>Whether user had interaction with any tab when CCT closes.
  * </ul>
  *
  * The engagement signal will reset in navigation.
@@ -126,8 +127,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     @Override
     protected void onAllTabsClosed() {
         notifySessionEnded(mDidGetUserInteraction);
-        mDidGetUserInteraction = false;
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
+        resetEngagementSignals();
         removeWebContentsDependencies(mWebContents);
     }
 
@@ -165,8 +165,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     @Override
     public void onDestroyed(Tab tab) {
+        collectUserInteraction(tab);
+        notifySessionEnded(mDidGetUserInteraction);
+        resetEngagementSignals();
         removeWebContentsDependencies(tab.getWebContents());
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
     }
 
     /** Prevents sending the next #onSessionEnded call. */
@@ -359,6 +361,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             // because Android exposes us to client bugs by throwing a variety
             // of exceptions. See crbug.com/517023.
         }
+    }
+
+    private void resetEngagementSignals() {
+        mDidGetUserInteraction = false;
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
     }
 
     boolean getSuspendSessionEndedForTesting() {

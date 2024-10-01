@@ -600,12 +600,11 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void sendOnSessionEnded_HadInteraction() {
+    public void onAllTabsClosed_hadInteraction_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
-        doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         mEngagementSignalObserver.webContentsWillSwap(tab);
@@ -619,7 +618,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void sendOnSessionEnded_HadInteractionButIncognito() {
+    public void onAllTabsClosed_hadInteractionButIncognito_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
@@ -641,14 +640,13 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void sendOnSessionEnded_HadInteractionButUmaUploadDisabled() {
+    public void onAllTabsClosed_hadInteractionButUmaUploadDisabled_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
         // Disable UMA upload.
         doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
-        doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -664,12 +662,11 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void sendOnSessionEnded_HadNoInteraction() {
+    public void onAllTabsClosed_hadNoInteraction_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
-        doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
@@ -681,13 +678,12 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void doNotSendOnSessionEndedWhenSuspended() {
+    public void onAllTabsClosed_suspended_doesNotSendOnSessionEnded() {
         initializeTabForTest();
         mEngagementSignalObserver.suppressNextSessionEndedCall();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
-        doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
@@ -695,6 +691,77 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
 
+        verify(mEngagementSignalsCallback, never()).onSessionEnded(eq(false), any(Bundle.class));
+
+        // We should only suspend for one call.
+        assertFalse(mEngagementSignalObserver.getSuspendSessionEndedForTesting());
+    }
+
+    @Test
+    public void onDestroyed_hadInteraction_sendsOnSessionEnded() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // User interacted.
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        // Tab destroyed.
+        mEngagementSignalObserver.onDestroyed(tab);
+
+        // didUserInteract is true.
+        verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(true), any(Bundle.class));
+    }
+
+    @Test
+    public void onDestroyed_hadInteractionButIncognito_sendsOnSessionEnded() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        // Turn on Incognito.
+        doReturn(true).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // User interacted.
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        // Tab destroyed.
+        mEngagementSignalObserver.onDestroyed(tab);
+
+        // didUserInteract is false, but they did.
+        verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
+    }
+
+    @Test
+    public void onDestroyed_hadInteractionButUmaUploadDisabled_sendsOnSessionEnded() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        // Disable UMA upload.
+        doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // User interacted.
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        // Tab destroyed.
+        mEngagementSignalObserver.onDestroyed(tab);
+
+        // didUserInteract is false, but they did.
+        verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
+    }
+
+    @Test
+    public void onDestroyed_suspended_doesNotSendOnSessionEnded() {
+        initializeTabForTest();
+        // Suspend.
+        mEngagementSignalObserver.suppressNextSessionEndedCall();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // Tab destroyed.
+        mEngagementSignalObserver.onDestroyed(tab);
+
+        // onSessionEnded not fired.
         verify(mEngagementSignalsCallback, never()).onSessionEnded(eq(false), any(Bundle.class));
 
         // We should only suspend for one call.
