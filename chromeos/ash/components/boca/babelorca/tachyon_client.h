@@ -10,6 +10,10 @@
 
 #include "base/functional/callback_forward.h"
 
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
+
 namespace ash::babelorca {
 
 struct RequestDataWrapper;
@@ -18,6 +22,12 @@ class TachyonClient {
  public:
   using AuthFailureCallback =
       base::OnceCallback<void(std::unique_ptr<RequestDataWrapper>)>;
+
+  static void HandleResponse(
+      std::unique_ptr<network::SimpleURLLoader> url_loader,
+      std::unique_ptr<RequestDataWrapper> request_data,
+      AuthFailureCallback auth_failure_cb,
+      std::unique_ptr<std::string> response_body);
 
   TachyonClient(const TachyonClient&) = delete;
   TachyonClient& operator=(const TachyonClient&) = delete;

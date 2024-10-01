@@ -15,12 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "net/base/load_flags.h"
-#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
-#include "net/http/http_status_code.h"
-#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -33,7 +31,6 @@ namespace {
 
 // TODO(b/353974384): Identify an accurate max size.
 constexpr int kMaxResponseBodySize = 1024 * 1024;
-constexpr char kOauthHeaderTemplate[] = "Authorization: Bearer %s";
 
 }  // namespace
 
@@ -80,17 +77,8 @@ void TachyonClientImpl::OnResponse(
     std::unique_ptr<RequestDataWrapper> request_data,
     AuthFailureCallback auth_failure_cb,
     std::unique_ptr<std::string> response_body) {
-  std::optional<int> http_status_code;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
-    http_status_code = url_loader->ResponseInfo()->headers->response_code();
-  }
-  TachyonResponse response(url_loader->NetError(), http_status_code,
-                           std::move(response_body));
-  if (response.status() == TachyonResponse::Status::kAuthError) {
-    std::move(auth_failure_cb).Run(std::move(request_data));
-    return;
-  }
-  std::move(request_data->response_cb).Run(std::move(response));
+  HandleResponse(std::move(url_loader), std::move(request_data),
+                 std::move(auth_failure_cb), std::move(response_body));
 }
 
 }  // namespace ash::babelorca

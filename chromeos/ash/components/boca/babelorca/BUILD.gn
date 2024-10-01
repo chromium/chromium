@@ -18,6 +18,7 @@ static_library("babelorca") {
     "tachyon_authed_client.h",
     "tachyon_authed_client_impl.cc",
     "tachyon_authed_client_impl.h",
+    "tachyon_client.cc",
     "tachyon_client.h",
     "tachyon_client_impl.cc",
     "tachyon_client_impl.h",

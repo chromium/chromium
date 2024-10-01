@@ -15,6 +15,8 @@ inline constexpr char kSigninGaiaUrl[] =
 inline constexpr char kSendMessageUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/message:send";
 
+inline constexpr char kOauthHeaderTemplate[] = "Authorization: Bearer %s";
+
 }  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CONSTANTS_H_
