@@ -100,7 +100,7 @@ class PdfInkModule {
     // The current brush to use for drawing strokes. Never null.
     std::unique_ptr<PdfInkBrush> brush;
 
-    std::optional<base::Time> start_time;
+    std::optional<base::TimeTicks> start_time;
 
     // The 0-based page index which is currently being stroked.
     int page_index = -1;
@@ -180,9 +180,9 @@ class PdfInkModule {
   bool OnMouseMove(const blink::WebMouseEvent& event);
 
   // Return values have the same semantics as OnMouse()* above.
-  bool StartStroke(const gfx::PointF& position);
-  bool ContinueStroke(const gfx::PointF& position);
-  bool FinishStroke(const gfx::PointF& position);
+  bool StartStroke(const gfx::PointF& position, base::TimeTicks timestamp);
+  bool ContinueStroke(const gfx::PointF& position, base::TimeTicks timestamp);
+  bool FinishStroke(const gfx::PointF& position, base::TimeTicks timestamp);
 
   // Return values have the same semantics as OnMouse*() above.
   bool StartEraseStroke(const gfx::PointF& position);
@@ -231,8 +231,10 @@ class PdfInkModule {
       int page_index);
 
   // Helper to convert `position` to a canonical position and record it into
-  // `current_tool_state_`. Can only be called when drawing.
-  void RecordStrokePosition(const gfx::PointF& position);
+  // `current_tool_state_` for the indicated time. Can only be called when
+  // drawing.
+  void RecordStrokePosition(const gfx::PointF& position,
+                            base::TimeTicks timestamp);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
   void ApplyUndoRedoCommandsHelper(std::set<size_t> ids, bool should_draw);

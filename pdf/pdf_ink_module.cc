@@ -286,7 +286,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = normalized_event.PositionInWidget();
-  return is_drawing_stroke() ? StartStroke(position)
+  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp())
                              : StartEraseStroke(position);
 }
 
@@ -298,7 +298,7 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke() ? FinishStroke(position)
+  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp())
                              : FinishEraseStroke(position);
 }
 
@@ -306,11 +306,12 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke() ? ContinueStroke(position)
+  return is_drawing_stroke() ? ContinueStroke(position, event.TimeStamp())
                              : ContinueEraseStroke(position);
 }
 
-bool PdfInkModule::StartStroke(const gfx::PointF& position) {
+bool PdfInkModule::StartStroke(const gfx::PointF& position,
+                               base::TimeTicks timestamp) {
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index < 0) {
     // Do not draw when not on a page.
@@ -324,7 +325,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
       ConvertEventPositionToCanonicalPosition(position, page_index);
 
   CHECK(!state.start_time.has_value());
-  state.start_time = base::Time::Now();
+  state.start_time = timestamp;
   state.page_index = page_index;
 
   // Start of the first segment of a stroke.
@@ -352,7 +353,8 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
+bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
+                                  base::TimeTicks timestamp) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   if (!state.start_time.has_value()) {
@@ -386,7 +388,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
     if (boundary_position != last_position) {
       // Record the last point before leaving the page, if `last_position` was
       // not already on the page boundary.
-      RecordStrokePosition(boundary_position);
+      RecordStrokePosition(boundary_position, timestamp);
       client_->Invalidate(
           state.brush->GetInvalidateArea(last_position, boundary_position));
     }
@@ -407,12 +409,12 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
         last_position);
     if (boundary_position != position) {
       // Record the first point after entering the page.
-      RecordStrokePosition(boundary_position);
+      RecordStrokePosition(boundary_position, timestamp);
       invalidation_position = boundary_position;
     }
   }
 
-  RecordStrokePosition(position);
+  RecordStrokePosition(position, timestamp);
 
   // Invalidate area covering a straight line between this position and the
   // previous one.
@@ -425,10 +427,11 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::FinishStroke(const gfx::PointF& position) {
+bool PdfInkModule::FinishStroke(const gfx::PointF& position,
+                                base::TimeTicks timestamp) {
   // Process `position` as though it was the last point of movement first,
   // before moving on to various bookkeeping tasks.
-  if (!ContinueStroke(position)) {
+  if (!ContinueStroke(position, timestamp)) {
     return false;
   }
 
@@ -679,12 +682,13 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
                                           client_->GetZoom());
 }
 
-void PdfInkModule::RecordStrokePosition(const gfx::PointF& position) {
+void PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
+                                        base::TimeTicks timestamp) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, state.page_index);
-  base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
+  base::TimeDelta time_diff = timestamp - state.start_time.value();
   // TODO(crbug.com/353942909): Set the tool type appropriately.
   auto result = state.inputs.back().Append(CreateInkStrokeInput(
       ink::StrokeInput::ToolType::kMouse, canonical_position, time_diff));
