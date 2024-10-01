@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/shell_observer.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/views/controls/button/button.h"
 
 namespace ash {
 
@@ -153,6 +154,11 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Shows (if the underlying session type supports it) the results panel with
   // the captured region as `image`.
   virtual void ShowSearchResultsPanel(const gfx::ImageSkia& image) = 0;
+
+  // Adds an action button below the selected region during an active session.
+  virtual void AddActionButton(views::Button::PressedCallback callback,
+                               std::u16string text,
+                               const gfx::VectorIcon* icon) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

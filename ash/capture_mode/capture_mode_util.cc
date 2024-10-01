@@ -585,4 +585,13 @@ gfx::Rect GetEffectivePartialRegionBounds(
   return result;
 }
 
+void AddActionButton(views::Button::PressedCallback callback,
+                     std::u16string text,
+                     const gfx::VectorIcon* icon) {
+  if (auto* controller = CaptureModeController::Get(); controller->IsActive()) {
+    controller->capture_mode_session()->AddActionButton(std::move(callback),
+                                                        text, icon);
+  }
+}
+
 }  // namespace ash::capture_mode_util

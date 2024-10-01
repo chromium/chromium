@@ -32,12 +32,14 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -187,6 +189,9 @@ constexpr float kRegionDefaultRatio = 0.24f;
 
 // The horizontal distance between action buttons in a row.
 constexpr int kActionButtonSpacing = 10;
+
+// The corner radius for an action button.
+constexpr int kActionButtonRadius = 18;
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -483,6 +488,59 @@ gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
 
   return widget_bounds;
 }
+
+class ActionButtonView : public PillButton {
+  METADATA_HEADER(ActionButtonView, PillButton)
+
+ public:
+  ActionButtonView(views::Button::PressedCallback callback,
+                   std::u16string text,
+                   const gfx::VectorIcon* icon)
+      : PillButton(std::move(callback),
+                   text,
+                   Type::kDefaultLargeWithIconLeading,
+                   icon),
+        // Since this view has fully circular rounded corners, we can't use a
+        // nine patch layer for the shadow. We have to use the
+        // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
+        shadow_(SystemShadow::CreateShadowOnTextureLayer(
+            SystemShadow::Type::kElevation12)) {
+    shadow_->SetRoundedCornerRadius(kActionButtonRadius);
+    capture_mode_util::SetHighlightBorder(
+        this, kActionButtonRadius,
+        views::HighlightBorder::Type::kHighlightBorderNoShadow);
+  }
+  ActionButtonView(const ActionButtonView&) = delete;
+  ActionButtonView& operator=(const ActionButtonView&) = delete;
+  ~ActionButtonView() override = default;
+
+  // views::View:
+  void AddedToWidget() override {
+    PillButton::AddedToWidget();
+
+    // Attach the shadow at the bottom of the widget layer.
+    auto* shadow_layer = shadow_->GetLayer();
+    auto* widget_layer = GetWidget()->GetLayer();
+    widget_layer->Add(shadow_layer);
+    widget_layer->StackAtBottom(shadow_layer);
+
+    // Make the shadow observe the color provider source change to update the
+    // colors.
+    shadow_->ObserveColorProviderSource(GetWidget());
+  }
+
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    // The shadow layer is a sibling of this view's layer, and should have the
+    // same bounds.
+    shadow_->SetContentBounds(layer()->bounds());
+  }
+
+ private:
+  std::unique_ptr<SystemShadow> shadow_;
+};
+
+BEGIN_METADATA(ActionButtonView)
+END_METADATA
 
 }  // namespace
 
@@ -1306,10 +1364,6 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
 
-  // When we show the panel, we also want to update the action button container
-  // and any buttons that might be visible.
-  UpdateActionContainerWidget();
-
   if (!search_results_panel_widget_) {
     search_results_panel_widget_ =
         SearchResultsPanel::CreateWidget(current_root());
@@ -1320,6 +1374,27 @@ void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
       search_results_panel_widget_->GetContentsView());
   search_results_panel->SetSearchBoxImage(image);
+
+  UpdateActionContainerWidget();
+}
+
+void CaptureModeSession::AddActionButton(
+    views::Button::PressedCallback callback,
+    std::u16string text,
+    const gfx::VectorIcon* icon) {
+  // Another process may try to add an action button before the container is
+  // created, or while it is invalid. In these cases, we don't want to do
+  // anything.
+  if (!action_container_widget_) {
+    return;
+  }
+
+  // TODO(http://b/368674223): Add a ranking when the button is added.
+  CHECK(action_container_view_);
+  action_container_view_->AddChildView(std::make_unique<ActionButtonView>(
+      std::move(callback), text, &kCaptureModeImageIcon));
+
+  UpdateActionContainerWidget();
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -2202,6 +2277,10 @@ void CaptureModeSession::OnLocatedEventPressed(
 
   fine_tune_position_ = GetFineTunePosition(screen_location, is_touch);
 
+  // The capture region will be changing, so remove any existing action buttons,
+  // if any, as they will no longer be applicable.
+  RemoveAllActionButtons();
+
   if (fine_tune_position_ == FineTunePosition::kNone) {
     // If the point is outside the capture region and not on the capture bar or
     // settings menu, restart to the select phase.
@@ -2664,62 +2743,6 @@ bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
   return capture_label_view_->ShouldHandleEvent();
 }
 
-// TODO(http://b/363069895): Upload strings for translation.
-void CaptureModeSession::UpdateActionContainerWidget() {
-  CHECK(features::IsSunfishFeatureEnabled());
-
-  if (!action_container_widget_) {
-    action_container_widget_ = std::make_unique<views::Widget>();
-    auto* parent = GetParentContainer(current_root_);
-    action_container_widget_->Init(
-        CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
-
-    action_container_widget_->SetContentsView(
-        views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&action_container_view_)
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetBetweenChildSpacing(kActionButtonSpacing)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-            .SetCrossAxisAlignment(
-                views::BoxLayout::CrossAxisAlignment::kStretch)
-            .Build());
-
-    action_container_widget_->Show();
-  }
-
-  UpdateActionContainerWidgetBounds();
-}
-
-void CaptureModeSession::UpdateActionContainerWidgetBounds() {
-  DCHECK(action_container_widget_);
-
-  const gfx::Rect bounds = CalculateActionContainerWidgetBounds();
-  const gfx::Rect old_bounds =
-      action_container_widget_->GetNativeWindow()->GetBoundsInScreen();
-  if (old_bounds == bounds) {
-    return;
-  }
-
-  action_container_widget_->SetBounds(bounds);
-}
-
-gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
-  DCHECK(action_container_widget_);
-
-  const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
-  const gfx::Rect capture_bar_bounds =
-      action_container_widget_->GetNativeWindow()->bounds();
-
-  gfx::Rect bounds(current_root_->bounds());
-  const gfx::Rect capture_region = controller_->user_capture_region();
-  bounds = CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
-                                     capture_region, current_root_);
-
-  // User capture bounds are in root window coordinates so convert them here.
-  wm::ConvertRectToScreen(current_root_, &bounds);
-  return bounds;
-}
-
 void CaptureModeSession::UpdateRootWindowDimmers() {
   root_window_dimmers_.clear();
 
@@ -2953,6 +2976,65 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
   return selected_window &&
          (capture_mode_util::GetTopMostCapturableWindowAtPoint(screen_point) ==
           selected_window);
+}
+
+// TODO(http://b/363069895): Upload strings for translation.
+void CaptureModeSession::UpdateActionContainerWidget() {
+  DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
+
+  if (!action_container_widget_) {
+    action_container_widget_ = std::make_unique<views::Widget>();
+    auto* parent = GetParentContainer(current_root_);
+    action_container_widget_->Init(
+        CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
+
+    action_container_widget_->SetContentsView(
+        views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&action_container_view_)
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetBetweenChildSpacing(kActionButtonSpacing)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kStretch)
+            .Build());
+
+    action_container_widget_->Show();
+  }
+
+  UpdateActionContainerWidgetBounds();
+}
+
+void CaptureModeSession::UpdateActionContainerWidgetBounds() {
+  DCHECK(action_container_widget_);
+
+  const gfx::Rect bounds = CalculateActionContainerWidgetBounds();
+  if (bounds != action_container_widget_->GetWindowBoundsInScreen()) {
+    action_container_widget_->SetBounds(bounds);
+  }
+}
+
+gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
+  DCHECK(action_container_widget_);
+
+  const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
+  const gfx::Rect capture_bar_bounds =
+      action_container_widget_->GetNativeWindow()->bounds();
+
+  const gfx::Rect capture_region = controller_->user_capture_region();
+  gfx::Rect bounds = CalculateRegionEdgeBounds(
+      preferred_size, capture_bar_bounds, capture_region, current_root_);
+
+  // User capture bounds are in root window coordinates so convert them here.
+  wm::ConvertRectToScreen(current_root_, &bounds);
+  return bounds;
+}
+
+void CaptureModeSession::RemoveAllActionButtons() {
+  // Remove all children from the action button container, if the widget exists.
+  if (action_container_widget_) {
+    CHECK(action_container_view_);
+    action_container_view_->RemoveAllChildViews();
+  }
 }
 
 void CaptureModeSession::InitInternal() {

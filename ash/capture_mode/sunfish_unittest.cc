@@ -10,16 +10,20 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/auto_reset.h"
 #include "base/test/bind.h"
@@ -108,7 +112,7 @@ TEST_F(SunfishTest, PressEnterKey) {
   // Immediately upon region selection, `PerformImageSearch()` and
   // `OnCaptureImageAttempted()` will be called once.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
-                          /*release_mouse=*/true, /*proceed=*/true);
+                          /*release_mouse=*/true, /*verify_region=*/true);
   ASSERT_FALSE(capture_button->GetVisible());
   ASSERT_FALSE(capture_label->GetVisible());
   auto* test_delegate =
@@ -131,7 +135,7 @@ TEST_F(SunfishTest, OnRegionSelected) {
   CaptureModeSessionTestApi test_api(session);
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
-                          /*release_mouse=*/true, /*proceed=*/true);
+                          /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
   EXPECT_TRUE(session->search_results_panel_widget());
 
@@ -192,7 +196,7 @@ TEST_F(SunfishTest, CheckDlpRestrictions) {
   // Tests after selecting a region, the session is ended.
   auto* event_generator = GetEventGenerator();
   SelectCaptureModeRegion(event_generator, gfx::Rect(100, 100, 600, 500),
-                          /*release_mouse=*/true, /*proceed=*/false);
+                          /*release_mouse=*/true, /*verify_region=*/false);
   EXPECT_FALSE(controller->IsActive());
   test_delegate->set_is_allowed_by_dlp(true);
 }
@@ -434,7 +438,7 @@ TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
 
   // Test we can select a region and show the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
-                          /*release_mouse=*/true, /*proceed=*/true);
+                          /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
   EXPECT_TRUE(session->search_results_panel_widget());
 
@@ -465,6 +469,52 @@ TEST_F(SunfishTest, SwitchBehaviorTypes) {
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   VerifyActiveBehavior(BehaviorType::kSunfish);
+}
+
+// Tests that while a sunfish session has a region selected, calling the API
+// will successfully create a new action button.
+TEST_F(SunfishTest, AddActionButton) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Attempt to add a new action button using the API.
+  capture_mode_util::AddActionButton(views::Button::PressedCallback(),
+                                     u"Do not show", &kCaptureModeImageIcon);
+
+  // The region has not been selected yet, so attempting to add a button should
+  // do nothing.
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Select a region on the far left of the screen so we have space for the
+  // button between it and the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Create another action button that, when clicked, will change the value of a
+  // bool that can be verified later.
+  bool pressed = false;
+  capture_mode_util::AddActionButton(
+      base::BindLambdaForTesting([&]() { pressed = true; }), u"Test",
+      &kCaptureModeImageIcon);
+
+  // There should only be one valid button in the session.
+  const std::vector<PillButton*> action_buttons =
+      session_test_api.GetActionButtons();
+  EXPECT_EQ(action_buttons.size(), 1u);
+
+  // Clicking the button should successfully run the callback, and change the
+  // value of the bool.
+  LeftClickOn(action_buttons[0]);
+  ASSERT_TRUE(pressed);
 }
 
 class SunfishWithScannerTest : public SunfishTest {

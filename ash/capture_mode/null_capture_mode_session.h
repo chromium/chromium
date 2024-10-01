@@ -49,6 +49,9 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
   void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
+  void AddActionButton(views::Button::PressedCallback callback,
+                       std::u16string text,
+                       const gfx::VectorIcon* icon) override;
 
  private:
   // CaptureModeSession:

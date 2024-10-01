@@ -179,6 +179,9 @@ class ASH_EXPORT CaptureModeSession
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
   void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
+  void AddActionButton(views::Button::PressedCallback callback,
+                       std::u16string text,
+                       const gfx::VectorIcon* icon) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -329,17 +332,6 @@ class ASH_EXPORT CaptureModeSession
   // child is visible.
   bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
 
-  // Creates the the action container widget if it wasn't previously created,
-  // and updates the widget's bounds.
-  void UpdateActionContainerWidget();
-
-  // Updates the action container widget's bounds.
-  void UpdateActionContainerWidgetBounds();
-
-  // Calculates the targeted action container widget bounds in screen
-  // coordinates.
-  gfx::Rect CalculateActionContainerWidgetBounds() const;
-
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
 
@@ -400,6 +392,21 @@ class ASH_EXPORT CaptureModeSession
   // Returns true if there is a selected window and it is the topmost
   // capturable window at `screen_point`. Returns false otherwise.
   bool IsPointOverSelectedWindow(const gfx::Point& screen_point) const;
+
+  // Creates the the action container widget if it wasn't previously created,
+  // and updates the widget's bounds.
+  void UpdateActionContainerWidget();
+
+  // Updates the action container widget's bounds.
+  void UpdateActionContainerWidgetBounds();
+
+  // Calculates the targeted action container widget bounds in screen
+  // coordinates.
+  gfx::Rect CalculateActionContainerWidgetBounds() const;
+
+  // Removes any existing action buttons from `action_container_view_` if the
+  // `action_container_widget_` exists,
+  void RemoveAllActionButtons();
 
   // BaseCaptureModeSession:
   void InitInternal() override;

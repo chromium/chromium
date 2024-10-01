@@ -19,6 +19,7 @@ class CaptureLabelView;
 class CaptureModeBarView;
 class CaptureModeSettingsView;
 class MagnifierGlass;
+class PillButton;
 class RecordingTypeMenuView;
 class UserNudgeController;
 
@@ -76,6 +77,10 @@ class CaptureModeSessionTestApi {
   bool AreAllUisVisible();
 
   gfx::Rect GetSelectedWindowTargetBounds();
+
+  // A vector of the current action buttons for a Sunfish session. Will return
+  // an empty vector if there are no buttons or there is no selected region.
+  std::vector<PillButton*> GetActionButtons() const;
 
  private:
   const raw_ptr<CaptureModeSession, DanglingUntriaged> session_;
