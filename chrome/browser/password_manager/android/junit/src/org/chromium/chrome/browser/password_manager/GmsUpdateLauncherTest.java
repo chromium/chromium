@@ -36,6 +36,7 @@ public class GmsUpdateLauncherTest {
         assertEquals(intent.getAction(), Intent.ACTION_VIEW);
         assertEquals(intent.getPackage(), "com.android.vending");
         assertEquals(intent.getStringExtra("callerId"), mockContext.getPackageName());
+        assertEquals(intent.getFlags(), Intent.FLAG_ACTIVITY_NEW_TASK);
         assertEquals(
                 intent.getData(),
                 Uri.parse(

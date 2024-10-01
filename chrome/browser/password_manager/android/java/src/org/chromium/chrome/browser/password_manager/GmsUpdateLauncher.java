@@ -32,6 +32,7 @@ public class GmsUpdateLauncher {
         intent.setPackage("com.android.vending");
         intent.setData(Uri.parse(deepLinkUrl));
         intent.putExtra("callerId", context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Request for overlay flow, Play Store will fallback to the default
         // behaviour if overlay is not available.
