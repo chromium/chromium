@@ -49,6 +49,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -590,6 +591,12 @@ std::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     AddSwitchesForVirtualTime();
   }
+
+#if BUILDFLAG(IS_WIN)
+  // Make sure that 'uxtheme.dll' is pinned before blocking on the main thread
+  // is disallowed; see https://crbug.com/368388543#comment11.
+  base::win::IsDarkModeAvailable();
+#endif  // BUILDFLAG(IS_WIN)
 
   return std::nullopt;
 }
