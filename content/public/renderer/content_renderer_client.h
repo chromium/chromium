@@ -359,14 +359,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // started.
   virtual void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {}
 
-  // Allows subclasses to update some runtime features for extension before
-  // Blink has started, but after the features are initialized. Use this method
-  // with caution, do not override the runtime features which might be set up
-  // via command line.
-  // TODO(crbug.com/350642260): remove after the `AIPromptAPI` is enabled by
-  // default.
-  virtual void SetupExtensionFeaturesBeforeBlinkInitialization() {}
-
   // Returns whether or not V8 script extensions should be allowed for a
   // service worker.
   virtual bool AllowScriptExtensionForServiceWorker(

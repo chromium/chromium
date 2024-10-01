@@ -61,6 +61,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/web/modules/ai/web_ai_assistant.h"
 #include "third_party/blink/public/web/modules/ai/web_ai_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -79,7 +80,6 @@ namespace {
 
 constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
 
-constexpr char kStringNameAI[] = "ai";
 constexpr char kStringNameAIOriginTrial[] = "aiOriginTrial";
 constexpr char kStringNameAssistant[] = "assistant";
 
@@ -445,38 +445,10 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
   return true;
 }
 
-bool IsPromptAPIEnabledForWebPlatform(v8::Local<v8::Context> v8_context) {
-  return blink::WebAIFeatures::IsPromptAPIEnabledForWebPlatform(v8_context) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kEnableAIPromptAPIForWebPlatform);
-}
-
 bool IsPromptAPIEnabledForExtension(v8::Local<v8::Context> v8_context) {
   return blink::WebAIFeatures::IsPromptAPIEnabledForExtension(v8_context) &&
          base::FeatureList::IsEnabled(
              blink::features::kEnableAIPromptAPIForExtension);
-}
-
-bool IsSummarizationAPIEnabled(v8::Local<v8::Context> v8_context) {
-  return blink::WebAIFeatures::IsSummarizationAPIEnabled(v8_context) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kEnableAISummarizationAPI);
-}
-
-bool IsWriterAPIEnabled(v8::Local<v8::Context> v8_context) {
-  return blink::WebAIFeatures::IsWriterAPIEnabled(v8_context) &&
-         base::FeatureList::IsEnabled(blink::features::kEnableAIWriterAPI);
-}
-
-bool IsRewriterAPIEnabled(v8::Local<v8::Context> v8_context) {
-  return blink::WebAIFeatures::IsRewriterAPIEnabled(v8_context) &&
-         base::FeatureList::IsEnabled(blink::features::kEnableAIRewriterAPI);
-}
-
-bool IsAnyAIAPIEnabled(v8::Local<v8::Context> v8_context) {
-  return IsPromptAPIEnabledForWebPlatform(v8_context) ||
-         IsSummarizationAPIEnabled(v8_context) ||
-         IsWriterAPIEnabled(v8_context) || IsRewriterAPIEnabled(v8_context);
 }
 
 }  // namespace
@@ -554,8 +526,6 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
       UpdateBindingsForPromptAPI(context);
     }
   }
-
-  MaybeRemoveUnnecessaryPromptAPIBinding(context);
 }
 
 void NativeExtensionBindingsSystem::WillReleaseScriptContext(
@@ -1148,13 +1118,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
   }
 
   v8::Local<v8::Object> chrome = GetOrCreateChrome(v8_context);
-  // Obtains `self.ai` from the global.
-  v8::Local<v8::Value> ai_value;
-  if (!v8_context->Global()
-           ->Get(v8_context, gin::StringToSymbol(isolate, kStringNameAI))
-           .ToLocal(&ai_value)) {
-    return;
-  }
 
   // Creates `chrome.aiOriginTrial`.
   v8::Local<v8::Object> chrome_ai_object = v8::Object::New(isolate);
@@ -1163,63 +1126,13 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
       chrome_ai_object);
   CHECK(success.IsJust() && success.FromJust());
 
-  v8::Local<v8::Object> ai_object;
-  if (!ai_value->ToObject(v8_context).ToLocal(&ai_object)) {
-    return;
-  }
-
-  // Obtains `ai.assistant` from `self.ai` and sets to
-  // `chrome.aiOriginTrial.assistant`.
+  // Set `chrome.aiOriginTrial.assistant`.
   v8::Local<v8::String> assistant_name =
       gin::StringToSymbol(isolate, kStringNameAssistant);
-  v8::Local<v8::Value> assistant_value;
-  if (!ai_object->Get(v8_context, assistant_name).ToLocal(&assistant_value)) {
-    return;
-  }
-
+  v8::Local<v8::Value> assistant_value =
+      blink::WebAIAssistant::GetAIAssistantFactory(v8_context, isolate);
   success = chrome_ai_object->CreateDataProperty(v8_context, assistant_name,
                                                  assistant_value);
-  CHECK(success.IsJust() && success.FromJust());
-}
-
-void NativeExtensionBindingsSystem::MaybeRemoveUnnecessaryPromptAPIBinding(
-    ScriptContext* context) {
-  v8::Isolate* isolate = context->isolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> v8_context = context->v8_context();
-
-  // If none of the AI APIs is enabled, reset `self.ai` to undefined.
-  if (!IsAnyAIAPIEnabled(v8_context)) {
-    v8::Maybe<bool> success = v8_context->Global()->CreateDataProperty(
-        v8_context, gin::StringToSymbol(isolate, kStringNameAI),
-        v8::Undefined(isolate));
-    CHECK(success.IsJust() && success.FromJust());
-    return;
-  }
-
-  // If the prompt API is enabled for web platform, we should not reset
-  // `self.ai`.
-  if (IsPromptAPIEnabledForWebPlatform(v8_context)) {
-    return;
-  }
-
-  // Obtains `self.ai` from the global.
-  v8::Local<v8::Value> ai_value;
-  if (!v8_context->Global()
-           ->Get(v8_context, gin::StringToSymbol(isolate, kStringNameAI))
-           .ToLocal(&ai_value)) {
-    return;
-  }
-
-  // Reset the `self.ai.assistant`.
-  v8::Local<v8::Object> ai_object;
-  if (!ai_value->ToObject(v8_context).ToLocal(&ai_object)) {
-    return;
-  }
-
-  v8::Maybe<bool> success = ai_object->CreateDataProperty(
-      v8_context, gin::StringToSymbol(isolate, kStringNameAssistant),
-      v8::Undefined(isolate));
   CHECK(success.IsJust() && success.FromJust());
 }
 

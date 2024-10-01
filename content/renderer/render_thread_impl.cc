@@ -864,11 +864,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
       ->renderer()
       ->SetRuntimeFeaturesDefaultsBeforeBlinkInitialization();
   SetRuntimeFeaturesDefaultsAndUpdateFromArgs(command_line);
-  // After the runtime features are set, there could be some rare case where the
-  // features need to be updated accordingly.
-  GetContentClient()
-      ->renderer()
-      ->SetupExtensionFeaturesBeforeBlinkInitialization();
 
   blink::Initialize(blink_platform_impl_.get(), binders,
                     main_thread_scheduler_.get());
