@@ -482,9 +482,10 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
         [&](base::TimeDelta event,
             std::optional<base::TimeDelta> expected_result) {
           if (expected_result->is_negative()) {
-            EXPECT_DEATH(CorrectEventAsNavigationOrActivationOrigined(
-                             delegate, timing, event),
-                         "");
+            EXPECT_DEATH_IF_SUPPORTED(
+                CorrectEventAsNavigationOrActivationOrigined(delegate, timing,
+                                                             event),
+                "");
           } else {
             base::TimeDelta got = CorrectEventAsNavigationOrActivationOrigined(
                 delegate, timing, event);
