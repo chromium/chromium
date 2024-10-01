@@ -68,8 +68,8 @@ class MlAnswerer::SessionManager {
   ~SessionManager() {
     // Run the existing callback if not called yet with canceled status.
     if (!callback_.is_null()) {
-      Finish(AnswererResult(ComputeAnswerStatus::EXECUTION_CANCELLED, query_,
-                            Answer()));
+      FinishAndResetSessions(AnswererResult(
+          ComputeAnswerStatus::EXECUTION_CANCELLED, query_, Answer()));
     }
   }
 
@@ -104,12 +104,17 @@ class MlAnswerer::SessionManager {
 
   size_t GetNumberOfSessions() { return sessions_.size(); }
 
-  // Finishes and cleans up sessions.
-  void Finish(AnswererResult answer_result) {
+  // Runs callback with result.
+  void FinishCallback(AnswererResult answer_result) {
     CHECK(!callback_.is_null());
     origin_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::move(answer_result)));
+  }
+
+  // Finishes and cleans up sessions.
+  void FinishAndResetSessions(AnswererResult answer_result) {
+    FinishCallback(std::move(answer_result));
 
     // Destroy all existing sessions.
     sessions_.clear();
@@ -123,15 +128,15 @@ class MlAnswerer::SessionManager {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result) {
     if (!result.response.has_value()) {
-      Finish(AnswererResult(ComputeAnswerStatus::EXECUTION_FAILURE, query_,
-                            Answer()));
+      FinishCallback(AnswererResult(ComputeAnswerStatus::EXECUTION_FAILURE,
+                                    query_, Answer()));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
-      Finish(AnswererResult(ComputeAnswerStatus::SUCCESS, query_,
-                            response->answer(), std::move(result.log_entry),
-                            urls_[session_index], {}));
+      FinishCallback(AnswererResult(
+          ComputeAnswerStatus::SUCCESS, query_, response->answer(),
+          std::move(result.log_entry), urls_[session_index], {}));
     }
   }
 
@@ -149,7 +154,7 @@ class MlAnswerer::SessionManager {
 
     // Return unanswerable status due to highest score is below the threshold.
     if (max_score < GetMlAnswerScoreThreshold()) {
-      Finish(
+      FinishAndResetSessions(
           AnswererResult{ComputeAnswerStatus::UNANSWERABLE, query_, Answer()});
       return;
     }
@@ -166,8 +171,8 @@ class MlAnswerer::SessionManager {
                               weak_ptr_factory_.GetWeakPtr(), session_index));
     } else {
       // If sessions are already cleaned up, run callback with canceled status.
-      Finish(AnswererResult{ComputeAnswerStatus::EXECUTION_CANCELLED, query_,
-                            Answer()});
+      FinishAndResetSessions(AnswererResult{
+          ComputeAnswerStatus::EXECUTION_CANCELLED, query_, Answer()});
     }
   }
 
@@ -207,7 +212,7 @@ void MlAnswerer::ComputeAnswer(std::string query,
         optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
         /*config_params=*/std::nullopt);
     if (session == nullptr) {
-      session_manager_->Finish(AnswererResult(
+      session_manager_->FinishAndResetSessions(AnswererResult(
           ComputeAnswerStatus::MODEL_UNAVAILABLE, query, Answer()));
       return;
     }
