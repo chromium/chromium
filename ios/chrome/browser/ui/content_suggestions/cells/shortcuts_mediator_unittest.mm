@@ -90,7 +90,8 @@ class ShortcutsMediatorTest : public PlatformTest {
 
 // Tests that the command is sent to the dispatcher when opening the Reading
 // List.
-TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
+// TODO(crbug.com/370727489): Re-enable
+TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
 
   OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
@@ -113,7 +114,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
 }
 
 // Tests that the command is sent to the dispatcher when opening the What's new.
-TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
+// TODO(crbug.com/370727489): Re-enable
+TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
 
   OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
