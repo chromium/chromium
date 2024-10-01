@@ -3177,6 +3177,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-extension-ai-data-collection",
+    "owners": [ "ryansturm@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-external-display-hdr10",
     "owners": [ "sashamcintosh@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 140
@@ -4507,10 +4512,6 @@
     "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
     "expiry_milestone": 128
   },
-  {"name": "extension-ai-data-collection",
-  "owners": [ "ryansturm@chromium.org" ],
-  "expiry_milestone": 150
-},
   {
     "name": "extension-manifest-v2-deprecation-disabled",
     "owners": [ "emiliapaz@chromium.org" ],

@@ -823,6 +823,11 @@ TEST(PermissionsTest, PermissionMessages) {
   // to warn you further.
   skip.insert(APIPermissionID::kExperimental);
 
+  // The Experimental AI Data API is gated on commandline switches, in
+  // addition to the permission in the manifest. If you've turned on the
+  // experimental AI Data command-line flag, we don't need to warn you further.
+  skip.insert(APIPermissionID::kExperimentalAiData);
+
   // The Identity API has its own server-driven permission prompts.
   skip.insert(APIPermissionID::kIdentity);
 
