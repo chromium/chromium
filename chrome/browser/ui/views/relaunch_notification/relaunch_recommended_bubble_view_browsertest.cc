@@ -29,5 +29,6 @@ class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(RelaunchRecommendedBubbleViewDialogTest,
                        InvokeUi_default) {
+  set_baseline("5855019");
   ShowAndVerifyUi();
 }

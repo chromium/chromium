@@ -104,6 +104,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
   if (std::get<0>(GetParam()) != SyncConfiguration::kAccountStorageOnly) {
     return;
   }
+  set_baseline("5855019");
   ShowAndVerifyUi();
 }
 

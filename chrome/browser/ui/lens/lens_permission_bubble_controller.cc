@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/lens/lens_features.h"
@@ -18,6 +19,7 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -97,6 +99,8 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
+                                              ui::kColorIcon, 20))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LENS_PERMISSION_MODAL_IMAGE)))
