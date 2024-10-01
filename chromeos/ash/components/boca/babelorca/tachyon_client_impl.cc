@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,9 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -80,34 +80,17 @@ void TachyonClientImpl::OnResponse(
     std::unique_ptr<RequestDataWrapper> request_data,
     AuthFailureCallback auth_failure_cb,
     std::unique_ptr<std::string> response_body) {
-  if (url_loader->NetError() != net::OK &&
-      url_loader->NetError() != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kNetworkError));
-    return;
+  std::optional<int> http_status_code;
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
+    http_status_code = url_loader->ResponseInfo()->headers->response_code();
   }
-  if (!url_loader->ResponseInfo() || !url_loader->ResponseInfo()->headers) {
-    std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kInternalError));
-    return;
-  }
-  const int response_code =
-      url_loader->ResponseInfo()->headers->response_code();
-  if (response_code == net::HttpStatusCode::HTTP_UNAUTHORIZED) {
+  TachyonResponse response(url_loader->NetError(), http_status_code,
+                           std::move(response_body));
+  if (response.status() == TachyonResponse::Status::kAuthError) {
     std::move(auth_failure_cb).Run(std::move(request_data));
     return;
   }
-  if (!network::IsSuccessfulStatus(response_code)) {
-    std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kHttpError));
-    return;
-  }
-  if (!response_body) {
-    std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kInternalError));
-    return;
-  }
-  std::move(request_data->response_cb).Run(std::move(*response_body));
+  std::move(request_data->response_cb).Run(std::move(response));
 }
 
 }  // namespace ash::babelorca

@@ -25,7 +25,6 @@ static_library("babelorca") {
     "tachyon_registrar.cc",
     "tachyon_registrar.h",
     "tachyon_request_data_provider.h",
-    "tachyon_request_error.h",
     "tachyon_response.cc",
     "tachyon_response.h",
     "tachyon_utils.cc",

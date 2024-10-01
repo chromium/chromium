@@ -4,12 +4,13 @@
 
 #include "chromeos/ash/components/boca/babelorca/transcript_sender.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
@@ -18,8 +19,10 @@
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,8 +75,9 @@ TEST(TranscriptSenderTest, SendOneMessageLongerThanMaxAllowed) {
                                             /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(
-      InboxSendResponse().SerializeAsString());
+  authed_client.ExecuteResponseCallback(TachyonResponse(
+      net::OK, net::HttpStatusCode::HTTP_OK,
+      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
 
   EXPECT_FALSE(failure_future.IsReady());
   InboxSendRequest sent_request;
@@ -135,16 +139,18 @@ TEST(TranscriptSenderTest, SendNewTranscript) {
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
   request_string1 = authed_client.GetRequestString();
-  authed_client.ExecuteResponseCallback(
-      InboxSendResponse().SerializeAsString());
+  authed_client.ExecuteResponseCallback(TachyonResponse(
+      net::OK, net::HttpStatusCode::HTTP_OK,
+      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
   authed_client.WaitForRequest();
   request_string2 = authed_client.GetRequestString();
-  authed_client.ExecuteResponseCallback(
-      InboxSendResponse().SerializeAsString());
+  authed_client.ExecuteResponseCallback(TachyonResponse(
+      net::OK, net::HttpStatusCode::HTTP_OK,
+      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
 
   EXPECT_FALSE(failure_future.IsReady());
   InboxSendRequest sent_request1;
@@ -194,14 +200,14 @@ TEST(TranscriptSenderTest, RejectSendingAndReplyOnMaxErrorsReached) {
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
-      base::unexpected(TachyonRequestError::kHttpError));
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
-      base::unexpected(TachyonRequestError::kHttpError));
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   media::SpeechRecognitionResult transcript3(kTranscriptText,
                                              /*is_final=*/false);
@@ -230,15 +236,16 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
-      base::unexpected(TachyonRequestError::kHttpError));
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   // Successful request, should reset error count.
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(
-      InboxSendResponse().SerializeAsString());
+  authed_client.ExecuteResponseCallback(TachyonResponse(
+      net::OK, net::HttpStatusCode::HTTP_OK,
+      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
 
   // Failed request, should not trigger failure callback since the error count
   // was reset.
@@ -247,7 +254,7 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
-      base::unexpected(TachyonRequestError::kHttpError));
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   EXPECT_FALSE(failure_future.IsReady());
 }
@@ -288,14 +295,14 @@ TEST(TranscriptSenderTest, InflightRequestsAreHandledOnFailure) {
       authed_client.TakeResponseCallback();
 
   std::move(response_cb1)
-      .Run(base::unexpected(TachyonRequestError::kHttpError));
+      .Run(TachyonResponse(TachyonResponse::Status::kHttpError));
   std::move(response_cb2)
-      .Run(base::unexpected(TachyonRequestError::kHttpError));
+      .Run(TachyonResponse(TachyonResponse::Status::kHttpError));
 
   EXPECT_TRUE(failure_future.IsReady());
 
   std::move(response_cb3)
-      .Run(base::unexpected(TachyonRequestError::kHttpError));
+      .Run(TachyonResponse(TachyonResponse::Status::kHttpError));
 
   media::SpeechRecognitionResult transcript4(kTranscriptText,
                                              /*is_final=*/false);

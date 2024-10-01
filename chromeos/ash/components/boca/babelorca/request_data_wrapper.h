@@ -9,15 +9,14 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
+class TachyonResponse;
+
 struct RequestDataWrapper {
-  using ResponseCallback = base::OnceCallback<void(
-      base::expected<std::string, TachyonRequestError>)>;
+  using ResponseCallback = base::OnceCallback<void(TachyonResponse)>;
 
   RequestDataWrapper(
       const net::NetworkTrafficAnnotationTag& annotation_tag_param,

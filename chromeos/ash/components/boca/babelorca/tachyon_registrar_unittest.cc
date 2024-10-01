@@ -9,10 +9,11 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,9 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   registrar.Register(kClientUuid, test_future.GetCallback());
   SignInGaiaResponse signin_response;
   signin_response.mutable_auth_token()->set_payload(kTachyonToken);
-  authed_client.ExecuteResponseCallback(signin_response.SerializeAsString());
+  authed_client.ExecuteResponseCallback(TachyonResponse(
+      net::OK, net::HttpStatusCode::HTTP_OK,
+      std::make_unique<std::string>(signin_response.SerializeAsString())));
 
   EXPECT_TRUE(test_future.Get());
   std::optional<std::string> tachyon_token = registrar.GetTachyonToken();
@@ -47,7 +50,7 @@ TEST(TachyonRegistrarTest, FailedRegistration) {
 
   registrar.Register(kClientUuid, test_future.GetCallback());
   authed_client.ExecuteResponseCallback(
-      base::unexpected(TachyonRequestError::kHttpError));
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   EXPECT_FALSE(test_future.Get());
   std::optional<std::string> tachyon_token = registrar.GetTachyonToken();

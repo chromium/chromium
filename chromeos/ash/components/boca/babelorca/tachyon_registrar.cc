@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_common.pb.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -69,16 +69,15 @@ std::optional<std::string> TachyonRegistrar::GetTachyonToken() {
   return tachyon_token_;
 }
 
-void TachyonRegistrar::OnResponse(
-    base::OnceCallback<void(bool)> success_cb,
-    base::expected<std::string, TachyonRequestError> response) {
+void TachyonRegistrar::OnResponse(base::OnceCallback<void(bool)> success_cb,
+                                  TachyonResponse response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!response.has_value()) {
+  if (!response.ok()) {
     std::move(success_cb).Run(false);
     return;
   }
   SignInGaiaResponse signin_response;
-  if (!signin_response.ParseFromString(response.value())) {
+  if (!signin_response.ParseFromString(response.response_body())) {
     std::move(success_cb).Run(false);
     return;
   }

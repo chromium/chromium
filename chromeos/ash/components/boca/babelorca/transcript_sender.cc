@@ -28,7 +28,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_utils.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -203,10 +203,9 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
       std::move(request_string));
 }
 
-void TranscriptSender::OnSendResponse(
-    base::expected<std::string, TachyonRequestError> response) {
+void TranscriptSender::OnSendResponse(TachyonResponse response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (response.has_value()) {
+  if (response.ok()) {
     errors_num_ = 0;
     return;
   }

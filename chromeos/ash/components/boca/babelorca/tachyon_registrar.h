@@ -15,13 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
 class TachyonAuthedClient;
+class TachyonResponse;
 
 // Register user with Tachyon and store tachyon token to be used by other
 // tachyon requests.
@@ -45,7 +44,7 @@ class TachyonRegistrar {
 
  private:
   void OnResponse(base::OnceCallback<void(bool)> success_cb,
-                  base::expected<std::string, TachyonRequestError> response);
+                  TachyonResponse response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
