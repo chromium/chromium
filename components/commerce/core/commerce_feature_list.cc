@@ -511,7 +511,7 @@ bool IsCouponDiscountPartnerMerchant(const GURL& url) {
 bool IsCartDiscountFeatureEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       ntp_features::kNtpChromeCartModule,
-      ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, true);
+      ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, false);
 }
 
 bool IsCouponWithCodeEnabled() {
