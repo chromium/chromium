@@ -13,6 +13,7 @@
 #include "ash/picker/picker_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -214,6 +215,13 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
     return fake_drivefs_helper_->fake_drivefs();
   }
 
+  // Creates a user and profile for a given `email`. Note that this class will
+  // keep the ownership of the created object.
+  TestingProfile* CreateMultiUserProfile(const std::string& email) {
+    LogIn(email);
+    return CreateProfile(email);
+  }
+
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, GetTestingFactories(), /*is_main_profile=*/false,
@@ -249,8 +257,7 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
 
   void LogIn(const std::string& email) override {
     // DriveFS needs the account to have an ID.
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(email, "test gaia");
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, email);
     user_manager()->AddUser(account_id);
     ash_test_helper()->test_session_controller_client()->AddUserSession(email);
     user_manager()->UserLoggedIn(
@@ -258,6 +265,11 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
         /*browser_restart=*/false,
         /*is_child=*/false);
+  }
+
+  void SwitchActiveUser(const std::string& email) override {
+    user_manager()->SwitchActiveUser(
+        AccountId::FromUserEmailGaiaId(email, email));
   }
 
  private:
@@ -591,6 +603,37 @@ TEST_F(PickerClientImplTest,
               ElementsAre(VariantWith<ash::PickerBrowsingHistoryResult>(
                   Field("url", &ash::PickerBrowsingHistoryResult::url,
                         GURL("https://mail.google.com")))));
+}
+
+TEST_F(PickerClientImplTest,
+       SearchAfterSwitchingActiveUserReturnsResultsFromNewUser) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
+  AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
+  AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
+  client.StartCrosSearch(u"foo", /*category=*/std::nullopt, base::DoNothing());
+  SwitchActiveUser("secondary@test");
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> result_future;
+  client.StartCrosSearch(
+      u"foo", /*category=*/std::nullopt,
+      base::BindLambdaForTesting(
+          [&result_future](ash::AppListSearchResultType result_type,
+                           std::vector<ash::PickerSearchResult> results) {
+            if (result_type == ash::AppListSearchResultType::kOmnibox) {
+              result_future.SetValue(std::move(results));
+            }
+          }));
+
+  const auto& results = result_future.Get();
+  ASSERT_THAT(results, Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
+                           Field("url", &ash::PickerBrowsingHistoryResult::url,
+                                 GURL("https://foo.com/secondary")))));
+  ASSERT_THAT(results,
+              Not(Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
+                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+                        GURL("https://foo.com/primary"))))));
 }
 
 class PickerClientImplEditorTest : public PickerClientImplTest {

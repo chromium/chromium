@@ -220,6 +220,10 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
       break;
     }
   }
+
+  if (active_user_ != nullptr) {
+    NotifyActiveUserChanged(active_user_);
+  }
 }
 
 void FakeUserManager::SaveUserDisplayName(const AccountId& account_id,
