@@ -91,8 +91,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
-  AtomicString matchedSourceType() const;
-  AtomicString finalSourceType() const;
+  AtomicString workerMatchedSourceType() const;
+  AtomicString workerFinalSourceType() const;
 
   void Trace(Visitor*) const override;
 

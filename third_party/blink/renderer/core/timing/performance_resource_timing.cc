@@ -200,7 +200,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
       info_->allow_negative_values, CrossOriginIsolatedCapability());
 }
 
-AtomicString PerformanceResourceTiming::matchedSourceType() const {
+AtomicString PerformanceResourceTiming::workerMatchedSourceType() const {
   if (!info_->service_worker_router_info ||
       !info_->service_worker_router_info->matched_source_type) {
     return AtomicString();
@@ -210,7 +210,7 @@ AtomicString PerformanceResourceTiming::matchedSourceType() const {
       *info_->service_worker_router_info->matched_source_type));
 }
 
-AtomicString PerformanceResourceTiming::finalSourceType() const {
+AtomicString PerformanceResourceTiming::workerFinalSourceType() const {
   if (!info_->service_worker_router_info ||
       !info_->service_worker_router_info->actual_source_type) {
     return AtomicString();
@@ -472,8 +472,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("workerRouterEvaluationStart",
                       workerRouterEvaluationStart());
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
-    builder.AddString("matchedSourceType", matchedSourceType());
-    builder.AddString("finalSourceType", finalSourceType());
+    builder.AddString("matchedSourceType", workerMatchedSourceType());
+    builder.AddString("finalSourceType", workerFinalSourceType());
   }
   builder.AddNumber("redirectStart", redirectStart());
   builder.AddNumber("redirectEnd", redirectEnd());
