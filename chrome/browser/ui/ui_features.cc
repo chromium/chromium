@@ -383,18 +383,6 @@ bool IsToolbarPinningEnabled() {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Enables alternate update-related text to be displayed in browser app menu
-// button, menu item and confirmation dialog.
-BASE_FEATURE(kUpdateTextOptions,
-             "UpdateTextOptions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Used to present different flavors of update strings in browser app menu
-// button.
-const base::FeatureParam<int> kUpdateTextOptionNumber{
-    &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
-#endif
-
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a "Work" or "School" label will
 // be used in the toolbar, and a building icon will be used  as a badge in the

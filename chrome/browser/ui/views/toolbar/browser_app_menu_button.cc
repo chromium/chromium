@@ -197,17 +197,15 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
     int message_id = IDS_APP_MENU_BUTTON_UPDATE;
-    if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
-      // Select an update text option randomly. Show this text in all browser
-      // windows.
-      static const int update_text_option = base::RandInt(1, 3);
-      if (update_text_option == 1) {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
-      } else if (update_text_option == 2) {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
-      } else {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
-      }
+    // Select an update text option randomly. Show this text in all browser
+    // windows.
+    static const int update_text_option = base::RandInt(1, 3);
+    if (update_text_option == 1) {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
+    } else if (update_text_option == 2) {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
+    } else {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
     }
     text = l10n_util::GetStringUTF16(message_id);
 #else

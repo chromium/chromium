@@ -224,11 +224,10 @@ std::u16string GetUpgradeDialogTitleText() {
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
     return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
-  }
-#endif
+#else
   return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+#endif
 }
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
