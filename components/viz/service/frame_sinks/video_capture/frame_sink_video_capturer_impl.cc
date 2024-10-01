@@ -1107,7 +1107,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   if (capture_texture_results) {
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
-    auto& mailbox_holder = frame_capture.frame->mailbox_holder(0);
+    auto mailbox_holder = frame_capture.frame->mailbox_holder(0);
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.

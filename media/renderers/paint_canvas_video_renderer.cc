@@ -133,7 +133,7 @@ class ScopedSharedImageAccess {
   GLuint texture;
 };
 
-const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
+const gpu::MailboxHolder GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
   DCHECK(video_frame->HasTextures());
 
   DCHECK(PIXEL_FORMAT_ARGB == video_frame->format() ||
@@ -156,7 +156,7 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_BGRA == video_frame->format())
       << "Format: " << VideoPixelFormatToString(video_frame->format());
 
-  const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(0);
+  const gpu::MailboxHolder mailbox_holder = video_frame->mailbox_holder(0);
   return mailbox_holder;
 }
 
@@ -1506,7 +1506,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     DCHECK_EQ(video_frame->shared_image_format_type(),
               SharedImageFormatType::kSharedImageFormatExternalSampler);
-    const gpu::MailboxHolder& mailbox_holder =
+    const gpu::MailboxHolder mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
     DCHECK(mailbox_holder.texture_target == GL_TEXTURE_2D ||
            mailbox_holder.texture_target == GL_TEXTURE_RECTANGLE_ARB ||
@@ -1846,7 +1846,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
     if (allow_wrap_texture && can_wrap_texture) {
       cache_.emplace(video_frame->unique_id());
-      const gpu::MailboxHolder& holder =
+      const gpu::MailboxHolder holder =
           GetVideoFrameMailboxHolder(video_frame.get());
       mailbox = holder.mailbox;
       ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
@@ -1897,7 +1897,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
       // Copy into the texture backing of the cached copy. This supports
       // multiplanar shared images.
-      const gpu::MailboxHolder& frame_mailbox_holder =
+      const gpu::MailboxHolder frame_mailbox_holder =
           GetVideoFrameMailboxHolder(video_frame.get());
       ri->WaitSyncTokenCHROMIUM(frame_mailbox_holder.sync_token.GetConstData());
       ri->CopySharedImage(
@@ -1991,7 +1991,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
 
   // If we have single source shared image, just use CopySharedImage().
   if (video_frame->HasTextures()) {
-    const auto& source = video_frame->mailbox_holder(0);
+    const auto source = video_frame->mailbox_holder(0);
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
     ri->WaitSyncTokenCHROMIUM(source.sync_token.GetConstData());

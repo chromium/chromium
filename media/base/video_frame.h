@@ -714,7 +714,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns a mailbox holder for a given texture.
   // Only valid to call if this is a NATIVE_TEXTURE frame. Before using the
   // mailbox, the caller must wait for the included sync point.
-  const gpu::MailboxHolder& mailbox_holder(size_t texture_index) const;
+  const gpu::MailboxHolder mailbox_holder(size_t texture_index) const;
 
   // Returns the ClientSharedImage.
   // Only valid to call if this is a NATIVE_TEXTURE frame and contains valid
@@ -963,8 +963,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // VideoFrame.
   const uint8_t* data_[kMaxPlanes];
 
-  // Native texture mailbox, if this is a IsTexture() frame.
-  gpu::MailboxHolder mailbox_holder_;
+  // Native texture mailbox, if this frame HasTextures().
+  gpu::Mailbox mailbox_;
+  gpu::SyncToken texture_sync_token_;
+  uint32_t texture_target_ = 0;
   ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is

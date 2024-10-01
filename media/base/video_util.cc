@@ -121,7 +121,7 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
 
   // With multiplanar shared images, there's one shared image mailbox so perform
   // readback passing the appropriate `src_plane` for the single mailbox.
-  const gpu::MailboxHolder& holder = src_frame.mailbox_holder(0);
+  const gpu::MailboxHolder holder = src_frame.mailbox_holder(0);
   DCHECK(!holder.mailbox.IsZero());
   ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
   bool result =

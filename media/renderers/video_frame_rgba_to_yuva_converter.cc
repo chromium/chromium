@@ -55,7 +55,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
 
   ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
 
-  const auto& dst_mailbox_holder =
+  const auto dst_mailbox_holder =
       dst_video_frame->mailbox_holder(/*texture_index=*/0);
   ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
 

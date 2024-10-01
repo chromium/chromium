@@ -155,7 +155,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   // and the source video frame texture can't be used on the output GL context.
   // https://crbug.com/582170
   void CopyHardwarePlane(VideoFrame* video_frame,
-                         const gpu::MailboxHolder& mailbox_holder,
                          VideoFrameExternalResource* external_resources);
 
   // Get resource ready to be appended into DrawQuad. This is used for GPU

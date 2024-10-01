@@ -468,12 +468,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
     return nullptr;
   }
 
-  // `mailbox` is not backed by a GPU texture, so using a texture target of 0
-  // is fine.
-  constexpr uint32_t kTextureTarget = 0;
-
-  frame->mailbox_holder_ =
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(), kTextureTarget);
+  frame->mailbox_ = mailbox;
   frame->mailbox_holder_and_gmb_release_cb_ =
       WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
 
@@ -501,8 +496,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   }
 
   if (shared_image) {
-    frame->mailbox_holder_ = gpu::MailboxHolder(
-        shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
+    frame->mailbox_ = shared_image->mailbox();
+    frame->texture_sync_token_ = sync_token;
+    frame->texture_target_ = shared_image->GetTextureTarget();
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   frame->mailbox_holder_and_gmb_release_cb_ =
@@ -530,8 +526,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   if (!frame) {
     return nullptr;
   }
-  frame->mailbox_holder_ = gpu::MailboxHolder(
-      shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
+  frame->mailbox_ = shared_image->mailbox();
+  frame->texture_sync_token_ = sync_token;
+  frame->texture_target_ = shared_image->GetTextureTarget();
 
   // Note that we can not use |shared_image|->MakeUnOwned() here since that
   // will not work for MappableSI due to it owning a GMB internally and we can
@@ -770,8 +767,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   }
 
   if (shared_image) {
-    frame->mailbox_holder_ = gpu::MailboxHolder(
-        shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
+    frame->mailbox_ = shared_image->mailbox();
+    frame->texture_sync_token_ = sync_token;
+    frame->texture_target_ = shared_image->GetTextureTarget();
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   return frame;
@@ -807,7 +805,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
     DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance.";
     return nullptr;
   }
-  frame->mailbox_holder_ = gpu::MailboxHolder();
+
   frame->mailbox_holder_and_gmb_release_cb_ =
       ReleaseMailboxAndGpuMemoryBufferCB();
   frame->dmabuf_fds_ = std::move(dmabuf_fds);
@@ -1270,8 +1268,7 @@ bool VideoFrame::IsMappable() const {
 }
 
 bool VideoFrame::HasTextures() const {
-  return wrapped_frame_ ? wrapped_frame_->HasTextures()
-                        : !mailbox_holder_.mailbox.IsZero();
+  return wrapped_frame_ ? wrapped_frame_->HasTextures() : !mailbox_.IsZero();
 }
 
 bool VideoFrame::HasSharedImage() const {
@@ -1490,11 +1487,17 @@ uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
 }
 
 // TODO(crbug.com/332564976): Update method to not take in param.
-const gpu::MailboxHolder& VideoFrame::mailbox_holder(
+const gpu::MailboxHolder VideoFrame::mailbox_holder(
     size_t texture_index) const {
   DCHECK(HasTextures());
-  return wrapped_frame_ ? wrapped_frame_->mailbox_holder(texture_index)
-                        : mailbox_holder_;
+  if (wrapped_frame_) {
+    return wrapped_frame_->mailbox_holder(texture_index);
+  }
+  if (shared_image_) {
+    return gpu::MailboxHolder(shared_image_->mailbox(), texture_sync_token_,
+                              shared_image_->GetTextureTarget());
+  }
+  return gpu::MailboxHolder(mailbox_, texture_sync_token_, texture_target_);
 }
 
 scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image() const {
@@ -1584,7 +1587,7 @@ gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
   DCHECK(!wrapped_frame_);
 
   // No lock is required due to the HasOneRef() check.
-  auto& token = mailbox_holder_.sync_token;
+  auto& token = texture_sync_token_;
   if (token.HasData())
     client->WaitSyncToken(token);
   client->GenerateSyncToken(&token);
@@ -1625,7 +1628,6 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
   DCHECK(visible_rect_ == visible_rect)
       << "visible_rect " << visible_rect.ToString() << " exceeds coded_size "
       << coded_size().ToString();
-  memset(&mailbox_holder_, 0, sizeof(mailbox_holder_));
   memset(&data_, 0, sizeof(data_));
 }
 

@@ -978,9 +978,9 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
 
 void VideoResourceUpdater::CopyHardwarePlane(
     VideoFrame* video_frame,
-    const gpu::MailboxHolder& mailbox_holder,
     VideoFrameExternalResource* external_resource) {
   const gfx::Size output_plane_resource_size = video_frame->coded_size();
+  auto mailbox_holder = video_frame->mailbox_holder(0);
   // The copy needs to be a direct transfer of pixel data, so we use an RGBA8
   // target to avoid loss of precision or dropping any alpha component.
   constexpr viz::SharedImageFormat copy_si_format =
@@ -1063,13 +1063,13 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
   CopyingSyncTokenClient client;
   auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
 
-  const gpu::MailboxHolder& mailbox_holder =
+  const gpu::MailboxHolder mailbox_holder =
       video_frame->mailbox_holder(/*texture_index=*/0);
   if (mailbox_holder.mailbox.IsZero()) {
     return external_resource;
   }
   if (copy_required) {
-    CopyHardwarePlane(video_frame.get(), mailbox_holder, &external_resource);
+    CopyHardwarePlane(video_frame.get(), &external_resource);
     return external_resource;
   }
 

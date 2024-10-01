@@ -245,13 +245,13 @@ void CopyToGpuMemoryBuffer(
       std::move(callback).Run();
     };
 
-    const auto& mailbox = dst_frame->mailbox_holder(0).mailbox;
+    const auto mailbox = dst_frame->mailbox_holder(0).mailbox;
     sii->CopyToGpuMemoryBufferAsync(
         blit_done_sync_token, mailbox,
         base::BindOnce(std::move(copy_to_gmb_done_lambda),
                        std::move(callback)));
   } else {
-    const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
+    const auto mailbox = dst_frame->mailbox_holder(/*texture_index=*/0).mailbox;
     sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
   }
 
