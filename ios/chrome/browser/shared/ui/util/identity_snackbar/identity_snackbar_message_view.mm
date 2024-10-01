@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -141,10 +142,15 @@ const CGFloat kTextOffset = 2.;
     [self addSubview:_avatarView];
 
     // Text views.
+    NSString* name = snackbarMessage.name;
+    NSString* signedInText =
+        (name)
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                  base::SysNSStringToUTF16(name))
+            : l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE);
     _signedInAsView = CreateSingleLineLabel(
-        l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                                base::SysNSStringToUTF16(snackbarMessage.name)),
-        UIFontTextStyleSubheadline, kInvertedTextPrimaryColor);
+        signedInText, UIFontTextStyleSubheadline, kInvertedTextPrimaryColor);
 
     _emailView = CreateSingleLineLabel(
         GetEmailLabelText(snackbarMessage.email, snackbarMessage.managed),
