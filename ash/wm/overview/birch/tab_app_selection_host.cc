@@ -6,11 +6,14 @@
 
 #include "ash/birch/birch_coral_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/window_properties.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -52,6 +55,15 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
   }
   views::AsViewClass<TabAppSelectionView>(GetContentsView())
       ->ProcessKeyEvent(event);
+}
+
+void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
+  views::Widget::OnNativeWidgetVisibilityChanged(visible);
+  views::AsViewClass<IconButton>(owner_->addon_view())
+      ->SetImageModel(
+          BirchChipButtonBase::ButtonState::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(visible ? vector_icons::kCaretDownIcon
+                                                 : vector_icons::kCaretUpIcon));
 }
 
 gfx::Rect TabAppSelectionHost::GetDesiredBoundsInScreen() {

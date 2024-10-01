@@ -19,6 +19,9 @@ class TabAppSelectionHost : public views::Widget {
 
   void ProcessKeyEvent(ui::KeyEvent* event);
 
+  // views::Widget:
+  void OnNativeWidgetVisibilityChanged(bool visible) override;
+
   const BirchChipButton* owner_for_testing() const { return owner_; }
 
  private:

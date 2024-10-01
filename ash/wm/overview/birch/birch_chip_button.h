@@ -38,6 +38,9 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   BirchChipButton& operator=(const BirchChipButton&) = delete;
   ~BirchChipButton() override;
 
+  views::View* addon_view() { return addon_view_; }
+  const views::View* addon_view() const { return addon_view_; }
+
   TabAppSelectionHost* tab_app_selection_widget() {
     return tab_app_selection_widget_.get();
   }
@@ -51,12 +54,11 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  const views::View* addon_view_for_testing() const { return addon_view_; }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
   class ChipMenuController;
+  friend class TabAppSelectionHost;
   friend class TabAppSelectionViewTest;
 
   void SetAddon(std::unique_ptr<views::View> addon_view);

@@ -81,7 +81,7 @@ class TabAppSelectionViewTest : public AshTestBase {
     auto* coral_button = views::AsViewClass<BirchChipButton>(birch_chips[0]);
     CHECK_EQ(BirchItemType::kCoral, coral_button->GetItem()->GetType());
 
-    LeftClickOn(coral_button->addon_view_for_testing());
+    LeftClickOn(coral_button->addon_view());
     return coral_button->tab_app_selection_widget_.get();
   }
 
@@ -98,10 +98,10 @@ TEST_F(TabAppSelectionViewTest, ToggleMenu) {
   ASSERT_TRUE(menu);
   EXPECT_TRUE(menu->IsVisible());
 
-  LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
+  LeftClickOn(menu->owner_for_testing()->addon_view());
   EXPECT_FALSE(menu->IsVisible());
 
-  LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
+  LeftClickOn(menu->owner_for_testing()->addon_view());
   EXPECT_TRUE(menu->IsVisible());
 }
 

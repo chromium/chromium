@@ -16,6 +16,7 @@
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -205,17 +206,23 @@ void BirchChipButton::Init(BirchItem* item) {
   const auto addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.
   switch (addon_type) {
-    case BirchAddonType::kButton:
-    case BirchAddonType::kCoralButton: {
-      // Coral item works different since it triggers a new overview view.
-      const bool is_coral = addon_type == BirchAddonType::kCoralButton;
-      base::RepeatingClosure callback =
-          is_coral ? base::BindRepeating(&BirchChipButton::OnCoralAddonClicked,
-                                         base::Unretained(this))
-                   : base::BindRepeating(&BirchItem::PerformAddonAction,
-                                         base::Unretained(item_));
+    case BirchAddonType::kButton: {
+      base::RepeatingClosure callback = base::BindRepeating(
+          &BirchItem::PerformAddonAction, base::Unretained(item_));
       auto button = birch_bar_util::CreateAddonButton(std::move(callback),
                                                       *item_->addon_label());
+      button->SetTooltipText(item->GetAddonAccessibleName());
+      SetAddon(std::move(button));
+      break;
+    }
+    case BirchAddonType::kCoralButton: {
+      // Coral item works different since it triggers a new overview view.
+      base::RepeatingClosure callback = base::BindRepeating(
+          &BirchChipButton::OnCoralAddonClicked, base::Unretained(this));
+      // Coral chip's addon button contains no text.
+      auto button = birch_bar_util::CreateCoralAddonButton(
+          std::move(callback), vector_icons::kCaretUpIcon,
+          item->GetAddonAccessibleName());
       button->SetTooltipText(item->GetAddonAccessibleName());
       SetAddon(std::move(button));
       break;
