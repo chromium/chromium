@@ -66,12 +66,12 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
        !helper->IsFindUIActive());
   NSString* tab_title = tab_util::GetTabTitle(web_state);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(browser_state);
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   BOOL can_send_tab_to_self =
       account_manager_service &&
       send_tab_to_self_service &&

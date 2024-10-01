@@ -26,8 +26,8 @@
 class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
  protected:
   RequestDesktopOrMobileSiteActivityTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
@@ -57,7 +57,7 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
 
   id mocked_handler_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebNavigationBrowserAgent> agent_;
   // Navigation manager for the web state at index 0 in `browser_`'s web state

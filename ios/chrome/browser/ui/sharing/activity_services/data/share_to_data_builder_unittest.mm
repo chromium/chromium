@@ -35,7 +35,7 @@ const char16_t kExpectedTitle[] = u"title";
 class ShareToDataBuilderTest : public PlatformTest {
  public:
   ShareToDataBuilderTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(GURL(kExpectedUrl), ui::PAGE_TRANSITION_TYPED);
@@ -45,7 +45,7 @@ class ShareToDataBuilderTest : public PlatformTest {
 
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetNavigationManager(std::move(navigation_manager));
-    web_state_->SetBrowserState(chrome_browser_state_.get());
+    web_state_->SetBrowserState(profile_.get());
     web_state_->SetVisibleURL(GURL(kExpectedUrl));
 
     // Attach SnapshotTabHelper to allow snapshot generation.
@@ -71,7 +71,7 @@ class ShareToDataBuilderTest : public PlatformTest {
  private:
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 
