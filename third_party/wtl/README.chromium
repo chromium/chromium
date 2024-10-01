@@ -1,7 +1,7 @@
 Name: Windows Template Library (WTL)
 URL: https://sourceforge.net/projects/wtl/files/WTL%2010/
 Version: 10.0.9163
-Commit: commit 57a7c4e2629cb85c6f27faa91650e047c4220e15
+Revision: 57a7c4e2629cb85c6f27faa91650e047c4220e15
 License: Microsoft Permissive License
 License File: Ms-PL.txt
 Security Critical: yes
