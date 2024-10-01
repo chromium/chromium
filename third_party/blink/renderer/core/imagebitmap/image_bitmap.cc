@@ -74,25 +74,55 @@ constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
 
 namespace {
 
+gfx::Size ParseDstSize(const ImageBitmapOptions* options,
+                       const gfx::Rect& src_rect) {
+  int resize_width = 0;
+  int resize_height = 0;
+  if (!options->hasResizeWidth() && !options->hasResizeHeight()) {
+    resize_width = src_rect.width();
+    resize_height = src_rect.height();
+  } else if (options->hasResizeWidth() && options->hasResizeHeight()) {
+    resize_width = options->resizeWidth();
+    resize_height = options->resizeHeight();
+  } else if (options->hasResizeWidth() && !options->hasResizeHeight()) {
+    resize_width = options->resizeWidth();
+    resize_height =
+        ClampTo<unsigned>(ceil(static_cast<float>(options->resizeWidth()) /
+                               src_rect.width() * src_rect.height()));
+  } else {
+    resize_height = options->resizeHeight();
+    resize_width =
+        ClampTo<unsigned>(ceil(static_cast<float>(options->resizeHeight()) /
+                               src_rect.height() * src_rect.width()));
+  }
+  return gfx::Size(resize_width, resize_height);
+}
+
 ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
                                         std::optional<gfx::Rect> crop_rect,
-                                        gfx::Size source_size) {
+                                        gfx::Size source_size,
+                                        ImageOrientation source_orientation,
+                                        bool source_is_unpremul) {
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == kImageOrientationFlipY) {
     parsed_options.flip_y = true;
     parsed_options.orientation_from_image = true;
+    parsed_options.source_orientation = source_orientation;
   } else {
     DCHECK(options->imageOrientation() == kImageOrientationFromImage ||
            options->imageOrientation() == kImageBitmapOptionNone);
     parsed_options.flip_y = false;
     parsed_options.orientation_from_image = true;
-
+    parsed_options.source_orientation = source_orientation;
     if (base::FeatureList::IsEnabled(
             features::kCreateImageBitmapOrientationNone) &&
         options->imageOrientation() == kImageBitmapOptionNone) {
       parsed_options.orientation_from_image = false;
+      parsed_options.source_orientation = ImageOrientation();
     }
   }
+
+  parsed_options.source_is_unpremul = source_is_unpremul;
   if (options->premultiplyAlpha() == kImageBitmapOptionNone) {
     parsed_options.premultiply_alpha = false;
   } else {
@@ -110,30 +140,28 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
         << IDLEnumAsString(options->colorSpaceConversion());
   }
 
-  int source_width = source_size.width();
-  int source_height = source_size.height();
+  parsed_options.source_size =
+      parsed_options.source_orientation.UsesWidthAsHeight()
+          ? gfx::TransposeSize(source_size)
+          : source_size;
   if (!crop_rect) {
-    parsed_options.crop_rect = gfx::Rect(0, 0, source_width, source_height);
+    // TODO(crbug.com/40773069): This should use `parsed_options.source_size`,
+    // because it should be in the same (post-orientation) space. The are
+    // other bugs that depend on this bug, so keep this present, adding
+    // `source_rect` as the future replacement.
+    parsed_options.crop_rect = gfx::Rect(source_size);
+    parsed_options.source_rect = gfx::Rect(parsed_options.source_size);
   } else {
     parsed_options.crop_rect = *crop_rect;
+    parsed_options.source_rect = *crop_rect;
   }
-  if (!options->hasResizeWidth() && !options->hasResizeHeight()) {
-    parsed_options.resize_width = parsed_options.crop_rect.width();
-    parsed_options.resize_height = parsed_options.crop_rect.height();
-  } else if (options->hasResizeWidth() && options->hasResizeHeight()) {
-    parsed_options.resize_width = options->resizeWidth();
-    parsed_options.resize_height = options->resizeHeight();
-  } else if (options->hasResizeWidth() && !options->hasResizeHeight()) {
-    parsed_options.resize_width = options->resizeWidth();
-    parsed_options.resize_height = ClampTo<unsigned>(ceil(
-        static_cast<float>(options->resizeWidth()) /
-        parsed_options.crop_rect.width() * parsed_options.crop_rect.height()));
-  } else {
-    parsed_options.resize_height = options->resizeHeight();
-    parsed_options.resize_width = ClampTo<unsigned>(ceil(
-        static_cast<float>(options->resizeHeight()) /
-        parsed_options.crop_rect.height() * parsed_options.crop_rect.width()));
-  }
+  // TODO(crbug.com/40773069): The above error propagates into `resize_width`
+  // and `resize_height`. Add `dest_size` as the future replacement.
+  gfx::Size resize = ParseDstSize(options, parsed_options.crop_rect);
+  parsed_options.resize_width = resize.width();
+  parsed_options.resize_height = resize.height();
+  parsed_options.dest_size = ParseDstSize(options, parsed_options.source_rect);
+
   if (static_cast<int>(parsed_options.resize_width) ==
           parsed_options.crop_rect.width() &&
       static_cast<int>(parsed_options.resize_height) ==
@@ -152,6 +180,27 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
   else
     parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kLow;
   return parsed_options;
+}
+
+ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
+                                        std::optional<gfx::Rect> crop_rect,
+                                        scoped_refptr<Image> input) {
+  const auto info = input->PaintImageForCurrentFrame().GetSkImageInfo();
+  return ParseOptions(options, crop_rect,
+                      gfx::Size(info.width(), info.height()),
+                      input->CurrentFrameOrientation(),
+                      info.alphaType() == kUnpremul_SkAlphaType);
+}
+
+ImageBitmap::ParsedOptions ParseOptions(
+    const ImageBitmapOptions* options,
+    std::optional<gfx::Rect> crop_rect,
+    scoped_refptr<StaticBitmapImage> input) {
+  auto info = input->GetSkImageInfo();
+  return ParseOptions(options, crop_rect,
+                      gfx::Size(info.width(), info.height()),
+                      input->CurrentFrameOrientation(),
+                      info.alphaType() == kUnpremul_SkAlphaType);
 }
 
 // The function dstBufferSizeHasOverflow() is being called at the beginning of
@@ -361,7 +410,7 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
 
 scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
-    ImageBitmap::ParsedOptions& options) {
+    const ImageBitmap::ParsedOptions& options) {
   SkImageInfo src_image_info =
       image->PaintImageForCurrentFrame().GetSkImageInfo();
   if (src_image_info.isEmpty())
@@ -385,7 +434,7 @@ scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
 
 scoped_refptr<StaticBitmapImage> BakeOrientation(
     scoped_refptr<StaticBitmapImage> input,
-    ImageBitmap::ParsedOptions& options,
+    const ImageBitmap::ParsedOptions& options,
     gfx::Rect src_rect) {
   SkImageInfo info = GetSkImageInfo(input);
   if (info.isEmpty()) {
@@ -453,7 +502,7 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
 
 static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
-    ImageBitmap::ParsedOptions& parsed_options) {
+    const ImageBitmap::ParsedOptions& parsed_options) {
   DCHECK(image);
   DCHECK(!image->HasData());
 
@@ -564,11 +613,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
   scoped_refptr<Image> input = cached ? cached->GetImage() : Image::NullImage();
   DCHECK(!input->IsTextureBacked());
 
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, image->BitmapSourceSize());
-  parsed_options.source_is_unpremul =
-      (input->PaintImageForCurrentFrame().GetAlphaType() ==
-       kUnpremul_SkAlphaType);
+  ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -638,22 +683,22 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, video->BitmapSourceSize());
-  if (DstBufferSizeHasOverflow(parsed_options))
-    return;
-
   // TODO(crbug.com/1181329): ImageBitmap resize test case failed when
   // quality equals to "low" and "medium". Need further investigate to
   // enable gpu backed imageBitmap with resize options.
   const bool allow_accelerated_images =
       !options->hasResizeWidth() && !options->hasResizeHeight();
+  const bool reinterpret_as_srgb =
+      (options->colorSpaceConversion() == kImageBitmapOptionNone);
   auto input = video->CreateStaticBitmapImage(
-      allow_accelerated_images,
-      /*size=*/std::nullopt,
-      /*reinterpret_as_srgb=*/!parsed_options.has_color_space_conversion);
+      allow_accelerated_images, /*size=*/std::nullopt, reinterpret_as_srgb);
   if (!input)
     return;
+
+  ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
+  if (DstBufferSizeHasOverflow(parsed_options)) {
+    return;
+  }
 
   image_ =
       CropImageAndApplyColorSpaceConversion(std::move(input), parsed_options);
@@ -677,8 +722,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
   scoped_refptr<StaticBitmapImage> input =
       static_cast<StaticBitmapImage*>(image_input.get());
 
-  ParsedOptions parsed_options = ParseOptions(
-      options, crop_rect, gfx::Size(input->width(), input->height()));
+  const ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -706,8 +750,7 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
   if (status != kNormalSourceImageStatus)
     return;
 
-  ParsedOptions parsed_options = ParseOptions(
-      options, crop_rect, gfx::Size(input->width(), input->height()));
+  const ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -736,10 +779,10 @@ ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
 ImageBitmap::ImageBitmap(ImageData* data,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, data->BitmapSourceSize());
-  // ImageData is always unpremul.
-  parsed_options.source_is_unpremul = true;
+  const ParsedOptions parsed_options =
+      ParseOptions(options, crop_rect, data->BitmapSourceSize(),
+                   ImageOrientationEnum::kOriginTopLeft,
+                   /*source_is_unpremul=*/true);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -822,11 +865,7 @@ ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
   scoped_refptr<StaticBitmapImage> input = bitmap->BitmapImage();
   if (!input)
     return;
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, input->Size());
-  parsed_options.source_is_unpremul =
-      (input->PaintImageForCurrentFrame().GetAlphaType() ==
-       kUnpremul_SkAlphaType);
+  const ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -843,11 +882,7 @@ ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   bool origin_clean = image->OriginClean();
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, image->Size());
-  parsed_options.source_is_unpremul =
-      (image->PaintImageForCurrentFrame().GetAlphaType() ==
-       kUnpremul_SkAlphaType);
+  const ParsedOptions parsed_options = ParseOptions(options, crop_rect, image);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -992,17 +1027,16 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     mojom::blink::PreferredColorScheme preferred_color_scheme,
     ExceptionState& exception_state,
     const ImageBitmapOptions* options) {
-  ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, image->BitmapSourceSize());
+  scoped_refptr<Image> input = image->CachedImage()->GetImage();
+  DCHECK(input->IsSVGImage());
+
+  const ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
     return EmptyPromise();
   }
-
-  scoped_refptr<Image> input = image->CachedImage()->GetImage();
-  DCHECK(input->IsSVGImage());
   gfx::Rect input_rect(input->Size());
 
   // In the case when |crop_rect| doesn't intersect the source image, we return
