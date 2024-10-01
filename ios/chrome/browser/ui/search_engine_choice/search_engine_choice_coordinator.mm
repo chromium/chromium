@@ -80,11 +80,10 @@
 
 - (void)start {
   [super start];
-  // Make sure we use the original browser state (non-incognito).
-  ChromeBrowserState* originalBrowserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  // Make sure we use the original profile (non-incognito).
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   if (!ShouldDisplaySearchEngineChoiceScreen(
-          *originalBrowserState, _firstRun,
+          *profile, _firstRun,
           /*app_started_via_external_intent=*/false)) {
     // If the search engine enterprise pocliy has been loaded, just before to
     // open the Search Engine Choice dialog, it should be skipped.
@@ -95,10 +94,9 @@
       [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
   _viewController.actionDelegate = self;
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(originalBrowserState);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForProfile(
-          originalBrowserState);
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
   _mediator = [[SearchEngineChoiceMediator alloc]
       initWithTemplateURLService:templateURLService
        searchEngineChoiceService:searchEngineChoiceService];
