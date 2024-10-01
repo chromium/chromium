@@ -195,13 +195,13 @@ void PinSetupScreen::ShowImpl() {
 
 void PinSetupScreen::HideImpl() {
   token_lifetime_timeout_.Stop();
-  ClearAuthData(*context());
 }
 
 void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
+    ClearAuthData(*context());
     token_lifetime_timeout_.Stop();
     exit_callback_.Run(Result::kDone);
     return;
@@ -209,6 +209,7 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionSkipButtonClickedOnStart ||
       action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
+    ClearAuthData(*context());
     token_lifetime_timeout_.Stop();
     exit_callback_.Run(Result::kUserSkip);
     return;
