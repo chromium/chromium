@@ -2122,7 +2122,26 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'^third_party/blink/renderer/modules/webcodecs/test_helpers\.cc',
             r'^third_party/blink/renderer/modules/websockets/websocket_channel_impl_test\.cc',
         ),
-    )
+    ),
+    BanRule(
+        pattern='BUILDFLAG(GOOGLE_CHROME_BRANDING)',
+        explanation=
+        ('Code gated by GOOGLE_CHROME_BRANDING is effectively untested. This '
+         'is typically wrong. Valid use cases are glue for private modules '
+         'shipped alongside Chrome, and installation-related logic.',
+        ),
+        treat_as_error=False,
+    ),
+    BanRule(
+        pattern='defined(OFFICIAL_BUILD)',
+        explanation=
+        ('Code gated by OFFICIAL_BUILD is effectively untested. This '
+         'is typically wrong. One valid use case is low-level code that '
+         'handles subtleties related to high-levels of optimizations that come '
+         'with OFFICIAL_BUILD.',
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
