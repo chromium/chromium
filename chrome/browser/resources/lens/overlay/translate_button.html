@@ -386,7 +386,8 @@
 </style>
 <div id="translateContainer">
   <cr-button id="translateEnableButton" class="button"
-  on-click="onTranslateButtonClick">
+    on-click="onTranslateButtonClick" aria-hidden="[[isTranslateModeEnabled]]"
+    tabindex$="[[getTabIndexForTranslateEntry(isTranslateModeEnabled)]]">
     <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
     </span>
     <span id="translateButtonLabel" class="button-label">
@@ -395,7 +396,9 @@
   </cr-button>
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
-        on-click="onSourceLanguageButtonClick">
+        on-click="onSourceLanguageButtonClick"
+        aria-hidden="[[!isTranslateModeEnabled]]"
+        tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
@@ -405,7 +408,9 @@
     </cr-button>
     <span id="arrowRightIcon"></span>
     <cr-button id="targetLanguageButton" class="button language-picker-button"
-        on-click="onTargetLanguageButtonClick">
+        on-click="onTargetLanguageButtonClick"
+        aria-hidden="[[!isTranslateModeEnabled]]"
+        tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
         [[getTargetLanguageDisplayName(targetLanguage)]]
       </span>
@@ -413,7 +418,9 @@
   </div>
   <div id="translateDisableButtonContainer">
     <cr-button id="translateDisableButton" class="button"
-    on-click="onTranslateButtonClick">
+      on-click="onTranslateButtonClick"
+      aria-hidden="[[!isTranslateModeEnabled]]"
+      tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
     </cr-button>
     <span id="translateDisableIcon" class="translate-icon"></span>
   </div>

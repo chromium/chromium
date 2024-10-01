@@ -395,6 +395,14 @@ export class TranslateButtonElement extends PolymerElement {
     return this.sourceLanguage === null;
   }
 
+  private getTabIndexForTranslateEntry(): number {
+    return this.isTranslateModeEnabled ? -1 : 0;
+  }
+
+  private getTabIndexForLanguagePicker(): number {
+    return this.isTranslateModeEnabled ? 0 : -1;
+  }
+
   private getAutoCheckedClass(
       sourceLanguage: chrome.languageSettingsPrivate.Language): string {
     return sourceLanguage === null ? 'selected' : '';
