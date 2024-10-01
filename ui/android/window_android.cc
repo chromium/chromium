@@ -277,6 +277,13 @@ ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
                                                            GetJavaObject()));
 }
 
+void WindowAndroid::SetModalDialogManagerForTesting(
+    base::android::ScopedJavaLocalRef<jobject> java_modal_dialog_manager) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ui::Java_WindowAndroid_setModalDialogManagerForTesting(
+      env, GetJavaObject(), java_modal_dialog_manager);
+}
+
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);

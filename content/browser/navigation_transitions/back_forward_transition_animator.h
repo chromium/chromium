@@ -13,6 +13,7 @@
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/events/back_gesture_event.h"
@@ -409,6 +410,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   int DipToPx(int dip) const;
 
+  void DeferDialogs();
+  void ResumeDialogs();
+
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
 
@@ -555,6 +559,14 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   IgnoringInputReason ignoring_input_reason_ =
       IgnoringInputReason::kNoOccurrence;
+
+  // Stores the token that identify the deferred dialogs. During the animated
+  // transition, the live page could show the user some permission prompts or
+  // alerts before unloaded. We suppress these dialogs during the transition.
+  // These dialogs will be re-presented if the swipe gesture does not unload the
+  // live page.
+  int deferred_dialog_token_ =
+      ui::ModalDialogManagerBridge::kInvalidDialogToken;
 
   base::WeakPtrFactory<BackForwardTransitionAnimator> weak_ptr_factory_{this};
 };
