@@ -381,10 +381,8 @@ BASE_FEATURE(kCampbellGlyph,
 // shortcut and feature tile.
 BASE_FEATURE(kCaptureModeEducation,
              "CaptureModeEducation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(hewer): Remove the unused paths after at least one milestone after
-// Capture Mode Education has been enabled by default.
 // Determines how we educate the user to the screen capture entry points.
 constexpr base::FeatureParam<CaptureModeEducationParam>::Option
     capture_mode_education_type_options[] = {
