@@ -193,6 +193,7 @@ class ChromeContentRendererClient
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
+  void SetupExtensionFeaturesBeforeBlinkInitialization() override;
   bool AllowScriptExtensionForServiceWorker(
       const url::Origin& script_origin) override;
   void WillInitializeServiceWorkerContextOnWorkerThread() override;

@@ -265,6 +265,7 @@ source_set("blink_headers") {
     "platform/websocket_handshake_throttle.h",
     "platform/websocket_handshake_throttle_provider.h",
     "web/blink.h",
+    "web/modules/ai/web_ai_features.h",
     "web/modules/autofill/web_form_element_observer.h",
     "web/modules/canvas/canvas_test_utils.h",
     "web/modules/credentialmanagement/throttle_helper.h",

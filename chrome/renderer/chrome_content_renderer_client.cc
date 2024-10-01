@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics_action.h"
@@ -146,6 +147,7 @@
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
@@ -1730,6 +1732,25 @@ void ChromeContentRendererClient::
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+void ChromeContentRendererClient::
+    SetupExtensionFeaturesBeforeBlinkInitialization() {
+  // TODO(crbug.com/350642260): the prompt API for extension OT is affecting
+  // ChromeOS. The logic may crashes `LoginApitest` on ChromeOS, so we skip the
+  // logic for it first. This needs to be investigated and fixed later.
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+  if (IsStandaloneContentExtensionProcess() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kEnableAIPromptAPIForExtension)) {
+    // Make blink prompt API accessible for mirroring from extensions. The
+    // prompt API might be reset after the mirroring is done.
+    // We need to do this in this special way from `ChromeContentRendererClient`
+    // because the `implied_by` property in the
+    // `runtime_enabled_features.json5` cannot be applied only for extension.
+    blink::WebRuntimeFeatures::EnableAIPromptAPI(true);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(

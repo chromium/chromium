@@ -61,6 +61,12 @@
     "channel": "dev",
     "command_line_switch": "extension-ai-data-collection"
   },
+  "aiAssistantOriginTrial": {
+    "channel": "trunk",
+    "extension_types": [
+      "extension"
+    ]
+  },
   "autofillPrivate": {
     "channel": "trunk",
     "extension_types": ["extension", "platform_app"],
