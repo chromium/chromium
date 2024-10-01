@@ -71,6 +71,12 @@ void ToastSpecification::Builder::ValidateSpecification() {
     CHECK(toast_specification_->has_close_button());
     CHECK(!toast_specification_->menu_model());
   }
+
+  // Toasts with a menu can't have a close button. If this behavior is needed,
+  // discuss with UX how to design this in a way that supports both.
+  if (toast_specification_->menu_model()) {
+    CHECK(!toast_specification_->has_close_button());
+  }
 }
 
 ToastSpecification::ToastSpecification(
