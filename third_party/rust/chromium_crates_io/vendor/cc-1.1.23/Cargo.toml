@@ -10,7 +10,7 @@
 
 [package]
 name = "cc"
-version = "1.1.20"
+version = "1.1.23"
 
 [features]
 "jobserver" = []

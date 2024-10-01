@@ -75,7 +75,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cc"
-version = "1.1.20"
+version = "1.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "shlex",
