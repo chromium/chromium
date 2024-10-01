@@ -69,7 +69,7 @@ class MODULES_EXPORT EncoderBase
 
   void close(ExceptionState&);
 
-  String state() { return state_; }
+  V8CodecState state() { return state_; }
 
   // EventTarget override.
   ExecutionContext* GetExecutionContext() const override;
