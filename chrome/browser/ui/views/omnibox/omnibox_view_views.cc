@@ -317,20 +317,18 @@ void OmniboxViewViews::InstallPlaceholderText() {
   // has placeholder text. Use that instead of the DSE placeholder text.
   if (!model()->keyword_placeholder().empty()) {
     SetPlaceholderText(model()->keyword_placeholder());
-    return;
-  }
-
-  // Otherwise, if a DSE is set, use the DSE placeholder text.
-  const TemplateURL* const default_provider = controller()
-                                                  ->client()
-                                                  ->GetTemplateURLService()
-                                                  ->GetDefaultSearchProvider();
-  if (default_provider) {
+  } else if (const auto* default_provider = controller()
+                                                ->client()
+                                                ->GetTemplateURLService()
+                                                ->GetDefaultSearchProvider()) {
+    // Otherwise, if a DSE is set, use the DSE placeholder text.
     SetPlaceholderText(l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
   } else {
     SetPlaceholderText(std::u16string());
   }
+
+  UpdatePlaceholderTextColor();
 }
 
 bool OmniboxViewViews::GetSelectionAtEnd() const {
@@ -630,8 +628,7 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  set_placeholder_text_color(
-      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
+  UpdatePlaceholderTextColor();
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
   SetSelectionTextColor(
@@ -2002,6 +1999,18 @@ void OmniboxViewViews::OnPopupOpened() {
   // crbug.com/332769403 for examples.
   BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(this);
 #endif
+}
+
+void OmniboxViewViews::UpdatePlaceholderTextColor() {
+  // Keyword placeholders are dim to differentiate from user input. DSE
+  // placeholders are not dim to draw attention to the omnibox and because the
+  // omnibox is unfocused so there's less risk of confusion with user input.
+  // Null in tests.
+  if (!GetColorProvider())
+    return;
+  set_placeholder_text_color(GetColorProvider()->GetColor(
+      model()->keyword_placeholder().empty() ? kColorOmniboxText
+                                             : kColorOmniboxTextDimmed));
 }
 
 BEGIN_METADATA(OmniboxViewViews)
