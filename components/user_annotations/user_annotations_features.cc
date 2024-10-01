@@ -33,12 +33,6 @@ std::vector<std::string> GetAllowedHostsForFormsAnnotations() {
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-bool ShouldReplaceAnnotationsAfterEachSubmission() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kUserAnnotations, "should_replace_annotations_for_form_submissions",
-      false);
-}
-
 bool ShouldPersistUserAnnotations() {
   return base::GetFieldTrialParamByFeatureAsBool(kUserAnnotations,
                                                  "persist_annotations", false);

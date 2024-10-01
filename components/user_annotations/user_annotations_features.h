@@ -27,9 +27,6 @@ bool IsUserAnnotationsObserveFormSubmissionsEnabled();
 // Returns the set of hosts that are allowed for forms annotations.
 std::vector<std::string> GetAllowedHostsForFormsAnnotations();
 
-// Whether the user annotations should be replaced after each form submission.
-bool ShouldReplaceAnnotationsAfterEachSubmission();
-
 // Whether the user annotations should be persisted in database.
 bool ShouldPersistUserAnnotations();
 

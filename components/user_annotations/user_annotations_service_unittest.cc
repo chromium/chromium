@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -61,6 +62,9 @@ class UserAnnotationsServiceTest : public testing::Test,
         /*is_sync_for_unittests=*/true);
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
+    logs_service_ = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(
+        /*pref_service=*/nullptr);
     service_ = std::make_unique<UserAnnotationsService>(
         &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
         optimization_guide_decider_.get());
@@ -113,10 +117,22 @@ class UserAnnotationsServiceTest : public testing::Test,
     return optimization_guide_decider_.get();
   }
 
+  optimization_guide::TestModelQualityLogsUploaderService* logs_service() {
+    return logs_service_.get();
+  }
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> CreateLogEntry() {
+    return std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
+        logs_service_->GetWeakPtr());
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      logs_service_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
@@ -215,7 +231,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
         .WillOnce(base::test::RunOnceCallback<2>(
-            test_request.forms_annotations_response, /*log_entry=*/nullptr));
+            test_request.forms_annotations_response, CreateLogEntry()));
 
     EXPECT_FALSE(
         AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -247,7 +263,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+        .WillOnce(base::test::RunOnceCallback<2>(any, CreateLogEntry()));
 
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
@@ -284,7 +300,7 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
                   FromModelExecutionError(
                       optimization_guide::OptimizationGuideModelExecutionError::
                           ModelExecutionError::kGenericFailure)),
-          /*log_entry=*/nullptr));
+          CreateLogEntry()));
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
@@ -301,6 +317,8 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   histogram_tester.ExpectUniqueSample(
       "UserAnnotations.AddFormSubmissionResult",
       UserAnnotationsExecutionResult::kResponseError, 1);
+
+  EXPECT_TRUE(logs_service()->uploaded_logs().empty());
 }
 
 TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
@@ -313,7 +331,7 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
           optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+      .WillOnce(base::test::RunOnceCallback<2>(any, CreateLogEntry()));
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
@@ -329,6 +347,8 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   histogram_tester.ExpectUniqueSample(
       "UserAnnotations.AddFormSubmissionResult",
       UserAnnotationsExecutionResult::kResponseMalformed, 1);
+
+  EXPECT_TRUE(logs_service()->uploaded_logs().empty());
 }
 
 TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
@@ -341,7 +361,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
-          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+          test_request.forms_annotations_response, CreateLogEntry()));
 
   EXPECT_FALSE(
       AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -379,7 +399,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
-          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+          test_request.forms_annotations_response, CreateLogEntry()));
 
   EXPECT_FALSE(
       AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
@@ -406,7 +426,7 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
-          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+          test_request.forms_annotations_response, CreateLogEntry()));
 
   service()->AddFormSubmission(
       test_request.ax_tree,
@@ -422,77 +442,6 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
-
-class UserAnnotationsServiceReplaceAnnotationsTest
-    : public UserAnnotationsServiceTest {
- public:
-  UserAnnotationsServiceReplaceAnnotationsTest() {
-    base::FieldTrialParams feature_parameters;
-    feature_parameters["should_replace_annotations_for_form_submissions"] =
-        "true";
-    if (ShouldPersistAnnotations()) {
-      feature_parameters["persist_annotations"] = "true";
-    }
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(kUserAnnotations,
-                                                            feature_parameters);
-  }
-
- private:
-  void InitializeFeatureList() override {}
-};
-
-TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
-       RetrieveAllEntriesWithInsertShouldReplace) {
-  {
-    auto test_request = CreateSampleFormsAnnotationsTestRequest();
-    EXPECT_CALL(
-        *model_executor(),
-        ExecuteModel(
-            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
-            An<optimization_guide::
-                   OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(
-            test_request.forms_annotations_response, /*log_entry=*/nullptr));
-
-    EXPECT_FALSE(
-        AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
-            .empty());
-
-    auto entries = GetAllUserAnnotationsEntries();
-    EXPECT_EQ(2u, entries.size());
-
-    EXPECT_EQ(entries[0].key(), "label");
-    EXPECT_EQ(entries[0].value(), "whatever");
-    EXPECT_EQ(entries[1].key(), "nolabel");
-    EXPECT_EQ(entries[1].value(), "value");
-  }
-
-  {
-    optimization_guide::proto::FormsAnnotationsResponse response;
-    optimization_guide::proto::Any any;
-    any.set_type_url(response.GetTypeName());
-    response.SerializeToString(any.mutable_value());
-    EXPECT_CALL(
-        *model_executor(),
-        ExecuteModel(
-            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
-            An<optimization_guide::
-                   OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
-    autofill::FormData empty_form_data;
-    optimization_guide::proto::AXTreeUpdate ax_tree;
-
-    EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
-
-    // Entries should be cleared since there were no fields to replace with.
-    auto entries = GetAllUserAnnotationsEntries();
-    EXPECT_EQ(0u, entries.size());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAnnotationsServiceReplaceAnnotationsTest,
-                         ::testing::Bool());
 
 }  // namespace
 }  // namespace user_annotations

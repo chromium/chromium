@@ -114,13 +114,6 @@ UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
   if (!transaction.Begin()) {
     return UserAnnotationsExecutionResult::kSqlError;
   }
-  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
-    if (!statement.Run()) {
-      return UserAnnotationsExecutionResult::kSqlError;
-    }
-  }
   auto now_time = base::Time::Now();
   for (const auto& entry : upserted_entries) {
     auto encrypted_value = encryptor_.EncryptString(entry.value());

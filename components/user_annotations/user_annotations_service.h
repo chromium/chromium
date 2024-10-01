@@ -146,13 +146,16 @@ class UserAnnotationsService : public KeyedService {
   void SendFormSubmissionResult(
       UserAnnotationsService::ImportFormCallback callback,
       std::unique_ptr<autofill::FormStructure> form,
-      FormSubmissionResult result);
+      FormSubmissionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Called when decision has been made whether to import form entries.
   // `prompt_was_accepted` is the user decision, and `entries` will be persisted
   // to database when true.
-  void OnImportFormConfirmation(FormSubmissionResult result,
-                                bool prompt_was_accepted);
+  void OnImportFormConfirmation(
+      FormSubmissionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
+      bool prompt_was_accepted);
 
   // An in-memory representation of the "database" of user annotation entries.
   // Used only when `ShouldPersistUserAnnotations()` is false.

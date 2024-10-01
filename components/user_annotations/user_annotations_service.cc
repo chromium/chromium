@@ -186,7 +186,8 @@ void UserAnnotationsService::OnModelExecuted(
   if (!result.has_value()) {
     SendFormSubmissionResult(
         std::move(callback), std::move(form),
-        base::unexpected(UserAnnotationsExecutionResult::kResponseError));
+        base::unexpected(UserAnnotationsExecutionResult::kResponseError),
+        std::move(log_entry));
     return;
   }
 
@@ -196,27 +197,34 @@ void UserAnnotationsService::OnModelExecuted(
   if (!maybe_response) {
     SendFormSubmissionResult(
         std::move(callback), std::move(form),
-        base::unexpected(UserAnnotationsExecutionResult::kResponseMalformed));
+        base::unexpected(UserAnnotationsExecutionResult::kResponseMalformed),
+        std::move(log_entry));
     return;
   }
 
   if (ShouldPersistUserAnnotations() && !user_annotations_database_) {
     SendFormSubmissionResult(
         std::move(callback), std::move(form),
-        base::unexpected(UserAnnotationsExecutionResult::kCryptNotInitialized));
+        base::unexpected(UserAnnotationsExecutionResult::kCryptNotInitialized),
+        std::move(log_entry));
     return;
   }
 
   SendFormSubmissionResult(std::move(callback), std::move(form),
-                           base::ok(maybe_response.value()));
+                           base::ok(maybe_response.value()),
+                           std::move(log_entry));
 }
 
 void UserAnnotationsService::OnImportFormConfirmation(
     FormSubmissionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
     bool prompt_was_accepted) {
+  // TODO: b/370039073 - Drop if no explicit action on prompt.
+
   if (!prompt_was_accepted) {
     return;
   }
+
   if (ShouldPersistUserAnnotations()) {
     DCHECK(user_annotations_database_);
 
@@ -235,10 +243,6 @@ void UserAnnotationsService::OnImportFormConfirmation(
     return;
   }
 
-  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
-    entries_.clear();
-  }
-
   for (const auto& entry : result->upserted_entries()) {
     EntryID entry_id = ++entry_id_counter_;
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
@@ -255,25 +259,36 @@ void UserAnnotationsService::OnImportFormConfirmation(
 void UserAnnotationsService::SendFormSubmissionResult(
     UserAnnotationsService::ImportFormCallback callback,
     std::unique_ptr<autofill::FormStructure> form,
-    FormSubmissionResult result) {
+    FormSubmissionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   base::UmaHistogramEnumeration(
       "UserAnnotations.AddFormSubmissionResult",
       result.error_or(UserAnnotationsExecutionResult::kSuccess));
   if (!result.has_value()) {
     CHECK_NE(result.error(), UserAnnotationsExecutionResult::kSuccess);
+
+    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
     std::move(callback).Run(std::move(form),
                             /*to_be_upserted_entries=*/{},
                             /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
-  // TODO: b/366278416 - No need to import the form entries when there is no
-  // change.
+
+  if (result->upserted_entries().empty()) {
+    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
+    std::move(callback).Run(std::move(form),
+                            /*to_be_upserted_entries=*/{},
+                            /*prompt_acceptance_callback=*/base::DoNothing());
+    return;
+  }
+
   UserAnnotationsEntries upserted_entries = UserAnnotationsEntries(
       result->upserted_entries().begin(), result->upserted_entries().end());
   std::move(callback).Run(
       std::move(form), upserted_entries,
       base::BindOnce(&UserAnnotationsService::OnImportFormConfirmation,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result),
+                     std::move(log_entry)));
 }
 
 void UserAnnotationsService::RemoveEntry(EntryID entry_id,
