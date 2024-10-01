@@ -73,6 +73,35 @@ public class PlaybackArgs {
             int PEACEFUL = 12;
         }
 
+        /** Enum for Voice Display Names. */
+        @IntDef({
+            DisplayName.NONE,
+            DisplayName.RUBY,
+            DisplayName.RIVER,
+            DisplayName.FIELD,
+            DisplayName.MOSS,
+            DisplayName.CLOUD,
+            DisplayName.DALE,
+            DisplayName.LAKE,
+            DisplayName.AIR,
+            DisplayName.COAST,
+            DisplayName.CORAL,
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface DisplayName {
+            int NONE = 0;
+            int RUBY = 1;
+            int RIVER = 2;
+            int FIELD = 3;
+            int MOSS = 4;
+            int CLOUD = 5;
+            int DALE = 6;
+            int LAKE = 7;
+            int AIR = 8;
+            int COAST = 9;
+            int CORAL = 10;
+        }
+
         private final String mLanguage;
         @Nullable private final String mAccentRegionCode;
         private final String mVoiceId;
@@ -80,6 +109,7 @@ public class PlaybackArgs {
 
         private final @Pitch int mPitch;
         private final @Tone int mTone;
+        private final @DisplayName int mVoiceDisplayName;
 
         // Deprecated. Remove once internal code no longer uses it.
         public PlaybackVoice(String language, String voiceId, String displayName) {
@@ -103,6 +133,23 @@ public class PlaybackArgs {
             mAccentRegionCode = accentRegionCode;
             mVoiceId = voiceId;
             mDisplayName = displayName;
+            mVoiceDisplayName = DisplayName.NONE;
+            mPitch = pitch;
+            mTone = tone;
+        }
+
+        public PlaybackVoice(
+                String language,
+                @Nullable String accentRegionCode,
+                String voiceId,
+                @DisplayName int displayName,
+                @Pitch int pitch,
+                @Tone int tone) {
+            mLanguage = language;
+            mAccentRegionCode = accentRegionCode;
+            mVoiceId = voiceId;
+            mVoiceDisplayName = displayName;
+            mDisplayName = null;
             mPitch = pitch;
             mTone = tone;
         }
@@ -140,6 +187,10 @@ public class PlaybackArgs {
         @Nullable
         public String getDisplayName() {
             return mDisplayName;
+        }
+
+        public @DisplayName int getVoiceDisplayName() {
+            return mVoiceDisplayName;
         }
 
         public @Pitch int getPitch() {
