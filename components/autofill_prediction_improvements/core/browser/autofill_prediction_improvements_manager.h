@@ -34,6 +34,11 @@ namespace autofill_prediction_improvements {
 inline constexpr base::TimeDelta kMinTimeToShowLoading =
     base::Milliseconds(300);
 
+// Maximum time for showing the loading suggestion to the user before timeout.
+// TODO(crbug.com/365512352): Evaluate what constant is best for this purpose.
+inline constexpr base::TimeDelta kMaxLoadingTimeBeforeTimeout =
+    base::Seconds(10);
+
 // The class for embedder-independent, tab-specific
 // autofill_prediction_improvements logic. This class is an interface.
 class AutofillPredictionImprovementsManager
@@ -155,6 +160,10 @@ class AutofillPredictionImprovementsManager
   // suggestions. This avoids a flickering UI for cases where retrieval happens
   // quickly.
   base::OneShotTimer loading_suggestion_timer_;
+
+  // Timer to decide when to timeout-terminate fetching suggestions so that we
+  // don't give the user long periods of loading.
+  base::OneShotTimer suggestion_timeout_timer_;
 
   // The `decider_` is used to check if the
   // `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` optimization guide can be

@@ -350,6 +350,14 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     AutofillPredictionImprovementsFillingEngine::PredictionsOrError
         predictions_or_error,
     std::optional<std::string> feedback_id) {
+  // If the timeout suggestion is still running, it means we retrieved the
+  // predictions before timeout threshold. Otherwise it means we're too late and
+  // should discard the received predictions.
+  if (!suggestion_timeout_timer_.IsRunning()) {
+    return;
+  }
+  suggestion_timeout_timer_.Stop();
+
   if (predictions_or_error.has_value()) {
     cache_ = predictions_or_error.value();
     feedback_id_ = feedback_id;
@@ -429,6 +437,15 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
   update_suggestions_callback_ = std::move(update_suggestions_callback);
   UpdateSuggestions({CreateLoadingSuggestion()});
   ExtractPredictionImprovementsForFormFields(form, trigger_field);
+
+  // In order to not show the loading suggestion for too long, which would be a
+  // poor UX, we set a limit before timeout and show an error suggestion if
+  // fetching the suggestion takes more time than this limit.
+  suggestion_timeout_timer_.Start(
+      FROM_HERE, kMaxLoadingTimeBeforeTimeout,
+      base::BindRepeating(
+          &AutofillPredictionImprovementsManager::UpdateSuggestions,
+          weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
 }
 
 void AutofillPredictionImprovementsManager::Reset() {
@@ -436,6 +453,7 @@ void AutofillPredictionImprovementsManager::Reset() {
   update_suggestions_callback_ = base::NullCallback();
   feedback_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
+  suggestion_timeout_timer_.Stop();
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(
