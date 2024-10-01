@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -763,17 +764,18 @@ void StreamingSearchPrefetchURLLoader::Finish() {
 
 void StreamingSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  TRACE_EVENT0("loading", "StreamingSearchPrefetchURLLoader::OnComplete");
   network_url_loader_.reset();
+  status_ = status;
+  if (response_reader_for_prerender_) {
+    response_reader_for_prerender_->OnStatusCodeReady(status);
+  }
   if (forwarding_client_ && (!serving_from_data_ || is_in_fallback_)) {
     DCHECK(!streaming_prefetch_request_);
     forwarding_client_->OnComplete(status);
     forwarding_result_ = ForwardingResult::kCompleted;
     OnForwardingComplete();
     return;
-  }
-  status_ = status;
-  if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->OnStatusCodeReady(status);
   }
 
   if (streaming_prefetch_request_) {
