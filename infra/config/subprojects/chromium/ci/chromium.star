@@ -637,6 +637,7 @@ ci.builder(
             "remoteexec",
             "mac",
             "arm64",
+            "save_lld_reproducers",
         ],
     ),
     targets = targets.bundle(

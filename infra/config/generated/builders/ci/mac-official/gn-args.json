@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "is_official_build": true,
+    "save_reproducers_on_lld_crash": true,
     "target_cpu": "arm64",
     "target_os": "mac",
     "use_remoteexec": true,

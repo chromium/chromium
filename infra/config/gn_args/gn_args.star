@@ -1208,6 +1208,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "save_lld_reproducers",
+    args = {
+        "save_reproducers_on_lld_crash": True,
+    },
+)
+
+gn_args.config(
     name = "skip_generate_fuzzer_owners",
     args = {
         "generate_fuzzer_owners": False,
