@@ -45,4 +45,11 @@ ScannerText::Paragraph& ScannerText::AppendParagraph() {
   return paragraphs_.back();
 }
 
+std::u16string ScannerText::GetTextFromRange(const gfx::Range& range) const {
+  if (!range.IsValid() || range.GetMax() > text_contents_.length()) {
+    return u"";
+  }
+  return text_contents_.substr(range.GetMin(), range.length());
+}
+
 }  // namespace ash

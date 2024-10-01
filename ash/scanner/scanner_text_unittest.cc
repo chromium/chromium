@@ -48,6 +48,21 @@ TEST(ScannerTextTest, AppendsLinesToParagraph) {
           Property(&ScannerText::Line::bounding_box, kLine2BoundingBox)));
 }
 
+TEST(ScannerTextTest, GetsTextFromRange) {
+  ScannerText text(u"abc 😀あ!");
+
+  EXPECT_EQ(text.GetTextFromRange(gfx::Range(0, 3)), u"abc");
+  EXPECT_EQ(text.GetTextFromRange(gfx::Range(4, 6)), u"😀");
+  EXPECT_EQ(text.GetTextFromRange(gfx::Range(6, 8)), u"あ!");
+  EXPECT_EQ(text.GetTextFromRange(gfx::Range(0, 8)), u"abc 😀あ!");
+}
+
+TEST(ScannerTextTest, GetsEmptyTextForInvalidRange) {
+  ScannerText text(u"abc 😀あ!");
+
+  EXPECT_EQ(text.GetTextFromRange(gfx::Range(0, 9)), u"");
+}
+
 }  // namespace
 
 }  // namespace ash

@@ -91,6 +91,10 @@ class ASH_EXPORT ScannerText {
   // this method (since `paragraphs_` is resized).
   Paragraph& AppendParagraph();
 
+  // Gets the substring of `text_contents_` for the UTF-16 indices specified by
+  // `range`. Returns an empty string if the range is invalid.
+  std::u16string GetTextFromRange(const gfx::Range& range) const;
+
  private:
   // List of paragraphs in natural reading order.
   std::vector<Paragraph> paragraphs_;
