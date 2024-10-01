@@ -2018,7 +2018,7 @@ message ChromeLatencyInfo2 {
     // Occurs on Browser Main.
     STEP_GESTURE_EVENT_HANDLED = 13;
     // Renderer's compositor.
-    STEP_SWAP_BUFFERS = 6;
+    STEP_SWAP_BUFFERS = 6 [deprecated = true];
     // Happens on the VizCompositor in the GPU process.
     STEP_DRAW_AND_SWAP = 7 [deprecated = true];
     // Happens on the GPU main thread after the swap has completed.

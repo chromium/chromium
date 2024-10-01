@@ -230,16 +230,6 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
                         perfetto::StaticString{trace_name_str},
                         perfetto::Track::Global(trace_id_), ts);
     }
-
-    TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-                [this](perfetto::EventContext ctx) {
-                  auto* info =
-                      ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                          ->set_chrome_latency_info();
-                  info->set_trace_id(trace_id_);
-                  tracing::FillFlowEvent(
-                      ctx, TrackEvent::LegacyEvent::FLOW_INOUT, trace_id_);
-                });
   }
 
   auto it = latency_components_.find(component);
@@ -287,16 +277,6 @@ void LatencyInfo::Terminate() {
           info->set_is_coalesced(coalesced_);
         });
   }
-
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [this](perfetto::EventContext ctx) {
-                auto* info =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                        ->set_chrome_latency_info();
-                info->set_trace_id(trace_id_);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_IN,
-                                       trace_id_);
-              });
 }
 
 bool LatencyInfo::FindLatency(LatencyComponentType type,

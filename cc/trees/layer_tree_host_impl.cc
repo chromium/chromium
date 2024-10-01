@@ -2980,9 +2980,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
           ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT, draw_time);
     }
   }
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      metadata.latency_info,
-      perfetto::protos::pbzero::ChromeLatencyInfo::STEP_SWAP_BUFFERS);
 
   // Collect all resource ids in the render passes into a single array.
   std::vector<viz::ResourceId> resources;
