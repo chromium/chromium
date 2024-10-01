@@ -111,6 +111,10 @@ void Frame::Trace(Visitor* visitor) const {
 
 bool Frame::Detach(FrameDetachType type) {
   TRACE_EVENT0("blink", "Frame::Detach");
+  const std::string_view histogram_suffix =
+      (type == FrameDetachType::kRemove) ? "Remove" : "Swap";
+  base::ScopedUmaHistogramTimer histogram_timer(
+      base::StrCat({"Navigation.Frame.Detach.", histogram_suffix}));
   DCHECK(client_);
   // Detach() can be re-entered, so this can't simply DCHECK(IsAttached()).
   DCHECK(!IsDetached());
@@ -862,6 +866,9 @@ bool Frame::SwapImpl(
 
   // Clone the state of the current Frame into the one being swapped in.
   if (auto* new_local_frame = DynamicTo<LocalFrame>(new_frame)) {
+    TRACE_EVENT0("navigation", "Frame::SwapImpl.CloneState");
+    base::ScopedUmaHistogramTimer clone_state_timer(
+        "Navigation.Frame.SwapImpl.CloneState");
     // A `LocalFrame` being swapped in is created provisionally, so
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` needs to be updated
     // to point to the newly swapped-in frame.

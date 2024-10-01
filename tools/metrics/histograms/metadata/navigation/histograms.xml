@@ -75,14 +75,42 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TracedMethod">
+  <variant name="AgentSchedulingGroup.CreateFrame"
+      summary="AgentSchedulingGroup::CreateFrame()"/>
+  <variant name="AgentSchedulingGroup.CreateWebView"
+      summary="AgentSchedulingGroup::CreateWebView()"/>
   <variant name="AgentSchedulingGroupHost.RemoveRoute"
       summary="AgentSchedulingGroupHost::RemoveRoute()"/>
+  <variant name="Document.DispatchUnloadEvents"
+      summary="Document::DispatchUnloadEvents()"/>
   <variant name="DocumentAssociatedDataDestructor"
       summary="DocumentAssociatedData destructor"/>
+  <variant name="DocumentLoader.CommitNavigation"
+      summary="DocumentLoader::CommitNavigation()"/>
+  <variant name="DocumentLoader.DidCommitNavigation"
+      summary="DocumentLoader::DidCommitNavigation()"/>
+  <variant name="Frame.SwapImpl.CloneState"
+      summary="Frame::SwapImpl() cloning state to new LocalFrame"/>
+  <variant name="Frame.SwapImpl.CloneState.Page"
+      summary="Frame::SwapImpl() cloning state to new LocalFrame's Page"/>
   <variant name="Frame.SwapImpl.Local"
       summary="Frame::SwapImpl() with LocalFrame"/>
   <variant name="Frame.SwapImpl.Remote"
       summary="Frame::SwapImpl() with RemoteFrame"/>
+  <variant name="FrameLoader.CommitDocumentLoader"
+      summary="FrameLoader::CommitDocumentLoader()"/>
+  <variant name="FrameLoader.CommitNavigation"
+      summary="FrameLoader::CommitNavigation()"/>
+  <variant name="FrameLoader.DetachDocument"
+      summary="FrameLoader::DetachDocument()"/>
+  <variant
+      name="FrameLoader.DispatchUnloadEventAndFillOldDocumentInfoIfNeeded.CommitInFrame"
+      summary="FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
+               for commiting"/>
+  <variant
+      name="FrameLoader.DispatchUnloadEventAndFillOldDocumentInfoIfNeeded.Other"
+      summary="FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
+               for others"/>
   <variant name="LocalFrame.DetachImpl.Remove"
       summary="LocalFrame::DetachImpl() for removal"/>
   <variant name="LocalFrame.DetachImpl.Swap"

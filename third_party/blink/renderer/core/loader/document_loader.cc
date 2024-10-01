@@ -2154,6 +2154,9 @@ void DocumentLoader::WillCommitNavigation() {
 }
 
 void DocumentLoader::DidCommitNavigation() {
+  TRACE_EVENT0("loading", "DocumentLoader::DidCommitNavigation");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.DocumentLoader.DidCommitNavigation");
   if (commit_reason_ != CommitReason::kRegular)
     return;
 
@@ -2724,6 +2727,8 @@ void DocumentLoader::CommitNavigation() {
   TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CommitNavigation",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.DocumentLoader.CommitNavigation");
   base::ElapsedTimer timer;
   DCHECK_LT(state_, kCommitted);
   DCHECK(frame_->GetPage());

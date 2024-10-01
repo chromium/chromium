@@ -277,6 +277,9 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
     mojom::CreateViewParamsPtr params,
     bool was_created_by_renderer,
     const blink::WebURL& base_url) {
+  TRACE_EVENT0("navigation", "AgentSchedulingGroup::CreateWebView");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.AgentSchedulingGroup.CreateWebView");
   DCHECK(RenderThread::IsMainThread());
 
   blink::WebFrame* opener_frame = nullptr;
@@ -415,6 +418,9 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
+  TRACE_EVENT0("navigation", "AgentSchedulingGroup::CreateFrame");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.AgentSchedulingGroup.CreateFrame");
   RenderFrameImpl::CreateFrame(
       *this, params->frame_token, params->routing_id, std::move(params->frame),
       std::move(params->interface_broker),
