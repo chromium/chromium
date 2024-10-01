@@ -427,7 +427,7 @@ Download the transcription model (up to 100MB) to get these transcriptions.
     OK
   </message>
   <message desc="Description of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION">
-    When Chromebook audio is on, Recorder captures all audio playing on this device. Make sure you want to record all sounds.
+    When Chromebook audio is on, Recorder captures all audio playing on this device
   </message>
   <message desc="Header of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
     Recording all Chromebook audio
