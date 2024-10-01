@@ -659,6 +659,17 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
   error_test("18446744073709551616x18446744073709551616");
 }
 
+TEST(HlsTypesTest, DecimalResolutionSzudzik) {
+  std::set<types::DecimalInteger> values;
+  for (types::DecimalInteger x = 0; x < 10; x++) {
+    for (types::DecimalInteger y = 0; y < 10; y++) {
+      types::DecimalResolution res{x, y};
+      values.insert(res.Szudzik());
+    }
+  }
+  ASSERT_EQ(values.size(), 100u);
+}
+
 TEST(HlsTypesTest, ParseByteRangeExpression) {
   const auto error_test = [](std::string_view input,
                              const base::Location& from =

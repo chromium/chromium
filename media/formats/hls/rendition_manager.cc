@@ -5,6 +5,7 @@
 #include "media/formats/hls/rendition_manager.h"
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/types.h"
@@ -36,9 +37,11 @@ RenditionManager::CodecSupportType VariantTypeSupported(
   return mp2t;
 }
 
-std::string GetVariantDisplayString(const VariantStream* variant) {
-  // TODO(crbug.com/40057824): implement.
-  return "variant";
+std::string GetVariantDisplayString(
+    RenditionManager::VariantID id,
+    const std::vector<VariantStream::FormatComponent>& components,
+    const VariantStream* variant) {
+  return variant->Format(components, id.value());
 }
 
 std::string GetAudioRenditionDisplayString(const AudioRendition* rendition) {
@@ -54,13 +57,20 @@ RenditionManager::UpdatedSelections::UpdatedSelections() = default;
 RenditionManager::UpdatedSelections::UpdatedSelections(
     const UpdatedSelections&) = default;
 
-RenditionManager::VariantStatistics::~VariantStatistics() = default;
-RenditionManager::VariantStatistics::VariantStatistics(
-    const VariantStatistics&) = default;
-RenditionManager::VariantStatistics::VariantStatistics(
+RenditionManager::VariantMetadata::~VariantMetadata() = default;
+RenditionManager::VariantMetadata::VariantMetadata(const VariantMetadata&) =
+    default;
+RenditionManager::VariantMetadata::VariantMetadata(
     const VariantStream* stream,
     const AudioRenditionGroup* group)
-    : stream(stream), audio_rendition_group(group) {}
+    : track_id(""), stream(stream), audio_rendition_group(group) {}
+
+RenditionManager::RenditionMetadata::~RenditionMetadata() = default;
+RenditionManager::RenditionMetadata::RenditionMetadata(
+    const RenditionMetadata&) = default;
+RenditionManager::RenditionMetadata::RenditionMetadata(
+    const AudioRendition* rendition)
+    : track_id(""), rendition(rendition) {}
 
 RenditionManager::~RenditionManager() = default;
 RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
@@ -71,25 +81,24 @@ RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
   InitializeVariantMaps(std::move(is_type_supported_cb));
 }
 
-std::vector<RenditionManager::SelectableOption<RenditionManager::VariantID>>
-RenditionManager::GetSelectableVariants() const {
-  std::vector<SelectableOption<VariantID>> result;
-  for (const auto& [variant_id, stats] : selectable_variants_) {
-    result.emplace_back(variant_id, GetVariantDisplayString(stats.stream));
+std::vector<MediaTrack> RenditionManager::GetSelectableVariants() const {
+  std::vector<MediaTrack> result;
+  for (const auto& [_, metadata] : selectable_variants_) {
+    result.push_back(track_map_.at(metadata.track_id));
   }
   return result;
 }
 
-std::vector<RenditionManager::SelectableOption<RenditionManager::RenditionID>>
-RenditionManager::GetSelectableAudioRenditions() const {
-  std::vector<SelectableOption<RenditionID>> result;
+std::vector<MediaTrack> RenditionManager::GetSelectableRenditions() const {
+  std::vector<MediaTrack> result;
   if (!selected_variant_.has_value()) {
+    // We can't select an audio rendition if the variant hasn't been selected
     return result;
   }
-  const auto& stats = selectable_variants_.at(*selected_variant_);
-  for (auto id : stats.audio_renditions) {
-    result.emplace_back(
-        id, GetAudioRenditionDisplayString(selectable_renditions_.at(id)));
+  const auto& variant_metadata = selectable_variants_.at(*selected_variant_);
+  for (auto id : variant_metadata.audio_renditions) {
+    auto rendition_metadata = selectable_renditions_.at(id);
+    result.push_back(track_map_.at(rendition_metadata.track_id));
   }
   return result;
 }
@@ -123,7 +132,8 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
       selectable_variants_.at(*selected_variant_).stream;
   const AudioRendition* audio_override = nullptr;
   if (selected_audio_rendition_.has_value()) {
-    audio_override = selectable_renditions_[*selected_audio_rendition_];
+    audio_override =
+        selectable_renditions_.at(selected_audio_rendition_.value()).rendition;
     if (!audio_override->GetUri().has_value()) {
       // An audio rendition with no uri just plays the content from the
       // selected variant. See section 4.4.6.2.1 of the HLS spec for details.
@@ -138,16 +148,28 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
   }
 }
 
-void RenditionManager::SetPreferredVariant(
-    std::optional<RenditionManager::VariantID> id) {
-  preferred_variant_ = id;
+void RenditionManager::SetPreferredAudioRendition(
+    std::optional<MediaTrack::Id> rendition_id) {
+  if (rendition_id.has_value()) {
+    auto track = track_map_.at(rendition_id);
+    CHECK(track.type() == MediaTrack::Type::kAudio);
+    preferred_audio_rendition_ = RenditionID(track.stream_id());
+  } else {
+    preferred_audio_rendition_ = std::nullopt;
+  }
   Reselect(
       base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
 }
 
-void RenditionManager::SetPreferredAudioRendition(
-    std::optional<RenditionManager::RenditionID> id) {
-  preferred_audio_rendition_ = id;
+void RenditionManager::SetPreferredVariant(
+    std::optional<MediaTrack::Id> variant_id) {
+  if (variant_id.has_value()) {
+    auto track = track_map_.at(variant_id);
+    CHECK(track.type() == MediaTrack::Type::kVideo);
+    preferred_variant_ = VariantID(track.stream_id());
+  } else {
+    preferred_variant_ = std::nullopt;
+  }
   Reselect(
       base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
 }
@@ -174,7 +196,7 @@ void RenditionManager::InitializeVariantMaps(
     IsTypeSupportedCallback is_type_supported_cb) {
   bool was_audio_only = false;
   bool has_video = false;
-  std::vector<VariantStatistics> variant_ordering;
+  std::vector<VariantMetadata> variant_ordering;
 
   // From the spec:
   //   The EXT-X-STREAM-INF tag specifies a Variant Stream, which is a set of
@@ -214,7 +236,7 @@ void RenditionManager::InitializeVariantMaps(
         continue;
       }
     }
-    VariantStatistics stats{&variant, variant.GetAudioRenditionGroup().get()};
+    VariantMetadata stats{&variant, variant.GetAudioRenditionGroup().get()};
     if (auto group = variant.GetAudioRenditionGroup()) {
       // If there is an audio rendition group associated, then get all of its
       // renditions, ID them, and track them in the selectable variant.
@@ -222,7 +244,8 @@ void RenditionManager::InitializeVariantMaps(
         auto rendition_id = LookupRendition(&rendition);
         if (!rendition_id.has_value()) {
           rendition_id = rendition_id_gen_.GenerateNextId();
-          selectable_renditions_[*rendition_id] = &rendition;
+          selectable_renditions_.try_emplace(*rendition_id,
+                                             RenditionMetadata(&rendition));
         }
         stats.audio_renditions.insert(*rendition_id);
       }
@@ -230,8 +253,8 @@ void RenditionManager::InitializeVariantMaps(
     variant_ordering.push_back(std::move(stats));
   }
 
-  constexpr auto compare = [](const VariantStatistics& lhs,
-                              const VariantStatistics& rhs) {
+  constexpr auto compare = [](const VariantMetadata& lhs,
+                              const VariantMetadata& rhs) {
     // First compare by bandwidth
     if (lhs.stream->GetBandwidth() != rhs.stream->GetBandwidth()) {
       return lhs.stream->GetBandwidth() < rhs.stream->GetBandwidth();
@@ -249,8 +272,34 @@ void RenditionManager::InitializeVariantMaps(
 
   // All variants are now added, and should be sorted.
   base::ranges::sort(variant_ordering, compare);
-  for (const VariantStatistics& stats : std::move(variant_ordering)) {
+  for (const VariantMetadata& stats : std::move(variant_ordering)) {
     selectable_variants_.try_emplace(variant_id_gen_.GenerateNextId(), stats);
+  }
+
+  // Use the narrowed down variant set to determine the smallest set of data
+  // that can be used to uniquely identify a variant.
+  auto format_components = DetermineVariantStreamFormatting();
+
+  for (auto& [variant_id, metadata] : selectable_variants_) {
+    auto track = MediaTrack::CreateVideoTrack(
+        base::StringPrintf("Video.%d", variant_id.value()),
+        MediaTrack::VideoKind::kMain,
+        GetVariantDisplayString(variant_id, format_components, metadata.stream),
+        /*language=*/"",
+        /*enabled=*/false, variant_id.value());
+    metadata.track_id = track.track_id();
+    track_map_.try_emplace(metadata.track_id, std::move(track));
+  }
+
+  for (auto& [rendition_id, metadata] : selectable_renditions_) {
+    auto track = MediaTrack::CreateAudioTrack(
+        base::StringPrintf("Audio.%d", rendition_id.value()),
+        MediaTrack::AudioKind::kMain,
+        GetAudioRenditionDisplayString(metadata.rendition),
+        metadata.rendition->GetLanguage().value_or(""),
+        selected_audio_rendition_ == rendition_id, rendition_id.value(), true);
+    metadata.track_id = track.track_id();
+    track_map_.try_emplace(metadata.track_id, std::move(track));
   }
 }
 
@@ -318,7 +367,7 @@ RenditionManager::SelectBestVariant() {
 
 std::optional<RenditionManager::RenditionID>
 RenditionManager::SelectRenditionBasedOnLanguage(
-    const VariantStatistics& variant,
+    const VariantMetadata& variant,
     std::optional<std::string> language,
     bool only_autoselect) {
   // Check to see if the default rendition exists and matches the language, if
@@ -340,10 +389,12 @@ RenditionManager::SelectRenditionBasedOnLanguage(
   // Check the remaining renditions - on this pass, they must be auto-selectable
   // and match the language if it is specified. Return the first match.
   for (const auto id : variant.audio_renditions) {
-    if (only_autoselect && !selectable_renditions_[id]->MayAutoSelect()) {
+    if (only_autoselect &&
+        !selectable_renditions_.at(id).rendition->MayAutoSelect()) {
       continue;
     }
-    const auto& rendition_lang = selectable_renditions_[id]->GetLanguage();
+    const auto& rendition_lang =
+        selectable_renditions_.at(id).rendition->GetLanguage();
     if (!language.has_value() || rendition_lang == language) {
       return id;
     }
@@ -357,7 +408,8 @@ RenditionManager::SelectRenditionBasedOnLanguage(
 
   // Select the first remotely acceptable rendition.
   for (const auto id : variant.audio_renditions) {
-    if (only_autoselect && !selectable_renditions_[id]->MayAutoSelect()) {
+    if (only_autoselect &&
+        !selectable_renditions_.at(id).rendition->MayAutoSelect()) {
       continue;
     }
     return id;
@@ -403,23 +455,119 @@ RenditionManager::SelectBestRendition(
     return maybe_rendition;
   }
 
-  auto ideal_rendition = selectable_renditions_[*maybe_rendition];
+  auto rendition_metadata = selectable_renditions_.at(*maybe_rendition);
 
   // Use the language from the user's selected rendition (might be nullopt),
   // and also don't consider only auto-selectable things, as the user has made
   // a selection.
-  return SelectRenditionBasedOnLanguage(variant, ideal_rendition->GetLanguage(),
-                                        false);
+  return SelectRenditionBasedOnLanguage(
+      variant, rendition_metadata.rendition->GetLanguage(), false);
 }
 
 std::optional<RenditionManager::RenditionID> RenditionManager::LookupRendition(
     const AudioRendition* rendition) {
-  for (const auto& [id, selectable] : selectable_renditions_) {
-    if (selectable == rendition) {
+  for (const auto& [id, metadata] : selectable_renditions_) {
+    if (metadata.rendition == rendition) {
       return id;
     }
   }
   return std::nullopt;
+}
+
+std::vector<VariantStream::FormatComponent>
+RenditionManager::DetermineVariantStreamFormatting() const {
+  // We have to find some set of properties that differentiates all of the
+  // supported variants. The most common differentiator is going to be
+  // video resolution. Resolution is always included in the format unless some
+  // of the variants are missing it or all variants have the same resolution.
+  // Framerate is used as a secondary differentiator to resolution, and is only
+  // used when there are two or more variants of the same resolution that have
+  // differing frames rates. Bandwidth is used as a tertiary differentiator to
+  // resolution and framerate.
+  // If we're still in a scenario where resolution, framerate, and bandwidth are
+  // all the same, we have to decide to fall back to either codecs, score, uri,
+  // or index. For now just fall back to stream index, and include resolution if
+  // there is more than one total size available.
+  base::flat_set<types::DecimalInteger> resolutions;
+  base::flat_set<types::DecimalInteger> rates;
+  base::flat_set<types::DecimalInteger> bandwidths;
+
+  bool missing_resolution = false;
+  bool missing_frame_rate = false;
+
+  for (const auto& [variant_id, stats] : selectable_variants_) {
+    auto resolution = stats.stream->GetResolution();
+    auto frame_rate = stats.stream->GetFrameRate();
+    auto bandwidth = stats.stream->GetBandwidth();
+
+    if (resolution.has_value()) {
+      resolutions.insert(resolution.value().Szudzik());
+    } else {
+      missing_resolution = true;
+    }
+
+    if (frame_rate.has_value()) {
+      // FrameRate x Resolution is a bit tricky. We can't just consider one or
+      // the other, because {360p, 720p} x {24fps, 60fps} would have four
+      // variants, but only two resolutions or two frame rates. This isn't an
+      // issue for bandwidth because it isn't an independent property like these
+      // two are. To account for the fact that frame rate is only a secondary
+      // differentiator, we actually hash it with resolution for a better
+      // signal.
+      if (frame_rate.value() > 2048) {
+        // We don't support this high of a frame rate anyway! This data is
+        // probably invalid, so just fall back to stream index.
+        return {VariantStream::FormatComponent::kIndex};
+      }
+      auto resolution_and_rate = frame_rate.value();
+      if (resolution.has_value()) {
+        resolution_and_rate += resolution.value().Szudzik() << 11;
+      }
+
+      rates.insert(resolution_and_rate);
+    } else {
+      missing_frame_rate = true;
+    }
+
+    bandwidths.insert(bandwidth);
+  }
+
+  if (resolutions.size() == selectable_variants_.size()) {
+    // There are no duplicates of resolution, and every variant provides one.
+    return {VariantStream::FormatComponent::kResolution};
+  }
+
+  if (rates.size() == selectable_variants_.size()) {
+    // The frame rates are a pure differentiator for variant, but we still
+    // want to include resolution as well, assuming each variant has one and
+    // they are not all the same.
+    if (missing_resolution || resolutions.size() == 1) {
+      return {VariantStream::FormatComponent::kFrameRate};
+    }
+    return {VariantStream::FormatComponent::kResolution,
+            VariantStream::FormatComponent::kFrameRate};
+  }
+
+  if (bandwidths.size() == selectable_variants_.size()) {
+    if (missing_resolution || resolutions.size() == 1) {
+      // Don't include resolution. Maybe frame rate?
+      if (missing_frame_rate || rates.size() == 1) {
+        return {VariantStream::FormatComponent::kBandwidth};
+      }
+      return {VariantStream::FormatComponent::kBandwidth,
+              VariantStream::FormatComponent::kFrameRate};
+    }
+    if (missing_frame_rate || rates.size() == 1) {
+      // Don't include frame rate, but resolution is ok.
+      return {VariantStream::FormatComponent::kBandwidth,
+              VariantStream::FormatComponent::kResolution};
+    }
+    return {VariantStream::FormatComponent::kBandwidth,
+            VariantStream::FormatComponent::kResolution,
+            VariantStream::FormatComponent::kFrameRate};
+  }
+
+  return {VariantStream::FormatComponent::kIndex};
 }
 
 }  // namespace media::hls

@@ -46,13 +46,15 @@ class MEDIA_EXPORT MediaTrack {
                                      VideoKind kind,
                                      const std::string& label,
                                      const std::string& language,
-                                     bool enabled);
+                                     bool enabled,
+                                     StreamParser::TrackId stream_id = 0);
 
   static MediaTrack CreateAudioTrack(const std::string& id,
                                      AudioKind kind,
                                      const std::string& label,
                                      const std::string& language,
                                      bool enabled,
+                                     StreamParser::TrackId stream_id = 0,
                                      bool exclusive = false);
 
   static MediaTrack::Kind VideoKindToString(MediaTrack::VideoKind kind);
