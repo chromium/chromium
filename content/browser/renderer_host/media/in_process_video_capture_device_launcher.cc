@@ -104,7 +104,7 @@ BASE_FEATURE(kScreenCaptureKitMacWindow,
 // feature has no effect if kScreenCaptureKitMac is enabled.
 BASE_FEATURE(kScreenCaptureKitMacScreen,
              "ScreenCaptureKitMacScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
