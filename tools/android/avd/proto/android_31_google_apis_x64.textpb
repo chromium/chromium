@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "5biVQLkXXVm61beRTyVfmPBrmjEJFBJTpdzAUcXY378C"  # 34.2.16 (Stable)
+  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
   dest_path: "android_31_google_apis_x64"
 }
 
@@ -19,9 +19,9 @@ system_image_name: "system-images;android-31;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-31/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8740226725265950241
+  # Created in https://ci.chromium.org/ui/b/8735783234873256961
   # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
-  version: "NiiDDP8whU5SPk1PHbfUqBZVRAc9naEg7xhc0qdlXzkC"
+  version: "tdIM612NIcS1k7tZ4FD_0mDIb4Zz4xjRYfoqU-Zeq6EC"
   dest_path: "android_31_google_apis_x64"
 }
 avd_name: "android_31_google_apis_x64"
