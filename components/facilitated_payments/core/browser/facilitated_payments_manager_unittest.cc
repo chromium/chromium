@@ -242,7 +242,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
 TEST_F(FacilitatedPaymentsManagerTest, RegisterPixAllowlist) {
   EXPECT_CALL(*optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST,
                   optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
       .Times(1);
 

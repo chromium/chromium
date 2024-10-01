@@ -223,8 +223,8 @@ class FacilitatedPaymentsManager {
   // 1. In the allowlist
   // 2. Not in the allowlist
   // 3. Infra for querying is not ready
-  optimization_guide::OptimizationGuideDecision GetAllowlistCheckResult(
-      const GURL& url) const;
+  // Returns true if the result is [1].
+  bool IsMerchantAllowlisted(const GURL& url) const;
 
   // Called by the utility process after validation of the `pix_code`. If the
   // utility processes has disconnected (e.g., due to a crash in the validation
