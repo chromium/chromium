@@ -246,22 +246,21 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   extensions_model_observation_.Observe(
       ToolbarActionsModel::Get(browser_view_->browser()->profile()));
 
-  window_registry_ = std::make_unique<SidePanelRegistry>();
+  window_registry_ =
+      std::make_unique<SidePanelRegistry>(browser_view_->browser());
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
 
-  SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
-                                       window_registry_.get());
   browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
 
   waiter_ = std::make_unique<SidePanelEntryWaiter>();
-
-  // Add observation for the window registry after global entries have been
-  // populated. This avoids re-entrancy during construction.
-  registry_observations_.AddObservation(window_registry_.get());
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
+
+void SidePanelCoordinator::Init(Browser* browser) {
+  SidePanelUtil::PopulateGlobalEntries(browser, window_registry_.get());
+}
 
 void SidePanelCoordinator::TearDownPreBrowserViewDestruction() {
   extensions_model_observation_.Reset();
@@ -928,20 +927,6 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
   pending_pin_promo_ = nullptr;
 }
 
-void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
-                                             SidePanelEntry* entry) {
-  bool is_global_entry_showing = current_key_ && !current_key_->tab_handle &&
-                                 current_key_->key == entry->key();
-  // If `entry` is a contextual entry and the global entry with the same key is
-  // currently being shown, show the tab-scoped `entry`.
-  if (registry == GetActiveContextualRegistry() && is_global_entry_showing) {
-    Show({browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
-          entry->key()},
-         SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered,
-         /*suppress_animations=*/true);
-  }
-}
-
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
                                                  SidePanelEntry* entry) {
   // Save the entry's view: if it has a cached view, retrieve it. Otherwise if
@@ -993,10 +978,6 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   entry->CacheView(std::move(entry_view));
 }
 
-void SidePanelCoordinator::OnRegistryDestroying(SidePanelRegistry* registry) {
-  registry_observations_.RemoveObservation(registry);
-}
-
 void SidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -1027,9 +1008,6 @@ void SidePanelCoordinator::OnTabStripModelChanged(
   if (!removed_for_deletion && selection.old_contents) {
     old_contextual_registry =
         SidePanelRegistry::GetDeprecated(selection.old_contents);
-    if (old_contextual_registry) {
-      registry_observations_.RemoveObservation(old_contextual_registry);
-    }
   }
 
   // Add the current tab's contextual registry.
@@ -1037,15 +1015,6 @@ void SidePanelCoordinator::OnTabStripModelChanged(
   if (selection.new_contents) {
     new_contextual_registry =
         SidePanelRegistry::GetDeprecated(selection.new_contents);
-    // Registries are per-tab whereas this is listening to WebContents changes.
-    // During a tab-discard the WebContents changes but the tab stays the same,
-    // hence the need to check if the source is already being observed. This
-    // observer method should eventually be replaced with a tab observation
-    // method.
-    if (new_contextual_registry &&
-        !registry_observations_.IsObservingSource(new_contextual_registry)) {
-      registry_observations_.AddObservation(new_contextual_registry);
-    }
   }
 
   // Show an entry in the following fallback order: new contextual registry's

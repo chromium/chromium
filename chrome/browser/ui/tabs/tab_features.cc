@@ -82,7 +82,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
   // dependencies for non-normal browsers.
-  side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+  side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab);
 
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.

@@ -128,6 +128,7 @@ bool ExtensionSidePanelCoordinator::IsDisabledForTab(int tab_id) const {
 
 void ExtensionSidePanelCoordinator::DeregisterEntry() {
   registry_->Deregister(GetEntryKey());
+
   global_entry_view_.reset();
 }
 
@@ -276,6 +277,21 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
       GetEntryKey(),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
                           base::Unretained(this))));
+
+  auto* coordinator = GetBrowser()->GetFeatures().side_panel_coordinator();
+  std::optional<SidePanelCoordinator::UniqueKey> current_key =
+      coordinator->current_key();
+  bool is_global_entry_showing = current_key && !current_key->tab_handle &&
+                                 current_key->key == GetEntryKey();
+  // If `entry` is a contextual entry and the global entry with the same key is
+  // currently being shown, show the tab-scoped `entry`.
+  if (!IsGlobalCoordinator() && is_global_entry_showing) {
+    coordinator->Show(
+        {tabs::TabInterface::GetFromContents(web_contents_)->GetTabHandle(),
+         GetEntryKey()},
+        SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered,
+        /*suppress_animations=*/true);
+  }
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {

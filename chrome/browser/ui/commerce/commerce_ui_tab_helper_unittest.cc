@@ -89,7 +89,8 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+    side_panel_registry_ = std::make_unique<SidePanelRegistry>(
+        static_cast<tabs::TabInterface*>(nullptr));
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
         web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get(), side_panel_registry_.get());

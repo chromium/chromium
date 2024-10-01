@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
@@ -55,8 +54,7 @@ class View;
 // registry's active_entry() then global registry's. These values are reset when
 // the side panel is closed and |last_active_global_entry_id_| is used to
 // determine what entry is seen when the panel is reopened.
-class SidePanelCoordinator final : public SidePanelRegistryObserver,
-                                   public TabStripModelObserver,
+class SidePanelCoordinator final : public TabStripModelObserver,
                                    public views::ViewObserver,
                                    public PinnedToolbarActionsModel::Observer,
                                    public SidePanelUI,
@@ -67,6 +65,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
+  void Init(Browser* browser);
   void TearDownPreBrowserViewDestruction();
 
   SidePanelRegistry* GetWindowRegistry();
@@ -124,12 +123,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void Close(bool suppress_animations);
 
- private:
-  friend class SidePanelCoordinatorTest;
-  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
-                           ShowEmptyUserNoteSidePanel);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
-                           PopulateUserNoteSidePanel);
+  // TODO(https://crbug.com/363743081): This method should be removed and the
+  // logic moved to ExtensionSidePanelCoordinator.
+  void OnEntryWillDeregister(SidePanelRegistry* registry,
+                             SidePanelEntry* entry);
 
   // The side panel entry to be shown is uniquely specified via a tuple:
   //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_handle` is
@@ -141,12 +138,23 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
     SidePanelEntry::Key key;
     friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
   };
+
   // This method does not show the side panel. Instead, it queues the side panel
   // to be shown once the contents has been loaded. This process may be either
   // synchronous or asynchronous.
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations);
+
+  std::optional<UniqueKey> current_key() { return current_key_; }
+
+ private:
+  friend class SidePanelCoordinatorTest;
+  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
+                           ShowEmptyUserNoteSidePanel);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
+                           PopulateUserNoteSidePanel);
+
   void OnClosed();
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
@@ -218,13 +226,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Opens the more info menu. This is called by the header button, when it's
   // visible.
   void OpenMoreInfoMenu();
-
-  // SidePanelRegistryObserver:
-  void OnEntryRegistered(SidePanelRegistry* registry,
-                         SidePanelEntry* entry) override;
-  void OnEntryWillDeregister(SidePanelRegistry* registry,
-                             SidePanelEntry* entry) override;
-  void OnRegistryDestroying(SidePanelRegistry* registry) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -308,10 +309,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       extensions_model_observation_{this};
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
-
-  base::ScopedMultiSourceObservation<SidePanelRegistry,
-                                     SidePanelRegistryObserver>
-      registry_observations_{this};
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

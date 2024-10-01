@@ -92,7 +92,6 @@ source_set("side_panel") {
     "side_panel_prefs.h",
     "side_panel_registry.cc",
     "side_panel_registry.h",
-    "side_panel_registry_observer.h",
     "side_panel_resize_area.cc",
     "side_panel_resize_area.h",
     "side_panel_rounded_corner.cc",

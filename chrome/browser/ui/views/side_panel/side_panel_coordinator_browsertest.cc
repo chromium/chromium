@@ -49,6 +49,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/lens/lens_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
@@ -1440,49 +1441,32 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 // the active tab and the global extension entry is showing.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   Init();
-  // Make sure the second tab is active.
-  browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
 
-  // Add first extension
-  scoped_refptr<const extensions::Extension> extension1 =
-      LoadSidePanelExtension("extension1");
+  // Add extension
+  scoped_refptr<const extensions::Extension> extension =
+      LoadSidePanelExtension("extension");
 
-  // Add second extension
-  scoped_refptr<const extensions::Extension> extension2 =
-      LoadSidePanelExtension("extension2");
+  // Give extension access to global side panel.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt,
+                /*path=*/"panel.html",
+                /*enabled=*/true);
 
-  SidePanelEntry::Key extension_1_key(SidePanelEntry::Id::kExtension,
-                                      extension1->id());
-  SidePanelEntry::Key extension_2_key(SidePanelEntry::Id::kExtension,
-                                      extension2->id());
+  // Show the global side panel.
+  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
+                                    extension->id());
+  coordinator()->Show(extension_key);
+  EXPECT_FALSE(coordinator()->current_key()->tab_handle.has_value());
 
-  // Register an extension for both contextual registries as well as the global
-  // registry.
-  contextual_registries_[0]->Register(CreateEntry(extension_1_key));
-  contextual_registries_[1]->Register(CreateEntry(extension_1_key));
-  global_registry()->Register(CreateEntry(extension_1_key));
-
-  // Register a second extension entry for the global registry.
-  global_registry()->Register(CreateEntry(extension_2_key));
-
-  // Show the global entry for `extension_2`.
-  coordinator()->Show(extension_2_key);
-  EXPECT_EQ(global_registry()->GetEntryForKey(extension_2_key),
-            coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(global_registry()->GetEntryForKey(extension_2_key),
-            global_registry()->active_entry());
-
-  // Register a contextual entry on the active tab while the global entry with
-  // the same key is showing.
-  contextual_registries_[1]->Register(CreateEntry(extension_2_key));
-
-  // Since `extension_2`'s global entry was showing when the contextual entry
-  // was registered for the active tab, the contextual entry should be shown
-  // right after registration.
-  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
-            coordinator()->GetCurrentSidePanelEntryForTesting());
-  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
-            contextual_registries_[1]->active_entry());
+  // Give extension access to tab side panel.
+  // Tab entry should immediately be shown.
+  RunSetOptions(*extension,
+                /*tab_id=*/
+                sessions::SessionTabHelper::IdForTab(
+                    browser()->GetActiveTabInterface()->GetContents())
+                    .id(),
+                /*path=*/"panel.html",
+                /*enabled=*/true);
+  EXPECT_TRUE(coordinator()->current_key()->tab_handle.has_value());
 }
 
 // Test that if global or contextual entries are deregistered, and if it exists,

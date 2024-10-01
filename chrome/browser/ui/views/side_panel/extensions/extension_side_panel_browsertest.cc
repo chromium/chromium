@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -108,47 +108,37 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
 
 // A class which waits for an extension's SidePanelEntry to be registered and/or
 // deregistered.
-class ExtensionSidePanelRegistryWaiter : public SidePanelRegistryObserver {
+class ExtensionSidePanelRegistryWaiter {
  public:
-  explicit ExtensionSidePanelRegistryWaiter(SidePanelRegistry* registry,
-                                            const ExtensionId& extension_id)
-      : extension_id_(extension_id) {
-    side_panel_registry_observation_.Observe(registry);
-  }
+  ExtensionSidePanelRegistryWaiter(SidePanelRegistry* registry,
+                                   const ExtensionId& extension_id)
+      : registry_(registry), extension_id_(extension_id) {}
 
-  ~ExtensionSidePanelRegistryWaiter() override = default;
+  ~ExtensionSidePanelRegistryWaiter() = default;
   ExtensionSidePanelRegistryWaiter(
       const ExtensionSidePanelRegistryWaiter& other) = delete;
   ExtensionSidePanelRegistryWaiter& operator=(
       const ExtensionSidePanelRegistryWaiter& other) = delete;
 
+  SidePanelEntry::Key GetKey() {
+    return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id_);
+  }
+
   // Waits until the entry for `extension_id_` is registered.
-  void WaitForRegistration() { registration_run_loop_.Run(); }
+  void WaitForRegistration() {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return registry_->GetEntryForKey(GetKey()); }));
+  }
 
   // Waits until the entry for `extension_id_` is deregistered.
-  void WaitForDeregistration() { deregistration_run_loop_.Run(); }
+  void WaitForDeregistration() {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !registry_->GetEntryForKey(GetKey()); }));
+  }
 
  private:
-  // SidePanelRegistryObserver implementation.
-  void OnEntryRegistered(SidePanelRegistry* registry,
-                         SidePanelEntry* entry) override {
-    if (entry->key() == GetKey(extension_id_)) {
-      registration_run_loop_.QuitWhenIdle();
-    }
-  }
-
-  void OnEntryWillDeregister(SidePanelRegistry* registry,
-                             SidePanelEntry* entry) override {
-    if (entry->key() == GetKey(extension_id_)) {
-      deregistration_run_loop_.QuitWhenIdle();
-    }
-  }
-
+  raw_ptr<SidePanelRegistry> registry_;
   ExtensionId extension_id_;
-  base::RunLoop registration_run_loop_;
-  base::RunLoop deregistration_run_loop_;
-  base::ScopedObservation<SidePanelRegistry, SidePanelRegistryObserver>
-      side_panel_registry_observation_{this};
 };
 
 class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
