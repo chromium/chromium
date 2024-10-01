@@ -32,6 +32,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -71,25 +72,6 @@ enum ManagementStringType : size_t {
 };
 
 const char* g_device_manager_for_testing = nullptr;
-
-std::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
-  if (g_browser_process->profile_manager()) {
-    ProfileAttributesEntry* entry =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile->GetPath());
-    if (entry && !entry->GetHostedDomain().empty() &&
-        entry->GetHostedDomain() != kNoHostedDomainFound)
-      return entry->GetHostedDomain();
-  }
-
-  const std::string domain =
-      enterprise_util::GetDomainFromEmail(profile->GetProfileUserName());
-  // Heuristic for most common consumer Google domains -- these are not managed.
-  if (domain.empty() || domain == "gmail.com" || domain == "googlemail.com")
-    return std::nullopt;
-  return domain;
-}
 
 bool ShouldDisplayManagedByParentUi(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -157,6 +139,27 @@ ScopedDeviceManagerForTesting::ScopedDeviceManagerForTesting(
 
 ScopedDeviceManagerForTesting::~ScopedDeviceManagerForTesting() {
   g_device_manager_for_testing = previous_manager_;
+}
+
+std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile) {
+  if (g_browser_process->profile_manager()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile.GetPath());
+    if (entry && !entry->GetHostedDomain().empty() &&
+        entry->GetHostedDomain() != kNoHostedDomainFound) {
+      return entry->GetHostedDomain();
+    }
+  }
+
+  const std::string domain =
+      enterprise_util::GetDomainFromEmail(profile.GetProfileUserName());
+  if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          profile.GetProfileUserName())) {
+    return std::nullopt;
+  }
+  return domain;
 }
 
 bool ShouldDisplayManagedUi(Profile* profile) {
@@ -486,7 +489,7 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
     return "Local Test Policies";
   }
 
-  return GetEnterpriseAccountDomain(profile);
+  return GetEnterpriseAccountDomain(*profile);
 }
 
 }  // namespace chrome

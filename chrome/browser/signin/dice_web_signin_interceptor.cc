@@ -1537,6 +1537,17 @@ bool DiceWebSigninInterceptor::IsFullExtendedAccountInfoAvailable(
          signin::Tribool::kUnknown;
 }
 
+bool DiceWebSigninInterceptor::managed_profile_creation_required_by_policy()
+    const {
+  return state_->interception_type_ ==
+         WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced;
+}
+
+AccountInfo DiceWebSigninInterceptor::intercepted_account_info() const {
+  return identity_manager_->FindExtendedAccountInfoByAccountId(
+      state_->account_id_);
+}
+
 // static
 base::TimeDelta
 DiceWebSigninInterceptor::GetTimeSinceLastChromeSigninDeclineForTesting(

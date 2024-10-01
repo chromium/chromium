@@ -29,6 +29,11 @@ class ScopedDeviceManagerForTesting {
   const char* previous_manager_ = nullptr;
 };
 
+// Returns the enterprise domain of `profile` if one was found.
+// This function will try to get the hosted domain and fallback on the domain
+// of the email of the signed in account.
+std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile);
+
 // Returns true if a 'Managed by <...>' message should appear in
 // Chrome's App Menu, and on the following chrome:// pages:
 // - chrome://bookmarks
