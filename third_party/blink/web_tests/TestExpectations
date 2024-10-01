@@ -8095,7 +8095,7 @@ crbug.com/365432212 virtual/prefetch/http/tests/inspector-protocol/prefetch/requ
 crbug.com/365432212 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure Pass ]
 crbug.com/365432212 virtual/prefetch-new-wait-loop/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure Pass ]
 crbug.com/365444428 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
-crbug.com/363342597 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeElement-on-event.html [ Failure Timeout Pass ]
+crbug.com/363342597 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeElement-on-event.html [ Failure Pass Timeout ]
 
 # Gardener 2024-09-10
 crbug.com/364306254 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]

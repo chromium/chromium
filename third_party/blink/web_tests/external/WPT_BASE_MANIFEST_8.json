@@ -393011,6 +393011,10 @@
        "fcaf5fe85b44129db71f82913374859380576369",
        []
       ],
+      "width-height-001-expected.txt": [
+       "68b359257d2727794c635f716e08330c0069b96a",
+       []
+      ],
       "width-height-002-ref.html": [
        "ed5125e95265b4e158a244766138c62fd5f86a3b",
        []
@@ -620594,14 +620598,28 @@
        ]
       ],
       "width-height-001.html": [
-       "2deedc3f0b84d4f822387f080bd13ef265f011cf",
+       "57cbc1b0ab2788958d4649b0e4ef1a59baa1a159",
        [
         null,
         {}
        ]
       ],
       "width-height-004.html": [
-       "10ece249ca0b51d4b63c865703ee43b7f95eda30",
+       "e26ebe9682328bfd69db8eb4d46c2f6e0ad71ecf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "width-height-005.html": [
+       "a6ea8d82deb90418484d98dee891d14eb7ba7e45",
+       [
+        null,
+        {}
+       ]
+      ],
+      "width-height-006.html": [
+       "d5427051974a0d9bd47a69bbdd2807b98449e641",
        [
         null,
         {}
@@ -657355,7 +657373,7 @@
      "tentative": {
       "static-router": {
        "static-router-resource-timing.https.html": [
-        "c85c5ea3b9adfd618cea8f38a71c5daec9791b0e",
+        "796beb916a68ec58c1a8a0315a03133d6ae3bc63",
         [
          null,
          {}

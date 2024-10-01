@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] width property on mo (preferred width)
+  assert_approx_equals: expected 300 +/- 1 but got 308.875
+Harness: the test ran to completion.
+
