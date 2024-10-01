@@ -1661,51 +1661,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxAnswerActionsVariants[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
-    {"OmniboxSquareSuggestIconIcons", "true"}};
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAnswers[] = {
-    {"OmniboxSquareSuggestIconAnswers", "true"}};
-const FeatureEntry::FeatureParam
-    kOmniboxSquareSuggestionIconFaviconsAndAnswers[] = {
-        {"OmniboxSquareSuggestIconIcons", "true"},
-        {"OmniboxSquareSuggestIconAnswers", "true"},
-};
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconEntities[] = {
-    {"OmniboxSquareSuggestIconEntities", "true"}};
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconWeather[] = {
-    {"OmniboxSquareSuggestIconWeather", "true"}};
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAll[] = {
-    {"OmniboxSquareSuggestIconIcons", "true"},
-    {"OmniboxSquareSuggestIconAnswers", "true"},
-    {"OmniboxSquareSuggestIconEntities", "true"},
-    {"OmniboxSquareSuggestIconWeather", "true"},
-};
-const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAllFullEntity[] = {
-    {"OmniboxSquareSuggestIconIcons", "true"},
-    {"OmniboxSquareSuggestIconAnswers", "true"},
-    {"OmniboxSquareSuggestIconEntities", "true"},
-    {"OmniboxSquareSuggestIconEntitiesScale", "1"},
-    {"OmniboxSquareSuggestIconWeather", "true"},
-};
-
-const FeatureEntry::FeatureVariation kOmniboxSquareSuggestionIconVariations[] =
-    {
-        {"Favicons", kOmniboxSquareSuggestionIconFavicons,
-         std::size(kOmniboxSquareSuggestionIconFavicons), nullptr},
-        {"Answers", kOmniboxSquareSuggestionIconAnswers,
-         std::size(kOmniboxSquareSuggestionIconAnswers), nullptr},
-        {"Favicons and answers", kOmniboxSquareSuggestionIconFaviconsAndAnswers,
-         std::size(kOmniboxSquareSuggestionIconFaviconsAndAnswers), nullptr},
-        {"Entities", kOmniboxSquareSuggestionIconEntities,
-         std::size(kOmniboxSquareSuggestionIconEntities), nullptr},
-        {"Weather", kOmniboxSquareSuggestionIconWeather,
-         std::size(kOmniboxSquareSuggestionIconWeather), nullptr},
-        {"All", kOmniboxSquareSuggestionIconAll,
-         std::size(kOmniboxSquareSuggestionIconAll), nullptr},
-        {"All with full entities", kOmniboxSquareSuggestionIconAllFullEntity,
-         std::size(kOmniboxSquareSuggestionIconAllFullEntity), nullptr},
-};
-
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
     {"MaxZeroSuggestMatches", "5"}};
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches6[] = {
@@ -1844,22 +1799,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxDynamicMaxAutocomplete101), nullptr},
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
-
-const FeatureEntry::FeatureParam kOmniboxFontSize12[] = {
-    {"OmniboxFontSizeNonTouchUI", "12"}};
-const FeatureEntry::FeatureParam kOmniboxFontSize13[] = {
-    {"OmniboxFontSizeNonTouchUI", "13"}};
-const FeatureEntry::FeatureParam kOmniboxFontSize14[] = {
-    {"OmniboxFontSizeNonTouchUI", "14"}};
-
-const FeatureEntry::FeatureVariation kOmniboxFontSizeVariations[] = {
-    {"12pt omnibox font", kOmniboxFontSize12, std::size(kOmniboxFontSize12),
-     nullptr},
-    {"13pt omnibox font", kOmniboxFontSize13, std::size(kOmniboxFontSize13),
-     nullptr},
-    {"14pt omnibox font", kOmniboxFontSize14, std::size(kOmniboxFontSize14),
-     nullptr},
-};
 
 const FeatureEntry::FeatureParam kRepeatableQueries_6Searches_90Days[] = {
     {"RepeatableQueriesIgnoreDuplicateVisits", "true"},
@@ -6518,81 +6457,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicMaxAutocomplete,
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
-
-    {"omnibox-square-suggest-icons",
-     flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconName,
-     flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kSquareSuggestIcons,
-                                    kOmniboxSquareSuggestionIconVariations,
-                                    "OmniboxBundledExperimentV1")},
-
-    {"omnibox-cr23-action-chips",
-     flag_descriptions::kOmniboxCR23ActionChipsName,
-     flag_descriptions::kOmniboxCR23ActionChipsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kCr2023ActionChips)},
-
-    {"omnibox-cr23-action-chips-icons",
-     flag_descriptions::kOmniboxCR23ActionChipsIconsName,
-     flag_descriptions::kOmniboxCR23ActionChipsIconsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kCr2023ActionChipsIcons)},
-
-    {"omnibox-cr23-expanded-state-height",
-     flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
-     flag_descriptions::kOmniboxCR23ExpandedStateHeightDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kExpandedStateHeight)},
-
-    {"omnibox-cr23-expanded-state-shape",
-     flag_descriptions::kOmniboxCR23ExpandedStateShapeName,
-     flag_descriptions::kOmniboxCR23ExpandedStateShapeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kExpandedStateShape)},
-
-    {"omnibox-cr23-expanded-state-suggest-icons",
-     flag_descriptions::kOmniboxCR23ExpandedStateSuggestIconsName,
-     flag_descriptions::kOmniboxCR23ExpandedStateSuggestIconsDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kExpandedStateSuggestIcons)},
-
-    {"omnibox-cr23-steady-state-icons",
-     flag_descriptions::kOmniboxCR23SteadyStateIconsName,
-     flag_descriptions::kOmniboxCR23SteadyStateIconsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxCR23SteadyStateIcons)},
-
-    {"omnibox-cr23-expanded-state-colors",
-     flag_descriptions::kOmniboxCR23ExpandedStateColorsName,
-     flag_descriptions::kOmniboxCR23ExpandedStateColorsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kExpandedStateColors)},
-
-    {"omnibox-cr23-expanded-state-layout",
-     flag_descriptions::kOmniboxCR23ExpandedStateLayoutName,
-     flag_descriptions::kOmniboxCR23ExpandedStateLayoutDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kExpandedLayout)},
-
-    {"omnibox-cr23-suggestion-hover-fill-shape",
-     flag_descriptions::kOmniboxCR23SuggestionHoverFillShapeName,
-     flag_descriptions::kOmniboxCR23SuggestionHoverFillShapeDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kSuggestionHoverFillShape)},
-
-    {"omnibox-gm3-steady-state-background-color",
-     flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorName,
-     flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorDescription,
-     kOsAll, FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateBackgroundColor)},
-
-    {"omnibox-gm3-steady-state-height",
-     flag_descriptions::kOmniboxGM3SteadyStateHeightName,
-     flag_descriptions::kOmniboxGM3SteadyStateHeightDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateHeight)},
-
-    {"omnibox-gm3-steady-state-text-color",
-     flag_descriptions::kOmniboxGM3SteadyStateTextColorName,
-     flag_descriptions::kOmniboxGM3SteadyStateTextColorDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateTextColor)},
-
-    {"omnibox-gm3-steady-state-text-style",
-     flag_descriptions::kOmniboxGM3SteadyStateTextStyleName,
-     flag_descriptions::kOmniboxGM3SteadyStateTextStyleDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxSteadyStateTextStyle,
-                                    kOmniboxFontSizeVariations,
-                                    "OmniboxCR2023m113")},
 
     {"omnibox-grouping-framework-non-zps",
      flag_descriptions::kOmniboxGroupingFrameworkNonZPSName,

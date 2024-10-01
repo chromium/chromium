@@ -293,10 +293,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       PickGoogleColor(ui::kColorAccent, kColorToolbar,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverityIcon};
-  mixer[kColorOmniboxAnswerIconBackground] = {
-      ui::kColorButtonBackgroundProminent};
-  mixer[kColorOmniboxAnswerIconForeground] = {
-      ui::kColorButtonForegroundProminent};
   mixer[kColorOmniboxChipBackground] = {kColorTabBackgroundActiveFrameActive};
   mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
       kColorInfoBarBackground};

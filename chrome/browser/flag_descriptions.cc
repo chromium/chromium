@@ -2613,51 +2613,6 @@ const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 const char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
 
-const char kOmniboxCR23ActionChipsName[] = "Omnibox CR 2023 Action Chips";
-const char kOmniboxCR23ActionChipsDescription[] =
-    "Updates Omnibox Action Chips to comply with CR23 shape guidelines.";
-
-const char kOmniboxCR23ActionChipsIconsName[] =
-    "Omnibox CR 2023 Action Chips Icons";
-const char kOmniboxCR23ActionChipsIconsDescription[] =
-    "Updates Omnibox Action Chips to comply with CR23 icons design.";
-
-const char kOmniboxCR23ExpandedStateColorsName[] =
-    "Omnibox Expanded State Colors";
-const char kOmniboxCR23ExpandedStateColorsDescription[] =
-    "Updates colors in Omnibox expanded state to comply with CR23 guidelines.";
-
-const char kOmniboxCR23ExpandedStateHeightName[] =
-    "Omnibox Expanded State Height";
-const char kOmniboxCR23ExpandedStateHeightDescription[] =
-    "Updates Omnibox expanded state height to comply with CR23 guidelines.";
-
-const char kOmniboxCR23ExpandedStateLayoutName[] =
-    "Omnibox Expanded State Layout";
-const char kOmniboxCR23ExpandedStateLayoutDescription[] =
-    "Updates Omnibox expanded state layout to comply with CR23 guidelines.";
-
-const char kOmniboxCR23ExpandedStateShapeName[] =
-    "Omnibox Expanded State Shape";
-const char kOmniboxCR23ExpandedStateShapeDescription[] =
-    "Updates Omnibox expanded state shape to comply with CR23 guidelines.";
-
-const char kOmniboxCR23ExpandedStateSuggestIconsName[] =
-    "Omnibox Expanded State Suggest Icons";
-const char kOmniboxCR23ExpandedStateSuggestIconsDescription[] =
-    "Updates suggestion icons in Omnibox query row and expanded state to "
-    "comply with CR23 guidelines.";
-
-const char kOmniboxCR23SteadyStateIconsName[] = "Omnibox Steady State Icons";
-const char kOmniboxCR23SteadyStateIconsDescription[] =
-    "Updates Omnibox steady state icons to comply with CR23 guidelines.";
-
-const char kOmniboxCR23SuggestionHoverFillShapeName[] =
-    "Omnibox Suggestion Hover Fill Shape";
-const char kOmniboxCR23SuggestionHoverFillShapeDescription[] =
-    "Updates Omnibox suggestion hover fill shape to comply with CR23 "
-    "guidelines.";
-
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
@@ -2668,26 +2623,6 @@ const char kOmniboxForceAllowedToBeDefaultName[] =
 const char kOmniboxForceAllowedToBeDefaultDescription[] =
     "If enabled, all omnibox suggestions pretend to be inlineable. This likely "
     "has a bunch of problems.";
-
-const char kOmniboxGM3SteadyStateBackgroundColorName[] =
-    "Omnibox Steady State Background Color";
-const char kOmniboxGM3SteadyStateBackgroundColorDescription[] =
-    "Updates Omnibox steady state background color to comply with GM3 "
-    "guidelines.";
-
-const char kOmniboxGM3SteadyStateHeightName[] = "Omnibox Steady State Height";
-const char kOmniboxGM3SteadyStateHeightDescription[] =
-    "Updates Omnibox steady state height to comply with GM3 guidelines.";
-
-const char kOmniboxGM3SteadyStateTextStyleName[] =
-    "Omnibox Steady State Text Style";
-const char kOmniboxGM3SteadyStateTextStyleDescription[] =
-    "Updates Omnibox steady state text style to comply with GM3 guidelines.";
-
-const char kOmniboxGM3SteadyStateTextColorName[] =
-    "Omnibox Steady State Text Color";
-const char kOmniboxGM3SteadyStateTextColorDescription[] =
-    "Updates Omnibox steady state text color to comply with GM3 guidelines.";
 
 const char kOmniboxGroupingFrameworkZPSName[] =
     "Omnibox Grouping Framework for ZPS";
@@ -2806,12 +2741,6 @@ const char kOmniboxSuggestionAnswerMigrationDescription[] =
 const char kOmniboxShortcutBoostName[] = "Omnibox shortcut boosting";
 const char kOmniboxShortcutBoostDescription[] =
     "Promote shortcuts to be default when available.";
-
-const char kOmniboxSimplifiedUiSquareSuggestIconName[] =
-    "Omnibox Square Suggest Icons";
-const char kOmniboxSimplifiedUiSquareSuggestIconDescription[] =
-    "Adds a grey square background to suggestion icons, and makes the answer "
-    "icon square.";
 
 const char kOmniboxMaxZeroSuggestMatchesName[] =
     "Omnibox Max Zero Suggest Matches";

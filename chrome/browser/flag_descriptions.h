@@ -1505,50 +1505,11 @@ extern const char kOmniboxCalcProviderDescription[];
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 
-extern const char kOmniboxCR23ActionChipsName[];
-extern const char kOmniboxCR23ActionChipsDescription[];
-
-extern const char kOmniboxCR23ActionChipsIconsName[];
-extern const char kOmniboxCR23ActionChipsIconsDescription[];
-
-extern const char kOmniboxCR23ExpandedStateColorsName[];
-extern const char kOmniboxCR23ExpandedStateColorsDescription[];
-
-extern const char kOmniboxCR23ExpandedStateHeightName[];
-extern const char kOmniboxCR23ExpandedStateHeightDescription[];
-
-extern const char kOmniboxCR23ExpandedStateLayoutName[];
-extern const char kOmniboxCR23ExpandedStateLayoutDescription[];
-
-extern const char kOmniboxCR23ExpandedStateShapeName[];
-extern const char kOmniboxCR23ExpandedStateShapeDescription[];
-
-extern const char kOmniboxCR23ExpandedStateSuggestIconsName[];
-extern const char kOmniboxCR23ExpandedStateSuggestIconsDescription[];
-
-extern const char kOmniboxCR23SteadyStateIconsName[];
-extern const char kOmniboxCR23SteadyStateIconsDescription[];
-
-extern const char kOmniboxCR23SuggestionHoverFillShapeName[];
-extern const char kOmniboxCR23SuggestionHoverFillShapeDescription[];
-
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 
 extern const char kOmniboxForceAllowedToBeDefaultName[];
 extern const char kOmniboxForceAllowedToBeDefaultDescription[];
-
-extern const char kOmniboxGM3SteadyStateBackgroundColorName[];
-extern const char kOmniboxGM3SteadyStateBackgroundColorDescription[];
-
-extern const char kOmniboxGM3SteadyStateHeightName[];
-extern const char kOmniboxGM3SteadyStateHeightDescription[];
-
-extern const char kOmniboxGM3SteadyStateTextStyleName[];
-extern const char kOmniboxGM3SteadyStateTextStyleDescription[];
-
-extern const char kOmniboxGM3SteadyStateTextColorName[];
-extern const char kOmniboxGM3SteadyStateTextColorDescription[];
 
 extern const char kOmniboxGroupingFrameworkNonZPSName[];
 extern const char kOmniboxGroupingFrameworkZPSName[];
@@ -1608,9 +1569,6 @@ extern const char kOmniboxShortcutBoostDescription[];
 
 extern const char kOmniboxShortcutExpandingName[];
 extern const char kOmniboxShortcutExpandingDescription[];
-
-extern const char kOmniboxSimplifiedUiSquareSuggestIconName[];
-extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 
 extern const char kOmniboxStarterPackExpansionName[];
 extern const char kOmniboxStarterPackExpansionDescription[];

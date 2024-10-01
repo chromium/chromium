@@ -218,14 +218,6 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enable_if(IS_ANDROID));
 
-// If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
-// the omnibox suggestion popup.
-BASE_FEATURE(kCr2023ActionChips, "Cr2023ActionChips", ENABLED);
-
-// If enabled, uses the Chrome Refresh 2023 design's icons for action chips in
-// the omnibox suggestion popup.
-BASE_FEATURE(kCr2023ActionChipsIcons, "Cr2023ActionChipsIcons", DISABLED);
-
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every
@@ -245,77 +237,13 @@ BASE_FEATURE(kRichAutocompletion,
 // Feature used to enable Pedals in the NTP Realbox.
 BASE_FEATURE(kNtpRealboxPedals, "NtpRealboxPedals", ENABLED);
 
-// If enabled, adds a grey square background to search icons, and makes answer
-// icon square instead of round.
-// TODO(manukh): Partially launched; still experimenting with
-//  `OmniboxSquareSuggestIconWeather`. Clean up when that param launches and
-//  reaches stable.
-BASE_FEATURE(kSquareSuggestIcons, "OmniboxSquareIcons", ENABLED);
-
 // If enabled, shows the omnibox suggestions popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup, "WebUIOmniboxPopup", DISABLED);
-
-// If enabled, Omnibox "expanded state" height is increased from 42 px to 44 px.
-BASE_FEATURE(kExpandedStateHeight, "OmniboxExpandedStateHeight", ENABLED);
-
-// If enabled, Omnibox "expanded state" corner radius is increased from 8px to
-// 16px.
-BASE_FEATURE(kExpandedStateShape, "OmniboxExpandedStateShape", ENABLED);
-
-// If enabled, Omnibox "expanded state" colors are updated to match CR23
-// guidelines.
-BASE_FEATURE(kExpandedStateColors, "OmniboxExpandedStateColors", DISABLED);
-
-// If enabled, Omnibox "expanded state" icons are updated to match CR23
-// guidelines.
-BASE_FEATURE(kExpandedStateSuggestIcons,
-             "OmniboxExpandedStateSuggestIcons",
-             DISABLED);
-
-// If enabled, Omnibox "expanded state" layout is updated to match CR23
-// guidelines.
-BASE_FEATURE(kExpandedLayout, "OmniboxExpandedLayout", DISABLED);
-
-// If enabled, the shape of the "hover fill" that's rendered for Omnibox
-// suggestions is updated to match CR23 guidelines.
-BASE_FEATURE(kSuggestionHoverFillShape,
-             "OmniboxSuggestionHoverFillShape",
-             DISABLED);
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
-             DISABLED);
-
-// If enabled, Omnibox LHS and RHS icons are updated to match CR23
-// guidelines.
-BASE_FEATURE(kOmniboxCR23SteadyStateIcons,
-             "kOmniboxCR23SteadyStateIcons",
-             DISABLED);
-
-// If enabled, Omnibox "steady state" background color is updated to match CR23
-// guidelines.
-BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
-             "OmniboxSteadyStateBackgroundColor",
-             DISABLED);
-
-// If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
-// match CR23 guidelines.
-// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
-//   launching the rest of CR23 in m117.
-BASE_FEATURE(kOmniboxSteadyStateHeight, "OmniboxSteadyStateHeight", ENABLED);
-
-// If enabled, Omnibox "steady state" text style is updated to match CR23
-// guidelines.
-BASE_FEATURE(kOmniboxSteadyStateTextStyle,
-             "OmniboxSteadyStateTextStyle",
-             DISABLED);
-
-// If enabled, Omnibox "steady state" text color is updated to match CR23
-// guidelines.
-BASE_FEATURE(kOmniboxSteadyStateTextColor,
-             "OmniboxSteadyStateTextColor",
              DISABLED);
 
 // Android only flag that controls whether the new security indicator should be

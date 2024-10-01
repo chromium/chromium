@@ -293,8 +293,6 @@
   E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
   E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
   /* Omnibox colors. */ \
-  E_CPONLY(kColorOmniboxAnswerIconBackground) \
-  E_CPONLY(kColorOmniboxAnswerIconForeground) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Background) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \

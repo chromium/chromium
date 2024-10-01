@@ -301,30 +301,6 @@ bool ShouldApplyOnDeviceHeadModelSelectionFix();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 
-// Omnibox UI Simplification - Square icon backgrounds.
-// Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
-// Does not apply to weather answers. Also updates the shade of blue and the
-// stroke color.
-extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
-// Gray rounded rect background for search loop and nav fav icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
-// Gray rounded rect background for entities.
-extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
-// The entity size relative to the background. 0.5 means the entity
-// takes up half of the space. Should be (0, 1). No effect if
-// `kSquareSuggestIconEntities` is false or this is 1.
-extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
-// Gray rounded rect background for weather icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconWeather;
-
-// Omnibox GM3 - text style.
-// Returns true if the feature to enable GM3 text styling is enabled.
-bool IsGM3TextStyleEnabled();
-// Specifies the omnibox font size (Touch UI).
-extern const base::FeatureParam<int> kFontSizeTouchUI;
-// Specifies the omnibox font size (non-Touch UI).
-extern const base::FeatureParam<int> kFontSizeNonTouchUI;
-
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 
