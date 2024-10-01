@@ -140,7 +140,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         TabListMode.GRID,
                         mRootView,
                         mRegularTabCreator,
-                        mBackPressManager);
+                        mBackPressManager,
+                        /* desktopWindowStateProvider= */ null);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator,

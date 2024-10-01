@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class TabListEditorManager {
     private final @NonNull ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
             new ObservableSupplierImpl<>();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
@@ -76,7 +78,8 @@ public class TabListEditorManager {
             @NonNull TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,
             @TabListMode int mode,
-            @Nullable Runnable onTabGroupCreation) {
+            @Nullable Runnable onTabGroupCreation,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
@@ -89,6 +92,7 @@ public class TabListEditorManager {
         mMode = mode;
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(activity, modalDialogManager, onTabGroupCreation);
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
         // default parent view of the snackbar. When shown this will be re-parented inside the
@@ -130,7 +134,8 @@ public class TabListEditorManager {
                             mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null,
-                            mModalDialogManager);
+                            mModalDialogManager,
+                            mDesktopWindowStateProvider);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

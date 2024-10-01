@@ -15,6 +15,7 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -32,11 +33,11 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -137,6 +138,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull Tracker mTracker;
     private final @NonNull Runnable mAppendMessageRunnable;
     private final @NonNull Supplier<TabListCoordinator> mTabListCoordinatorSupplier;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -161,7 +163,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Tracker tracker,
             @NonNull Runnable appendMessageRunnable,
-            @NonNull Supplier<TabListCoordinator> tabListCoordinatorSupplier) {
+            @NonNull Supplier<TabListCoordinator> tabListCoordinatorSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -176,6 +179,7 @@ public class ArchivedTabsMessageService extends MessageService
         mTracker = tracker;
         mAppendMessageRunnable = appendMessageRunnable;
         mTabListCoordinatorSupplier = tabListCoordinatorSupplier;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
         // Capture this value immediately before it expires when the IPH is dismissed, which will
         // happen regardless of user behavior. The TabArchiveSettings tracks whether the main IPH
         // was followed. When that's true, the archived tabs message should be highlighted as part
@@ -307,7 +311,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mRegularTabCreator,
                         mBackPressManager,
                         mTabArchiveSettings,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        mDesktopWindowStateProvider);
     }
 
     private void updateModelProperties() {

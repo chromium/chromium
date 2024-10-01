@@ -29,8 +29,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -48,7 +50,8 @@ import java.util.Set;
  */
 class TabListEditorMediator
         implements TabListEditorCoordinator.TabListEditorController,
-                TabListEditorAction.ActionDelegate {
+                TabListEditorAction.ActionDelegate,
+                AppHeaderObserver {
     private final Context mContext;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final @NonNull ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
@@ -61,6 +64,7 @@ class TabListEditorMediator
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
     private final TabListEditorLayout mTabListEditorLayout;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private @Nullable TabListCoordinator mTabListCoordinator;
     private @Nullable TabListEditorCoordinator.ResetHandler mResetHandler;
@@ -92,7 +96,8 @@ class TabListEditorMediator
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
             TabListEditorLayout tabListEditorLayout,
-            @TabActionState int initialTabActionState) {
+            @TabActionState int initialTabActionState,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mContext = context;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mModel = model;
@@ -102,6 +107,7 @@ class TabListEditorMediator
         mBottomSheetController = bottomSheetController;
         mTabListEditorLayout = tabListEditorLayout;
         mTabActionState = initialTabActionState;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -153,6 +159,12 @@ class TabListEditorMediator
                         mBackPressChangedSupplier.set(isEditorVisible());
                     }
                 });
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+            if (mDesktopWindowStateProvider.getAppHeaderState() != null) {
+                onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+            }
+        }
     }
 
     private boolean isEditorVisible() {
@@ -373,6 +385,12 @@ class TabListEditorMediator
     @Override
     public BottomSheetController getBottomSheetController() {
         return mBottomSheetController;
+    }
+
+    /** AppHeaderObserver implementation */
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        mModel.set(TabListEditorProperties.TOP_MARGIN, newState.getAppHeaderHeight());
     }
 
     /** Destroy any members that needs clean up. */

@@ -306,7 +306,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null,
-                            mModalDialogManager);
+                            mModalDialogManager,
+                            // Parent container handles desktop window state.
+                            /* desktopWindowStateProvider= */ null);
         }
 
         return mTabListEditorCoordinator.getController();

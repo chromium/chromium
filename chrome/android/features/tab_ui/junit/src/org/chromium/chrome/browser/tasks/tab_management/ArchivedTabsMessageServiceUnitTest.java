@@ -108,7 +108,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mModalDialogManager,
                         mTracker,
                         mAppendMessageRunnable,
-                        mTabListCoordinatorSupplier);
+                        mTabListCoordinatorSupplier,
+                        /* desktopWindowStateProvider= */ null);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);

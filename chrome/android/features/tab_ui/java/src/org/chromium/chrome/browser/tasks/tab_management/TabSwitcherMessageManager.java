@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -144,6 +145,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull ViewGroup mRootView;
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private @Nullable Profile mProfile;
     private @Nullable PriceMessageService mPriceMessageService;
@@ -164,6 +166,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param rootView The root {@link ViewGroup} to attach dialogs to.
      * @param regularTabCreator Manages the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers in the app.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     public TabSwitcherMessageManager(
             @NonNull Context context,
@@ -177,7 +180,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @TabListMode int tabListMode,
             @NonNull ViewGroup rootView,
             @NonNull TabCreator regularTabCreator,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mContext = context;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -190,6 +194,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mRootView = rootView;
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
@@ -298,7 +303,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             () ->
                                     appendNextMessage(
                                             MessageService.MessageType.ARCHIVED_TABS_MESSAGE),
-                            mTabListCoordinatorSupplier);
+                            mTabListCoordinatorSupplier,
+                            mDesktopWindowStateProvider);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

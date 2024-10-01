@@ -32,15 +32,19 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARI
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Intent;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
@@ -64,12 +68,14 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -84,6 +90,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Butt
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -93,6 +100,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -155,6 +163,7 @@ public class SelectableTabListEditorTest {
     private SnackbarManager mSnackbarManager;
     private BookmarkModel mBookmarkModel;
     private TabGroupCreationDialogManager mCreationDialogManager;
+    private AppHeaderCoordinator mAppHeaderStateProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -191,6 +200,12 @@ public class SelectableTabListEditorTest {
                             mTabModelSelector
                                     .getTabModelFilterProvider()
                                     .getCurrentTabModelFilterSupplier();
+                    mAppHeaderStateProvider =
+                            (AppHeaderCoordinator)
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getRootUiCoordinatorForTesting()
+                                            .getDesktopWindowStateProvider();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
                                     cta,
@@ -206,7 +221,8 @@ public class SelectableTabListEditorTest {
                                     /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.SELECTABLE,
                                     /* gridCardOnClickListenerProvider= */ null,
-                                    mModalDialogManager);
+                                    mModalDialogManager,
+                                    mAppHeaderStateProvider);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
@@ -362,6 +378,47 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot.verifyToolbarMenuItemState("Close tabs", /* enabled= */ false);
         Espresso.pressBack();
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @Restriction(DeviceFormFactor.TABLET)
+    @Feature("DesktopWindow")
+    @SmallTest
+    public void testMarginWithAppHeaders() {
+        // Height to apply as top margin.
+        int appHeaderHeight =
+                sActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_height);
+        Rect windowRect = new Rect();
+        sActivityTestRule.getActivity().getWindow().getDecorView().getGlobalVisibleRect(windowRect);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Trigger desktop window - set app headers
+                    Rect widestUnoccludedRect =
+                            new Rect(windowRect.left, 0, windowRect.right, appHeaderHeight);
+                    var state = new AppHeaderState(windowRect, widestUnoccludedRect, true);
+                    mAppHeaderStateProvider.setStateForTesting(true, state);
+                });
+
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        showSelectionEditor(tabs, null);
+
+        mRobot.resultRobot.verifyTabListEditorHasTopMargin(appHeaderHeight);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Exit desktop window.
+                    var state = new AppHeaderState(windowRect, new Rect(), false);
+                    mAppHeaderStateProvider.setStateForTesting(false, state);
+                });
+
+        // Verify margin is reset.
+        mRobot.resultRobot.verifyTabListEditorHasTopMargin(0);
     }
 
     @Test

@@ -257,7 +257,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mMode,
                             mActivity.findViewById(R.id.coordinator),
                             mTabCreatorManager.getTabCreator(/* incognito= */ false),
-                            mBackPressManager);
+                            mBackPressManager,
+                            mDesktopWindowStateProvider);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

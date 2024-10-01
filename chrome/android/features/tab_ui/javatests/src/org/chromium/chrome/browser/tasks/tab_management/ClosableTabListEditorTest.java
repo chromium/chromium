@@ -98,7 +98,8 @@ public class ClosableTabListEditorTest {
                                     /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.CLOSABLE,
                                     /* gridCardOnClickListenerProvider= */ null,
-                                    mModalDialogManager);
+                                    mModalDialogManager,
+                                    /* desktopWindowStateProvider= */ null);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

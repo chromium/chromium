@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,6 +48,11 @@ public class TabListEditorLayoutBinder {
                             model.get(TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER));
         } else if (TabListEditorProperties.TOOLBAR_TITLE == propertyKey) {
             view.getToolbar().setTitle(model.get(TabListEditorProperties.TOOLBAR_TITLE));
+        } else if (TabListEditorProperties.TOP_MARGIN == propertyKey) {
+            ViewGroup.MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
+            layoutParams.topMargin = model.get(TabListEditorProperties.TOP_MARGIN);
+            // Calling setLayoutParams to requestLayout() for margin to take effect.
+            view.setLayoutParams(layoutParams);
         }
     }
 }

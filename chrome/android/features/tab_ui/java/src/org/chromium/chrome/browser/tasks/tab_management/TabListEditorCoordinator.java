@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -257,6 +258,7 @@ class TabListEditorCoordinator {
      * @param bottomSheetController Used to display bottom sheets.
      * @param initialTabActionState The initial TabActionState to use.
      * @param modalDialogManager Used for managing the modal dialogs.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     public TabListEditorCoordinator(
             Context context,
@@ -271,9 +273,9 @@ class TabListEditorCoordinator {
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
             @TabActionState int initialTabActionState,
-            @Nullable
-                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
             mRootView = rootView;
@@ -309,7 +311,8 @@ class TabListEditorCoordinator {
                             snackbarManager,
                             bottomSheetController,
                             mTabListEditorLayout,
-                            mTabActionState);
+                            mTabActionState,
+                            desktopWindowStateProvider);
             mTabListEditorMediator.setNavigationProvider(
                     new TabListEditorNavigationProvider(mContext, mTabListEditorController));
         }
