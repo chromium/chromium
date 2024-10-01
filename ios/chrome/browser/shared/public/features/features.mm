@@ -72,6 +72,15 @@ const char kSafetyCheckNotificationsImpressionTrigger[] =
 const char kSafetyCheckNotificationsImpressionLimit[] =
     "SafetyCheckNotificationsImpressionLimit";
 
+const char kSafetyCheckAllowPasswordsNotifications[] =
+    "SafetyCheckAllowPasswordsNotifications";
+
+const char kSafetyCheckAllowSafeBrowsingNotifications[] =
+    "SafetyCheckAllowSafeBrowsingNotifications";
+
+const char kSafetyCheckAllowUpdateChromeNotifications[] =
+    "SafetyCheckAllowUpdateChromeNotifications";
+
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
 
@@ -80,6 +89,30 @@ const char kSafetyCheckNotificationsProvisionalEnabled[] =
 
 const char kSafetyCheckNotificationsUserInactiveThreshold[] =
     "SafetyCheckNotificationsUserInactiveThreshold";
+
+// This helper should return true by default, as this parameter primarily serves
+// as a killswitch.
+bool AreSafetyCheckPasswordsNotificationsAllowed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSafetyCheckNotifications, kSafetyCheckAllowPasswordsNotifications,
+      /*default_value=*/true);
+}
+
+// This helper should return true by default, as this parameter primarily serves
+// as a killswitch.
+bool AreSafetyCheckSafeBrowsingNotificationsAllowed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSafetyCheckNotifications, kSafetyCheckAllowSafeBrowsingNotifications,
+      /*default_value=*/true);
+}
+
+// This helper should return true by default, as this parameter primarily serves
+// as a killswitch.
+bool AreSafetyCheckUpdateChromeNotificationsAllowed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSafetyCheckNotifications, kSafetyCheckAllowUpdateChromeNotifications,
+      /*default_value=*/true);
+}
 
 bool ProvisionalSafetyCheckNotificationsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
