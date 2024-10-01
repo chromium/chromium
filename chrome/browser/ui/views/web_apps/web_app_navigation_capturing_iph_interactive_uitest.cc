@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "url/gurl.h"
 
@@ -158,51 +159,24 @@ class WebAppNavigationCapturingIphUiTest
   // Clicks on the "launch app" link on the start page with element ID
   // `element_id`. The start page must be open in at least one browser. The
   // context of the last step is the browser window containing the start page.
-  auto ClickLaunchLink(test::ClickMethod click, const std::string& element_id) {
-    int mouse_button;
-    bool shift = false;
-    switch (click) {
-      case test::ClickMethod::kLeftClick:
-        mouse_button = 0;
-        break;
-      case test::ClickMethod::kMiddleClick:
-        mouse_button = 1;
-        break;
-      case test::ClickMethod::kShiftClick:
-        mouse_button = 0;
-        shift = true;
-        break;
-      case test::ClickMethod::kRightClickLaunchApp:
-        mouse_button = 2;
-        break;
-    }
-    const auto js = base::StringPrintf(R"(
-      function(el) {
-        const event = new MouseEvent(
-            'click',
-            {
-              bubbles: true,
-              button: %d,
-              cancelable: true,
-              shiftKey: %s
-            }
-        );
-        el.dispatchEvent(event);
-      }
-    )",
-                                       mouse_button, shift ? "true" : "false");
-
-    return InAnyContext(ExecuteJsAt(kStartPageId, {"#" + element_id}, js)
-                            .SetDescription("ClickLaunchLink()"));
+  auto ClickLaunchLink(
+      const std::string& element_id,
+      ui_controls::MouseButton button,
+      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
+    return InAnyContext(
+        ClickElement(kStartPageId, {"#" + element_id}, button, accel)
+            .SetDescription("ClickLaunchLink()"));
   }
 
   // Clicks on `element_id` in the start page, which must be open in at least
   // one browser, launching a new app window. The context of the last step is
   // the window in which the link was opened.
-  auto TriggerAppLaunch(test::ClickMethod click,
-                        const std::string& element_id) {
+  auto TriggerAppLaunch(
+      const std::string& element_id,
+      ui_controls::MouseButton button,
+      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
     auto steps = Steps(
-        ClickLaunchLink(click, element_id),
+        ClickLaunchLink(element_id, button, accel),
         InAnyContext(
             WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
         InSameContext(CheckViewProperty(kBrowserViewElementId,
@@ -230,11 +204,11 @@ class WebAppNavigationCapturingIphUiTest
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        IPHShownOnLinkLeftClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
-  RunTestSequence(OpenStartPage(),
-                  TriggerAppLaunch(test::ClickMethod::kLeftClick,
-                                   kToSiteBTargetBlankNoOpener),
-                  InSameContext(WaitForPromo(
-                      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+  RunTestSequence(
+      OpenStartPage(),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
 // Middle click does not work (consistently?) on Mac; see
@@ -247,11 +221,11 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        MAYBE_IPHShownOnLinkMiddleClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetStartUrl());
-  RunTestSequence(OpenAppStartPage(app_id),
-                  TriggerAppLaunch(test::ClickMethod::kMiddleClick,
-                                   kToSiteATargetBlankWithOpener),
-                  InSameContext(WaitForPromo(
-                      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+  RunTestSequence(
+      OpenAppStartPage(app_id),
+      TriggerAppLaunch(kToSiteATargetBlankWithOpener, ui_controls::MIDDLE),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
 // Shift-click click does not work (consistently?) on Mac; see
@@ -266,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(OpenAppStartPage(app_id_a),
-                  TriggerAppLaunch(test::ClickMethod::kShiftClick,
-                                   kToSiteBTargetBlankWithOpener),
+                  TriggerAppLaunch(kToSiteBTargetBlankWithOpener,
+                                   ui_controls::LEFT, ui_controls::kShift),
                   InSameContext(WaitForPromo(
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
@@ -279,14 +253,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
       blink::Manifest::LaunchHandler(
           blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting));
 
-  RunTestSequence(OpenStartPage(), OpenApp(app_id),
-                  ClickLaunchLink(test::ClickMethod::kLeftClick,
-                                  kToSiteBTargetBlankNoOpener),
-                  // Switch back to the app browser's context and verify the IPH
-                  // shows there.
-                  InAnyContext(WithElement(kAppPageId, base::DoNothing())),
-                  InSameContext(WaitForPromo(
-                      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+  RunTestSequence(
+      OpenStartPage(), OpenApp(app_id),
+      ClickLaunchLink(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
+      // Switch back to the app browser's context and verify the IPH
+      // shows there.
+      InAnyContext(WithElement(kAppPageId, base::DoNothing())),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
@@ -296,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
   RunTestSequence(
       OpenAppStartPage(app_id_a),
-      TriggerAppLaunch(test::ClickMethod::kLeftClick,
-                       kToSiteBTargetBlankWithOpener),
+      TriggerAppLaunch(kToSiteBTargetBlankWithOpener, ui_controls::LEFT),
       InSameContext(CheckPromoIsActive(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, false)));
 }
@@ -308,8 +281,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
   RunTestSequence(
       OpenStartPage(),
-      TriggerAppLaunch(test::ClickMethod::kLeftClick,
-                       kToSiteBTargetBlankNoOpener),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
       InSameContext(Steps(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           CheckActionCount("LinkCapturingIPHAppBubbleShown", 1),
@@ -326,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
   RunTestSequence(
       OpenStartPage(),
-      TriggerAppLaunch(test::ClickMethod::kLeftClick,
-                       kToSiteBTargetBlankNoOpener),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
       InSameContext(Steps(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           CheckActionCount("LinkCapturingIPHAppBubbleShown", 1),
@@ -342,8 +313,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
   RunTestSequence(
       OpenStartPage(),
-      TriggerAppLaunch(test::ClickMethod::kLeftClick,
-                       kToSiteBTargetBlankNoOpener),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
       InSameContext(Steps(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           PressDefaultPromoButton(),
