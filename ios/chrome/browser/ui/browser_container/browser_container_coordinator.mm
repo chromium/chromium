@@ -74,8 +74,8 @@
   DCHECK(!_viewController);
   Browser* browser = self.browser;
   WebStateList* webStateList = browser->GetWebStateList();
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  BOOL incognito = browserState->IsOffTheRecord();
+  ProfileIOS* profile = browser->GetProfile();
+  BOOL incognito = profile->IsOffTheRecord();
   self.viewController = [[BrowserContainerViewController alloc] init];
   self.webContentAreaOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
@@ -94,8 +94,7 @@
   self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
   self.viewController.linkToTextDelegate = self.linkToTextMediator;
 
-  PrefService* prefService =
-      browserState->GetOriginalChromeBrowserState()->GetPrefs();
+  PrefService* prefService = profile->GetOriginalProfile()->GetPrefs();
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
 
@@ -114,7 +113,7 @@
       self.partialTranslateMediator;
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   self.searchWithMediator =
       [[SearchWithMediator alloc] initWithWebStateList:webStateList
                                     templateURLService:templateURLService

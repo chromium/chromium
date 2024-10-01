@@ -315,9 +315,9 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
   BrowserEditMenuHandlerTest()
       : web_client_(std::make_unique<ChromeWebClient>()),
         web_state_list_(&web_state_list_delegate_) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
   }
 
@@ -364,7 +364,7 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   std::unique_ptr<web::WebState> web_state_;
@@ -393,7 +393,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
       [[PartialTranslateMediator alloc]
             initWithWebStateList:&web_state_list_
           withBaseViewController:base_view_controller_
-                     prefService:browser_state_->GetPrefs()
+                     prefService:profile_->GetPrefs()
             fullscreenController:nullptr
                        incognito:NO];
 
