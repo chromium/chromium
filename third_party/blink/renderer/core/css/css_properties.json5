@@ -7608,7 +7608,6 @@
       ],
       typedom_types: ["Keyword"],
       valid_for_position_try: true,
-      runtime_flag: "CSSPositionAreaProperty",
       valid_for_permission_element: true,
       // position-area needs to be applied before inset properties since
       // anchor() functions compute relative to the containing block that is

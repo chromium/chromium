@@ -507,20 +507,8 @@ TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
             CSSPropertyID::kPositionTryFallbacks);
 }
 
-TEST_F(CSSPropertyTest, PositionAreaDisabled) {
-  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(true);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(false);
-  auto* declarations = ParseShorthand("position-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 0u);
-  declarations = ParseShorthand("inset-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 1u);
-}
-
 TEST_F(CSSPropertyTest, InsetAreaDisabled) {
   ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(true);
   auto* declarations = ParseShorthand("position-area", "center top");
   ASSERT_TRUE(declarations);
   ASSERT_EQ(declarations->PropertyCount(), 1u);

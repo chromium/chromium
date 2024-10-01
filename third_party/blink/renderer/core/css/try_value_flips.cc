@@ -121,9 +121,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
   add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
-  if (RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled()) {
-    add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-  }
+  add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
   if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
     add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
   }

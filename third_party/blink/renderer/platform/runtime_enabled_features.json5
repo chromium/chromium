@@ -1105,14 +1105,6 @@
       status: "stable",
     },
     {
-      // The `inset-area` CSS property has been renamed to `position-area`. This
-      // feature (CSSPositionAreaProperty) enables the new `position-area`
-      // property. This is shipped in M129, and (depending on the status of the
-      // CSSInsetAreaProperty feature) can be removed in M131.
-      name: "CSSPositionAreaProperty",
-      status: "stable",
-    },
-    {
       // For the position-try-fallbacks property, replaces the inset-area()
       // syntax (which had the old "inset-area" name) with just a
       // <'position-area'>.
