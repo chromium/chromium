@@ -127,6 +127,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // FingerprintView actions:
   void SetFingerprintState(FingerprintState state);
+  void NotifyFingerprintAuthSuccess(
+      base::OnceClosure on_success_animation_finished);
   void NotifyFingerprintAuthFailure();
 
  private:

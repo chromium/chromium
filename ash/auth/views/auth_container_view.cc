@@ -330,6 +330,13 @@ void AuthContainerView::SetFingerprintState(FingerprintState state) {
   fingerprint_view_->SetState(state);
 }
 
+void AuthContainerView::NotifyFingerprintAuthSuccess(
+    base::OnceCallback<void()> on_success_animation_finished) {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->NotifyAuthSuccess(
+      std::move(on_success_animation_finished));
+}
+
 void AuthContainerView::NotifyFingerprintAuthFailure() {
   CHECK(fingerprint_view_);
   fingerprint_view_->NotifyAuthFailure();

@@ -290,6 +290,12 @@ void ActiveSessionAuthView::SetFingerprintState(FingerprintState state) {
   auth_container_->SetFingerprintState(state);
 }
 
+void ActiveSessionAuthView::NotifyFingerprintAuthSuccess(
+    base::OnceClosure on_success_animation_finished) {
+  auth_container_->NotifyFingerprintAuthSuccess(
+      std::move(on_success_animation_finished));
+}
+
 void ActiveSessionAuthView::NotifyFingerprintAuthFailure() {
   auth_container_->NotifyFingerprintAuthFailure();
 }

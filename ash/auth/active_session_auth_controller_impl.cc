@@ -141,6 +141,52 @@ const char* ActiveSessionAuthStateToString(
 
 }  // namespace
 
+// This class manages the closing process after successful fingerprint
+// authentication. It listens for two signals:
+//  1. The completion of the successful authentication animation.
+//  2. The authentication callback from cryptohome.
+// Once both signals are received, the class triggers the closing process.
+class ActiveSessionAuthControllerImpl::FingerprintAuthTracker {
+ public:
+  explicit FingerprintAuthTracker(ActiveSessionAuthControllerImpl* owner)
+      : owner_(owner) {
+    CHECK(owner_);
+  }
+
+  void OnAuthenticationFinished(
+      std::unique_ptr<UserContext> user_context,
+      std::optional<AuthenticationError> authentication_error) {
+    CHECK_EQ(authentication_finished_, false);
+    authentication_finished_ = true;
+    if (authentication_error.has_value()) {
+      LOG(ERROR) << "Authentication error during OnFingerprintSuccess code: "
+                 << authentication_error->get_cryptohome_code();
+    }
+    owner_->user_context_ = std::move(user_context);
+    MaybeNotifyOwner();
+  }
+
+  void OnAnimationFinished() {
+    VLOG(1) << "OnAnimationFinished";
+    CHECK_EQ(animation_finished_, false);
+    animation_finished_ = true;
+    MaybeNotifyOwner();
+  }
+
+  void MaybeNotifyOwner() {
+    if (authentication_finished_ && animation_finished_) {
+      owner_->StartClose();
+    }
+    CHECK(owner_);
+    CHECK(owner_->fp_auth_tracker_);
+  }
+
+ private:
+  const raw_ptr<ActiveSessionAuthControllerImpl> owner_;
+  bool animation_finished_ = false;
+  bool authentication_finished_ = false;
+};
+
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
     ActiveSessionAuthControllerImpl* controller)
     : controller_(controller) {}
@@ -206,6 +252,9 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
   account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
+
+  fingerprint_animation_finished_ = false;
+  fingerprint_authentication_finished_ = false;
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
@@ -299,6 +348,7 @@ void ActiveSessionAuthControllerImpl::OnFingerprintReady(
     LOG(ERROR) << "Failed to start fingerprint auth session - only "
                   "non-fingerprint factors will be available.";
   } else {
+    fp_auth_tracker_ = std::make_unique<FingerprintAuthTracker>(this);
     available_factors_.Put(AuthInputType::kFingerprint);
   }
   std::move(on_auth_factors_ready).Run(std::move(user_context));
@@ -319,6 +369,9 @@ void ActiveSessionAuthControllerImpl::OnFingerprintScan(
   }
   switch (scan_result) {
     case FingerprintAuthScanResult::kSuccess:
+      contents_view_->NotifyFingerprintAuthSuccess(
+          base::BindOnce(&FingerprintAuthTracker::OnAnimationFinished,
+                         base::Unretained(fp_auth_tracker_.get())));
       if (state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
           state_ == ActiveSessionAuthState::kPinAuthStarted) {
         SetState(ActiveSessionAuthState::kFingerprintAuthSucceededWaiting);
@@ -346,25 +399,14 @@ void ActiveSessionAuthControllerImpl::OnFingerprintScan(
   NOTREACHED();
 }
 
-void ActiveSessionAuthControllerImpl::OnFingerprintSuccess(
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Authentication error during OnFingerprintSuccess code: "
-               << authentication_error->get_cryptohome_code();
-  }
-  user_context_ = std::move(user_context);
-  StartClose();
-}
-
 void ActiveSessionAuthControllerImpl::HandleFingerprintAuthSuccess() {
   CHECK(user_context_);
   uma_recorder_.RecordAuthSucceeded(AuthInputType::kFingerprint);
   SetState(ActiveSessionAuthState::kFingerprintAuthSucceeded);
   auth_performer_->AuthenticateWithLegacyFingerprint(
       std::move(user_context_),
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnFingerprintSuccess,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&FingerprintAuthTracker::OnAuthenticationFinished,
+                     base::Unretained(fp_auth_tracker_.get())));
 }
 
 void ActiveSessionAuthControllerImpl::InitUi() {
@@ -410,12 +452,14 @@ void ActiveSessionAuthControllerImpl::StartClose() {
 
   auth_performer_->InvalidateCurrentAttempts();
   if (fp_client_ && available_factors_.Has(AuthInputType::kFingerprint)) {
+    CHECK(fp_auth_tracker_);
     fp_client_->TerminateFingerprintAuth(
         std::move(user_context_),
         base::BindOnce(&ActiveSessionAuthControllerImpl::CompleteClose,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+  CHECK(!fp_auth_tracker_);
   CompleteClose(std::move(user_context_), std::nullopt);
 }
 
@@ -441,7 +485,7 @@ void ActiveSessionAuthControllerImpl::CompleteClose(
 
   title_.clear();
   description_.clear();
-
+  fp_auth_tracker_.reset();
   widget_.reset();
 }
 
