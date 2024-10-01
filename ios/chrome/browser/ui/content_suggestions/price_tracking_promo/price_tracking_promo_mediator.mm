@@ -6,8 +6,18 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/cancelable_callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/pref_names.h"
+#import "components/commerce/core/price_tracking_utils.h"
+#import "components/commerce/core/shopping_service.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -28,30 +38,30 @@
 
 @implementation PriceTrackingPromoMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
   PriceTrackingPromoItem* _priceTrackingPromoItem;
   raw_ptr<PrefService> _prefService;
   raw_ptr<PushNotificationService> _pushNotificationService;
   raw_ptr<AuthenticationService> _authenticationService;
+  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 }
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)shoppingService
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+               imageFetcher:
+                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                 prefService:(PrefService*)prefService
     pushNotificationService:(PushNotificationService*)pushNotificationService
       authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
+    _bookmarkModel = bookmarkModel;
+    _imageFetcher = std::move(fetcher);
     _prefService = prefService;
     _pushNotificationService = pushNotificationService;
     _authenticationService = authenticationService;
-    // _priceTrackingPromoItem will ultimately be filled with data
-    // fetched via ShoppingService. However, for now use a blank object
-    // to hold the magic stack integration together and enable magic
-    // stack card to be build out with static assets. This will
-    // be removed when TODO(crbug.com/361106168) is implemented.
-    _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
-    _priceTrackingPromoItem.commandHandler = self;
   }
   return self;
 }
@@ -65,8 +75,20 @@
 }
 
 - (void)fetchLatestSubscription {
-  // TODO(crbug.com/361405189) fetch latest subscription and
-  // convert to PriceTrackingPromoItem.
+  if (self->_priceTrackingPromoItem) {
+    return;
+  }
+  __weak PriceTrackingPromoMediator* weakSelf = self;
+  GetAllPriceTrackedBookmarks(
+      _shoppingService, _bookmarkModel,
+      base::BindOnce(
+          ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+            PriceTrackingPromoMediator* strongSelf = weakSelf;
+            if (!strongSelf || !strongSelf.delegate) {
+              return;
+            }
+            [strongSelf onPriceTrackedBookarksReceived:subscriptions];
+          }));
 }
 
 - (PriceTrackingPromoItem*)priceTrackingPromoItemToShow {
@@ -87,6 +109,13 @@
 - (void)disableModule {
   _prefService->SetBoolean(kPriceTrackingPromoDisabled, true);
   [self.delegate removePriceTrackingPromo];
+}
+
+- (void)setDelegate:(id<PriceTrackingPromoMediatorDelegate>)delegate {
+  _delegate = delegate;
+  if (_delegate) {
+    [self fetchLatestSubscription];
+  }
 }
 
 #pragma mark - PriceTrackingPromoCommands
@@ -151,6 +180,67 @@
   return message;
 }
 
+- (void)onPriceTrackedBookarksReceived:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  const power_bookmarks::ShoppingSpecifics* most_recent =
+      [self getMostRecentBookmarkSpecifics:subscriptions];
+  if (!most_recent) {
+    return;
+  }
+  __weak PriceTrackingPromoMediator* weakSelf = self;
+  // There is a subscription but no image url - the price tracking promo
+  // will be displayed but with the fallback image.
+  if (!most_recent->has_image_url()) {
+    _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
+    _priceTrackingPromoItem.commandHandler = self;
+    [self.delegate newSubscriptionAvailable];
+  } else {
+    // If we have an image, fetch it and display the price tracking promo
+    // with that image.
+    _imageFetcher->FetchImageData(
+        GURL(most_recent->image_url()),
+        base::BindOnce(^(const std::string& imageData,
+                         const image_fetcher::RequestMetadata& metadata) {
+          PriceTrackingPromoMediator* strongSelf = weakSelf;
+          if (!strongSelf || !strongSelf.delegate) {
+            return;
+          }
+          [strongSelf onImageFetchedResult:imageData];
+        }),
+        NO_TRAFFIC_ANNOTATION_YET);
+  }
+}
+
+- (const power_bookmarks::ShoppingSpecifics*)getMostRecentBookmarkSpecifics:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  const power_bookmarks::ShoppingSpecifics* most_recent = nil;
+  for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
+    if (!meta || !meta->has_shopping_specifics()) {
+      continue;
+    }
+    const power_bookmarks::ShoppingSpecifics specifics =
+        meta->shopping_specifics();
+    if (!most_recent || specifics.last_subscription_change_time() >
+                            most_recent->last_subscription_change_time()) {
+      most_recent = &specifics;
+    }
+  }
+  return most_recent;
+}
+
+- (void)onImageFetchedResult:(const std::string&)imageData {
+  self->_priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
+  self->_priceTrackingPromoItem.commandHandler = self;
+  NSData* data = [NSData dataWithBytes:imageData.data()
+                                length:imageData.size()];
+  if (data) {
+    self->_priceTrackingPromoItem.productImageData = data;
+  }
+  [self.delegate newSubscriptionAvailable];
+}
+
 // TODO(crbug.com/368064027) move all magic stack clients
 // ForTesting to @implementation.
 #pragma mark - Testing category methods
@@ -169,6 +259,10 @@
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting {
   [self enablePriceTrackingNotificationsSettings];
+}
+
+- (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item {
+  self->_priceTrackingPromoItem = item;
 }
 
 @end

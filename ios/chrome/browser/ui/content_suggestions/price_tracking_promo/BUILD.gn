@@ -18,7 +18,12 @@ source_set("price_tracking_promo") {
   deps = [
     ":price_tracking_promo_constants",
     "//base:base",
+    "//components/bookmarks/browser:browser",
     "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions:subscriptions",
+    "//components/image_fetcher/core:core",
+    "//components/power_bookmarks/core:core",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",

@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
@@ -29,6 +30,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -141,6 +143,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -364,6 +367,12 @@
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(
                                         self.browser->GetBrowserState())
+                  bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
+                                    self.browser->GetBrowserState())
+                   imageFetcher:std::make_unique<
+                                    image_fetcher::ImageDataFetcher>(
+                                    self.browser->GetBrowserState()
+                                        ->GetSharedURLLoaderFactory())
                     prefService:prefs
         pushNotificationService:GetApplicationContext()
                                     ->GetPushNotificationService()

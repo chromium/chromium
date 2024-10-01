@@ -15,6 +15,9 @@
 // Command handler for user actions.
 @property(nonatomic, weak) id<PriceTrackingPromoCommands> commandHandler;
 
+// Serialized image data for the most recent price tracked product image.
+@property(nonatomic, strong) NSData* productImageData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_PRICE_TRACKING_PROMO_ITEM_H_

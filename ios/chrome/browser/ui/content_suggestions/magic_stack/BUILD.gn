@@ -224,6 +224,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",

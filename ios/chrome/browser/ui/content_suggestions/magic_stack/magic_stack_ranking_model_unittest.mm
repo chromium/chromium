@@ -61,6 +61,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator+testing.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
@@ -340,9 +342,14 @@ class MagicStackRankingModelTest : public PlatformTest {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(GetBrowserState())
+                  bookmarkModel:nil
+                   imageFetcher:nil
                     prefService:GetBrowserState()->GetPrefs()
         pushNotificationService:nil
           authenticationService:nil];
+
+    PriceTrackingPromoItem* item = [[PriceTrackingPromoItem alloc] init];
+    [_priceTrackingPromoMediator setPriceTrackingPromoItemForTesting:item];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:segmentation_platform::

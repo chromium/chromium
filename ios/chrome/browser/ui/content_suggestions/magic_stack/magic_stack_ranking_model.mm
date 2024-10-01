@@ -306,6 +306,14 @@
 // New subscription observed for user (from another platform). This
 // has the potential to boost the ranking of the price trackiing promo.
 - (void)newSubscriptionAvailable {
+  MagicStackModule* item =
+      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
 // Starts a fetch of the ephemeral card to show from Segmentation.
@@ -523,7 +531,8 @@
               kSegmentationPlatformEphemeralCardRanker)) {
     switch (_ephemeralCardToShow) {
       case ContentSuggestionsModuleType::kPriceTrackingPromo:
-        if (_priceTrackingPromoMediator) {
+        if (_priceTrackingPromoMediator &&
+            _priceTrackingPromoMediator.priceTrackingPromoItemToShow) {
           [magicStackOrder addObject:_priceTrackingPromoMediator
                                          .priceTrackingPromoItemToShow];
         }
