@@ -401,9 +401,15 @@ class TabbedNavigationBarColorController
 
         endNavigationBarColorAnimationIfRunning();
         if (toEdge) {
+            // When setting a transparent navbar for drawing toEdge, the system navbar contrast
+            // should not be enforced - otherwise, some devices will apply a scrim to the navbar.
+            mWindow.setNavigationBarContrastEnforced(false);
             // When drawing to edge, the new window nav bar color is always transparent.
             // This is called only once when |currentWindowNavigationBarColor| is another color.
             mWindow.setNavigationBarColor(Color.TRANSPARENT);
+            // TODO (crbug.com/370526173) Refactor to a single method setting both navbar and
+            // divider colors.
+            setWindowNavigationBarDividerColor(windowDividerColor);
         } else if (animateColorUpdate) { // if (!toEdge)
             animateNavigationBarColor(currentWindowNavigationBarColor, newWindowNavigationBarColor);
         } else { // if (!toEdge && !animateColorUpdate)

@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +21,15 @@ import android.view.Window;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -57,6 +57,8 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
         sdk = 28)
 @EnableFeatures(ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND)
 public class TabbedNavigationBarColorControllerUnitTest {
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+
     @Implements(SemanticColorUtils.class)
     static class ShadowSemanticColorUtils {
         @Implementation
@@ -91,8 +93,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -164,6 +164,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testMatchBottomAttachedColor_toEdge() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
@@ -180,7 +181,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.RED);
         assertNavBarDividerColor(Color.RED);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+        assertWindowNavBarDividerColor(Color.TRANSPARENT);
 
         Mockito.clearInvocations(mWindow);
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
@@ -190,7 +191,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.BLUE);
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+        assertWindowNavBarDividerColor(Color.TRANSPARENT);
     }
 
     @Test
@@ -207,6 +208,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testMatchBottomAttachedColor_forceShowDivider_toEdge() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
@@ -223,7 +225,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.RED);
         assertNavBarDividerColor(NAV_DIVIDER_COLOR, true);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+        assertWindowNavBarDividerColor(Color.TRANSPARENT);
 
         Mockito.clearInvocations(mWindow);
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
@@ -234,7 +236,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.BLUE);
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+        assertWindowNavBarDividerColor(Color.TRANSPARENT);
     }
 
     @Test
@@ -269,6 +271,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testMatchTabBackgroundColor_toEdge() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
@@ -286,7 +289,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.BLUE);
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+        assertWindowNavBarDividerColor(Color.TRANSPARENT);
     }
 
     @Test
