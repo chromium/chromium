@@ -355,9 +355,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // it fails to get a codec.  This is to work around b/191966399.
   bool should_retry_codec_allocation_ = false;
 
-  // True if the created codec is software backed.
-  bool is_software_codec_ = false;
-
   // Name of the MediaCodec that was created.
   std::string codec_name_;
 

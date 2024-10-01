@@ -549,6 +549,11 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
+    private boolean isSoftwareCodec() {
+        return MediaCodecUtil.isSoftwareCodec(mMediaCodec.getCodecInfo());
+    }
+
+    @CalledByNative
     private MediaFormatWrapper getOutputFormat() {
         if (mUseAsyncApi && mCurrentFormat != null) return mCurrentFormat;
 

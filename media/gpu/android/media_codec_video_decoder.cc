@@ -122,9 +122,7 @@ std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
 // Return the name of the decoder that will be used to create MediaCodec.
 void SelectMediaCodec(const VideoDecoderConfig& config,
                       bool requires_secure_codec,
-                      std::string* out_codec_name,
-                      bool* out_is_software_codec) {
-  *out_is_software_codec = false;
+                      std::string* out_codec_name) {
   *out_codec_name = "";
 
   std::string software_decoder;
@@ -170,7 +168,6 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
       continue;
     }
 
-    *out_is_software_codec = false;
     *out_codec_name = info.name;
     return;
   }
@@ -195,7 +192,6 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
     return;
   }
 
-  *out_is_software_codec = true;
   *out_codec_name = software_decoder;
 }
 
@@ -705,8 +701,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->hdr_metadata = decoder_config_.hdr_metadata();
   config->use_block_model = use_block_model_;
   config->profile = decoder_config_.profile();
-  SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name,
-                   &is_software_codec_);
+  SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name);
 
   config->on_buffers_available_cb =
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
@@ -770,8 +765,9 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   }
 
   codec_name_ = codec->GetName();
-  MEDIA_LOG(INFO, media_log_) << "Created MediaCodec " << codec_name_
-                              << ", is_software_codec=" << is_software_codec_;
+  MEDIA_LOG(INFO, media_log_)
+      << "Created MediaCodec " << codec_name_
+      << ", is_software_codec=" << codec->IsSoftwareCodec();
 
   // Since we can't get the coded size w/o rendering the frame, we try to guess
   // in cases where we are unable to render the frame (resolution changes). If
@@ -965,10 +961,8 @@ bool MediaCodecVideoDecoder::QueueInput() {
     // The underlying MediaCodec must remain the same in order for us to elide
     // the end of stream flush.
     const bool can_reuse_codec = [&]() {
-      bool unused_is_sw_codec;
       std::string codec_name;
-      SelectMediaCodec(new_config, requires_secure_codec_, &codec_name,
-                       &unused_is_sw_codec);
+      SelectMediaCodec(new_config, requires_secure_codec_, &codec_name);
       return !codec_name_.empty() && codec_name == codec_name_ &&
              !CodecNeedsReallocation(new_config.coded_size().width());
     }();

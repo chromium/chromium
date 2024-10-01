@@ -81,6 +81,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
       CopyFromOutputBuffer,
       MediaCodecResult(int index, size_t offset, void* dst, size_t num));
   std::string GetName() override;
+  bool IsSoftwareCodec() override;
   MOCK_METHOD1(SetSurface,
                bool(const base::android::JavaRef<jobject>& surface));
   MOCK_METHOD2(SetVideoBitrate, void(int bps, int frame_rate));
@@ -105,6 +106,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
 
   CodecType codec_type_ = CodecType::kAny;
   std::string name_;
+  bool is_software_codec_;
 };
 
 }  // namespace media

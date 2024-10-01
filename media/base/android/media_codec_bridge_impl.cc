@@ -850,6 +850,11 @@ std::string MediaCodecBridgeImpl::GetName() {
   return ConvertJavaStringToUTF8(env, j_name);
 }
 
+bool MediaCodecBridgeImpl::IsSoftwareCodec() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_MediaCodecBridge_isSoftwareCodec(env, j_bridge_);
+}
+
 bool MediaCodecBridgeImpl::SetSurface(const JavaRef<jobject>& surface) {
   JNIEnv* env = AttachCurrentThread();
   return Java_MediaCodecBridge_setSurface(env, j_bridge_, surface);

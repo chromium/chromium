@@ -164,6 +164,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                         void* dst,
                                         size_t num) override;
   std::string GetName() override;
+  bool IsSoftwareCodec() override;
   bool SetSurface(const base::android::JavaRef<jobject>& surface) override;
   void SetVideoBitrate(int bps, int frame_rate) override;
   void RequestKeyFrameSoon() override;
