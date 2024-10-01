@@ -155,19 +155,31 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
   // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
   // prior to service response, `view_` will be null.
-  if (view_) {
-    view_->ShowReserveResult(maybe_plus_profile);
-    if (PlusAddressService* service = GetPlusAddressService();
-        service && !service->IsRefreshingSupported(relevant_origin_)) {
-      view_->HideRefreshButton();
-    }
+  if (PlusAddressService* service = GetPlusAddressService();
+      view_ && service && !service->IsRefreshingSupported(relevant_origin_)) {
+    view_->HideRefreshButton();
   }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
     ++reserve_response_count_;
+    if (view_) {
+      view_->ShowReservedProfile(maybe_plus_profile.value());
+    }
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError;
+    PlusAddressRequestError error = maybe_plus_profile.error();
+    PlusAddressCreationBottomSheetErrorType error_type;
+    if (error.IsTimeoutError()) {
+      error_type = PlusAddressCreationBottomSheetErrorType::kReserveTimeout;
+    } else if (error.IsQuotaError()) {
+      error_type = PlusAddressCreationBottomSheetErrorType::kReserveQuota;
+    } else {
+      error_type = PlusAddressCreationBottomSheetErrorType::kReserveGeneric;
+    }
+    if (view_) {
+      view_->ShowError(error_type);
+    }
   }
 }
 
@@ -175,35 +187,44 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
   CHECK(plus_profile_.has_value());
   if (maybe_plus_profile.has_value()) {
-    const bool was_notice_shown = ShouldShowNotice();
-    if (was_notice_shown) {
-      GetPlusAddressSettingService()->SetHasAcceptedNotice();
-    }
     if (maybe_plus_profile->plus_address == plus_profile_->plus_address) {
+      if (view_) {
+        view_->FinishConfirm();
+      }
+      const bool was_notice_shown = ShouldShowNotice();
+      if (was_notice_shown) {
+        GetPlusAddressSettingService()->SetHasAcceptedNotice();
+      }
       std::move(callback_).Run(*maybe_plus_profile->plus_address);
       RecordModalShownOutcome(
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
           was_notice_shown);
     } else {
+      // Persist the confirmed profile if it's different from the reserved one.
+      plus_profile_ = maybe_plus_profile.value();
       modal_error_status_ =
           metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+      if (view_) {
+        view_->ShowAffiliationError(maybe_plus_profile.value());
+      }
     }
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
-  }
-
-  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
-  // prior to service response, `view_` will be null.
-  if (view_) {
-    view_->ShowConfirmResult(/*maybe_plus_profile=*/maybe_plus_profile,
-                             /*reserved_plus_profile=*/plus_profile_.value());
-  }
-
-  // The confirmed plus address might be different from the reserved on. Persist
-  // the latest valid plus address in any case.
-  if (maybe_plus_profile.has_value()) {
-    plus_profile_ = maybe_plus_profile.value();
+    PlusAddressRequestError error = maybe_plus_profile.error();
+    PlusAddressCreationBottomSheetErrorType error_type;
+    if (error.IsTimeoutError()) {
+      error_type = PlusAddressCreationBottomSheetErrorType::kCreateTimeout;
+    } else if (error.IsQuotaError()) {
+      error_type = PlusAddressCreationBottomSheetErrorType::kCreateQuota;
+    } else {
+      error_type = PlusAddressCreationBottomSheetErrorType::kCreateGeneric;
+    }
+    // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+    // prior to service response, `view_` will be null.
+    if (view_) {
+      view_->ShowError(error_type);
+    }
   }
 }
 
