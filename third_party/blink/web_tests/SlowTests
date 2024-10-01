@@ -1487,3 +1487,8 @@ crbug.com/356963272 external/wpt/webrtc/RTCDataChannel-send-close.html [ Slow ]
 
 # Slow because it contains a large number of subtests
 crbug.com/369600187 external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Slow ]
+
+# Slow because it needs to run wait for up to 100 updates, one of which will
+# introduce a 5-10s delay until the following one.
+crbug.com/370726578 external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=dedicated_worker [ Slow ]
+crbug.com/370726578 external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Slow ]
