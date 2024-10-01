@@ -184,8 +184,7 @@ gfx::Rect GetPickerViewBoundsWithSelectedText(
 PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   switch (type) {
     case PickerSectionType::kNone:
-    case PickerSectionType::kEditorWrite:
-    case PickerSectionType::kEditorRewrite:
+    case PickerSectionType::kContentEditor:
     case PickerSectionType::kExamples:
       NOTREACHED_NORETURN();
     case PickerSectionType::kClipboard:

@@ -49,9 +49,8 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
     case PickerSearchSource::kDrive:
       return PickerSectionType::kDriveFiles;
     case PickerSearchSource::kEditorWrite:
-      return PickerSectionType::kEditorWrite;
     case PickerSearchSource::kEditorRewrite:
-      return PickerSectionType::kEditorRewrite;
+      return PickerSectionType::kContentEditor;
   }
 }
 
@@ -188,7 +187,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
       accumulated_results_[base::to_underlying(section_type)];
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
-  if (section_type == PickerSectionType::kNone) {
+  if (section_type == PickerSectionType::kNone ||
+      section_type == PickerSectionType::kContentEditor) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
@@ -320,8 +320,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kDriveFiles,
            PickerSectionType::kLocalFiles,
            PickerSectionType::kClipboard,
-           PickerSectionType::kEditorWrite,
-           PickerSectionType::kEditorRewrite,
+           PickerSectionType::kContentEditor,
        }) {
     if (published_types.contains(type)) {
       continue;

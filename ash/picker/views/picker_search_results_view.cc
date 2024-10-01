@@ -71,8 +71,7 @@ std::u16string GetAccessibleNameForSeeMoreButton(
     case PickerSectionType::kNone:
     case PickerSectionType::kClipboard:
     case PickerSectionType::kExamples:
-    case PickerSectionType::kEditorWrite:
-    case PickerSectionType::kEditorRewrite:
+    case PickerSectionType::kContentEditor:
       return u"";
   }
 }

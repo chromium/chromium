@@ -124,17 +124,11 @@ std::u16string GetSectionTitleForPickerSectionType(
     case PickerSectionType::kExamples:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EXAMPLES_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerSectionType::kEditorWrite:
+    case PickerSectionType::kContentEditor:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      // TODO: b/369726248 - Rename the IDS variable name to a generic name.
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
-#else
-      return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerSectionType::kEditorRewrite:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_EDITOR_REWRITE_CATEGORY_TYPE_SECTION_TITLE);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
