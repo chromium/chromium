@@ -40,8 +40,7 @@ class ChromeHintsManager : public HintsManager,
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
-      const std::optional<NavigationPredictorKeyedService::Prediction>
-          prediction) override;
+      const NavigationPredictorKeyedService::Prediction& prediction) override;
 
  private:
   // A reference to the profile. Not owned.

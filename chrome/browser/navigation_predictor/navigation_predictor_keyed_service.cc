@@ -149,8 +149,9 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
 
   last_prediction_ = Prediction(web_contents, document_url, prediction_source,
                                 sorted_predicted_urls);
+
   for (auto& observer : observer_list_) {
-    observer.OnPredictionUpdated(last_prediction_);
+    observer.OnPredictionUpdated(last_prediction_.value());
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -163,7 +164,7 @@ void NavigationPredictorKeyedService::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   observer_list_.AddObserver(observer);
   if (last_prediction_.has_value()) {
-    observer->OnPredictionUpdated(last_prediction_);
+    observer->OnPredictionUpdated(last_prediction_.value());
   }
 }
 
