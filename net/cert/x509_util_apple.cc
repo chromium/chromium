@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -37,9 +38,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CertBufferFromSecCertificate(
   if (!der_data) {
     return nullptr;
   }
-  return CreateCryptoBuffer(base::make_span(
-      CFDataGetBytePtr(der_data.get()),
-      base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
+  return CreateCryptoBuffer(base::apple::CFDataToSpan(der_data.get()));
 }
 
 }  // namespace

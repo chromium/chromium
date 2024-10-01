@@ -137,9 +137,8 @@ std::optional<std::vector<uint8_t>> GenerateSignature(
     LOG(ERROR) << "SecKeyCreateSignature failed: " << err.get();
     return std::nullopt;
   }
-  return std::vector<uint8_t>(
-      CFDataGetBytePtr(sig_data.get()),
-      CFDataGetBytePtr(sig_data.get()) + CFDataGetLength(sig_data.get()));
+  auto sig_data_span = base::apple::CFDataToSpan(sig_data.get());
+  return std::vector<uint8_t>(sig_data_span.begin(), sig_data_span.end());
 }
 
 // SecKeyRefToECPublicKey converts a SecKeyRef for a public key into an
@@ -154,9 +153,7 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
     LOG(ERROR) << "SecCopyExternalRepresentation failed: " << err.get();
     return nullptr;
   }
-  base::span<const uint8_t> key_data = base::make_span(
-      CFDataGetBytePtr(data_ref.get()),
-      base::checked_cast<size_t>(CFDataGetLength(data_ref.get())));
+  auto key_data = base::apple::CFDataToSpan(data_ref.get());
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {

@@ -44,12 +44,6 @@ constexpr char kAttrService[] = "com.google.common.folsom.cloud.private";
 // access group is not set.
 static const uint kSecAttrTypeFolsom = 'flsm';
 
-// Returns a span of a CFDataRef.
-base::span<const uint8_t> ToSpan(CFDataRef data) {
-  return base::make_span(CFDataGetBytePtr(data),
-                         base::checked_cast<size_t>(CFDataGetLength(data)));
-}
-
 // Returns the public key in uncompressed x9.62 format encoded in padded base64.
 NSString* EncodePublicKey(const trusted_vault::SecureBoxPublicKey& public_key) {
   return base::SysUTF8ToNSString(
@@ -174,7 +168,8 @@ ICloudRecoveryKey::RetrieveKeysSlowly(std::string_view keychain_access_group) {
     CFDataRef key = base::apple::CFCastStrict<CFDataRef>(
         CFDictionaryGetValue(item, kSecValueData));
     std::unique_ptr<trusted_vault::SecureBoxKeyPair> key_pair =
-        trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(ToSpan(key));
+        trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
+            base::apple::CFDataToSpan(key));
     if (!key_pair) {
       FIDO_LOG(ERROR) << "iCloud recovery key is corrupted, skipping";
       continue;

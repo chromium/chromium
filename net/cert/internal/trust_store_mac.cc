@@ -374,9 +374,8 @@ class TrustDomainCacheFullCerts {
         LOG(ERROR) << "SecCertificateCopyData error";
         continue;
       }
-      auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()),
-          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
+      auto buffer = x509_util::CreateCryptoBuffer(
+          base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       bssl::ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
@@ -809,9 +808,8 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
         LOG(ERROR) << "SecCertificateCopyData error";
         continue;
       }
-      auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()),
-          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
+      auto buffer = x509_util::CreateCryptoBuffer(
+          base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       bssl::ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
@@ -995,9 +993,8 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
         LOG(ERROR) << "SecCertificateCopyData error";
         continue;
       }
-      auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()),
-          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
+      auto buffer = x509_util::CreateCryptoBuffer(
+          base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       bssl::ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;

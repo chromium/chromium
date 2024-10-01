@@ -137,10 +137,7 @@ void ClipboardIOS::ReadAvailableTypes(
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumDataTransferCustomData);
   if (data) {
-    ReadCustomDataTypes(
-        base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                   [data length]),
-        types);
+    ReadCustomDataTypes(base::apple::NSDataToSpan(data), types);
   }
 }
 
@@ -274,10 +271,8 @@ void ClipboardIOS::ReadDataTransferCustomData(
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumDataTransferCustomData);
   if (data) {
-    if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
-            base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                       [data length]),
-            type);
+    if (std::optional<std::u16string> maybe_result =
+            ReadCustomDataForType(base::apple::NSDataToSpan(data), type);
         maybe_result) {
       *result = std::move(*maybe_result);
     }
@@ -350,7 +345,7 @@ void ClipboardIOS::ReadData(const ClipboardFormatType& format,
   NSData* data =
       GetDataWithTypeFromPasteboard(GetPasteboard(), format.ToNSString());
   if (data) {
-    result->assign(static_cast<const char*>([data bytes]), [data length]);
+    result->assign(base::as_string_view(base::apple::NSDataToSpan(data)));
   }
 }
 
@@ -493,9 +488,8 @@ std::vector<uint8_t> ClipboardIOS::ReadPngInternal(
     return std::vector<uint8_t>();
   }
 
-  const uint8_t* bytes = (const uint8_t*)png_data.bytes;
-  std::vector<uint8_t> png(bytes, bytes + png_data.length);
-  return png;
+  auto png_span = base::apple::NSDataToSpan(png_data);
+  return std::vector<uint8_t>(png_span.begin(), png_span.end());
 }
 
 }  // namespace ui

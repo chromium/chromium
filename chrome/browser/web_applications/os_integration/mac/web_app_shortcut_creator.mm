@@ -1053,9 +1053,8 @@ bool WebAppShortcutCreator::UpdateSignature(
 
   CFDataRef cd_hash_data = base::apple::GetValueFromDictionary<CFDataRef>(
       app_shim_info.get(), kSecCodeInfoUnique);
-  std::vector<uint8_t> cd_hash(
-      CFDataGetBytePtr(cd_hash_data),
-      CFDataGetBytePtr(cd_hash_data) + CFDataGetLength(cd_hash_data));
+  auto cd_hash_span = base::apple::CFDataToSpan(cd_hash_data);
+  std::vector<uint8_t> cd_hash(cd_hash_span.begin(), cd_hash_span.end());
 
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AppShimRegistry::SaveCdHashForApp,

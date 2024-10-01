@@ -12,6 +12,7 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -133,9 +134,7 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
 
   std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
-          std::string_view(
-              reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
-              CFDataGetLength(der_data.get())),
+          base::as_string_view(base::apple::CFDataToSpan(der_data.get())),
           &spki_bytes)) {
     return public_keys;
   }

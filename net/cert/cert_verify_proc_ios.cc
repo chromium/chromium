@@ -11,6 +11,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "crypto/sha2.h"
@@ -253,9 +254,7 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
 
     std::string_view spki_bytes;
     if (!asn1::ExtractSPKIFromDERCert(
-            std::string_view(
-                reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
-                CFDataGetLength(der_data.get())),
+            base::as_string_view(base::apple::CFDataToSpan(der_data.get())),
             &spki_bytes)) {
       verify_result->cert_status |= CERT_STATUS_INVALID;
       return;

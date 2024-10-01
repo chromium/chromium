@@ -6,6 +6,9 @@
 
 #import <Security/Security.h>
 
+#include <string>
+
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -125,10 +128,9 @@ std::string RemotingKeychain::GetData(Key key,
   if (status != errSecSuccess) {
     LOG(FATAL) << "Failed to query keychain data. Status: " << status;
   }
-  const char* data_pointer =
-      reinterpret_cast<const char*>(CFDataGetBytePtr(cf_result.get()));
-  CFIndex data_size = CFDataGetLength(cf_result.get());
-  return std::string(data_pointer, data_size);
+
+  return std::string(
+      base::as_string_view(base::apple::CFDataToSpan(cf_result.get())));
 }
 
 void RemotingKeychain::RemoveData(Key key, const std::string& account) {

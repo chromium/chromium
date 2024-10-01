@@ -56,15 +56,6 @@ using PostRequestCompleteCallback =
 using DownloadToFileCompleteCallback =
     update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-namespace {
-
-base::span<const uint8_t> AsByteSpan(NSData* data) {
-  return base::span<const uint8_t>(static_cast<const uint8_t*>(data.bytes),
-                                   data.length);
-}
-
-}  // namespace
-
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:
                     (ResponseStartedCallback)responseStartedCallback
@@ -338,7 +329,7 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 - (void)URLSession:(NSURLSession*)session
           dataTask:(NSURLSessionDataTask*)dataTask
     didReceiveData:(NSData*)data {
-  if (_output.WriteAtCurrentPosAndCheck(AsByteSpan(data))) {
+  if (_output.WriteAtCurrentPosAndCheck(base::apple::NSDataToSpan(data))) {
     _callbackRunner->PostTask(
         FROM_HERE, base::BindOnce(_progressCallback, _output.GetLength()));
     [dataTask resume];

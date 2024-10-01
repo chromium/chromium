@@ -216,9 +216,7 @@ bool VerifyCodeDirectoryHash(
   }
 
   return AppShimRegistry::Get()->VerifyCdHashForApp(
-      base::SysCFStringRefToUTF8(app_id),
-      base::make_span(CFDataGetBytePtr(cd_hash),
-                      base::checked_cast<size_t>(CFDataGetLength(cd_hash))));
+      base::SysCFStringRefToUTF8(app_id), base::apple::CFDataToSpan(cd_hash));
 }
 
 // Returns whether |app_shim_audit_token|'s code signature is trusted. Since an
