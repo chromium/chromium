@@ -322,4 +322,42 @@ suite('LocalCertsSectionV2Test', () => {
     assertFalse(localCertsSection.$.importOsCerts.disabled);
   });
   // </if>
+
+  // <if expr="not is_chromeos">
+  test('import OS certs toggle disable', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+
+    localCertsSection.$.importOsCerts.click();
+    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
+    assertFalse(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+  });
+
+  test('import OS certs toggle enable', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: false,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+
+    localCertsSection.$.importOsCerts.click();
+    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
+    assertTrue(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+  });
+  // </if>
 });

@@ -83,6 +83,10 @@ class CertificateManagerPageHandler
   void ShowNativeManageCertificates() override;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  void SetIncludeSystemTrustStore(bool include) override;
+#endif
+
  private:
   // Returns a reference to the CertSource object corresponding to `source`.
   // Will always return a valid object, or will fail with a CHECK if `source`

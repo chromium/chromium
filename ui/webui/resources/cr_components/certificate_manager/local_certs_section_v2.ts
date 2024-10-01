@@ -190,6 +190,13 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
+
+  // <if expr="not is_chromeos">
+  private onOsCertsToggleChanged_(e: CustomEvent<boolean>) {
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.handler.setIncludeSystemTrustStore(e.detail);
+  }
+  // </if>
 }
 
 declare global {

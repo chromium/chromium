@@ -59,6 +59,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'importAndBindCertificate',
       'deleteCertificate',
       'showNativeManageCertificates',
+      'setIncludeSystemTrustStore',
     ]);
   }
 
@@ -117,6 +118,12 @@ class FakePageHandler extends TestBrowserProxy implements
   // <if expr="is_win or is_macosx">
   showNativeManageCertificates() {
     this.methodCalled('showNativeManageCertificates');
+  }
+  // </if>
+
+  // <if expr="not is_chromeos">
+  setIncludeSystemTrustStore(include: boolean) {
+    this.methodCalled('setIncludeSystemTrustStore', include);
   }
   // </if>
 }

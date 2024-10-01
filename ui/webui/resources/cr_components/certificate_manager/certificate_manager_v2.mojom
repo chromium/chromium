@@ -132,6 +132,9 @@ interface CertificateManagerPageHandler {
   [EnableIf=native_cert_management]
   ShowNativeManageCertificates();
 
+  // Set whether to use the OS imported certs or not.
+  [EnableIfNot=is_chromeos]
+  SetIncludeSystemTrustStore(bool include);
 };
 
 // Calls from C++ -> TS (Browser -> Renderer).

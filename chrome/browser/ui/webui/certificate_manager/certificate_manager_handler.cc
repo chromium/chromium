@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/enterprise_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/platform_cert_sources.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 
@@ -192,6 +193,13 @@ void CertificateManagerPageHandler::GetCertManagementMetadata(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void CertificateManagerPageHandler::ShowNativeManageCertificates() {
   settings_utils::ShowManageSSLCertificates(web_contents_);
+}
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void CertificateManagerPageHandler::SetIncludeSystemTrustStore(bool include) {
+  auto* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kCAPlatformIntegrationEnabled, include);
 }
 #endif
 
