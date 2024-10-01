@@ -44,7 +44,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
     $i18n{browseAsGuestButton}
   </cr-button>
   <cr-checkbox id="askOnStartup" ?checked="${this.askOnStartup_}"
-      @change="${this.onAskOnStartupChangedByUser_}"
+      @checked-changed="${this.onAskOnStartupChangedByUser_}"
       ?hidden="${this.hideAskOnStartup_}">
     $i18n{askOnStartupCheckboxText}
   </cr-checkbox>
