@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/scanner/scanner_text.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,25 +22,6 @@ namespace ash {
 
 namespace {
 
-ScannerText::Line CreateTextLine(
-    const gfx::Range& range,
-    const ScannerText::CenterRotatedBox& bounding_box) {
-  ScannerText::Line line;
-  line.range = range;
-  line.bounding_box = bounding_box;
-  return line;
-}
-
-ScannerText CreateSingleParagraphText(const std::u16string& text_contents,
-                                      std::vector<ScannerText::Line> lines) {
-  ScannerText::Paragraph paragraph;
-  paragraph.lines = std::move(lines);
-  ScannerText text;
-  text.paragraphs.push_back(std::move(paragraph));
-  text.text_contents = text_contents;
-  return text;
-}
-
 TEST(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {
   // Initialize an entirely green 100 x 100 canvas.
   constexpr gfx::Rect kCanvasBounds(0, 0, 100, 100);
@@ -53,15 +33,14 @@ TEST(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {
   // - has size 40 x 8 before rotation, then
   // - is rotated clockwise by 45 degrees.
   CaptureRegionOverlayController capture_region_overlay_controller;
-  std::vector<ScannerText::Line> lines;
+  ScannerText text(u"text content");
+  ScannerText::Paragraph& paragraph = text.AppendParagraph();
   constexpr gfx::Point kTextRegionCenter(40, 50);
-  lines.push_back(
-      CreateTextLine(gfx::Range(0, 12),
-                     ScannerText::CenterRotatedBox{.center = kTextRegionCenter,
-                                                   .size = gfx::Size(40, 8),
-                                                   .rotation = 45}));
-  capture_region_overlay_controller.OnTextDetected(
-      CreateSingleParagraphText(u"text content", std::move(lines)));
+  paragraph.AppendLine(gfx::Range(0, 12), ScannerText::CenterRotatedBox{
+                                              .center = kTextRegionCenter,
+                                              .size = gfx::Size(40, 8),
+                                              .rotation = 45});
+  capture_region_overlay_controller.OnTextDetected(std::move(text));
   capture_region_overlay_controller.PaintCaptureRegionOverlay(
       canvas, /*region=*/kCanvasBounds);
 

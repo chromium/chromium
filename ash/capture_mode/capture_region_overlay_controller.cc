@@ -75,12 +75,12 @@ void CaptureRegionOverlayController::PaintDetectedTextRegions(
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(kDetectedTextRegionColor);
   flags.setAlphaf(kDetectedTextRegionOpacity);
-  for (const ScannerText::Paragraph& paragraph : detected_text_->paragraphs) {
-    for (const ScannerText::Line& line : paragraph.lines) {
+  for (const ScannerText::Paragraph& paragraph : detected_text_->paragraphs()) {
+    for (const ScannerText::Line& line : paragraph.lines()) {
       canvas.Save();
       TranslateAndRotateCanvas(canvas, region_bounds_in_canvas,
-                               line.bounding_box);
-      canvas.DrawRect(GetRectCenteredAtOrigin(line.bounding_box.size), flags);
+                               line.bounding_box());
+      canvas.DrawRect(GetRectCenteredAtOrigin(line.bounding_box().size), flags);
       canvas.Restore();
     }
   }
