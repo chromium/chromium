@@ -20,7 +20,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -772,9 +771,9 @@ bool CreditCard::IsLocalOrServerDuplicateOf(const CreditCard& other) const {
   }
   // If `this` or `other` is only a partial card, i.e. some fields are
   // missing, assume those fields match.
-  bool name_on_card_differs =
-      !name_on_card_.empty() && !other.name_on_card_.empty() &&
-      !base::EqualsCaseInsensitiveASCII(name_on_card_, other.name_on_card_);
+  bool name_on_card_differs = !name_on_card_.empty() &&
+                              !other.name_on_card_.empty() &&
+                              name_on_card_ != other.name_on_card_;
   bool expiration_month_differs = expiration_month_ != 0 &&
                                   other.expiration_month_ != 0 &&
                                   expiration_month_ != other.expiration_month_;

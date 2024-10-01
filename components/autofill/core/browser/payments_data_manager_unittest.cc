@@ -1280,32 +1280,6 @@ TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   EXPECT_EQ(2U, credit_cards.size());
 }
 
-// Tests case-insensitive deduping of the name field, i.e. the server card is
-// kept for duplicate cards except different name casing.
-TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_CaseInsensitiveName) {
-  std::list<CreditCard*> credit_cards;
-
-  CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                        test::kEmptyOrigin);
-  test::SetCreditCardInfo(&local_card, "homer simpson",
-                          "4234567890123456" /* Visa */, "01", "2999", "1");
-  credit_cards.push_back(&local_card);
-
-  // Create a masked server card that is a duplicate of a local card except name
-  // casing.
-  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
-  test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
-                          "01", "2999", "1");
-  masked_card.SetNetworkForMaskedCard(kVisaCard);
-  credit_cards.push_back(&masked_card);
-
-  PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
-  ASSERT_EQ(1U, credit_cards.size());
-
-  // Verify `masked_card` is returned after deduping `credit_cards` list.
-  EXPECT_EQ(*credit_cards.front(), masked_card);
-}
-
 TEST_F(PaymentsDataManagerTest, DeleteLocalCreditCards) {
   CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           test::kEmptyOrigin);
