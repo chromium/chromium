@@ -658,16 +658,18 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
     return;
   }
 
-  // Check that the index is valid for buttons
-  DCHECK_LE(index, static_cast<int>(children().size()));
-
+  // Ensure the button is placed within the bounds of children(). The last
+  // button is always reserved for the everything / overflow menu.
+  int num_buttons = static_cast<int>(children().size());
+  int clamped_index =
+      index < num_buttons ? index : std::max(0, num_buttons - 1);
   views::View* view = AddChildViewAt(
       std::make_unique<SavedTabGroupButton>(
           group,
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.saved_guid()),
           browser_, animations_enabled_),
-      index);
+      clamped_index);
   if (group.saved_tabs().size() == 0) {
     view->SetVisible(false);
   }
