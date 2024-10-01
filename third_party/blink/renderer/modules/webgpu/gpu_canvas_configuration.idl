@@ -26,7 +26,4 @@ dictionary GPUCanvasConfiguration {
     PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode = "opaque";
     [RuntimeEnabled=WebGPUHDR] GPUCanvasToneMapping toneMapping = {};
-    // TODO(https://crbug.com/333967627): Remove support for this older version
-    // of the API once the new API lands.
-    [RuntimeEnabled=CanvasHDR] CanvasHighDynamicRangeOptions hdrOptions;
 };

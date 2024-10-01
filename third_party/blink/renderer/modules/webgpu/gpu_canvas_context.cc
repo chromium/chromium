@@ -528,25 +528,19 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   gfx::HDRMetadata hdr_metadata;
-  if (descriptor->hasToneMapping()) {
-    if (descriptor->toneMapping()->hasMode()) {
-      tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
-      switch (tone_mapping_mode_) {
-        case V8GPUCanvasToneMappingMode::Enum::kStandard:
-          break;
-        case V8GPUCanvasToneMappingMode::Enum::kExtended:
-          hdr_metadata.extended_range.emplace(
-              /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom,
-              /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom);
-          break;
-      }
+  if (descriptor->hasToneMapping() && descriptor->toneMapping()->hasMode()) {
+    tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
+    switch (tone_mapping_mode_) {
+      case V8GPUCanvasToneMappingMode::Enum::kStandard:
+        break;
+      case V8GPUCanvasToneMappingMode::Enum::kExtended:
+        hdr_metadata.extended_range.emplace(
+            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom,
+            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom);
+        break;
     }
-  } else if (descriptor->hasHdrOptions()) {
-    // TODO(https://crbug.com/333967627): Remove support for this older version
-    // of the API once the new API lands.
-    ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
   const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
