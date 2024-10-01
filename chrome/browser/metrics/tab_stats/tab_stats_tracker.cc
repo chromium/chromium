@@ -626,10 +626,12 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
 
     base::UmaHistogramCounts100(kTabDuplicateCountSingleWindowHistogramName,
                                 duplicate_data_single_window.duplicate_count);
-    base::UmaHistogramPercentage(
-        kTabDuplicatePercentageSingleWindowHistogramName,
-        duplicate_data_single_window.duplicate_count * 100 /
-            duplicate_data_single_window.tab_count);
+    if (duplicate_data_single_window.tab_count > 0) {
+      base::UmaHistogramPercentage(
+          kTabDuplicatePercentageSingleWindowHistogramName,
+          duplicate_data_single_window.duplicate_count * 100 /
+              duplicate_data_single_window.tab_count);
+    }
   }
   for (const auto& duplicate_data : duplicate_data_per_profile) {
     // Guest mode and incognito should not count for the per-profile metrics
@@ -641,10 +643,12 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
     base::UmaHistogramCounts100(
         kTabDuplicateCountAllProfileWindowsHistogramName,
         duplicate_data.second.duplicate_count);
-    base::UmaHistogramPercentage(
-        kTabDuplicatePercentageAllProfileWindowsHistogramName,
-        duplicate_data.second.duplicate_count * 100 /
-            duplicate_data.second.tab_count);
+    if (duplicate_data.second.tab_count > 0) {
+      base::UmaHistogramPercentage(
+          kTabDuplicatePercentageAllProfileWindowsHistogramName,
+          duplicate_data.second.duplicate_count * 100 /
+              duplicate_data.second.tab_count);
+    }
   }
 }
 
