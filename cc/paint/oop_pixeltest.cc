@@ -1070,7 +1070,14 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
                comparator);
 }
 
-TEST_F(OopPixelTest, DrawImageReinterpretedAsSRGB) {
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+// SwiftShader crashes when running this test on ARM64 on Fuchsia,
+// see b/369849405.
+#define MAYBE_DrawImageReinterpretedAsSRGB DISABLED_DrawImageReinterpretedAsSRGB
+#else
+#define MAYBE_DrawImageReinterpretedAsSRGB DrawImageReinterpretedAsSRGB
+#endif
+TEST_F(OopPixelTest, MAYBE_DrawImageReinterpretedAsSRGB) {
   constexpr gfx::Rect rect(100, 100);
 
   auto image_color_space = gfx::ColorSpace::CreateHDR10().ToSkColorSpace();
