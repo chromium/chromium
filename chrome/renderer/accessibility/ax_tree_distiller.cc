@@ -226,14 +226,10 @@ void AXTreeDistiller::DistillViaScreen2x(
     std::vector<ui::AXNodeID>* content_node_ids_algorithm) {
   CHECK(screen_ai_service_ready_);
 
-  // Establish connection to ScreenAI service if it's not already made and set
-  // it to reset if it stays idle for `kScreenAIIdleDisconnectDelay` to release
-  // resources. It will be created again if its needed.
-  if (!main_content_extractor_.is_bound() ||
-      !main_content_extractor_.is_connected()) {
+  // Establish connection to ScreenAI service if it's not already made.
+  if (!main_content_extractor_.is_bound()) {
     render_frame()->GetBrowserInterfaceBroker().GetInterface(
         main_content_extractor_.BindNewPipeAndPassReceiver());
-    main_content_extractor_.reset_on_disconnect();
     main_content_extractor_.set_disconnect_handler(
         base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -273,6 +269,7 @@ void AXTreeDistiller::ScreenAIServiceReady() {
 }
 
 void AXTreeDistiller::OnMainContentExtractorDisconnected() {
+  main_content_extractor_.reset();
   on_ax_tree_distilled_callback_.Run(ui::AXTreeIDUnknown(),
                                      std::vector<ui::AXNodeID>());
 }
