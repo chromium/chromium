@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
                 ->GetBrowserView()
                 .unified_side_panel()
                 ->GetHorizontalAlignment(),
-            SidePanel::kAlignRight);
+            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
                 ->GetBrowserView()
                 .unified_side_panel()
                 ->GetHorizontalAlignment(),
-            SidePanel::kAlignLeft);
+            SidePanel::HorizontalAlignment::kLeft);
 }
 
 // Verify that right and left alignment works the same as when in LTR mode.
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
                 ->GetBrowserView()
                 .unified_side_panel()
                 ->GetHorizontalAlignment(),
-            SidePanel::kAlignRight);
+            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
                 ->GetBrowserView()
                 .unified_side_panel()
                 ->GetHorizontalAlignment(),
-            SidePanel::kAlignLeft);
+            SidePanel::HorizontalAlignment::kLeft);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,

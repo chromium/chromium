@@ -1032,7 +1032,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
+      this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                             : SidePanel::HorizontalAlignment::kLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
   side_panel_rounded_corner_ =
@@ -2596,7 +2597,8 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   unified_side_panel_->SetHorizontalAlignment(
-      is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
+      is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                       : SidePanel::HorizontalAlignment::kLeft);
   GetBrowserViewLayout()->Layout(this);
   side_panel_rounded_corner_->DeprecatedLayoutImmediately();
   side_panel_rounded_corner_->SchedulePaint();

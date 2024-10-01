@@ -395,7 +395,7 @@ SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() {
 }
 
 bool SidePanel::IsRightAligned() {
-  return GetHorizontalAlignment() == kAlignRight;
+  return GetHorizontalAlignment() == HorizontalAlignment::kRight;
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {

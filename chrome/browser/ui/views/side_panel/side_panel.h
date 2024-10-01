@@ -29,10 +29,10 @@ class SidePanel : public views::AccessiblePaneView,
   // LTR / RTL conversions are handled in
   // BrowserViewLayout::LayoutSidePanelView. As such, left will always be on the
   // left side of the browser regardless of LTR / RTL mode.
-  enum HorizontalAlignment { kAlignLeft = 0, kAlignRight };
-  explicit SidePanel(BrowserView* browser_view,
-                     HorizontalAlignment horizontal_alignment =
-                         HorizontalAlignment::kAlignRight);
+  enum class HorizontalAlignment { kLeft = 0, kRight };
+  explicit SidePanel(
+      BrowserView* browser_view,
+      HorizontalAlignment horizontal_alignment = HorizontalAlignment::kRight);
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
