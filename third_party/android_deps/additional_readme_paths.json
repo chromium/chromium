@@ -88,6 +88,7 @@
     "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava",
     "libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
     "libs/org_jsoup_jsoup",
+    "libs/org_jspecify_jspecify",
     "libs/org_mockito_mockito_android",
     "libs/org_mockito_mockito_core",
     "libs/org_mockito_mockito_subclass",

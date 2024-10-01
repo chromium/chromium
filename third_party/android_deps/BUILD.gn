@@ -1048,6 +1048,14 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jspecify_jspecify_java") {
+    jar_path = "cipd/libs/org_jspecify_jspecify/jspecify-1.0.0.jar"
+    output_name = "org_jspecify_jspecify"
+    supports_android = true
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_android_java") {
     jar_path =
         "cipd/libs/org_mockito_mockito_android/mockito-android-5.11.0.jar"
