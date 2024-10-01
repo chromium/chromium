@@ -626,7 +626,10 @@
       About this profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      This profile is managed by your organization, which can view certain kinds of information
+      This profile is managed by your organization, which can view certain kinds of information, including
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
+      This profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view certain kinds of information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
@@ -662,7 +665,7 @@
       You can try again or contact your administrator for help
     </message>
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
-      Sign in to securely separate your work and personal browsing. Increase your productivity while protecting sensitive company data.
+      Sign in to get your bookmarks, passwords, and more on all your devices
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
       Keep existing browsing data separate from your work profile?

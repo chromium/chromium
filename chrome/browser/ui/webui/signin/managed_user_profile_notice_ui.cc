@@ -9,9 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
@@ -240,6 +242,14 @@ void ManagedUserProfileNoticeUI::Initialize(
             base::FeatureList::IsEnabled(
                 profile_management::features::kOidcAuthProfileManagement));
 #endif
+  }
+  if (account_info.IsManaged()) {
+    update_data.Set(
+        "profileDisclosureSubtitle",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
+            base::UTF8ToUTF16(
+                enterprise_util::GetDomainFromEmail(account_info.email))));
   }
   content::WebUIDataSource::Update(
       Profile::FromWebUI(web_ui()),
