@@ -2749,10 +2749,6 @@ public class StripLayoutHelperTest {
         // Verify tab is moved out of group as user chooses delete tab group without showing the
         // dialog.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
-
-        // Verify group title is removed from the tab strip
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2775,10 +2771,6 @@ public class StripLayoutHelperTest {
 
         // Verify tab is moved out of group as user confirms tab group delete.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
-
-        // Verify group title is removed from the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2802,10 +2794,6 @@ public class StripLayoutHelperTest {
         // Verify tab is not moved out of group as user cancels tab group delete.
         verify(mTabGroupModelFilter, never())
                 .moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
-
-        // Verify group title is restored back on the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2829,10 +2817,6 @@ public class StripLayoutHelperTest {
         // Assume the drop is unsuccessful; the tab and the tab group will be restored to its
         // original position.
         mStripLayoutHelper.clearTabDragState();
-
-        // Verify group title is restored back on the tab strip.
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2855,10 +2839,6 @@ public class StripLayoutHelperTest {
 
         // Verify tab is moved out of group as user confirms tab group delete.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), false);
-
-        // Verify group title is removed from the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2882,10 +2862,6 @@ public class StripLayoutHelperTest {
         // Verify tab is not moved out of group as user cancels tab group delete.
         verify(mTabGroupModelFilter, never())
                 .moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
-
-        // Verify group title is restored back on the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2904,10 +2880,6 @@ public class StripLayoutHelperTest {
 
         // Assert tab is being closed.
         assertTrue("Tab should be closing", tabs[0].isDying());
-
-        // Verify group title is removed from the tab strip
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2930,10 +2902,6 @@ public class StripLayoutHelperTest {
 
         // Assert tab is being closed.
         assertTrue("Tab should be closing", tabs[0].isDying());
-
-        // Verify group title is removed from the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -2956,10 +2924,6 @@ public class StripLayoutHelperTest {
 
         // Assert tab should not be closed.
         assertFalse("Tab should not be closing", tabs[0].isDying());
-
-        // Verify group title is restored back to the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     private void setUpTabGroupAndDialog(
@@ -3022,7 +2986,7 @@ public class StripLayoutHelperTest {
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(6)).requestUpdate();
+        verify(mUpdateHost, times(7)).requestUpdate();
     }
 
     @Test
@@ -4530,8 +4494,6 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
         mContext.getResources().getDisplayMetrics().density = 1f;
-
-        mStripLayoutHelper.disableHoverCardDelayForTesting();
     }
 
     @Test
@@ -4544,6 +4506,7 @@ public class StripLayoutHelperTest {
 
         // Set a new TabGroupModelFilter.
         TabGroupModelFilter newModelFilter = mock(TabGroupModelFilter.class);
+        when(newModelFilter.getTabModel()).thenReturn(mModel);
         mStripLayoutHelper.setTabGroupModelFilter(newModelFilter);
 
         // Verify the observers have been updated as expected.
