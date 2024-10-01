@@ -304952,7 +304952,7 @@
      []
     ],
     "README.md": [
-     "2b92e470ac19b59777ee39b82ebd7b3bd85763f1",
+     "2f23e76b6fa01fcd4edd8a287a8cc10b3b501054",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -304984,10 +304984,6 @@
      ],
      "compute-pressure-disabled-by-permissions-policy-worker.js": [
       "90ed0a78576edc041caaa2ae70c319837152b726",
-      []
-     ],
-     "pressure-helpers.js": [
-      "5234cf2d78c90d559d3cfd8ee1b86d9b3fa97861",
       []
      ],
      "support-iframe.html": [
@@ -368675,7 +368671,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "09cda1beb54c1430941b5e3b9042d66ff5329784",
+      "e05fe65911d4154f3e8bee9214b21e0ec64ba3af",
       []
      ],
      "auction-config-passed-to-worklets.https.window_1-5-expected.txt": [
@@ -368805,6 +368801,14 @@
       ],
       "request-tracker.py": [
        "dea8427266f1245e297795a69538b3a4f0007af2",
+       []
+      ],
+      "service-worker-helper.js": [
+       "cc00181359740b51f83c3289cfc215252123b67e",
+       []
+      ],
+      "service-worker-helper.js.headers": [
+       "98dfc8c8674edc62c4f6498a0b2a97c25447de96",
        []
       ],
       "set-cookie.asis": [
@@ -390148,7 +390152,7 @@
      []
     ],
     "audio-session.idl": [
-     "f542347c710143e6003e96907c989614a40c701a",
+     "7fd75024ee8fa5c505955a4dfc581eb8d774b97b",
      []
     ],
     "autoplay-detection.idl": [
@@ -390656,7 +390660,7 @@
      []
     ],
     "mediacapture-viewport.idl": [
-     "a9dcf74e17cdf38d3d3cea8c7323c510d07653a1",
+     "c4d1892b0b9932a034b15caa8f80d3f16f096f5f",
      []
     ],
     "mediaqueries-5.idl": [
@@ -390664,7 +390668,7 @@
      []
     ],
     "mediasession.idl": [
-     "00bfe6ad21649d719511537db4f4ee046f8086b1",
+     "5c6942be5a0786234d5f9fddaa302c98c8d92f97",
      []
     ],
     "mediastream-recording.idl": [
@@ -390692,7 +390696,7 @@
      []
     ],
     "observable.idl": [
-     "b0f0949a23a09700c08911f3ee4719d0752cdc2b",
+     "55bdbb21e417d6abd10963e82587c9416b689adb",
      []
     ],
     "observable.tentative.idl": [
@@ -390884,7 +390888,7 @@
      []
     ],
     "selection-api.idl": [
-     "a84536ab0f58bbb45a210870a6b9873c37df20e1",
+     "49d718d0777ae4aba36c39b0945d6fb0065e6bf7",
      []
     ],
     "serial.idl": [
@@ -390896,7 +390900,7 @@
      []
     ],
     "service-workers.idl": [
-     "87d48398f72b540b14544165ca7216a0090d79f6",
+     "d9ff2f651f8235968dd29bd6d7f86e9e8fdcb4cf",
      []
     ],
     "shape-detection-api.idl": [
@@ -390904,7 +390908,7 @@
      []
     ],
     "shared-storage.idl": [
-     "6f8e92708881f0bc496b093939c006a5ec712e12",
+     "85906bedbcff138cc1bf940a77a6485b695a6715",
      []
     ],
     "speech-api.idl": [
@@ -390952,7 +390956,7 @@
      []
     ],
     "turtledove.idl": [
-     "77360d0dd10d8a8bf584b6d6939479bce2c1b5c2",
+     "ff48d311914e49e9de8a96f7ac3a26da144da818",
      []
     ],
     "ua-client-hints.idl": [
@@ -391096,7 +391100,7 @@
      []
     ],
     "webgpu.idl": [
-     "74021895a8f740c71cbb048a8089186a2ca77d86",
+     "421685c7a8fe4516e5e0b803f617181650d1d62a",
      []
     ],
     "webhid.idl": [
@@ -391112,7 +391116,7 @@
      []
     ],
     "webnn.idl": [
-     "9a71f73954cd1dc99e157c7d60571632959dbf2f",
+     "8329e7d2b33eec5ffe030e9f1b826b5276d6088a",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -391140,7 +391144,7 @@
      []
     ],
     "webrtc.idl": [
-     "32500f9a5600b03372ea438ad42e4a8f9fcb9cb6",
+     "174ead6261c6c28eac7bd9dd5a1feb374d521b4d",
      []
     ],
     "websockets.idl": [
@@ -391631,7 +391635,7 @@
     ]
    },
    "lint.ignore": [
-    "62ad931cb83b0fb0681f02f92b24ffd895973663",
+    "3e1d05be28de3836888b62d527ebc4a0781397b1",
     []
    ],
    "loading": {
@@ -396990,6 +396994,10 @@
       "360e6686bfb65ed33d811d15e1ba7183a736d552",
       []
      ],
+     "green.png": [
+      "28a1faab37797ef39454aa1deac1b470712f7be4",
+      []
+     ],
      "link-header-referrer-policy.html": [
       "dd2144d5075c68c3ad6d6c7ea393b8f58c24e057",
       []
@@ -399584,14 +399592,6 @@
       "c9980e1285b7e14a85cba19f2c870f480e303946",
       []
      ],
-     "mock-pressure-service.js": [
-      "610d02a9164ce5aba99e0cd20e37321c054af252",
-      []
-     ],
-     "mock-pressure-service.js.headers": [
-      "6805c323df5a975231648b830e33ce183c3cbbd3",
-      []
-     ],
      "mock-subapps.js": [
       "b81936713b17db941ef380d4019cecfbe563caf6",
       []
@@ -401402,7 +401402,7 @@
      ]
     },
     "idlharness.https.any.serviceworker-expected.txt": [
-     "3857e59ccc797418d1d158563d3c25d1242ce2b4",
+     "d6b8ea51c60c4ae9ceaa43a320193775e51656e1",
      []
     ],
     "idlharness.https.any.sharedworker-expected.txt": [
@@ -444653,7 +444653,7 @@
    },
    "compute-pressure": {
     "compute_pressure_basic.https.window.js": [
-     "ff50ef4e5613a7154d601699da7b3387a26256fe",
+     "a120f97a403621c9baa6c2769f5989f7bfadd43d",
      [
       "compute-pressure/compute_pressure_basic.https.window.html?globalScope=dedicated_worker",
       {
@@ -444735,248 +444735,327 @@
       }
      ]
     ],
-    "compute_pressure_detached_iframe.https.html": [
-     "6123521248cb7f6d6368bf916c1004f6a84dd5db",
+    "compute_pressure_detached_iframe.https.window.js": [
+     "a43d6b0fc2dc7ed0263dbf3bde7c242dc421cea4",
      [
-      null,
-      {}
-     ]
-    ],
-    "compute_pressure_disconnect.https.any.js": [
-     "f8bc3fb357811a35201b30f86361846452b15faf",
-     [
-      "compute-pressure/compute_pressure_disconnect.https.any.html",
+      "compute-pressure/compute_pressure_detached_iframe.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_disconnect.https.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_disconnect.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/common/utils.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_disconnect_idempotent.https.any.js": [
-     "3c9a6688a42fb8e3e4decbee393e51a52554b6f5",
+    "compute_pressure_disconnect.https.window.js": [
+     "0a27b16a926b35b3d9d7f1878542f379bb7cb7f3",
      [
-      "compute-pressure/compute_pressure_disconnect_idempotent.https.any.html",
+      "compute-pressure/compute_pressure_disconnect.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_disconnect_idempotent.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_disconnect.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_disconnect_idempotent.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_disconnect_immediately.https.any.js": [
-     "86963e242aba383ff5c687549f23bbdf58d3a237",
+    "compute_pressure_disconnect_idempotent.https.window.js": [
+     "b7c440502d4f9e92df6c3a719f638f2b94682b8f",
      [
-      "compute-pressure/compute_pressure_disconnect_immediately.https.any.html",
+      "compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_disconnect_immediately.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_disconnect_immediately.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_duplicate_updates.https.any.js": [
-     "609fb5ad7083f3cce6e10d8c0b461ffb01e853be",
+    "compute_pressure_disconnect_immediately.https.window.js": [
+     "f411a1ea85c2d326f6bc2f7ee6984fc2576e48d6",
      [
-      "compute-pressure/compute_pressure_duplicate_updates.https.any.html",
+      "compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_duplicate_updates.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_duplicate_updates.https.window.js": [
+     "f11a59b4cbbad30b4b9b0700e243bd12f5ea68d5",
+     [
+      "compute-pressure/compute_pressure_duplicate_updates.https.window.html?globalScope=dedicated_worker",
+      {
+       "script_metadata": [
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_duplicate_updates.https.any.worker.html",
+      "compute-pressure/compute_pressure_duplicate_updates.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
@@ -445018,121 +445097,147 @@
       }
      ]
     ],
-    "compute_pressure_multiple.https.any.js": [
-     "8c50cc4b3df27e99e7fcb445d59609aa41d54fc9",
+    "compute_pressure_multiple.https.window.js": [
+     "a5d2f530a0944f470f7581c076edd1eef01d83f8",
      [
-      "compute-pressure/compute_pressure_multiple.https.any.html",
+      "compute-pressure/compute_pressure_multiple.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_multiple.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_multiple.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_multiple.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_observe_idempotent.https.any.js": [
-     "9fcbb49814b6c0aac163c31d35d76b473d87a274",
+    "compute_pressure_observe_idempotent.https.window.js": [
+     "af719097db23dd95b780ae5ae89c47363fdf07e5",
      [
-      "compute-pressure/compute_pressure_observe_idempotent.https.any.html",
+      "compute-pressure/compute_pressure_observe_idempotent.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_observe_idempotent.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_observe_idempotent.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_observe_idempotent.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
@@ -445174,70 +445279,83 @@
       }
      ]
     ],
-    "compute_pressure_options.https.any.js": [
-     "ecf3c29dbf031d4014c8b7896bdf8f305596db27",
+    "compute_pressure_options.https.window.js": [
+     "0cf0b8e11fd0b7f798b2873d8df3a6ade87abcd0",
      [
-      "compute-pressure/compute_pressure_options.https.any.html",
+      "compute-pressure/compute_pressure_options.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_options.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_options.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_options.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
     "compute_pressure_rate_obfuscation_mitigation_not_triggered.https.window.js": [
-     "f3e966de24183f729918ca5a96add3941df1a40e",
+     "96cb29025406fce294d511367cd82603b31199a9",
      [
-      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_not_triggered.https.window.html",
+      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_not_triggered.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
@@ -445245,16 +445363,72 @@
          "long"
         ],
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_not_triggered.https.window.html?globalScope=window",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ],
        "timeout": "long"
@@ -445262,9 +445436,9 @@
      ]
     ],
     "compute_pressure_rate_obfuscation_mitigation_triggered.https.window.js": [
-     "b481cf6c87d87d0853468ebd7b3e257cd66ae5e3",
+     "b87452a9ddffa74a69b0577a2572667eadbdb2ba",
      [
-      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html",
+      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
@@ -445272,197 +445446,468 @@
          "long"
         ],
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ],
        "timeout": "long"
       }
      ]
     ],
-    "compute_pressure_take_records.https.any.js": [
-     "55660b228be22453c3d48a907d8501e3d9a55c00",
+    "compute_pressure_take_records.https.window.js": [
+     "0025dd61701b52f38e1f8428124ffba133dfc62a",
      [
-      "compute-pressure/compute_pressure_take_records.https.any.html",
+      "compute-pressure/compute_pressure_take_records.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_take_records.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_take_records.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_take_records.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_timestamp.https.any.js": [
-     "18db1dac461dd175bf7ee67ff96e6084a61964ad",
+    "compute_pressure_timestamp.https.window.js": [
+     "0f35eef522a454bfde3db8fcf0d2fce49f3f2bb6",
      [
-      "compute-pressure/compute_pressure_timestamp.https.any.html",
+      "compute-pressure/compute_pressure_timestamp.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
-      "compute-pressure/compute_pressure_timestamp.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_timestamp.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_timestamp.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
-        ],
-        [
-         "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
-    "compute_pressure_update_toJSON.https.any.js": [
-     "7f726698d61dd30afe588f4b477de5dc6bdbe407",
+    "compute_pressure_timestamp_continuously_increasing.https.window.js": [
+     "bdf5dbae6f513ccd0603f97b4c29f6f6c65f1c12",
      [
-      "compute-pressure/compute_pressure_update_toJSON.https.any.html",
+      "compute-pressure/compute_pressure_timestamp_continuously_increasing.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_timestamp_continuously_increasing.https.window.html?globalScope=window",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "compute_pressure_timestamp_faster_collector.https.window.js": [
+     "40ffe3b5b006e3ed8e1d1aae7ad3db40be2a17a3",
+     [
+      "compute-pressure/compute_pressure_timestamp_faster_collector.https.window.html?globalScope=dedicated_worker",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_timestamp_faster_collector.https.window.html?globalScope=window",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "compute_pressure_update_toJSON.https.window.js": [
+     "4ba8142c72edf96919f3ddf6fb9cd3eb7708f970",
+     [
+      "compute-pressure/compute_pressure_update_toJSON.https.window.html?globalScope=dedicated_worker",
+      {
+       "script_metadata": [
+        [
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/compute_pressure_update_toJSON.https.any.sharedworker.html",
+      "compute-pressure/compute_pressure_update_toJSON.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
+        ],
+        [
+         "variant",
+         "?globalScope=dedicated_worker"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/compute_pressure_update_toJSON.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
+         "/resources/testdriver.js"
         ],
         [
          "script",
-         "resources/pressure-helpers.js"
+         "/resources/testdriver-vendor.js"
         ],
         [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
         ]
        ]
       }
@@ -445528,61 +445973,34 @@
       }
      ]
     ],
-    "observe_return_type.https.any.js": [
-     "b24878ab394d236db4babb395e5703682b28c95d",
+    "observe_return_type.https.window.js": [
+     "6653f9a89eed083974ce9d1a4c31f34c4aec4407",
      [
-      "compute-pressure/observe_return_type.https.any.html",
+      "compute-pressure/observe_return_type.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
         ],
         [
-         "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "variant",
+         "?globalScope=dedicated_worker"
         ]
        ]
       }
      ],
      [
-      "compute-pressure/observe_return_type.https.any.sharedworker.html",
+      "compute-pressure/observe_return_type.https.window.html?globalScope=window",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
+         "variant",
+         "?globalScope=window"
         ],
         [
-         "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "compute-pressure/observe_return_type.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/test-only-api.js"
-        ],
-        [
-         "script",
-         "resources/pressure-helpers.js"
-        ],
-        [
-         "global",
-         "window,dedicatedworker,sharedworker"
+         "variant",
+         "?globalScope=dedicated_worker"
         ]
        ]
       }
@@ -502358,6 +502776,13 @@
          }
         ]
        ],
+       "listed-form-element-reset.html": [
+        "29f524dd9e7de2f9036dd3f69f8268523dfd6d2e",
+        [
+         null,
+         {}
+        ]
+       ],
        "modal-dialog.html": [
         "fa9eeae85eb13daf948c20406b1b907575c1c1f6",
         [
@@ -548630,6 +549055,41 @@
          [
           "variant",
           "?49-52"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "service-worker-request-visibility.https.window.js": [
+      "91214f01ef1e521f8d9f7d514129693288e5cf19",
+      [
+       "fledge/tentative/service-worker-request-visibility.https.window.html?1-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-last"
          ]
         ],
         "timeout": "long"
@@ -635422,7 +635882,7 @@
      ]
     ],
     "prefetch-headers.https.html": [
-     "0a475c7d7735cb535f24b62339fdd42d4d5443cb",
+     "74f654a3636008f591a959454673e7885adee948",
      [
       null,
       {}
@@ -635445,7 +635905,7 @@
      ]
     ],
     "prefetch-types.https.html": [
-     "276439e5440b2157eb2bfaf6a2fbe8b4ec05b3ff",
+     "da034252562c3bc7483f81d556adf5592efc8436",
      [
       null,
       {}
@@ -657373,7 +657833,7 @@
      "tentative": {
       "static-router": {
        "static-router-resource-timing.https.html": [
-        "796beb916a68ec58c1a8a0315a03133d6ae3bc63",
+        "74d84eb3c9f8b90492992167475b2cbdd11c9e52",
         [
          null,
          {}
