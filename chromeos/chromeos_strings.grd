@@ -454,7 +454,7 @@
         Help me read
       </message>
       <message name="IDS_ASH_MAHI_CONDENSED_MENU_BUTTON_LABEL" desc="The label that appears on the condensed Mahi menu button">
-        Help me read this page
+        Summarize with Help me read
       </message>
 
       <!-- Multitask Menu -->
