@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/api/tabs/app_base_window.h"
 #include "chrome/browser/extensions/api/tabs/app_window_controller.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -27,6 +26,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/browser_process_platform_part.h"
+#endif
 
 using content::BrowserContext;
 
