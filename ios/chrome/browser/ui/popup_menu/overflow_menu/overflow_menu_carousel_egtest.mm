@@ -255,7 +255,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   AppLaunchConfiguration config;
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature.name;
-  config.features_enabled.push_back(kOverflowMenuCustomization);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Open tools menu and see IPH appears.

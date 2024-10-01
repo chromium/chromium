@@ -712,15 +712,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                 actions:@[ self.editActionsAction ]
                  footer:nil];
 
-  NSMutableArray* actionGroups = [[NSMutableArray alloc] init];
-  [actionGroups
-      addObjectsFromArray:@[ self.appActionsGroup, self.pageActionsGroup ]];
-  if (IsOverflowMenuCustomizationEnabled()) {
-    [actionGroups addObject:self.editActionsGroup];
-  }
-  [actionGroups addObject:self.helpActionsGroup];
-
-  self.model.actionGroups = actionGroups;
+  self.model.actionGroups = @[
+    self.appActionsGroup, self.pageActionsGroup, self.editActionsGroup,
+    self.helpActionsGroup
+  ];
 }
 
 - (OverflowMenuAction*)newFollowAction {
@@ -1090,35 +1085,33 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   result.destination = static_cast<NSInteger>(destination);
 
-  if (IsOverflowMenuCustomizationEnabled()) {
-    NSMutableArray<OverflowMenuLongPressItem*>* longPressItems =
-        [[NSMutableArray alloc] init];
+  NSMutableArray<OverflowMenuLongPressItem*>* longPressItems =
+      [[NSMutableArray alloc] init];
 
-    NSString* hideItemText = [self hideItemTextForDestination:destination];
-    if (hideItemText) {
-      [longPressItems addObject:[[OverflowMenuLongPressItem alloc]
-                                    initWithTitle:hideItemText
-                                       symbolName:@"eye.slash"
-                                          handler:^{
-                                            [weakSelf
-                                                hideDestination:destination];
-                                          }]];
-    }
-    [longPressItems
-        addObject:[[OverflowMenuLongPressItem alloc]
-                      initWithTitle:l10n_util::GetNSString(
-                                        IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
-                         symbolName:@"pencil"
-                            handler:^{
-                              [weakSelf beginCustomization];
-                            }]];
-    result.longPressItems = longPressItems;
-
-    __weak __typeof(result) weakResult = result;
-    result.onShownToggleCallback = ^{
-      [weakSelf onShownToggledForDestination:weakResult];
-    };
+  NSString* hideItemText = [self hideItemTextForDestination:destination];
+  if (hideItemText) {
+    [longPressItems addObject:[[OverflowMenuLongPressItem alloc]
+                                  initWithTitle:hideItemText
+                                     symbolName:@"eye.slash"
+                                        handler:^{
+                                          [weakSelf
+                                              hideDestination:destination];
+                                        }]];
   }
+  [longPressItems
+      addObject:[[OverflowMenuLongPressItem alloc]
+                    initWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
+                       symbolName:@"pencil"
+                          handler:^{
+                            [weakSelf beginCustomization];
+                          }]];
+  result.longPressItems = longPressItems;
+
+  __weak __typeof(result) weakResult = result;
+  result.onShownToggleCallback = ^{
+    [weakSelf onShownToggledForDestination:weakResult];
+  };
 
   return result;
 }
@@ -1153,7 +1146,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   bool actionIsReorderable =
       std::find(reorderableActions.begin(), reorderableActions.end(),
                 actionType) != reorderableActions.end();
-  if (IsOverflowMenuCustomizationEnabled() && actionIsReorderable) {
+  if (actionIsReorderable) {
     action.longPressItems =
         [self actionLongPressItemsForActionType:actionType
                                    hideItemText:hideItemText];
@@ -1704,14 +1697,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                              [weakSelf
                                                  unfollowWebPage:webPageURLs];
                                            }];
-    if (IsOverflowMenuCustomizationEnabled()) {
-      NSString* hideItemText =
-          l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_UNFOLLOW,
-                                  base::SysNSStringToUTF16(domainName));
-      self.followAction.longPressItems = [self
-          actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
-                               hideItemText:hideItemText];
-    }
+    NSString* hideItemText =
+        l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_UNFOLLOW,
+                                base::SysNSStringToUTF16(domainName));
+    self.followAction.longPressItems = [self
+        actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
+                             hideItemText:hideItemText];
   } else {
     __weak __typeof(self) weakSelf = self;
     self.followAction.name = l10n_util::GetNSStringF(
@@ -1724,14 +1715,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                              [weakSelf
                                                  followWebPage:webPageURLs];
                                            }];
-    if (IsOverflowMenuCustomizationEnabled()) {
-      NSString* hideItemText =
-          l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW,
-                                  base::SysNSStringToUTF16(domainName));
-      self.followAction.longPressItems = [self
-          actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
-                               hideItemText:hideItemText];
-    }
+    NSString* hideItemText =
+        l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW,
+                                base::SysNSStringToUTF16(domainName));
+    self.followAction.longPressItems = [self
+        actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
+                             hideItemText:hideItemText];
   }
 }
 

@@ -525,7 +525,7 @@ using base::UserMetricsAction;
 
     RecordOverflowMenuVisitedEvent(_event);
 
-    if (IsOverflowMenuCustomizationEnabled() &&
+    if (IsNewOverflowMenuEnabled() &&
         self.overflowMenuUserScrolledToEndOfActions) {
       base::UmaHistogramBoolean(
           "IOS.OverflowMenu.UserScrolledToEndAndStartedCustomization",

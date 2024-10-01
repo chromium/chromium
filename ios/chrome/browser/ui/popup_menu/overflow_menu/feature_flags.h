@@ -10,13 +10,7 @@
 // Feature to enable the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
-// Feature to enable overflow menu customization.
-BASE_DECLARE_FEATURE(kOverflowMenuCustomization);
-
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
-
-// Whether or not overflow menu customization is enabled.
-bool IsOverflowMenuCustomizationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_FEATURE_FLAGS_H_

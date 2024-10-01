@@ -6811,11 +6811,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "overflow-menu-customization",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng@chromium.org", "bokan@chromium.org", "input-dev@chromium.org" ],
     // This flag is used by users to improve the accessibility of scroll bars

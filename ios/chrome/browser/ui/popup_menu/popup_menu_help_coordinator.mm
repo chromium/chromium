@@ -195,7 +195,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // Possibly shows the IPH for the Overflow Menu Customization feature. Returns
 // whether or not the IPH was shown.
 - (BOOL)showCustomizationIPHInMenu:(UIViewController*)menu {
-  if (!IsOverflowMenuCustomizationEnabled()) {
+  if (!IsNewOverflowMenuEnabled()) {
     return NO;
   }
 

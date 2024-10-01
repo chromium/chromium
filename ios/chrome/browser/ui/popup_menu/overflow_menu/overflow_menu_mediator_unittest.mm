@@ -1090,7 +1090,6 @@ TEST_F(OverflowMenuMediatorTest,
 
 // Tests that the actions have the correct longpress items set.
 TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;
@@ -1113,7 +1112,6 @@ TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
 
 // Tests that the destinations have the correct longpress items set.
 TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;
@@ -1136,7 +1134,6 @@ TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
 // Tests that when a destination becomes hidden during customization, the
 // corresponding action gains a subtitle and a highlight.
 TEST_F(OverflowMenuMediatorTest, DestinationHideShowsActionSubtitle) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;
