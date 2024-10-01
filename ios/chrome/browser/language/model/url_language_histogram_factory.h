@@ -22,10 +22,6 @@ class PrefRegistrySyncable;
 
 class UrlLanguageHistogramFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static language::UrlLanguageHistogram* GetForBrowserState(
-      ProfileIOS* profile);
-
   static language::UrlLanguageHistogram* GetForProfile(ProfileIOS* profile);
   static UrlLanguageHistogramFactory* GetInstance();
 

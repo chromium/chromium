@@ -567,7 +567,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     // Remove language histogram history.
     language::UrlLanguageHistogram* language_histogram =
-        UrlLanguageHistogramFactory::GetForBrowserState(browser_state_);
+        UrlLanguageHistogramFactory::GetForProfile(browser_state_);
     if (language_histogram) {
       language_histogram->ClearHistory(delete_begin, delete_end);
     }

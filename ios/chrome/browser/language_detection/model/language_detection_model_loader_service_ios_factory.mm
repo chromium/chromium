@@ -62,7 +62,7 @@ LanguageDetectionModelLoaderServiceIOSFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<
       language_detection::LanguageDetectionModelLoaderServiceIOS>(
-      LanguageDetectionModelServiceFactory::GetForBrowserState(profile));
+      LanguageDetectionModelServiceFactory::GetForProfile(profile));
 }
 
 web::BrowserState*

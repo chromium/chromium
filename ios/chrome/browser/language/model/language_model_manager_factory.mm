@@ -21,7 +21,7 @@
 
 namespace {
 
-void PrepareLanguageModels(ChromeBrowserState* const chrome_state,
+void PrepareLanguageModels(ProfileIOS* const chrome_state,
                            language::LanguageModelManager* const manager) {
   // Create and set the primary Language Model to use based on the state of
   // experiments. Note: there are currently no such experiments on iOS.
@@ -62,8 +62,7 @@ LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
 std::unique_ptr<KeyedService>
 LanguageModelManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* const state) const {
-  ChromeBrowserState* const chrome_state =
-      ChromeBrowserState::FromBrowserState(state);
+  ProfileIOS* const chrome_state = ProfileIOS::FromBrowserState(state);
   std::unique_ptr<language::LanguageModelManager> manager =
       std::make_unique<language::LanguageModelManager>(
           chrome_state->GetPrefs(),

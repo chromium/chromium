@@ -77,10 +77,9 @@ AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
 std::unique_ptr<KeyedService>
 AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<AcceptLanguagesServiceForBrowserState>(
-      browser_state->GetPrefs());
+      profile->GetPrefs());
 }
 
 web::BrowserState* AcceptLanguagesServiceFactory::GetBrowserStateToUse(
