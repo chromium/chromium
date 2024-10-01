@@ -1922,7 +1922,8 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
 
 // Temporary plumbing
 bool HTMLCanvasElement::IsHibernating() const {
-  return canvas2d_bridge_ && canvas2d_bridge_->IsHibernating();
+  return canvas2d_bridge_ &&
+         canvas2d_bridge_->GetHibernationHandler().IsHibernating();
 }
 
 bool HTMLCanvasElement::IsAccelerated() const {

@@ -73,8 +73,9 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
 }
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
-  if (IsHibernating())
+  if (hibernation_handler_.IsHibernating()) {
     logger_->ReportHibernationEvent(kHibernationEndedWithTeardown);
+  }
 }
 
 // static
@@ -93,7 +94,7 @@ void Canvas2DLayerBridge::HibernateOrLogFailure(
 
 void Canvas2DLayerBridge::Hibernate() {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
-  DCHECK(!IsHibernating());
+  DCHECK(!hibernation_handler_.IsHibernating());
   DCHECK(hibernation_scheduled_);
 
   hibernation_scheduled_ = false;
@@ -189,7 +190,8 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // attempts of Restore(), the layer would not exist, therefore, it will not
   // fall through this clause to try Restore() again
   if (resource_host_->CcLayer() &&
-      adjusted_hint == RasterModeHint::kPreferGPU && !IsHibernating()) {
+      adjusted_hint == RasterModeHint::kPreferGPU &&
+      !hibernation_handler_.IsHibernating()) {
     return nullptr;
   }
 
@@ -200,8 +202,9 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   if (!resource_provider || !resource_provider->IsValid())
     return nullptr;
 
-  if (!IsHibernating())
+  if (!hibernation_handler_.IsHibernating()) {
     return resource_provider;
+  }
 
   if (resource_provider->IsAccelerated()) {
     logger_->ReportHibernationEvent(kHibernationEndedNormally);
@@ -222,7 +225,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   resource_provider->SetRecorder(hibernation_handler_.ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler_.Clear();
-  DCHECK(!IsHibernating());
+  DCHECK(!hibernation_handler_.IsHibernating());
 
   // shouldBeDirectComposited() may have changed.
   resource_host_->SetNeedsCompositingUpdate();
@@ -280,7 +283,7 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     resource_host_->SetNeedsPushProperties();
   }
 
-  if (page_is_visible && IsHibernating()) {
+  if (page_is_visible && hibernation_handler_.IsHibernating()) {
     GetOrCreateResourceProvider();  // Rude awakening
   }
 }

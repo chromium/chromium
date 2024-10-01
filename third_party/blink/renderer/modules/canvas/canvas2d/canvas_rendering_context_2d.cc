@@ -721,9 +721,12 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
 
   Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
 
-  if (bridge->IsHibernating()) {
+  CanvasHibernationHandler& hibernation_handler =
+      bridge->GetHibernationHandler();
+
+  if (hibernation_handler.IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
-        bridge->GetHibernationHandler().GetImage());
+        hibernation_handler.GetImage());
   }
 
   if (!Host()->IsResourceValid()) {
