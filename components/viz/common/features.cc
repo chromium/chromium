@@ -67,7 +67,7 @@ BASE_FEATURE(kUseFrameIntervalDecider,
 
 BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
              "TemporalSkipOverlaysWithRootCopyOutputRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
