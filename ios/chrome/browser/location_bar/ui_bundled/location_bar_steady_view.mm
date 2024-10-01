@@ -484,7 +484,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
-  if (!self.badgesContainerView.badgeView) {
+  if (!self.badgesContainerView.badgeView ||
+      self.badgesContainerView.badgeView.hidden) {
     return;
   }
 
