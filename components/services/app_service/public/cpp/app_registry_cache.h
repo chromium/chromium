@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_REGISTRY_CACHE_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_REGISTRY_CACHE_H_
 
+#include <functional>
 #include <map>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -264,7 +269,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   base::ObserverList<Observer> observers_;
 
   // Maps from app_id to the latest state: the "sum" of all previous deltas.
-  std::map<std::string, AppPtr> states_;
+  std::map<std::string, AppPtr, std::less<>> states_;
 
   // Track the deltas being processed or are about to be processed by OnApps.
   // They are separate to manage the "notification and merging might be delayed
@@ -282,7 +287,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Nested OnApps calls are expected to be rare (but still dealt with
   // sensibly). In the typical case, OnApps should call DoOnApps exactly once,
   // and deltas_pending_ will stay empty.
-  std::map<std::string, raw_ptr<App, CtnExperimental>> deltas_in_progress_;
+  std::map<std::string, raw_ptr<App, CtnExperimental>, std::less<>> deltas_in_progress_;
   std::vector<AppPtr> deltas_pending_;
 
   // Saves app types which will finish initialization, and OnAppTypeInitialized
