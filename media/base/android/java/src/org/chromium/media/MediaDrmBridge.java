@@ -102,7 +102,7 @@ public class MediaDrmBridge {
     // Reference to the C++ media::MediaDrmBridge object.
     private long mNativeMediaDrmBridge;
 
-    private UUID mSchemeUUID;
+    private final UUID mKeySystemUuid;
     private final boolean mRequiresMediaCrypto;
 
     // A session only for the purpose of creating a MediaCrypto object. Created
@@ -246,7 +246,7 @@ public class MediaDrmBridge {
         return keysInfo;
     }
 
-    private static UUID getUUIDFromBytes(byte[] data) {
+    private static UUID getUuidFromBytes(byte[] data) {
         if (data.length != 16) {
             return null;
         }
@@ -266,21 +266,21 @@ public class MediaDrmBridge {
     }
 
     private boolean isWidevine() {
-        return mSchemeUUID.equals(WIDEVINE_UUID);
+        return mKeySystemUuid.equals(WIDEVINE_UUID);
     }
 
     private boolean isClearKey() {
-        return mSchemeUUID.equals(CLEARKEY_UUID);
+        return mKeySystemUuid.equals(CLEARKEY_UUID);
     }
 
     private MediaDrmBridge(
-            UUID schemeUUID,
+            UUID keySystemUuid,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
             long nativeMediaDrmStorageBridge)
             throws android.media.UnsupportedSchemeException {
-        mSchemeUUID = schemeUUID;
-        mMediaDrm = new MediaDrm(schemeUUID);
+        mKeySystemUuid = keySystemUuid;
+        mMediaDrm = new MediaDrm(keySystemUuid);
         mRequiresMediaCrypto = requiresMediaCrypto;
 
         mNativeMediaDrmBridge = nativeMediaDrmBridge;
@@ -363,8 +363,8 @@ public class MediaDrmBridge {
         // Create MediaCrypto object.
         // MediaCrypto#isCryptoSchemeSupported may do a disk read.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (MediaCrypto.isCryptoSchemeSupported(mSchemeUUID)) {
-                mMediaCrypto = new MediaCrypto(mSchemeUUID, mMediaCryptoSession.drmId());
+            if (MediaCrypto.isCryptoSchemeSupported(mKeySystemUuid)) {
+                mMediaCrypto = new MediaCrypto(mKeySystemUuid, mMediaCryptoSession.drmId());
                 Log.d(TAG, "MediaCrypto successfully created!");
                 onMediaCryptoReady(mMediaCrypto);
                 return true;
@@ -415,8 +415,8 @@ public class MediaDrmBridge {
      * @return true if the container and the crypto scheme is supported, or false otherwise.
      */
     @CalledByNative
-    private static boolean isCryptoSchemeSupported(byte[] schemeUUID, String containerMimeType) {
-        UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
+    private static boolean isCryptoSchemeSupported(byte[] keySystemUuid, String containerMimeType) {
+        UUID cryptoScheme = getUuidFromBytes(keySystemUuid);
         if (cryptoScheme == null) {
             return false;
         }
@@ -463,7 +463,7 @@ public class MediaDrmBridge {
     /**
      * Create a new MediaDrmBridge from the crypto scheme UUID.
      *
-     * @param schemeUUID Crypto scheme UUID.
+     * @param keySystemBytes Key system UUID.
      * @param securityOrigin Security origin. Empty value means no need for origin isolated storage.
      * @param securityLevel Security level. If empty, the default one should be used.
      * @param nativeMediaDrmBridge Native C++ object of this class.
@@ -471,7 +471,7 @@ public class MediaDrmBridge {
      */
     @CalledByNative
     private static MediaDrmBridge create(
-            byte[] schemeUUID,
+            byte[] keySystemBytes,
             String securityOrigin,
             String securityLevel,
             String message,
@@ -488,8 +488,8 @@ public class MediaDrmBridge {
         MediaDrmBridge mediaDrmBridge;
         // MediaDrm.isCryptoSchemeSupported reads from disk
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
-            if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
+            UUID keySystemUuid = getUuidFromBytes(keySystemBytes);
+            if (keySystemUuid == null || !MediaDrm.isCryptoSchemeSupported(keySystemUuid)) {
                 MediaDrmBridgeJni.get()
                         .onCreateError(
                                 nativeMediaDrmBridge, MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
@@ -498,7 +498,7 @@ public class MediaDrmBridge {
 
             mediaDrmBridge =
                     new MediaDrmBridge(
-                            cryptoScheme,
+                            keySystemUuid,
                             requiresMediaCrypto,
                             nativeMediaDrmBridge,
                             nativeMediaDrmStorageBridge);
