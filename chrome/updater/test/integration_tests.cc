@@ -182,6 +182,12 @@ class IntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
     VLOG(2) << __func__ << " entered.";
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+      // TODO(crbug.com/366973330): updater_tests_system fail under Win/ASan.
+      GTEST_SKIP() << "Skipping on Windows/ASan";
+    }
+#endif
 
     ASSERT_NO_FATAL_FAILURE(CleanProcesses());
     ASSERT_TRUE(WaitForUpdaterExit());
@@ -217,6 +223,9 @@ class IntegrationTest : public ::testing::Test {
 
   void TearDown() override {
     VLOG(2) << __func__ << " entered.";
+    if (IsSkipped()) {
+      return;
+    }
 
     ExitTestMode();
     if (!HasFailure()) {
@@ -1848,6 +1857,9 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
  protected:
   void SetUp() override {
     IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
     if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
       GTEST_SKIP();
@@ -1868,6 +1880,9 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     if (IsSystemInstall(GetUpdaterScopeForTesting())) {
       UninstallEnterpriseCompanionApp();
     }
@@ -2730,6 +2745,9 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     }
 
     IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
     test_server_ = std::make_unique<ScopedServer>();
     test_server_->ConfigureTestMode(user_test_commands_.get());
     test_server_->ConfigureTestMode(test_commands_.get());
@@ -4136,12 +4154,18 @@ class IntegrationTestLegacyUpdate3WebNewInstall : public IntegrationTest {
     }
 
     IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
     ASSERT_NO_FATAL_FAILURE(Install());
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
     ASSERT_NO_FATAL_FAILURE(Uninstall());
 
@@ -4201,6 +4225,9 @@ class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
  protected:
   void SetUp() override {
     IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
     ASSERT_NO_FATAL_FAILURE(Install());
@@ -4208,6 +4235,9 @@ class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
     ASSERT_NO_FATAL_FAILURE(Uninstall());
 
@@ -4299,13 +4329,16 @@ class IntegrationTestMsi : public IntegrationTest {
       GTEST_SKIP();
     }
     IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
     ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdInitialVersion));
     ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdUpdatedVersion));
   }
 
   void TearDown() override {
-    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    if (IsSkipped()) {
       return;
     }
     ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdInitialVersion));
