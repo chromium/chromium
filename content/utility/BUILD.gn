@@ -79,11 +79,12 @@ source_set("utility") {
     "//url",
   ]
 
+  if (is_linux) {
+    deps += [ "//services/video_effects:sandbox_hook" ]
+  }
+
   if (enable_video_effects) {
     deps += [ "//services/video_effects:service" ]
-    if (is_linux) {
-      deps += [ "//services/video_effects:sandbox_hook" ]
-    }
   }
 
   # When library CDMs are supported, we support running the CDM in the utility

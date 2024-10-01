@@ -299,10 +299,8 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif
 #if BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kVideoEffects:
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       pre_sandbox_hook =
           base::BindOnce(&video_effects::VideoEffectsPreSandboxHook);
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       break;
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
