@@ -413,9 +413,7 @@ void GLContext::OnContextWillDestroy() {
   DCHECK(!has_called_on_destory_);
   has_called_on_destory_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextWillDestroy(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextWillDestroy, this);
 }
 
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
@@ -426,9 +424,7 @@ std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
 void GLContext::MarkContextLost() {
   context_lost_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextLost(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextLost, this);
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {

@@ -299,9 +299,7 @@ void VSyncThreadWin::WaitForVSync() {
   PostTaskIfNeeded();
 
   const base::TimeTicks vsync_time = base::TimeTicks::Now();
-  for (VSyncObserver& obs : observers_) {
-    obs.OnVSync(vsync_time, vsync_interval);
-  }
+  observers_.Notify(&VSyncObserver::OnVSync, vsync_time, vsync_interval);
 }
 
 }  // namespace gl
