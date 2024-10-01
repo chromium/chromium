@@ -37,8 +37,8 @@
                                                parcels {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _shoppingService = commerce::ShoppingServiceFactory::GetForBrowserState(
-        browser->GetBrowserState());
+    _shoppingService =
+        commerce::ShoppingServiceFactory::GetForProfile(browser->GetProfile());
     _parcels = parcels;
   }
   return self;
@@ -73,7 +73,7 @@
 
 - (void)alwaysTrackTapped {
   [self dismissPrompt];
-  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
   prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
@@ -86,7 +86,7 @@
 
 - (void)askToTrackTapped {
   [self dismissPrompt];
-  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
   prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
@@ -99,7 +99,7 @@
 
 - (void)noThanksTapped {
   [self dismissPrompt];
-  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
   prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
@@ -111,7 +111,7 @@
 
 - (void)parcelTrackingSettingsPageLinkTapped {
   [self dismissPrompt];
-  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+  self.browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
   id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
@@ -126,7 +126,7 @@
   // If user has swiped down on the prompt before as well, set
   // kIosParcelTrackingOptInPromptDisplayLimitMet to true to avoid showing the
   // prompt again.
-  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
   if (prefs->GetBoolean(prefs::kIosParcelTrackingOptInPromptSwipedDown)) {
     prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet,
                       true);
