@@ -123,7 +123,7 @@ KURL MakePseudoCSSUrl() {
 }
 
 void AppendLinkElement(StringBuilder& markup, const KURL& url) {
-  markup.Append(R"html(<link rel="stylesheet" type="text/css" href=")html");
+  markup.Append(R"(<link rel="stylesheet" type="text/css" href=")");
   markup.Append(url.GetString());
   markup.Append("\" />");
 }
@@ -135,9 +135,8 @@ void AppendLinkElement(StringBuilder& markup, const KURL& url) {
 class MultiResourcePacker {
  public:
   MultiResourcePacker(
-      Deque<SerializedResource>* resources,
       WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate)
-      : resources_(resources), web_delegate_(web_delegate) {}
+      : web_delegate_(web_delegate) {}
 
   bool HasResource(const KURL& url) const {
     return resource_urls_.Contains(url);
@@ -148,7 +147,7 @@ class MultiResourcePacker {
                        const KURL& url) {
     // The main resource must be first.
     // We do not call `ShouldAddURL()` for the main resource.
-    resources_->push_front(SerializedResource(url, mime_type, std::move(data)));
+    resources_.push_front(SerializedResource(url, mime_type, std::move(data)));
   }
 
   void AddToResources(const String& mime_type,
@@ -160,7 +159,7 @@ class MultiResourcePacker {
     }
     CHECK(resource_urls_.Contains(url))
         << "ShouldAddURL() not called before AddToResources";
-    resources_->push_back(SerializedResource(url, mime_type, std::move(data)));
+    resources_.push_back(SerializedResource(url, mime_type, std::move(data)));
   }
 
   void AddImageToResources(ImageResourceContent* image, const KURL& url) {
@@ -204,11 +203,15 @@ class MultiResourcePacker {
                    font.Url());
   }
 
+  Deque<SerializedResource> FinishAndTakeResources() && {
+    return std::move(resources_);
+  }
+
  private:
   // This hashset is only used for de-duplicating resources to be serialized.
   HashSet<KURL> resource_urls_;
 
-  Deque<SerializedResource>* resources_;
+  Deque<SerializedResource> resources_;
   WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
 };
 
@@ -954,17 +957,19 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
 
 // static
 void FrameSerializer::SerializeFrame(
-    Deque<SerializedResource>& resources,
     WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate,
-    const LocalFrame& frame) {
+    LocalFrame& frame,
+    base::OnceCallback<void(Deque<SerializedResource>)> done_callback) {
   TRACE_EVENT0("page-serialization", "FrameSerializer::serializeFrame");
   DCHECK(frame.GetDocument());
   Document& document = *frame.GetDocument();
   KURL url = document.Url();
-  MultiResourcePacker resource_serializer(&resources, &web_delegate);
+  MultiResourcePacker resource_serializer(&web_delegate);
   // If frame is an image document, add the image and don't continue
   if (auto* image_document = DynamicTo<ImageDocument>(document)) {
     resource_serializer.AddImageToResources(image_document->CachedImage(), url);
+    std::move(done_callback)
+        .Run(std::move(resource_serializer).FinishAndTakeResources());
     return;
   }
 
@@ -980,6 +985,9 @@ void FrameSerializer::SerializeFrame(
     resource_serializer.AddMainResource(
         document.SuggestedMIMEType(),
         SharedBuffer::Create(frame_html.c_str(), frame_html.length()), url);
+    // TODO(crbug.com/363289333): Add async fetching of fonts.
+    std::move(done_callback)
+        .Run(std::move(resource_serializer).FinishAndTakeResources());
   }
 }
 

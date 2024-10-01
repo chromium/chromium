@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 
+#include "base/functional/callback.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -63,9 +64,9 @@ class CORE_EXPORT FrameSerializer {
   // added to `resources`. The first resource is the frame's serialized content.
   // Subsequent resources are images, css, etc.
   static void SerializeFrame(
-      Deque<SerializedResource>& resources,
       WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate,
-      const LocalFrame&);
+      LocalFrame& frame,
+      base::OnceCallback<void(Deque<SerializedResource>)> done_callback);
 
   static String MarkOfTheWebDeclaration(const KURL&);
 };

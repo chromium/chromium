@@ -103,11 +103,13 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/platform/web_thread_safe_data.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
@@ -169,6 +171,7 @@ class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
 class DocumentState;
 class MediaPermissionDispatcher;
+class MHTMLPartsGenerationDelegateImpl;
 class NavigationClient;
 class PepperPluginInstanceImpl;
 class RendererPpapiHost;
@@ -947,6 +950,12 @@ class CONTENT_EXPORT RenderFrameImpl
       bool save_with_empty_url,
       mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
       override;
+
+  void OnSerializeMHTMLComplete(
+      std::unique_ptr<MHTMLPartsGenerationDelegateImpl> delegate,
+      SerializeAsMHTMLCallback callback,
+      std::vector<blink::WebThreadSafeData> mhtml_contents,
+      blink::WebThreadSafeData frame_mhtml_data);
 
   // Callback scheduled from SerializeAsMHTML for when writing serialized
   // MHTML to the handle has been completed in the file thread.

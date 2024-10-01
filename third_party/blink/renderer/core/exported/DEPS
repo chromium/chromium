@@ -7,6 +7,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "web_frame_serializer_test_helper.cc": [
+    "+base/run_loop.h",
+  ],
   "web_view_impl\.cc": [
     "+base/command_line.h",
     "+components/viz/common/features.h",

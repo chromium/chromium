@@ -780,62 +780,6 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
       frame_token_to_local_path_;
 };
 
-// Implementation of WebFrameSerializer::MHTMLPartsGenerationDelegate that
-// 1. Bases shouldSkipResource and getContentID responses on contents of
-//    SerializeAsMHTMLParams.
-// 2. Stores digests of urls of serialized resources (i.e. urls reported via
-//    shouldSkipResource) into |serialized_resources_uri_digests| passed
-//    to the constructor.
-class MHTMLPartsGenerationDelegate
-    : public WebFrameSerializer::MHTMLPartsGenerationDelegate {
- public:
-  MHTMLPartsGenerationDelegate(
-      const mojom::SerializeAsMHTMLParams& params,
-      std::unordered_set<std::string>* serialized_resources_uri_digests)
-      : params_(params),
-        serialized_resources_uri_digests_(serialized_resources_uri_digests) {
-    DCHECK(serialized_resources_uri_digests_);
-    // Digests must be sorted for binary search.
-    DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
-                          params_->digests_of_uris_to_skip.end()));
-    // URLs are not duplicated.
-    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
-           params_->digests_of_uris_to_skip.end());
-  }
-
-  MHTMLPartsGenerationDelegate(const MHTMLPartsGenerationDelegate&) = delete;
-  MHTMLPartsGenerationDelegate& operator=(const MHTMLPartsGenerationDelegate&) =
-      delete;
-
-  bool ShouldSkipResource(const WebURL& url) override {
-    std::string digest =
-        crypto::SHA256HashString(params_->salt + GURL(url).spec());
-
-    // Skip if the |url| already covered by serialization of an *earlier* frame.
-    if (std::binary_search(params_->digests_of_uris_to_skip.begin(),
-                           params_->digests_of_uris_to_skip.end(), digest)) {
-      return true;
-    }
-
-    // Let's record |url| as being serialized for the *current* frame.
-    auto pair = serialized_resources_uri_digests_->insert(digest);
-    bool insertion_took_place = pair.second;
-    DCHECK(insertion_took_place);  // Blink should dedupe within a frame.
-
-    return false;
-  }
-
-  bool UseBinaryEncoding() override { return params_->mhtml_binary_encoding; }
-
-  bool RemovePopupOverlay() override {
-    return params_->mhtml_popup_overlay_removal;
-  }
-
- private:
-  const raw_ref<const mojom::SerializeAsMHTMLParams> params_;
-  raw_ptr<std::unordered_set<std::string>> serialized_resources_uri_digests_;
-};
-
 bool IsHttpPost(const blink::WebURLRequest& request) {
   return request.HttpMethod().Utf8() == "POST";
 }
@@ -1343,6 +1287,66 @@ void InitializeFrameWidgetForFrame(
 }
 
 }  // namespace
+
+// Implementation of WebFrameSerializer::MHTMLPartsGenerationDelegate that
+// 1. Bases shouldSkipResource and getContentID responses on contents of
+//    SerializeAsMHTMLParams.
+// 2. Stores digests of urls of serialized resources (i.e. urls reported via
+//    shouldSkipResource) into |serialized_resources_uri_digests| passed
+//    to the constructor.
+class MHTMLPartsGenerationDelegateImpl final
+    : public WebFrameSerializer::MHTMLPartsGenerationDelegate {
+ public:
+  explicit MHTMLPartsGenerationDelegateImpl(
+      mojom::SerializeAsMHTMLParamsPtr params)
+      : params_(std::move(params)) {
+    // Digests must be sorted for binary search.
+    DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
+                          params_->digests_of_uris_to_skip.end()));
+    // URLs are not duplicated.
+    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
+           params_->digests_of_uris_to_skip.end());
+  }
+
+  MHTMLPartsGenerationDelegateImpl(const MHTMLPartsGenerationDelegateImpl&) =
+      delete;
+  MHTMLPartsGenerationDelegateImpl& operator=(
+      const MHTMLPartsGenerationDelegateImpl&) = delete;
+
+  bool ShouldSkipResource(const WebURL& url) override {
+    std::string digest =
+        crypto::SHA256HashString(params_->salt + GURL(url).spec());
+
+    // Skip if the |url| already covered by serialization of an *earlier* frame.
+    if (std::binary_search(params_->digests_of_uris_to_skip.begin(),
+                           params_->digests_of_uris_to_skip.end(), digest)) {
+      return true;
+    }
+
+    // Let's record |url| as being serialized for the *current* frame.
+    auto pair = serialized_resources_uri_digests_.insert(digest);
+    bool insertion_took_place = pair.second;
+    DCHECK(insertion_took_place);  // Blink should dedupe within a frame.
+
+    return false;
+  }
+
+  bool UseBinaryEncoding() override { return params_->mhtml_binary_encoding; }
+
+  bool RemovePopupOverlay() override {
+    return params_->mhtml_popup_overlay_removal;
+  }
+
+  std::unordered_set<std::string> TakeSerializedResourcesUriDigests() {
+    return std::move(serialized_resources_uri_digests_);
+  }
+  mojom::SerializeAsMHTMLParamsPtr TakeParams() { return std::move(params_); }
+
+ private:
+  std::vector<std::string> digests_of_uris_to_skip_;
+  mojom::SerializeAsMHTMLParamsPtr params_;
+  std::unordered_set<std::string> serialized_resources_uri_digests_;
+};
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
     RenderFrameImpl* frame)
@@ -5795,12 +5799,8 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
   // Holds WebThreadSafeData instances for some or all of header, contents and
   // footer.
   std::vector<WebThreadSafeData> mhtml_contents;
-  std::unordered_set<std::string> serialized_resources_uri_digests;
-  MHTMLPartsGenerationDelegate delegate(*params,
-                                        &serialized_resources_uri_digests);
-
-  mojom::MhtmlSaveStatus save_status = mojom::MhtmlSaveStatus::kSuccess;
-  bool has_some_data = false;
+  auto delegate =
+      std::make_unique<MHTMLPartsGenerationDelegateImpl>(std::move(params));
 
   // Generate MHTML header if needed.
   if (IsMainFrame()) {
@@ -5809,37 +5809,54 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
     // The returned data can be empty if the main frame should be skipped. If
     // the main frame is skipped, then the whole archive is bad.
     mhtml_contents.emplace_back(WebFrameSerializer::GenerateMHTMLHeader(
-        mhtml_boundary, GetWebFrame(), &delegate));
-    has_some_data = true;
+        mhtml_boundary, GetWebFrame(), delegate.get()));
   }
 
   // Generate MHTML parts.  Note that if this is not the main frame, then even
   // skipping the whole parts generation step is not an error - it simply
   // results in an omitted resource in the final file.
-  if (save_status == mojom::MhtmlSaveStatus::kSuccess) {
-    TRACE_EVENT0("page-serialization",
-                 "RenderFrameImpl::SerializeAsMHTML parts serialization");
-    // The returned data can be empty if the frame should be skipped, but this
-    // is OK.
-    mhtml_contents.emplace_back(WebFrameSerializer::GenerateMHTMLParts(
-        mhtml_boundary, GetWebFrame(), &delegate));
-    has_some_data |= !mhtml_contents.back().IsEmpty();
+  TRACE_EVENT0("page-serialization",
+               "RenderFrameImpl::SerializeAsMHTML parts serialization");
+  MHTMLPartsGenerationDelegateImpl* delegate_ptr = delegate.get();
+  WebFrameSerializer::GenerateMHTMLParts(
+      mhtml_boundary, GetWebFrame(), delegate_ptr,
+      base::BindOnce(&RenderFrameImpl::OnSerializeMHTMLComplete,
+                     weak_factory_.GetWeakPtr(), std::move(delegate),
+                     std::move(callback), std::move(mhtml_contents)));
+}
+
+void RenderFrameImpl::OnSerializeMHTMLComplete(
+    std::unique_ptr<MHTMLPartsGenerationDelegateImpl> delegate,
+    SerializeAsMHTMLCallback callback,
+    std::vector<blink::WebThreadSafeData> mhtml_contents,
+    blink::WebThreadSafeData frame_mhtml_data) {
+  TRACE_EVENT0("page-serialization",
+               "RenderFrameImpl::SerializeAsMHTML parts serialization");
+  // The returned data can be empty if the frame should be skipped, but this
+  // is OK.
+  mhtml_contents.emplace_back(frame_mhtml_data);
+  bool has_some_data = false;
+  for (const auto& c : mhtml_contents) {
+    if (!c.IsEmpty()) {
+      has_some_data = true;
+      break;
+    }
   }
 
   // Note: the MHTML footer is written by the browser process, after the last
   // frame is serialized by a renderer process.
 
   MHTMLHandleWriterDelegate handle_delegate(
-      *params,
+      *delegate->TakeParams(),
       base::BindOnce(&RenderFrameImpl::OnWriteMHTMLComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(serialized_resources_uri_digests)),
+                     delegate->TakeSerializedResourcesUriDigests()),
       GetTaskRunner(blink::TaskType::kInternalDefault));
 
-  if (save_status == mojom::MhtmlSaveStatus::kSuccess && has_some_data) {
+  if (has_some_data) {
     handle_delegate.WriteContents(mhtml_contents);
   } else {
-    handle_delegate.Finish(save_status);
+    handle_delegate.Finish(mojom::MhtmlSaveStatus::kSuccess);
   }
 }
 

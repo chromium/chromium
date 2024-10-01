@@ -32,6 +32,8 @@
 
 #include <string>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -126,13 +128,19 @@ class FrameSerializerTest
     for (; frame; frame = frame->Tree().TraverseNext()) {
       // This is safe, because tests do not do cross-site navigation
       // (and therefore don't have remote frames).
-      FrameSerializer::SerializeFrame(resources_, *this,
-                                      *To<LocalFrame>(frame));
-      // Don't serialize the same resource on subsequent frames. This mimics how
-      // FrameSerializer is actually used.
-      for (auto& res : GetResources()) {
-        skip_urls_.insert(res.url);
-      }
+      base::RunLoop run_loop;
+      FrameSerializer::SerializeFrame(
+          *this, *To<LocalFrame>(frame),
+          base::BindLambdaForTesting([&](Deque<SerializedResource> resources) {
+            for (auto& res : resources) {
+              resources_.push_back(res);
+              // Don't serialize the same resource on subsequent frames. This
+              // mimics how FrameSerializer is actually used.
+              skip_urls_.insert(res.url);
+            }
+            run_loop.Quit();
+          }));
+      run_loop.Run();
     }
   }
 
