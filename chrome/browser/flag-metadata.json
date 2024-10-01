@@ -858,11 +858,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "autofill-enable-virtual-cards",
-    "owners": [ "siyua@chromium.org", "chbannon@google.com", "slobodan@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "autofill-for-unclassified-fields-available",
     "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
     "expiry_milestone": 140

@@ -311,37 +311,15 @@ TEST_F(CardUnmaskPromptControllerImplGenericTest,
 
 // Tests to ensure the UI text elements are shown correctly in the card unmask
 // prompt.
-// The parameter indicates whether the virtual card feature is enabled on Bling.
-// It decides the text content we show in the promp.
 class CardUnmaskPromptTextTest
-    : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_IOS)
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableVirtualCards, GetParam());
-#endif
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
-                         CardUnmaskPromptTextTest,
-                         ::testing::Bool());
+    : public CardUnmaskPromptControllerImplGenericTest {};
 
 // Ensures the card information is shown correctly.
-TEST_P(CardUnmaskPromptTextTest, DisplayCardInformation) {
+TEST_F(CardUnmaskPromptTextTest, DisplayCardInformation) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  // On IOS, if feature is enabled, we don't show card information in the
-  // instructions.
-  EXPECT_EQ(GetParam(),
-            controller_->GetInstructionsMessage().find(
-                card_.CardNameAndLastFourDigits()) == std::string::npos);
+  EXPECT_TRUE(controller_->GetInstructionsMessage().find(
+                  card_.CardNameAndLastFourDigits()) == std::string::npos);
 #elif BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(controller_->GetCardName(), card_.CardNameForAutofillDisplay());
   EXPECT_EQ(controller_->GetCardLastFourDigits(),
@@ -353,23 +331,14 @@ TEST_P(CardUnmaskPromptTextTest, DisplayCardInformation) {
 }
 
 // Tests the title and instructions message in the credit card unmask dialog.
-TEST_P(CardUnmaskPromptTextTest, TitleAndInstructionMessage) {
+TEST_F(CardUnmaskPromptTextTest, TitleAndInstructionMessage) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  if (GetParam()) {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
-    EXPECT_EQ(controller_->GetInstructionsMessage(),
-              u"To help keep your card secure, enter the CVC on the back of "
-              u"your card");
-  } else {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"");
-    EXPECT_EQ(controller_->GetInstructionsMessage(),
-              u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
-                  u". After you confirm, card details from your Google Account "
-                  u"will be shared with this site.");
-  }
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"To help keep your card secure, enter the CVC on the back of "
+            u"your card");
 #else
 
 #if BUILDFLAG(IS_ANDROID)
@@ -389,26 +358,17 @@ TEST_P(CardUnmaskPromptTextTest, TitleAndInstructionMessage) {
   DismissPrompt();
 }
 
-TEST_P(CardUnmaskPromptTextTest, TitleAndInstructionMessageAmex) {
+TEST_F(CardUnmaskPromptTextTest, TitleAndInstructionMessageAmex) {
   // On Amex cards, the CVC is present on the front of the card. Test that the
   // dialog relays this information to the users.
   card_ = test::GetMaskedServerCardAmex();
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  if (GetParam()) {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
-    EXPECT_EQ(controller_->GetInstructionsMessage(),
-              u"To help keep your card secure, enter the CVC on the front of "
-              u"your card");
-  } else {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"");
-    EXPECT_EQ(controller_->GetInstructionsMessage(),
-              u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
-                  u". After you confirm, card details from your Google Account "
-                  u"will be shared with this site.");
-  }
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"To help keep your card secure, enter the CVC on the front of "
+            u"your card");
 #else
 
 #if BUILDFLAG(IS_ANDROID)
@@ -430,26 +390,14 @@ TEST_P(CardUnmaskPromptTextTest, TitleAndInstructionMessageAmex) {
 
 // Tests the title and instructions message in the credit card unmask dialog for
 // expired cards.
-TEST_P(CardUnmaskPromptTextTest, ExpiredCardTitleAndInstructionMessage) {
+TEST_F(CardUnmaskPromptTextTest, ExpiredCardTitleAndInstructionMessage) {
   card_ = test::GetExpiredCreditCard();
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  if (GetParam()) {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"Card expired");
-    EXPECT_EQ(
-        controller_->GetInstructionsMessage(),
-        u"Enter your new expiration date and CVC on the back of your card");
-  } else {
-    EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
-    EXPECT_EQ(controller_->GetWindowTitle(), u"");
-    EXPECT_EQ(controller_->GetInstructionsMessage(),
-              u"Enter the expiration date and CVC for " +
-                  card_.CardNameAndLastFourDigits() +
-                  u" to update your card details. After you confirm, card "
-                  u"details from "
-                  u"your Google Account will be shared with this site.");
-  }
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Verification");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Card expired");
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"Enter your new expiration date and CVC on the back of your card");
 
 #else
 
@@ -472,13 +420,8 @@ TEST_P(CardUnmaskPromptTextTest, ExpiredCardTitleAndInstructionMessage) {
 // showing the card unmask prompt for a virtual card. This test also checks that
 // the expected CVC length is correctly set for virtual cards. Virtual cards are
 // not currently supported on iOS, so we don't test on the platform.
-TEST_P(CardUnmaskPromptTextTest,
+TEST_F(CardUnmaskPromptTextTest,
        ChallengeOptionInstructionMessageAndWindowTitleAndExpectedCvcLength) {
-#if BUILDFLAG(IS_IOS)
-  if (!GetParam()) {
-    GTEST_SKIP() << "This test requires the virtual card feature.";
-  }
-#endif
   // Test that if the network is not American Express and the challenge option
   // denotes that the security code is on the back of the card, its expected
   // length is 3.
@@ -499,14 +442,9 @@ TEST_P(CardUnmaskPromptTextTest,
   DismissPrompt();
 }
 
-TEST_P(
+TEST_F(
     CardUnmaskPromptTextTest,
     ChallengeOptionInstructionMessageAndWindowTitleAndExpectedCvcLengthAmex) {
-#if BUILDFLAG(IS_IOS)
-  if (!GetParam()) {
-    GTEST_SKIP() << "This test requires the virtual card feature.";
-  }
-#endif
   // Test that if the network is American Express and the challenge option
   // denotes that the security code is on the back of the card, its expected
   // length is still 3.

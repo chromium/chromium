@@ -21,9 +21,6 @@ bool DidDisplayBenefitForCard(const CreditCard& card,
 // product name and whether they both should be shown.
 bool ShouldShowCardMetadata(const CreditCard& card);
 
-// Returns whether the virtual card is supported.
-bool VirtualCardFeatureEnabled();
-
 // Returns whether VCN 3DS authentication is enabled and can be used as an
 // authentication option.
 bool IsVcn3dsEnabled();

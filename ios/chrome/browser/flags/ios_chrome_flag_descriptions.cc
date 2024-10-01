@@ -132,12 +132,6 @@ const char kAutofillEnableVerveCardSupportName[] =
 const char kAutofillEnableVerveCardSupportDescription[] =
     "When enabled, Verve-branded card art will be shown for Verve cards.";
 
-const char kAutofillEnableVirtualCardsName[] =
-    "Enable virtual card enrollment and retrieval";
-const char kAutofillEnableVirtualCardsDescription[] =
-    "When enabled, virtual card enrollment and retrieval will be available on "
-    "Bling.";
-
 const char kAutofillIsolatedWorldForJavascriptIOSName[] =
     "Isolated content world for Autofill";
 const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =

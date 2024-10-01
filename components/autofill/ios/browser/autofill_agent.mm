@@ -352,9 +352,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   if (suggestion.type == autofill::SuggestionType::kAddressEntry ||
       suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
       suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
-      (base::FeatureList::IsEnabled(
-           autofill::features::kAutofillEnableVirtualCards) &&
-       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry) ||
+      suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
       ((base::FeatureList::IsEnabled(
             autofill::features::kAutofillAddressFieldSwapping) &&
         suggestion.type ==
@@ -595,10 +593,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     if (popup_suggestion.type == autofill::SuggestionType::kAutocompleteEntry ||
         popup_suggestion.type == autofill::SuggestionType::kAddressEntry ||
         popup_suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
-        (base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnableVirtualCards) &&
-         popup_suggestion.type ==
-             autofill::SuggestionType::kVirtualCreditCardEntry) ||
+        popup_suggestion.type ==
+            autofill::SuggestionType::kVirtualCreditCardEntry ||
         (base::FeatureList::IsEnabled(
              autofill::features::kAutofillAddressFieldSwapping) &&
          popup_suggestion.type ==
@@ -614,9 +610,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // the other elements.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
 
-      if (base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableVirtualCards) &&
-          (!popup_suggestion.minor_text.value.empty())) {
+      if (!popup_suggestion.minor_text.value.empty()) {
         // For Virtual Cards, the main_text is just "Virtual card" so we need to
         // include the minor_text (which is the card name + last 4 digits ||
         // card holder's name) as the minorValue.

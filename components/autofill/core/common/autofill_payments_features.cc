@@ -314,14 +314,6 @@ BASE_FEATURE(kAutofillUpstreamUpdatedUi,
 const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
     &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 0};
 
-#if BUILDFLAG(IS_IOS)
-// When this is enabled, virtual card enrollment and retrieval will be enabled
-// on Bling.
-BASE_FEATURE(kAutofillEnableVirtualCards,
-             "AutofillEnableVirtualCards",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // When enabled, adds a timeout on the network request for VcnEnroll requests.
 BASE_FEATURE(kAutofillVcnEnrollRequestTimeout,
              "AutofillVcnEnrollRequestTimeout",

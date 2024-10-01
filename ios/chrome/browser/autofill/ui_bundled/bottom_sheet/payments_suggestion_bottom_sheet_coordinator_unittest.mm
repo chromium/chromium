@@ -127,9 +127,6 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 // Test that using the primary button logs the correct exit reason when a
 // virtual card is used
 TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillEnableVirtualCards);
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];

@@ -16,7 +16,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/gtest_util.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -487,10 +486,6 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
 // is the 'Virtual card' string and the minor_text is the card name + last 4 or
 // the card holder's name
 TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillEnableVirtualCards);
-
   __block NSUInteger suggestion_array_size = 0;
   __block FormSuggestion* virtual_card_suggestion = nil;
   __block FormSuggestion* credit_card_suggestion = nil;

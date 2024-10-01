@@ -41,16 +41,6 @@ std::u16string GetSideOfCardTranslationString(bool is_cvc_in_front) {
           : IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
 }
 
-#if BUILDFLAG(IS_IOS)
-// Returns whether the virtual card feature is enabled on IOS. If true, a UI
-// overhaul which was proposed as part of the virtual card feature launch, will
-// be enabled regardless of whether the card being unmasked is a virtual card or
-// not.
-bool VirtualCardFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
-}
-#endif
-
 }  // namespace
 
 CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
@@ -208,22 +198,11 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
 #if BUILDFLAG(IS_IOS)
 std::u16string CardUnmaskPromptControllerImpl::GetNavigationTitle() const {
   return l10n_util::GetStringUTF16(
-      VirtualCardFeatureEnabled()
-          ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION
-          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE);
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION);
 }
 #endif
 
 std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
-#if BUILDFLAG(IS_IOS)
-  // - For IOS, if the virtual card feature is not enabled, don't show any
-  //   title. Use the instruction message below instead.
-  // - If it is enabled, share the same string below with other platforms.
-  if (!VirtualCardFeatureEnabled()) {
-    return std::u16string();
-  }
-#endif
-
   // Set title for VCN retrieval errors first.
   if (unmasking_result_ == PaymentsRpcResult::kVcnRetrievalPermanentFailure) {
     return l10n_util::GetStringUTF16(
@@ -269,22 +248,6 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
-#if BUILDFLAG(IS_IOS)
-  if (!VirtualCardFeatureEnabled()) {
-    int ids;
-    if (card_unmask_prompt_options_.reason ==
-            payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill &&
-        ShouldRequestExpirationDate()) {
-      ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
-    } else {
-      ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
-    }
-    // The iOS UI shows the card details in the instructions text since they
-    // don't fit in the title.
-    return l10n_util::GetStringFUTF16(ids, card_.CardNameAndLastFourDigits());
-  }
-#endif
-
   // If the challenge option is present, return the challenge option instruction
   // information.
   if (IsChallengeOptionPresent()) {

@@ -59,8 +59,7 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
       payments_network_interface_(payments_network_interface) {
   // |autofill_client_| does not exist on Clank settings page where this flow
   // can also be triggered.
-  if (VirtualCardFeatureEnabled() && autofill_client_ &&
-      autofill_client_->GetStrikeDatabase()) {
+  if (autofill_client_ && autofill_client_->GetStrikeDatabase()) {
     virtual_card_enrollment_strike_database_ =
         std::make_unique<VirtualCardEnrollmentStrikeDatabase>(
             autofill_client_->GetStrikeDatabase());
@@ -80,8 +79,7 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     VirtualCardEnrollmentFieldsLoadedCallback
         virtual_card_enrollment_fields_loaded_callback) {
   // If at strike limit, exit enrollment flow.
-  if (VirtualCardFeatureEnabled() &&
-      ShouldBlockVirtualCardEnrollment(
+  if (ShouldBlockVirtualCardEnrollment(
           base::NumberToString(credit_card.instrument_id()),
           virtual_card_enrollment_source)) {
     Reset();
@@ -143,10 +141,8 @@ void VirtualCardEnrollmentManager::Enroll(
                          OnDidGetUpdateVirtualCardEnrollmentResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      VirtualCardEnrollmentRequestType::kEnroll));
-  if (VirtualCardFeatureEnabled()) {
     RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
-  }
 }
 
 void VirtualCardEnrollmentManager::Unenroll(
@@ -359,10 +355,8 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
-  if (VirtualCardFeatureEnabled()) {
     AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
-  }
   Reset();
 }
 

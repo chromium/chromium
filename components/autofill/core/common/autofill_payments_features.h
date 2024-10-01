@@ -127,10 +127,6 @@ BASE_DECLARE_FEATURE(kAutofillUpstreamUpdatedUi);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment;
 
-#if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
-#endif
-
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVcnEnrollRequestTimeout);
 COMPONENT_EXPORT(AUTOFILL)

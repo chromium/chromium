@@ -108,8 +108,6 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
   if ([self
           isRunningTest:@selector
           (testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed

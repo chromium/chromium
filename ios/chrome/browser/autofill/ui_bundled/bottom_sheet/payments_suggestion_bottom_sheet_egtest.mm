@@ -76,13 +76,6 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  return config;
-}
-
 // Matcher for the bottom sheet's "Continue" button.
 id<GREYMatcher> ContinueButton() {
   return chrome_test_util::StaticTextWithAccessibilityLabelId(

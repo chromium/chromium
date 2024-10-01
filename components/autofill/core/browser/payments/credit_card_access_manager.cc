@@ -424,25 +424,11 @@ void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
   unmasked_card_cache_[identifier] = card_info;
 }
 
-bool AreVirtualCardsSupported() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
-#else
-  return true;
-#endif
-}
-
 void CreditCardAccessManager::StartAuthenticationFlow(bool fido_auth_enabled) {
-  if (AreVirtualCardsSupported()) {
-    if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
-      StartAuthenticationFlowForVirtualCard(fido_auth_enabled);
-    } else {
-      StartAuthenticationFlowForMaskedServerCard(fido_auth_enabled);
-    }
+  if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
+    StartAuthenticationFlowForVirtualCard(fido_auth_enabled);
   } else {
-    // There is no FIDO auth available on iOS and until the feature is live
-    // there are no virtual cards, so offer CVC auth.
-    Authenticate(UnmaskAuthFlowType::kCvc);
+    StartAuthenticationFlowForMaskedServerCard(fido_auth_enabled);
   }
 }
 

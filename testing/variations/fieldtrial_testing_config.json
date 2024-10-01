@@ -1957,21 +1957,6 @@
             ]
         }
     ],
-    "AutofillEnableVirtualCards": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableVirtualCards"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillFixCachingOnJavaScriptChanges": [
         {
             "platforms": [

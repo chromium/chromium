@@ -6084,14 +6084,9 @@ INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
 TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
        InitVirtualCardEnroll_LoadingAndConfirmation) {
   base::test::ScopedFeatureList feature_list;
-  base::flat_map<base::test::FeatureRef, bool> feature_states;
-#if BUILDFLAG(IS_IOS)
-  feature_states.insert({features::kAutofillEnableVirtualCards, true});
-#endif
-  feature_states.insert(
-      {features::kAutofillEnableSaveCardLoadingAndConfirmation,
-       IsSaveCardLoadingAndConfirmationEnabled()});
-  feature_list.InitWithFeatureStates(feature_states);
+  feature_list.InitWithFeatureState(
+      features::kAutofillEnableSaveCardLoadingAndConfirmation,
+      IsSaveCardLoadingAndConfirmationEnabled());
 
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
@@ -6135,16 +6130,12 @@ TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
 class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
     : public CreditCardSaveManagerTest,
       public testing::WithParamInterface<
-          std::tuple<CreditCard::VirtualCardEnrollmentState, bool>> {
+          std::tuple<CreditCard::VirtualCardEnrollmentState>> {
  public:
   CreditCardSaveManagerWithVirtualCardEnrollTestParameterized() = default;
 
   CreditCard::VirtualCardEnrollmentState GetEnrollmentState() const {
     return std::get<0>(GetParam());
-  }
-
-  bool IsVirtualCardEnrollmentEnabled() const {
-    return std::get<1>(GetParam());
   }
 };
 
@@ -6152,20 +6143,8 @@ class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
 // correctly only when a card becomes eligible after upload.
 TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
        PrepareUploadedCardForVirtualCardEnrollment) {
-  base::test::ScopedFeatureList feature_list;
-  base::flat_map<base::test::FeatureRef, bool> feature_states;
-#if !BUILDFLAG(IS_IOS)
-  if (!IsVirtualCardEnrollmentEnabled()) {
-    GTEST_SKIP() << "Virtual card enrollment is always enabled on non-iOS "
-                    "platforms.";
-  }
-#else
-  feature_states.insert({features::kAutofillEnableVirtualCards,
-                         IsVirtualCardEnrollmentEnabled()});
-#endif
-  feature_states.insert(
-      {features::kAutofillEnableSaveCardLoadingAndConfirmation, true});
-  feature_list.InitWithFeatureStates(feature_states);
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableSaveCardLoadingAndConfirmation};
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://www.example.com/");
@@ -6196,9 +6175,8 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
                   A<std::optional<payments::PaymentsAutofillClient::
                                       OnConfirmationClosedCallback>>()));
 
-  if (IsVirtualCardEnrollmentEnabled() &&
-      GetEnrollmentState() ==
-          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
+  if (GetEnrollmentState() ==
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
     EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
                     payments_client().GetVirtualCardEnrollmentManager()),
                 InitVirtualCardEnroll)
@@ -6223,9 +6201,8 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
 
   // The condition inside of this if-statement is true if virtual card
   // enrollment should be offered.
-  if (IsVirtualCardEnrollmentEnabled() &&
-      GetEnrollmentState() ==
-          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
+  if (GetEnrollmentState() ==
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
     EXPECT_EQ(arg_credit_card.card_art_url(),
               upload_card_response_details.card_art_url);
     EXPECT_EQ(arg_credit_card.instrument_id(),
@@ -6265,7 +6242,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*enrollment_state*/ testing::Values(
             CreditCard::VirtualCardEnrollmentState::kUnenrolled,
             CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible,
-            CreditCard::VirtualCardEnrollmentState::kEnrolled),
-        /*is_virtual_card_enrollment_enabled*/ testing::Bool()));
+            CreditCard::VirtualCardEnrollmentState::kEnrolled)));
 
 }  // namespace autofill

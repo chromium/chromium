@@ -33,14 +33,6 @@ bool DidDisplayBenefitForCard(
               .empty();
 }
 
-bool VirtualCardFeatureEnabled() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
-#else
-  return true;
-#endif
-}
-
 bool IsVcn3dsEnabled() {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableVcn3dsAuthentication) &&

@@ -339,19 +339,11 @@ void DismissPaymentBottomSheet() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   } else {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
-
-  if ([self isRunningTest:@selector
-            (testCardChipButtonsAreAllVisibleWithVirtualCardsDisabled)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillEnableVirtualCards);
   }
 
   return config;
@@ -404,23 +396,6 @@ void DismissPaymentBottomSheet() {
 // Tests that the saved card chip buttons are all visible in the card
 // table view controller, and that they have the right accessibility label.
 - (void)testCardChipButtonsAreAllVisible {
-  [AutofillAppInterface saveLocalCreditCard];
-
-  // Bring up the keyboard
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-
-  // Open the payment method manual fill view.
-  OpenPaymentMethodManualFillView();
-
-  CheckChipButtonsOfLocalCard();
-}
-
-// Tests that the saved card chip buttons are all visible in the card
-// table view controller, and that they have the right accessibility label when
-// the Virtual Cards feature is disabled. TODO(crbug.com/335736927): Delete this
-// test once the Virtual Cards feature is launched.
-- (void)testCardChipButtonsAreAllVisibleWithVirtualCardsDisabled {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard

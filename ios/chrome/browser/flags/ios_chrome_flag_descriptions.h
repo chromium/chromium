@@ -104,11 +104,6 @@ extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
 
-// Title and description for flag to enable virtual card enrollment and
-// retrieval.
-extern const char kAutofillEnableVirtualCardsName[];
-extern const char kAutofillEnableVirtualCardsDescription[];
-
 // Title and description for the flag to control whether to use the
 // isolated content world instead of the page content world for the Autofill JS
 // feature scripts.

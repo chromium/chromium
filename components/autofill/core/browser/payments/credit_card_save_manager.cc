@@ -106,8 +106,7 @@ PrepareForVirtualCardEnroll(
   // them here and start the flow.
   if (card_saved &&
       upload_card_response_details.virtual_card_enrollment_state ==
-          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible &&
-      VirtualCardFeatureEnabled()) {
+          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
     DCHECK(upload_card_response_details.instrument_id.has_value());
     if (!upload_card_response_details.card_art_url.is_empty()) {
       uploaded_card->set_card_art_url(
@@ -1253,11 +1252,9 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
         user_provided_card_details.expiration_date_year, app_locale_);
   }
 
-  if (VirtualCardFeatureEnabled()) {
-    client_->GetPaymentsAutofillClient()
-        ->GetVirtualCardEnrollmentManager()
-        ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
-  }
+  client_->GetPaymentsAutofillClient()
+      ->GetVirtualCardEnrollmentManager()
+      ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
 
   // Populating risk data and offering upload occur asynchronously.
   // If |risk_data| has already been loaded, send the upload card request.

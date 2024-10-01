@@ -89,13 +89,6 @@ id<GREYMatcher> OtpNewCodeLink() {
 
 #pragma mark - Setup
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface setUpFakeCreditCardServer];

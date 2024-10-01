@@ -16,17 +16,11 @@ namespace {
 
 class CardUnmaskHeaderItemTest : public PlatformTest {
  public:
-  CardUnmaskHeaderItemTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableVirtualCards);
-  }
+  CardUnmaskHeaderItemTest() {}
 
   CardUnmaskHeaderItemTest(const CardUnmaskHeaderItemTest&) = delete;
   CardUnmaskHeaderItemTest& operator=(const CardUnmaskHeaderItemTest&) = delete;
   ~CardUnmaskHeaderItemTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the header subviews are set properly after a call to

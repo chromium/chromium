@@ -168,10 +168,8 @@ std::vector<CreditCard> FetchCards(
   // enrolled to have one.
   for (const CreditCard& card : _cards) {
     // Virtual cards are ordered directly before their original card.
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableVirtualCards) &&
-        card.virtual_card_enrollment_state() ==
-            CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+    if (card.virtual_card_enrollment_state() ==
+        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(card);
       cardsToPresent.push_back(virtualCard);
     }
@@ -324,24 +322,19 @@ std::vector<CreditCard> FetchCards(
       initWithCreditCard:card
                     icon:[self iconForCreditCard:card]];
   NSString* fillValue;
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    switch (fieldType) {
-      case PaymentFieldType::kCardNumber:
-        fillValue = manualFillCreditCard.number;
-        break;
-      case PaymentFieldType::kExpirationMonth:
-        fillValue = manualFillCreditCard.expirationMonth;
-        break;
-      case PaymentFieldType::kExpirationYear:
-        fillValue = manualFillCreditCard.expirationYear;
-        break;
-      case PaymentFieldType::kCVC:
-        fillValue = manualFillCreditCard.CVC;
-        break;
-    }
-  } else {
-    fillValue = manualFillCreditCard.number;
+  switch (fieldType) {
+    case PaymentFieldType::kCardNumber:
+      fillValue = manualFillCreditCard.number;
+      break;
+    case PaymentFieldType::kExpirationMonth:
+      fillValue = manualFillCreditCard.expirationMonth;
+      break;
+    case PaymentFieldType::kExpirationYear:
+      fillValue = manualFillCreditCard.expirationYear;
+      break;
+    case PaymentFieldType::kCVC:
+      fillValue = manualFillCreditCard.CVC;
+      break;
   }
 
   // Don't replace the locked card with the unlocked one, so the user will
