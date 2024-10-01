@@ -39,7 +39,12 @@ BackForwardTransitionAnimationManagerAndroid::
           std::make_unique<BackForwardTransitionAnimator::Factory>()) {}
 
 BackForwardTransitionAnimationManagerAndroid::
-    ~BackForwardTransitionAnimationManagerAndroid() = default;
+    ~BackForwardTransitionAnimationManagerAndroid() {
+  if (animator_) {
+    animator_->AbortAnimation(AnimationAbortReason::kAnimationManagerDestroyed);
+    DestroyAnimator();
+  }
+}
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     const ui::BackGestureEvent& gesture,

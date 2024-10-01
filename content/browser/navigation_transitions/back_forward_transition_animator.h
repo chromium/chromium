@@ -133,7 +133,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // Indicates the animation abort reason for UMA metrics.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Upon adding a new value, add it
-  // to `enums.xml` as well.
+  // to `tools/metrics/histograms/metadata/navigation/enums.xml` as well.
   enum class AnimationAbortReason {
     // The subscribed `RenderWidgetHost` was destroyed.
     kRenderWidgetHostDestroyed = 0,
@@ -168,7 +168,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
     kCompositorDetached = 16,
 
-    kMaxValue = kCompositorDetached
+    // The animation manager is destroyed. This can happen when a visible
+    // `WebContents` is destroyed when its NativeView, layer and compositor are
+    // still intact, thus bypassing other observer hooks.
+    kAnimationManagerDestroyed = 17,
+
+    kMaxValue = kAnimationManagerDestroyed
   };
 
   // Indicates what animation state caused input event suppression.

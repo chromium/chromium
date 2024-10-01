@@ -136,6 +136,8 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kRootWindowVisibilityChanged";
     case AnimationAbortReason::kCompositorDetached:
       return "kCompositorDetached";
+    case AnimationAbortReason::kAnimationManagerDestroyed:
+      return "kAnimationManagerDestroyed";
   }
   NOTREACHED();
 }
