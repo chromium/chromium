@@ -1994,12 +1994,24 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
             "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
-      if (response_info_->proxy_chain.is_for_ip_protection()) {
+
+      auto& proxy_chain = response_info_->proxy_chain;
+      // To enable measuring how much traffic would be proxied (for
+      // experimentation and planning purposes), treat the direct
+      // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
+      // true. When it is false, we only care about traffic that actually went
+      // through the IP Protection proxies, so don't log the times.
+      bool log_ip_protection_time =
+          proxy_chain.is_for_ip_protection() &&
+          ((proxy_chain.is_direct() &&
+            net::features::kIpPrivacyDirectOnly.Get()) ||
+           !proxy_chain.is_direct());
+      if (log_ip_protection_time) {
         base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached",
                                 total_time);
         // Log specific times for non-zero chains. The zero chain is the
         // default and is still counted in the base `TotalTimeNotCached`.
-        int chain_id = response_info_->proxy_chain.ip_protection_chain_id();
+        int chain_id = proxy_chain.ip_protection_chain_id();
         if (chain_id != ProxyChain::kNotIpProtectionChainId) {
           UmaHistogramTimes(
               base::StrCat({"Net.HttpJob.IpProtection.TotalTimeNotCached.Chain",

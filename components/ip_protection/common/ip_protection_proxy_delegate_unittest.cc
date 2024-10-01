@@ -331,7 +331,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
                                                "backup-proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(
            net::ProxyServer::SCHEME_HTTPS, "backup-proxyb", std::nullopt)}));
-  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({}));
 
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
       << "Got: " << result.proxy_list().ToDebugString();
@@ -374,7 +374,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
                            "GET", std::move(retry_map), &result);
 
   EXPECT_TRUE(result.is_direct());
-  EXPECT_FALSE(result.is_for_ip_protection());
+  EXPECT_TRUE(result.is_for_ip_protection());
   histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
                                        ProxyResolutionResult::kAttemptProxy, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
@@ -422,7 +422,7 @@ TEST_F(IpProtectionProxyDelegateTest,
 
   expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain1));
   expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain2));
-  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({}));
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY weird"));
 
