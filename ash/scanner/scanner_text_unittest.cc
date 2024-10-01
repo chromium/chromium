@@ -17,6 +17,7 @@ namespace ash {
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Property;
 using ::testing::SizeIs;
@@ -36,16 +37,21 @@ TEST(ScannerTextTest, AppendsLinesToParagraph) {
 
   const ScannerText::CenterRotatedBox kLine1BoundingBox = {
       .center = gfx::Point(10, 10), .size = gfx::Size(20, 8)};
-  paragraph.AppendLine(gfx::Range(0, 4), kLine1BoundingBox);
+  constexpr gfx::Range kLine1Range(0, 4);
+  paragraph.AppendLine(kLine1Range, kLine1BoundingBox);
   const ScannerText::CenterRotatedBox kLine2BoundingBox = {
       .center = gfx::Point(10, 30), .size = gfx::Size(40, 8)};
-  paragraph.AppendLine(gfx::Range(5, 12), kLine2BoundingBox);
+  constexpr gfx::Range kLine2Range(5, 12);
+  paragraph.AppendLine(kLine2Range, kLine2BoundingBox);
 
   EXPECT_THAT(
       paragraph.lines(),
       ElementsAre(
-          Property(&ScannerText::Line::bounding_box, kLine1BoundingBox),
-          Property(&ScannerText::Line::bounding_box, kLine2BoundingBox)));
+          AllOf(Property(&ScannerText::Line::range, kLine1Range),
+                Property(&ScannerText::Line::bounding_box, kLine1BoundingBox)),
+          AllOf(
+              Property(&ScannerText::Line::range, kLine2Range),
+              Property(&ScannerText::Line::bounding_box, kLine2BoundingBox))));
 }
 
 TEST(ScannerTextTest, GetsTextFromRange) {

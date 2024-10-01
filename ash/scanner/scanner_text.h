@@ -44,6 +44,8 @@ class ASH_EXPORT ScannerText {
     Line& operator=(Line&& other);
     ~Line();
 
+    const gfx::Range& range() const { return range_; }
+
     const CenterRotatedBox& bounding_box() const { return bounding_box_; }
 
    private:
