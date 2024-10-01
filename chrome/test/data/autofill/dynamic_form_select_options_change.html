@@ -1,4 +1,4 @@
-<!-- A page that is used to test that a dynamic form fill feature works properly when select or selectlist options are added/removed. -->
+<!-- A page that is used to test that a dynamic form fill feature works properly when select options are added/removed. -->
 <body>
   <form action="https://example.com/" method="post">
     Name: <input type="text" id="firstname" autocomplete="given-name"><br>
@@ -23,16 +23,14 @@
 
 <script>
 function Init() {
-  const is_selectlist = GetBoolQueryParameter("is_selectlist");
-
   let state_div = document.getElementById("state_div");
-  let state_input = document.createElement(is_selectlist ? "selectlist" : "select");
-  state_input.id = "state";
+  let state_select = document.createElement("select");
+  state_select.id = "state";
   while (state_div.children.length > 0) {
-    state_input.appendChild(state_div.children[0]);
+    state_select.appendChild(state_div.children[0]);
   }
 
-  state_div.parentNode.replaceChild(state_input, state_div);
+  state_div.parentNode.replaceChild(state_select, state_div);
 }
 
 function GetBoolQueryParameter(parameter) {
@@ -58,13 +56,13 @@ function CountryChangedImpl() {
   console.log('An event happened that should trigger a refill.');
 
   // Replace the provinces with states. The state should get selected by refill.
-  let state_input = document.getElementById("state");
-  while (state_input.length > 0) {
-     state_input.remove(0);
+  let state_select = document.getElementById("state");
+  while (state_select.length > 0) {
+     state_select.remove(0);
   }
-  state_input.appendChild(new Option('WA', 'WA'));
-  state_input.appendChild(new Option('MA', 'MA'));
-  state_input.appendChild(new Option('TX', 'TX'));
+  state_select.appendChild(new Option('WA', 'WA'));
+  state_select.appendChild(new Option('MA', 'MA'));
+  state_select.appendChild(new Option('TX', 'TX'));
 }
 
 Init();

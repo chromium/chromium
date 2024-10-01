@@ -277,8 +277,7 @@ class BrowserAutofillManager : public AutofillManager {
                                      const base::TimeTicks timestamp) override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
-  void OnSelectOrSelectListFieldOptionsDidChangeImpl(
-      const FormData& form) override;
+  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override;
   void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
                                               const FieldGlobalId& field_id,
                                               const std::u16string& old_value,

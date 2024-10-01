@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/mock_file_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -411,11 +410,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
         <option value='autofilled_select'>b</option>
         <option value='overridden'>c</option>
       </select>
-      <selectlist id='selectlist'>
-        <option value='initial' selected>a</option>
-        <option value='autofilled_selectlist'>b</option>
-        <option value='overridden'>c</option>
-      </selectlist>
       <input id='not_autofilled_text'>
     </form>
   )HTML");
@@ -423,8 +417,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
   auto* text_element = To<HTMLInputElement>(GetElementById("text"));
   auto* textarea_element = To<HTMLTextAreaElement>(GetElementById("textarea"));
   auto* select_element = To<HTMLSelectElement>(GetElementById("select"));
-  auto* selectlist_element =
-      To<HTMLSelectListElement>(GetElementById("selectlist"));
   auto* not_autofilled_text =
       To<HTMLInputElement>(GetElementById("not_autofilled_text"));
 
@@ -432,8 +424,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
   textarea_element->SetAutofillValue("autofilled_textarea");
   select_element->SetAutofillValue("autofilled_select",
                                    WebAutofillState::kAutofilled);
-  selectlist_element->SetAutofillValue("autofilled_selectlist",
-                                       WebAutofillState::kAutofilled);
 
   EXPECT_THAT(text_element->Value(), Eq("autofilled_text"));
   EXPECT_THAT(text_element->GetAutofillState(),
@@ -465,16 +455,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("select", "autofilled_select"));
 
-  EXPECT_THAT(selectlist_element->value(), Eq("autofilled_selectlist"));
-  EXPECT_THAT(selectlist_element->GetAutofillState(),
-              Eq(WebAutofillState::kAutofilled));
-  ExecuteScript("document.getElementById('selectlist').value = 'overridden';");
-  EXPECT_THAT(selectlist_element->value(), Eq("overridden"));
-  EXPECT_THAT(selectlist_element->GetAutofillState(),
-              Eq(WebAutofillState::kNotFilled));
-  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
-              ::testing::ElementsAre("selectlist", "autofilled_selectlist"));
-
   // Even for elements that are not in state "autofilled", the chrome client is
   // informed about the change.
   EXPECT_THAT(not_autofilled_text->Value().IsNull(), ::testing::IsTrue());
@@ -501,16 +481,11 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
         <option value='autofilled_select'>b</option>
         <option value='overridden'>c</option>
       </select>
-      <selectlist id='selectlist'>
-        <option value='initial' selected>a</option>
-        <option value='autofilled_selectlist'>b</option>
-        <option value='overridden'>c</option>
-      </selectlist>
     </form>
   )HTML");
 
   ExecuteScript(R"JS(
-    for (const id of ['text', 'textarea', 'select', 'selectlist']) {
+    for (const id of ['text', 'textarea', 'select']) {
       document.getElementById(id).addEventListener('change', () => {
         document.getElementById(id).value = 'overridden';
       });
@@ -520,8 +495,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
   auto* text_element = To<HTMLInputElement>(GetElementById("text"));
   auto* textarea_element = To<HTMLTextAreaElement>(GetElementById("textarea"));
   auto* select_element = To<HTMLSelectElement>(GetElementById("select"));
-  auto* selectlist_element =
-      To<HTMLSelectListElement>(GetElementById("selectlist"));
   text_element->SetAutofillValue("autofilled_text");
   EXPECT_THAT(text_element->Value(), Eq("overridden"));
   // Note that we expect WebAutofillState::kAutofilled. This is a product
@@ -556,15 +529,6 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
       !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("select", "autofilled_select"));
-
-  selectlist_element->SetAutofillValue("autofilled_selectlist",
-                                       WebAutofillState::kAutofilled);
-  EXPECT_THAT(selectlist_element->value(), Eq("overridden"));
-  EXPECT_EQ(
-      selectlist_element->GetAutofillState() == WebAutofillState::kAutofilled,
-      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
-  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
-              ::testing::ElementsAre("selectlist", "autofilled_selectlist"));
 }
 
 }  // namespace blink

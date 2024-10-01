@@ -2340,10 +2340,6 @@
       status: "stable",
     },
     {
-      name: "HTMLSelectListElement",
-      status: "experimental",
-    },
-    {
       // According to spec, text transforms should not affect the content
       // of plain text copy and paste -
       // https://www.w3.org/TR/css-text-3/#text-transform

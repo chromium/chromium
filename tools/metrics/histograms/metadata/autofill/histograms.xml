@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Autofill.TimingPrecise.Caller">
   <variant name="ApplyFieldsAction"/>
-  <variant name="BatchSelectOrSelectListOptionChange"/>
+  <variant name="BatchSelectOptionChange"/>
   <variant name="DidChangeScrollOffsetImpl"/>
   <variant name="ExtractForm"/>
   <variant name="FocusedElementChanged"/>

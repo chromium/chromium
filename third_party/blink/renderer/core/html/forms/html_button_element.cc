@@ -35,9 +35,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -90,13 +88,6 @@ const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
       DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
       return reset;
     }
-    case Type::kSelectlist: {
-      if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
-        DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
-        return selectlist;
-      }
-      break;
-    }
   }
   NOTREACHED();
 }
@@ -119,9 +110,6 @@ void HTMLButtonElement::ParseAttribute(
       type_ = kReset;
     } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
       type_ = kButton;
-    } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
-               EqualIgnoringASCIICase(params.new_value, "selectlist")) {
-      type_ = kSelectlist;
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
@@ -159,13 +147,6 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  if (type_ == kSelectlist) {
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    if (auto* selectlist = OwnerSelectList()) {
-      selectlist->HandleButtonEvent(event);
-    }
-  }
-
   if (auto* select = OwnerSelect()) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
     // For native popups, use HTMLSelectElement's codepath. For <datalist>
@@ -182,9 +163,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  // type=selectlist should not open the listbox when enter is pressed, which
-  // HandleKeyboardActivation would do via simulated click.
-  if (type_ != kSelectlist && HandleKeyboardActivation(event)) {
+  if (HandleKeyboardActivation(event)) {
     return;
   }
 
@@ -276,22 +255,6 @@ void HTMLButtonElement::DispatchBlurEvent(
   }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
-}
-
-HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
-  if (type_ != kSelectlist) {
-    return nullptr;
-  }
-  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
-    if (IsA<HTMLListboxElement>(ancestor)) {
-      // Buttons inside listboxes are excluded from triggering the listbox.
-      return nullptr;
-    }
-    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
-      return selectlist;
-    }
-  }
-  return nullptr;
 }
 
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {

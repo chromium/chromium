@@ -1048,7 +1048,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="InputUrl"/>
   <int value="11" label="SelectOne"/>
   <int value="12" label="SelectMultiple"/>
-  <int value="13" label="SelectList"/>
   <int value="14" label="TextArea"/>
 </enum>
 
@@ -9582,7 +9581,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3808" label="InsertHTMLCommandOnReadWritePlainText"/>
   <int value="3809" label="CSSAtRuleCounterStyle"/>
   <int value="3810" label="CanvasUseColorSpace"/>
-  <int value="3811" label="SelectListElement"/>
+  <int value="3811" label="OBSOLETE_SelectListElement"/>
   <int value="3812"
       label="OBSOLETE_RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
   <int value="3813" label="WebAppManifestCaptureLinks"/>

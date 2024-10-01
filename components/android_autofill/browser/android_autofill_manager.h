@@ -48,8 +48,7 @@ class AndroidAutofillManager : public AutofillManager,
 
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
-  void OnSelectOrSelectListFieldOptionsDidChangeImpl(
-      const FormData& form) override {}
+  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 

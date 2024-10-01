@@ -810,11 +810,6 @@ void MatchOuterScopeRules(const Element& matching_element,
   // but this is also used for VTT) that are exposed as pseudos ("shadow
   // pseudos") are never exposed as parts, the rules from a particular scope
   // can only be used for one of the states below.
-  //
-  // The one semi-exception to this is the deprecated <selectlist> element,
-  // which exposes a few things as -internal-* shadow pseudos to the UA sheet
-  // and as ::part() to authors.  Because of this, and since this code is only
-  // used for author rules, we prioritize part below when setting state.
   enum class MatchingState {
     kDone,
     kShadowPseudo,

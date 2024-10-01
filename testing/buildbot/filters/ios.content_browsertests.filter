@@ -155,9 +155,6 @@
 # TODO(crbug.com/40276950): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
-# TODO(crbug.com/40280396): This test is flaky.
--All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink
-
 # TODO(crbug.com/40281785): These consistently fail.
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
 
@@ -314,7 +311,6 @@
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
--All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/1
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
@@ -668,7 +664,7 @@
 # TODO(crbug.com/341991542): The below tests related to the accessibility
 # have been failing since https://crrev.com/c/5513503.
 -All/DumpAccessibilityTreeTest.SelectExpandManyOptionsCrash/blink
--CrossPlatformAccessibilityBrowserTest.SelectListWithOptgroupActiveDescendant
+-CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
 -CrossPlatformAccessibilityBrowserTest.SelectSizeChangeWithOpenedPopupDoesNotCrash
 -CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
 

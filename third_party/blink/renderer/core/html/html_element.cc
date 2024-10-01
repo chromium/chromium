@@ -92,7 +92,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_bdi_element.h"
@@ -1205,14 +1204,6 @@ PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
 }  // namespace
 
 void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
-  if (auto* listbox = DynamicTo<HTMLListboxElement>(this)) {
-    if (listbox->OwnerSelectList()) {
-      CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-      // Selectlist listboxes manage their own popover state.
-      return;
-    }
-  }
-
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
       !EqualIgnoringASCIICase(value, keywords::kManual)) {
@@ -1320,9 +1311,7 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
     }
   };
 
-  auto* listbox = DynamicTo<HTMLListboxElement>(this);
-  bool is_selectlist_listbox = listbox && listbox->OwnerSelectList();
-  if (!HasPopoverAttribute() && !is_selectlist_listbox) {
+  if (!HasPopoverAttribute()) {
     maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
                           "Not supported on elements that do not have a valid "
                           "value for the 'popover' attribute.");
@@ -1919,15 +1908,6 @@ void HTMLElement::HidePopoverInternal(
     }
   }
 
-  if (auto* selectlist =
-          DynamicTo<HTMLSelectListElement>(internalImplicitAnchor())) {
-    // internalImplicitAnchor() is set on both the <selectlist> listbox
-    // and the <selectlist> autofill preview popover.
-    if (selectlist->ListBoxPart() == this) {
-      selectlist->ListboxWasClosed();
-    }
-  }
-
   if (auto* close_watcher = GetPopoverData()->closeWatcher()) {
     close_watcher->destroy();
     GetPopoverData()->setCloseWatcher(nullptr);
@@ -2356,8 +2336,7 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
 }
 
 void HTMLElement::SetInternalImplicitAnchor(HTMLElement* element) {
-  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
-        RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   CHECK(HasPopoverAttribute());
   GetPopoverData()->setInternalImplicitAnchor(element);
 }
@@ -2436,31 +2415,10 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
         /*exception_state=*/nullptr);
     return true;
   } else if (can_show) {
-    // TODO(crbug.com/1121840)
-    // HandleCommandInternal is called for both `popovertarget` and
-    // `commandfor`. `popovertarget` has one small additional behavior
-    // though; a `<selectlist>` can have a `popovertarget` button. The behavior
-    // for `<selectlist>` for `commandfor` should be handled in
-    // `HTMLSelectListElement::HandleCommandInternal`, but the `popovertarget`
-    // logic follows a slightly different path, and so for now lives here.
-    // The logic checks to see if the invoker was a popovertarget invoker that
-    // is intending to invoke a selectlist element, and opens the ListBox in
-    // that case.
-    auto* button = DynamicTo<HTMLButtonElement>(invoker);
-    HTMLSelectListElement* selectlist =
-        button && button->popoverTargetElement().popover &&
-                RuntimeEnabledFeatures::HTMLSelectListElementEnabled()
-            ? button->OwnerSelectList()
-            : nullptr;
-    if (selectlist) {
-      if (!selectlist->IsDisabledFormControl()) {
-        selectlist->OpenListbox();
-        return true;
-      }
-    } else {
-      InvokePopover(invoker);
-      return true;
-    }
+    // TODO(crbug.com/1121840) HandleCommandInternal is called for both
+    // `popovertarget` and `commandfor`.
+    InvokePopover(invoker);
+    return true;
   }
 
   if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {

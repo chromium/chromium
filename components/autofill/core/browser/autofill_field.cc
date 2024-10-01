@@ -429,7 +429,7 @@ AutofillType AutofillField::Type() const {
 
 const std::u16string& AutofillField::value_for_import() const {
   bool should_consider_value_for_import =
-      IsSelectOrSelectListElement() ||
+      IsSelectElement() ||
       value(ValueSemantics::kInitial) != value(ValueSemantics::kCurrent);
   if (!base::FeatureList::IsEnabled(
           features::kAutofillFixCurrentValueInImport)) {

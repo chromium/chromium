@@ -21,7 +21,6 @@
       <include name="IDR_UASTYLE_PERMISSION_ELEMENT_CSS" file="../renderer/core/html/resources/permission.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_SELECTLIST_CSS" file="../renderer/core/html/resources/selectlist.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_CSS" file="../renderer/core/html/resources/customizable_select.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS" file="../renderer/core/html/resources/customizable_select_linux.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_FORCED_COLORS_CSS" file="../renderer/core/html/resources/customizable_select_forced_colors.css" type="BINDATA" compress="brotli"/>

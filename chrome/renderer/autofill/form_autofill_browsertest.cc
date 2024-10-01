@@ -53,7 +53,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_select_element.h"
-#include "third_party/blink/public/web/web_select_list_element.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
@@ -2016,12 +2015,12 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
 }
 
 // Test that we use the aria-label as the content if the <option> has no text.
-TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
+TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectAriaLabel) {
   LoadHTML(
-      R"(<selectlist id=element>
+      R"(<select id=element>
          <option aria-label='usa'><img></option>
          <option aria-label='uk'><img></option>
-         </selectlist>)");
+         </select>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2037,12 +2036,11 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
 
 // Test that the content for the <option> can be computed when the <option>s
 // have nested HTML nodes.
-TEST_F(FormAutofillTest,
-       WebFormControlElementToFormFieldSelectListNestedNodes) {
+TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectNestedNodes) {
   LoadHTML(
-      R"(<selectlist id=element>
+      R"(<select id=element>
            <option><div><img><b>+1</b> (Canada)</div></option>
-         </selectlist>)");
+         </select>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -4388,14 +4386,6 @@ TEST_F(FormAutofillTest, UndoAutofill) {
           <option value=undo_select_option_2>Foo</option>
           <option value=autofill_select_option_2>Bar</option>
         </select>
-        <selectlist id=selectlist_id_1>
-          <option value=undo_selectlist_option_1>Foo</option>
-          <option value=autofill_selectlist_option_1>Bar</option>
-        </selectlist>
-        <selectlist id=selectlist_id_2>
-          <option value=undo_selectlist_option_2>Foo</option>
-          <option value=autofill_selectlist_option_2>Bar</option>
-        </selectlist>
       </form>
   )");
   WebFormControlElement text_element_1 = GetFormControlElementById("text_id_1");
@@ -4414,15 +4404,6 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   select_element_2.SetAutofillValue("autofill_select_option_2",
                                     WebAutofillState::kAutofilled);
 
-  WebFormControlElement selectlist_element_1 =
-      GetFormControlElementById("selectlist_id_1");
-  WebFormControlElement selectlist_element_2 =
-      GetFormControlElementById("selectlist_id_2");
-  selectlist_element_1.SetAutofillValue("autofill_selectlist_option_1",
-                                        WebAutofillState::kAutofilled);
-  selectlist_element_2.SetAutofillValue("autofill_selectlist_option_2",
-                                        WebAutofillState::kAutofilled);
-
   auto HasAutofillValue = [](const WebString& value,
                              WebAutofillState autofill_state) {
     return ::testing::AllOf(
@@ -4440,12 +4421,6 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   ASSERT_THAT(select_element_2,
               HasAutofillValue("autofill_select_option_2",
                                WebAutofillState::kAutofilled));
-  ASSERT_THAT(selectlist_element_1,
-              HasAutofillValue("autofill_selectlist_option_1",
-                               WebAutofillState::kAutofilled));
-  ASSERT_THAT(selectlist_element_2,
-              HasAutofillValue("autofill_selectlist_option_2",
-                               WebAutofillState::kAutofilled));
 
   WebVector<WebFormElement> forms =
       GetMainFrame()->GetDocument().GetTopLevelForms();
@@ -4453,12 +4428,10 @@ TEST_F(FormAutofillTest, UndoAutofill) {
 
   FormData form = *ExtractFormData(forms[0]);
 
-  EXPECT_EQ(form.fields().size(), 6u);
+  EXPECT_EQ(form.fields().size(), 4u);
   std::vector<FormFieldData> undo_fields;
-  for (size_t i = 0; i < 6; i += 2) {
-    std::u16string type = i == 0   ? u"text"
-                          : i == 2 ? u"select_option"
-                                   : u"selectlist_option";
+  for (size_t i = 0; i < 4; i += 2) {
+    std::u16string type = i == 0 ? u"text" : u"select_option";
     test_api(form).field(i).set_value(u"undo_" + type + u"_1");
     test_api(form).field(i).set_is_autofilled(false);
     undo_fields.push_back(form.fields()[i]);
@@ -4477,12 +4450,6 @@ TEST_F(FormAutofillTest, UndoAutofill) {
                                                  WebAutofillState::kNotFilled));
   EXPECT_THAT(select_element_2,
               HasAutofillValue("autofill_select_option_2",
-                               WebAutofillState::kAutofilled));
-  EXPECT_THAT(selectlist_element_1,
-              HasAutofillValue("undo_selectlist_option_1",
-                               WebAutofillState::kNotFilled));
-  EXPECT_THAT(selectlist_element_2,
-              HasAutofillValue("autofill_selectlist_option_2",
                                WebAutofillState::kAutofilled));
 }
 

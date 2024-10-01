@@ -5066,28 +5066,6 @@ interface HTMLSelectElement : HTMLElement
     setter selectedOptionElement
     setter size
     setter value
-interface HTMLSelectListElement : HTMLElement
-    attribute @@toStringTag
-    getter disabled
-    getter form
-    getter labels
-    getter name
-    getter open
-    getter required
-    getter selectedOption
-    getter type
-    getter validationMessage
-    getter validity
-    getter value
-    getter willValidate
-    method checkValidity
-    method constructor
-    method reportValidity
-    method setCustomValidity
-    setter disabled
-    setter name
-    setter required
-    setter value
 interface HTMLSelectedOptionElement : HTMLElement
     attribute @@toStringTag
     method constructor

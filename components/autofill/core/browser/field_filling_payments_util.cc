@@ -30,9 +30,9 @@ namespace autofill {
 
 namespace {
 
-// Gets the expiration month `value` inside the <select> or <selectlist>
-// `field`. Since `value` is well defined but the website's `field` option
-// values may not be, some heuristics are run to cover all observed cases.
+// Gets the expiration month `value` inside the <select> `field`. Since `value`
+// is well defined but the website's `field` option values may not be, some
+// heuristics are run to cover all observed cases.
 std::u16string GetExpirationMonthSelectControlValue(
     const std::u16string& value,
     const std::string& app_locale,
@@ -485,7 +485,7 @@ std::u16string GetFillingValueForCreditCard(
                                                  action_persistence, field,
                                                  failure_to_fill);
 
-  return field.IsSelectOrSelectListElement() && !value.empty()
+  return field.IsSelectElement() && !value.empty()
              ? GetFillingValueForCreditCardSelectControl(value, app_locale,
                                                          field, failure_to_fill)
              : value;

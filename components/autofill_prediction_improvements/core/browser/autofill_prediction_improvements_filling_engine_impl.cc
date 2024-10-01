@@ -135,7 +135,7 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
           filled_form_field_proto.predicted_values()[0].value());
       std::optional<std::u16string> select_option_text = std::nullopt;
 
-      if (field.IsSelectOrSelectListElement()) {
+      if (field.IsSelectElement()) {
         // Reject the prediction if it equals the currently selected option.
         if (field.selected_option().has_value() &&
             field.selected_option()->value == predicted_value) {

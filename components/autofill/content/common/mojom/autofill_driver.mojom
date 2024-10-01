@@ -77,8 +77,8 @@ interface AutofillDriver {
   SelectControlDidChange(FormData form,
                          FieldRendererId field_id);
 
-  // Notification that a select or selectlist element's options were modified.
-  SelectOrSelectListFieldOptionsDidChange(FormData form);
+  // Notification that a select element's options were modified.
+  SelectFieldOptionsDidChange(FormData form);
 
   // `FocusOnFormField()` xor `FocusOnNonFormField()` is fired when the focused
   // element changes (https://html.spec.whatwg.org/#focused):

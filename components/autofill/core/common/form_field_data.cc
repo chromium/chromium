@@ -395,14 +395,6 @@ bool FormFieldData::IsSelectElement() const {
   return form_control_type() == FormControlType::kSelectOne;
 }
 
-bool FormFieldData::IsSelectListElement() const {
-  return form_control_type() == FormControlType::kSelectList;
-}
-
-bool FormFieldData::IsSelectOrSelectListElement() const {
-  return IsSelectElement() || IsSelectListElement();
-}
-
 bool FormFieldData::DidUserType() const {
   return properties_mask() & kUserTyped;
 }
@@ -465,8 +457,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "select-one";
     case FormControlType::kSelectMultiple:
       return "select-multiple";
-    case FormControlType::kSelectList:
-      return "selectlist";
     case FormControlType::kTextArea:
       return "textarea";
   }
@@ -479,7 +469,8 @@ FormControlType StringToFormControlTypeDiscouraged(
   for (auto i = base::to_underlying(FormControlType::kMinValue);
        i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
     FormControlType type = static_cast<FormControlType>(i);
-    if (type_string == autofill::FormControlTypeToString(type)) {
+    if (mojom::IsKnownEnumValue(type) &&
+        type_string == autofill::FormControlTypeToString(type)) {
       return type;
     }
   }

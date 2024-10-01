@@ -180,7 +180,7 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 [[nodiscard]] FormFieldData CreateTestSelectField(
     const std::vector<const char*>& values);
 
-[[nodiscard]] FormFieldData CreateTestSelectOrSelectListField(
+[[nodiscard]] FormFieldData CreateTestSelectField(
     std::string_view label,
     std::string_view name,
     std::string_view value,

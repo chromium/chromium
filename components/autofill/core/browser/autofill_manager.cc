@@ -504,13 +504,11 @@ void AutofillManager::OnSuggestionsHidden() {
   NotifyObservers(&Observer::OnSuggestionsHidden);
 }
 
-void AutofillManager::OnSelectOrSelectListFieldOptionsDidChange(
-    const FormData& form) {
+void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
   if (!IsValidFormData(form))
     return;
   ParseFormAsync(
-      form, ParsingCallback(
-                &AutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl)
+      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl)
                 .Then(NotifyNoObserversCallback()));
 }
 

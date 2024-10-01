@@ -17,7 +17,7 @@ namespace autofill {
 struct CallTimerState {
   enum class CallSite {
     kApplyFieldsAction,
-    kBatchSelectOrSelectListOptionChange,
+    kBatchSelectOptionChange,
     kDidChangeScrollOffsetImpl,
     kExtractForm,
     kFocusedElementChanged,

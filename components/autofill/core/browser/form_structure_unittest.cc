@@ -351,22 +351,6 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 }
 
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectListField) {
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kSelectList);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
 // Form whose action is a search URL should not be parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
   AddTextField();

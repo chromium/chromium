@@ -991,7 +991,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       result.card.SetInfoForMonthInputType(value);
     } else {
       bool saved = result.card.SetInfo(field.Type(), value, app_locale);
-      if (!saved && field.IsSelectOrSelectListElement()) {
+      if (!saved && field.IsSelectElement()) {
         // Saving with the option text (here `value`) may fail for the
         // expiration month. Attempt to save with the option value. First find
         // the index of the option text in the select options and try the

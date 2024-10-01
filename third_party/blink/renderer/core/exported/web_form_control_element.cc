@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -217,15 +216,6 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
     select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    if (!Focused()) {
-      DispatchFocusEvent();
-    }
-    selectlist->SetAutofillValue(value, autofill_state);
-    if (!Focused()) {
-      DispatchBlurEvent();
-    }
   }
 }
 
@@ -236,9 +226,6 @@ WebString WebFormControlElement::Value() const {
     return textarea->Value();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->Value();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->value();
-  }
   return WebString();
 }
 
@@ -250,9 +237,6 @@ void WebFormControlElement::SetSuggestedValue(const WebString& value) {
     textarea->SetSuggestedValue(value);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     select->SetSuggestedValue(value);
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    selectlist->SetSuggestedValue(value);
   }
 }
 
@@ -263,9 +247,6 @@ WebString WebFormControlElement::SuggestedValue() const {
     return textarea->SuggestedValue();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->SuggestedValue();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->SuggestedValue();
-  }
   return WebString();
 }
 

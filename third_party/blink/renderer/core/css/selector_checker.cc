@@ -1937,9 +1937,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoOpen:
-      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
-        return selectlist->open();
-      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+      if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
         return dialog->FastHasAttribute(html_names::kOpenAttr);
       } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
         return details->FastHasAttribute(html_names::kOpenAttr);
@@ -1948,9 +1946,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoClosed:
-      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
-        return !selectlist->open();
-      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+      if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
         return !dialog->FastHasAttribute(html_names::kOpenAttr);
       } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
         return !details->FastHasAttribute(html_names::kOpenAttr);
@@ -2195,12 +2191,6 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
   }
   HTMLFormControlElement* form_control_element =
       DynamicTo<HTMLFormControlElement>(&element);
-  if (auto* button = DynamicTo<HTMLButtonElement>(&element)) {
-    if (auto* selectlist = button->OwnerSelectList()) {
-      form_control_element = selectlist;
-    }
-  }
-
   if (!form_control_element) {
     return false;
   }

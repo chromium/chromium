@@ -44,7 +44,6 @@ class ElementInternals;
 class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
-class HTMLSelectListElement;
 class KeyboardEvent;
 class TextControlElement;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;

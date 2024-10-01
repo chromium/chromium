@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -140,7 +139,6 @@ void CSSDefaultStyleSheets::Reset() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
-  selectlist_style_sheet_.Clear();
   customizable_select_style_sheet_.Clear();
   customizable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
@@ -378,16 +376,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!selectlist_style_sheet_ && IsA<HTMLSelectListElement>(element)) {
-    // TODO: We should assert that this sheet only contains rules for
-    // <selectlist>.
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    selectlist_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTLIST_CSS));
-    AddRulesToDefaultStyleSheets(selectlist_style_sheet_, NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-
   if (!customizable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
       RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     // TODO(crbug.com/1511354): Merge customizable_select.css into html.css and
@@ -552,7 +540,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
-  visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(customizable_select_style_sheet_);
   visitor->Trace(customizable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);

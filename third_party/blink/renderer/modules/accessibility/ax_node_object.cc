@@ -85,12 +85,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_output_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/radio_input_type.h"
@@ -1993,16 +1991,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (GetNode()->IsTextNode())
     return ax::mojom::blink::Role::kStaticText;
-
-  if (auto* button = DynamicTo<HTMLButtonElement>(GetNode())) {
-    if (button->OwnerSelectList()) {
-      return ax::mojom::blink::Role::kComboBoxMenuButton;
-    }
-  }
-
-  if (IsA<HTMLListboxElement>(GetNode())) {
-    return ax::mojom::blink::Role::kListBox;
-  }
 
   if (IsA<HTMLImageElement>(GetNode()))
     return ax::mojom::blink::Role::kImage;
@@ -4341,24 +4329,6 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
   }
 
   if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
-    // An HTML <selectlist>'s button gets its value from the selected option.
-    if (auto* button = DynamicTo<HTMLButtonElement>(node)) {
-      if (auto* select_list = button->OwnerSelectList()) {
-        if (HTMLOptionElement* selected = select_list->selectedOption()) {
-          // TODO(accessibility) Because these <option> elements can contain
-          // anything, we need to create an AXObject for the selected option,
-          // and use ax_selected_option->ComputedName(). However, for now, the
-          // AXObject is not created because AXObject::IsRelevantSlotElement()
-          // returns false for the invisible slot parent. Also, strangely,
-          // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
-          // See the following content_browsertest:
-          // All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink.
-          return selected->textContent();
-        }
-        return String();
-      }
-    }
-
     // An ARIA combobox can get value from inner contents.
     return TextFromDescendants(visited, nullptr, false);
   }

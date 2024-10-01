@@ -972,14 +972,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("style-changed.html"));
 }
 
-// crbug.com/1511111 leaving disabled after re-enabling test suite.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
-                       AccessibilityEventsSelectList) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "HTMLSelectListElement");
-  RunEventTest(FILE_PATH_LITERAL("selectlist.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSubtreeReparentedIgnoredChanged) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));

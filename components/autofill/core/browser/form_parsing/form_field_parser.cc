@@ -509,8 +509,7 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
           {FormControlType::kInputEmail, FormControlType::kInputNumber,
            FormControlType::kInputPassword, FormControlType::kInputSearch,
            FormControlType::kInputTelephone, FormControlType::kInputText,
-           FormControlType::kSelectOne, FormControlType::kSelectList,
-           FormControlType::kTextArea})) {
+           FormControlType::kSelectOne, FormControlType::kTextArea})) {
     return false;
   }
   if (Match(context, field, kEmptyLabelRegex, {MatchAttribute::kLabel},

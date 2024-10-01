@@ -242,7 +242,7 @@ class AutofillManager
                                     const FieldGlobalId& field_id);
   virtual void OnSelectControlDidChange(const FormData& form,
                                         const FieldGlobalId& field_id);
-  void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
+  void OnSelectFieldOptionsDidChange(const FormData& form);
   virtual void OnFocusOnFormField(const FormData& form,
                                   const FieldGlobalId& field_id);
   void OnFocusOnNonFormField();
@@ -358,8 +358,7 @@ class AutofillManager
                                         const FieldGlobalId& field_id) = 0;
   virtual void OnSelectControlDidChangeImpl(const FormData& form,
                                             const FieldGlobalId& field_id) = 0;
-  virtual void OnSelectOrSelectListFieldOptionsDidChangeImpl(
-      const FormData& form) = 0;
+  virtual void OnSelectFieldOptionsDidChangeImpl(const FormData& form) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FieldGlobalId& field_id) = 0;
   virtual void OnFocusOnNonFormFieldImpl() = 0;

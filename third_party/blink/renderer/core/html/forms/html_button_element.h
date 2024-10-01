@@ -29,8 +29,6 @@
 
 namespace blink {
 
-class HTMLSelectListElement;
-
 class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -47,9 +45,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
-  // This returns a <selectlist> if this button has type=selectlist and is a
-  // descendant of a <selectlist>.
-  HTMLSelectListElement* OwnerSelectList() const;
   // This returns a <select> if this button has type=select and is a direct
   // child of a <select>.
   HTMLSelectElement* OwnerSelect() const;
@@ -63,8 +58,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
     kSubmit = base::to_underlying(mojom::blink::FormControlType::kButtonSubmit),
     kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
     kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
-    kSelectlist =
-        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
   };
 
   mojom::blink::FormControlType FormControlType() const override;

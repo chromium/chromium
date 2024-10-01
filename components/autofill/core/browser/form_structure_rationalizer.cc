@@ -151,7 +151,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
       case HtmlFieldType::kCreditCardExpYear:
       case HtmlFieldType::kCreditCardExp2DigitYear:
       case HtmlFieldType::kCreditCardExp4DigitYear:
-        if (!is_text_field & !field->IsSelectOrSelectListElement()) {
+        if (!is_text_field & !field->IsSelectElement()) {
           continue;
         }
         if (base::FeatureList::IsEnabled(

@@ -489,7 +489,7 @@ std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
   std::u16string value = GetValueForProfileForInput(
       profile, app_locale, filling_type, field_data, failure_to_fill);
 
-  if (field_data.IsSelectOrSelectListElement() && !value.empty()) {
+  if (field_data.IsSelectElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
         profile, value, app_locale, field_data.options(),
         filling_type.GetStorableType(), address_normalizer, failure_to_fill);

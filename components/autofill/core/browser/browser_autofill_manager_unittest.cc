@@ -136,7 +136,6 @@ using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
 using test::CreateTestPersonalInformationFormData;
 using test::CreateTestSelectField;
-using test::CreateTestSelectOrSelectListField;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;
@@ -5244,13 +5243,6 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
   DoTestFormSubmittedControlWithDefaultValue(this, FormControlType::kSelectOne);
 }
 
-// Test that we save form data when a <selectlist> in the form contains the
-// default value.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectListWithDefaultValue) {
-  DoTestFormSubmittedControlWithDefaultValue(this,
-                                             FormControlType::kSelectList);
-}
-
 void DoTestFormSubmittedNonAddressControlWithDefaultValue(
     BrowserAutofillManagerTest* test,
     FormControlType form_control_type) {
@@ -5300,14 +5292,6 @@ TEST_F(BrowserAutofillManagerTest,
        FormSubmittedNonAddressSelectWithDefaultValue) {
   DoTestFormSubmittedNonAddressControlWithDefaultValue(
       this, FormControlType::kSelectOne);
-}
-
-// Test that we save form data when a non-country, non-state <selectlist> in the
-// form contains the default value.
-TEST_F(BrowserAutofillManagerTest,
-       FormSubmittedNonAddressSelectListWithDefaultValue) {
-  DoTestFormSubmittedNonAddressControlWithDefaultValue(
-      this, FormControlType::kSelectList);
 }
 
 // Tests that DeterminePossibleFieldTypesForUpload is called when a form is

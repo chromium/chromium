@@ -121,7 +121,7 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(
     return false;
   }
   // Select (list) elements are currently not supported.
-  if (field.IsSelectOrSelectListElement()) {
+  if (field.IsSelectElement()) {
     return false;
   }
   // By default, empty initial values are not considered to be meaningful.

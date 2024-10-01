@@ -94,10 +94,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable accessibility object model, used in other tests.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AccessibilityObjectModel");
-  // Enable HTMLSelectListElement, used by AccessibilitySelectList and
-  // AccessibilitySelectListOpen.
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "HTMLSelectListElement");
   // Enable aria-colindextext and aria-rowindextext.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AriaRowColIndexText");
@@ -3361,33 +3357,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySelectFollowsFocusMultiselect) {
   RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus-multiselect.html"));
-}
-
-// Flaky on Android and Fuchsia - crbug.com/1286650, crbug.com/1491059
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilitySelectList DISABLED_AccessibilitySelectList
-#else
-#define MAYBE_AccessibilitySelectList AccessibilitySelectList
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelectList) {
-  RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelectList) {
-  RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
-}
-
-// Flaky on Android - crbug.com/1286663
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySelectListOpen DISABLED_AccessibilitySelectListOpen
-#else
-#define MAYBE_AccessibilitySelectListOpen AccessibilitySelectListOpen
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelectListOpen) {
-  RunHtmlTest(FILE_PATH_LITERAL("selectlist-open.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {

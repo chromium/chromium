@@ -1386,10 +1386,6 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
       <option value='first'>first</option>
       <option value='second' selected>second</option>
     </select>
-    <select id='unowned_selectlist'>
-      <option value='first'>first</option>
-      <option value='second' selected>second</option>
-    </select>
     <object id='unowned_object'></object>
 
     <form id='form'>
@@ -1404,10 +1400,6 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
         <option value='june'>june</option>
         <option value='july' selected>july</option>
       </select>
-      <selectlist name='form_selectlist' id='form_selectlist'>
-        <option value='june'>june</option>
-        <option value='july' selected>july</option>
-      </selectlist>
       <object id='form_object'></object>
     </form>
   )");
@@ -1416,15 +1408,13 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
   std::vector<WebFormControlElement> unowned_form_fields =
       form_util::GetOwnedFormControlsForTesting(doc, WebFormElement());
 
-  EXPECT_THAT(
-      unowned_form_fields,
-      ElementsAre(GetFormControlElementById(doc, "unowned_button"),
-                  GetFormControlElementById(doc, "unowned_fieldset"),
-                  GetFormControlElementById(doc, "unowned_input"),
-                  GetFormControlElementById(doc, "unowned_textarea"),
-                  GetFormControlElementById(doc, "unowned_output"),
-                  GetFormControlElementById(doc, "unowned_select"),
-                  GetFormControlElementById(doc, "unowned_selectlist")));
+  EXPECT_THAT(unowned_form_fields,
+              ElementsAre(GetFormControlElementById(doc, "unowned_button"),
+                          GetFormControlElementById(doc, "unowned_fieldset"),
+                          GetFormControlElementById(doc, "unowned_input"),
+                          GetFormControlElementById(doc, "unowned_textarea"),
+                          GetFormControlElementById(doc, "unowned_output"),
+                          GetFormControlElementById(doc, "unowned_select")));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
@@ -1578,10 +1568,10 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
   LoadHTML(R"(
     <form id='form'>
       <input id='input'>
-      <selectlist name='form_selectlist' id='selectlist'>
+      <select name='form_select' id='select'>
         <option value='june'>june</option>
         <option value='july' selected>july</option>
-      </selectlist>
+      </select>
     </form>
   )");
 
@@ -1599,7 +1589,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
                                       form_data.fields()[0]));
   }
 
-  WebElement element = GetElementById(doc, "selectlist");
+  WebElement element = GetElementById(doc, "select");
   ASSERT_TRUE(element);
   ASSERT_TRUE(element.IsFormControlElement());
   EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),

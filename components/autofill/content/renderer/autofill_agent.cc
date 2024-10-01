@@ -407,9 +407,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
                               FieldRendererId field_id) override {
     DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field_id);
   }
-  void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override {
-    DeferMsg(&mojom::AutofillDriver::SelectOrSelectListFieldOptionsDidChange,
-             form);
+  void SelectFieldOptionsDidChange(const FormData& form) override {
+    DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
   }
   void AskForValuesToFill(
       const FormData& form,
@@ -504,7 +503,7 @@ void AutofillAgent::Reset() {
   last_queried_element_ = {};
   form_cache_.Reset();
   is_dom_content_loaded_ = false;
-  select_or_selectlist_option_change_batch_timer_.Stop();
+  select_option_change_batch_timer_.Stop();
   datalist_option_change_batch_timer_.Stop();
   process_forms_after_dynamic_change_timer_.Stop();
   process_forms_form_extraction_timer_.Stop();
@@ -1607,14 +1606,14 @@ void AutofillAgent::SelectControlDidChange(
   form_tracker_->SelectControlDidChange(element);
 }
 
-// Notifies the AutofillDriver about changes in the <select> or <selectlist>
+// Notifies the AutofillDriver about changes in the <select>
 // options in batches.
 //
 // A batch ends if no event occurred for `kWaitTimeForOptionsChanges`. For a
 // given batch, the AutofillDriver is informed only about the last FormData.
 // That is, if within one batch the options of different forms changed, all but
 // one of these events will be lost.
-void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
+void AutofillAgent::SelectFieldOptionsChanged(
     const WebFormControlElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
@@ -1622,19 +1621,18 @@ void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
     return;
   }
 
-  if (select_or_selectlist_option_change_batch_timer_.IsRunning()) {
-    select_or_selectlist_option_change_batch_timer_.AbandonAndStop();
+  if (select_option_change_batch_timer_.IsRunning()) {
+    select_option_change_batch_timer_.AbandonAndStop();
   }
 
-  select_or_selectlist_option_change_batch_timer_.Start(
+  select_option_change_batch_timer_.Start(
       FROM_HERE, kWaitTimeForOptionsChanges,
-      base::BindRepeating(&AutofillAgent::BatchSelectOrSelectListOptionChange,
+      base::BindRepeating(&AutofillAgent::BatchSelectOptionChange,
                           base::Unretained(this),
                           form_util::GetFieldRendererId(element)));
 }
 
-void AutofillAgent::BatchSelectOrSelectListOptionChange(
-    FieldRendererId element_id) {
+void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
   if (!element) {
@@ -1646,12 +1644,12 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
   if (std::optional<FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
-              GetCallTimerState(kBatchSelectOrSelectListOptionChange),
+              GetCallTimerState(kBatchSelectOptionChange),
               /*extract_options=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
         autofill_driver && !field->options().empty()) {
-      autofill_driver->SelectOrSelectListFieldOptionsDidChange(form);
+      autofill_driver->SelectFieldOptionsDidChange(form);
     }
   }
 }

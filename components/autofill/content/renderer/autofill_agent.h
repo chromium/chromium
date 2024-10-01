@@ -308,7 +308,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DidCompleteFocusChangeInFrame() override;
   void DidReceiveLeftMouseDownOrGestureTapInNode(
       const blink::WebNode& node) override;
-  void SelectOrSelectListFieldOptionsChanged(
+  void SelectFieldOptionsChanged(
       const blink::WebFormControlElement& element) override;
   void SelectControlDidChange(
       const blink::WebFormControlElement& element) override;
@@ -407,10 +407,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   DenseSet<form_util::ExtractOption> MaybeExtractDatalist(
       DenseSet<form_util::ExtractOption> extract_options);
 
-  // Helpers for SelectOrSelectListFieldOptionsChanged() and
+  // Helpers for SelectFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
-  void BatchSelectOrSelectListOptionChange(FieldRendererId element_id);
+  void BatchSelectOptionChange(FieldRendererId element_id);
   void BatchDataListOptionChange(FieldRendererId element_id);
 
   FormRef last_interacted_form() const {
@@ -491,7 +491,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool was_last_action_fill_ = false;
 
   // Timers for throttling handling of frequent events.
-  base::OneShotTimer select_or_selectlist_option_change_batch_timer_;
+  base::OneShotTimer select_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
   // TODO(crbug.com/40267764): Merge some or all of these timers?
   base::OneShotTimer process_forms_after_dynamic_change_timer_;

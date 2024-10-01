@@ -268,7 +268,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OpenTextDataListChooser(HTMLInputElement&) override;
   void TextFieldDataListChanged(HTMLInputElement&) override;
   void DidChangeSelectionInSelectControl(HTMLFormControlElement&) override;
-  void SelectOrSelectListFieldOptionsChanged(HTMLFormControlElement&) override;
+  void SelectFieldOptionsChanged(HTMLFormControlElement&) override;
   void AjaxSucceeded(LocalFrame*) override;
   void JavaScriptChangedValue(HTMLFormControlElement&,
                               const String& old_value,

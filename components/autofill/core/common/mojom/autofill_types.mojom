@@ -28,7 +28,7 @@ enum FormControlType {
   kInputUrl = 10,
   kSelectOne = 11,
   kSelectMultiple = 12,
-  kSelectList = 13,
+  // deprecated: kSelectList = 13
   kTextArea = 14,
 };
 

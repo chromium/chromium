@@ -381,7 +381,7 @@ void AutofillDriverRouter::DidEndTextFieldEditing(RoutedCallback<> callback,
   ForEachFrame(form_forest_, callback);
 }
 
-void AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange(
+void AutofillDriverRouter::SelectFieldOptionsDidChange(
     RoutedCallback<const FormData&> callback,
     AutofillDriver& source,
     FormData form) {

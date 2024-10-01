@@ -21,7 +21,7 @@ namespace autofill {
 namespace {
 
 using ::autofill::test::CreateTestFormField;
-using ::autofill::test::CreateTestSelectOrSelectListField;
+using ::autofill::test::CreateTestSelectField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Not;

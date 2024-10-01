@@ -380,7 +380,6 @@ source_set("blink_headers") {
     "web/web_searchable_form_data.h",
     "web/web_security_policy.h",
     "web/web_select_element.h",
-    "web/web_select_list_element.h",
     "web/web_selector.h",
     "web/web_serialized_script_value.h",
     "web/web_serialized_script_value_version.h",

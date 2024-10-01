@@ -207,9 +207,9 @@ FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view autocomplete,
                                     const std::vector<const char*>& values,
                                     const std::vector<const char*>& contents) {
-  return CreateTestSelectOrSelectListField(
-      label, name, value, autocomplete, values, contents,
-      /*type=*/FormControlType::kSelectOne);
+  return CreateTestSelectField(label, name, value, autocomplete, values,
+                               contents,
+                               /*type=*/FormControlType::kSelectOne);
 }
 
 FormFieldData CreateTestSelectField(const std::vector<const char*>& values) {
@@ -218,16 +218,14 @@ FormFieldData CreateTestSelectField(const std::vector<const char*>& values) {
                                /*contents=*/values);
 }
 
-FormFieldData CreateTestSelectOrSelectListField(
-    std::string_view label,
-    std::string_view name,
-    std::string_view value,
-    std::string_view autocomplete,
-    const std::vector<const char*>& values,
-    const std::vector<const char*>& contents,
-    FormControlType type) {
-  CHECK(type == FormControlType::kSelectOne ||
-        type == FormControlType::kSelectList);
+FormFieldData CreateTestSelectField(std::string_view label,
+                                    std::string_view name,
+                                    std::string_view value,
+                                    std::string_view autocomplete,
+                                    const std::vector<const char*>& values,
+                                    const std::vector<const char*>& contents,
+                                    FormControlType type) {
+  CHECK(type == FormControlType::kSelectOne);
   FormFieldData field = CreateTestFormField(label, name, value, type);
   field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));

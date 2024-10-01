@@ -1081,7 +1081,8 @@ enum AXStringListAttribute {
   AX_SLA_ARIANOTIFICATIONIDS = 3;
 }
 
-// Matches FormControlType in mojo by one off for an unknown value.
+// Matches FormControlType in mojo, but off by one, because this list contains
+// an "UNSPECIFIED" value at 0.
 // https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=17;drc=105770df485ace262780d95126bb60b1a16ec340;bpv=1;bpt=1
 enum FormControlType {
   FORM_CONTROL_TYPE_UNSPECIFIED = 0;
@@ -1112,7 +1113,7 @@ enum FormControlType {
 
   FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
 
-  FORM_CONTROL_TYPE_SELECT_LIST = 14;
+  // deprecated: FORM_CONTROL_TYPE_SELECT_LIST = 14;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
 }

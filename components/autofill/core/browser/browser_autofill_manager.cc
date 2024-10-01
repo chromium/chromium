@@ -2299,7 +2299,7 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
   return GetCreditCardAccessManager().ShouldClearPreviewedForm();
 }
 
-void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
+void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure) {

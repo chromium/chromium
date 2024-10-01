@@ -125,7 +125,6 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
     case blink::mojom::FormControlType::kButtonSubmit:
     case blink::mojom::FormControlType::kButtonReset:
     case blink::mojom::FormControlType::kButtonPopover:
-    case blink::mojom::FormControlType::kButtonSelectList:
     case blink::mojom::FormControlType::kFieldset:
     case blink::mojom::FormControlType::kInputButton:
     case blink::mojom::FormControlType::kInputCheckbox:
@@ -144,7 +143,6 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
     case blink::mojom::FormControlType::kOutput:
     case blink::mojom::FormControlType::kSelectOne:
     case blink::mojom::FormControlType::kSelectMultiple:
-    case blink::mojom::FormControlType::kSelectList:
       return false;
   }
   NOTREACHED();

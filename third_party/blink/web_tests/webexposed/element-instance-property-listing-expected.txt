@@ -850,7 +850,6 @@ html element link
     property sizes
     property target
     property type
-html element listbox
 html element listing
     property width
 html element main
@@ -1029,22 +1028,6 @@ html element select
     property value
     property willValidate
 html element selectedoption
-html element selectlist
-    property checkValidity
-    property disabled
-    property form
-    property labels
-    property name
-    property open
-    property reportValidity
-    property required
-    property selectedOption
-    property setCustomValidity
-    property type
-    property validationMessage
-    property validity
-    property value
-    property willValidate
 html element slot
     property assign
     property assignedElements

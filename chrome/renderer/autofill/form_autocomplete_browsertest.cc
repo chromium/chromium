@@ -121,8 +121,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectOrSelectListFieldOptionsDidChange(
-      const autofill::FormData& form) override {}
+  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
 
   // Records the form data received via FormSubmitted() call.
   std::unique_ptr<FormData> form_submitted_;

@@ -41,9 +41,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -349,17 +347,6 @@ HTMLFormControlElement::popoverTargetElement() {
   target_element = GetElementAttributeResolvingReferenceTarget(
       html_names::kPopovertargetAttr);
 
-  // The selectlist element's button which opens its listbox forms an implicit
-  // popover trigger for the listbox in order to function properly with light
-  // dismiss.
-  if (!target_element && RuntimeEnabledFeatures::HTMLSelectListElementEnabled(
-                             GetDocument().GetExecutionContext())) {
-    if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
-      if (auto* selectlist = button->OwnerSelectList()) {
-        target_element = selectlist->ListBoxPart();
-      }
-    }
-  }
 
   if (!target_element) {
     return no_element;

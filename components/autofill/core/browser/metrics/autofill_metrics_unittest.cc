@@ -7458,44 +7458,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 4, 1);
 }
 
-// Tests that the forms with <selectlist> field are recorded in UkmFieldInfo
-// metrics.
-TEST_F(AutofillMetricsFromLogEventsTest,
-       AutofillFieldInfoMetricsRecordOnSelectListField) {
-  FormData form = test::GetFormData(
-      {.fields = {
-           // Start with two input text fields.
-           {.label = u"First Name", .name = u"firstname"},
-           {.label = u"Last Name", .name = u"lastname"},
-           // A Selectlist.
-           {.label = u"Country",
-            .name = u"country",
-            .form_control_type = FormControlType::kSelectList},
-       }});
-
-  std::vector<FieldType> field_types = {NAME_FIRST, NAME_LAST,
-                                        ADDRESS_HOME_COUNTRY};
-  autofill_manager().AddSeenForm(form, field_types);
-  SeeForm(form);
-  task_environment_.FastForwardBy(base::Milliseconds(9));
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-  test_api(autofill_manager()).Reset();
-
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(3u, entries.size());
-  test_ukm_recorder().ExpectEntryMetric(
-      entries[0], UkmFieldInfoType::kFormControlType2Name,
-      base::to_underlying(FormControlType::kInputText));
-  test_ukm_recorder().ExpectEntryMetric(
-      entries[1], UkmFieldInfoType::kFormControlType2Name,
-      base::to_underlying(FormControlType::kInputText));
-  test_ukm_recorder().ExpectEntryMetric(
-      entries[2], UkmFieldInfoType::kFormControlType2Name,
-      base::to_underlying(FormControlType::kSelectList));
-}
-
 // Tests that the field which is in a different frame than its form is recorded
 // as AutofillStatus::kIsInSubFrame.
 TEST_F(AutofillMetricsFromLogEventsTest,

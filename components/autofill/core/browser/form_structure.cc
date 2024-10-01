@@ -411,9 +411,8 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
     return false;
   }
 
-  bool has_text_field = std::ranges::any_of(*this, [](const auto& field) {
-    return !field->IsSelectOrSelectListElement();
-  });
+  bool has_text_field = std::ranges::any_of(
+      *this, [](const auto& field) { return !field->IsSelectElement(); });
   if (!has_text_field) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingFormHasNoTextfield << *this;
@@ -490,7 +489,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
     // TODO: crbug.com/40227496 - Simplify the `switch` statement once
     // kAutofillFixValueSemantics is launched.
-    // TODO: crbug.com/40227496 - Remove the IsSelectOrSelectListElement()
+    // TODO: crbug.com/40227496 - Remove the IsSelectElement()
     // checks once kAutofillFixValueSemantics is launched.
     // TODO: crbug.com/40227496 - Update the comments when the experiments are
     // launched.
@@ -499,7 +498,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // If kAutofillFixValueSemantics is disabled: During form parsing (as in
         // "assigning field types to fields") the `value` represents the initial
         // value found at page load and needs to be preserved.
-        if (!field->IsSelectOrSelectListElement() ||
+        if (!field->IsSelectElement() ||
             base::FeatureList::IsEnabled(
                 features::kAutofillFixInitialValueOfSelect)) {
           field->set_initial_value(
@@ -507,9 +506,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         }
         break;
       case RetrieveFromCacheReason::kFormImport:
-        // TODO: crbug.com/40227496 - Group IsSelectOrSelectListElement()
-        // checks.
-        if ((!field->IsSelectOrSelectListElement() ||
+        // TODO: crbug.com/40227496 - Group IsSelectElement() checks.
+        if ((!field->IsSelectElement() ||
              base::FeatureList::IsEnabled(
                  features::kAutofillFixInitialValueOfSelect)) &&
             base::FeatureList::IsEnabled(
@@ -530,7 +528,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
             !cached_field->possible_types().empty();
         if (!cached_field->value(ValueSemantics::kInitial).empty() &&
-            (!field->IsSelectOrSelectListElement() ||
+            (!field->IsSelectElement() ||
              base::FeatureList::IsEnabled(
                  features::kAutofillFixInitialValueOfSelect)) &&
             had_type) {
@@ -544,7 +542,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         const bool field_is_neither_state_nor_country =
             field->server_type() != ADDRESS_HOME_COUNTRY &&
             field->server_type() != ADDRESS_HOME_STATE;
-        if ((!field->IsSelectOrSelectListElement() &&
+        if ((!field->IsSelectElement() &&
              !base::FeatureList::IsEnabled(
                  features::kAutofillFixCurrentValueInImport)) &&
             same_value_as_on_page_load && field_is_neither_state_nor_country) {

@@ -581,12 +581,10 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
                  &AutofillManager::OnDidEndTextFieldEditing);
 }
 
-void ContentAutofillDriver::SelectOrSelectListFieldOptionsDidChange(
-    const FormData& form) {
+void ContentAutofillDriver::SelectFieldOptionsDidChange(const FormData& form) {
   RouteToManager(*this, router(),
-                 &AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange,
-                 &AutofillManager::OnSelectOrSelectListFieldOptionsDidChange,
-                 form);
+                 &AutofillDriverRouter::SelectFieldOptionsDidChange,
+                 &AutofillManager::OnSelectFieldOptionsDidChange, form);
 }
 
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(

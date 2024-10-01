@@ -42,8 +42,6 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
       return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
     case FormControlType::kSelectMultiple:
       return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_MULTIPLE;
-    case FormControlType::kSelectList:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_LIST;
     case FormControlType::kTextArea:
       return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
   }

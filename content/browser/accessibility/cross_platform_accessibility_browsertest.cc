@@ -1317,60 +1317,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
-// Android uses kComboboxSelect instead of kListbox for <select size > 1>.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       SelectListWithOptgroupActiveDescendant) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <!DOCTYPE html>
-      <html>
-      <body>
-        <select autofocus size="8" aria-label="Select">
-          <optgroup label="A">
-            <option>Option 1</option>
-          </optgroup>
-          <optgroup label="B">
-            <option selected>Option 2</option>
-            <option>Option 3</option>
-          </optgroup>
-        </select>
-      </body>
-      </html>)HTML");
-
-  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
-                                                "Select");
-
-  const ui::BrowserAccessibility* root =
-      GetManager()->GetBrowserAccessibilityRoot();
-  ASSERT_NE(root, nullptr);
-  const ui::BrowserAccessibility* body = root->PlatformGetChild(0);
-  ASSERT_NE(body, nullptr);
-  ui::BrowserAccessibility* select = body->PlatformGetChild(0);
-  ASSERT_NE(select, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kListBox, select->GetRole());
-
-  // Get Optgroup "B"
-  const ui::BrowserAccessibility* opt_group_2 = select->PlatformGetChild(1);
-  ASSERT_NE(opt_group_2, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kGroup, opt_group_2->GetRole());
-  EXPECT_EQ("B",
-            opt_group_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-  // Get "Option 2".
-  const ui::BrowserAccessibility* option_2 = opt_group_2->PlatformGetChild(0);
-  ASSERT_NE(option_2, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kListBoxOption, option_2->GetRole());
-  EXPECT_EQ("Option 2",
-            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-  // Ensure active descendant is "Option 2"
-  int active_descendant_id = -1;
-  EXPECT_TRUE(select->GetIntAttribute(
-      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
-  EXPECT_EQ(active_descendant_id, option_2->GetId());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

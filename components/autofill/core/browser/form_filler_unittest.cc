@@ -944,8 +944,7 @@ TEST_F(FormFillerTest, PreviewCreditCardForm_VirtualCard) {
   EXPECT_EQ(filled_fields[4].value(), expected_cvc);
 }
 
-// Test that unfocusable fields aren't filled, except for <select> fields (but
-// not <selectlist> fields).
+// Test that unfocusable fields aren't filled, except for <select> fields.
 TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   // Create a form with both focusable and non-focusable fields.
   FormData form = test::GetFormData(
@@ -953,11 +952,7 @@ TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
                   {.role = ADDRESS_HOME_COUNTRY,
                    .autocomplete_attribute = "country"}}});
   test_api(form).field(-1).set_is_focusable(false);
-  test_api(form).Append(test::CreateTestSelectOrSelectListField(
-      "Country", "country", "", "country", {"CA", "US"},
-      {"Canada", "United States"}, FormControlType::kSelectList));
-  test_api(form).field(-1).set_is_focusable(false);
-  test_api(form).Append(test::CreateTestSelectOrSelectListField(
+  test_api(form).Append(test::CreateTestSelectField(
       "Country", "country", "", "country", {"CA", "US"},
       {"Canada", "United States"}, FormControlType::kSelectOne));
   test_api(form).field(-1).set_is_focusable(false);
@@ -967,14 +962,12 @@ TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields()[0], &profile).fields();
 
-  ASSERT_EQ(4u, filled_fields.size());
+  ASSERT_EQ(3u, filled_fields.size());
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
   EXPECT_FALSE(filled_fields[1].is_autofilled());
   EXPECT_TRUE(filled_fields[1].value().empty());
-  EXPECT_FALSE(filled_fields[2].is_autofilled());
-  EXPECT_TRUE(filled_fields[2].value().empty());
-  EXPECT_THAT(filled_fields[3], AutofilledWith(u"US"));
+  EXPECT_THAT(filled_fields[2], AutofilledWith(u"US"));
 }
 
 // Test that we correctly fill a form that has author-specified sections, which

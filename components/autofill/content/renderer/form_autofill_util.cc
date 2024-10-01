@@ -65,7 +65,6 @@
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
-#include "third_party/blink/public/web/web_select_list_element.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using blink::WebAutofillState;
@@ -81,7 +80,6 @@ using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebOptionElement;
 using blink::WebSelectElement;
-using blink::WebSelectListElement;
 using blink::WebString;
 using blink::WebVector;
 
@@ -256,15 +254,6 @@ bool IsTextInput(const WebInputElement& element) {
 bool IsSelectElement(const WebFormControlElement& element) {
   return element && element.FormControlTypeForAutofill() ==
                         blink::mojom::FormControlType::kSelectOne;
-}
-
-bool IsSelectListElement(const WebFormControlElement& element) {
-  return element && element.FormControlTypeForAutofill() ==
-                        blink::mojom::FormControlType::kSelectList;
-}
-
-bool IsSelectOrSelectListElement(const WebFormControlElement& element) {
-  return IsSelectElement(element) || IsSelectListElement(element);
 }
 
 bool IsTextInput(const WebFormControlElement& element) {
@@ -1261,7 +1250,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
     return true;
   }
   // Check if we should autofill/preview/clear a select element or leave it.
-  if (IsSelectOrSelectListElement(element) && element.UserHasEditedTheField() &&
+  if (IsSelectElement(element) && element.UserHasEditedTheField() &&
       !SanitizedFieldIsEmpty(current_element_value)) {
     base::UmaHistogramEnumeration(kSkipReasonHistogram,
                                   SkipReason::kUserEditedSelect);
@@ -1280,7 +1269,7 @@ void FillFormField(const FormFieldData::FillData& data,
   // Fill fields for text input, textarea and select fields.
   // Filling not supported for checkboxes and radio buttons.
   if (!IsTextInput(field) && !IsMonthInput(field) &&
-      !IsTextAreaElement(field) && !IsSelectOrSelectListElement(field)) {
+      !IsTextAreaElement(field) && !IsSelectElement(field)) {
     return;
   }
   WebAutofillState new_autofill_state = data.is_autofilled
@@ -1300,7 +1289,7 @@ void FillFormField(const FormFieldData::FillData& data,
     return;
   }
 
-  if (!is_initiating_node || IsSelectOrSelectListElement(field)) {
+  if (!is_initiating_node || IsSelectElement(field)) {
     return;
   }
   auto length = base::checked_cast<unsigned>(field.Value().length());
@@ -1321,7 +1310,7 @@ void PreviewFormField(const FormFieldData::FillData& data,
   // Preview text input, textarea and select fields.
   // Preview not supported for checkboxes and radio buttons.
   if (!IsTextInput(field) && !IsMonthInput(field) &&
-      !IsTextAreaElement(field) && !IsSelectOrSelectListElement(field)) {
+      !IsTextAreaElement(field) && !IsSelectElement(field)) {
     return;
   }
 
@@ -1729,23 +1718,13 @@ uint64_t GetMaxLength(const WebFormControlElement& element) {
 // returns {{.value = "Foo", .text = "Bar"}, {.value = "Foo", .text = "Foo"}}.
 // For more details, see the documentation of `SelectOption`.
 std::vector<SelectOption> GetSelectOptions(
-    const WebFormControlElement& select_or_select_list_element) {
-  DCHECK(IsSelectOrSelectListElement(select_or_select_list_element));
-
-  WebVector<WebElement> maybe_option_elements;
-  if (auto select_element =
-          select_or_select_list_element.DynamicTo<WebSelectElement>()) {
-    maybe_option_elements = select_element.GetListItems();
-  } else if (auto select_list_element =
-                 select_or_select_list_element
-                     .DynamicTo<WebSelectListElement>()) {
-    maybe_option_elements = select_list_element.GetListItems();
-  }
+    const WebSelectElement& select_element) {
+  WebVector<WebElement> option_elements = select_element.GetListItems();
 
   // Constrain the maximum list length to prevent a malicious site from DOS'ing
   // the browser, without entirely breaking autocomplete for some extreme
   // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
-  if (maybe_option_elements.size() > kMaxListSize) {
+  if (option_elements.size() > kMaxListSize) {
     return {};
   }
 
@@ -1753,8 +1732,8 @@ std::vector<SelectOption> GetSelectOptions(
     return s.Utf16().substr(0, kMaxStringLength);
   };
   std::vector<SelectOption> options;
-  options.reserve(maybe_option_elements.size());
-  for (const auto& maybe_option_element : maybe_option_elements) {
+  options.reserve(option_elements.size());
+  for (const auto& maybe_option_element : option_elements) {
     if (auto option_element =
             maybe_option_element.DynamicTo<WebOptionElement>()) {
       std::u16string text = to_string(option_element.GetText());
@@ -1967,8 +1946,8 @@ void WebFormControlElementToFormField(
     // Nothing more to do in this case.
   } else {
     // Set option strings on the field if available.
-    DCHECK(IsSelectOrSelectListElement(element));
-    field->set_options(GetSelectOptions(element));
+    DCHECK(IsSelectElement(element));
+    field->set_options(GetSelectOptions(element.To<WebSelectElement>()));
   }
   if (extract_options.contains(ExtractOption::kBounds)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
@@ -2222,8 +2201,8 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
 bool IsAutofillableElement(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsTextInput(input_element) || IsMonthInput(input_element) ||
-         IsCheckableElement(input_element) ||
-         IsSelectOrSelectListElement(element) || IsTextAreaElement(element);
+         IsCheckableElement(input_element) || IsSelectElement(element) ||
+         IsTextAreaElement(element);
 }
 
 FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
@@ -2252,8 +2231,6 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
       return FormControlType::kSelectOne;
     case blink::mojom::FormControlType::kSelectMultiple:
       return FormControlType::kSelectMultiple;
-    case blink::mojom::FormControlType::kSelectList:
-      return FormControlType::kSelectList;
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
@@ -2277,7 +2254,6 @@ bool IsCheckable(FormControlType form_control_type) {
     case FormControlType::kInputUrl:
     case FormControlType::kSelectOne:
     case FormControlType::kSelectMultiple:
-    case FormControlType::kSelectList:
     case FormControlType::kTextArea:
       return false;
   }
@@ -2295,10 +2271,7 @@ bool IsElementEditable(const WebInputElement& element) {
 }
 
 bool IsWebElementFocusableForAutofill(const WebElement& element) {
-  return element.IsFocusable() ||
-         // The <selectlist> shadow root is not focusable.
-         (IsSelectListElement(element.DynamicTo<WebFormControlElement>()) &&
-          element.To<WebSelectListElement>().HasFocusableChild());
+  return element.IsFocusable();
 }
 
 FormRendererId GetFormRendererId(const WebElement& e) {
