@@ -647,6 +647,17 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.ensure_valid_mixin_list(test_mixins, f'test {test_name} mixins')
     test = self.apply_mixins(test, test_mixins, mixins_to_ignore, builder)
 
+    # Apply any variant details
+    variant = test.pop('*variant*', None)
+    if variant is not None:
+      test = self.apply_mixin(variant, test)
+      variant_mixins = test.pop('*variant_mixins*', [])
+      self.ensure_valid_mixin_list(
+          variant_mixins,
+          (f'variant mixins for test {test_name}'
+           f' with variant with identifier{test["variant_id"]}'))
+      test = self.apply_mixins(test, variant_mixins, mixins_to_ignore, builder)
+
     # Add any swarming or args from the builder
     self.dictionary_merge(test['swarming'], builder.get('swarming', {}))
     if supports_args:
@@ -1161,10 +1172,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       variant_skylab = variant.pop('skylab', {})
 
       for test_name, test_config in basic_test_definition.items():
-        new_test = self.apply_mixin(variant, test_config)
-
-        new_test['mixins'] = (test_config.get('mixins', []) + variant_mixins +
-                              mixins)
+        new_test = copy.copy(test_config)
 
         # The identifier is used to make the name of the test unique.
         # Generators in the recipe uniquely identify a test by it's name, so we
@@ -1176,6 +1184,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # is mainly used in generate_gpu_telemetry_test().
         new_test['variant_id'] = identifier
 
+        # Save the variant details and mixins to be applied in
+        # apply_common_transformations to match the order that starlark will
+        # apply things
+        new_test['*variant*'] = variant
+        new_test['*variant_mixins*'] = variant_mixins + mixins
+
+        # TODO: crbug.com/40258588 - When skylab support is implemented in
+        # starlark, these fields should be incorporated into mixins and handled
+        # consistently with other fields
         for k, v in variant_skylab.items():
           # cros_chrome_version is the ash chrome version in the cros img in the
           # variant of cros_board. We don't want to include it in the final json

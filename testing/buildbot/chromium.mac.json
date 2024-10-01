@@ -6357,12 +6357,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 14",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -6410,12 +6410,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 15",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10010,12 +10010,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Air (5th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10063,12 +10063,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10116,12 +10116,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10169,12 +10169,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10222,12 +10222,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 14",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10275,12 +10275,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 15",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10328,12 +10328,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10381,12 +10381,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10434,12 +10434,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 14",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10487,12 +10487,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 15",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10944,12 +10944,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -10997,12 +10997,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -11050,12 +11050,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 14",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -11103,12 +11103,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPhone 15",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -15611,12 +15611,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Air (5th generation)",
           "--version",
           "16.4",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -15665,12 +15665,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Air (5th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -15719,12 +15719,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -15773,12 +15773,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "16.4",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -15827,12 +15827,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -15881,12 +15881,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -16244,12 +16244,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "16.4",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -16298,12 +16298,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "17.5",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
@@ -16352,12 +16352,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.0",
-          "--clones",
-          "2",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
