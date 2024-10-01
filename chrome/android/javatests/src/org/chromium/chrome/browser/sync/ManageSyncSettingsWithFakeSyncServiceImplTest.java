@@ -360,7 +360,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    @DisabledTest(message = "https://crbug.com/359644250")
     public void testTrustedVaultKeyRetrievalForSignedInUsers() {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
         // bug is resolved.

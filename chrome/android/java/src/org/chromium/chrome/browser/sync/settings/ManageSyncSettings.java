@@ -28,6 +28,7 @@ import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -229,6 +230,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * Creates an argument bundle for this fragment.
@@ -487,6 +490,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         if (!mShouldReplaceSyncSettingsWithAccountSettings) {
             mSyncSetupInProgressHandle.close();
         }
@@ -600,7 +607,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // A change to Preference state hasn't been applied yet. Defer
         // updateSyncStateFromSelectedTypes so it gets the updated state from
         // isChecked().
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncStateFromSelectedTypes);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncStateFromSelectedTypes));
         return true;
     }
 
@@ -614,7 +623,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public void syncStateChanged() {
         // This is invoked synchronously from SyncService.setSelectedTypes, postpone the
         // update to let updateSyncStateFromSelectedTypes finish saving the state.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /** IdentityManager.Observer implementation. */
@@ -672,16 +683,18 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getUserSelectedTypes());
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /**
      * Update the encryption state.
      *
-     * If sync's engine is initialized, the button is enabled and the dialog will present the
-     * valid encryption options for the user. Otherwise, any encryption dialogs will be closed
-     * and the button will be disabled because the engine is needed in order to know and
-     * modify the encryption state.
+     * <p>If sync's engine is initialized, the button is enabled and the dialog will present the
+     * valid encryption options for the user. Otherwise, any encryption dialogs will be closed and
+     * the button will be disabled because the engine is needed in order to know and modify the
+     * encryption state.
      */
     private void updateEncryptionState() {
         boolean isEngineInitialized = mSyncService.isEngineInitialized();
@@ -899,7 +912,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                 ((ChromeSwitchPreference) preference).setChecked(true);
                                 PostTask.postTask(
                                         TaskTraits.UI_DEFAULT,
-                                        this::updateSyncStateFromSelectedTypes);
+                                        mCallbackController.makeCancelable(
+                                                this::updateSyncStateFromSelectedTypes));
                             }
                         });
         PropertyModel dialog =
