@@ -1,20 +1,18 @@
-CONSOLE WARNING: A descendant of a <select> does not follow the content model.
-CONSOLE WARNING: A descendant of a <select> does not follow the content model.
-../resources/tests9.dat:
+../resources/tests10.dat:
+4
 5
-6
+17
 18
-19
 
-Test 5 of 27 in ../resources/tests9.dat failed. Input:
-<!DOCTYPE html><body><select><math></math></select>
+Test 4 of 54 in ../resources/tests10.dat failed. Input:
+<!DOCTYPE html><body><select><svg></svg></select>
 Got:
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       <math math>
+|       <svg svg>
 Expected:
 | <!DOCTYPE html>
 | <html>
@@ -22,8 +20,8 @@ Expected:
 |   <body>
 |     <select>
 
-Test 6 of 27 in ../resources/tests9.dat failed. Input:
-<!DOCTYPE html><body><select><option><math></math></option></select>
+Test 5 of 54 in ../resources/tests10.dat failed. Input:
+<!DOCTYPE html><body><select><option><svg></svg></option></select>
 Got:
 | <!DOCTYPE html>
 | <html>
@@ -31,7 +29,7 @@ Got:
 |   <body>
 |     <select>
 |       <option>
-|         <math math>
+|         <svg svg>
 Expected:
 | <!DOCTYPE html>
 | <html>
@@ -40,8 +38,8 @@ Expected:
 |     <select>
 |       <option>
 
-Test 18 of 27 in ../resources/tests9.dat failed. Input:
-<!DOCTYPE html><body><table><tr><td><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
+Test 17 of 54 in ../resources/tests10.dat failed. Input:
+<!DOCTYPE html><body><table><tr><td><select><svg><g>foo</g><g>bar</g><p>baz</table><p>quux
 Got:
 | <!DOCTYPE html>
 | <html>
@@ -52,10 +50,10 @@ Got:
 |         <tr>
 |           <td>
 |             <select>
-|               <math math>
-|                 <math mi>
+|               <svg svg>
+|                 <svg g>
 |                   "foo"
-|                 <math mi>
+|                 <svg g>
 |                   "bar"
 |               <p>
 |                 "baz"
@@ -75,18 +73,18 @@ Expected:
 |     <p>
 |       "quux"
 
-Test 19 of 27 in ../resources/tests9.dat failed. Input:
-<!DOCTYPE html><body><table><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
+Test 18 of 54 in ../resources/tests10.dat failed. Input:
+<!DOCTYPE html><body><table><select><svg><g>foo</g><g>bar</g><p>baz</table><p>quux
 Got:
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       <math math>
-|         <math mi>
+|       <svg svg>
+|         <svg g>
 |           "foo"
-|         <math mi>
+|         <svg g>
 |           "bar"
 |       <p>
 |         "baz"

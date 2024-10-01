@@ -51,6 +51,7 @@ class SelectType;
 class V8UnionHTMLElementOrLong;
 class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 class HTMLSelectedOptionElement;
+class SelectDescendantsObserver;
 
 class CORE_EXPORT HTMLSelectElement final
     : public HTMLFormControlElementWithState,
@@ -381,6 +382,8 @@ class CORE_EXPORT HTMLSelectElement final
 
   Member<SelectType> select_type_;
   int index_to_select_on_cancel_;
+
+  Member<SelectDescendantsObserver> descendants_observer_;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

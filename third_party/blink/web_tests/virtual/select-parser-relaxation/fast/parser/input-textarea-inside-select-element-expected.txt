@@ -1,0 +1,4 @@
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+Test for bug 17421: Lack of end tag of SELECT element causes inaccessible (blank) a rest of a page rendered.
+
+There should be two green bars below.

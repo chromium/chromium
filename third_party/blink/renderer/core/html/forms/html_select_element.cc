@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlelement_long.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmloptgroupelement_htmloptionelement.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
+#include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -60,8 +63,13 @@
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_selected_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
+#include "third_party/blink/renderer/core/html/html_no_script_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -90,6 +98,65 @@ static const unsigned kMaxListItems = 100000;
 // absent.
 const int kDefaultListBoxSize = 4;
 
+class SelectDescendantsObserver : public MutationObserver::Delegate {
+ public:
+  explicit SelectDescendantsObserver(HTMLSelectElement& select)
+      : select_(select), observer_(MutationObserver::Create(this)) {
+    MutationObserverInit* init = MutationObserverInit::Create();
+    init->setChildList(true);
+    init->setSubtree(true);
+    observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
+  }
+
+  ExecutionContext* GetExecutionContext() const override {
+    return select_->GetExecutionContext();
+  }
+
+  void Deliver(const MutationRecordVector& records,
+               MutationObserver&) override {
+    for (const auto& record : records) {
+      if (record->type() == "childList") {
+        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+          if (auto* html_element =
+                  DynamicTo<HTMLElement>(record->addedNodes()->item(i))) {
+            if (!IsDescendantAllowed(html_element)) {
+              // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as
+              // well.
+              html_element->AddConsoleMessage(
+                  mojom::blink::ConsoleMessageSource::kRecommendation,
+                  mojom::blink::ConsoleMessageLevel::kWarning,
+                  "A descendant of a <select> does not follow the content "
+                  "model.");
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(select_);
+    visitor->Trace(observer_);
+    MutationObserver::Delegate::Trace(visitor);
+  }
+
+ private:
+  bool IsDescendantAllowed(HTMLElement* element) {
+    // TODO(ansollan): This should be looking at the tree structure to decide if
+    // this is a valid descendant.
+    return IsA<HTMLOptionElement>(element) ||
+           IsA<HTMLOptGroupElement>(element) || IsA<HTMLHRElement>(element) ||
+           IsA<HTMLScriptElement>(element) ||
+           IsA<HTMLTemplateElement>(element) ||
+           IsA<HTMLNoScriptElement>(element) ||
+           IsA<HTMLButtonElement>(element) || IsA<HTMLDivElement>(element) ||
+           IsA<HTMLSpanElement>(element);
+  }
+  Member<HTMLSelectElement> select_;
+  Member<MutationObserver> observer_;
+};
+
 HTMLSelectElement::HTMLSelectElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectTag, document),
       type_ahead_(this),
@@ -102,6 +169,10 @@ HTMLSelectElement::HTMLSelectElement(Document& document)
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    descendants_observer_ =
+        MakeGarbageCollected<SelectDescendantsObserver>(*this);
+  }
 }
 
 HTMLSelectElement::~HTMLSelectElement() = default;
@@ -1357,6 +1428,7 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(suggested_option_);
   visitor->Trace(descendant_selectedoptions_);
   visitor->Trace(select_type_);
+  visitor->Trace(descendants_observer_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 

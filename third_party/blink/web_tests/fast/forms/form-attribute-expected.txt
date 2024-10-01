@@ -1,3 +1,4 @@
+CONSOLE WARNING: A descendant of a <select> does not follow the content model.
 This test checks the form attribute of the form-associated elements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

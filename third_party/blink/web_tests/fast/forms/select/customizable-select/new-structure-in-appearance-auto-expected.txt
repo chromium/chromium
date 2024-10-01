@@ -1,4 +1,2 @@
 CONSOLE WARNING: A descendant of a <select> does not follow the content model.
-PASS
-
-PASS
+CONSOLE WARNING: A descendant of a <select> does not follow the content model.
