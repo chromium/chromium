@@ -447,12 +447,11 @@ void ShimlessRmaService::SetWipeDevice(bool should_wipe_device,
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
-    ChooseManuallyDisableWriteProtectCallback callback) {
+void ShimlessRmaService::SetManuallyDisableWriteProtect(
+    SetManuallyDisableWriteProtectCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
-    LOG(ERROR)
-        << "ChooseManuallyDisableWriteProtect called from incorrect state "
-        << state_proto_.state_case();
+    LOG(ERROR) << "SetManuallyDisableWriteProtect called from incorrect state "
+               << state_proto_.state_case();
     std::move(callback).Run(CreateStateResultForInvalidRequest());
     return;
   }
@@ -461,10 +460,10 @@ void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::ChooseRsuDisableWriteProtect(
-    ChooseRsuDisableWriteProtectCallback callback) {
+void ShimlessRmaService::SetRsuDisableWriteProtect(
+    SetRsuDisableWriteProtectCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
-    LOG(ERROR) << "ChooseRsuDisableWriteProtect called from incorrect state "
+    LOG(ERROR) << "SetRsuDisableWriteProtect called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(CreateStateResultForInvalidRequest());
     return;

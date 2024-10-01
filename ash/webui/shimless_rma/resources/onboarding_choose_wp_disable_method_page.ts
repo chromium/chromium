@@ -71,9 +71,9 @@ export class OnboardingChooseWpDisableMethodPage extends
 
   onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.hwwpMethod === 'hwwpDisableMethodManual') {
-      return this.shimlessRmaService.chooseManuallyDisableWriteProtect();
+      return this.shimlessRmaService.setManuallyDisableWriteProtect();
     } else if (this.hwwpMethod === 'hwwpDisableMethodRsu') {
-      return this.shimlessRmaService.chooseRsuDisableWriteProtect();
+      return this.shimlessRmaService.setRsuDisableWriteProtect();
     } else {
       return Promise.reject(new Error('No disable method selected'));
     }

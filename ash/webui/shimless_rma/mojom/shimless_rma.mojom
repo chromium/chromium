@@ -74,7 +74,6 @@ enum State {
 // This must remain in sync with RmadErrorCode in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // See shimless_rma_mojom_traits.cc\h.
-// TODO(crbug.com/1218175): Remove Rmad prefix from name.
 enum RmadErrorCode {
   // 0 is the default value. It should never be used.
   kNotSet = 0,
@@ -604,15 +603,11 @@ interface ShimlessRmaService {
   // Choose to disabled HWWP manually e.g. by disconnecting the battery
   // If successful returns the next state and kOk followed by a signalling the
   // HardwareWriteProtectionStateObserver when HWWP is disabled.
-  // TODO(crbug.com/1218175): Rename SetManuallyDisableWriteProtect for
-  // consistency with other methods.
-  ChooseManuallyDisableWriteProtect()
+  SetManuallyDisableWriteProtect()
       => (StateResult state_result);
   // Choose to disable HWWP using the RSU code method.
   // Returns the next state to display and an error code.
-  // TODO(crbug.com/1218175): Rename SetRsuDisableWriteProtect for
-  // consistency with other methods.
-  ChooseRsuDisableWriteProtect()
+  SetRsuDisableWriteProtect()
       => (StateResult state_result);
 
   ///////////////////////////////////////
