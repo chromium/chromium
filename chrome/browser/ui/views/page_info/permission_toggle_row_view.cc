@@ -128,9 +128,11 @@ PermissionToggleRowView::PermissionToggleRowView(
     std::u16string reason =
         delegate->GetAutomaticallyBlockedReason(permission_.type);
     if (!reason.empty()) {
-      row_view_->AddControl(std::make_unique<views::Label>(
-          delegate->GetAutomaticallyBlockedReason(permission_.type),
-          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+      views::Label* label =
+          row_view_->AddControl(std::make_unique<views::Label>(
+              delegate->GetAutomaticallyBlockedReason(permission_.type),
+              views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4));
+      label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
     } else {
       InitForUserSource(should_show_spacer_view, toggle_accessible_name);
     }
@@ -238,8 +240,8 @@ void PermissionToggleRowView::InitForManagedSource(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   auto state_label = std::make_unique<views::Label>(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
-      views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5);
-  state_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+      views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
+  state_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
   state_label->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));

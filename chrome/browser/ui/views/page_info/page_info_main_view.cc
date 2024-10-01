@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -206,6 +207,13 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
   cookie_button_->SetProperty(views::kElementIdentifierKey,
                               kCookieButtonElementId);
+  cookie_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  cookie_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
+  if (cookie_button_->subtitle()) {
+    cookie_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
+    cookie_button_->subtitle()->SetEnabledColorId(
+        kColorPageInfoSubtitleForeground);
+  }
 }
 
 void PageInfoMainView::SetPermissionInfo(
@@ -387,6 +395,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
     connection_button_->SetTitleText(security_description->summary);
+    connection_button_->title()->SetTextStyle(
+        views::style::STYLE_BODY_3_MEDIUM);
 
     // Show "About this site" section only if connection is secure, because
     // security information has higher priority.
@@ -637,6 +647,12 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);
+  about_this_site_button->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  about_this_site_button->title()->SetEnabledColorId(kColorPageInfoForeground);
+  about_this_site_button->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
+  about_this_site_button->subtitle()->SetEnabledColorId(
+      kColorPageInfoSubtitleForeground);
 
   return about_this_site_section;
 }
@@ -647,19 +663,32 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   ads_personalization_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  ads_personalization_section
-      ->AddChildView(std::make_unique<RichHoverButton>(
-          base::BindRepeating(
-              [](PageInfoMainView* view) {
-                view->navigation_handler_->OpenAdPersonalizationPage();
-              },
-              this),
-          PageInfoViewFactory::GetAdPersonalizationIcon(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
-          std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP),
-          std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()))
-      ->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+  RichHoverButton* ads_personalization_button =
+      ads_personalization_section->AddChildView(
+          std::make_unique<RichHoverButton>(
+              base::BindRepeating(
+                  [](PageInfoMainView* view) {
+                    view->navigation_handler_->OpenAdPersonalizationPage();
+                  },
+                  this),
+              PageInfoViewFactory::GetAdPersonalizationIcon(),
+              l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
+              std::u16string(),
+              l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP),
+              std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
+  ads_personalization_button->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+
+  ads_personalization_button->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  ads_personalization_button->title()->SetEnabledColorId(
+      kColorPageInfoForeground);
+  if (ads_personalization_button->subtitle()) {
+    ads_personalization_button->subtitle()->SetTextStyle(
+        views::style::STYLE_BODY_4);
+    ads_personalization_button->subtitle()->SetEnabledColorId(
+        kColorPageInfoSubtitleForeground);
+  }
 
   return ads_personalization_section;
 }

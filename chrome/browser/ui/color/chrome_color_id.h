@@ -361,6 +361,7 @@
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
   E_CPONLY(kColorPageInfoForeground) \
+  E_CPONLY(kColorPageInfoSubtitleForeground) \
   E_CPONLY(kColorPageInfoForegroundTonal) \
   E_CPONLY(kColorPageInfoIconHover) \
   E_CPONLY(kColorPageInfoIconPressed) \

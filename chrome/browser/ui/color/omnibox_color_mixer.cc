@@ -62,6 +62,7 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
   mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorPageInfoBackgroundTonal] = {ui::kColorSysTonalContainer};
   mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorPageInfoSubtitleForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorPageInfoForegroundTonal] = {ui::kColorSysOnTonalContainer};
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};

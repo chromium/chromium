@@ -14,6 +14,7 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -78,18 +79,22 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       std::make_unique<views::Label>(PageInfoUI::PermissionTypeToUIString(type),
                                      views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  title_->SetEnabledColorId(kColorPageInfoForeground);
 
   state_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_SECONDARY));
+      views::style::STYLE_BODY_4));
+  state_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Add extra details as sublabel.
   std::u16string detail = ui_delegate_->GetPermissionDetail(type);
   if (!detail.empty()) {
     auto detail_label = std::make_unique<views::Label>(
-        detail, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+        detail, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
     detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    detail_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
     label_wrapper->AddChildView(std::move(detail_label));
   }
 
@@ -168,6 +173,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   subpage_manage_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
+  subpage_manage_button->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  subpage_manage_button->title()->SetEnabledColorId(kColorPageInfoForeground);
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 

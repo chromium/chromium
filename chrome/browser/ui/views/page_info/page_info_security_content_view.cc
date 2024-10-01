@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -145,6 +146,14 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     certificate_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
+    certificate_button_->title()->SetTextStyle(
+        views::style::STYLE_BODY_3_MEDIUM);
+    certificate_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
+    if (certificate_button_->subtitle()) {
+      certificate_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
+      certificate_button_->subtitle()->SetEnabledColorId(
+          kColorPageInfoSubtitleForeground);
+    }
   }
 
   if (identity_info.show_change_password_buttons) {

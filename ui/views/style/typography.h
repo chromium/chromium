@@ -157,6 +157,8 @@ enum TextStyle {
   STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_MEDIUM = STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_BOLD,
+  // The style used for links within blocks of STYLE_BODY_3 text.
+  STYLE_LINK_3,
   // The style used for links within blocks of STYLE_BODY_5 text.
   STYLE_LINK_5,
   STYLE_OVERRIDE_TYPOGRAPHY_END,
