@@ -36,6 +36,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
 ToastParams& ToastParams::operator=(ToastParams&& other) noexcept = default;
@@ -232,6 +236,18 @@ void ToastController::UpdateToastWidgetVisibility(bool show_toast_widget) {
   }
 }
 
+bool ToastController::ShouldRenderToastOverWebContents() {
+  bool render_in_contents =
+      browser_window_interface_->ShouldHideUIForFullscreen();
+
+#if BUILDFLAG(IS_MAC)
+  render_in_contents |=
+      fullscreen_utils::IsInContentFullscreen(browser_window_interface_);
+#endif
+
+  return render_in_contents;
+}
+
 void ToastController::WebContentsDestroyed() {
   omnibox_helper_observer_.Reset();
   Observe(nullptr);
@@ -274,13 +290,13 @@ void ToastController::CloseToast(toasts::ToastCloseReason reason) {
 
 void ToastController::CreateToast(const ToastParams& params,
                                   const ToastSpecification* spec) {
-  views::View* anchor_view = browser_window_interface_->TopContainer();
+  views::View* const anchor_view = browser_window_interface_->TopContainer();
   CHECK(anchor_view);
   auto toast_view = std::make_unique<toasts::ToastView>(
       anchor_view,
       FormatString(spec->body_string_id(),
                    params.body_string_replacement_params_),
-      spec->icon(), browser_window_interface_->ShouldHideUIForFullscreen(),
+      spec->icon(), ShouldRenderToastOverWebContents(),
       base::BindRepeating(&RecordToastDismissReason, params.toast_id_));
 
   if (spec->has_close_button()) {
@@ -335,7 +351,7 @@ std::u16string ToastController::FormatString(
 
 void ToastController::OnFullscreenStateChanged() {
   toast_view_->UpdateRenderToastOverWebContentsAndPaint(
-      browser_window_interface_->ShouldHideUIForFullscreen());
+      ShouldRenderToastOverWebContents());
 }
 
 void ToastController::ClearTabScopedToasts() {

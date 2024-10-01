@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -31,10 +33,12 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -447,4 +451,31 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
         histogram_tester.ExpectBucketCount("Toast.LinkCopied.Dismissed",
                                            toasts::ToastCloseReason::kAbort, 1);
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       ToastRendersOverWebContents) {
+#if BUILDFLAG(IS_MAC)
+  FullscreenController* const fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  fullscreen_controller->set_is_tab_fullscreen_for_testing(true);
+#else
+  ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+  content::WebContents* const active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  active_contents->GetDelegate()->EnterFullscreenModeForTab(
+      active_contents->GetPrimaryMainFrame(), {});
+  waiter.Wait();
+#endif
+
+  ToastController* const toast_controller = GetToastController();
+  EXPECT_TRUE(
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  const gfx::Rect toast_bounds =
+      toast_controller->GetToastViewForTesting()->GetBoundsInScreen();
+  const gfx::Rect web_view_bounds =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetContentsWebView()
+          ->GetBoundsInScreen();
+  EXPECT_TRUE(web_view_bounds.Contains(toast_bounds));
 }
