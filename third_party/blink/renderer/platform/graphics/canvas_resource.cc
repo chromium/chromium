@@ -532,16 +532,6 @@ bool CanvasResourceSharedImage::IsValid() const {
   return !!owning_thread_data_.client_shared_image;
 }
 
-void CanvasResourceSharedImage::BeginReadAccess() {
-  RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
-      GetTextureIdForReadAccess(), GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-}
-
-void CanvasResourceSharedImage::EndReadAccess() {
-  RasterInterface()->EndSharedImageAccessDirectCHROMIUM(
-      GetTextureIdForReadAccess());
-}
-
 void CanvasResourceSharedImage::BeginWriteAccess() {
   RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
       GetTextureIdForWriteAccess(),

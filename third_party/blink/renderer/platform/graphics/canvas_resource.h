@@ -336,8 +336,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void NotifyResourceLost() final;
-  void BeginReadAccess();
-  void EndReadAccess();
   void BeginWriteAccess();
   void EndWriteAccess();
   GrBackendTexture CreateGrTexture() const;
@@ -350,9 +348,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   }
 
   void WillDraw();
-  bool HasReadAccess() const {
-    return owning_thread_data().bitmap_image_read_refs > 0u;
-  }
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   bool UsesClientSharedImage() override { return true; }

@@ -551,47 +551,32 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       resource_ = NewOrRecycledResource();
       DCHECK(IsResourceUsable(resource_.get()));
 
-      auto* raster_interface = RasterInterface();
-      if (raster_interface) {
-        if (!use_oop_rasterization_)
-          TearDownSkSurface();
+      if (!use_oop_rasterization_) {
+        TearDownSkSurface();
+      }
 
-        if (mode_ == SkSurface::kRetain_ContentChangeMode) {
-          auto old_mailbox =
-              old_resource_shared_image->GetClientSharedImage()->mailbox();
-          auto mailbox = resource()->GetClientSharedImage()->mailbox();
+      if (mode_ == SkSurface::kRetain_ContentChangeMode) {
+        auto old_mailbox =
+            old_resource_shared_image->GetClientSharedImage()->mailbox();
+        auto mailbox = resource()->GetClientSharedImage()->mailbox();
 
-          raster_interface->CopySharedImage(
-              old_mailbox, mailbox,
-              resource()->GetClientSharedImage()->GetTextureTarget(), 0, 0, 0,
-              0, Size().width(), Size().height(), false /* unpack_flip_y */,
-              false /* unpack_premultiply_alpha */);
-        } else if (use_oop_rasterization_) {
-          // If we're not copying over the previous contents, we need to ensure
-          // that the image is cleared on the next BeginRasterCHROMIUM.
-          is_cleared_ = false;
-        }
+        RasterInterface()->CopySharedImage(
+            old_mailbox, mailbox,
+            resource()->GetClientSharedImage()->GetTextureTarget(), 0, 0, 0, 0,
+            Size().width(), Size().height(), false /* unpack_flip_y */,
+            false /* unpack_premultiply_alpha */);
+      } else if (use_oop_rasterization_) {
+        // If we're not copying over the previous contents, we need to ensure
+        // that the image is cleared on the next BeginRasterCHROMIUM.
+        is_cleared_ = false;
+      }
 
-        // In non-OOPR mode we need to update the client side SkSurface with the
-        // copied texture. Recreating SkSurface here matches the GPU process
-        // behaviour that will happen in OOPR mode.
-        if (!use_oop_rasterization_) {
-          EnsureWriteAccess();
-          GetSkSurface();
-        }
-      } else {
+      // In non-OOPR mode we need to update the client side SkSurface with the
+      // copied texture. Recreating SkSurface here matches the GPU process
+      // behaviour that will happen in OOPR mode.
+      if (!use_oop_rasterization_) {
         EnsureWriteAccess();
-        if (surface_) {
-          // Take read access to the outgoing resource for the skia copy below.
-          if (!old_resource_shared_image->HasReadAccess()) {
-            old_resource_shared_image->BeginReadAccess();
-          }
-          surface_->replaceBackendTexture(CreateGrTextureForResource(),
-                                          GetGrSurfaceOrigin(), mode_);
-          if (!old_resource_shared_image->HasReadAccess()) {
-            old_resource_shared_image->EndReadAccess();
-          }
-        }
+        GetSkSurface();
       }
       UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
                             mode_ == SkSurface::kRetain_ContentChangeMode);
