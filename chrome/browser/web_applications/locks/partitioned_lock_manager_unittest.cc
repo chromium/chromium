@@ -295,62 +295,30 @@ TEST_F(PartitionedLockManagerTest, PartitionsOperateSeparately) {
 }
 
 TEST_F(PartitionedLockManagerTest, AcquireOptionsEnsureAsync) {
-  {
-    base::RunLoop loop;
-    bool callback_ran = false;
+  base::RunLoop loop;
+  bool callback_ran = false;
 
-    PartitionedLockManager lock_manager;
-    PartitionedLockHolder lock_holder;
-    PartitionedLockId lock_id = {0, IntegerKey(0)};
+  PartitionedLockManager lock_manager;
+  PartitionedLockHolder lock_holder;
+  PartitionedLockId lock_id = {0, IntegerKey(0)};
 
-    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
-              lock_manager.TestLock(
-                  {lock_id, PartitionedLockManager::LockType::kShared}));
+  EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
+            lock_manager.TestLock(
+                {lock_id, PartitionedLockManager::LockType::kShared}));
 
-    PartitionedLockManager::AcquireOptions options{};
-    options.ensure_async = true;
+  lock_manager.AcquireLocks(
+      {{lock_id, PartitionedLockManager::LockType::kShared}},
+      lock_holder.AsWeakPtr(),
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* callback_ran) {
+            *callback_ran = true;
+            loop->Quit();
+          },
+          base::Unretained(&loop), base::Unretained(&callback_ran)));
+  EXPECT_FALSE(callback_ran);
 
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        lock_holder.AsWeakPtr(),
-        base::BindOnce(
-            [](base::RunLoop* loop, bool* callback_ran) {
-              *callback_ran = true;
-              loop->Quit();
-            },
-            base::Unretained(&loop), base::Unretained(&callback_ran)),
-        options);
-    EXPECT_FALSE(callback_ran);
-
-    loop.Run();
-    EXPECT_TRUE(callback_ran);
-  }
-  {
-    base::RunLoop loop;
-    bool callback_ran = false;
-
-    PartitionedLockManager lock_manager;
-    PartitionedLockHolder lock_holder;
-    PartitionedLockId lock_id = {0, IntegerKey(0)};
-
-    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
-              lock_manager.TestLock(
-                  {lock_id, PartitionedLockManager::LockType::kShared}));
-
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        lock_holder.AsWeakPtr(),
-        base::BindOnce(
-            [](base::RunLoop* loop, bool* callback_ran) {
-              *callback_ran = true;
-              loop->Quit();
-            },
-            base::Unretained(&loop), base::Unretained(&callback_ran)));
-    EXPECT_TRUE(callback_ran);
-
-    loop.Run();
-    EXPECT_TRUE(callback_ran);
-  }
+  loop.Run();
+  EXPECT_TRUE(callback_ran);
 }
 
 TEST_F(PartitionedLockManagerTest, Locations) {
@@ -367,27 +335,25 @@ TEST_F(PartitionedLockManagerTest, Locations) {
 
   PartitionedLockHolder holder1;
   PartitionedLockHolder holder2;
+  PartitionedLockHolder holder3;
   {
     base::test::TestFuture<void> lock_acquired;
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder1.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location1);
+        holder1.AsWeakPtr(), lock_acquired.GetCallback(), location1);
     ASSERT_TRUE(lock_acquired.Wait());
   }
   {
     base::test::TestFuture<void> lock_acquired;
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder2.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location2);
+        holder2.AsWeakPtr(), lock_acquired.GetCallback(), location2);
     ASSERT_TRUE(lock_acquired.Wait());
   }
   {
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kExclusive}},
-        holder2.AsWeakPtr(), base::DoNothing(),
-        PartitionedLockManager::AcquireOptions(), location3);
+        holder3.AsWeakPtr(), base::DoNothing(), location3);
   }
   std::vector<base::Location> held_locations =
       lock_manager.GetHeldAndQueuedLockLocations(
@@ -411,33 +377,77 @@ TEST_F(PartitionedLockManagerTest, DebugValueNoCrash) {
 
   PartitionedLockHolder holder1;
   PartitionedLockHolder holder2;
+  PartitionedLockHolder holder3;
   {
     base::test::TestFuture<void> lock_acquired;
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder1.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location1);
+        holder1.AsWeakPtr(), lock_acquired.GetCallback(), location1);
     ASSERT_TRUE(lock_acquired.Wait());
   }
   {
     base::test::TestFuture<void> lock_acquired;
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder2.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location2);
+        holder2.AsWeakPtr(), lock_acquired.GetCallback(), location2);
     ASSERT_TRUE(lock_acquired.Wait());
   }
   {
     lock_manager.AcquireLocks(
         {{lock_id, PartitionedLockManager::LockType::kExclusive}},
-        holder2.AsWeakPtr(), base::DoNothing(),
-        PartitionedLockManager::AcquireOptions(), location3);
+        holder3.AsWeakPtr(), base::DoNothing(), location3);
   }
   base::Value debug_value =
       lock_manager.ToDebugValue([](const PartitionedLockId& lock) {
         return base::StringPrintf("%i %s", lock.partition, lock.key.c_str());
       });
   EXPECT_TRUE(debug_value.is_dict());
+}
+
+TEST_F(PartitionedLockManagerTest, DeadlockPreventionWithOrdering) {
+  PartitionedLockManager lock_manager;
+
+  PartitionedLockHolder holder1;
+  PartitionedLockHolder holder2;
+
+  PartitionedLockId lock_a = {0, ""};
+  PartitionedLockId lock_b = {1, ""};
+
+  // Deadlock case that ordering prevents (where, when given multiple locks,
+  // locks are only requested after the previous one is granted):
+  // 1. Holder 1 requests A
+  // 2. Holder 2 requests A and B
+  // 3. Holder 1 requests B.
+  // Deadlock unless holder 2 didn't get B due to lack of A availability.
+
+  base::test::TestFuture<void> step_1;
+  lock_manager.AcquireLocks(
+      {PartitionedLockManager::PartitionedLockRequest(
+          lock_a, PartitionedLockManager::LockType::kExclusive)},
+      holder1.AsWeakPtr(), step_1.GetCallback());
+  EXPECT_TRUE(step_1.Wait());
+
+  base::test::TestFuture<void> step_2;
+  lock_manager.AcquireLocks(
+      {PartitionedLockManager::PartitionedLockRequest(
+           lock_a, PartitionedLockManager::LockType::kExclusive),
+       PartitionedLockManager::PartitionedLockRequest(
+           lock_b, PartitionedLockManager::LockType::kExclusive)},
+      holder2.AsWeakPtr(), step_2.GetCallback());
+
+  base::test::TestFuture<void> step_3;
+  lock_manager.AcquireLocks(
+      {PartitionedLockManager::PartitionedLockRequest(
+          lock_b, PartitionedLockManager::LockType::kExclusive)},
+      holder1.AsWeakPtr(), step_3.GetCallback());
+
+  // The 3rd step should complete before the 2nd step.
+  EXPECT_TRUE(step_3.Wait()) << "Step two status: " << step_2.IsReady();
+  EXPECT_FALSE(step_2.IsReady());
+
+  holder1.locks.clear();
+
+  EXPECT_TRUE(step_2.Wait());
 }
 
 }  // namespace
