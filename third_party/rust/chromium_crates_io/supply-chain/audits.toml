@@ -2074,6 +2074,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.20.0 -> 0.22.0"
 notes = "Changes for adding autohinting support. Crates forbids unsafe code."
 
+[[audits.skrifa]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.22.0 -> 0.22.1"
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

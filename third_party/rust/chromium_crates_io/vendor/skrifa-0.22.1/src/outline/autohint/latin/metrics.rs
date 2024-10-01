@@ -13,20 +13,21 @@ use super::super::{
         ScaledStyleMetrics, ScaledWidth, UnscaledAxisMetrics, UnscaledBlue, UnscaledStyleMetrics,
         WidthMetrics,
     },
+    shape::Shaper,
     style::{blue_flags, ScriptGroup, StyleClass},
 };
 use crate::{prelude::Size, MetadataProvider};
-use raw::{types::F2Dot14, FontRef};
+use raw::types::F2Dot14;
 
 /// Computes unscaled metrics for the Latin writing system.
 ///
 /// See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/aflatin.c#L1134>
 pub(crate) fn compute_unscaled_style_metrics(
-    font: &FontRef,
+    shaper: &Shaper,
     coords: &[F2Dot14],
     style: &StyleClass,
 ) -> UnscaledStyleMetrics {
-    let charmap = font.charmap();
+    let charmap = shaper.charmap();
     // We don't attempt to produce any metrics if we don't have a Unicode
     // cmap
     // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/aflatin.c#L1146>
@@ -46,9 +47,9 @@ pub(crate) fn compute_unscaled_style_metrics(
             ..Default::default()
         };
     }
-    let [hwidths, vwidths] = super::widths::compute_widths(font, coords, style.script);
-    let [hblues, vblues] = super::blues::compute_unscaled_blues(font, coords, style);
-    let glyph_metrics = font.glyph_metrics(Size::unscaled(), coords);
+    let [hwidths, vwidths] = super::widths::compute_widths(shaper, coords, style.script);
+    let [hblues, vblues] = super::blues::compute_unscaled_blues(shaper, coords, style);
+    let glyph_metrics = shaper.font().glyph_metrics(Size::unscaled(), coords);
     let mut digit_advance = None;
     let mut digits_have_same_width = true;
     for ch in '0'..='9' {
@@ -302,7 +303,10 @@ fn scale_cjk_axis_metrics(
 
 #[cfg(test)]
 mod tests {
-    use super::{super::super::style, *};
+    use super::{
+        super::super::{shape::ShaperMode, style},
+        *,
+    };
     use crate::attribute::Style;
     use raw::{FontRef, TableProvider};
 
@@ -380,7 +384,8 @@ mod tests {
     fn make_scaled_metrics(font_data: &[u8], style_class: usize) -> ScaledStyleMetrics {
         let font = FontRef::new(font_data).unwrap();
         let class = &style::STYLE_CLASSES[style_class];
-        let unscaled_metrics = compute_unscaled_style_metrics(&font, Default::default(), class);
+        let shaper = Shaper::new(&font, ShaperMode::Nominal);
+        let unscaled_metrics = compute_unscaled_style_metrics(&shaper, Default::default(), class);
         let scale = Scale::new(
             16.0,
             font.head().unwrap().units_per_em() as i32,

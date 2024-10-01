@@ -359,7 +359,12 @@ fn iup_interpolate(
 #[cfg(test)]
 mod tests {
     use super::{
-        super::{latin, metrics::Scale, style},
+        super::{
+            latin,
+            metrics::Scale,
+            shape::{Shaper, ShaperMode},
+            style,
+        },
         *,
     };
     use crate::{attribute::Style, MetadataProvider};
@@ -638,11 +643,12 @@ mod tests {
         gid: GlyphId,
         style: &style::StyleClass,
     ) -> (Outline, latin::HintedMetrics) {
+        let shaper = Shaper::new(font, ShaperMode::Nominal);
         let glyphs = font.outline_glyphs();
         let glyph = glyphs.get(gid).unwrap();
         let mut outline = Outline::default();
         outline.fill(&glyph, coords).unwrap();
-        let metrics = latin::compute_unscaled_style_metrics(font, coords, style);
+        let metrics = latin::compute_unscaled_style_metrics(&shaper, coords, style);
         let scale = Scale::new(
             size,
             font.head().unwrap().units_per_em() as i32,

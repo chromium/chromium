@@ -1,8 +1,8 @@
 //! Styles, scripts and glyph style mapping.
 
-use crate::{charmap::Charmap, GlyphId};
+use super::shape::ShaperCoverageKind;
 use alloc::vec::Vec;
-use raw::types::Tag;
+use raw::types::{GlyphId, Tag};
 
 /// Defines the script and style associated with a single glyph.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
@@ -16,11 +16,15 @@ impl GlyphStyle {
     // information differently.
     const STYLE_INDEX_MASK: u16 = 0xFF;
     const UNASSIGNED: u16 = Self::STYLE_INDEX_MASK;
+    // A non-base character, perhaps more commonly referred to as a "mark"
     const NON_BASE: u16 = 0x100;
     const DIGIT: u16 = 0x200;
+    // Used as intermediate state to mark when a glyph appears as GSUB output
+    // for a given script
+    const FROM_GSUB_OUTPUT: u16 = 0x8000;
 
     pub const fn is_unassigned(self) -> bool {
-        self.0 == Self::UNASSIGNED
+        self.0 & Self::STYLE_INDEX_MASK == Self::UNASSIGNED
     }
 
     pub const fn is_non_base(self) -> bool {
@@ -58,6 +62,31 @@ impl GlyphStyle {
             self.0 = (self.0 & !Self::STYLE_INDEX_MASK) | other.0;
         }
     }
+
+    pub(super) fn set_from_gsub_output(&mut self) {
+        self.0 |= Self::FROM_GSUB_OUTPUT
+    }
+
+    pub(super) fn clear_from_gsub(&mut self) {
+        self.0 &= !Self::FROM_GSUB_OUTPUT;
+    }
+
+    /// Assign a style if we've been marked as GSUB output _and_ the
+    /// we don't currently have an assigned style.
+    ///
+    /// This also clears the GSUB output bit.
+    ///
+    /// Returns `true` if this style was applied.
+    pub(super) fn maybe_assign_gsub_output_style(&mut self, style: &StyleClass) -> bool {
+        let style_ix = style.index as u16;
+        if self.0 & Self::FROM_GSUB_OUTPUT != 0 && self.is_unassigned() {
+            self.clear_from_gsub();
+            self.0 = (self.0 & !Self::STYLE_INDEX_MASK) | style_ix;
+            true
+        } else {
+            false
+        }
+    }
 }
 
 impl Default for GlyphStyle {
@@ -65,6 +94,9 @@ impl Default for GlyphStyle {
         Self(Self::UNASSIGNED)
     }
 }
+
+/// Sentinel for unused styles in [`GlyphStyleMap::metrics_map`].
+const UNMAPPED_STYLE: u8 = 0xFF;
 
 /// Maps glyph identifiers to glyph styles.
 ///
@@ -88,19 +120,26 @@ impl GlyphStyleMap {
     /// map.
     ///
     /// Roughly based on <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L126>
-    pub fn new(glyph_count: u32, charmap: &Charmap) -> Self {
+    pub fn new(glyph_count: u32, shaper: &Shaper) -> Self {
         let mut map = Self {
             styles: vec![GlyphStyle::default(); glyph_count as usize],
-            metrics_map: [0xFF; MAX_STYLES],
+            metrics_map: [UNMAPPED_STYLE; MAX_STYLES],
             metrics_count: 0,
         };
-        // TODO: Step 1: compute styles for glyphs covered by OpenType features
-        // --
+        // Step 1: compute styles for glyphs covered by OpenType features
+        // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L233>
+        for style in super::style::STYLE_CLASSES {
+            if style.feature.is_some()
+                && shaper.compute_coverage(style, ShaperCoverageKind::Script, &mut map.styles)
+            {
+                map.use_style(style.index);
+            }
+        }
         // Step 2: compute styles for glyphs contained in the cmap
         // cmap entries are sorted so we keep track of the most recent range to
         // avoid a binary search per character
         let mut last_range: Option<(usize, StyleRange)> = None;
-        for (ch, gid) in charmap.mappings() {
+        for (ch, gid) in shaper.charmap().mappings() {
             let Some(style) = map.styles.get_mut(gid.to_u32() as usize) else {
                 continue;
             };
@@ -122,19 +161,27 @@ impl GlyphStyleMap {
             if range.contains(ch) {
                 style.maybe_assign(range.style);
                 if let Some(style_ix) = range.style.style_index() {
-                    let style_ix = style_ix as usize;
-                    if map.metrics_map[style_ix] == 0xFF {
-                        // This the first time we've seen this style so record
-                        // it in the metrics map
-                        map.metrics_map[style_ix] = map.metrics_count;
-                        map.metrics_count += 1;
-                    }
+                    map.use_style(style_ix as usize);
                 }
                 last_range = Some((ix, range));
             }
         }
-        // TODO: Step 3: compute script based coverage
-        // --
+        // Step 3a: compute script based coverage
+        // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L239>
+        for style in super::style::STYLE_CLASSES {
+            if style.feature.is_none()
+                && shaper.compute_coverage(style, ShaperCoverageKind::Script, &mut map.styles)
+            {
+                map.use_style(style.index);
+            }
+        }
+        // Step 3b: compute coverage for "default" script which is always set
+        // to Latin in FreeType
+        // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L248>
+        let default_style = &STYLE_CLASSES[StyleClass::LATN];
+        if shaper.compute_coverage(default_style, ShaperCoverageKind::Default, &mut map.styles) {
+            map.use_style(default_style.index);
+        }
         // Step 4: Assign a default to all remaining glyphs
         // For some reason, FreeType uses Hani as a default fallback style so
         // let's do the same.
@@ -148,11 +195,7 @@ impl GlyphStyleMap {
             }
         }
         if need_hani {
-            let mapped_ix = &mut map.metrics_map[StyleClass::HANI];
-            if *mapped_ix == 0xFF {
-                map.metrics_map[StyleClass::HANI] = map.metrics_count;
-                map.metrics_count += 1;
-            }
+            map.use_style(StyleClass::HANI);
         }
         map
     }
@@ -165,7 +208,7 @@ impl GlyphStyleMap {
     pub fn metrics_index(&self, style: GlyphStyle) -> Option<usize> {
         let ix = style.style_index()? as usize;
         let metrics_ix = *self.metrics_map.get(ix)? as usize;
-        if metrics_ix != 0xFF {
+        if metrics_ix != UNMAPPED_STYLE as usize {
             Some(metrics_ix)
         } else {
             None
@@ -181,9 +224,9 @@ impl GlyphStyleMap {
     /// this map.
     pub fn metrics_styles(&self) -> impl Iterator<Item = &'static StyleClass> + '_ {
         // Need to build a reverse map so that these are properly ordered
-        let mut reverse_map = [0xFF; MAX_STYLES];
+        let mut reverse_map = [UNMAPPED_STYLE; MAX_STYLES];
         for (ix, &entry) in self.metrics_map.iter().enumerate() {
-            if entry != 0xFF {
+            if entry != UNMAPPED_STYLE {
                 reverse_map[entry as usize] = ix as u8;
             }
         }
@@ -191,12 +234,22 @@ impl GlyphStyleMap {
             .into_iter()
             .enumerate()
             .filter_map(move |(mapped, style_ix)| {
-                if mapped == 0xFF {
+                if mapped == UNMAPPED_STYLE as usize {
                     None
                 } else {
                     STYLE_CLASSES.get(style_ix as usize)
                 }
             })
+    }
+
+    fn use_style(&mut self, style_ix: usize) {
+        let mapped = &mut self.metrics_map[style_ix];
+        if *mapped == UNMAPPED_STYLE {
+            // This the first time we've seen this style so record
+            // it in the metrics map
+            *mapped = self.metrics_count;
+            self.metrics_count += 1;
+        }
     }
 }
 
@@ -204,7 +257,7 @@ impl Default for GlyphStyleMap {
     fn default() -> Self {
         Self {
             styles: Default::default(),
-            metrics_map: [0xFF; MAX_STYLES],
+            metrics_map: [UNMAPPED_STYLE; MAX_STYLES],
             metrics_count: 0,
         }
     }
@@ -320,20 +373,20 @@ const MAX_STYLES: usize = STYLE_CLASSES.len();
 
 use blue_flags::*;
 
+use super::shape::Shaper;
+
 include!("../../../generated/generated_autohint_styles.rs");
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{raw::TableProvider, FontRef, MetadataProvider};
+    use super::{super::shape::ShaperMode, *};
+    use crate::{raw::TableProvider, FontRef};
 
     #[test]
     fn glyph_styles() {
-        let font = FontRef::new(font_test_data::AUTOHINT_CMAP).unwrap();
-        let num_glyphs = font.maxp().unwrap().num_glyphs() as u32;
-        let style_map = GlyphStyleMap::new(num_glyphs, &font.charmap());
         // generated by printf debugging in FreeType
-        // (gid, Option<(script_name, is_non_base)>)
+        // (gid, Option<(script_name, is_non_base_char)>)
+        // where "is_non_base_char" more common means "is_mark"
         let expected = &[
             (0, Some(("CJKV ideographs", false))),
             (1, Some(("Latin", true))),
@@ -434,13 +487,47 @@ mod tests {
             (96, Some(("Adlam", true))),
             (97, Some(("Adlam", false))),
         ];
+        check_styles(font_test_data::AUTOHINT_CMAP, ShaperMode::Nominal, expected);
+    }
+
+    #[test]
+    fn shaped_glyph_styles() {
+        // generated by printf debugging in FreeType
+        // (gid, Option<(script_name, is_non_base_char)>)
+        // where "is_non_base_char" more common means "is_mark"
+        let expected = &[
+            (0, Some(("CJKV ideographs", false))),
+            (1, Some(("Latin", false))),
+            (2, Some(("Latin", false))),
+            (3, Some(("Latin", false))),
+            (4, Some(("Latin", false))),
+            // Note: ligatures starting with 'f' are assigned the Cyrillic
+            // script which matches FreeType
+            (5, Some(("Cyrillic", false))),
+            (6, Some(("Cyrillic", false))),
+            (7, Some(("Cyrillic", false))),
+            // Capture the Latin c2sc feature
+            (8, Some(("Latin small capitals from capitals", false))),
+        ];
+        check_styles(
+            font_test_data::NOTOSERIF_AUTOHINT_SHAPING,
+            ShaperMode::BestEffort,
+            expected,
+        );
+    }
+
+    fn check_styles(font_data: &[u8], mode: ShaperMode, expected: &[(u32, Option<(&str, bool)>)]) {
+        let font = FontRef::new(font_data).unwrap();
+        let shaper = Shaper::new(&font, mode);
+        let num_glyphs = font.maxp().unwrap().num_glyphs() as u32;
+        let style_map = GlyphStyleMap::new(num_glyphs, &shaper);
         let results = style_map
             .styles
             .iter()
             .enumerate()
             .map(|(gid, style)| {
                 (
-                    gid as i32,
+                    gid as u32,
                     style
                         .style_class()
                         .map(|style_class| (style_class.name, style.is_non_base())),

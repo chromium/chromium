@@ -808,6 +808,7 @@ mod tests {
             latin,
             metrics::{self},
             outline::Outline,
+            shape::{Shaper, ShaperMode},
             style,
         },
         *,
@@ -879,9 +880,10 @@ mod tests {
         expected_v_edges: &[(i32, u8)],
     ) {
         let font = FontRef::new(font_data).unwrap();
+        let shaper = Shaper::new(&font, ShaperMode::Nominal);
         let class = &style::STYLE_CLASSES[class];
         let unscaled_metrics =
-            latin::metrics::compute_unscaled_style_metrics(&font, Default::default(), class);
+            latin::metrics::compute_unscaled_style_metrics(&shaper, Default::default(), class);
         let scale = metrics::Scale::new(
             16.0,
             font.head().unwrap().units_per_em() as i32,

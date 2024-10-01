@@ -24,6 +24,8 @@ use read_fonts::collections::IntSet;
 
 use crate::charmap::Charmap;
 
+// TODO(garretrieger): implement support for building and compiling mapping tables.
+
 /// Find the set of patches which intersect the specified subset definition.
 pub fn intersecting_patches(
     font: &FontRef,
@@ -328,7 +330,6 @@ fn decode_format2_entry<'a>(
     if let Some(design_space_segments) = entry_data.design_space_segments() {
         for dss in design_space_segments {
             if dss.start() > dss.end() {
-                // TODO(garretrieger): ensure spec has language enforcing this.
                 return Err(ReadError::MalformedData(
                     "Design space segment start > end.",
                 ));
@@ -426,6 +427,7 @@ fn compute_format2_new_entry_index(
             .entry_id_delta()
             .map(|v| v.into_inner() as i64)
             .unwrap_or(0);
+
     if new_index.is_negative() {
         return Err(ReadError::MalformedData("Negative entry id encountered."));
     }
@@ -463,9 +465,6 @@ fn decode_format2_codepoints<'a>(
         return Err(ReadError::MalformedData("Codepoints data is too short."));
     };
 
-    // TODO(garretrieger): the spec doesn't currently enforce a maximum set size, but here we are
-    // disallowing sets with more members then the unicode max value. The spec should be updated to
-    // provide a reasonable maximum set size.
     let (set, remaining_data) =
         IntSet::<u32>::from_sparse_bit_set_bounded(codepoint_data.as_bytes(), bias, 0x10FFFF)
             .map_err(|_| {
@@ -654,6 +653,7 @@ mod tests {
         codepoints_only_format2, copy_indices_format2, custom_ids_format2, feature_map_format1,
         features_and_design_space_format2, simple_format1, string_ids_format2, u16_entries_format1,
     };
+    use raw::types::Int24;
     use read_fonts::tables::ift::{IFTX_TAG, IFT_TAG};
     use read_fonts::FontRef;
     use write_fonts::FontBuilder;
@@ -1096,8 +1096,9 @@ mod tests {
         test_intersection(&font, [0x02], [], [1]);
         test_intersection(&font, [0x15], [], [3]);
         test_intersection(&font, [0x07], [], [1, 3]);
+        test_intersection(&font, [80_007], [], [4]);
 
-        test_intersection_with_all(&font, [], [1, 3]);
+        test_intersection_with_all(&font, [], [1, 3, 4]);
     }
 
     #[test]
@@ -1177,7 +1178,7 @@ mod tests {
         let font = FontRef::new(&font_bytes).unwrap();
 
         test_intersection(&font, [], [], []);
-        test_intersection(&font, [0x05], [], [1, 5, 9]);
+        test_intersection(&font, [0x05], [], [5, 9]);
         test_intersection(&font, [0x65], [], [9]);
 
         test_design_space_intersection(
@@ -1193,7 +1194,7 @@ mod tests {
             [0x05],
             [Tag::new(b"rlig")],
             [(Tag::new(b"wght"), vec![500.0..=500.0])],
-            [1, 3, 5, 6, 7, 8, 9],
+            [3, 5, 6, 7, 8, 9],
         );
     }
 
@@ -1239,7 +1240,7 @@ mod tests {
     }
 
     #[test]
-    fn format_2_id_strings() {
+    fn format_2_patch_map_id_strings() {
         let font_bytes = create_ift_font(
             FontRef::new(test_data::ift::IFT_BASE).unwrap(),
             Some(&string_ids_format2()),
@@ -1265,7 +1266,7 @@ mod tests {
     }
 
     #[test]
-    fn format_2_id_strings_too_short() {
+    fn format_2_patch_map_id_strings_too_short() {
         let mut data = string_ids_format2();
         data.write_at("entry[4] id length", 4u16);
 
@@ -1283,13 +1284,134 @@ mod tests {
         .is_err());
     }
 
-    // TODO(garretrieger): test decoding of other entry features for format 2
-    // - invalid cases: add once spec has been updated with validation requirements.
-    //   - start < end for ds segments
-    //   - sparse bit set to short
-    //   - negative entry indices
-    //   - too large entry indices
-    // - 24 bit bias.
-    // - no codepoints
-    // - ignored entries can still be copied
+    #[test]
+    fn format_2_patch_map_invalid_design_space() {
+        let mut data = features_and_design_space_format2();
+        data.write_at("wdth start", 0x20000u32);
+
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn format_2_patch_map_invalid_sparse_bit_set() {
+        let data = codepoints_only_format2();
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data[..(data.len() - 1)]),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn format_2_patch_map_negative_entry_id() {
+        let mut data = custom_ids_format2();
+        data.write_at("id delta", Int24::new(-2));
+
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn format_2_patch_map_negative_entry_id_on_ignored() {
+        let mut data = custom_ids_format2();
+        data.write_at("id delta - ignored entry", Int24::new(-20));
+
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn format_2_patch_map_entry_id_overflow() {
+        let count = 511;
+        let mut data = custom_ids_format2();
+        data.write_at("entry_count", Uint24::new(count + 5));
+
+        for _ in 0..count {
+            data = data
+                .push(0b01000100u8) // format = ID_DELTA | IGNORED
+                .push(Int24::new(0x7FFFFF)); // delta = max(i24)
+        }
+
+        // at this point the second last entry id is:
+        // 15 +                   # last entry id from the first 4 entries
+        // count * (0x7FFFFF + 1) # sum of added deltas
+        //
+        // So the max delta without overflow on the last entry is:
+        //
+        // u32::MAX - second last entry id - 1
+        //
+        // The -1 is needed because the last entry implicitly includes a + 1
+        let max_delta_without_overflow = (u32::MAX - ((15 + count * (0x7FFFFF + 1)) + 1)) as i32;
+        data = data
+            .push(0b01000100u8) // format = ID_DELTA | IGNORED
+            .push_with_tag(Int24::new(max_delta_without_overflow), "last delta"); // delta
+
+        // Check one less than max doesn't overflow
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_ok());
+
+        // Check one more does overflow
+        data.write_at("last delta", Int24::new(max_delta_without_overflow + 1));
+
+        let font_bytes = create_ift_font(
+            FontRef::new(test_data::ift::IFT_BASE).unwrap(),
+            Some(&data),
+            None,
+        );
+        let font = FontRef::new(&font_bytes).unwrap();
+
+        assert!(intersecting_patches(
+            &font,
+            &SubsetDefinition::new(IntSet::all(), BTreeSet::new(), HashMap::new()),
+        )
+        .is_err());
+    }
 }

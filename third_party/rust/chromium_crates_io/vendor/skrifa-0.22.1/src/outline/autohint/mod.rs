@@ -7,6 +7,7 @@ mod instance;
 mod latin;
 mod metrics;
 mod outline;
+mod shape;
 mod style;
 
 pub use instance::GlyphStyles;

@@ -1350,11 +1350,12 @@ def generate() -> str:
             group = "Cjk"
         elif tag in INDIC_GROUP:
             group = "Indic"
+        unicode_tag = tag.lower().capitalize()
         has_features = tag in SCRIPTS_WITH_FEATURES
         buf += "    ScriptClass {\n"
         buf += "        name: \"{}\",\n".format(script["name"])
         buf += "        group: ScriptGroup::{},\n".format(group)
-        buf += "        tag: Tag::new(b\"{}\"),\n".format(tag)
+        buf += "        tag: Tag::new(b\"{}\"),\n".format(unicode_tag)
         buf += "        hint_top_to_bottom: {},\n".format(str(script["hint_top_to_bottom"]).lower())
         # standard characters
         buf += "        std_chars: \"{}\",\n".format(script["std_chars"])

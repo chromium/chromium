@@ -9,12 +9,21 @@ use super::{
     },
     metrics::{fixed_mul, pix_round, Scale, UnscaledStyleMetricsSet},
     outline::Outline,
+    shape::{Shaper, ShaperMode},
     style::GlyphStyleMap,
 };
 use alloc::sync::Arc;
 use raw::{
     types::{F26Dot6, F2Dot14},
     FontRef, TableProvider,
+};
+
+/// We enable "best effort" mode by default but allow it to be disabled with
+/// a feature for testing.
+const SHAPER_MODE: ShaperMode = if cfg!(feature = "autohint_shaping") {
+    ShaperMode::BestEffort
+} else {
+    ShaperMode::Nominal
 };
 
 /// Set of derived glyph styles that are used for automatic hinting.
@@ -33,10 +42,8 @@ impl GlyphStyles {
                 .maxp()
                 .map(|maxp| maxp.num_glyphs() as u32)
                 .unwrap_or_default();
-            Self(Arc::new(GlyphStyleMap::new(
-                glyph_count,
-                &outlines.font.charmap(),
-            )))
+            let shaper = Shaper::new(&outlines.font, SHAPER_MODE);
+            Self(Arc::new(GlyphStyleMap::new(glyph_count, &shaper)))
         } else {
             Self(Default::default())
         }
@@ -66,10 +73,10 @@ impl Instance {
         let metrics = if lazy_metrics {
             UnscaledStyleMetricsSet::lazy(&styles.0)
         } else {
-            UnscaledStyleMetricsSet::precomputed(font, coords, &styles.0)
+            UnscaledStyleMetricsSet::precomputed(font, coords, SHAPER_MODE, &styles.0)
         };
         #[cfg(not(feature = "std"))]
-        let metrics = UnscaledStyleMetricsSet::precomputed(font, coords, &styles.0);
+        let metrics = UnscaledStyleMetricsSet::precomputed(font, coords, SHAPER_MODE, &styles.0);
         let is_fixed_width = font
             .post()
             .map(|post| post.is_fixed_pitch() != 0)
@@ -101,7 +108,7 @@ impl Instance {
             .ok_or(DrawError::GlyphNotFound(glyph_id))?;
         let metrics = self
             .metrics
-            .get(&common.font, coords, &self.styles.0, glyph_id)
+            .get(&common.font, coords, SHAPER_MODE, &self.styles.0, glyph_id)
             .ok_or(DrawError::GlyphNotFound(glyph_id))?;
         let units_per_em = glyph.units_per_em() as i32;
         let scale = Scale::new(

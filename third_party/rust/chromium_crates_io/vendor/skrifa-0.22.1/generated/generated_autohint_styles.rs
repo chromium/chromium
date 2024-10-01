@@ -7,7 +7,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Adlam",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ADLM"),
+        tag: Tag::new(b"Adlm"),
         hint_top_to_bottom: false,
         std_chars: "𞤌 𞤮",
         blues: &[
@@ -20,7 +20,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Arabic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ARAB"),
+        tag: Tag::new(b"Arab"),
         hint_top_to_bottom: false,
         std_chars: "ل ح ـ",
         blues: &[
@@ -32,7 +32,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Armenian",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ARMN"),
+        tag: Tag::new(b"Armn"),
         hint_top_to_bottom: false,
         std_chars: "ս Ս",
         blues: &[
@@ -47,7 +47,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Avestan",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"AVST"),
+        tag: Tag::new(b"Avst"),
         hint_top_to_bottom: false,
         std_chars: "𐬚",
         blues: &[
@@ -58,7 +58,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Bamum",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"BAMU"),
+        tag: Tag::new(b"Bamu"),
         hint_top_to_bottom: false,
         std_chars: "ꛁ ꛯ",
         blues: &[
@@ -69,7 +69,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Bengali",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"BENG"),
+        tag: Tag::new(b"Beng"),
         hint_top_to_bottom: true,
         std_chars: "০ ৪",
         blues: &[
@@ -82,7 +82,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Buhid",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"BUHD"),
+        tag: Tag::new(b"Buhd"),
         hint_top_to_bottom: false,
         std_chars: "ᝋ ᝏ",
         blues: &[
@@ -95,7 +95,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Chakma",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CAKM"),
+        tag: Tag::new(b"Cakm"),
         hint_top_to_bottom: false,
         std_chars: "𑄤 𑄉 𑄛",
         blues: &[
@@ -107,7 +107,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Canadian Syllabics",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CANS"),
+        tag: Tag::new(b"Cans"),
         hint_top_to_bottom: false,
         std_chars: "ᑌ ᓚ",
         blues: &[
@@ -122,7 +122,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Carian",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CARI"),
+        tag: Tag::new(b"Cari"),
         hint_top_to_bottom: false,
         std_chars: "𐊫 𐋉",
         blues: &[
@@ -133,7 +133,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Cherokee",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CHER"),
+        tag: Tag::new(b"Cher"),
         hint_top_to_bottom: false,
         std_chars: "Ꭴ Ꮕ ꮕ",
         blues: &[
@@ -148,7 +148,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Coptic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"COPT"),
+        tag: Tag::new(b"Copt"),
         hint_top_to_bottom: false,
         std_chars: "Ⲟ ⲟ",
         blues: &[
@@ -161,7 +161,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Cypriot",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CPRT"),
+        tag: Tag::new(b"Cprt"),
         hint_top_to_bottom: false,
         std_chars: "𐠅 𐠣",
         blues: &[
@@ -174,7 +174,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Cyrillic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"CYRL"),
+        tag: Tag::new(b"Cyrl"),
         hint_top_to_bottom: false,
         std_chars: "о О",
         blues: &[
@@ -188,7 +188,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Devanagari",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"DEVA"),
+        tag: Tag::new(b"Deva"),
         hint_top_to_bottom: true,
         std_chars: "ठ व ट",
         blues: &[
@@ -202,7 +202,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Deseret",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"DSRT"),
+        tag: Tag::new(b"Dsrt"),
         hint_top_to_bottom: false,
         std_chars: "𐐄 𐐬",
         blues: &[
@@ -215,7 +215,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Ethiopic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ETHI"),
+        tag: Tag::new(b"Ethi"),
         hint_top_to_bottom: false,
         std_chars: "ዐ",
         blues: &[
@@ -226,7 +226,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Georgian (Mkhedruli)",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GEOR"),
+        tag: Tag::new(b"Geor"),
         hint_top_to_bottom: false,
         std_chars: "ი ე ა Ჿ",
         blues: &[
@@ -241,7 +241,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Georgian (Khutsuri)",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GEOK"),
+        tag: Tag::new(b"Geok"),
         hint_top_to_bottom: false,
         std_chars: "Ⴖ Ⴑ ⴙ",
         blues: &[
@@ -256,7 +256,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Glagolitic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GLAG"),
+        tag: Tag::new(b"Glag"),
         hint_top_to_bottom: false,
         std_chars: "Ⱅ ⱅ",
         blues: &[
@@ -269,7 +269,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Gothic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GOTH"),
+        tag: Tag::new(b"Goth"),
         hint_top_to_bottom: true,
         std_chars: "𐌴 𐌾 𐍃",
         blues: &[
@@ -280,7 +280,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Greek",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GREK"),
+        tag: Tag::new(b"Grek"),
         hint_top_to_bottom: false,
         std_chars: "ο Ο",
         blues: &[
@@ -295,7 +295,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Gujarati",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GUJR"),
+        tag: Tag::new(b"Gujr"),
         hint_top_to_bottom: false,
         std_chars: "ટ ૦",
         blues: &[
@@ -309,7 +309,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Gurmukhi",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"GURU"),
+        tag: Tag::new(b"Guru"),
         hint_top_to_bottom: true,
         std_chars: "ਠ ਰ ੦",
         blues: &[
@@ -323,7 +323,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Hebrew",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"HEBR"),
+        tag: Tag::new(b"Hebr"),
         hint_top_to_bottom: false,
         std_chars: "ם",
         blues: &[
@@ -335,7 +335,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Kayah Li",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"KALI"),
+        tag: Tag::new(b"Kali"),
         hint_top_to_bottom: false,
         std_chars: "ꤍ ꤀",
         blues: &[
@@ -349,7 +349,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Khmer",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"KHMR"),
+        tag: Tag::new(b"Khmr"),
         hint_top_to_bottom: false,
         std_chars: "០",
         blues: &[
@@ -363,7 +363,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Khmer Symbols",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"KHMS"),
+        tag: Tag::new(b"Khms"),
         hint_top_to_bottom: false,
         std_chars: "᧡ ᧪",
         blues: &[
@@ -374,7 +374,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Kannada",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"KNDA"),
+        tag: Tag::new(b"Knda"),
         hint_top_to_bottom: false,
         std_chars: "೦ ಬ",
         blues: &[
@@ -385,7 +385,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Lao",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"LAOO"),
+        tag: Tag::new(b"Laoo"),
         hint_top_to_bottom: false,
         std_chars: "໐",
         blues: &[
@@ -399,7 +399,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Latin",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"LATN"),
+        tag: Tag::new(b"Latn"),
         hint_top_to_bottom: false,
         std_chars: "o O 0",
         blues: &[
@@ -414,7 +414,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Latin Subscript Fallback",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"LATB"),
+        tag: Tag::new(b"Latb"),
         hint_top_to_bottom: false,
         std_chars: "ₒ ₀",
         blues: &[
@@ -429,7 +429,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Latin Superscript Fallback",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"LATP"),
+        tag: Tag::new(b"Latp"),
         hint_top_to_bottom: false,
         std_chars: "ᵒ ᴼ ⁰",
         blues: &[
@@ -444,7 +444,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Lisu",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"LISU"),
+        tag: Tag::new(b"Lisu"),
         hint_top_to_bottom: false,
         std_chars: "ꓳ",
         blues: &[
@@ -455,7 +455,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Malayalam",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"MLYM"),
+        tag: Tag::new(b"Mlym"),
         hint_top_to_bottom: false,
         std_chars: "ഠ റ",
         blues: &[
@@ -466,7 +466,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Medefaidrin",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"MEDF"),
+        tag: Tag::new(b"Medf"),
         hint_top_to_bottom: false,
         std_chars: "𖹡 𖹛 𖹯",
         blues: &[
@@ -482,7 +482,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Mongolian",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"MONG"),
+        tag: Tag::new(b"Mong"),
         hint_top_to_bottom: true,
         std_chars: "ᡂ ᠪ",
         blues: &[
@@ -493,7 +493,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Myanmar",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"MYMR"),
+        tag: Tag::new(b"Mymr"),
         hint_top_to_bottom: false,
         std_chars: "ဝ င ဂ",
         blues: &[
@@ -506,7 +506,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "N'Ko",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"NKOO"),
+        tag: Tag::new(b"Nkoo"),
         hint_top_to_bottom: false,
         std_chars: "ߋ ߀",
         blues: &[
@@ -519,7 +519,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "no script",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"NONE"),
+        tag: Tag::new(b"None"),
         hint_top_to_bottom: false,
         std_chars: "",
         blues: &[],
@@ -527,7 +527,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Ol Chiki",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"OLCK"),
+        tag: Tag::new(b"Olck"),
         hint_top_to_bottom: false,
         std_chars: "ᱛ",
         blues: &[
@@ -538,7 +538,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Old Turkic",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ORKH"),
+        tag: Tag::new(b"Orkh"),
         hint_top_to_bottom: false,
         std_chars: "𐰗",
         blues: &[
@@ -549,7 +549,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Osage",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"OSGE"),
+        tag: Tag::new(b"Osge"),
         hint_top_to_bottom: false,
         std_chars: "𐓂 𐓪",
         blues: &[
@@ -565,7 +565,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Osmanya",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"OSMA"),
+        tag: Tag::new(b"Osma"),
         hint_top_to_bottom: false,
         std_chars: "𐒆 𐒠",
         blues: &[
@@ -576,7 +576,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Hanifi Rohingya",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"ROHG"),
+        tag: Tag::new(b"Rohg"),
         hint_top_to_bottom: false,
         std_chars: "𐴰",
         blues: &[
@@ -588,7 +588,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Saurashtra",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"SAUR"),
+        tag: Tag::new(b"Saur"),
         hint_top_to_bottom: false,
         std_chars: "ꢝ ꣐",
         blues: &[
@@ -599,7 +599,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Shavian",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"SHAW"),
+        tag: Tag::new(b"Shaw"),
         hint_top_to_bottom: false,
         std_chars: "𐑴",
         blues: &[
@@ -613,7 +613,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Sinhala",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"SINH"),
+        tag: Tag::new(b"Sinh"),
         hint_top_to_bottom: false,
         std_chars: "ට",
         blues: &[
@@ -625,7 +625,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Sundanese",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"SUND"),
+        tag: Tag::new(b"Sund"),
         hint_top_to_bottom: false,
         std_chars: "᮰",
         blues: &[
@@ -637,7 +637,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Tamil",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"TAML"),
+        tag: Tag::new(b"Taml"),
         hint_top_to_bottom: false,
         std_chars: "௦",
         blues: &[
@@ -648,7 +648,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Tai Viet",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"TAVT"),
+        tag: Tag::new(b"Tavt"),
         hint_top_to_bottom: false,
         std_chars: "ꪒ ꪫ",
         blues: &[
@@ -659,7 +659,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Telugu",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"TELU"),
+        tag: Tag::new(b"Telu"),
         hint_top_to_bottom: false,
         std_chars: "౦ ౧",
         blues: &[
@@ -670,7 +670,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Tifinagh",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"TFNG"),
+        tag: Tag::new(b"Tfng"),
         hint_top_to_bottom: false,
         std_chars: "ⵔ",
         blues: &[
@@ -681,7 +681,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Thai",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"THAI"),
+        tag: Tag::new(b"Thai"),
         hint_top_to_bottom: false,
         std_chars: "า ๅ ๐",
         blues: &[
@@ -697,7 +697,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Vai",
         group: ScriptGroup::Default,
-        tag: Tag::new(b"VAII"),
+        tag: Tag::new(b"Vaii"),
         hint_top_to_bottom: false,
         std_chars: "ꘓ ꖜ ꖴ",
         blues: &[
@@ -708,7 +708,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Limbu",
         group: ScriptGroup::Indic,
-        tag: Tag::new(b"LIMB"),
+        tag: Tag::new(b"Limb"),
         hint_top_to_bottom: false,
         std_chars: "o",
         blues: &[],
@@ -716,7 +716,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Oriya",
         group: ScriptGroup::Indic,
-        tag: Tag::new(b"ORYA"),
+        tag: Tag::new(b"Orya"),
         hint_top_to_bottom: false,
         std_chars: "o",
         blues: &[],
@@ -724,7 +724,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Syloti Nagri",
         group: ScriptGroup::Indic,
-        tag: Tag::new(b"SYLO"),
+        tag: Tag::new(b"Sylo"),
         hint_top_to_bottom: false,
         std_chars: "o",
         blues: &[],
@@ -732,7 +732,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "Tibetan",
         group: ScriptGroup::Indic,
-        tag: Tag::new(b"TIBT"),
+        tag: Tag::new(b"Tibt"),
         hint_top_to_bottom: false,
         std_chars: "o",
         blues: &[],
@@ -740,7 +740,7 @@ pub(super) const SCRIPT_CLASSES: &[ScriptClass] = &[
     ScriptClass {
         name: "CJKV ideographs",
         group: ScriptGroup::Cjk,
-        tag: Tag::new(b"HANI"),
+        tag: Tag::new(b"Hani"),
         hint_top_to_bottom: false,
         std_chars: "田 囗",
         blues: &[

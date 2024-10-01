@@ -1,6 +1,6 @@
 [package]
 name = "skrifa"
-version = "0.22.0"
+version = "0.22.1"
 description = "Metadata reader and glyph scaler for OpenType fonts."
 readme = "README.md"
 categories = ["text-processing", "parsing", "graphics"]
@@ -15,9 +15,13 @@ repository.workspace = true
 all-features = true
 
 [features]
-default = ["traversal"]
+default = ["autohint_shaping", "traversal"]
 std = ["read-fonts/std"]
 traversal = ["std", "read-fonts/experimental_traverse"]
+# Enables extended shaping support for the autohinter. Enabled by default.
+# This exists as a feature because shaping support is "best effort" and
+# we want the ability to disable it for testing against FreeType.
+autohint_shaping = []
 libm = ["dep:core_maths", "read-fonts/libm"]
 
 [dependencies]
