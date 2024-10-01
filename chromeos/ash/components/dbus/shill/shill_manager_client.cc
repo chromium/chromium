@@ -44,12 +44,12 @@ ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
     default;
 
 ShillManagerClient::ConnectP2PGroupParameter::ConnectP2PGroupParameter(
-    const std::string ssid,
-    const std::string passphrase,
+    std::string ssid,
+    std::string passphrase,
     const std::optional<uint32_t> frequency,
     const std::optional<shill::WiFiInterfacePriority> priority)
-    : ssid(ssid),
-      passphrase(passphrase),
+    : ssid(std::move(ssid)),
+      passphrase(std::move(passphrase)),
       frequency(frequency),
       priority(priority) {}
 

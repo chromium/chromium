@@ -877,7 +877,7 @@ base::FilePath CrosDisksClient::GetRemovableDiskMountPoint() {
 // static
 std::vector<std::string> CrosDisksClient::ComposeMountOptions(
     std::vector<std::string> options,
-    const std::string_view mount_label,
+    std::string_view mount_label,
     const MountAccessMode access_mode,
     const RemountOption remount) {
   options.push_back(access_mode == MountAccessMode::kReadWrite ? "rw" : "ro");

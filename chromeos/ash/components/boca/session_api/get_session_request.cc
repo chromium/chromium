@@ -36,12 +36,12 @@
 namespace ash::boca {
 
 GetSessionRequest::GetSessionRequest(google_apis::RequestSender* sender,
-                                     const std::string gaia_id,
+                                     std::string gaia_id,
                                      Callback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
-      gaia_id_(gaia_id),
+      gaia_id_(std::move(gaia_id)),
       url_base_(kSchoolToolsApiBaseUrl),
       callback_(std::move(callback)) {}
 
