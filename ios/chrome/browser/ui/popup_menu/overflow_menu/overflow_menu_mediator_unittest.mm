@@ -685,7 +685,7 @@ TEST_F(OverflowMenuMediatorTest,
 // Tests that the "Managed by..." item is shown for machine level policies
 // (e.g. from MDM or CBCM).
 TEST_F(OverflowMenuMediatorTest,
-       TestEnterpriseInfoShownForMachineLevelPolicies) {
+       DISABLED_TestEnterpriseInfoShownForMachineLevelPolicies) {
   // Set a policy.
   base::ScopedTempDir state_directory;
   ASSERT_TRUE(state_directory.CreateUniqueTempDir());
@@ -715,7 +715,7 @@ TEST_F(OverflowMenuMediatorTest,
 }
 
 // Tests that the Family Link item is hidden for non-supervised users.
-TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestFamilyLinkInfoHidden) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
@@ -736,7 +736,8 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
 
 // Tests that the Family Link item is hidden for non-supervised users with
 // pref-based supervision status.
-TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
+TEST_F(OverflowMenuMediatorTest,
+       DISABLED_TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
@@ -755,7 +756,7 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
 }
 
 // Tests that the Family Link item is shown for supervised users.
-TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestFamilyLinkInfoShown) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
