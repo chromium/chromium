@@ -368,6 +368,11 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
 
   void CreateService() {
+    // `CreateService` is sometimes called twice, or more in a tests.
+    // Previous instances must be destroyed in the opposite order of their
+    // construction.
+    privacy_sandbox_service_.reset();
+
     auto mock_delegate = CreateMockDelegate();
     mock_delegate_ = mock_delegate.get();
     mock_privacy_sandbox_countries_ =
@@ -486,9 +491,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList inner_feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
-          DanglingUntriaged>
-      mock_delegate_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
@@ -502,6 +504,8 @@ class PrivacySandboxServiceTest : public testing::Test {
 #endif
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+      mock_delegate_;  // Owned by |privacy_sandbox_settings_|.
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_;

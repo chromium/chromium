@@ -343,8 +343,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
-  raw_ptr<privacy_sandbox::PrivacySandboxSettings, DanglingUntriaged>
-      privacy_sandbox_settings_;
+  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -355,13 +354,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<TrustSafetySentimentService, DanglingUntriaged> sentiment_service_;
+  raw_ptr<TrustSafetySentimentService> sentiment_service_;
 #endif
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
-  raw_ptr<PrivacySandboxCountries, DanglingUntriaged>
-      privacy_sandbox_countries_;
+  raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 
   PrefChangeRegistrar user_prefs_registrar_;
 
