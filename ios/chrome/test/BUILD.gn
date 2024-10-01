@@ -254,6 +254,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/download/ui_bundled:unit_tests",
     "//ios/chrome/browser/drive/model:unit_tests",
     "//ios/chrome/browser/drive_file_picker/coordinator:unit_tests",
+    "//ios/chrome/browser/enterprise/connectors:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",
     "//ios/chrome/browser/favicon/model:unit_tests",
     "//ios/chrome/browser/feature_engagement/model:unit_tests",

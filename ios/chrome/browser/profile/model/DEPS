@@ -32,6 +32,7 @@ specific_include_rules = {
     "+ios/chrome/browser/dom_distiller/model",
     "+ios/chrome/browser/download/model",
     "+ios/chrome/browser/drive/model",
+    "+ios/chrome/browser/enterprise/connectors",
     "+ios/chrome/browser/enterprise/model",
     "+ios/chrome/browser/external_files/model",
     "+ios/chrome/browser/favicon/model",

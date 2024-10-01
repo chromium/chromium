@@ -153,6 +153,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/favicon/model",

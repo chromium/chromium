@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
@@ -180,6 +181,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   data_sharing::DataSharingServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   drive::DriveServiceFactory::GetInstance();
+  enterprise_connectors::ConnectorsServiceFactory::GetInstance();
   enterprise_idle::IdleServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   ios::AboutSigninInternalsFactory::GetInstance();
