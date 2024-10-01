@@ -10,11 +10,13 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +52,14 @@ ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
                 extension_id()) == allowlisted_extensions.end()) {
     return RespondNow(Error("API access restricted for this extension."));
+  }
+
+  // In addition to the extension framework channel restriction, we make sure
+  // the API is not available on Stable. In particular,
+  // extension::switches::kEnableExperimentalExtensionApis allows ignoring those
+  // channel restrictions.
+  if (chrome::GetChannel() == version_info::Channel::STABLE) {
+    return RespondNow(Error("API access restricted to non-Stable channels."));
   }
 
   auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
