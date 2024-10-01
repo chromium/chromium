@@ -1096,6 +1096,12 @@ constexpr char kPrivacySandboxActivityTypeRecord[] =
     "privacy_sandbox.activity_type.record";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 09/2024.
+#if !BUILDFLAG(IS_ANDROID)
+const char kTabResumeDismissedTabsPrefName[] =
+    "NewTabPage.MostRelevantTabResumption.DismissedTabs";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1539,6 +1545,12 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(kPrivacySandboxActivityTypeRecord);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kTabResumeDismissedTabsPrefName,
+                             base::Value::List());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2872,6 +2884,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kPrivacySandboxActivityTypeRecord);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Added 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kTabResumeDismissedTabsPrefName);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

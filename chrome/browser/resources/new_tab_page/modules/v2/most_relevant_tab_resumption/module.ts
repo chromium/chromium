@@ -134,7 +134,8 @@ private shouldShowDeviceIcon_:
   }
 
   private onDismissButtonClick_(e: DomRepeatEvent<URLVisit>) {
-    e.preventDefault();
+    e.preventDefault();   // Stop navigation
+    e.stopPropagation();  // Stop firing of click handler
     const urlVisit = (e.target! as HTMLElement).parentElement!;
     const index = e.model.index;
     chrome.metricsPrivate.recordSmallCount(

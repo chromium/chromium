@@ -52,8 +52,7 @@ class MostRelevantTabResumptionPageHandler
       const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
           url_visits) override;
   void DismissURLVisit(
-      const ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit)
-      override;
+      ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) override;
   void RestoreModule(
       const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
           url_visits) override;
@@ -90,6 +89,13 @@ class MostRelevantTabResumptionPageHandler
   // Method to determine if a url is in the list of previously dismissed urls.
   bool IsNewURL(
       ntp::most_relevant_tab_resumption::mojom::URLVisitPtr& url_visit);
+
+  void DismissURLVisits(
+      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>&
+          url_visits);
+  void RestoreURLVisits(
+      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>&
+          url_visits);
 
   // Method to clear dismissed tabs that are older than a certain amount of
   // time.

@@ -22,6 +22,7 @@ enum FormFactor {
 enum DecorationType {
   kVisitedXAgo,
   kMostRecent,
+  kFrequentlyVisited,
   kFrequentlyVisitedAtTime,
 };
 

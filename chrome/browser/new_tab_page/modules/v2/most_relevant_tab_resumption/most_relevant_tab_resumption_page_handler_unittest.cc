@@ -371,7 +371,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
                     {Fetcher::kSession}));
             url_visit_aggregates.emplace_back(
                 visited_url_ranking::CreateSampleURLVisitAggregate(
-                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    GURL(visited_url_ranking::kSampleSearchUrl +
+                         std::string("1")),
+                    1.0f,
                     base::Time::FromDeltaSinceWindowsEpoch(
                         base::Microseconds(123456)),
                     {Fetcher::kHistory}));
