@@ -45,16 +45,6 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
   }
 }
 
-bool ReauthenticatorBridge::CanUseAuthenticationWithBiometric(JNIEnv* env) {
-  return authenticator_ && authenticator_->CanAuthenticateWithBiometrics();
-}
-
-bool ReauthenticatorBridge::CanUseAuthenticationWithBiometricOrScreenLock(
-    JNIEnv* env) {
-  return authenticator_ &&
-         authenticator_->CanAuthenticateWithBiometricOrScreenLock();
-}
-
 jint ReauthenticatorBridge::GetBiometricAvailabilityStatus(JNIEnv* env) {
   if (authenticator_ == nullptr) {
     return static_cast<jint>(device_reauth::BiometricStatus::kUnavailable);

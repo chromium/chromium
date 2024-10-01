@@ -35,26 +35,6 @@ public class ReauthenticatorBridge {
     }
 
     /**
-     * Checks if biometric authentication can be used.
-     *
-     * @return Whether authentication can be used.
-     */
-    public boolean canUseAuthenticationWithBiometric() {
-        return ReauthenticatorBridgeJni.get()
-                .canUseAuthenticationWithBiometric(mNativeReauthenticatorBridge);
-    }
-
-    /**
-     * Checks if biometric or screen lock authentication can be used.
-     *
-     * @return Whether authentication can be used.
-     */
-    public boolean canUseAuthenticationWithBiometricOrScreenLock() {
-        return ReauthenticatorBridgeJni.get()
-                .canUseAuthenticationWithBiometricOrScreenLock(mNativeReauthenticatorBridge);
-    }
-
-    /**
      * Checks biometric auth availability status. It returns one of the following:
      * <li>REQUIRED - biometric is mandatory,
      * <li>BIOMETRICS_AVAILABLE - biometric auth is available but not mandatory,
@@ -139,10 +119,6 @@ public class ReauthenticatorBridge {
                 Activity activity,
                 @JniType("Profile*") Profile profile,
                 int source);
-
-        boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
-
-        boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
 
         @BiometricStatus
         int getBiometricAvailabilityStatus(long nativeReauthenticatorBridge);

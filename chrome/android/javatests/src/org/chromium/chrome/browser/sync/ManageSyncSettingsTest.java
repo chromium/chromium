@@ -898,7 +898,8 @@ public class ManageSyncSettingsTest {
     public void testSigninSettingsBatchUploadCardVisibilityWhenSyncIsConfiguring()
             throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.ONLY_LSKF_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getTransportState()).thenReturn(TransportState.CONFIGURING);
         doAnswer(

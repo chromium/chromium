@@ -26,13 +26,6 @@ class ReauthenticatorBridge {
   ReauthenticatorBridge(const ReauthenticatorBridge&) = delete;
   ReauthenticatorBridge& operator=(const ReauthenticatorBridge&) = delete;
 
-  // Called by Java to check if biometric authentication can be used.
-  bool CanUseAuthenticationWithBiometric(JNIEnv* env);
-
-  // Called by Java to check if biometric or screen lock authentication can be
-  // used.
-  bool CanUseAuthenticationWithBiometricOrScreenLock(JNIEnv* env);
-
   // Called by Java to check biometric availability status.
   jint GetBiometricAvailabilityStatus(JNIEnv* env);
 
