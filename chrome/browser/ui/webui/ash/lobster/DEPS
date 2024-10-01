@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/ash/lobster",
   "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/views/bubble",
   "+chrome/browser/ui/webui/top_chrome",
   "+chrome/test",
 ]

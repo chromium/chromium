@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -353,6 +354,7 @@
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -1967,9 +1969,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<color_change_listener::mojom::PageHandler>();
   }
 
-  if (chromeos::features::IsOrcaEnabled()) {
+  if (chromeos::features::IsOrcaEnabled() ||
+      ash::features::IsLobsterEnabled()) {
     registry.ForWebUI<ash::MakoUntrustedUI>()
-        .Add<ash::orca::mojom::EditorClient>();
+        .Add<ash::orca::mojom::EditorClient>()
+        .Add<lobster::mojom::LobsterPageHandler>();
   }
 
   registry.ForWebUI<ash::DemoModeAppUntrustedUI>()

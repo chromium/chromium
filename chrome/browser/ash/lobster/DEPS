@@ -11,10 +11,13 @@ include_rules = [
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/browser_process.h",
+  "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
-  "+chrome/browser/feedback",
+  "+chrome/browser/ui/webui/ash/lobster",
+  "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
+  "+chrome/grit/generated_resources.h",
 
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/test/base/testing_profile.h",

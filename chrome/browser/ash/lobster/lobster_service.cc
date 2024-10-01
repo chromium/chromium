@@ -56,3 +56,15 @@ bool LobsterService::SubmitFeedback(const std::string& query,
                              /*user_description=*/description,
                              /*image_bytes=*/image_bytes);
 }
+
+void LobsterService::LoadUI(std::optional<std::string> query) {
+  bubble_coordinator_.LoadUI(profile_, query);
+}
+
+void LobsterService::ShowUI() {
+  bubble_coordinator_.ShowUI();
+}
+
+void LobsterService::CloseUI() {
+  bubble_coordinator_.CloseUI();
+}

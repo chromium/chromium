@@ -4,6 +4,7 @@
 
 #include "ash/lobster/lobster_session_impl.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
@@ -48,6 +49,9 @@ class MockLobsterClient : public LobsterClient {
                const std::string& description,
                const std::string& image_bytes),
               (override));
+  MOCK_METHOD(void, LoadUI, (std::optional<std::string> query), (override));
+  MOCK_METHOD(void, ShowUI, (), (override));
+  MOCK_METHOD(void, CloseUI, (), (override));
 };
 
 class LobsterSessionImplTest : public testing::Test {

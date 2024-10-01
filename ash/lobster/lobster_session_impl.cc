@@ -165,4 +165,16 @@ void LobsterSessionImpl::InflateCandidateAndPerformAction(
               std::move(status_callback))));
 }
 
+void LobsterSessionImpl::LoadUI(std::optional<std::string> query) {
+  client_->LoadUI(query);
+}
+
+void LobsterSessionImpl::ShowUI() {
+  client_->ShowUI();
+}
+
+void LobsterSessionImpl::CloseUI() {
+  client_->CloseUI();
+}
+
 }  // namespace ash

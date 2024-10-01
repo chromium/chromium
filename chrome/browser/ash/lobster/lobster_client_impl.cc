@@ -45,3 +45,15 @@ bool LobsterClientImpl::SubmitFeedback(const std::string& query,
   return service_->SubmitFeedback(query, model_version, description,
                                   image_bytes);
 }
+
+void LobsterClientImpl::LoadUI(std::optional<std::string> query) {
+  service_->LoadUI(query);
+}
+
+void LobsterClientImpl::ShowUI() {
+  service_->ShowUI();
+}
+
+void LobsterClientImpl::CloseUI() {
+  service_->CloseUI();
+}

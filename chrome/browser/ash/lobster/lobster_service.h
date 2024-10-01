@@ -11,6 +11,7 @@
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_bubble_coordinator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
@@ -47,6 +48,12 @@ class LobsterService : public KeyedService {
                       const std::string& description,
                       const std::string& image_bytes);
 
+  void LoadUI(std::optional<std::string> query);
+
+  void ShowUI();
+
+  void CloseUI();
+
  private:
   // Not owned by this class
   raw_ptr<Profile> profile_;
@@ -60,6 +67,8 @@ class LobsterService : public KeyedService {
   LobsterCandidateResizer resizer_;
 
   LobsterSystemStateProvider system_state_provider_;
+
+  ash::LobsterBubbleCoordinator bubble_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_

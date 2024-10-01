@@ -25,6 +25,13 @@ LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session,
 
 LobsterPageHandler::~LobsterPageHandler() = default;
 
+void LobsterPageHandler::BindInterface(
+    mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
+        pending_receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(pending_receiver));
+}
+
 void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
                                            DownloadCandidateCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
@@ -98,6 +105,14 @@ void LobsterPageHandler::SubmitFeedback(uint32_t candidate_id,
                                         SubmitFeedbackCallback callback) {
   std::move(callback).Run(
       /*success=*/session_->SubmitFeedback(candidate_id, description));
+}
+
+void LobsterPageHandler::ShowUI() {
+  session_->ShowUI();
+}
+
+void LobsterPageHandler::CloseUI() {
+  session_->CloseUI();
 }
 
 }  // namespace ash

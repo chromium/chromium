@@ -47,6 +47,9 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                        LobsterPreviewFeedbackCallback) override;
   bool SubmitFeedback(int candidate_id,
                       const std::string& description) override;
+  void LoadUI(std::optional<std::string> query) override;
+  void ShowUI() override;
+  void CloseUI() override;
 
  private:
   void OnRequestCandidates(RequestCandidatesCallback callback,

@@ -32,6 +32,9 @@ class ASH_PUBLIC_EXPORT LobsterClient {
                               const std::string& model_version,
                               const std::string& description,
                               const std::string& image_bytes) = 0;
+  virtual void LoadUI(std::optional<std::string> query) = 0;
+  virtual void ShowUI() = 0;
+  virtual void CloseUI() = 0;
 };
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
@@ -54,7 +55,8 @@ MakoUntrustedUIConfig::~MakoUntrustedUIConfig() = default;
 
 bool MakoUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return chromeos::features::IsOrcaEnabled();
+  return chromeos::features::IsOrcaEnabled() ||
+         ash::features::IsLobsterEnabled();
 }
 
 bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
@@ -66,7 +68,8 @@ bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
-  CHECK(chromeos::features::IsOrcaEnabled());
+  CHECK(chromeos::features::IsOrcaEnabled() ||
+        ash::features::IsLobsterEnabled());
 
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -120,6 +123,11 @@ MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
+  if (!chromeos::features::IsOrcaEnabled()) {
+    mojo::ReportBadMessage("Editor is disabled by flags.");
+    return;
+  }
+
   // If mako ui is shown to the user, then we know that EditorMediator is
   // allowed for the current profile and will return a valid instance.
   input_method::EditorMediatorFactory::GetInstance()
@@ -131,6 +139,22 @@ void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void MakoUntrustedUI::BindInterface(
+    mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
+        pending_receiver) {
+  if (!ash::features::IsLobsterEnabled()) {
+    mojo::ReportBadMessage("Editor is disabled by flags.");
+    return;
+  }
+
+  Profile* profile = Profile::FromWebUI(web_ui());
+  lobster_page_handler_ = std::make_unique<LobsterPageHandler>(
+      LobsterServiceProvider::GetForProfile(profile)->active_session(),
+      profile);
+
+  lobster_page_handler_->BindInterface(std::move(pending_receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)

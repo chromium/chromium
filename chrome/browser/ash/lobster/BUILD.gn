@@ -10,6 +10,8 @@ static_library("lobster") {
   sources = [
     "image_fetcher.cc",
     "image_fetcher.h",
+    "lobster_bubble_coordinator.cc",
+    "lobster_bubble_coordinator.h",
     "lobster_candidate_id_generator.cc",
     "lobster_candidate_id_generator.h",
     "lobster_candidate_resizer.cc",
@@ -37,6 +39,8 @@ static_library("lobster") {
     "//chrome/browser:browser_process",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/mako:resources",
+    "//chrome/browser/ui/webui/ash/lobster:lobster",
     "//components/feedback/redaction_tool",
     "//components/keyed_service/core",
     "//components/manta",

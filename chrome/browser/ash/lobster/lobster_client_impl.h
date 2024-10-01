@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
@@ -35,6 +36,9 @@ class LobsterClientImpl : public ash::LobsterClient {
                       const std::string& model_version,
                       const std::string& description,
                       const std::string& image_bytes) override;
+  void LoadUI(std::optional<std::string> query) override;
+  void ShowUI() override;
+  void CloseUI() override;
 
  private:
   // Not owned by this class

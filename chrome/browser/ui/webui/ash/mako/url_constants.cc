@@ -26,4 +26,8 @@ const char kOrcaMagicBoostParamKey[] = "magic-boost";
 
 const char kOrcaHostLanguageParamKey[] = "hl";
 
+const char kChromeUILobsterURL[] = "chrome-untrusted://mako/lobster.html";
+
+const char kLobsterPromptParamKey[] = "prompt";
+
 }  // namespace ash

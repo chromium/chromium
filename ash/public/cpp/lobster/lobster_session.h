@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 #define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -37,6 +38,10 @@ class ASH_PUBLIC_EXPORT LobsterSession {
                                LobsterPreviewFeedbackCallback) = 0;
   virtual bool SubmitFeedback(int candidate_id,
                               const std::string& description) = 0;
+
+  virtual void LoadUI(std::optional<std::string> query) = 0;
+  virtual void ShowUI() = 0;
+  virtual void CloseUI() = 0;
 };
 
 }  // namespace ash

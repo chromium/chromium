@@ -11,19 +11,19 @@ static_library("lobster") {
   sources = [
     "lobster_page_handler.cc",
     "lobster_page_handler.h",
-    "lobster_ui.cc",
-    "lobster_ui.h",
+    "lobster_view.cc",
+    "lobster_view.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/views/bubble:bubble",
     "//chrome/browser/ui/webui/top_chrome",
   ]
 
   deps = [
     "//ash/public/cpp",
-    "//chrome/browser/ash/lobster",
     "//chrome/browser/profiles:profile",
     "//mojo/public/cpp/bindings",
   ]
