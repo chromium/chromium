@@ -107,6 +107,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void OnSearchResultsViewHeightChanged() override;
 
   // PickerEmojiBarViewDelegate:
+  void ToggleGifs() override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
 
   // PickerPseudoFocusHandler:

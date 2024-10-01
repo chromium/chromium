@@ -54,6 +54,7 @@ class MockEmojiBarViewDelegate : public PickerEmojiBarViewDelegate {
               SelectSearchResult,
               (const PickerSearchResult&),
               (override));
+  MOCK_METHOD(void, ToggleGifs, (), (override));
   MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));
 };
 
@@ -241,8 +242,7 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
           &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate, ShowEmojiPicker(ui::EmojiPickerCategory::kGifs))
-      .Times(1);
+  EXPECT_CALL(mock_delegate, ToggleGifs()).Times(1);
 
   ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
   LeftClickOn(*emoji_bar->gifs_button_for_testing());

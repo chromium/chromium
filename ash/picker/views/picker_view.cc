@@ -438,6 +438,10 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
                           search_field_view_->GetQueryText());
 }
 
+void PickerView::ToggleGifs() {
+  ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
+}
+
 void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
   session_metrics.SetSelectedCategory(PickerCategory::kEmojisGifs);

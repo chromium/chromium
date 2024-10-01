@@ -349,7 +349,7 @@ void PickerEmojiBarView::OpenMoreEmojis() {
 }
 
 void PickerEmojiBarView::OpenGifs() {
-  delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
+  delegate_->ToggleGifs();
 }
 
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {

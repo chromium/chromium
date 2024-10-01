@@ -20,6 +20,8 @@ class ASH_EXPORT PickerEmojiBarViewDelegate {
  public:
   virtual void SelectSearchResult(const PickerSearchResult& result) = 0;
 
+  virtual void ToggleGifs() = 0;
+
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
 };
 
