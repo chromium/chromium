@@ -37,11 +37,15 @@
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
+#include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
@@ -68,6 +72,7 @@ using ::testing::ValuesIn;
 using ::testing::WithArgs;
 
 using SpatialLayer = media::VideoEncodeAccelerator::Config::SpatialLayer;
+using Type = webrtc::VideoFrameBuffer::Type;
 
 namespace blink {
 
@@ -113,6 +118,47 @@ class EncodedImageCallbackWrapper : public webrtc::EncodedImageCallback {
 
  private:
   EncodedCallback encoded_callback_;
+};
+
+class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
+ public:
+  FakeNativeBufferI420(int width, int height, bool allow_to_i420)
+      : blink::WebRtcVideoFrameAdapter(
+            media::VideoFrame::CreateBlackFrame(gfx::Size(480, 360))),
+        width_(width),
+        height_(height),
+        allow_to_i420_(allow_to_i420) {}
+
+  Type type() const override { return Type::kNative; }
+  int width() const override { return width_; }
+  int height() const override { return height_; }
+
+  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+    if (allow_to_i420_) {
+      return webrtc::I420Buffer::Create(width_, height_);
+    } else {
+      return nullptr;
+    }
+  }
+
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
+    const gfx::Size kSize360p(480, 360);
+    const gfx::Rect kRect360p(0, 0, 480, 360);
+
+    // The strictness of the mock ensures zero copy.
+    auto resources =
+        base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
+
+    return CreateTestFrame(kSize360p, kRect360p, kSize360p,
+                           media::VideoFrame::STORAGE_OWNED_MEMORY,
+                           media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                           base::TimeDelta());
+  }
+
+ private:
+  const int width_;
+  const int height_;
+  const bool allow_to_i420_;
 };
 
 class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
@@ -1060,6 +1106,38 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
                                      .build(),
                                  &frame_types));
 }
+
+// On Windows we allow native input that is mappable.
+#if BUILDFLAG(IS_WIN)
+TEST_F(RTCVideoEncoderEncodeTest, NoSoftwareFallbackOnMappableNativeInput) {
+  // Make RTCVideoEncoder expect native input.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kVideoCaptureUseGpuMemoryBuffer);
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_NV12,
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> mapped_buffer(
+      rtc::make_ref_counted<FakeNativeBufferI420>(480, 360,
+                                                  /*allow_to_i420=*/false));
+
+  std::vector<webrtc::VideoFrameType> frame_types;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(mapped_buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   // Make RTCVideoEncoder expect native input.

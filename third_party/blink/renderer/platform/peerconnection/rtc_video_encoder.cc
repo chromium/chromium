@@ -861,6 +861,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                    scoped_refptr<RefCountedWritableSharedMemoryMapping>>>
       output_buffers_;
 
+  // The number of input buffers requested by hardware video encoder.
+  size_t input_buffers_requested_count_{0};
+
   // The number of frames that are sent to a hardware video encoder by Encode()
   // and the encoder holds them.
   size_t frames_in_encoder_count_{0};
@@ -1073,6 +1076,52 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     }
     return;
   }
+
+// On Windows it is possible that RtcVideoEncoder is configured to only accept
+// native inputs, but the incoming frame is not backed by GpuMemoryBuffer and
+// is not a black frame.
+#if BUILDFLAG(IS_WIN)
+  {
+    // Check if the incoming frame is backed by unowned memory. This could
+    // happen when: 1. Zero-copy capture feature is turned on but device does
+    // not support MediaFoundation; 2. The video track gets disabled so black
+    // frames are sent.
+    scoped_refptr<media::VideoFrame> frame;
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+        frame_chunk.video_frame_buffer;
+    // For black frames their handling will depend on the current
+    // |use_native_input_| state. As a result we don't toggle
+    // |use_native_input_| flag here for them.
+    if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative) {
+      frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
+                  ->getMediaVideoFrame();
+      if (frame->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY) {
+        if (use_native_input_) {
+          use_native_input_ = false;
+          // VEA previously worked with imported frames. Now they need input
+          // buffers when handling non-imported frames.
+          if (input_buffers_.empty()) {
+            input_buffers_free_.resize(input_buffers_requested_count_);
+            input_buffers_.resize(input_buffers_requested_count_);
+            for (wtf_size_t i = 0; i < input_buffers_requested_count_; i++) {
+              input_buffers_free_[i] = i;
+              input_buffers_[i] = nullptr;
+            }
+          }
+        }
+      } else if (frame->storage_type() ==
+                 media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+        if (!use_native_input_) {
+          use_native_input_ = true;
+          // VEA previously worked with input buffers. Now they need imported
+          // frames, so get rid of those buffers.
+          input_buffers_free_.clear();
+          input_buffers_.clear();
+        }
+      }
+    }
+  }
+#endif
 
   if (use_native_input_) {
     DCHECK(pending_frames_.empty());
@@ -1293,13 +1342,13 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     return;
 
   input_frame_coded_size_ = input_coded_size;
+  input_buffers_requested_count_ = input_count + kInputBufferExtraCount;
 
   // |input_buffers_| is only needed in non import mode.
   if (!use_native_input_) {
-    const wtf_size_t num_input_buffers = input_count + kInputBufferExtraCount;
-    input_buffers_free_.resize(num_input_buffers);
-    input_buffers_.resize(num_input_buffers);
-    for (wtf_size_t i = 0; i < num_input_buffers; i++) {
+    input_buffers_free_.resize(input_buffers_requested_count_);
+    input_buffers_.resize(input_buffers_requested_count_);
+    for (wtf_size_t i = 0; i < input_buffers_requested_count_; i++) {
       input_buffers_free_[i] = i;
       input_buffers_[i] = nullptr;
     }
@@ -1961,6 +2010,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
 
   frames_in_encoder_count_++;
   DVLOG(3) << "frames_in_encoder_count=" << frames_in_encoder_count_;
+
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 

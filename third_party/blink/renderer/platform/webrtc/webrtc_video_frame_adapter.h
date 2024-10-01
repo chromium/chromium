@@ -188,7 +188,9 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       scoped_refptr<media::VideoFrame> frame,
       scoped_refptr<SharedResources> shared_resources);
 
-  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
+  virtual scoped_refptr<media::VideoFrame> getMediaVideoFrame() const {
+    return frame_;
+  }
 
   // Regardless of the pixel format used internally, kNative is returned
   // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain
