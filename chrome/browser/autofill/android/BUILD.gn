@@ -29,6 +29,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldView.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/EditTextNoAutofillView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorBase.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialogToolbar.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialogView.java",

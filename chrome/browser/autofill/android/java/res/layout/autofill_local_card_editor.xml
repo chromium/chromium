@@ -21,7 +21,7 @@ found in the LICENSE file.
         app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
-        <EditText
+        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/credit_card_number_edit"
             android:layout_width="match_parent"
@@ -115,7 +115,7 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:text="@string/autofill_credit_card_editor_expiration_date" />
 
-            <EditText
+            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
                 android:id="@+id/expiration_month_and_year"
                 android:width="@dimen/local_card_expiration_date_editor_width"
                 android:layout_width="match_parent"
@@ -149,7 +149,7 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:text="@string/autofill_credit_card_editor_security_code" />
 
-            <EditText
+            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
                 android:id="@+id/cvc"
                 android:width="@dimen/local_card_cvc_editor_width"
                 android:layout_width="match_parent"
@@ -186,7 +186,7 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin">
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
-        <EditText
+        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/credit_card_name_edit"
             android:layout_width="match_parent"
@@ -211,7 +211,7 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/pref_autofill_field_extra_large_top_margin"
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin">
 
-        <EditText
+        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/credit_card_nickname_edit"
             android:maxLength="25"
