@@ -1005,7 +1005,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests that the selected value for the time range updates across all open
 // Quick Delete menus.
-- (void)testTimeRangeSelectionUpdatesInMultiwindow {
+//
+// TODO(crbug.com/370135677): This test has been flaking since around
+// 2024-09-25 on `ios-simulator-noncq`.
+- (void)DISABLED_testTimeRangeSelectionUpdatesInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
