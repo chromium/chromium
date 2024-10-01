@@ -619,21 +619,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutResult* layout_result = nullptr;
     auto BlockSizeFunc = [&](SizeType type) -> LayoutUnit {
       // This function mirrors the logic within `BlockNode::ComputeMinMaxSizes`.
-      if (!layout_result) {
-        ConstraintSpace child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
-        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          disable_side_effects.emplace();
-        }
-        layout_result = child.Layout(child_space, /* break_token */ nullptr);
-        DCHECK(layout_result);
-      }
+      const ConstraintSpace child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
 
       // Don't apply any special aspect-ratio treatment for replaced elements.
-      const LayoutUnit intrinsic_size = layout_result->IntrinsicBlockSize();
       if (child.IsReplaced()) {
-        return intrinsic_size;
+        return ComputeReplacedSize(child, child_space,
+                                   border_padding_in_child_writing_mode,
+                                   ReplacedSizeMode::kIgnoreBlockLengths)
+            .block_size;
       }
 
       const bool has_aspect_ratio = !child_style.AspectRatio().IsAuto();
@@ -645,6 +639,16 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
               child_style.BoxSizingForAspectRatio(), inline_size);
         }
       }
+
+      if (!layout_result) {
+        std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
+          disable_side_effects.emplace();
+        }
+        layout_result = child.Layout(child_space, /* break_token */ nullptr);
+        DCHECK(layout_result);
+      }
+      const LayoutUnit intrinsic_size = layout_result->IntrinsicBlockSize();
 
       // Constrain the intrinsic-size by the transferred min/max constraints.
       if (has_aspect_ratio) {
