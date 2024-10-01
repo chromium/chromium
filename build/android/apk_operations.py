@@ -1152,9 +1152,15 @@ def _GenerateMissingAllFlagMessage(devices):
           'or use --device to select a device by serial.\n\n' +
           _GenerateAvailableDevicesMessage(devices))
 
+def _SanitizeFilename(filename):
+  for sep in os.path.sep, os.path.altsep:
+    if sep is not None:
+      filename = filename.replace(sep, '_')
+  return filename
+
 
 def _DeviceCachePath(device, output_directory):
-  file_name = 'device_cache_%s.json' % device.serial
+  file_name = 'device_cache_%s.json' % _SanitizeFilename(device.serial)
   return os.path.join(output_directory, file_name)
 
 
