@@ -205,16 +205,6 @@ void ExceptionState::ThrowWasmCompileError(const String& message) {
                exception);
 }
 
-void ExceptionState::RethrowV8Exception(v8::Local<v8::Value> value) {
-#if DCHECK_IS_ON()
-  DCHECK_AT(!assert_no_exceptions_, file_, line_)
-      << "A V8 exception should not be thrown.";
-#endif
-  SetException(
-      static_cast<ExceptionCode>(InternalExceptionType::kRethrownException),
-      String(), isolate_ ? value : v8::Local<v8::Value>());
-}
-
 void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
 #if DCHECK_IS_ON()
   DCHECK_AT(!assert_no_exceptions_, file_, line_)

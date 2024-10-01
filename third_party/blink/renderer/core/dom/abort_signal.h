@@ -20,7 +20,6 @@ namespace blink {
 class AbortController;
 class AbortSignalCompositionManager;
 class AbortSignalRegistry;
-class ExceptionState;
 class ExecutionContext;
 class ScriptState;
 
@@ -97,7 +96,7 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   static AbortSignal* timeout(ScriptState*, uint64_t milliseconds);
   ScriptValue reason(ScriptState*) const;
   bool aborted() const { return !abort_reason_.IsEmpty(); }
-  void throwIfAborted(ScriptState*, ExceptionState&) const;
+  void throwIfAborted() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
 
   const AtomicString& InterfaceName() const override;

@@ -207,15 +207,15 @@ void ReadableStreamDefaultController::Enqueue(
     //   a. Let result be the result of performing controller.
     //      [[strategySizeAlgorithm]], passing in chunk, and interpreting the
     //      result as an ECMAScript completion value.
+    TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
     std::optional<double> chunk_size =
-        controller->strategy_size_algorithm_->Run(script_state, chunk,
-                                                  exception_state);
+        controller->strategy_size_algorithm_->Run(script_state, chunk);
 
     //   b. If result is an abrupt completion,
-    if (exception_state.HadException()) {
+    if (rethrow_scope.HasCaught()) {
       //    i. Perform ! ReadableStreamDefaultControllerError(controller,
       //       result.[[Value]]).
-      Error(script_state, controller, exception_state.GetException());
+      Error(script_state, controller, rethrow_scope.GetException());
       //    ii. Return result.
       return;
     }
@@ -225,13 +225,14 @@ void ReadableStreamDefaultController::Enqueue(
     //  d. Let enqueueResult be EnqueueValueWithSize(controller, chunk,
     //     chunkSize).
     controller->queue_->EnqueueValueWithSize(
-        script_state->GetIsolate(), chunk, chunk_size.value(), exception_state);
+        script_state->GetIsolate(), chunk, chunk_size.value(),
+        PassThroughException(script_state->GetIsolate()));
 
     //   e. If enqueueResult is an abrupt completion,
-    if (exception_state.HadException()) {
+    if (rethrow_scope.HasCaught()) {
       //    i. Perform ! ReadableStreamDefaultControllerError(controller,
       //       enqueueResult.[[Value]]).
-      Error(script_state, controller, exception_state.GetException());
+      Error(script_state, controller, rethrow_scope.GetException());
       //    ii. Return enqueueResult.
       return;
     }

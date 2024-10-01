@@ -305,21 +305,21 @@ void TransformStreamDefaultController::Enqueue(
 
   // 4. Let enqueueResult be ReadableStreamDefaultControllerEnqueue(
   //    readableController, chunk).
-  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   ReadableStreamDefaultController::Enqueue(
-      script_state, readable_controller, chunk,
-      PassThroughException(script_state->GetIsolate()));
+      script_state, readable_controller, chunk, PassThroughException(isolate));
 
   // 5. If enqueueResult is an abrupt completion,
-  if (try_catch.HasCaught()) {
+  if (rethrow_scope.HasCaught()) {
     // a. Perform ! TransformStreamErrorWritableAndUnblockWrite(stream,
     //    enqueueResult.[[Value]]).
     TransformStream::ErrorWritableAndUnblockWrite(script_state, stream,
-                                                  try_catch.Exception());
+                                                  rethrow_scope.GetException());
 
     // b. Throw stream.[[readable]].[[storedError]].
-    exception_state.RethrowV8Exception(
-        stream->readable_->GetStoredError(script_state->GetIsolate()));
+    V8ThrowException::ThrowException(
+        isolate, stream->readable_->GetStoredError(isolate));
     return;
   }
 

@@ -57,9 +57,7 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
 
 class DefaultSizeAlgorithm final : public StrategySizeAlgorithm {
  public:
-  std::optional<double> Run(ScriptState*,
-                            v8::Local<v8::Value>,
-                            ExceptionState&) override {
+  std::optional<double> Run(ScriptState*, v8::Local<v8::Value>) override {
     return 1;
   }
 };
@@ -70,11 +68,9 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
       : function_(isolate, size) {}
 
   std::optional<double> Run(ScriptState* script_state,
-                            v8::Local<v8::Value> chunk,
-                            ExceptionState& exception_state) override {
+                            v8::Local<v8::Value> chunk) override {
     auto* isolate = script_state->GetIsolate();
     auto context = script_state->GetContext();
-    v8::TryCatch trycatch(isolate);
     v8::Local<v8::Value> argv[] = {chunk};
 
     // https://streams.spec.whatwg.org/#make-size-algorithm-from-size-function
@@ -83,7 +79,6 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
         function_.Get(isolate)->Call(context, v8::Undefined(isolate), 1, argv);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
-      exception_state.RethrowV8Exception(trycatch.Exception());
       return std::nullopt;
     }
 
@@ -93,7 +88,6 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
     v8::MaybeLocal<v8::Number> number_maybe = result->ToNumber(context);
     v8::Local<v8::Number> number;
     if (!number_maybe.ToLocal(&number)) {
-      exception_state.RethrowV8Exception(trycatch.Exception());
       return std::nullopt;
     }
     return number->Value();

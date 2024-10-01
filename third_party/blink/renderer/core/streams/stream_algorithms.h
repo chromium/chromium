@@ -27,8 +27,7 @@ class StrategySizeAlgorithm : public GarbageCollected<StrategySizeAlgorithm> {
   virtual ~StrategySizeAlgorithm() = default;
 
   virtual std::optional<double> Run(ScriptState*,
-                                    v8::Local<v8::Value> chunk,
-                                    ExceptionState&) = 0;
+                                    v8::Local<v8::Value> chunk) = 0;
 
   virtual void Trace(Visitor*) const {}
 };

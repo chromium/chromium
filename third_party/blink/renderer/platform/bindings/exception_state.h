@@ -139,8 +139,6 @@ class PLATFORM_EXPORT ExceptionState {
   NOINLINE void ThrowTypeError(const char* message);
   NOINLINE void ThrowWasmCompileError(const char* message);
 
-  // Rethrows a v8::Value as an exception.
-  NOINLINE void RethrowV8Exception(v8::Local<v8::Value>);
   // Report the given value as the exception being thrown, but rethrow it
   // immediately via the v8::TryCatch instead of in the destructor.
   NOINLINE void RethrowV8Exception(v8::TryCatch&);

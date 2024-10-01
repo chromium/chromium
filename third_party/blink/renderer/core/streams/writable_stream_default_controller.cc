@@ -407,8 +407,8 @@ double WritableStreamDefaultController::GetChunkSize(
   //     controller.[[strategySizeAlgorithm]], passing in chunk, and
   //     interpreting the result as an ECMAScript completion value.
   v8::TryCatch try_catch(script_state->GetIsolate());
-  auto return_value = controller->strategy_size_algorithm_->Run(
-      script_state, chunk, PassThroughException(script_state->GetIsolate()));
+  auto return_value =
+      controller->strategy_size_algorithm_->Run(script_state, chunk);
 
   //  2. If returnValue is an abrupt completion,
   if (!return_value.has_value()) {

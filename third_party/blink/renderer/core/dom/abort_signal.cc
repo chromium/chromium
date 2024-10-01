@@ -21,8 +21,8 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -167,11 +167,11 @@ ScriptValue AbortSignal::reason(ScriptState* script_state) const {
   return abort_reason_;
 }
 
-void AbortSignal::throwIfAborted(ScriptState* script_state,
-                                 ExceptionState& exception_state) const {
+void AbortSignal::throwIfAborted() const {
   if (!aborted())
     return;
-  exception_state.RethrowV8Exception(reason(script_state).V8Value());
+  V8ThrowException::ThrowException(execution_context_->GetIsolate(),
+                                   abort_reason_.V8Value());
 }
 
 const AtomicString& AbortSignal::InterfaceName() const {
