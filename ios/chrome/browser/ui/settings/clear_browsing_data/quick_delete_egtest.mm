@@ -340,6 +340,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Wait for Quick Delete to disappear marking that the deletion has finished.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
+
+  // Wait for the tabs closure animation to finish if it's trigger by the
+  // deletion.
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 - (void)signIn {
@@ -585,7 +589,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       @"Incorrect local pref value.");
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Confirm that only after the user has gone through with the deletion, the
   // pref has been saved with the new value of last 15 minutes.
@@ -1005,10 +1009,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests that the selected value for the time range updates across all open
 // Quick Delete menus.
-//
-// TODO(crbug.com/370135677): This test has been flaking since around
-// 2024-09-25 on `ios-simulator-noncq`.
-- (void)DISABLED_testTimeRangeSelectionUpdatesInMultiwindow {
+- (void)testTimeRangeSelectionUpdatesInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -1084,7 +1085,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button so the time range pref is saved.
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [self triggerDeletionFromQuickDelete];
 
   // Focus on the second window.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
