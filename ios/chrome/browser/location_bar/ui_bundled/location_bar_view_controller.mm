@@ -869,6 +869,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
         feature_engagement::events::kLensOverlayEntrypointUsed);
   }
   RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
+  TriggerHapticFeedbackForSelectionChange();
   [self.dispatcher createAndShowLensUI:YES
                             entrypoint:LensOverlayEntrypoint::kLocationBar
                             completion:nil];
