@@ -18,16 +18,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/crx_file/id_util.h"
 
 using chromeos::ChromeKioskAppInstaller;
@@ -49,12 +42,6 @@ const net::BackoffEntry::Policy kKioskLaunchExtensionBackoffPolicy = {
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false,
 };
-
-crosapi::ChromeAppKioskServiceAsh* crosapi_chrome_app_kiosk_service() {
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->chrome_app_kiosk_service();
-}
 
 }  // namespace
 
@@ -171,26 +158,11 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
 void StartupAppLauncher::BeginInstall() {
   state_ = LaunchState::kInstallingApp;
   observers_.NotifyAppInstalling();
-  if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    InstallAppInLacros();
-  } else {
-    InstallAppInAsh();
-  }
-}
-
-void StartupAppLauncher::InstallAppInAsh() {
   installer_ = std::make_unique<ChromeKioskAppInstaller>(
       profile_,
       KioskChromeAppManager::Get()->CreatePrimaryAppInstallData(app_id_));
   installer_->BeginInstall(base::BindOnce(
       &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
-}
-
-void StartupAppLauncher::InstallAppInLacros() {
-  crosapi_chrome_app_kiosk_service()->InstallKioskApp(
-      KioskChromeAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
-      base::BindOnce(&StartupAppLauncher::OnInstallComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StartupAppLauncher::OnInstallComplete(
@@ -234,18 +206,11 @@ void StartupAppLauncher::LaunchApp() {
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
 
-  if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    crosapi_chrome_app_kiosk_service()->LaunchKioskApp(
-        app_id_, delegate_->IsNetworkReady(),
-        base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    launcher_ = std::make_unique<ChromeKioskAppLauncher>(
-        profile_, app_id_, delegate_->IsNetworkReady());
+  launcher_ = std::make_unique<ChromeKioskAppLauncher>(
+      profile_, app_id_, delegate_->IsNetworkReady());
 
-    launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  }
+  launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StartupAppLauncher::OnLaunchComplete(

@@ -55,8 +55,6 @@ class StartupAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
   void BeginInstall();
-  void InstallAppInAsh();
-  void InstallAppInLacros();
   void OnInstallComplete(
       chromeos::ChromeKioskAppInstaller::InstallResult result);
   void OnInstallSuccess();

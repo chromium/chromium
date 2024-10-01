@@ -61,8 +61,6 @@ class KioskSystemSession {
   }
 
  private:
-  class LacrosWatcher;
-
   void InitForChromeAppKiosk();
   void InitForWebKiosk(const std::optional<std::string>& app_name);
 
@@ -91,7 +89,6 @@ class KioskSystemSession {
   const std::unique_ptr<PeriodicMetricsService> periodic_metrics_service_;
   const std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
-  std::unique_ptr<LacrosWatcher> lacros_watcher_;
 
   // Tracks low disk notifications.
   LowDiskMetricsService low_disk_metrics_service_;

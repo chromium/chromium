@@ -68,8 +68,6 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
           callback);
   void CheckWhetherNetworkIsRequired(crosapi::mojom::WebKioskInstallState state,
                                      const std::optional<webapps::AppId>& id);
-  void InstallAppInAsh();
-  void InstallAppInLacros();
   void OnInstallComplete(const std::optional<webapps::AppId>& app_id);
 
   // Get the current web application to be launched in the session.
