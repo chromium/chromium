@@ -370,6 +370,8 @@ void OverviewSession::Shutdown() {
 
   tab_app_selection_widget_.reset();
 
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
   // that will call into this function again.
@@ -1293,6 +1295,10 @@ void OverviewSession::ToggleTabAppSelectionMenu() {
   }
 
   tab_app_selection_widget_ = TabAppSelectionHost::Create();
+}
+
+base::WeakPtr<OverviewSession> OverviewSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

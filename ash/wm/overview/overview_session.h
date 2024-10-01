@@ -338,6 +338,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // `tab_app_selection_widget_`.
   void ToggleTabAppSelectionMenu();
 
+  base::WeakPtr<OverviewSession> GetWeakPtr();
+
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -580,6 +582,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       active_window_before_overview_observation_{this};
+  base::WeakPtrFactory<OverviewSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
