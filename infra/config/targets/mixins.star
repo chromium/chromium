@@ -1432,6 +1432,21 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
+            "gpu": "1002:67ef|1002:7340",
+            "hidpi": "1",
+            "os": "Mac-14.4.1",
+            "pool": "chromium.tests.gpu",
+            "display_attached": "1",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "mac_retina_amd_radeon_pro_555x_gpu_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-14.4.1",
