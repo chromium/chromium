@@ -42,8 +42,8 @@ NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
 
 // Debug NSUserDefaults key used to collect debug data.
 // Number of times systemTriggeredRefreshForTask was run with no due tasks.
-NSString* appStateDueCountDuringBackgroundRefreshKey =
-    @"debug_app_state_no_due_count_during_background_refresh";
+NSString* noTasksDueCountDuringBackgroundRefreshKey =
+    @"debug_no_tasks_due_count_during_background_refresh";
 
 }  // namespace
 
@@ -52,14 +52,35 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
 @end
 
 @interface BackgroundRefreshAppAgent ()
+// The providers registered.
 @property(nonatomic) NSMutableSet<AppRefreshProvider*>* providers;
+// The subset of `providers` that are currently running refresh tasks.
+@property(nonatomic) NSMutableSet<AppRefreshProvider*>* activeProviders;
 @end
 
-@implementation BackgroundRefreshAppAgent
+// General note on threading: the IOS task scheduler invokes the configured
+// blocks on a non-main thread. This class's primary job is to route background
+// refresh work to the specific classes (instances of AppRefreshProvider) which
+// actually perform the refresh tasks. In order for this to happen on Chromium
+// threads, all of the task dispatch and management work is done on the main
+// thread. The methods that handle that work are thus main-sequence affine, and
+// are guarded by a sequence checker. The configured methods that handle task
+// execution and cancellation, which are called directly by the iOS scheduler on
+// a non-main thread, must therefore only consist of dispacthing to a
+// corresponding main-thread method.
+//
+// For clarity, the methods expected to be only called from the task scheduler
+// on a non-main thread have names beginning with `systemTriggered`. The
+// corresponding main-thread methods have names beginning with `handle`.
+
+@implementation BackgroundRefreshAppAgent {
+  SEQUENCE_CHECKER(_sequenceChecker);
+}
 
 - (instancetype)init {
   if ((self = [super init])) {
     _providers = [NSMutableSet set];
+    _activeProviders = [NSMutableSet set];
     [self registerBackgroundRefreshTask];
   }
   return self;
@@ -67,6 +88,7 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
 
 - (void)addAppRefreshProvider:(AppRefreshProvider*)provider {
   CHECK(provider);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.providers addObject:provider];
 }
 
@@ -79,8 +101,10 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
 #pragma mark - Private
 
 - (void)registerBackgroundRefreshTask {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
   auto handler = ^(BGTask* task) {
-    [self systemTriggeredRefreshForTask:task];
+    [self systemTriggeredExecutionForTask:task];
   };
 
   // TODO(crbug.com/354919106):  Consider moving this task to a queue known to
@@ -117,19 +141,20 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
 
 // Handle background refresh. This is called by the (OS) background task
 // scheduler and is **not called on the main thread**.
-- (void)systemTriggeredRefreshForTask:(BGTask*)task {
-  // TODO(crbug.com/354919106): This is the simplest possible implementation,
-  // and it provides no thread safety or signalling to the app state about
-  // status. Some of the many things that must be implemented for this to work
-  // correctly:
+- (void)systemTriggeredExecutionForTask:(BGTask*)task {
+  // TODO(crbug.com/354919106): This is still an incomplete implementation. Some
+  // of the things that must be implemented for this to work correctly:
   //  - No processing if this is a safe mode launch.
-  //  - Configure an expiration handler on `task`, which cancels all refresh
-  //    tasks.
   //  - Update the app state for both starting and ending refresh work; this
   //    must hapopen on the main thread, and further processing should wait on
-  //    it.
-  //  - Handle tracking completion of each task, and only signal success if
-  //    all tasks succeeded overall.
+  //    it. There are hooks (-refreshStarted and -refreshComplete) for this but
+  //    they are no-ops.
+
+  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(task) weakTask = task;
+  task.expirationHandler = ^{
+    [weakSelf systemTriggeredExpirationForTask:weakTask];
+  };
 
   // TODO(crbug.com/354918794): Remove this code once not needed anymore.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -138,46 +163,117 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
   [defaults setInteger:triggeredRefreshCount + 1
                 forKey:triggeredBackgroundRefreshesKey];
 
-  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
-  // ApplicationState must be called from the main thread.
+  // Hop on to the main thread for task execution.
   dispatch_async(dispatch_get_main_queue(), ^{
-    NSString* appState;
-    switch ([[UIApplication sharedApplication] applicationState]) {
-      case UIApplicationStateActive:
-        appState = appStateActiveCountDuringBackgroundRefreshKey;
-        break;
-      case UIApplicationStateInactive:
-        appState = appStateInactiveCountDuringBackgroundRefreshKey;
-        break;
-      case UIApplicationStateBackground:
-        appState = appStateBackgroundCountDuringBackgroundRefreshKey;
-        break;
-    }
-    [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+    [weakSelf handleExecutionForTask:task];
   });
+}
 
-  ProceduralBlock completion = ^{
-    [task setTaskCompletedWithSuccess:YES];
-  };
+// Handle task expiration. This is called by the (OS) background task scheduler
+// shortly before the task expires; it is **not called on the main thread**.
+- (void)systemTriggeredExpirationForTask:(BGTask*)task {
+  // Hop to main thread to cancel tasks.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf handleExpiratonForTask:task];
+  });
+}
 
-  // YES if there is at least one due task.
-  BOOL hasDueTasks = NO;
+// Handles `task` execution on the main thread.
+- (void)handleExecutionForTask:(BGTask*)task {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  NSString* appState;
+  switch ([[UIApplication sharedApplication] applicationState]) {
+    case UIApplicationStateActive:
+      appState = appStateActiveCountDuringBackgroundRefreshKey;
+      break;
+    case UIApplicationStateInactive:
+      appState = appStateInactiveCountDuringBackgroundRefreshKey;
+      break;
+    case UIApplicationStateBackground:
+      appState = appStateBackgroundCountDuringBackgroundRefreshKey;
+      break;
+  }
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+
+  [self refreshStarted];
   for (AppRefreshProvider* provider in self.providers) {
     // Only execute due tasks.
     if ([provider isDue]) {
-      hasDueTasks = YES;
+      // Track running providers. The completion handler will remove tasks as
+      // they complete.
+      [self.activeProviders addObject:provider];
+
+      __weak __typeof(self) weakSelf = self;
+      ProceduralBlock completion = ^{
+        [weakSelf handleCompletedProvider:provider forTask:task];
+      };
       [provider handleRefreshWithCompletion:completion];
     }
   }
-
   // TODO(crbug.com/354918794): Remove this code once not needed anymore.
-  if (!hasDueTasks) {
+  if (self.activeProviders.count == 0) {
     [defaults
-        setInteger:[defaults integerForKey:
-                                 appStateDueCountDuringBackgroundRefreshKey] +
-                   1
-            forKey:appStateDueCountDuringBackgroundRefreshKey];
+        setInteger:
+            [defaults integerForKey:noTasksDueCountDuringBackgroundRefreshKey] +
+            1
+            forKey:noTasksDueCountDuringBackgroundRefreshKey];
   }
+}
+
+// Handle `task` running out of execution time.
+- (void)handleExpiratonForTask:(BGTask*)task {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // TODO(crbug.com/354919106): While this should correctly handle task
+  // expiration, there's no mechanism for looging or informing the app as a
+  // whole that this has happened.
+
+  // Cancel all provider tasks. The completion callback will not be called.
+  for (AppRefreshProvider* provider in self.activeProviders) {
+    [provider cancelRefresh];
+  }
+  // Stop tracking all remaining providers.
+  [self.activeProviders removeAllObjects];
+  // Signal that the refresh is complete.
+  [self refreshComplete];
+}
+
+// Handle `provider` completing its work for `task`. If all active providers are
+// complete, mark `task` as complete.
+- (void)handleCompletedProvider:(AppRefreshProvider*)provider
+                        forTask:(BGTask*)task {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self.activeProviders removeObject:provider];
+  if (self.activeProviders.count == 0) {
+    [task setTaskCompletedWithSuccess:YES];
+    [self refreshComplete];
+  }
+}
+
+- (void)refreshStarted {
+  // TODO(crbug.com/354919106): At a minimum, this should signal to the app
+  // state that refresh has started.
+  // Better would be tell the app state to call back when the right init stage
+  // has been reached, which might be immediate. There's currently no control
+  // flow to do this.
+  //
+  // The design intent for this class is that it is agnostic to whether the app
+  // is actually foregrounded or not.
+}
+
+- (void)refreshComplete {
+  // TODO(crbug.com/354919106): Signal to the app state that background refresh
+  // is done. This should, if the app is not yet in the foreground, cause the
+  // app to enter a state where background termination is not considered a
+  // crash.
+  //
+  // The design intent for this class is that it is agnostic to whether the app
+  // is actually foregrounded or not. The app state will care about how to
+  // handle -refreshComplete in the foreground vs the background, but this class
+  // will not.
 }
 
 // Request that app refresh runs no sooner than `delay` seconds from now.
@@ -185,6 +281,7 @@ NSString* appStateDueCountDuringBackgroundRefreshKey =
 // TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
 // providers.
 - (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // Schedule requests only if flag is enabled.
   if (!IsAppBackgroundRefreshEnabled()) {
     return;

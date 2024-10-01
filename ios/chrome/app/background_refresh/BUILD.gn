@@ -24,6 +24,7 @@ source_set("background_refresh") {
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common",
+    "//ios/web/public/thread",
   ]
   frameworks = [
     "Foundation.framework",
