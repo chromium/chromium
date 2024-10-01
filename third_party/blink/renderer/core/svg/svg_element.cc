@@ -664,19 +664,6 @@ bool SVGElement::InUseShadowTree() const {
 }
 
 void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
-  // Note about the 'class' attribute:
-  // The "special storage" (SVGAnimatedString) for the 'class' attribute (and
-  // the 'className' property) is updated by the follow block (|class_name_|
-  // registered in |attribute_to_property_map_|.). SvgAttributeChanged then
-  // triggers the resulting style updates (instead of
-  // Element::ParseAttribute). We don't tell Element about the change to avoid
-  // parsing the class list twice.
-  if (SVGAnimatedPropertyBase* property = PropertyFromAttribute(params.name)) {
-    SVGParsingError parse_error = property->AttributeChanged(params.new_value);
-    ReportAttributeParsingError(parse_error, params.name, params.new_value);
-    return;
-  }
-
   // SVGElement and HTMLElement are handling "nonce" the same way.
   if (params.name == html_names::kNonceAttr) {
     if (params.new_value != g_empty_atom)
@@ -974,6 +961,16 @@ void SVGElement::SendSVGLoadEventToSelfAndAncestorChainIfPossible() {
 }
 
 void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
+  // Note about the 'class' attribute:
+  // The "special storage" (SVGAnimatedString) for the 'class' attribute (and
+  // the 'className' property) is updated by the following block (`class_name_`
+  // returned by PropertyFromAttribute().). SvgAttributeChanged then triggers
+  // the resulting style updates (as well as Element::AttributeChanged()).
+  if (SVGAnimatedPropertyBase* property = PropertyFromAttribute(params.name)) {
+    SVGParsingError parse_error = property->AttributeChanged(params.new_value);
+    ReportAttributeParsingError(parse_error, params.name, params.new_value);
+  }
+
   Element::AttributeChanged(params);
 
   if (params.name == html_names::kIdAttr) {
