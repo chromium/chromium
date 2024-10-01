@@ -181,6 +181,10 @@ const base::FeatureParam<int> kWordMatchSmoothingFactor(
     "WordMatchSmoothingFactor",
     1);
 
+const base::FeatureParam<int> kWordMatchMaxTermCount(&kHistoryEmbeddings,
+                                                     "WordMatchMaxTermCount",
+                                                     3);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

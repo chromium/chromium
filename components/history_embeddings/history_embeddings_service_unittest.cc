@@ -90,7 +90,9 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"SearchPassageMinimumWordCount", "3"}, {"EnableAnswers", "true"}}},
+          {{"SearchPassageMinimumWordCount", "3"},
+           {"EnableAnswers", "true"},
+           {"WordMatchMinEmbeddingScore", "0"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -456,7 +458,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     feature_list_.Reset();
     feature_list_.InitAndEnableFeatureWithParameters(
         kHistoryEmbeddings, {{"SearchPassageMinimumWordCount", "3"},
-                             {"SearchScoreThreshold", "0.5"}});
+                             {"SearchScoreThreshold", "0.5"},
+                             {"WordMatchMinEmbeddingScore", "0"}});
     base::test::TestFuture<SearchResult> future;
     service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
                                 scored_url_rows);
@@ -677,6 +680,43 @@ TEST_F(HistoryEmbeddingsServiceTest, StopWordsExcludedFromQueryTerms) {
   // words in `fake_search_strings_file` test proto.
   EXPECT_EQ(search_params.query_terms,
             std::vector<std::string>({"stop", "words"}));
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
+  AddTestHistoryPage("http://test1.com");
+  OverrideVisibilityScoresForTesting({
+      {"boosted test query", 0.99},
+      {"this very long test query isn't boosted", 0.99},
+      {"test passage 1", 0.99},
+      {"test passage 2", 0.99},
+  });
+  OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search(/*previous_search_result=*/nullptr, "boosted test query",
+                     {}, 1, future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_EQ(result.scored_url_rows.size(), 1u);
+    const ScoredUrlRow& row = result.scored_url_rows[0];
+    // The word "test" in "boosted test query" boosts the score slightly.
+    EXPECT_LT(std::ranges::max(row.scores), row.scored_url.score);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search(/*previous_search_result=*/nullptr,
+                     "this very long test query isn't boosted", {}, 1,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_EQ(result.scored_url_rows.size(), 1u);
+    const ScoredUrlRow& row = result.scored_url_rows[0];
+    // The word "test" makes no difference in the long query because
+    // there are enough terms to disable word match boosting.
+    EXPECT_FLOAT_EQ(std::ranges::max(row.scores), row.scored_url.score);
+  }
 }
 
 }  // namespace history_embeddings
