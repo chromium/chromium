@@ -1784,6 +1784,12 @@ BASE_FEATURE(kMediaSharedBitmapToSharedImage,
              "MediaSharedBitmapToSharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
+             "MediaFoundationD3DVideoProcessing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

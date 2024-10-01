@@ -32,6 +32,7 @@
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/mf_video_processor_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -291,6 +292,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // of the next frame to be encoded.
   bool has_prepared_input_sample_ = false;
 
+  // MF video processor used for color format conversion; only
+  // created if needed.
+  std::unique_ptr<MediaFoundationVideoProcessorAccelerator> mf_video_processor_;
+
   // Variables used by video processing for scaling.
   ComD3D11VideoProcessor video_processor_;
   ComD3D11VideoProcessorEnumerator video_processor_enumerator_;
@@ -330,6 +335,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // output. Every input pushes back a new entry, and outputs consumes entries
   // from the front.
   base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
+  gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds workarounds_;
 
   // This counter starts from 0, used for managing the METransformNeedInput

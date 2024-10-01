@@ -185,7 +185,7 @@ VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format);
 
 // Converts `primaries` into an MFVideoPrimaries value
 MEDIA_EXPORT MFVideoPrimaries
-VideoPrimariesToMFVideoPrimaries(VideoColorSpace::PrimaryID primaries);
+VideoPrimariesToMFVideoPrimaries(gfx::ColorSpace::PrimaryID primaries);
 
 // Callback to transform a Media Foundation sample when converting from the
 // DecoderBuffer if needed.

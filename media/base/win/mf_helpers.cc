@@ -596,21 +596,21 @@ GUID VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format) {
 }
 
 MFVideoPrimaries VideoPrimariesToMFVideoPrimaries(
-    VideoColorSpace::PrimaryID primaries) {
+    gfx::ColorSpace::PrimaryID primaries) {
   switch (primaries) {
-    case VideoColorSpace::PrimaryID::BT709:
+    case gfx::ColorSpace::PrimaryID::BT709:
       return MFVideoPrimaries_BT709;
-    case VideoColorSpace::PrimaryID::BT470M:
+    case gfx::ColorSpace::PrimaryID::BT470M:
       return MFVideoPrimaries_BT470_2_SysM;
-    case VideoColorSpace::PrimaryID::BT470BG:
+    case gfx::ColorSpace::PrimaryID::BT470BG:
       return MFVideoPrimaries_BT470_2_SysBG;
-    case VideoColorSpace::PrimaryID::SMPTE170M:
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
       return MFVideoPrimaries_SMPTE170M;
-    case VideoColorSpace::PrimaryID::SMPTE240M:
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
       return MFVideoPrimaries_SMPTE240M;
-    case VideoColorSpace::PrimaryID::BT2020:
+    case gfx::ColorSpace::PrimaryID::BT2020:
       return MFVideoPrimaries_BT2020;
-    case VideoColorSpace::PrimaryID::EBU_3213_E:
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
       return MFVideoPrimaries_EBU3213;
     default:
       return MFVideoPrimaries_Unknown;
@@ -895,6 +895,13 @@ HRESULT GenerateSampleFromVideoFrame(
   hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
                              kOneMicrosecondInMFSampleTimeUnits);
   RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
+
+  if (frame->ColorSpace().GetPrimaryID() !=
+      gfx::ColorSpace::PrimaryID::INVALID) {
+    hr = sample->SetUINT32(
+        MF_MT_VIDEO_PRIMARIES,
+        VideoPrimariesToMFVideoPrimaries(frame->ColorSpace().GetPrimaryID()));
+  }
 
   *sample_out = sample.Detach();
 

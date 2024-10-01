@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/features.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -102,6 +103,20 @@ constexpr gfx::Size kMinResolution(32, 32);
 // scenarios.
 constexpr uint8_t kH264MinQuantizer = 16;
 constexpr uint8_t kH264MaxQuantizer = 51;
+
+// NV12 is supported natively by all hardware encoders.  Other
+// formats can be converted by MediaFoundationVideoProcessorAccelerator.
+// In the future, specific encoders may also be queried for support
+// for additional formats.  For example, ARGB may be accepted by
+// some encoders directly, or AV1 encoders may accept some 4:4:4
+// formats.
+constexpr auto kSupportedPixelFormats =
+    base::MakeFixedFlatSet<VideoPixelFormat>(
+        {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12});
+constexpr auto kSupportedPixelFormatsD3DVideoProcessing =
+    base::MakeFixedFlatSet<VideoPixelFormat>(
+        {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
+         PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB});
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265, ideally we may reuse Min/MaxQp for H.264 from
@@ -783,6 +798,7 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     CHROME_LUID luid)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       luid_(luid),
+      gpu_preferences_(gpu_preferences),
       workarounds_(gpu_workarounds) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
   bitrate_allocation_.SetBitrate(0, 0, kDefaultTargetBitrate);
@@ -866,6 +882,11 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       }
     }
 
+    if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
+      base::ranges::copy(kSupportedPixelFormatsD3DVideoProcessing,
+                         profile.gpu_supported_pixel_formats.begin());
+    }
+
     SupportedProfile portrait_profile(profile);
     portrait_profile.max_resolution.Transpose();
     portrait_profile.min_resolution.Transpose();
@@ -900,8 +921,18 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   media_log_ = std::move(media_log);
 
-  if (PIXEL_FORMAT_I420 != config.input_format &&
-      PIXEL_FORMAT_NV12 != config.input_format) {
+  bool is_supported_format = false;
+  if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
+    is_supported_format =
+        base::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
+                           config.input_format) != kSupportedPixelFormats.end();
+  } else {
+    is_supported_format =
+        base::ranges::find(kSupportedPixelFormats, config.input_format) !=
+        kSupportedPixelFormats.end();
+  }
+
+  if (!is_supported_format) {
     MEDIA_LOG(ERROR, media_log_)
         << "Input format not supported= "
         << VideoPixelFormatToString(config.input_format);
@@ -1119,6 +1150,44 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     client_->NotifyEncoderInfoChange(encoder_info_);
     encoder_info_sent_ = true;
   }
+
+  if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
+      config.input_format == PIXEL_FORMAT_NV12) {
+    return true;
+  }
+
+  mf_video_processor_ =
+      std::make_unique<MediaFoundationVideoProcessorAccelerator>(
+          gpu_preferences_, workarounds_);
+  MediaFoundationVideoProcessorAccelerator::Config vp_config;
+  vp_config.input_format = config.input_format;
+  vp_config.input_visible_size = config.input_visible_size;
+  // Primaries information is provided per frame and will be
+  // attached to the corresponding IMFSample.  This color
+  // space information now serves as a default if frame
+  // primaries are unknown.
+  vp_config.input_color_space = gfx::ColorSpace::CreateREC709();
+  vp_config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
+  vp_config.output_visible_size = config.input_visible_size;
+  vp_config.output_color_space = gfx::ColorSpace::CreateREC709();
+  if (dxgi_resource_mapping_required_) {
+    hr = mf_video_processor_->Initialize(vp_config, nullptr,
+                                         media_log_->Clone());
+  } else {
+    hr = mf_video_processor_->Initialize(vp_config, dxgi_device_manager_,
+                                         media_log_->Clone());
+  }
+
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+                       "Couldn't initialize MF video processor for color "
+                       "format conversion"});
+    return false;
+  }
+
+  MEDIA_LOG(INFO, media_log_)
+      << "Using video processor to convert from " << config.input_format
+      << " to encoder accepted " << vp_config.output_format;
 
   return true;
 }
@@ -2332,6 +2401,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
   hr = input_sample_->AddBuffer(input_buffer.Get());
   RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+
+  if (mf_video_processor_) {
+    // This sample needs color space conversion
+    ComMFSample vp_input_sample = std::move(input_sample_);
+    hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample_);
+    RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+  }
+
   return S_OK;
 }
 
@@ -2342,6 +2419,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   DCHECK_EQ(frame->storage_type(),
             VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
   DCHECK(dxgi_device_manager_);
+
+  if (mf_video_processor_) {
+    // Using the MF video processor mitigates many of the issues handled below.
+    // - MFVP will resize if needed
+    // - MFVP acquires the texture's keyed mutex when available and
+    //    holds it only for the duration needed.
+    // - MFVP will call SetCurrentLength on the output buffer
+    // - MFVP will output a different texture that can be used
+    //    as encoder input with no synchronization issues.
+    input_sample_ = nullptr;
+    HRESULT hr = mf_video_processor_->Convert(frame, &input_sample_);
+    RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+    return S_OK;
+  }
 
   gfx::GpuMemoryBufferHandle buffer_handle = frame->GetGpuMemoryBufferHandle();
   CHECK(!buffer_handle.is_null());

@@ -95,7 +95,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
-    VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
+    VideoEncodeAccelerator::Config::EncoderType required_encoder_type,
+    bool is_gpu_supported_format) {
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config = VideoEncodeAccelerator::Config(
@@ -161,8 +162,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
   // Override the provided format if incoming frames are RGB -- they'll be
   // converted to I420 or NV12 depending on the VEA configuration.
-  if (is_rgb)
+  if (is_rgb && !is_gpu_supported_format) {
     config.input_format = PIXEL_FORMAT_I420;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (format != PIXEL_FORMAT_I420 ||
@@ -482,9 +484,12 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   auto supported_rc_modes =
       VideoEncodeAccelerator::SupportedRateControlMode::kNoMode;
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
   for (const auto& supported_profile : *supported_profiles) {
     if (supported_profile.profile == profile) {
       supported_rc_modes = supported_profile.rate_control_modes;
+      gpu_supported_pixel_formats =
+          supported_profile.gpu_supported_pixel_formats;
       break;
     }
   }
@@ -501,6 +506,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
+  gpu_supported_pixel_formats_ = std::move(gpu_supported_pixel_formats);
   options_ = options;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
@@ -539,16 +545,22 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
   const bool supported_format =
       format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_I420 || is_rgb;
-  if (!supported_format) {
+  const bool is_gpu_frame =
+      first_frame->HasTextures() || first_frame->HasNativeGpuMemoryBuffer();
+  const bool is_gpu_supported_format =
+      is_gpu_frame &&
+      base::ranges::find(gpu_supported_pixel_formats_, format) !=
+          gpu_supported_pixel_formats_.end();
+  if (!supported_format && !is_gpu_supported_format) {
     InitCompleted(EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
                                 "Unexpected frame format.")
                       .WithData("frame", first_frame->AsHumanReadableString()));
     return;
   }
 
-  auto vea_config =
-      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type(),
-                     supported_rc_modes_, required_encoder_type_);
+  auto vea_config = SetUpVeaConfig(
+      profile_, options_, format, first_frame->storage_type(),
+      supported_rc_modes_, required_encoder_type_, is_gpu_supported_format);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
@@ -1155,9 +1167,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
+  bool is_gpu_supported_format =
+      base::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
+      gpu_supported_pixel_formats_.end();
 
   if (src_frame->HasMappableGpuBuffer() &&
-      src_frame->format() == PIXEL_FORMAT_NV12 &&
+      (src_frame->format() == PIXEL_FORMAT_NV12 || is_gpu_supported_format) &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
     return src_frame;

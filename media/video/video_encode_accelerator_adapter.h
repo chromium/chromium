@@ -188,6 +188,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes_ =
       VideoEncodeAccelerator::kNoMode;
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats_;
   Options options_;
   EncoderInfoCB info_cb_;
   OutputCB output_cb_;

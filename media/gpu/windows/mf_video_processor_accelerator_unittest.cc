@@ -179,10 +179,10 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12) {
   MediaFoundationVideoProcessorAccelerator::Config config;
   config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.input_visible_size = {kWidth, kHeight};
-  config.input_color_space = VideoColorSpace::REC709();
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
   config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   config.output_visible_size = {kWidth, kHeight};
-  config.output_color_space = VideoColorSpace::REC709();
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
   ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
                                           std::make_unique<NullMediaLog>()));
 
@@ -233,10 +233,10 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBResize) {
   MediaFoundationVideoProcessorAccelerator::Config config;
   config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.input_visible_size = {kWidth, kHeight};
-  config.input_color_space = VideoColorSpace::REC709();
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
   config.output_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.output_visible_size = {kWidth / 2, kHeight / 2};
-  config.output_color_space = VideoColorSpace::REC709();
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
   ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
                                           std::make_unique<NullMediaLog>()));
 
@@ -292,10 +292,11 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12Resize) {
   MediaFoundationVideoProcessorAccelerator::Config config;
   config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.input_visible_size = {kWidth, kHeight};
-  config.input_color_space = VideoColorSpace::REC709();
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
   config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   config.output_visible_size = {kWidth / 2, kHeight / 2};
-  config.output_color_space = VideoColorSpace::REC709();
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
+  ;
   ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
                                           std::make_unique<NullMediaLog>()));
 
@@ -364,10 +365,10 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12SizeChange) {
   MediaFoundationVideoProcessorAccelerator::Config config;
   config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.input_visible_size = {kWidth, kHeight};
-  config.input_color_space = VideoColorSpace::REC709();
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
   config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   config.output_visible_size = {kWidth, kHeight};
-  config.output_color_space = VideoColorSpace::REC709();
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
   ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
                                           std::make_unique<NullMediaLog>()));
 
@@ -417,10 +418,10 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12CPU) {
   MediaFoundationVideoProcessorAccelerator::Config config;
   config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
   config.input_visible_size = {kWidth, kHeight};
-  config.input_color_space = VideoColorSpace::REC709();
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
   config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   config.output_visible_size = {kWidth, kHeight};
-  config.output_color_space = VideoColorSpace::REC709();
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
   ASSERT_TRUE(video_processor->Initialize(config, nullptr,
                                           std::make_unique<NullMediaLog>()));
 
