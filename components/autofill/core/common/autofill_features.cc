@@ -41,14 +41,6 @@ BASE_FEATURE(kAutofillCaretExtraction,
              "AutofillCaretExtraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, AutofillAgent's left-click handler tries to treat
-// contenteditables appropriately.
-// This is a kill switch.
-// TODO(crbug.com/341695271): Remove when launched.
-BASE_FEATURE(kAutofillContentEditableLeftClickFix,
-             "AutofillContentEditableLeftClickFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",

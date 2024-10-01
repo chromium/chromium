@@ -1460,10 +1460,6 @@ class AutofillAgentTestClick
                                    %s)",
                                 field_html()));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillContentEditableLeftClickFix};
 };
 
 INSTANTIATE_TEST_SUITE_P(

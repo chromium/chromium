@@ -1594,9 +1594,7 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
   WebElement contenteditable;
   const bool is_focused =
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
-                         contenteditable.Focused() &&
-                         base::FeatureList::IsEnabled(
-                             features::kAutofillContentEditableLeftClickFix));
+                         contenteditable.Focused());
 #if defined(ANDROID)
   HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused);
 #else
