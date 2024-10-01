@@ -15,6 +15,8 @@
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+
+// LINT.IfChange(ToastId)
 enum class ToastId {
   kLinkCopied = 0,
   kMinValue = kLinkCopied,
@@ -23,8 +25,10 @@ enum class ToastId {
   kAddedToReadingList = 3,
   kLensOverlay = 4,
   kNonMilestoneUpdate = 5,
-  kMaxValue = kNonMilestoneUpdate
+  kAddedToComparisonTable = 6,
+  kMaxValue = kAddedToComparisonTable
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
 // Returns the string equivalent name persisted to logs for `toast_id`.
 // New additions should also be added to

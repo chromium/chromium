@@ -9951,6 +9951,7 @@ test("unit_tests") {
       "//chrome/browser/ui/commerce:test_support",
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//components/app_constants",

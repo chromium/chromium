@@ -17,10 +17,13 @@ source_set("toasts") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/commerce:commerce",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox:omnibox",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/toasts/api:toasts",
+    "//components/commerce/core:feature_list",
+    "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common:common",
     "//content/public/browser",
     "//ui/base",

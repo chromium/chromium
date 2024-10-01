@@ -451,6 +451,15 @@ bool CommerceUiTabHelper::IsInRecommendedSet() {
   return product_specifications_controller_->IsInRecommendedSet();
 }
 
+void CommerceUiTabHelper::OnOpenComparePageClicked() {
+  // TODO(b/369238920): Open the comparison page if the page is not opened in
+  // the current window, otherwise switch to the comparison tab.
+}
+
+std::u16string CommerceUiTabHelper::GetComparisonSetName() {
+  return product_specifications_controller_->GetComparisonSetName();
+}
+
 std::u16string CommerceUiTabHelper::GetProductSpecificationsLabel(
     bool is_added) {
   return product_specifications_controller_->GetProductSpecificationsLabel(

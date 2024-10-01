@@ -90,6 +90,15 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
   // product specifications set.
   virtual bool IsInRecommendedSet();
 
+  // A notification that the open button in the added to compare set toast is
+  // clicked. This method will open the compare page in a new tab if the compare
+  // page is not already open in the current window, otherwise it will switch to
+  // that compare page tab.
+  virtual void OnOpenComparePageClicked();
+
+  // Returns the name of the comparison set.
+  virtual std::u16string GetComparisonSetName();
+
   // Returns the label to show on the product specifications icon.
   virtual std::u16string GetProductSpecificationsLabel(bool is_added);
 

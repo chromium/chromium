@@ -164,6 +164,9 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
   }
   product_specifications_service_->SetUrls(product_group_for_page_->uuid,
                                            std::move(existing_url_infos));
+
+  // TODO(b/369238920): Hide the ProductSpecificationIconView.
+
   NotifyHost();
 }
 
@@ -186,6 +189,12 @@ ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
                                                set_name)
                   : l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADD,
                                                set_name);
+}
+
+std::u16string
+ProductSpecificationsPageActionController::GetComparisonSetName() {
+  CHECK(product_group_for_page_.has_value());
+  return base::UTF8ToUTF16(product_group_for_page_->name);
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

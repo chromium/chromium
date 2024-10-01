@@ -46908,4 +46908,10 @@ should be able to be added at any place in this file.
   <affected-action name="Toast.CloseButtonClicked"/>
 </action-suffix>
 
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AddedToComparisonTable" label="Added to comparison table"/>
+  <affected-action name="Toast.ActionButtonClicked"/>
+  <affected-action name="Toast.CloseButtonClicked"/>
+</action-suffix>
+
 </actions>

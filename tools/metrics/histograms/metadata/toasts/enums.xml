@@ -36,6 +36,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Aborted"/>
 </enum>
 
+<!-- LINT.IfChange(ToastId) -->
+
 <enum name="ToastId">
   <int value="0" label="Link Copied"/>
   <int value="1" label="Image Copied"/>
@@ -43,7 +45,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Added to Reading List"/>
   <int value="4" label="Lens Overlay"/>
   <int value="5" label="Non-milestone Update"/>
+  <int value="6" label="Added to comparison table"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
 
 </enums>
 

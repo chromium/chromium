@@ -9,9 +9,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -35,7 +38,8 @@ const char kUrlB[] = "about:blank";
 }  // namespace
 
 class ProductSpecificationsIconViewIntegrationTest
-    : public TestWithBrowserView {
+    : public TestWithBrowserView,
+      public ::testing::WithParamInterface<bool> {
  public:
   ProductSpecificationsIconViewIntegrationTest() {
     MockCommerceUiTabHelper::ReplaceFactory();
@@ -49,7 +53,13 @@ class ProductSpecificationsIconViewIntegrationTest
   ~ProductSpecificationsIconViewIntegrationTest() override = default;
 
   void SetUp() override {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        commerce::kProductSpecifications};
+    if (GetParam()) {
+      enabled_features.push_back(toast_features::kToastFramework);
+      enabled_features.push_back(commerce::kCompareConfirmationToast);
+    }
+    test_features_.InitWithFeatures(enabled_features, /*disabled_features*/ {});
     TestWithBrowserView::SetUp();
 
     account_checker_ = std::make_unique<commerce::MockAccountChecker>();
@@ -106,7 +116,7 @@ class ProductSpecificationsIconViewIntegrationTest
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
 };
 
-TEST_F(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
+TEST_P(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
 
@@ -120,7 +130,7 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
   EXPECT_FALSE(icon_view->GetVisible());
 }
 
-TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
+TEST_P(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
 
@@ -128,11 +138,26 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   auto* icon_view = GetChip();
   EXPECT_TRUE(icon_view->GetVisible());
 
+  if (GetParam()) {
+    ON_CALL(*GetTabHelper(), GetComparisonSetName)
+        .WillByDefault(testing::Return(u"Set"));
+
+    ToastController* toast_controller =
+        browser()->browser_window_features()->toast_controller();
+    EXPECT_FALSE(toast_controller->IsShowingToast());
+  }
+
   EXPECT_CALL(*GetTabHelper(), OnProductSpecificationsIconClicked).Times(1);
   icon_view->ExecuteForTesting();
+
+  if (GetParam()) {
+    ToastController* toast_controller =
+        browser()->browser_window_features()->toast_controller();
+    EXPECT_TRUE(toast_controller->IsShowingToast());
+  }
 }
 
-TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
+TEST_P(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
   std::u16string added_title = u"Added to set";
   std::u16string add_title = u"Add to set";
 
@@ -160,3 +185,7 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
   EXPECT_TRUE(icon_view->GetVisible());
   EXPECT_EQ(icon_view->GetText(), add_title);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProductSpecificationsIconViewIntegrationTest,
+                         testing::Bool());

@@ -563,6 +563,9 @@
   <message name="IDS_COMPARE_ADD_NEW_COLUMN" translateable="false" desc="Label shown on hover for the button for adding a new column in comparison table.">
     Add similar products you want to compare
   </message>
+  <message name="IDS_COMPARE_ADDED_TO_TABLE_TOAST_ACTION_BUTTON" translateable="false" desc="The text for the action button on the added to comparison table confirmation toast. User uses this button to go to comparison table.">
+    Open
+  </message>
   <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
     Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
   </message>
