@@ -267,9 +267,17 @@ int GpuMain(MainFunctionParams parameters) {
   std::unique_ptr<base::SingleThreadTaskExecutor> main_thread_task_executor;
   std::unique_ptr<ui::PlatformEventSource> event_source;
   if (command_line.HasSwitch(switches::kHeadless)) {
+#if BUILDFLAG(IS_MAC)
+    // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP.
+    main_thread_task_executor =
+        std::make_unique<base::SingleThreadTaskExecutor>(
+            base::MessagePumpType::NS_RUNLOOP);
+    main_thread_task_executor->SetWorkBatchSize(2);
+#else
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
             base::MessagePumpType::DEFAULT);
+#endif
   } else {
 #if BUILDFLAG(IS_WIN)
     // The GpuMain thread should not be pumping Windows messages because no UI
@@ -291,6 +299,8 @@ int GpuMain(MainFunctionParams parameters) {
     // Cross-process CoreAnimation requires a CFRunLoop to function at all, and
     // requires a NSRunLoop to not starve under heavy load. See:
     // https://crbug.com/312462#c51 and https://crbug.com/783298
+    // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP. DEFAULT
+    // type does not support NSObject.
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
             base::MessagePumpType::NS_RUNLOOP);

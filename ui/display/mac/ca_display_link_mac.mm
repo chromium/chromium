@@ -253,6 +253,12 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
                          .maximum = refresh_rate,
                          .preferred = refresh_rate};
 
+    // This display link interface requires the task executor of the current
+    // thread (CrGpuMain or VizCompositorThread) to run with
+    // MessagePumpType::NS_RUNLOOP. CADisplayLinkTarget and display_link are
+    // NSObject, and MessagePumpType::DEFAULT does not support system work.
+    // There will be no callbacks (CADisplayLinkTarget::step()) at all if
+    // MessagePumpType NS_RUNLOOP is not chosen during thread initialization.
     [objc_state->display_link addToRunLoop:NSRunLoop.currentRunLoop
                                    forMode:NSDefaultRunLoopMode];
 
