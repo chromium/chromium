@@ -304,38 +304,20 @@
 #pragma mark - SyncErrorSettingsCommandHandler
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
-  if (presentModally) {
-    _syncEncryptionPassphraseTableViewController =
-        [[SyncEncryptionPassphraseTableViewController alloc]
-            initWithBrowser:self.browser];
-    _syncEncryptionPassphraseTableViewController.presentModally = YES;
-    UINavigationController* navigationController =
-        [[UINavigationController alloc]
-            initWithRootViewController:
-                _syncEncryptionPassphraseTableViewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self configureHandlersForRootViewController:
-              _syncEncryptionPassphraseTableViewController];
-    [_navigationController presentViewController:navigationController
-                                        animated:YES
-                                      completion:nil];
-    return;
-  }
-  // If there was a sync error, prompt the user to enter the passphrase.
-  // Otherwise, show the full encryption options.
-  UIViewController<SettingsRootViewControlling>* controllerToPush;
-  if (_syncService->GetUserSettings()->IsPassphraseRequired()) {
-    controllerToPush = _syncEncryptionPassphraseTableViewController =
-        [[SyncEncryptionPassphraseTableViewController alloc]
-            initWithBrowser:self.browser];
-  } else {
-    controllerToPush = _syncEncryptionTableViewController =
-        [[SyncEncryptionTableViewController alloc]
-            initWithBrowser:self.browser];
-  }
-
-  [self configureHandlersForRootViewController:controllerToPush];
-  [_navigationController pushViewController:controllerToPush animated:YES];
+  CHECK(presentModally);
+  _syncEncryptionPassphraseTableViewController =
+      [[SyncEncryptionPassphraseTableViewController alloc]
+          initWithBrowser:self.browser];
+  _syncEncryptionPassphraseTableViewController.presentModally = YES;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_syncEncryptionPassphraseTableViewController];
+  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self configureHandlersForRootViewController:
+            _syncEncryptionPassphraseTableViewController];
+  [_navigationController presentViewController:navigationController
+                                      animated:YES
+                                    completion:nil];
+  return;
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
