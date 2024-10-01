@@ -848,7 +848,9 @@ ci.builder(
             "android_browsertests": targets.mixin(
                 args = [
                     # https://crbug.com/361042311
-                    "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
+                    ("--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*:" +
+                     # https://crbug.com/345100678
+                     "PaymentHandler*"),
                 ],
             ),
             "content_browsertests": targets.mixin(
