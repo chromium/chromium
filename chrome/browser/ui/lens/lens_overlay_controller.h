@@ -862,6 +862,9 @@ class LensOverlayController : public LensSearchboxClient,
   void RecordEndOfSessionMetrics(
       lens::LensOverlayDismissalSource dismissal_source);
 
+  // Launches the Lens overlay HaTS survey if eligible.
+  void MaybeLaunchSurvey();
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
@@ -972,7 +975,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Indicates whether a search has been performed in the current session. Used
   // to record success/abandonment rate, as defined by whether or not a search
   // was performed.
-  bool search_performed_in_session_{false};
+  bool search_performed_in_session_ = false;
 
   // The time at which the overlay was invoked. Used to compute timing metrics.
   base::TimeTicks invocation_time_;
@@ -980,6 +983,11 @@ class LensOverlayController : public LensSearchboxClient,
   // The time at which the overlay was invoked, since epoch. Used to calculate
   // timeToWebUIReady on the WebUI side.
   base::Time invocation_time_since_epoch_;
+
+  // Indicates whether a trigger for the HaTS survey has occurred in the current
+  // session. Note that a trigger does not mean the survey will actually be
+  // shown.
+  bool hats_triggered_in_session_ = false;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is
