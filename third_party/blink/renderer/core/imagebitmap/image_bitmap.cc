@@ -179,6 +179,9 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kNone;
   else
     parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kLow;
+
+  parsed_options.sampling = cc::PaintFlags::FilterQualityToSkSamplingOptions(
+      parsed_options.resize_quality);
   return parsed_options;
 }
 
@@ -260,6 +263,56 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 
   return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
                                                       kShouldInitialize);
+}
+
+// Perform all transformations using a blit, which will result in a new
+// premultiplied-alpha result.
+scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsWithBlit(
+    scoped_refptr<StaticBitmapImage> src,
+    const ImageBitmap::ParsedOptions& options) {
+  // This path will necessarily premultiply alpha. If unmultiplied alpha is
+  // requested and the source was originally unmultiplied, then we this would
+  // break things.
+  CHECK(!options.MustPreserveUnpremulValues());
+
+  auto paint_image = src->PaintImageForCurrentFrame();
+
+  // Compute the parameters for the blit.
+  const SkAlphaType dst_alpha_type =
+      paint_image.GetAlphaType() == kOpaque_SkAlphaType ? kOpaque_SkAlphaType
+                                                        : kPremul_SkAlphaType;
+  auto dst_color_space = paint_image.GetSkImageInfo().refColorSpace();
+  SkIRect source_rect;
+  SkIRect source_rect_valid;
+  SkISize dest_size;
+  options.ComputeSubsetParameters(source_rect, source_rect_valid, dest_size);
+
+  SkImageInfo dst_info = SkImageInfo::Make(dest_size, kN32_SkColorType,
+                                           dst_alpha_type, dst_color_space);
+  auto resource_provider = CreateProvider(
+      paint_image.IsTextureBacked() ? src->ContextProviderWrapper() : nullptr,
+      dst_info, src, true /* fallback_to_software */);
+  if (!resource_provider) {
+    return nullptr;
+  }
+
+  cc::PaintFlags paint;
+  paint.setBlendMode(SkBlendMode::kSrc);
+  cc::PaintCanvas& canvas = resource_provider->Canvas();
+  if (options.flip_y) {
+    if (options.source_orientation.UsesWidthAsHeight()) {
+      canvas.translate(dest_size.width(), 0);
+      canvas.scale(-1, 1);
+    } else {
+      canvas.translate(0, dest_size.height());
+      canvas.scale(1, -1);
+    }
+  }
+  canvas.drawImageRect(paint_image, SkRect::Make(source_rect),
+                       SkRect::Make(dest_size), options.sampling, &paint,
+                       SkCanvas::kStrict_SrcRectConstraint);
+  return resource_provider->Snapshot(FlushReason::kCreateImageBitmap,
+                                     options.source_orientation);
 }
 
 scoped_refptr<StaticBitmapImage> FlipImageVertically(
@@ -485,6 +538,30 @@ scoped_refptr<StaticBitmapImage> BakeOrientation(
                                      input->CurrentFrameOrientation());
 }
 
+scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
+    scoped_refptr<StaticBitmapImage> source,
+    const ImageBitmap::ParsedOptions& options) {
+  const bool needs_flip = options.flip_y;
+  const bool needs_crop = options.source_rect != gfx::Rect(options.source_size);
+  const bool needs_resize = options.source_rect.size() != options.dest_size;
+  const bool needs_strip_orientation = !options.orientation_from_image;
+  const bool needs_strip_color_space = !options.has_color_space_conversion;
+
+  // If we just aren't doing anything, just return the original.
+  if (!needs_flip && !needs_crop && !needs_resize && !needs_strip_orientation &&
+      !needs_strip_color_space) {
+    return source;
+  }
+
+  // Using a blit will premultiply content, so if preserving unmultiplied alpha
+  // is required then use the software path (which needs to be updated).
+  if (options.MustPreserveUnpremulValues()) {
+    return nullptr;
+  }
+
+  return ApplyTransformsFromOptionsWithBlit(source, options);
+}
+
 scoped_refptr<StaticBitmapImage> MakeBlankImage(
     const ImageBitmap::ParsedOptions& parsed_options) {
   SkImageInfo info = SkImageInfo::Make(
@@ -593,7 +670,31 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
 
   return result;
 }
+
 }  // namespace
+
+void ImageBitmap::ParsedOptions::ComputeSubsetParameters(
+    SkIRect& source_skrect,
+    SkIRect& source_skrect_valid,
+    SkISize& dest_sksize) const {
+  gfx::Size unoriented_source_size = source_size;
+  gfx::Size unoriented_dest_size = dest_size;
+  if (source_orientation.UsesWidthAsHeight()) {
+    unoriented_source_size = gfx::TransposeSize(unoriented_source_size);
+    unoriented_dest_size = gfx::TransposeSize(unoriented_dest_size);
+  }
+  auto t = source_orientation.TransformFromDefault(
+      gfx::SizeF(unoriented_source_size));
+  const gfx::Rect source_rect_valid =
+      gfx::IntersectRects(source_rect, gfx::Rect(source_size));
+
+  const gfx::Rect unoriented_source_rect = t.MapRect(source_rect);
+  const gfx::Rect unoriented_source_rect_valid = t.MapRect(source_rect_valid);
+
+  source_skrect = gfx::RectToSkIRect(unoriented_source_rect);
+  source_skrect_valid = gfx::RectToSkIRect(unoriented_source_rect_valid);
+  dest_sksize = gfx::SizeToSkISize(unoriented_dest_size);
+}
 
 sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
     std::unique_ptr<ImageDecoder> decoder) {
@@ -671,8 +772,12 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 
   auto static_input = UnacceleratedStaticBitmapImage::Create(
       std::move(paint_image), input->CurrentFrameOrientation());
-  image_ = CropImageAndApplyColorSpaceConversion(std::move(static_input),
-                                                 parsed_options);
+
+  image_ = ApplyTransformsFromOptions(static_input, parsed_options);
+  if (!image_) {
+    image_ = CropImageAndApplyColorSpaceConversion(std::move(static_input),
+                                                   parsed_options);
+  }
   if (!image_)
     return;
 

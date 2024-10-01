@@ -131,6 +131,10 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                                ExceptionState&) override;
 
   struct ParsedOptions {
+    bool MustPreserveUnpremulValues() const {
+      return source_is_unpremul && !premultiply_alpha;
+    }
+
     // If true, then the final result should be flipped vertically. This happens
     // in the space after `source_orientation` has been applied.
     bool flip_y = false;
@@ -150,12 +154,11 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
     cc::PaintFlags::FilterQuality resize_quality =
         cc::PaintFlags::FilterQuality::kLow;
 
-    // The filter quality specified by the options. This is always set, even
-    // if no resampling is needed.
-    cc::PaintFlags::FilterQuality filter_quality =
-        cc::PaintFlags::FilterQuality::kLow;
+    // The sampling options to use. This will be set to nearest-neighbor if no
+    // resampling is performed.
+    SkSamplingOptions sampling;
 
-    // The orientation of the source. This may be from the source or overridden.
+    // The orientation of the source.
     class ImageOrientation source_orientation;
 
     // The `source_size`, `source_rect`, and `dest_size` parameters are all in
@@ -163,6 +166,15 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
     gfx::Size source_size;
     gfx::Rect source_rect;
     gfx::Size dest_size;
+
+    // Compute the parameters for creating and then resizing a subset of the
+    // source image. In the underlying PaintImage, `source_skrect` corresponds
+    // to `source_rect`, `source_skrect_valid` corresponds to the intersection
+    // of that with the PaintImage size, and `dest_sksize` corresponds to the
+    // output size.
+    void ComputeSubsetParameters(SkIRect& source_skrect,
+                                 SkIRect& source_skrect_valid,
+                                 SkISize& dest_sksize) const;
   };
 
  private:
