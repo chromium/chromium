@@ -42,6 +42,10 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
 
   EolNoticeQuickSettingsView* eol_notice_for_test() { return eol_notice_; }
 
+  // Shows enterprise managed device information.
+  static void ShowEnterpriseInfo(UnifiedSystemTrayController* controller,
+                                 bool showManagementDisclosureDialog);
+
   views::View* GetManagedButtonForTest();
   views::View* GetSupervisedButtonForTest();
   views::Label* GetManagedButtonLabelForTest();
