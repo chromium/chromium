@@ -24,7 +24,7 @@ TEST(AqaResponseParserTest, Valid) {
 
   ParseResponseFuture response_future;
   parser->ParseAsync(
-      "ID:0001,0003 has the answer. The answer is The fox jumps over the dog",
+      "0001,0003 has the answer. The answer is The fox jumps over the dog",
       response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
@@ -58,7 +58,7 @@ TEST(AqaResponseParserTest, RecursiveAnswer) {
 
   ParseResponseFuture response_future;
   parser->ParseAsync(
-      "ID:0001,0003 has the answer. The answer is ID:0002 has the answer. The "
+      "0001,0003 has the answer. The answer is ID:0002 has the answer. The "
       "answer is the fox jumps over the dog.",
       response_future.GetCallback());
   auto maybe_response = response_future.Get();
@@ -73,7 +73,7 @@ TEST(AqaResponseParserTest, RecursiveUnanswerable) {
   auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("ID:0001,0003 has the answer. The answer is unanswerable.",
+  parser->ParseAsync("0001,0003 has the answer. The answer is unanswerable.",
                      response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
@@ -81,6 +81,15 @@ TEST(AqaResponseParserTest, RecursiveUnanswerable) {
   auto response =
       ParsedAnyMetadata<proto::HistoryAnswerResponse>(*maybe_response);
   EXPECT_TRUE(response->is_unanswerable());
+}
+
+TEST(AqaResponseParserTest, SuppressParsingIncompleteResponseAlwaysTrue) {
+  proto::OnDeviceModelExecutionOutputConfig cfg;
+  cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
+  cfg.set_suppress_parsing_incomplete_output(false);
+  auto parser = AqaResponseParserFactory().CreateParser(cfg);
+
+  EXPECT_TRUE(parser->SuppressParsingIncompleteResponse());
 }
 
 }  // namespace optimization_guide

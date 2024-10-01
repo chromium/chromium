@@ -756,6 +756,10 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     return;
   }
 
+  if (!on_device_state_->opts.adapter->ShouldParseResponse(is_complete)) {
+    return;
+  }
+
   std::string safe_response = on_device_state_->current_response.substr(
       0, on_device_state_->latest_safe_raw_output.length);
   on_device_state_->MutableLoggedResponse()->set_output_string(safe_response);

@@ -24,7 +24,15 @@ auto UnanswerableRegex() {
 }
 
 // Regex for a passage ID, capturing ID numbers.
+// The start ID in the answer does not contain the `ID` token.
 // The IDs should be comma-delimited, but there could be arbitrary whitespaces.
+auto StartIdRegex() {
+  static const LazyRE2 re = {"\\s*([0-9,\\s]*[0-9])"};
+  return re.get();
+}
+
+// Regex for capture potentially recursive occurrence of IDs in the middle of
+// the answer.
 auto IdRegex() {
   static const LazyRE2 re = {"ID:\\s*([0-9,\\s]*[0-9])"};
   return re.get();
@@ -58,7 +66,8 @@ optimization_guide::AqaResponseParser::Result ParseAqaResponse(
   base::TrimWhitespaceASCII(redacted_output, base::TRIM_ALL, &raw_prediction);
   std::string_view remaining_prediction_view(raw_prediction);
   std::string id_string;
-  if (!re2::RE2::Consume(&remaining_prediction_view, *IdRegex(), &id_string)) {
+  if (!re2::RE2::Consume(&remaining_prediction_view, *StartIdRegex(),
+                         &id_string)) {
     // Failed to match any ID; the prediction is not parsable.
     return base::unexpected(optimization_guide::ResponseParsingError::kFailed);
   }
@@ -107,6 +116,11 @@ AqaResponseParser::~AqaResponseParser() = default;
 void AqaResponseParser::ParseAsync(const std::string& redacted_output,
                                    ResultCallback result_callback) const {
   std::move(result_callback).Run(ParseAqaResponse(redacted_output));
+}
+
+bool AqaResponseParser::SuppressParsingIncompleteResponse() const {
+  // AQA can only parse complete responses.
+  return true;
 }
 
 AqaResponseParserFactory::AqaResponseParserFactory() = default;

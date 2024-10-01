@@ -77,6 +77,10 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
   return redact_result;
 }
 
+bool OnDeviceModelFeatureAdapter::ShouldParseResponse(bool is_complete) const {
+  return is_complete || !parser_->SuppressParsingIncompleteResponse();
+}
+
 void OnDeviceModelFeatureAdapter::ParseResponse(
     const google::protobuf::MessageLite& request,
     const std::string& model_response,

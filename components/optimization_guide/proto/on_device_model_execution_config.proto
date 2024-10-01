@@ -85,6 +85,9 @@ message OnDeviceModelExecutionOutputConfig {
 
   // Which output parsing implementation to use.
   optional ParserKind parser_kind = 4;
+
+  // Whether to suppress parsing incomplete output.
+  optional bool suppress_parsing_incomplete_output = 5;
 }
 
 message TextSafetyFallbackConfig {

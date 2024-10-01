@@ -41,6 +41,8 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
+  bool ShouldParseResponse(bool is_complete) const;
+
   // Converts model response into this feature's expected response type.
   // Replies with std::nullopt on error.
   void ParseResponse(const google::protobuf::MessageLite& request,

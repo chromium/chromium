@@ -33,6 +33,10 @@ class ResponseParser {
   // Parses redacted model output, returns parsed data via result_callback.
   virtual void ParseAsync(const std::string& redacted_output,
                           ResultCallback result_callback) const = 0;
+
+  virtual bool SuppressParsingIncompleteResponse() const = 0;
+
+ protected:
 };
 
 // Constructs response parsers for a registered type.

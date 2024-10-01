@@ -26,6 +26,8 @@ class SimpleResponseParser final : public ResponseParser {
   void ParseAsync(const std::string& redacted_output,
                   ResultCallback result_callback) const override;
 
+  bool SuppressParsingIncompleteResponse() const override;
+
  private:
   proto::OnDeviceModelExecutionOutputConfig config_;
 };
