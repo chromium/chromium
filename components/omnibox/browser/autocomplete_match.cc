@@ -70,7 +70,12 @@ namespace {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
 // type suggestion icons.
-static gfx::VectorIcon empty_icon;
+
+const gfx::VectorIcon& GetEmptyIcon() {
+  static const gfx::VectorIcon instance;
+  return instance;
+}
+
 #endif
 
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
@@ -582,7 +587,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       // Found), fallthrough to use the empty icon.
       switch (iph_type) {
         case IphType::kNone:
-          return empty_icon;
+          return GetEmptyIcon();
         case IphType::kGemini:
           return omnibox::kSparkIcon;
         case IphType::kFeaturedEnterpriseSearch:
@@ -590,7 +595,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case IphType::kHistoryEmbeddingsSettingsPromo:
           return omnibox::kSparkIcon;
         case IphType::kHistoryEmbeddingsDisclaimer:
-          return empty_icon;
+          return GetEmptyIcon();
         case IphType::kHistoryScopePromo:
           return vector_icons::kHistoryChromeRefreshIcon;
         case IphType::kHistoryEmbeddingsScopePromo:
@@ -598,7 +603,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       }
 
     case Type::SEARCH_SUGGEST_TAIL:
-      return empty_icon;
+      return GetEmptyIcon();
 
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {
