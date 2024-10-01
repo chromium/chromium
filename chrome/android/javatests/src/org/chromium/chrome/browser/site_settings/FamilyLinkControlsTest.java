@@ -55,7 +55,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 public class FamilyLinkControlsTest {
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
-    private SettingsActivity mSettingsActivity;
     private CoreAccountInfo mAccountInfo;
 
     @Rule
@@ -71,7 +70,10 @@ public class FamilyLinkControlsTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mSettingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+
+        // Initialize the browser.
+        SiteSettingsTestUtils.startSiteSettingsMenu("").finish();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mAccountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
@@ -88,11 +90,11 @@ public class FamilyLinkControlsTest {
     @Test
     @SmallTest
     public void testDeletingOnDeviceDataBlockedForSupervisedUsers() {
-        mSettingsActivity =
+        SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.SITE_DATA);
         PreferenceFragmentCompat preferenceFragment =
-                (PreferenceFragmentCompat) mSettingsActivity.getMainFragment();
+                (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
         ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
 
@@ -113,10 +115,10 @@ public class FamilyLinkControlsTest {
                         matches(
                                 withText(
                                         containsString(
-                                                mSettingsActivity.getString(
+                                                settingsActivity.getString(
                                                         org.chromium.chrome.test.R.string
                                                                 .managed_by_your_parent)))));
-        mSettingsActivity.finish();
+        settingsActivity.finish();
     }
 
     @Test
@@ -130,16 +132,16 @@ public class FamilyLinkControlsTest {
                         any(), eq(ContentSettingsType.COOKIES)))
                 .thenReturn(false);
 
-        mSettingsActivity =
+        SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.SITE_DATA);
         PreferenceFragmentCompat preferenceFragment =
-                (PreferenceFragmentCompat) mSettingsActivity.getMainFragment();
+                (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
         ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
 
         // When deleting cookies are not blocked through Family Link the toggle will be enabled
         Assert.assertTrue(binary_toggle.isEnabled());
-        mSettingsActivity.finish();
+        settingsActivity.finish();
     }
 }
