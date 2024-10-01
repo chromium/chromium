@@ -32,7 +32,7 @@ class LogManager;
 @protocol IOSChromePasswordReuseDetectionManagerClientBridge <
     PasswordReuseDetectionManagerClientBridge>
 
-@property(readonly, nonatomic) ChromeBrowserState* browserState;
+@property(readonly, nonatomic) ProfileIOS* profile;
 
 @end
 

@@ -60,14 +60,13 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       password_feature_manager_(
           GetPrefs(),
           GetLocalStatePrefs(),
-          SyncServiceFactory::GetForProfileIfExists(bridge_.browserState)),
+          SyncServiceFactory::GetForProfileIfExists(bridge_.profile)),
       credentials_filter_(this),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
   log_manager_ = autofill::LogManager::Create(
-      ios::PasswordManagerLogRouterFactory::GetForBrowserState(
-          bridge_.browserState),
+      ios::PasswordManagerLogRouterFactory::GetForProfile(bridge_.profile),
       base::RepeatingClosure());
 }
 
@@ -138,7 +137,7 @@ void IOSChromePasswordManagerClient::PromptUserToEnableAutosignin() {
 }
 
 bool IOSChromePasswordManagerClient::IsOffTheRecord() const {
-  return (bridge_.browserState)->IsOffTheRecord();
+  return (bridge_.profile)->IsOffTheRecord();
 }
 
 const password_manager::PasswordManager*
@@ -152,7 +151,7 @@ IOSChromePasswordManagerClient::GetPasswordFeatureManager() const {
 }
 
 PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
-  return (bridge_.browserState)->GetPrefs();
+  return (bridge_.profile)->GetPrefs();
 }
 
 PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
@@ -161,7 +160,7 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return SyncServiceFactory::GetForProfileIfExists(bridge_.browserState);
+  return SyncServiceFactory::GetForProfileIfExists(bridge_.profile);
 }
 
 affiliations::AffiliationService*
@@ -172,22 +171,21 @@ IOSChromePasswordManagerClient::GetAffiliationService() {
 
 PasswordStoreInterface*
 IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
-  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-             bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
+  return IOSChromeProfilePasswordStoreFactory::GetForProfile(
+             bridge_.profile, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
 PasswordStoreInterface*
 IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
-  return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-             bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
+  return IOSChromeAccountPasswordStoreFactory::GetForProfile(
+             bridge_.profile, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
 password_manager::PasswordReuseManager*
 IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
-  return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-      bridge_.browserState);
+  return IOSChromePasswordReuseManagerFactory::GetForProfile(bridge_.profile);
 }
 
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
@@ -284,18 +282,18 @@ IOSChromePasswordManagerClient::GetMetricsRecorder() {
 }
 
 signin::IdentityManager* IOSChromePasswordManagerClient::GetIdentityManager() {
-  return IdentityManagerFactory::GetForProfile(bridge_.browserState);
+  return IdentityManagerFactory::GetForProfile(bridge_.profile);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 IOSChromePasswordManagerClient::GetURLLoaderFactory() {
-  return (bridge_.browserState)->GetSharedURLLoaderFactory();
+  return (bridge_.profile)->GetSharedURLLoaderFactory();
 }
 
 password_manager::PasswordRequirementsService*
 IOSChromePasswordManagerClient::GetPasswordRequirementsService() {
-  return IOSPasswordRequirementsServiceFactory::GetForBrowserState(
-      bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+  return IOSPasswordRequirementsServiceFactory::GetForProfile(
+      bridge_.profile, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
 void IOSChromePasswordManagerClient::UpdateFormManagers() {
@@ -313,6 +311,5 @@ bool IOSChromePasswordManagerClient::IsNewTabPage() const {
 
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
-  return ChromePasswordProtectionServiceFactory::GetForBrowserState(
-      bridge_.browserState);
+  return ChromePasswordProtectionServiceFactory::GetForProfile(bridge_.profile);
 }

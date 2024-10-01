@@ -278,9 +278,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return _webState;
 }
 
-- (ChromeBrowserState*)browserState {
-  return _webState ? ChromeBrowserState::FromBrowserState(
-                         _webState->GetBrowserState())
+- (ProfileIOS*)profile {
+  return _webState ? ProfileIOS::FromBrowserState(_webState->GetBrowserState())
                    : nullptr;
 }
 
@@ -438,10 +437,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     return;
   }
 
-  CHECK(self.browserState);
-  PrefService* prefs = self.browserState->GetPrefs();
+  CHECK(self.profile);
+  PrefService* prefs = self.profile->GetPrefs();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browserState);
+      SyncServiceFactory::GetForProfile(self.profile);
   const std::optional<std::string> accountToStorePassword =
       password_manager::sync_util::GetAccountForSaving(prefs, syncService);
   const password_manager::features_util::PasswordAccountStorageUserState

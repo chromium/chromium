@@ -38,9 +38,9 @@ class PasswordTabHelperTest : public PlatformTest {
  public:
   PasswordTabHelperTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     PasswordTabHelper::CreateForWebState(web_state_.get());
@@ -66,7 +66,7 @@ class PasswordTabHelperTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<PasswordTabHelper> helper_ = nullptr;
   id dispatcher_;

@@ -52,8 +52,7 @@ IOSChromeBulkLeakCheckServiceFactory::~IOSChromeBulkLeakCheckServiceFactory() =
 std::unique_ptr<KeyedService>
 IOSChromeBulkLeakCheckServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
       test_bulk_leak_check_service =
           tests_hook::GetOverriddenBulkLeakCheckService();
@@ -61,6 +60,6 @@ IOSChromeBulkLeakCheckServiceFactory::BuildServiceInstanceFor(
     return test_bulk_leak_check_service;
   }
   return std::make_unique<password_manager::BulkLeakCheckService>(
-      IdentityManagerFactory::GetForProfile(browser_state),
+      IdentityManagerFactory::GetForProfile(profile),
       context->GetSharedURLLoaderFactory());
 }

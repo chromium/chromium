@@ -93,7 +93,7 @@ void AddIssueToForm(PasswordForm* form,
 class PasswordCheckupUtilsTest : public PlatformTest {
  protected:
   PasswordCheckupUtilsTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -105,26 +105,26 @@ class PasswordCheckupUtilsTest : public PlatformTest {
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
-    manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        browser_state_.get());
+    manager_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
   TestPasswordStore& store() { return *store_; }
   IOSChromePasswordCheckManager& manager() { return *manager_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_env_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> manager_;
 };
@@ -257,7 +257,7 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
                                       manager().GetLastPasswordCheckTime()));
 
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
-  browser_state()->GetPrefs()->SetDouble(
+  profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       expected1.InSecondsFSinceUnixEpoch());
 
@@ -265,7 +265,7 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
                                        manager().GetLastPasswordCheckTime()));
 
   base::Time expected2 = base::Time::Now() - base::Minutes(5);
-  browser_state()->GetPrefs()->SetDouble(
+  profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       expected2.InSecondsFSinceUnixEpoch());
 

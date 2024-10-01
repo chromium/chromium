@@ -17,12 +17,16 @@ class PasswordRequirementsService;
 }
 
 // Singleton that owns all PasswordRequirementsService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSPasswordRequirementsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static password_manager::PasswordRequirementsService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
+      ServiceAccessType access_type);
+
+  static password_manager::PasswordRequirementsService* GetForProfile(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
   static IOSPasswordRequirementsServiceFactory* GetInstance();

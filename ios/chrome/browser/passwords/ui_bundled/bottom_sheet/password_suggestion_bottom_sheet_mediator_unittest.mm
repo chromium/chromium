@@ -195,14 +195,14 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PasswordSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()),
-        chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
+        profile_(TestProfileIOS::Builder().Build()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
   }
 
   void SetUp() override {
     test_web_state_->SetCurrentURL(URL());
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
                               ios::FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -218,7 +218,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     consumer_ =
         OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
@@ -249,14 +249,13 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:web_state_list_.get()
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(
-                                       chrome_browser_state_.get())
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   profile_.get())
                    prefService:prefs_.get()
                         params:params_
                   reauthModule:nil
@@ -287,7 +286,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> test_web_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<password_manager::TestPasswordStore> store_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;

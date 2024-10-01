@@ -54,18 +54,17 @@ IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kPasswordReuseDetectionEnabled));
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
   reuse_manager->Init(
-      browser_state->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
       std::make_unique<password_manager::PasswordReuseDetectorImpl>());
   return reuse_manager;

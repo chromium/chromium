@@ -33,9 +33,9 @@ namespace {
 
 // Returns the password store corresponding to the main browser state.
 scoped_refptr<password_manager::PasswordStoreInterface> PasswordStore() {
-  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-             chrome_test_util::GetOriginalBrowserState(),
-             ServiceAccessType::IMPLICIT_ACCESS);
+  return IOSChromeProfilePasswordStoreFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile(),
+      ServiceAccessType::IMPLICIT_ACCESS);
 }
 
 }  // namespace
@@ -81,7 +81,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
       PasswordStore();
   if (passwordStore == nullptr) {
     return testing::NSErrorWithLocalizedDescription(
-        @"PasswordStore is unexpectedly null for BrowserState");
+        @"PasswordStore is unexpectedly null for Profile");
   }
 
   // Store a PasswordForm representing a PasswordCredential.
@@ -139,8 +139,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 + (int)storedCredentialsCount {
   // Obtain a PasswordStore.
   scoped_refptr<PasswordStoreInterface> passwordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState(),
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile(),
           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
 

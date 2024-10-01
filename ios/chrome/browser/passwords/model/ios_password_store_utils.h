@@ -10,6 +10,6 @@
 // Query the password stores and reports multiple metrics. The actual reporting
 // is delayed by 30 seconds, to ensure it doesn't happen during the "hot phase"
 // of Chrome startup.
-void DelayReportingPasswordStoreMetrics(ChromeBrowserState* browser_state);
+void DelayReportingPasswordStoreMetrics(ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_STORE_UTILS_H_

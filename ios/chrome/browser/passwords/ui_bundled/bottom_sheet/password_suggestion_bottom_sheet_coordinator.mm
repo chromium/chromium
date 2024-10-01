@@ -69,15 +69,14 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
         initWithHandler:self
                     URL:URL];
 
-    ChromeBrowserState* browserState =
-        browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
 
     auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     self.reauthModule =
         ScopedPasswordSuggestionBottomSheetReauthModuleOverride::Get();
@@ -86,18 +85,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     }
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:webStateList
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(browserState)
-                   prefService:browserState->GetPrefs()
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   profile)
+                   prefService:profile->GetPrefs()
                         params:params
                   reauthModule:_reauthModule
                            URL:URL
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
-        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
+        sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
              engagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                   GetForProfile(self.browser->GetProfile())];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
   }

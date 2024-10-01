@@ -43,8 +43,7 @@ IOSPasswordManagerSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
 std::unique_ptr<KeyedService>
 IOSPasswordManagerSettingsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<password_manager::PasswordManagerSettingsServiceImpl>(
-      chrome_browser_state->GetPrefs());
+      profile->GetPrefs());
 }

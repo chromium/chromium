@@ -45,7 +45,7 @@ enum class WarningAction;
 
 @protocol IOSChromePasswordManagerClientBridge <PasswordManagerClientBridge>
 
-@property(readonly, nonatomic) ChromeBrowserState* browserState;
+@property(readonly, nonatomic) ProfileIOS* profile;
 
 // Shows UI to notify the user about auto sign in.
 - (void)showAutosigninNotification:

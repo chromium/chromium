@@ -34,8 +34,7 @@ IOSChromePasswordReuseDetectionManagerClient::
         id<IOSChromePasswordReuseDetectionManagerClientBridge> bridge)
     : bridge_(bridge), password_reuse_detection_manager_(this) {
   log_manager_ = autofill::LogManager::Create(
-      ios::PasswordManagerLogRouterFactory::GetForBrowserState(
-          bridge_.browserState),
+      ios::PasswordManagerLogRouterFactory::GetForProfile(bridge_.profile),
       base::RepeatingClosure());
 
   if (IsPasswordReuseDetectionEnabled()) {
@@ -50,8 +49,7 @@ IOSChromePasswordReuseDetectionManagerClient::
 
 password_manager::PasswordReuseManager*
 IOSChromePasswordReuseDetectionManagerClient::GetPasswordReuseManager() const {
-  return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-      bridge_.browserState);
+  return IOSChromePasswordReuseManagerFactory::GetForProfile(bridge_.profile);
 }
 
 const GURL& IOSChromePasswordReuseDetectionManagerClient::GetLastCommittedURL()
@@ -67,21 +65,20 @@ IOSChromePasswordReuseDetectionManagerClient::GetLogManager() {
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordReuseDetectionManagerClient::GetPasswordProtectionService()
     const {
-  return ChromePasswordProtectionServiceFactory::GetForBrowserState(
-      bridge_.browserState);
+  return ChromePasswordProtectionServiceFactory::GetForProfile(bridge_.profile);
 }
 
 bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     const std::string& username) {
   // Password reuse detection is tied to history sync.
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(bridge_.browserState);
+      SyncServiceFactory::GetForProfile(bridge_.profile);
   if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
                            syncer::HISTORY_DELETE_DIRECTIVES)) {
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
-      username, IdentityManagerFactory::GetForProfile(bridge_.browserState),
+      username, IdentityManagerFactory::GetForProfile(bridge_.profile),
       signin::ConsentLevel::kSignin);
 }
 

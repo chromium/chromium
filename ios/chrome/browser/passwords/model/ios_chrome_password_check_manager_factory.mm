@@ -55,16 +55,15 @@ IOSChromePasswordCheckManagerFactory::~IOSChromePasswordCheckManagerFactory() =
 scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return base::MakeRefCounted<IOSChromePasswordCheckManager>(
-      browser_state->GetPrefs(),
-      IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(browser_state),
+      profile->GetPrefs(),
+      IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state),
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForBrowserState(browser_state)));
+          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForProfile(profile)));
 }

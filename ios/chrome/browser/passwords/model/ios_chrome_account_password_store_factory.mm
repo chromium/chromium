@@ -42,7 +42,7 @@ IOSChromeAccountPasswordStoreFactory::GetForProfile(
     ServiceAccessType access_type) {
   // `profile` gets always redirected to a non-Incognito one below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
-  // result in traces in the normal BrowserState without the user knowing it.
+  // result in traces in the normal Profile without the user knowing it.
   if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
       profile->IsOffTheRecord()) {
     return nullptr;
@@ -73,12 +73,11 @@ IOSChromeAccountPasswordStoreFactory::~IOSChromeAccountPasswordStoreFactory() =
 scoped_refptr<RefcountedKeyedService>
 IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(
-          browser_state->GetStatePath(), browser_state->GetPrefs()));
+          profile->GetStatePath(), profile->GetPrefs()));
 
   os_crypt_async::OSCryptAsync* os_crypt_async =
       base::FeatureList::IsEnabled(
@@ -90,20 +89,19 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-          browser_state->GetPrefs(), os_crypt_async));
+          profile->GetPrefs(), os_crypt_async));
 
   AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
 
-  password_store->Init(browser_state->GetPrefs(),
-                       std::move(affiliated_match_helper));
+  password_store->Init(profile->GetPrefs(), std::move(affiliated_match_helper));
 
   password_manager::SanitizeAndMigrateCredentials(
-      CredentialsCleanerRunnerFactory::GetForBrowserState(browser_state),
-      password_store, password_manager::kAccountStore,
-      browser_state->GetPrefs(), base::Minutes(1), base::NullCallback());
+      CredentialsCleanerRunnerFactory::GetForProfile(profile), password_store,
+      password_manager::kAccountStore, profile->GetPrefs(), base::Minutes(1),
+      base::NullCallback());
 
   std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
       password_affiliation_adapter = std::make_unique<
