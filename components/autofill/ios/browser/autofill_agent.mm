@@ -15,6 +15,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/map_util.h"
+#import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/functional/bind.h"
@@ -317,6 +318,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
           completionHandler:(SuggestionHandledCompletion)completion {
   [[UIDevice currentDevice] playInputClick];
   DCHECK(completion);
+  // TODO(crbug.com/366247033): This double-checks the assumption that this
+  // crash is caused by an unexpected suggestion type, and not a nil suggestion.
+  // It can be removed once a root cause for the issue is known.
+  CHECK(suggestion, base::NotFatalUntil::M133);
+
   _suggestionHandledCompletion = [completion copy];
 
   if (suggestion.acceptanceA11yAnnouncement != nil) {
@@ -420,8 +426,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "unknown identifier " << base::to_underlying(suggestion.type);
+    // TODO(crbug.com/366247033): Remove this crash key once the underlying
+    // crash has been fixed.
+    SCOPED_CRASH_KEY_NUMBER("Bug366247033", "suggestion_type",
+                            static_cast<int>(suggestion.type));
+    NOTREACHED(base::NotFatalUntil::M133);
   }
 }
 
