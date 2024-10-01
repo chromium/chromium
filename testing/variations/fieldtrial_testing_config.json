@@ -6871,6 +6871,21 @@
             ]
         }
     ],
+    "CrOSLateBootResourcedVmmmsReclaimEntireTarget": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootResourcedVmmmsReclaimEntireTarget"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSchedTrace": [
         {
             "platforms": [
