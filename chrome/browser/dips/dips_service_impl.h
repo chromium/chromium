@@ -131,6 +131,9 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
   // DipsDelegate::OnDipsServiceCreated(). On subsequent calls, it does nothing.
   void MaybeNotifyCreated(base::PassKey<DIPSServiceFactory>);
 
+  // Notify Observers that a stateful bounce took place in `web_contents`.
+  void NotifyStatefulBounce(content::WebContents* web_contents);
+
  private:
   std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
 

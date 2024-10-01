@@ -306,7 +306,17 @@ std::unique_ptr<dips::PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
                           base::Unretained(this)));
 }
 
-DIPSServiceImpl::~DIPSServiceImpl() = default;
+DIPSServiceImpl::~DIPSServiceImpl() {
+  // Some UserData may interact with `this` during their destruction. Delete
+  // them now, before it's too late. If we don't delete them manually,
+  // ~SupportsUserData() will, but `this` will be invalid at that time.
+  //
+  // Note that we can't put this call in ~DIPSService() either, even though
+  // DIPSService is the class that directly inherits from SupportsUserData.
+  // Because when ~DIPSService() is called, it's undefined behavior to call
+  // pure virtual functions like DIPSService::RemoveObserver().
+  ClearAllUserData();
+}
 
 /* static */
 DIPSServiceImpl* DIPSServiceImpl::Get(content::BrowserContext* context) {
@@ -680,4 +690,10 @@ void DIPSServiceImpl::MaybeNotifyCreated(base::PassKey<DIPSServiceFactory>) {
 
   delegate_notified_ = true;  // Set this first to prevent infinite recursion.
   ChromeDipsDelegate::Create()->OnDipsServiceCreated(browser_context_, this);
+}
+
+void DIPSServiceImpl::NotifyStatefulBounce(content::WebContents* web_contents) {
+  for (auto& observer : observers_) {
+    observer.OnStatefulBounce(web_contents);
+  }
 }

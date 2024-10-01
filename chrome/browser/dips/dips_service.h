@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 
@@ -17,11 +18,12 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 // When DIPS moves to //content, DIPSService will be exposed in the Content API,
 // available to embedders such as Chrome.
-class DIPSService {
+class DIPSService : public base::SupportsUserData {
  public:
   using DeletedSitesCallback =
       base::OnceCallback<void(const std::vector<std::string>& sites)>;
@@ -29,12 +31,11 @@ class DIPSService {
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) = 0;
+    virtual void OnStatefulBounce(content::WebContents* web_contents) {}
+    virtual void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) {}
   };
 
   static DIPSService* Get(content::BrowserContext* context);
-
-  virtual ~DIPSService() = default;
 
   virtual void RecordBrowserSignIn(std::string_view domain) = 0;
 

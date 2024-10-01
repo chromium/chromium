@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
+#include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/dips_delegate.h"
@@ -48,4 +49,5 @@ void ChromeDipsDelegate::OnDipsServiceCreated(
     DIPSService* dips_service) {
   // Create DIPSBrowserSigninDetector.
   CHECK(DIPSBrowserSigninDetector::Get(browser_context));
+  dips::StatefulBounceCounter::CreateFor(dips_service);
 }

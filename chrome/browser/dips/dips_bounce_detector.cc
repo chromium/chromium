@@ -127,24 +127,7 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
       &DIPSWebContentsObserver::EmitDIPSIssue, weak_factory_.GetWeakPtr());
 }
 
-DIPSWebContentsObserver::~DIPSWebContentsObserver() {
-  // Some UserData may interact with `this` during their destruction. Delete
-  // them now, before it's too late. If we don't delete them manually,
-  // ~SupportsUserData() will, but `this` will be invalid at that time.
-  ClearAllUserData();
-}
-
-DIPSWebContentsObserver::Observer::~Observer() {
-  CHECK(!IsInObserverList());
-}
-
-void DIPSWebContentsObserver::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DIPSWebContentsObserver::RemoveObserver(const Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
+DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -618,9 +601,7 @@ void DIPSWebContentsObserver::OnStatefulBounce(const GURL& final_url) {
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.OnStatefulBounce(web_contents());
-  }
+  dips_service_->NotifyStatefulBounce(web_contents());
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
