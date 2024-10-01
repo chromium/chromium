@@ -5169,6 +5169,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Socket.SkipCompletionPortOnSuccessOutcome"
+    enum="SkipCompletionPortOnSuccessOutcome" expires_after="2025-02-01">
+  <owner>fdoray@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    The outcome of enabling the FILE_SKIP_COMPLETION_PORT_ON_SUCCESS option on a
+    TcpSocketIoCompletionPortWin. Recorded for 1/1000 attempts to set the
+    option.
+  </summary>
+</histogram>
+
 <histogram name="Net.SocketUnchangeableReceiveBuffer" units="Bytes"
     expires_after="2025-07-01">
   <owner>dschinazi@chromium.org</owner>

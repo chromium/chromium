@@ -10,9 +10,11 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_win.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/object_watcher.h"
@@ -25,6 +27,15 @@
 namespace net {
 
 namespace {
+
+// Outcome of setting FILE_SKIP_COMPLETION_PORT_ON_SUCCESS on a socket. Used in
+// UMA histograms so should not be renumbered.
+enum class SkipCompletionPortOnSuccessOutcome {
+  kNotSupported,
+  kSetFileCompletionNotificationModesFailed,
+  kSuccess,
+  kMaxValue = kSuccess
+};
 
 bool g_skip_completion_port_on_success_enabled = true;
 
@@ -68,6 +79,17 @@ bool SkipCompletionPortOnSuccessIsSupported() {
   // Too many protocol retrieval attempts failed due to insufficient buffer
   // length.
   return false;
+}
+
+// Returns true for 1/1000 calls, indicating if a subsampled histogram should be
+// recorded.
+bool ShouldRecordSubsampledHistogram() {
+  // Not using `base::MetricsSubSampler` because it's not thread-safe sockets
+  // could be used from multiple threads.
+  static std::atomic<uint64_t> counter = base::RandUint64();
+  // Relaxed memory order since there is no dependent memory access.
+  uint64_t val = counter.fetch_add(1, std::memory_order_relaxed);
+  return val % 1000 == 0;
 }
 
 class WSAEventHandleTraits {
@@ -357,12 +379,15 @@ void TcpSocketIoCompletionPortWin::EnsureOverlappedIOInitialized() {
     return;
   }
 
+  // Register the `CoreImpl` as an I/O handler for the socket.
   CoreImpl& core = GetCoreImpl();
   auto hresult = base::CurrentIOThread::Get()->RegisterIOHandler(
       reinterpret_cast<HANDLE>(socket_), &core);
   CHECK(SUCCEEDED(hresult));
   registered_as_io_handler_ = true;
 
+  // Activate an option to skip the completion port when an operation completes
+  // immediately.
   static const bool skip_completion_port_on_success_is_supported =
       SkipCompletionPortOnSuccessIsSupported();
   if (g_skip_completion_port_on_success_enabled &&
@@ -371,6 +396,23 @@ void TcpSocketIoCompletionPortWin::EnsureOverlappedIOInitialized() {
         reinterpret_cast<HANDLE>(socket_),
         FILE_SKIP_COMPLETION_PORT_ON_SUCCESS);
     skip_completion_port_on_success_ = (result != 0);
+  }
+
+  // Report the outcome of activating an option to skip the completion port when
+  // an operation completes immediately to UMA. Subsampled for efficiency.
+  if (ShouldRecordSubsampledHistogram()) {
+    SkipCompletionPortOnSuccessOutcome outcome;
+    if (skip_completion_port_on_success_) {
+      outcome = SkipCompletionPortOnSuccessOutcome::kSuccess;
+    } else if (skip_completion_port_on_success_is_supported) {
+      outcome = SkipCompletionPortOnSuccessOutcome::
+          kSetFileCompletionNotificationModesFailed;
+    } else {
+      outcome = SkipCompletionPortOnSuccessOutcome::kNotSupported;
+    }
+
+    base::UmaHistogramEnumeration(
+        "Net.Socket.SkipCompletionPortOnSuccessOutcome", outcome);
   }
 }
 

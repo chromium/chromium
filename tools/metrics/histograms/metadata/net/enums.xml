@@ -2431,6 +2431,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="TooBigDictionary"/>
 </enum>
 
+<enum name="SkipCompletionPortOnSuccessOutcome">
+  <int value="0"
+      label="Not all available transport protocols return Installable File
+             System (IFS) handles"/>
+  <int value="1" label="SetFileCompletionNotificationModes failed"/>
+  <int value="2" label="Succeeded"/>
+</enum>
+
 <enum name="SpdyFrameFlowControlState">
   <int value="0" label="Send not stalled"/>
   <int value="1" label="Send stalled by stream"/>
