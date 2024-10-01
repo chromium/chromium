@@ -555,4 +555,32 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   }
 }
 
+// Tests PIN-only related settings in the ChromeOS settings page.
+class OSSettingsPinOnlySetupTest : public OSSettingsLockScreenBrowserTestBase {
+ public:
+  OSSettingsPinOnlySetupTest()
+      : OSSettingsLockScreenBrowserTestBase(
+            ash::AshAuthFactor::kCryptohomePin) {
+    cryptohome_->set_supports_low_entropy_credentials(true);
+  }
+
+  mojom::PinSettingsApiAsyncWaiter GoToPinSettings(
+      mojom::LockScreenSettingsAsyncWaiter& lock_screen_settings) {
+    pin_settings_remote_ = mojo::Remote(lock_screen_settings.GoToPinSettings());
+    return mojom::PinSettingsApiAsyncWaiter(pin_settings_remote_.get());
+  }
+
+ private:
+  mojo::Remote<mojom::PinSettingsApi> pin_settings_remote_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+// Tests that the PIN control is disabled when PIN is the only factor.
+IN_PROC_BROWSER_TEST_F(OSSettingsPinOnlySetupTest, PinOnlyRemobalDisabled) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertMoreButtonDisabled(true);
+}
+
 }  // namespace ash::settings
