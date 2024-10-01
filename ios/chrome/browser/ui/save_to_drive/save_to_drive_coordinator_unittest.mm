@@ -51,15 +51,13 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    drive_service_ =
-        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
-    pref_service_ = browser_state_->GetPrefs();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+    pref_service_ = profile_->GetPrefs();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
     browser_->GetWebStateList()->InsertWebState(
@@ -127,7 +125,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
