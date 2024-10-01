@@ -5,16 +5,18 @@
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 
 std::unique_ptr<NativeScreenCapturePicker>
 MaybeCreateNativeScreenCapturePicker() {
 #if BUILDFLAG(IS_MAC)
-  return CreateNativeScreenCapturePickerMac();
-#else
-  return nullptr;
+  if (base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
+    return CreateNativeScreenCapturePickerMac();
+  }
 #endif
+  return nullptr;
 }
 
 }  // namespace content
