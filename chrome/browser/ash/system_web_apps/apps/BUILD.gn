@@ -144,6 +144,7 @@ static_library("apps") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/resources/ash/settings:resources",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:channel_info",
@@ -290,6 +291,7 @@ source_set("unit_tests") {
     "//ash/webui/boca_ui",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//testing/gtest",
 
     # Tests from subdirectories:

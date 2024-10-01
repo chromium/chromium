@@ -159,6 +159,7 @@ static_library("devtools") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/flags_ui",

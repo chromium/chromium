@@ -1975,7 +1975,7 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/startup:startup_tab",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/zoom",
@@ -4251,7 +4251,16 @@ static_library("browser") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
-      "//chrome/browser/ui/tabs:tabs",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:impl",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_group_impl",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/tabs:tab_menu_impl",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_model_impl",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/toolbar/cast:impl",
@@ -4414,6 +4423,11 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/signin:login_impl",
       "//chrome/browser/ui/media_router:impl",
+      "//chrome/browser/ui/tabs:impl",
+      "//chrome/browser/ui/tabs:tab_menu_impl",
+      "//chrome/browser/ui/tabs:tab_group_impl",
+      "//chrome/browser/ui/tabs:tab_model_impl",
+      "//chrome/browser/ui/tabs:tab_strip_impl",
     ]
 
     #!is_android
@@ -9163,8 +9177,6 @@ static_library("test_support") {
       "speech/fake_speech_recognition_service.h",
       "speech/fake_speech_recognizer.cc",
       "speech/fake_speech_recognizer.h",
-      "ui/tabs/tab_activity_simulator.cc",
-      "ui/tabs/tab_activity_simulator.h",
     ]
     deps += [
       "//chrome/browser/apps/app_service",

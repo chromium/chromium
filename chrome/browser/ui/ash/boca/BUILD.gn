@@ -20,6 +20,8 @@ static_library("boca") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/favicon",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/app_constants",
     "//components/app_restore",
     "//content/public/browser",

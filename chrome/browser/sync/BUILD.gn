@@ -159,6 +159,7 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/themes",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
     ]
 

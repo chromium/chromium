@@ -185,6 +185,7 @@ source_set("signin_impl") {
 
     deps += [
       ":login",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/webui:webui_util",
       "//components/keyed_service/content",
       "//components/policy/core/browser",

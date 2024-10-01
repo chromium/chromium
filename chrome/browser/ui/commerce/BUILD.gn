@@ -79,7 +79,7 @@ source_set("test_support") {
   deps = [
     ":commerce",
     "//base",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//skia:skia_core_public_headers",
     "//testing/gmock",
     "//ui/views",

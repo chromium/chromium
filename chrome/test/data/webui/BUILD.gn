@@ -190,7 +190,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/whats_new",

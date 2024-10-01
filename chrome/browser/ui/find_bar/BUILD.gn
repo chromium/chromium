@@ -46,6 +46,7 @@ source_set("impl") {
   if (is_mac) {
     sources += [ "find_bar_platform_helper_mac.mm" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 

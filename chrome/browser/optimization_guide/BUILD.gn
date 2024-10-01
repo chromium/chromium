@@ -69,6 +69,8 @@ source_set("impl") {
       "//base",
       "//chrome/browser/optimization_guide/android:jni_headers",
     ]
+  } else {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 

@@ -97,6 +97,7 @@ source_set("impl") {
 
     deps += [
       "//chrome/browser/pdf",
+      "//chrome/browser/ui/tabs",
       "//components/guest_view/browser",
     ]
   }
@@ -168,6 +169,10 @@ source_set("content_settings_util_impl") {
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
 }
 
 if (!is_android) {
@@ -208,6 +213,7 @@ if (!is_android) {
       deps += [
         "//build:chromeos_buildflags",
         "//chrome/browser",
+        "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/common:chrome_features",
         "//chrome/common:constants",
         "//chrome/test:test_support",
@@ -295,6 +301,7 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/tabs",
       "//chrome/common/extensions",
       "//chrome/common/extensions/api",
     ]

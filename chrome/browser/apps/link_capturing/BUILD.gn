@@ -154,6 +154,7 @@ source_set("app_service_browser_tests") {
     ":test_support",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",

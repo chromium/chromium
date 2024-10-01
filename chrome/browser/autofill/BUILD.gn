@@ -185,6 +185,7 @@ if (!is_android) {
     deps = [
       "//chrome/browser/autofill",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:test_support",
@@ -212,6 +213,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -236,6 +238,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

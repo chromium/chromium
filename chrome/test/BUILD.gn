@@ -755,10 +755,6 @@ static_library("test_support") {
       "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.cc",
       "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.h",
       "../browser/ui/profiles/profile_ui_test_utils.h",
-      "../browser/ui/tabs/pinned_tab_test_utils.cc",
-      "../browser/ui/tabs/pinned_tab_test_utils.h",
-      "../browser/ui/tabs/test_util.cc",
-      "../browser/ui/tabs/test_util.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
       "../browser/ui/test/pixel_test_configuration_mixin.h",
       "../browser/ui/test/test_browser_dialog.cc",
@@ -1837,7 +1833,10 @@ if (!is_android) {
       "../browser/media/webrtc/webrtc_browsertest_common.cc",
       "../browser/media/webrtc/webrtc_browsertest_common.h",
     ]
-    deps = [ ":test_support" ]
+    deps = [
+      ":test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
   }
 
   test("browser_tests") {
@@ -1999,7 +1998,11 @@ if (!is_android) {
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:browser_tests",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views/bubble",
@@ -3092,9 +3095,7 @@ if (!is_android) {
       "../browser/ui/tab_ui_helper_browsertest.cc",
       "../browser/ui/tabs/organization/tab_declutter_controller_browsertest.cc",
       "../browser/ui/tabs/organization/tab_sensitivity_cache_browsertest.cc",
-      "../browser/ui/tabs/pinned_tab_service_browsertest.cc",
       "../browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_browsertest.cc",
-      "../browser/ui/tabs/tab_strip_model_browsertest.cc",
       "../browser/ui/test/browser_ui_browsertest.cc",
       "../browser/ui/test/browser_ui_test_base.cc",
       "../browser/ui/test/browser_ui_test_base.h",
@@ -3269,6 +3270,8 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    public_deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
 
     if (is_android) {
       sources += [ "../browser/dom_distiller/tab_utils_browsertest.cc" ]
@@ -4957,6 +4960,7 @@ if (!is_android) {
         "//chrome/browser/ui/chromeos/read_write_cards",
         "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
         "//chrome/browser/ui/quick_answers",
+        "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/views/borealis:browser_tests",
         "//chrome/browser/ui/views/bruschetta:browser_tests",
         "//chrome/browser/ui/views/crostini",
@@ -7809,29 +7813,13 @@ test("unit_tests") {
       "../browser/ui/tab_contents/core_tab_helper_unittest.cc",
       "../browser/ui/tab_contents/tab_contents_iterator_unittest.cc",
       "../browser/ui/tab_sharing/tab_sharing_infobar_delegate_unittest.cc",
-      "../browser/ui/tabs/existing_base_sub_menu_model_unittest.cc",
-      "../browser/ui/tabs/existing_tab_group_sub_menu_model_unittest.cc",
-      "../browser/ui/tabs/existing_window_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_service_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_unittest.cc",
       "../browser/ui/tabs/organization/trigger_observer_unittest.cc",
       "../browser/ui/tabs/organization/trigger_policies_unittest.cc",
       "../browser/ui/tabs/organization/trigger_unittest.cc",
-      "../browser/ui/tabs/pinned_tab_codec_unittest.cc",
-      "../browser/ui/tabs/pinned_tab_service_unittest.cc",
-      "../browser/ui/tabs/recent_tabs_builder_test_helper.cc",
-      "../browser/ui/tabs/recent_tabs_builder_test_helper.h",
-      "../browser/ui/tabs/recent_tabs_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service_unittest.cc",
       "../browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy_unittest.cc",
-      "../browser/ui/tabs/supports_handles_unittest.cc",
-      "../browser/ui/tabs/tab_collection_storage_unittest.cc",
-      "../browser/ui/tabs/tab_collection_unittest.cc",
-      "../browser/ui/tabs/tab_menu_model_unittest.cc",
-      "../browser/ui/tabs/tab_strip_model_stats_recorder_unittest.cc",
-      "../browser/ui/tabs/tab_strip_model_unittest.cc",
-      "../browser/ui/tabs/test_tab_strip_model_delegate.cc",
-      "../browser/ui/tabs/test_tab_strip_model_delegate.h",
       "../browser/ui/thumbnails/thumbnail_capture_driver_unittest.cc",
       "../browser/ui/thumbnails/thumbnail_image_unittest.cc",
       "../browser/ui/thumbnails/thumbnail_scheduler_impl_unittest.cc",
@@ -7994,6 +7982,11 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/webui/settings",
     ]
 
@@ -10959,6 +10952,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/views/bubble",
@@ -11301,6 +11295,10 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/media_router",
+        "//chrome/browser/ui/tabs",
+        "//chrome/browser/ui/tabs:tab_group",
+        "//chrome/browser/ui/tabs:tab_menu",
+        "//chrome/browser/ui/tabs:tab_model",
         "//chrome/browser/ui/toolbar/cast",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",

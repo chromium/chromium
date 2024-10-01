@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/signin",
     "//chrome/common",
     "//components/prefs",

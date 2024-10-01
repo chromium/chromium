@@ -121,6 +121,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
     "//chrome/common:buildflags",

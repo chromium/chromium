@@ -31,6 +31,9 @@ source_set("tab_groups") {
   deps = [
     "//chrome/browser/extensions",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common/extensions",
     "//content/public/browser",
     "//extensions/common",

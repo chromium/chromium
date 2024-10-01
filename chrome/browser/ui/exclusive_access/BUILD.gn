@@ -50,6 +50,7 @@ source_set("exclusive_access") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

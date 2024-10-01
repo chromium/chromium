@@ -105,6 +105,7 @@ source_set("feedback_impl") {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//components/device_event_log",
       "//components/feedback",

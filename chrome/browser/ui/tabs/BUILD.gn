@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
 # This is the public interface for tabs in a desktop browser. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
-source_set("tabs") {
+source_set("tabs_public") {
   public = [
     "public/tab_features.h",
     "public/tab_interface.h",
@@ -24,12 +26,312 @@ source_set("tab_enums") {
   sources = [ "tab_enums.h" ]
 }
 
-# This is pulled out in a standalone target as its include is spread
-# all around //chrome/browser and it was part of //chrome/browser/ui:ui.
-# As a result, it created quite a few of circular dependencies when
-# directories in //c/b and //c/b/ui began to be modularized.
-# TODO(crbug.com/364501603): modularize all the rest.
 if (!is_android) {
+  source_set("tab_menu") {
+    sources = [
+      "tab_menu_model.h",
+      "tab_menu_model_delegate.h",
+      "tab_menu_model_factory.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//ui/base",
+    ]
+  }
+
+  source_set("tab_menu_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "tab_menu_model.cc",
+      "tab_menu_model_factory.cc",
+    ]
+
+    deps = [
+      ":tab_menu",
+      ":tab_model",
+      ":tab_strip",
+      ":tabs",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/commerce",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//components/commerce/core:commerce_constants",
+      "//components/commerce/core:feature_list",
+      "//components/feed:feature_list",
+      "//components/reading_list/features:flags",
+    ]
+  }
+
+  source_set("tab_group") {
+    sources = [
+      "tab_group.h",
+      "tab_group_controller.h",
+      "tab_group_deletion_dialog_controller.h",
+      "tab_group_model.h",
+      "tab_group_tab_collection.h",
+      "tab_group_theme.h",
+    ]
+
+    public_deps = [
+      ":tab_strip_model_observer",
+      "//base",
+      "//components/tab_groups",
+      "//ui/color:color_headers",
+      "//ui/gfx/range",
+    ]
+  }
+
+  source_set("tab_group_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "tab_group.cc",
+      "tab_group_deletion_dialog_controller.cc",
+      "tab_group_model.cc",
+      "tab_group_tab_collection.cc",
+      "tab_group_theme.cc",
+    ]
+
+    deps = [
+      ":tab_group",
+      ":tab_model",
+      ":tab_strip_model_observer",
+      ":tabs",
+      "//chrome/browser/favicon",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/color:color_headers",
+      "//components/tab_groups",
+    ]
+  }
+
+  source_set("tab_model") {
+    sources = [
+      "existing_base_sub_menu_model.h",
+      "existing_tab_group_sub_menu_model.h",
+      "existing_window_sub_menu_model.h",
+      "recent_tabs_sub_menu_model.h",
+      "tab_model.h",
+    ]
+
+    public_deps = [
+      ":tab_strip_model_observer",
+      ":tabs",
+      ":tabs_public",
+      "//base",
+      "//components/favicon/core",
+      "//components/sessions",
+      "//components/sync_sessions",
+      "//components/tab_groups",
+      "//content/public/browser",
+      "//ui/base",
+    ]
+
+    if (is_chromeos) {
+      sources += [ "existing_window_sub_menu_model_chromeos.h" ]
+    }
+  }
+
+  source_set("tab_model_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "existing_base_sub_menu_model.cc",
+      "existing_tab_group_sub_menu_model.cc",
+      "existing_window_sub_menu_model.cc",
+      "tab_model.cc",
+    ]
+
+    deps = [
+      ":tab_group",
+      ":tab_menu",
+      ":tab_model",
+      ":tab_strip",
+      ":tabs",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//components/tab_groups",
+    ]
+
+    if (is_chromeos) {
+      sources += [ "existing_window_sub_menu_model_chromeos.cc" ]
+
+      deps += [ "//chromeos/ui/wm" ]
+    }
+  }
+
+  source_set("tab_strip") {
+    sources = [
+      "tab_strip_collection.h",
+      "tab_strip_model.h",
+      "tab_strip_model_delegate.h",
+      "tab_strip_model_stats_recorder.h",
+      "tab_strip_prefs.h",
+      "tab_strip_scrubbing_metrics.h",
+      "tab_strip_user_gesture_details.h",
+    ]
+
+    public_deps = [
+      ":tab_group",
+      ":tab_model",
+      ":tab_strip_model_observer",
+      ":tabs",
+      "//base",
+      "//components/sessions:session_id",
+      "//components/tab_groups",
+      "//ui/base",
+    ]
+  }
+
+  source_set("tab_strip_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "tab_strip_collection.cc",
+      "tab_strip_model.cc",
+      "tab_strip_model_delegate.cc",
+      "tab_strip_model_stats_recorder.cc",
+      "tab_strip_prefs.cc",
+      "tab_strip_scrubbing_metrics.cc",
+    ]
+
+    deps = [
+      ":tab_group",
+      ":tab_model",
+      ":tab_strip",
+      ":tab_strip_model_observer",
+      ":tabs",
+      "//chrome/app:command_ids",
+      "//chrome/browser/commerce",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/reading_list",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/web_applications",
+      "//components/commerce/core:utils",
+      "//components/content_settings/core/browser",
+      "//components/feature_engagement/public",
+      "//components/pref_registry",
+      "//components/reading_list/core",
+      "//components/tab_groups",
+      "//components/web_modal",
+      "//components/webapps/common",
+    ]
+  }
+
+  source_set("tabs") {
+    sources = [
+      "features.h",
+      "hover_tab_selector.h",
+      "pinned_tab_codec.h",
+      "pinned_tab_collection.h",
+      "pinned_tab_service.h",
+      "pinned_tab_service_factory.h",
+      "supports_handles.h",
+      "tab_collection.h",
+      "tab_collection_storage.h",
+      "tab_contents_data.h",
+      "tab_renderer_data.h",
+      "tab_style.h",
+      "tab_types.h",
+      "tab_utils.h",
+      "unpinned_tab_collection.h",
+    ]
+
+    public_deps = [
+      ":tab_enums",
+      ":tab_group",
+      ":tab_strip_model_observer",
+      ":tabs_public",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/startup:startup_tab",
+      "//components/keyed_service/core",
+      "//content/public/browser",
+      "//skia",
+      "//ui/base",
+      "//ui/color:color_headers",
+      "//ui/gfx",
+      "//ui/gfx:color_utils",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+
+    allow_circular_includes_from = [ ":tab_group" ]
+  }
+
+  source_set("impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "features.cc",
+      "hover_tab_selector.cc",
+      "pinned_tab_codec.cc",
+      "pinned_tab_collection.cc",
+      "pinned_tab_service.cc",
+      "pinned_tab_service_factory.cc",
+      "recent_tabs_sub_menu_model.cc",
+      "tab_collection_storage.cc",
+      "tab_contents_data.cc",
+      "tab_features.cc",
+      "tab_renderer_data.cc",
+      "tab_style.cc",
+      "tab_utils.cc",
+      "unpinned_tab_collection.cc",
+    ]
+
+    deps = [
+      ":tab_group",
+      ":tab_model",
+      ":tab_strip",
+      ":tabs",
+      "//chrome/app:command_ids",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/commerce",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/favicon",
+      "//chrome/browser/fingerprinting_protection",
+      "//chrome/browser/image_fetcher",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/user_annotations",
+      "//chrome/browser/web_applications",
+      "//components/browsing_topics",
+      "//components/content_settings/core/browser",
+      "//components/favicon/core",
+      "//components/fingerprinting_protection_filter/common:features",
+      "//components/image_fetcher/core",
+      "//components/performance_manager",
+      "//components/permissions",
+      "//components/pref_registry",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/sessions",
+      "//components/sync_sessions",
+      "//components/tab_groups",
+    ]
+  }
+
+  # This is a separate component to avoid possible circular deps.
   source_set("tab_strip_model_observer") {
     sources = [
       "tab_change_type.h",
@@ -47,9 +349,165 @@ if (!is_android) {
     sources = [ "tab_strip_model_observer.cc" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
+      ":tab_strip",
       ":tab_strip_model_observer",
       "//base",
       "//content/public/browser",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "pinned_tab_test_utils.cc",
+      "pinned_tab_test_utils.h",
+      "tab_activity_simulator.cc",
+      "tab_activity_simulator.h",
+      "tab_ukm_test_helper.cc",
+      "tab_ukm_test_helper.h",
+      "test_util.cc",
+      "test_util.h",
+    ]
+
+    public_deps = [
+      "//chrome/browser/ui/startup:startup_tab",
+      "//components/ukm:test_support",
+      "//ui/base",
+    ]
+
+    deps = [
+      ":tab_strip",
+      ":tabs_public",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/mojom",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "pinned_tab_service_browsertest.cc",
+      "tab_strip_model_browsertest.cc",
+    ]
+
+    deps = [
+      ":tab_enums",
+      ":tab_strip",
+      ":tab_strip_model_observer",
+      ":tabs",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:prevent_close_test_support",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
+      "//components/saved_tab_groups:features",
+      "//components/tab_groups",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/base:features",
+      "//ui/base:types",
+      "//url",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "existing_base_sub_menu_model_unittest.cc",
+      "existing_tab_group_sub_menu_model_unittest.cc",
+      "existing_window_sub_menu_model_unittest.cc",
+      "pinned_tab_codec_unittest.cc",
+      "pinned_tab_service_unittest.cc",
+      "recent_tabs_builder_test_helper.cc",
+      "recent_tabs_builder_test_helper.h",
+      "recent_tabs_sub_menu_model_unittest.cc",
+      "supports_handles_unittest.cc",
+      "tab_collection_storage_unittest.cc",
+      "tab_collection_unittest.cc",
+      "tab_menu_model_unittest.cc",
+      "tab_strip_model_stats_recorder_unittest.cc",
+      "tab_strip_model_unittest.cc",
+      "test_tab_strip_model_delegate.cc",
+      "test_tab_strip_model_delegate.h",
+    ]
+
+    public_deps = [
+      ":tab_strip",
+      "//base",
+      "//components/sessions:session_id",
+      "//components/tab_groups",
+    ]
+
+    deps = [
+      ":tab_enums",
+      ":tab_group",
+      ":tab_menu",
+      ":tab_model",
+      ":tabs",
+      ":test_support",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//components/commerce/core:feature_list",
+      "//components/content_settings/core/browser",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:features",
+      "//components/sessions",
+      "//components/sessions:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//components/sync/engine",
+      "//components/sync/model",
+      "//components/sync/protocol",
+      "//components/sync/service",
+      "//components/sync_sessions",
+      "//components/web_modal",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/views",
+      "//url",
     ]
   }
 }

@@ -46,6 +46,7 @@ source_set("util") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chromeos/constants",
     "//components/security_state/content",

@@ -44,6 +44,7 @@ static_library("projector") {
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chrome/services/media_gallery_util/public/cpp",
     "//chromeos/ash/components/drivefs",

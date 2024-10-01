@@ -18,6 +18,6 @@ source_set("impl") {
   deps = [
     ":user_education",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
   ]
 }

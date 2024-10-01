@@ -84,6 +84,7 @@ static_library("file_system_provider") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chromeos/constants",
     "//components/pref_registry",

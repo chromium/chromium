@@ -48,6 +48,12 @@ source_set("impl") {
     ":ai",
     "//chrome/browser/optimization_guide",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
 }
 
 source_set("test_support") {
