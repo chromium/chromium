@@ -7,15 +7,8 @@ import {FittingType, record, recordFitTo, resetForTesting as resetMetricsForTest
 chrome.test.runTests(function() {
   'use strict';
 
-  const originalMetricTypeType = chrome.metricsPrivate.MetricTypeType;
-
   class MockMetricsPrivate {
     actionCounter: Map<UserAction, number> = new Map();
-    MetricTypeType: typeof chrome.metricsPrivate.MetricTypeType;
-
-    constructor() {
-      this.MetricTypeType = originalMetricTypeType;
-    }
 
     recordValue(metric: chrome.metricsPrivate.MetricType, value: number) {
       chrome.test.assertEq('PDF.Actions', metric.metricName);
@@ -34,8 +27,8 @@ chrome.test.runTests(function() {
     function testMetricsDocumentOpened() {
       resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      chrome.metricsPrivate.recordValue =
+          mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
 
       record(UserAction.DOCUMENT_OPENED);
 
@@ -50,8 +43,8 @@ chrome.test.runTests(function() {
     function testMetricsFirstRecorded() {
       resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      chrome.metricsPrivate.recordValue =
+          mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
 
       const keys = (Object.keys(UserAction) as Array<keyof typeof UserAction>)
                        .filter(key => Number.isInteger(UserAction[key]))
@@ -82,8 +75,8 @@ chrome.test.runTests(function() {
     function testMetricsFitTo() {
       resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      chrome.metricsPrivate.recordValue =
+          mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
 
       record(UserAction.DOCUMENT_OPENED);
       recordFitTo(FittingType.FIT_TO_HEIGHT);

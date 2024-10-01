@@ -63,6 +63,20 @@ module.exports = {
         'property': 'exportPath',
         'message': 'Use ES modules or cr.define() instead',
       },
+      {
+        'object': 'MockInteractions',
+        'property': 'tap',
+        'message': 'Do not use on-tap handlers in prod code, and use the ' +
+            'native click() method in tests. See more context at ' +
+            'crbug.com/812035.',
+      },
+      {
+        'object': 'test',
+        'property': 'only',
+        'message': 'test.only() silently disables other tests in the same ' +
+            'suite(). Did you forget deleting it before uploading? Use ' +
+            'test.skip() instead to explicitly disable certain test() cases.',
+      },
     ],
     'no-restricted-syntax': ['error', {
       'selector': 'CallExpression[callee.object.name=JSON][callee.property.name=parse] > CallExpression[callee.object.name=JSON][callee.property.name=stringify]',
@@ -300,7 +314,10 @@ module.exports = {
   // We do not allow per-directory custom eslint rules. This section exists for
   // rules that are in the process of being applied to the whole code base.
   {
-    'files': ['content/browser/resources/**/*.[jt]s',
+    'files': ['chrome/browser/resources/**/*.[jt]s',
+              'chrome/test/data/pdf/**/*.ts',
+              'chrome/test/data/webui/**/*.[jt]s',
+              'content/browser/resources/**/*.[jt]s',
               'ui/webui/resources/**/*.[jt]s',],
     'rules': {
       'eqeqeq': ['error', 'always', {'null': 'ignore'}],
@@ -316,6 +333,52 @@ module.exports = {
       'no-restricted-syntax': 'off',
     },
   },
+
+  // 1-month exception for //chrome/browser/resources/ash/settings. This can be
+  // removed November 15 2024.
+  {
+    'files' : ['chrome/browser/resources/ash/settings/**/*.[jt]s'],
+    // Disable clang-format because it produces odd formatting for these rules.
+    // clang-format off
+    'rules' : {
+      // Disable due to large number of violations in this folder.
+      '@typescript-eslint/consistent-type-imports': 'off',
+      /**
+       * https://google.github.io/styleguide/tsguide.html#return-types
+       * The Google TS style guide makes no formal rule on enforcing explicit
+       * return types. However, explicit return types have clear advantages in
+       * both readability and maintainability.
+       */
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        {
+          // Function expressions are exempt.
+          allowExpressions: true,
+          // Avoid checking Polymer static getter methods.
+          allowedNames: ['is', 'template', 'properties', 'observers'],
+        },
+      ],
+      /**
+       * https://google.github.io/styleguide/tsguide.html#type-inference
+       */
+      '@typescript-eslint/no-inferrable-types': [
+        'error',
+        {
+          // Function parameters may have explicit types for clearer APIs.
+          ignoreParameters: true,
+          // Class properties may have explicit types for clearer APIs.
+          ignoreProperties: true,
+        },
+      ],
+      /**
+       * https://google.github.io/styleguide/tsguide.html#function-expressions
+       */
+      'prefer-arrow-callback': 'error',
+      'quote-props': ['error', 'consistent-as-needed'],
+    },
+    // clang-format on
+  },
+
   ],
 
   'ignorePatterns': [
@@ -324,10 +387,6 @@ module.exports = {
     'chrome/browser/resources/gaia_auth_host/password_change_authenticator.js',
     'chrome/browser/resources/gaia_auth_host/saml_username_autofill.js',
 
-    // Ignore because of https://crbug.com/1033337
-    'chrome/test/data/webui/chromeos/async_gen.js',
-    'chrome/test/data/webui/chromeos/cr_focus_row_behavior_interactive_test.js',
-    'chrome/test/data/webui/chromeos/**/*_browsertest.js',
 
     // No point linting auto-generated files.
     'tools/typescript/definitions/**',
@@ -338,5 +397,21 @@ module.exports = {
     // latest eslint. See https://crbug.com/368085620.
     'ash/webui/camera_app_ui/resources/**',
     'ash/webui/recorder_app_ui/resources/**',
+
+    // ESLint is disabled for directories that use custom linting rules, which
+    // is no longer supported.
+    // TODO(https://crbug.com/369766161): Bring directories into conformance to
+    // re-enable linting.
+    'chrome/browser/resources/ash/**/*.[jt]s',
+    'chrome/browser/resources/chromeos/**',
+    'chrome/test/data/webui/chromeos/**',
+
+    // TODO(https://crbug.com/41446521): Bring extension test files into
+    // conformance.
+    'chrome/test/data/extensions/**',
+
+    // TODO(https://crbug.com/370730323): 1-month exception. This can be removed
+    // in November 2024.
+    '!chrome/browser/resources/ash/settings/**',
   ]
 };

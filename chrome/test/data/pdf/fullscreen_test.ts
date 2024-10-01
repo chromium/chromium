@@ -168,15 +168,15 @@ const tests = [
 
     chrome.test.succeed();
   },
-  async function testEnterAndExitFullscreenWithType_FitToPage() {
+  async function testEnterAndExitFullscreenWithTypeFitToPage() {
     await assertEnterAndExitFullscreenWithType(FittingType.FIT_TO_PAGE);
     chrome.test.succeed();
   },
-  async function testEnterAndExitFullscreenWithType_FitToWidth() {
+  async function testEnterAndExitFullscreenWithTypeFitToWidth() {
     await assertEnterAndExitFullscreenWithType(FittingType.FIT_TO_WIDTH);
     chrome.test.succeed();
   },
-  async function testEnterAndExitFullscreenWithType_FitToHeight() {
+  async function testEnterAndExitFullscreenWithTypeFitToHeight() {
     await assertEnterAndExitFullscreenWithType(FittingType.FIT_TO_HEIGHT);
     chrome.test.succeed();
   },

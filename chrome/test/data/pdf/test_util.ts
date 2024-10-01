@@ -34,7 +34,7 @@ export class MockElement {
     this.sizer = sizer;
 
     if (sizer) {
-      sizer.resizeCallback_ = () =>
+      sizer.resizeCallbackImpl = () =>
           this.scrollTo(this.scrollLeft, this.scrollTop);
     }
   }
@@ -75,7 +75,7 @@ export class MockSizer {
   private width_: string = '0px';
   private height_: string = '0px';
 
-  resizeCallback_: (() => void)|null = null;
+  resizeCallbackImpl: (() => void)|null = null;
   style: {
     height: string,
     width: string,
@@ -92,8 +92,8 @@ export class MockSizer {
 
       set height(height: string) {
         sizer.height_ = height;
-        if (sizer.resizeCallback_) {
-          sizer.resizeCallback_();
+        if (sizer.resizeCallbackImpl) {
+          sizer.resizeCallbackImpl();
         }
       },
 
@@ -103,8 +103,8 @@ export class MockSizer {
 
       set width(width: string) {
         sizer.width_ = width;
-        if (sizer.resizeCallback_) {
-          sizer.resizeCallback_();
+        if (sizer.resizeCallbackImpl) {
+          sizer.resizeCallbackImpl();
         }
       },
     };
