@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -775,6 +776,9 @@ VideoResourceUpdater::~VideoResourceUpdater() {
 
 void VideoResourceUpdater::ObtainFrameResource(
     scoped_refptr<VideoFrame> video_frame) {
+  UMA_HISTOGRAM_ENUMERATION("Media.VideoResourceUpdater.FrameFormat",
+                            video_frame->format(), PIXEL_FORMAT_MAX + 1);
+
   if (video_frame->metadata().overlay_plane_id.has_value()) {
     // This is a hole punching VideoFrame, there is nothing to display.
     overlay_plane_id_ = *video_frame->metadata().overlay_plane_id;

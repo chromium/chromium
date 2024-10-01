@@ -6842,6 +6842,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoResourceUpdater.FrameFormat"
+    enum="VideoPixelFormatUnion" expires_after="2025-10-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The format of each VideoFrame passed to VideoResourceUpdater. Recorded prior
+    to resources being obtained for passing to Viz.
+  </summary>
+</histogram>
+
 <histogram name="Media.WatchTime" units="ms" expires_after="2025-03-09">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
