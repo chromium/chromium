@@ -1624,9 +1624,13 @@ void Document::SetContentFromDOMParser(const String& content) {
     // fast-path parser fails, the full parser will adjust the mode
     // appropriately.
     SetCompatibilityMode(kQuirksMode);
+    // Set the state so that the attribute cache is enabled for fragments.
+    // TODO(sesse): Should we do this also for the non-fastpath parser?
+    SetParsingState(kParsing);
     const bool success = TryParsingHTMLFragment(content, *this, *body, *body,
                                                 kAllowScriptingContent,
                                                 parser_behavior, nullptr);
+    SetParsingState(kFinishedParsing);
     if (success) {
       // When DCHECK is enabled, use SetContent() and verify fast-path
       // content matches. This effectively means the results of the fast-path
@@ -7729,9 +7733,9 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
 }
 
 void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
-    data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
-    data_->max_shape_text_elapsed_time_ =
-        std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
+  data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
+  data_->max_shape_text_elapsed_time_ =
+      std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
 }
 
 void Document::MaybeRecordSvgImageProcessingTime(
