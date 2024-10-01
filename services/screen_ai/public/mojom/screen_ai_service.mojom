@@ -104,6 +104,11 @@ struct WordBox {
 
 // Main interface a client uses for visual annotation functions of the Screen AI
 // service.
+//
+// NOTE: Security approval for this interface is based on the fact that only
+// simple inputs (bitmaps) are sent to the service. If this needs changing in
+// future, we may need to switch to one service instance per site to keep site
+// content isolation.
 [RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
   // Receives an image, such as a screenshot or a page from a PDF file, as well
