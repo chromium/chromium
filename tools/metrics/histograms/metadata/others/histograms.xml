@@ -9981,7 +9981,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-01-28">
+    enum="VoiceInteractionEventSource" expires_after="2025-03-30">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10004,7 +10004,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2025-01-28">
+    expires_after="2025-03-30">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

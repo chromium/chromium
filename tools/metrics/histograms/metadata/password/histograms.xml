@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordGeneration.Event" enum="PasswordGenerationEvent"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1547,7 +1547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FormVisited.PerProfileType"
-    enum="BrowserProfileType" expires_after="2025-01-26">
+    enum="BrowserProfileType" expires_after="2025-03-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -2198,7 +2198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.OnEncryptorReceived.Success"
-    enum="BooleanSuccess" expires_after="2025-01-26">
+    enum="BooleanSuccess" expires_after="2025-03-30">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2389,7 +2389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordDropdownItemSelected"
-    enum="PasswordDropdownSelectedOption" expires_after="2025-01-26">
+    enum="PasswordDropdownSelectedOption" expires_after="2025-03-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3737,7 +3737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SuggestionPopupTriggerSource"
-    enum="AutofillSuggestionTriggerSource" expires_after="2025-01-26">
+    enum="AutofillSuggestionTriggerSource" expires_after="2025-03-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3850,7 +3850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.DismissalReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2025-01-26">
+    enum="BottomSheet.StateChangeReason" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3860,7 +3860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.Outcome"
-    enum="TouchToFill.Outcome" expires_after="2025-01-26">
+    enum="TouchToFill.Outcome" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3900,7 +3900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.SubmissionReadiness"
-    enum="TouchToFill.SubmissionReadiness" expires_after="2025-01-26">
+    enum="TouchToFill.SubmissionReadiness" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3912,7 +3912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved"
-    enum="Boolean" expires_after="2025-01-26">
+    enum="Boolean" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3931,7 +3931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.TimeToSuccessfulLogin" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -4122,7 +4122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UpdateUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2025-01-26">
+    enum="PasswordManagerUIDismissalReason" expires_after="2025-03-30">
   <owner>vasilii@chromium.org</owner>
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
 </histogram>
@@ -4606,7 +4606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PasswordProtection.RequestOutcome"
-    enum="PasswordProtectionRequestOutcome" expires_after="2025-01-26">
+    enum="PasswordProtectionRequestOutcome" expires_after="2025-03-30">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

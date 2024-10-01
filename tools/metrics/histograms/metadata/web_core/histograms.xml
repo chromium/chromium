@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>

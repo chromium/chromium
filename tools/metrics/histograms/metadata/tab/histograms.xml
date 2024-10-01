@@ -1177,7 +1177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TimeSinceLastUserInteractionWithGroup"
-    units="minutes" expires_after="2025-01-26">
+    units="minutes" expires_after="2025-03-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

@@ -4578,7 +4578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.NewProfileDecision2.{UserGroup}"
-    enum="AutofillProfileImportDecision" expires_after="2025-01-26">
+    enum="AutofillProfileImportDecision" expires_after="2025-03-30">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>

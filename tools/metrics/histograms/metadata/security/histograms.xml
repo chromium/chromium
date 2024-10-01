@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ProxyCount" units="proxies"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

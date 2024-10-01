@@ -1181,7 +1181,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccountsBackoffSuccess"
-    enum="BooleanGetAccountsSucceeded" expires_after="2025-01-26">
+    enum="BooleanGetAccountsSucceeded" expires_after="2025-03-30">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
-    enum="BooleanEnabled" expires_after="2025-01-26">
+    enum="BooleanEnabled" expires_after="2025-03-30">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

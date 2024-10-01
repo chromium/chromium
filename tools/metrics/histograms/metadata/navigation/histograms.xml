@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -2052,7 +2052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.StartToCommit" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

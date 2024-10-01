@@ -694,7 +694,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}"
-    units="Unique Setting(s) Changed" expires_after="2025-01-26">
+    units="Unique Setting(s) Changed" expires_after="2025-03-30">
   <owner>moteva@google.com</owner>
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
@@ -976,7 +976,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
