@@ -118,7 +118,6 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 
 
 # Longstanding flaking test - page reported failure
-crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Tests are hitting an assertion, root cause needs to be tracked down.
