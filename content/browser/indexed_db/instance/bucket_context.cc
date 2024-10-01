@@ -104,6 +104,8 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content::indexed_db {
 namespace {
@@ -955,11 +957,8 @@ void BucketContext::CompactBackingStoreForTesting() {
 
 void BucketContext::WriteToIndexedDBForTesting(const std::string& key,
                                                const std::string& value) {
-  TransactionalLevelDBDatabase* db = backing_store_->db();
-  std::string value_copy = value;
-  Status s(db->Put(key, &value_copy));
-  CHECK(s.ok()) << s.ToString();
-  ForceClose(true);
+  backing_store_->WriteToIndexedDBForTesting(key, value);  // IN-TEST
+  ForceClose(/*doom=*/true);
 }
 
 void BucketContext::BindMockFailureSingletonForTesting(
@@ -1261,7 +1260,7 @@ void BucketContext::OnDatabaseError(Status status, const std::string& message) {
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
   }
-  ForceClose(/*will_be_deleted=*/false);
+  ForceClose(/*doom=*/false);
 }
 
 bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

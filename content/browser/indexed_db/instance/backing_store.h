@@ -590,9 +590,6 @@ class CONTENT_EXPORT BackingStore {
 
   const std::string& origin_identifier() { return origin_identifier_; }
 
-  // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
-  bool IsBlobCleanupPending();
-
   // Gets the total size of blobs and the database for in-memory backing stores.
   int64_t GetInMemorySize() const;
 
@@ -610,6 +607,11 @@ class CONTENT_EXPORT BackingStore {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     execute_journal_cleaning_on_no_txns_ = true;
   }
+  void WriteToIndexedDBForTesting(const std::string& key,
+                                  const std::string& value);
+
+  // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
+  bool IsBlobCleanupPending();
 
   // Stops the journal_cleaning_timer_ and runs its pending task.
   void ForceRunBlobCleanup();
