@@ -18,6 +18,14 @@ interface TestWebIdl {
   static double returnsDouble();
   static long returnsLong();
   static DOMString returnsDOMString();
+
+  static void takesNoArguments();
+  static void takesDOMString(DOMString stringArgument);
+  static void takesOptionalBoolean(optional boolean optionalBoolean);
+  static void takesMultipleArguments(
+      DOMString argument1, optional double argument2);
+  static void takesOptionalInnerArgument(
+      DOMString first, optional DOMString optionalInner, DOMString last);
 };
 
 partial interface Browser {

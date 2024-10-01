@@ -27,6 +27,11 @@ def getReturns(schema, name):
   return function.get('returns', None)
 
 
+def getFunctionParameters(schema, name):
+  function = getFunction(schema, name)
+  return function.get('parameters', None)
+
+
 class WebIdlSchemaTest(unittest.TestCase):
 
   def setUp(self):
@@ -70,6 +75,42 @@ class WebIdlSchemaTest(unittest.TestCase):
         },
         getReturns(schema, 'returnsDOMString'),
     )
+
+  # Tests function parameters are processed as expected.
+  def testFunctionParameters(self):
+    schema = self.idl_basics
+    # A function with no arguments has an empty array on the "parameters" key.
+    self.assertEqual([], getFunctionParameters(schema, 'takesNoArguments'))
+
+    self.assertEqual([{
+        'name': 'stringArgument',
+        'type': 'string'
+    }], getFunctionParameters(schema, 'takesDOMString'))
+    self.assertEqual([{
+        'name': 'optionalBoolean',
+        'optional': True,
+        'type': 'boolean'
+    }], getFunctionParameters(schema, 'takesOptionalBoolean'))
+    self.assertEqual([{
+        'name': 'argument1',
+        'type': 'string'
+    }, {
+        'name': 'argument2',
+        'optional': True,
+        'type': 'number'
+    }], getFunctionParameters(schema, 'takesMultipleArguments'))
+    self.assertEqual([{
+        'name': 'first',
+        'type': 'string'
+    }, {
+        'name': 'optionalInner',
+        'optional': True,
+        'type': 'string'
+    }, {
+        'name': 'last',
+        'type': 'string'
+    }], getFunctionParameters(schema, 'takesOptionalInnerArgument'))
+
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.

@@ -110,16 +110,19 @@ class Type:
         'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
     self.node = type_node
     self.name = node.GetName()
+    self.optional = node.GetProperty('OPTIONAL')
 
   def process(self) -> dict:
     properties = OrderedDict()
-    # TODO(crbug.com/340297705): Add support for optional types.
     # TODO(crbug.com/340297705): Add support for extended attributes on types.
     # TODO(crbug.com/340297705): Add processing of comments to descriptions on
     #                            types.
     properties['name'] = self.name
-    if self.node.GetProperty('NULLABLE'):
+    # We consider both nullable properties on types or arguments marked as
+    # optional as being "optional" in the schema compiler's logic..
+    if self.node.GetProperty('NULLABLE') or self.optional:
       properties['optional'] = True
+
     # TODO(crbug.com/340297705): Add support for more types, including TypeRefs.
     basic_type = self.node.GetOneOf('PrimitiveType', 'StringType')
     if basic_type:
@@ -165,7 +168,15 @@ class Operation:
     properties = OrderedDict()
     properties['name'] = self.node.GetName()
 
+    parameters = []
+    arguments_node = self.node.GetOneOf('Arguments')
+    for argument in arguments_node.GetListOf('Argument'):
+      parameters.append(Type(argument).process())
+    properties['parameters'] = parameters
+
     # Return type processing.
+    # TODO(crbug.com/340297705): Add support for turning a Promise return into a
+    # returns_async property.
     return_type = Type(self.node).process()
     if return_type is not None:
       properties['returns'] = return_type
