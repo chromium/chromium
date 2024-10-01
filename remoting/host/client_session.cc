@@ -547,6 +547,9 @@ void ClientSession::OnConnectionAuthenticated(
 
   DesktopEnvironmentOptions options = desktop_environment_options_;
   options.ApplySessionOptions(session_options);
+  if (effective_policies_.curtain_required.has_value()) {
+    options.set_enable_curtaining(*effective_policies_.curtain_required);
+  }
   // Create the desktop environment. Drop the connection if it could not be
   // created for any reason (for instance the curtain could not initialize).
   desktop_environment_ = desktop_environment_factory_->Create(

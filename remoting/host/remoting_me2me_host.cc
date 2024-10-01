@@ -390,7 +390,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnClientDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnHostDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnUsernamePolicyUpdate(const base::Value::Dict& policies);
-  bool OnCurtainPolicyUpdate(const base::Value::Dict& policies);
   bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
   bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
   bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
@@ -1414,8 +1413,6 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   bool restart_required = false;
   restart_required |= OnClientDomainListPolicyUpdate(policies);
   restart_required |= OnHostDomainListPolicyUpdate(policies);
-  restart_required |= OnCurtainPolicyUpdate(policies);
-  // Note: UsernamePolicyUpdate must run after OnCurtainPolicyUpdate.
   restart_required |= OnUsernamePolicyUpdate(policies);
   restart_required |= OnPairingPolicyUpdate(policies);
   restart_required |= OnGnubbyAuthPolicyUpdate(policies);
@@ -1551,6 +1548,12 @@ void HostProcess::ApplyUsernamePolicy() {
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // The RemoteAccessHostMatchUsername policy does not exist on Windows, so this
+  // should be unreached code.
+  NOTREACHED();
+#endif
+
   HOST_LOG << "Policy requires host username match.";
 
 #if BUILDFLAG(IS_APPLE)
@@ -1561,15 +1564,6 @@ void HostProcess::ApplyUsernamePolicy() {
     return;
   }
 #endif
-
-  // Curtain-mode on Windows presents the standard OS login prompt to the user
-  // for each connection, removing the need for an explicit user-name matching
-  // check.
-#if BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
-  if (desktop_environment_options_.enable_curtaining()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
 
   std::string username = GetUsername();
   LOG(INFO) << "Current local username is '" << username << "'";
@@ -1606,27 +1600,6 @@ bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
   ApplyUsernamePolicy();
 #endif
   return false;
-}
-
-bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> curtain_required =
-      policies.FindBool(policy::key::kRemoteAccessHostRequireCurtain);
-  if (!curtain_required.has_value()) {
-    return false;
-  }
-
-  desktop_environment_options_.set_enable_curtaining(*curtain_required);
-
-  if (*curtain_required) {
-    HOST_LOG << "Policy requires curtain-mode.";
-  } else {
-    HOST_LOG << "Policy does not require curtain-mode.";
-  }
-
-  return true;
 }
 
 bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {

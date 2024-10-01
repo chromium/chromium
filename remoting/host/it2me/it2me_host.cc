@@ -330,8 +330,6 @@ void It2MeHost::ConnectOnNetworkThread(
         !chrome_os_enterprise_params_->suppress_notifications);
     options.set_terminate_upon_input(
         chrome_os_enterprise_params_->terminate_upon_input);
-    options.set_enable_curtaining(
-        chrome_os_enterprise_params_->curtain_local_user_session);
   }
 #endif
 

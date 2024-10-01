@@ -916,13 +916,13 @@ TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
 TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
   StartHost(ChromeOsEnterpriseParams{.curtain_local_user_session = true});
 
-  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_curtaining());
+  EXPECT_TRUE(*get_local_session_policies().curtain_required);
 }
 
 TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
   StartHost(/*enterprise_params=*/std::nullopt);
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
+  EXPECT_FALSE(get_local_session_policies().curtain_required.has_value());
 }
 
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyEnabled) {
