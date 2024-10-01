@@ -576,14 +576,6 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
     blink::mojom::WidgetInputHandler::DispatchEventCallback callback) {
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
-  TRACE_EVENT("input,benchmark,devtools.timeline,latencyInfo",
-              "LatencyInfo.Flow", [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency_info.trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_SEND_INPUT_EVENT_UI,
-                    InputEventTypeToProto(input_event.GetType()));
-              });
 
   output_stream_validator_.Validate(input_event);
   blink::mojom::InputEventResultState filtered_state =
