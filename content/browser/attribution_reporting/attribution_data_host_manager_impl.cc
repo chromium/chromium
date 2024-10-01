@@ -1765,6 +1765,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data,
     bool was_fetched_via_service_worker) {
+  // LINT.IfChange(DataAvailableCallSource)
+  base::UmaHistogramEnumeration(
+      "Conversions.DataAvailableCall.Source",
+      attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
+  // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallSource)
   // This is validated by the Mojo typemapping.
   CHECK(reporting_origin.IsValid());
 
@@ -1810,6 +1815,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
     bool was_fetched_via_service_worker) {
+  // LINT.IfChange(DataAvailableCallTrigger)
+  base::UmaHistogramEnumeration(
+      "Conversions.DataAvailableCall.Trigger",
+      attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
+  // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallTrigger)
   // This is validated by the Mojo typemapping.
   CHECK(reporting_origin.IsValid());
 
@@ -1837,6 +1847,11 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items,
     bool was_fetched_via_service_worker) {
+  // LINT.IfChange(DataAvailableCallOsSource)
+  base::UmaHistogramEnumeration(
+      "Conversions.DataAvailableCall.OsSource",
+      attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
+  // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallOsSource)
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
   if (!context || registration_items.empty()) {
@@ -1864,6 +1879,11 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items,
     bool was_fetched_via_service_worker) {
+  // LINT.IfChange(DataAvailableCallOsTrigger)
+  base::UmaHistogramEnumeration(
+      "Conversions.DataAvailableCall.OsTrigger",
+      attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
+  // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallOsTrigger)
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
   if (!context || registration_items.empty()) {

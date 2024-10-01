@@ -1011,6 +1011,11 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
         return;
       }
 
+      // LINT.IfChange(DataAvailableCallSource)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.Source",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallSource)
       data_host_->SourceDataAvailable(std::move(reporting_origin),
                                       *std::move(source_data),
                                       was_fetched_via_service_worker);
@@ -1038,6 +1043,12 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
             std::move(reporting_origin));
         return;
       }
+
+      // LINT.IfChange(DataAvailableCallOsSource)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.OsSource",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsSource)
 
       data_host_->OsSourceDataAvailable(std::move(reporting_origin),
                                         *std::move(registration_items),
@@ -1085,6 +1096,11 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         return;
       }
 
+      // LINT.IfChange(DataAvailableCallTrigger)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.Trigger",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallTrigger)
       data_host_->TriggerDataAvailable(std::move(reporting_origin),
                                        *std::move(trigger_data),
                                        was_fetched_via_service_worker);
@@ -1112,6 +1128,11 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
             std::move(reporting_origin));
         return;
       }
+      // LINT.IfChange(DataAvailableCallOsTrigger)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.OsTrigger",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsTrigger)
       data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
                                          *std::move(registration_items),
                                          was_fetched_via_service_worker);

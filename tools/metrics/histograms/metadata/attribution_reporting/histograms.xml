@@ -462,6 +462,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DataAvailableCall.{MethodCall}"
+    enum="DataAvailableCallsite" expires_after="2025-09-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records when attribution_reporting::mojom::DataHost::OsSourceDataAvailable
+    is called in Blink and when a method is received by the browser.
+
+    The purpose of this histogram is to measure the percentage of messages being
+    dropped. Messages are dropped if an attribution request is tied to a
+    navigation that opens in a different app. This is especially likely to
+    happen in WebView when an ad opens in the system browser, which puts the
+    WebView app into the background, and the browser process stops processing
+    events before the renderer is done sending the registration.
+
+    The histogram is logged with enum value of &quot;Blink&quot; when the
+    DataHost is called in attribution_src_loader.cc , and enum value of
+    &quot;Browser&quot; when the implementation in
+    attribution_data_host_manager_impl.cc is invoked.
+  </summary>
+  <token key="MethodCall">
+    <variant name="OsSource"/>
+    <variant name="OsTrigger"/>
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
     expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>

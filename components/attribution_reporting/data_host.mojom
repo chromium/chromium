@@ -43,3 +43,15 @@ interface DataHost {
     attribution_reporting.mojom.SuitableOrigin reporting_origin,
     attribution_reporting.mojom.RegistrationHeaderError error);
 };
+
+// Enum to log the number of calls to OsSourceDataAvailable in Blink and the
+// number of calls received in the Browser process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DataAvailableCallsite)
+enum DataAvailableCallsite {
+  kBlink = 0,
+  kBrowser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:DataAvailableCallsite)

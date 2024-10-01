@@ -614,6 +614,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->
 
+<!-- LINT.IfChange(DataAvailableCallsite) -->
+
+<enum name="DataAvailableCallsite">
+  <int value="0" label="Blink"/>
+  <int value="1" label="Browser"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/data_host.mojom:DataAvailableCallsite) -->
+
 <!-- LINT.IfChange(SourceRegistrationTimeConfig) -->
 
 <enum name="SourceRegistrationTimeConfig">
