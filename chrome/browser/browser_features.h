@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a feature
+// is referenced in multiple places, it should be scoped to that module, e.g.
+// //chrome/browser/<foo_module>/features.h
+
 // This file defines the browser-specific base::FeatureList features that are
 // not shared with other process types.
 
@@ -16,6 +21,10 @@
 
 namespace features {
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a feature
+// is referenced in multiple places, it should be scoped to that module, e.g.
+// //chrome/browser/<foo_module>/features.h
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
@@ -189,6 +198,11 @@ BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
 
 BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a feature
+// is referenced in multiple places, it should be scoped to that module, e.g.
+// //chrome/browser/<foo_module>/features.h
+//
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
