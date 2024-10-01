@@ -109,6 +109,36 @@ public class BackPressManagerUnitTest {
     }
 
     @Test
+    public void testMaintainingHandler() {
+        BackPressManager manager = new BackPressManager();
+        manager.setIsGestureNavEnabledSupplier(() -> true);
+        EmptyBackPressHandler h1 = Mockito.spy(new EmptyBackPressHandler());
+        EmptyBackPressHandler h2 = Mockito.spy(new EmptyBackPressHandler());
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        h1.getHandleBackPressChangedSupplier().set(false);
+        h2.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the active handler", h2, manager.getEnabledBackPressHandler());
+        var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackStarted(backEvent);
+        Mockito.verify(h2).handleOnBackStarted(backEvent);
+
+        backEvent = new BackEventCompat(1, 0, .5f, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        backEvent = new BackEventCompat(2, 0, 1, BackEventCompat.EDGE_LEFT);
+        manager.getCallback().handleOnBackProgressed(backEvent);
+        Mockito.verify(h2).handleOnBackProgressed(backEvent);
+
+        h1.getHandleBackPressChangedSupplier().set(true);
+
+        manager.getCallback().handleOnBackPressed();
+        Mockito.verify(h2).handleBackPress();
+    }
+
+    @Test
     public void testMultipleHandlers() {
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 = new EmptyBackPressHandler();

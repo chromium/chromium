@@ -86,7 +86,24 @@ public class BackPressManager implements Destroyable {
                     if (mOnBackPressed != null) mOnBackPressed.run();
                     recordSystemBackCountIfBeforeFirstVisibleContent();
                     mLastCalledHandlerType = -1;
-                    BackPressManager.this.handleBackPress();
+                    if (ChromeFeatureList.sLockBackPressHandlerAtStart.isEnabled()
+                            && mActiveHandler != null) {
+                        Boolean enabled = mActiveHandler.getHandleBackPressChangedSupplier().get();
+                        if (enabled != null && enabled) {
+                            int result = mActiveHandler.handleBackPress();
+                            int index = BackPressManager.this.getIndex(mActiveHandler);
+                            mLastCalledHandlerType = index;
+                            if (result == BackPressResult.FAILURE) {
+                                BackPressManager.this.handleBackPress();
+                            } else {
+                                record(index);
+                            }
+                        } else {
+                            BackPressManager.this.handleBackPress();
+                        }
+                    } else {
+                        BackPressManager.this.handleBackPress();
+                    }
 
                     // This means this back is triggered by a gesture rather than the back button.
                     if (mLastBackEvent != null
@@ -346,6 +363,16 @@ public class BackPressManager implements Destroyable {
         }
         assert false;
         return null;
+    }
+
+    private int getIndex(BackPressHandler handler) {
+        for (int i = 0; i < mHandlers.length; i++) {
+            if (mHandlers[i] == null) continue;
+            if (mHandlers[i] == handler) {
+                return i;
+            }
+        }
+        throw new AssertionError("Handler not found.");
     }
 
     private void handleBackPress() {
