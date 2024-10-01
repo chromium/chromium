@@ -23,6 +23,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//chrome/browser/chromeos/mahi",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_BROWSER_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_BROWSER_UTIL_H_
+#ifndef CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_BROWSER_UTIL_H_
+#define CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_BROWSER_UTIL_H_
 
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
 namespace mahi {
 
 // State struct to keep the information of a web content.
-struct WebContentState {
+struct COMPONENT_EXPORT(MAHI_PUBLIC_CPP) WebContentState {
   base::UnguessableToken page_id = base::UnguessableToken::Create();
   GURL url;
   std::u16string title;
@@ -41,4 +44,4 @@ struct WebContentState {
 
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_MAHI_BROWSER_UTIL_H_
+#endif  // CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_BROWSER_UTIL_H_
