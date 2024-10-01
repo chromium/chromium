@@ -59,10 +59,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     block_third_party_cookies_ = block_third_party_cookies;
   }
 
-  bool are_third_party_cookies_blocked() const {
-    return block_third_party_cookies_;
-  }
-
   void set_secure_origin_cookies_allowed_schemes(
       const std::vector<std::string>& secure_origin_cookies_allowed_schemes) {
     secure_origin_cookies_allowed_schemes_.clear();
