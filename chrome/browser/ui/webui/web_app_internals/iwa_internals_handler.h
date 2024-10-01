@@ -70,8 +70,13 @@ class IwaInternalsHandler {
   void RotateKey(const std::string& web_bundle_id,
                  const std::optional<std::vector<uint8_t>>& public_key);
 
+  void UpdateManifestInstalledIsolatedWebApp(
+      const webapps::AppId& app_id,
+      Handler::UpdateManifestInstalledIsolatedWebAppCallback callback);
+
  private:
   class IsolatedWebAppDevBundleSelectListener;
+  class IwaManifestInstallUpdateHandler;
   friend class web_app::WebAppInternalsIwaInstallationBrowserTest;
 
   Profile* profile() { return &profile_.get(); }
@@ -118,6 +123,11 @@ class IwaInternalsHandler {
 
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
+
+  // Runs updates for manifest-installed dev-mode apps.
+  // Will be nullptr if WebAppProvider is not available for the current
+  // `profile_`.
+  std::unique_ptr<IwaManifestInstallUpdateHandler> update_handler_;
 
   base::WeakPtrFactory<IwaInternalsHandler> weak_ptr_factory_{this};
 };

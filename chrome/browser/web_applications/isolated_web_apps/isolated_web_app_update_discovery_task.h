@@ -25,6 +25,12 @@
 
 namespace web_app {
 
+struct IwaUpdateDiscoveryTaskParams {
+  GURL update_manifest_url;
+  IsolatedWebAppUrlInfo url_info;
+  bool dev_mode;
+};
+
 class IsolatedWebAppUpdateDiscoveryTask {
  public:
   enum class Success {
@@ -57,8 +63,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
 
   IsolatedWebAppUpdateDiscoveryTask(
-      GURL update_manifest_url,
-      IsolatedWebAppUrlInfo url_info,
+      IwaUpdateDiscoveryTaskParams task_params,
       WebAppCommandScheduler& command_scheduler,
       WebAppRegistrar& registrar,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -72,7 +77,9 @@ class IsolatedWebAppUpdateDiscoveryTask {
   void Start(CompletionCallback callback);
   bool has_started() const { return has_started_; }
 
-  const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
+  const IsolatedWebAppUrlInfo& url_info() const {
+    return task_params_.url_info;
+  }
 
   base::Value AsDebugValue() const;
 
@@ -100,8 +107,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   bool has_started_ = false;
   CompletionCallback callback_;
 
-  GURL update_manifest_url_;
-  IsolatedWebAppUrlInfo url_info_;
+  const IwaUpdateDiscoveryTaskParams task_params_;
 
   raw_ref<WebAppCommandScheduler> command_scheduler_;
   raw_ref<WebAppRegistrar> registrar_;

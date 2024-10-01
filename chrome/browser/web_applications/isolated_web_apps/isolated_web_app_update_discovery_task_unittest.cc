@@ -78,6 +78,14 @@ class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
+  Task CreateDefaultIwaUpdateDiscoveryTask() {
+    return Task({.update_manifest_url = update_manifest_url_,
+                 .url_info = url_info_,
+                 .dev_mode = false},
+                fake_provider().scheduler(), fake_provider().registrar_unsafe(),
+                profile()->GetURLLoaderFactory());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
@@ -97,9 +105,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NotFound) {
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), "",
                                            net::HttpStatusCode::HTTP_NOT_FOUND);
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -111,9 +117,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, InvalidJson) {
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(),
                                            "invalid json");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -123,9 +127,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, InvalidJson) {
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, InvalidManifest) {
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), "[]");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -139,9 +141,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
     { "versions": [] }
   )");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -158,9 +158,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, IwaNotInstalled) {
     }
   )");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -178,9 +176,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, AppIsNotIwa) {
     }
   )");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -203,9 +199,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
     }
   )");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -233,9 +227,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
     }
   )");
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -266,9 +258,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest, NotFound) {
                                            "",
                                            net::HttpStatusCode::HTTP_NOT_FOUND);
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -359,9 +349,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
   auto& page_state = CreateUpdateManifesteAndBundle(base::Version("3.0.0"));
   page_state.error_code = webapps::InstallableStatusCode::CANNOT_DOWNLOAD_ICON;
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -386,9 +374,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
   InstallIwa(base::Version("1.0.0"));
   CreateUpdateManifesteAndBundle(base::Version("3.0.0"));
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
@@ -426,9 +412,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
           base::Version("3.0.0"), /*integrity_block_data=*/std::nullopt));
   CreateUpdateManifesteAndBundle(base::Version("2.0.0"));
 
-  Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
-            fake_provider().registrar_unsafe(),
-            profile()->GetURLLoaderFactory());
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());

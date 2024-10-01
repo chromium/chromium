@@ -335,6 +335,20 @@ bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
   return queued_update_discovery_task;
 }
 
+void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
+    const IsolatedWebAppUrlInfo& url_info,
+    const GURL& update_manifest_url,
+    bool dev_mode) {
+  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
+      IwaUpdateDiscoveryTaskParams{.update_manifest_url = update_manifest_url,
+                                   .url_info = url_info,
+                                   .dev_mode = dev_mode},
+      provider_->scheduler(), provider_->registrar_unsafe(),
+      profile_->GetURLLoaderFactory()));
+
+  task_queue_.MaybeStartNextTask();
+}
+
 size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
   // If an update discovery check is already scheduled, reset it, so that the
   // next update discovery happens based on `update_discovery_frequency_` time
@@ -479,9 +493,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     // uninstalled), so no need to check for updates.
     return false;
   }
-  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-      *update_manifest_url, url_info, provider_->scheduler(),
-      provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
+  DiscoverUpdatesForApp(url_info, *update_manifest_url, /*dev_mode=*/false);
 
   return true;
 }
@@ -529,6 +541,10 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
   TrackResultOfUpdateDiscoveryTask(status);
 
+  for (auto& observer : task_observers_) {
+    observer.OnUpdateDiscoveryTaskCompleted(task->url_info().app_id(), status);
+  }
+
   if (status.has_value() && *status ==
                                 IsolatedWebAppUpdateDiscoveryTask::Success::
                                     kUpdateFoundAndSavedInDatabase) {
@@ -567,6 +583,10 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
   TrackResultOfUpdateApplyTask(status);
 
+  for (auto& observer : task_observers_) {
+    observer.OnUpdateApplyTaskCompleted(task->url_info().app_id(), status);
+  }
+
   auto callbacks_it =
       on_update_finished_callbacks_.find(task->url_info().app_id());
   if (callbacks_it != on_update_finished_callbacks_.end()) {
@@ -589,6 +609,14 @@ void IsolatedWebAppUpdateManager::TrackResultOfUpdateApplyTask(
         "WebApp.Isolated.Update",
         base::unexpected(IsolatedWebAppUpdateError::kUpdateApplyFailed));
   }
+}
+
+void IsolatedWebAppUpdateManager::AddObserver(Observer* observer) {
+  task_observers_.AddObserver(observer);
+}
+
+void IsolatedWebAppUpdateManager::RemoveObserver(Observer* observer) {
+  task_observers_.RemoveObserver(observer);
 }
 
 void IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered(

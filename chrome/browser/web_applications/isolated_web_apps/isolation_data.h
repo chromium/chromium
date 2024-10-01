@@ -142,8 +142,17 @@ class IsolationData {
     Builder& SetUpdateManifestUrl(GURL update_manifest_url) &;
     Builder&& SetUpdateManifestUrl(GURL update_manifest_url) &&;
 
+    // During an update the foundational pieces of the IWA (`location` and
+    // `version`) of the IWA change, and hence the IsolationData has to be
+    // re-built from scratch. This function is called as part of the update
+    // finalize routine -- all fields that have to be persisted (such as
+    // `controlled_frame_partitions`, etc) can be copied over here.
+    Builder& PersistFieldsForUpdate(const IsolationData& isolation_data) &;
+    Builder&& PersistFieldsForUpdate(const IsolationData& isolation_data) &&;
+
     // When adding new setters to the builder, make sure to update the the
-    // Builder(const IsolationData&) constructor to forward the new field.
+    // Builder(const IsolationData&) constructor to forward the new field as
+    // well as PersistFieldsForUpdate(const IsolationData&) if necessary.
     IsolationData Build() &&;
 
    private:

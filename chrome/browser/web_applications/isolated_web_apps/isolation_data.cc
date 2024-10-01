@@ -10,6 +10,19 @@
 
 namespace web_app {
 
+namespace {
+
+void PersistFieldsForUpdateImpl(IsolationData::Builder& builder,
+                                const IsolationData& isolation_data) {
+  builder.SetControlledFramePartitions(
+      isolation_data.controlled_frame_partitions());
+  if (isolation_data.update_manifest_url()) {
+    builder.SetUpdateManifestUrl(*isolation_data.update_manifest_url());
+  }
+}
+
+}  // namespace
+
 IsolationData::IsolationData(
     IsolatedWebAppStorageLocation location,
     base::Version version,
@@ -161,6 +174,18 @@ IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
       << "This field is supposed to be used only with dev mode installs via "
          "chrome://web-app-internals.";
   update_manifest_url_ = std::move(update_manifest_url);
+  return std::move(*this);
+}
+
+IsolationData::Builder& IsolationData::Builder::PersistFieldsForUpdate(
+    const IsolationData& isolation_data) & {
+  PersistFieldsForUpdateImpl(*this, isolation_data);
+  return *this;
+}
+
+IsolationData::Builder&& IsolationData::Builder::PersistFieldsForUpdate(
+    const IsolationData& isolation_data) && {
+  PersistFieldsForUpdateImpl(*this, isolation_data);
   return std::move(*this);
 }
 

@@ -51,6 +51,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::Pointee;
 
 constexpr char kBadIconErrorTemplate[] = R"({
@@ -234,7 +235,7 @@ class WebAppInternalsIwaInstallationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
-                       FetchUpdateManifestAndInstallIwa) {
+                       FetchUpdateManifestAndInstallIwaAndUpdate) {
   update_server_mixin_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
@@ -269,14 +270,44 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());
 
-  ASSERT_OK_AND_ASSIGN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(provider().registrar_unsafe(),
-                            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                                test::GetDefaultEd25519WebBundleId())
-                                .app_id()));
+  webapps::AppId app_id = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                              test::GetDefaultEd25519WebBundleId())
+                              .app_id();
+  {
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-  EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("1.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+  }
+
+  // Run an update check on the same manifest.
+  {
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(),
+                HasSubstr("app is already on the latest version"));
+  }
+
+  // Now add a new entry to the manifest and re-run the update check.
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()));
+  {
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.0.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,

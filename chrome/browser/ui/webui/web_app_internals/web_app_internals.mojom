@@ -88,6 +88,9 @@ interface WebAppInternalsHandler {
   // success or error message.
   SelectFileAndUpdateIsolatedWebAppFromDevBundle(string app_id) =>
       (string result);
+  // Triggers an update for a manifest-installed dev mode app.
+  // Returns a string containing a success or error message.
+  UpdateManifestInstalledIsolatedWebApp(string app_id) => (string result);
 
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.

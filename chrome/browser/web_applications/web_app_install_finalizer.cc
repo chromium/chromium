@@ -507,12 +507,10 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
   CHECK(version.IsValid());
 
   IsolationData::Builder builder(location, version);
-  if (web_app->isolation_data().has_value()) {
-    // If previous `controlled_frame_partitions` exist, keep them the same. This
-    // can only happen during an update, and never during an install.
-    builder.SetControlledFramePartitions(
-        web_app->isolation_data()->controlled_frame_partitions());
+  if (web_app->isolation_data()) {
+    builder.PersistFieldsForUpdate(*web_app->isolation_data());
   }
+
   if (integrity_block_data) {
     builder.SetIntegrityBlockData(std::move(*integrity_block_data));
   }

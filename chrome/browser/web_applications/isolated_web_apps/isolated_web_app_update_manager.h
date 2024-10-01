@@ -19,6 +19,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -83,6 +85,19 @@ class IsolatedWebAppUpdateManager
     : public WebAppInstallManagerObserver,
       public IwaKeyDistributionInfoProvider::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnUpdateDiscoveryTaskCompleted(
+        const webapps::AppId& app_id,
+        IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {}
+
+    // Will be invoked only if the discovery task finished with
+    // `kUpdateFoundAndSavedInDatabase`.
+    virtual void OnUpdateApplyTaskCompleted(
+        const webapps::AppId& app_id,
+        IsolatedWebAppUpdateApplyTask::CompletionStatus status) {}
+  };
+
   explicit IsolatedWebAppUpdateManager(
       Profile& profile,
       base::TimeDelta update_discovery_frequency =
@@ -137,10 +152,18 @@ class IsolatedWebAppUpdateManager
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
-  // Queues an update discovery task for the provided `app_id`. Returns a
-  // boolean indicating whether an update discovery task was queued
-  // successfully.
+  // Queues an update discovery task for the provided `app_id`, assuming that
+  // the corresponding app is policy-installed (prod mode). Returns a boolean
+  // indicating whether an update discovery task was queued successfully.
   bool MaybeDiscoverUpdatesForApp(const webapps::AppId& app_id);
+
+  // Queues an update discovery task (and potentially an apply update task
+  // afterwards if the discovery leads to a pending update) for the provided
+  // `url_info.app_id`. The result of the discover & apply chain will be
+  // communicated via observers.
+  void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
+                             const GURL& update_manifest_url,
+                             bool dev_mode);
 
   // Used to queue update discovery tasks manually from the
   // chrome://web-app-internals page. Returns the number of tasks queued.
@@ -168,6 +191,9 @@ class IsolatedWebAppUpdateManager
       IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
     TrackResultOfUpdateApplyTask(status);
   }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -359,6 +385,8 @@ class IsolatedWebAppUpdateManager
   class LocalDevModeUpdateDiscoverer;
   std::unique_ptr<LocalDevModeUpdateDiscoverer>
       local_dev_mode_update_discoverer_;
+
+  base::ObserverList<Observer> task_observers_;
 
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 

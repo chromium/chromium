@@ -558,3 +558,10 @@ void WebAppInternalsHandler::RotateKey(
     const std::optional<std::vector<uint8_t>>& public_key) {
   iwa_handler_.RotateKey(web_bundle_id, public_key);
 }
+
+void WebAppInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
+    const webapps::AppId& app_id,
+    UpdateManifestInstalledIsolatedWebAppCallback callback) {
+  iwa_handler_.UpdateManifestInstalledIsolatedWebApp(app_id,
+                                                     std::move(callback));
+}
