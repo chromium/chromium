@@ -182,20 +182,6 @@ IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
   MaybeCreateLoader();
 }
 
-IDBRequestQueueItem::IDBRequestQueueItem(
-    IDBRequest* request,
-    Vector<std::unique_ptr<IDBValue>> values,
-    base::OnceClosure on_result_ready)
-    : request_(request),
-      values_(std::move(values)),
-      on_result_ready_(std::move(on_result_ready)),
-      response_type_(kValueArray) {
-  DCHECK(on_result_ready_);
-  DCHECK_EQ(request->queue_item_, nullptr);
-  request_->queue_item_ = this;
-  MaybeCreateLoader();
-}
-
 IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
                                          std::unique_ptr<IDBKey> key,
                                          std::unique_ptr<IDBKey> primary_key,

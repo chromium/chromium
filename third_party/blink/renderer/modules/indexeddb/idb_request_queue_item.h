@@ -64,9 +64,6 @@ class MODULES_EXPORT IDBRequestQueueItem {
                       std::unique_ptr<IDBValue>,
                       base::OnceClosure on_load_complete);
   IDBRequestQueueItem(IDBRequest*,
-                      Vector<std::unique_ptr<IDBValue>>,
-                      base::OnceClosure on_result_ready);
-  IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<IDBKey>,
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>,
