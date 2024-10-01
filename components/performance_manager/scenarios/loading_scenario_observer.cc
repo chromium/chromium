@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -31,6 +32,16 @@ bool StateIsLoading(PageNode::LoadingState loading_state) {
   NOTREACHED();
 }
 
+// Increments `num` in-place, and CHECK's on overflow.
+void CheckIncrement(size_t& num) {
+  num = base::CheckAdd(num, 1).ValueOrDie();
+}
+
+// Decrements `num` in-place, and CHECK's on underflow.
+void CheckDecrement(size_t& num) {
+  num = base::CheckSub(num, 1).ValueOrDie();
+}
+
 }  // namespace
 
 LoadingScenario LoadingScenarioObserver::LoadingCounts::GetScenario() const {
@@ -49,27 +60,24 @@ LoadingScenario LoadingScenarioObserver::LoadingCounts::GetScenario() const {
 void LoadingScenarioObserver::LoadingCounts::IncrementLoadingPageCounts(
     bool visible,
     bool focused) {
-  loading_pages_++;
+  CheckIncrement(loading_pages_);
   if (visible) {
-    visible_loading_pages_++;
+    CheckIncrement(visible_loading_pages_);
   }
   if (focused) {
-    focused_loading_pages_++;
+    CheckIncrement(focused_loading_pages_);
   }
 }
 
 void LoadingScenarioObserver::LoadingCounts::DecrementLoadingPageCounts(
     bool visible,
     bool focused) {
-  CHECK_GT(loading_pages_.RawValue(), 0u);
-  loading_pages_--;
+  CheckDecrement(loading_pages_);
   if (visible) {
-    CHECK_GT(visible_loading_pages_.RawValue(), 0u);
-    visible_loading_pages_--;
+    CheckDecrement(visible_loading_pages_);
   }
   if (focused) {
-    CHECK_GT(focused_loading_pages_.RawValue(), 0u);
-    focused_loading_pages_--;
+    CheckDecrement(focused_loading_pages_);
   }
 }
 

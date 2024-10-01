@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
 
-#include "base/numerics/clamped_math.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -40,9 +39,9 @@ class LoadingScenarioObserver : public PageNode::ObserverDefaultImpl,
     LoadingScenario GetScenario() const;
 
    private:
-    base::ClampedNumeric<size_t> focused_loading_pages_;
-    base::ClampedNumeric<size_t> visible_loading_pages_;
-    base::ClampedNumeric<size_t> loading_pages_;
+    size_t focused_loading_pages_ = 0;
+    size_t visible_loading_pages_ = 0;
+    size_t loading_pages_ = 0;
   };
 
   LoadingScenarioObserver() = default;
