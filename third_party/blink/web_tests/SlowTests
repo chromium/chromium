@@ -1463,6 +1463,8 @@ crbug.com/350628679 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intr
 
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Slow ]
 
+crbug.com/363342597 shadow-dom/focus-navigation/focus-scroller-activeElement-on-event.html [ Slow ]
+
 # Slow because the test is huge
 crbug.com/352097024 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Slow ]
 crbug.com/352097024 virtual/plz-dedicated-worker-disabled/external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Slow ]
