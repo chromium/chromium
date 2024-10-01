@@ -481,14 +481,14 @@ public class TabListCoordinator
         mRecyclerView.setRecyclerViewPosition(recyclerViewPosition);
     }
 
-    void initWithNative(@NonNull Profile profile) {
+    void initWithNative(@NonNull Profile originalProfile) {
         if (mIsInitialized) return;
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
             mIsInitialized = true;
 
-            assert !profile.isOffTheRecord() : "Expecting a non-incognito profile.";
-            mMediator.initWithNative(profile);
+            assert !originalProfile.isOffTheRecord() : "Expecting a non-incognito profile.";
+            mMediator.initWithNative(originalProfile);
         }
     }
 

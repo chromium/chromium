@@ -363,7 +363,7 @@ class TabListMediator implements TabListNotificationHandler {
     private boolean mActionsOnAllRelatedTabs;
     private String mComponentName;
     private @TabActionState int mTabActionState;
-    private @Nullable Profile mProfile;
+    private @Nullable Profile mOriginalProfile;
     private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     private Size mDefaultGridCardSize;
     private ComponentCallbacks mComponentCallbacks;
@@ -912,7 +912,6 @@ class TabListMediator implements TabListNotificationHandler {
         mActionConfirmationManager = actionConfirmationManager;
         mOnTabGroupCreation = onTabGroupCreation;
 
-        mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -1282,10 +1281,10 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    public void initWithNative(Profile profile) {
-        assert !profile.isOffTheRecord() : "Expecting a non-incognito profile.";
-        mProfile = profile;
-        mTabListFaviconProvider.initWithNative(profile);
+    public void initWithNative(Profile originalProfile) {
+        assert !originalProfile.isOffTheRecord() : "Expecting a non-incognito profile.";
+        mOriginalProfile = originalProfile;
+        mTabListFaviconProvider.initWithNative(originalProfile);
 
         mOnTabModelFilterChanged.onResult(
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
@@ -1335,7 +1334,7 @@ class TabListMediator implements TabListNotificationHandler {
         // switcher.
         if (mMode == TabListMode.GRID
                 && mTabActionState != TabActionState.SELECTABLE
-                && PriceTrackingFeatures.isPriceTrackingEnabled(profile)) {
+                && PriceTrackingFeatures.isPriceTrackingEnabled(originalProfile)) {
             mListObserver =
                     new ListObserver<Void>() {
                         @Override
@@ -1552,10 +1551,11 @@ class TabListMediator implements TabListNotificationHandler {
 
     void hardCleanup() {
         assert !mShowingTabs;
-        if (mProfile != null
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
-                && (PriceTrackingFeatures.isPriceDropIphEnabled(mProfile)
-                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mProfile))) {
+        if (!mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
+                && mOriginalProfile != null
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
+                && (PriceTrackingFeatures.isPriceDropIphEnabled(mOriginalProfile)
+                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mOriginalProfile))) {
             saveSeenPriceDrops();
         }
         sViewedTabIds.clear();
@@ -1726,11 +1726,12 @@ class TabListMediator implements TabListNotificationHandler {
     void registerOnScrolledListener(RecyclerView recyclerView) {
         // For InstantStart, this can be called before native is initialized, so ensure the Profile
         // is available before proceeding.
-        if (mProfile == null) return;
+        if (mOriginalProfile == null) return;
 
-        if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
-                && (PriceTrackingFeatures.isPriceDropIphEnabled(mProfile)
-                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mProfile))) {
+        if (!mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
+                && (PriceTrackingFeatures.isPriceDropIphEnabled(mOriginalProfile)
+                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mOriginalProfile))) {
             mRecyclerView = recyclerView;
             mOnScrollListener =
                     new OnScrollListener() {
@@ -1882,17 +1883,18 @@ class TabListMediator implements TabListNotificationHandler {
 
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
         if (mTabListGroupMenuCoordinator == null) {
-            boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
-            TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-            Profile profile = tabModel.getProfile().getOriginalProfile();
+            boolean isTabGroupSyncEnabled =
+                    !mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
+                            && TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
             IdentityManager identityManager = null;
             TabGroupSyncService tabGroupSyncService = null;
             DataSharingService dataSharingService = null;
             if (isTabGroupSyncEnabled
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-                identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
-                tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-                dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+                identityManager =
+                        IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
+                tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
+                dataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
             }
             mTabListGroupMenuCoordinator =
                     new TabListGroupMenuCoordinator(
@@ -2230,8 +2232,8 @@ class TabListMediator implements TabListNotificationHandler {
     private void setupPersistedTabDataFetcherForTab(Tab tab, int index) {
         PropertyModel model = mModel.get(index).model;
         if (mMode == TabListMode.GRID && !tab.isIncognito()) {
-            assert mProfile != null;
-            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
+            assert mOriginalProfile != null;
+            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
                     && !isTabInTabGroup(tab)) {
                 model.set(
                         TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
@@ -2386,8 +2388,9 @@ class TabListMediator implements TabListNotificationHandler {
     void updateLayout() {
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
-        if (mProfile == null
-                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile)) {
+        if (mOriginalProfile == null
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mOriginalProfile)
+                || mCurrentTabModelFilterSupplier.get().isIncognitoBranded()) {
             return;
         }
         assert mGridLayoutManager != null;
@@ -2424,9 +2427,10 @@ class TabListMediator implements TabListNotificationHandler {
     @VisibleForTesting
     void recordPriceAnnotationsEnabledMetrics() {
         if (mMode != TabListMode.GRID
+                || mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
                 || !mActionsOnAllRelatedTabs
-                || mProfile == null
-                || !PriceTrackingFeatures.isPriceTrackingEligible(mProfile)) {
+                || mOriginalProfile == null
+                || !PriceTrackingFeatures.isPriceTrackingEligible(mOriginalProfile)) {
             return;
         }
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
@@ -2438,7 +2442,7 @@ class TabListMediator implements TabListNotificationHandler {
                 >= PriceTrackingFeatures.getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
             RecordHistogram.recordBooleanHistogram(
                     "Commerce.PriceDrop.AnnotationsEnabled",
-                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
+                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile));
             preferencesManager.writeLong(
                     ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                     System.currentTimeMillis());
@@ -2768,7 +2772,9 @@ class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     void onMenuItemClicked(@IdRes int menuId, int tabId, @Nullable String collaborationId) {
-        boolean isSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
+        boolean isSyncEnabled =
+                !mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
+                        && TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
         if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
             boolean hideTabGroups = menuId == R.id.close_tab;
             if (hideTabGroups) {
@@ -2949,8 +2955,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         @Nullable TabGroupSyncService tabGroupSyncService = null;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(tab.getProfile())) {
-            tabGroupSyncService =
-                    TabGroupSyncServiceFactory.getForProfile(tab.getProfile().getOriginalProfile());
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
         }
         @Nullable
         String collaborationId =
