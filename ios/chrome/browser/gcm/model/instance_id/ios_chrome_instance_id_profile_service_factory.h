@@ -16,7 +16,7 @@ class InstanceIDProfileService;
 }
 
 // Singleton that owns all InstanceIDProfileService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSChromeInstanceIDProfileServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:

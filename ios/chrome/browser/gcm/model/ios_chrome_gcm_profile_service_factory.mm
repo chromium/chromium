@@ -102,15 +102,14 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<gcm::GCMProfileService>(
-      browser_state->GetPrefs(), browser_state->GetStatePath(),
+      profile->GetPrefs(), profile->GetStatePath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory, context),
-      browser_state->GetSharedURLLoaderFactory(),
+      profile->GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       GetProductCategoryForSubtypes(),
-      IdentityManagerFactory::GetForProfile(browser_state),
+      IdentityManagerFactory::GetForProfile(profile),
       base::WrapUnique(new gcm::GCMClientFactory),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);
