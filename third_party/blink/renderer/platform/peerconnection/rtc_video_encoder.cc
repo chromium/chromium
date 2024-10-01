@@ -72,6 +72,7 @@
 #include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "third_party/webrtc/modules/video_coding/utility/simulcast_utility.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
+#include "ui/gfx/buffer_format_util.h"
 
 namespace {
 
@@ -2005,10 +2006,24 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
 
     // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
     const auto size = mapping->Size();
+
+    size_t plane0_height;
+    size_t plane0_row_size;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        size.height(), mapping->Format(), /*plane=*/0, &plane0_height));
+    CHECK(gfx::RowSizeForBufferFormatChecked(size.width(), mapping->Format(),
+                                             /*plane=*/0, &plane0_row_size));
     memset(static_cast<uint8_t*>(mapping->Memory(0)), 0x0,
-           mapping->Stride(0) * size.height());
+           mapping->Stride(0) * (plane0_height - 1) + plane0_row_size);
+
+    size_t plane1_height;
+    size_t plane1_row_size;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        size.height(), mapping->Format(), /*plane=*/1, &plane1_height));
+    CHECK(gfx::RowSizeForBufferFormatChecked(size.width(), mapping->Format(),
+                                             /*plane=*/1, &plane1_row_size));
     memset(static_cast<uint8_t*>(mapping->Memory(1)), 0x80,
-           mapping->Stride(1) * size.height() / 2);
+           mapping->Stride(1) * (plane1_height - 1) + plane1_row_size);
 
     gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
     black_gmb_frame_ = media::VideoFrame::WrapMappableSharedImage(
