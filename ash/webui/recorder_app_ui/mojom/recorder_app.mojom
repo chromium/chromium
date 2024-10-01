@@ -147,12 +147,12 @@ interface PageHandler {
   // Sets the system quiet mode.
   SetQuietMode(bool quiet_mode);
 
-  // Gets whether speaker label can be used for current profile.
-  // Note that there are some other requirements for speaker label (SODA is
-  // downloaded and installed, the language pack supports it, ...), but this
-  // method specifically only query if the current profile has the capabilities
-  // needed to use speaker label.
-  CanUseSpeakerLabelForCurrentProfile() => (bool supported);
+  // Gets whether speaker label can be used.
+  // Note that this method specifically only query if the current profile has
+  // the capabilities needed to use speaker label, and the device supports SODA
+  // language pack that supports speaker label, but the caller still need to
+  // ensure that SODA is available and installed to use speaker label.
+  CanUseSpeakerLabel() => (bool supported);
 
   // Records the consent of speaker label from user.
   // Since the frontend doesn't have info about resource ID, the given

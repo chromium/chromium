@@ -145,8 +145,7 @@ class RecorderAppUI
 
   void SetQuietMode(bool quiet_mode) override;
 
-  void CanUseSpeakerLabelForCurrentProfile(
-      CanUseSpeakerLabelForCurrentProfileCallback callback) override;
+  void CanUseSpeakerLabel(CanUseSpeakerLabelCallback callback) override;
 
   void RecordSpeakerLabelConsent(
       bool consent_given,

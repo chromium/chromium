@@ -586,11 +586,16 @@ void RecorderAppUI::SetQuietMode(bool quiet_mode) {
   message_center::MessageCenter::Get()->SetQuietMode(quiet_mode);
 }
 
-void RecorderAppUI::CanUseSpeakerLabelForCurrentProfile(
-    CanUseSpeakerLabelForCurrentProfileCallback callback) {
+void RecorderAppUI::CanUseSpeakerLabel(CanUseSpeakerLabelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+  if (!base::FeatureList::IsEnabled(
+          speech::kFeatureManagementCrosSodaConchLanguages)) {
+    // Large SODA model (which supports speaker label) isn't available.
+    std::move(callback).Run(false);
+  } else {
+    std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+  }
 }
 
 void RecorderAppUI::RecordSpeakerLabelConsent(
