@@ -101,6 +101,7 @@ class PlusAddressService : public KeyedService,
   // Checks whether the passed-in string is a known plus address.
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
+  bool IsPlusAddressFullFormFillingEnabled() const override;
   void GetAffiliatedPlusAddresses(
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) override;

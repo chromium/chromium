@@ -290,6 +290,10 @@ bool PlusAddressService::IsPlusAddressFillingEnabled(
   return IsEnabled() && IsSupportedOrigin(origin);
 }
 
+bool PlusAddressService::IsPlusAddressFullFormFillingEnabled() const {
+  return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
+}
+
 void PlusAddressService::GetAffiliatedPlusAddresses(
     const url::Origin& origin,
     base::OnceCallback<void(std::vector<std::string>)> callback) {

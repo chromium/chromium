@@ -23,6 +23,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               IsPlusAddressFillingEnabled,
               (const url::Origin& origin),
               (const override));
+  MOCK_METHOD(bool, IsPlusAddressFullFormFillingEnabled, (), (const override));
   MOCK_METHOD(void,
               GetAffiliatedPlusAddresses,
               (const url::Origin& origin,

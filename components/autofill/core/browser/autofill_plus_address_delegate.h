@@ -71,6 +71,9 @@ class AutofillPlusAddressDelegate {
   // - `origin` is not a blocked origin.
   virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
 
+  // Returns whether plus address full form filling is supported.
+  virtual bool IsPlusAddressFullFormFillingEnabled() const = 0;
+
   // Returns a list of plus addresses for the `origin` and all affiliated
   // domains.
   virtual void GetAffiliatedPlusAddresses(
