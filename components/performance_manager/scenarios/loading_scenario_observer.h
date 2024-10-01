@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
 
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -71,4 +71,4 @@ class LoadingScenarioObserver : public PageNode::ObserverDefaultImpl,
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_

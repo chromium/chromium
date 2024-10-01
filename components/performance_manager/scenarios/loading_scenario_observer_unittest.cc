@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/scenarios/loading_scenario_observer.h"
+#include "components/performance_manager/scenarios/loading_scenario_observer.h"
 
 #include <atomic>
 #include <memory>

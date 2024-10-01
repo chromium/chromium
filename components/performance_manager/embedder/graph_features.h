@@ -7,6 +7,9 @@
 
 #include <cstdint>
 
+#include "base/feature_list.h"
+#include "components/performance_manager/public/features.h"
+
 namespace performance_manager {
 
 class Graph;
@@ -43,6 +46,7 @@ class GraphFeatures {
       bool frame_visibility_decorator : 1;
       bool frozen_frame_aggregator : 1;
       bool important_frame_decorator : 1;
+      bool loading_scenario : 1;
       bool metrics_collector : 1;
       bool node_impl_describers : 1;
       bool page_aggregator : 1;
@@ -72,6 +76,11 @@ class GraphFeatures {
 
   constexpr GraphFeatures& EnableImportantFrameDecorator() {
     flags_.important_frame_decorator = true;
+    return *this;
+  }
+
+  constexpr GraphFeatures& EnableLoadingScenario() {
+    flags_.loading_scenario = true;
     return *this;
   }
 
