@@ -2069,6 +2069,9 @@ using UserFeedbackDataCallback =
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
+    DCHECK(self.settingsNavigationController.presentingViewController)
+        << base::SysNSStringToUTF8(
+               [self.settingsNavigationController.viewControllers description]);
     return;
   }
   [[DeferredInitializationRunner sharedInstance]
