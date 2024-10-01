@@ -17,10 +17,135 @@
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace plus_addresses {
+
+namespace {
+PlusAddressCreationErrorStateInfo GetReserveErrorStateInfo(
+    PlusAddressRequestError error) {
+  if (error.IsTimeoutError()) {
+    return PlusAddressCreationErrorStateInfo(
+        /*error_type=*/PlusAddressCreationBottomSheetErrorType::kReserveTimeout,
+        /*title=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID),
+        /*description=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID),
+        /*ok_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID),
+        /*cancel_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+  }
+  if (error.IsQuotaError()) {
+    // Cancel text is empty in this case.
+    return PlusAddressCreationErrorStateInfo(
+        /*error_type=*/PlusAddressCreationBottomSheetErrorType::kReserveQuota,
+        /*title=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID),
+        /*description=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID),
+        /*ok_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID),
+        /*cancel_text=*/u"");
+  }
+  return PlusAddressCreationErrorStateInfo(
+      /*error_type=*/PlusAddressCreationBottomSheetErrorType::kReserveGeneric,
+      /*title=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID),
+      /*description=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID),
+      /*ok_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID),
+      /*cancel_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+}
+
+PlusAddressCreationErrorStateInfo GetCreateErrorStateInfo(
+    PlusAddressRequestError error) {
+  if (error.IsTimeoutError()) {
+    return PlusAddressCreationErrorStateInfo(
+        /*error_type=*/PlusAddressCreationBottomSheetErrorType::kCreateTimeout,
+        /*title=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_TITLE_ANDROID),
+        /*description=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_DESCRIPTION_ANDROID),
+        /*ok_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID),
+        /*cancel_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+  }
+  if (error.IsQuotaError()) {
+    // Cancel text is empty in this case.
+    return PlusAddressCreationErrorStateInfo(
+        /*error_type=*/PlusAddressCreationBottomSheetErrorType::kCreateQuota,
+        /*title=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_TITLE_ANDROID),
+        /*description=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID),
+        /*ok_text=*/
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID),
+        /*cancel_text=*/u"");
+  }
+  return PlusAddressCreationErrorStateInfo(
+      /*error_type=*/PlusAddressCreationBottomSheetErrorType::kCreateGeneric,
+      /*title=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID),
+      /*description=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_DESCRIPTION_ANDROID),
+      /*ok_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID),
+      /*cancel_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+}
+
+PlusAddressCreationErrorStateInfo GetAffiliationErrorStateInfo(
+    PlusProfile existing_profile) {
+  return PlusAddressCreationErrorStateInfo(
+      /*error_type=*/PlusAddressCreationBottomSheetErrorType::
+          kCreateAffiliation,
+      /*title=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID),
+      /*description=*/
+      l10n_util::GetStringFUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID,
+          GetOriginForDisplay(existing_profile),
+          base::UTF8ToUTF16(*existing_profile.plus_address)),
+      /*ok_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID),
+      /*cancel_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+}
+}  // namespace
+
 // static
 PlusAddressCreationController* PlusAddressCreationController::GetOrCreate(
     content::WebContents* web_contents) {
@@ -168,17 +293,8 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError;
-    PlusAddressRequestError error = maybe_plus_profile.error();
-    PlusAddressCreationBottomSheetErrorType error_type;
-    if (error.IsTimeoutError()) {
-      error_type = PlusAddressCreationBottomSheetErrorType::kReserveTimeout;
-    } else if (error.IsQuotaError()) {
-      error_type = PlusAddressCreationBottomSheetErrorType::kReserveQuota;
-    } else {
-      error_type = PlusAddressCreationBottomSheetErrorType::kReserveGeneric;
-    }
     if (view_) {
-      view_->ShowError(error_type);
+      view_->ShowError(GetReserveErrorStateInfo(maybe_plus_profile.error()));
     }
   }
 }
@@ -205,25 +321,17 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
       modal_error_status_ =
           metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
       if (view_) {
-        view_->ShowAffiliationError(maybe_plus_profile.value());
+        view_->ShowError(
+            GetAffiliationErrorStateInfo(maybe_plus_profile.value()));
       }
     }
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
-    PlusAddressRequestError error = maybe_plus_profile.error();
-    PlusAddressCreationBottomSheetErrorType error_type;
-    if (error.IsTimeoutError()) {
-      error_type = PlusAddressCreationBottomSheetErrorType::kCreateTimeout;
-    } else if (error.IsQuotaError()) {
-      error_type = PlusAddressCreationBottomSheetErrorType::kCreateQuota;
-    } else {
-      error_type = PlusAddressCreationBottomSheetErrorType::kCreateGeneric;
-    }
     // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
     // prior to service response, `view_` will be null.
     if (view_) {
-      view_->ShowError(error_type);
+      view_->ShowError(GetCreateErrorStateInfo(maybe_plus_profile.error()));
     }
   }
 }

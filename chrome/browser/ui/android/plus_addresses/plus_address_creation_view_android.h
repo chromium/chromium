@@ -39,6 +39,29 @@ enum class PlusAddressCreationBottomSheetErrorType {
   kCreateGeneric = 6,
 };
 
+struct PlusAddressCreationErrorStateInfo {
+  PlusAddressCreationBottomSheetErrorType error_type;
+  std::u16string title;
+  std::u16string description;
+  std::u16string ok_text;
+  std::u16string cancel_text;
+
+  PlusAddressCreationErrorStateInfo(
+      PlusAddressCreationBottomSheetErrorType error_type,
+      std::u16string title,
+      std::u16string description,
+      std::u16string ok_text,
+      std::u16string cancel_text);
+  ~PlusAddressCreationErrorStateInfo();
+
+  PlusAddressCreationErrorStateInfo(const PlusAddressCreationErrorStateInfo&);
+  PlusAddressCreationErrorStateInfo(PlusAddressCreationErrorStateInfo&&);
+  PlusAddressCreationErrorStateInfo& operator=(
+      const PlusAddressCreationErrorStateInfo&);
+  PlusAddressCreationErrorStateInfo& operator=(
+      PlusAddressCreationErrorStateInfo&&);
+};
+
 // A class intended as a thin wrapper around a Java object, which calls out to
 // the `PlusAddressCreationControllerAndroid`. This shields the controller from
 // JNI complications, allowing a consistent interface for clients (e.g.,
@@ -73,10 +96,7 @@ class PlusAddressCreationViewAndroid {
   // Either shows an error message on the bottomsheet or closes the bottomsheet.
   void FinishConfirm();
   // Shows the error state ui to the user.
-  void ShowError(PlusAddressCreationBottomSheetErrorType error_type);
-  // Shows a special error state UI for the case, when an existing affiliated
-  // plus profile was fetched after the user was offered to create a new one.
-  void ShowAffiliationError(const PlusProfile& existing_profile);
+  void ShowError(PlusAddressCreationErrorStateInfo error_info);
   // Hides the refresh icon in case no more plus address refreshes are available
   // to the user.
   void HideRefreshButton();

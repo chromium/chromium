@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -87,108 +86,31 @@ ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
       error_report_url);
 }
 
-ScopedJavaLocalRef<jobject> GetErrorStateInfo(
-    PlusAddressCreationBottomSheetErrorType error_type) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPlusAddressAndroidErrorStatesEnabled)) {
-    return ScopedJavaLocalRef<jobject>();
-  }
-  std::u16string title;
-  std::u16string description;
-  std::u16string ok_text;
-  std::u16string cancel_text;
-  switch (error_type) {
-    case PlusAddressCreationBottomSheetErrorType::kReserveTimeout:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
-      cancel_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
-      break;
-    case PlusAddressCreationBottomSheetErrorType::kReserveQuota:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID);
-      // Cancel text is empty in this case.
-      break;
-    case PlusAddressCreationBottomSheetErrorType::kReserveGeneric:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
-      cancel_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
-      break;
-    case PlusAddressCreationBottomSheetErrorType::kCreateTimeout:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
-      cancel_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
-      break;
-    case PlusAddressCreationBottomSheetErrorType::kCreateQuota:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID);
-      // Cancel text is empty in this case.
-      break;
-    case PlusAddressCreationBottomSheetErrorType::kCreateAffiliation:
-      NOTREACHED_NORETURN()
-          << "Affiliation error info should be created separately";
-    case PlusAddressCreationBottomSheetErrorType::kCreateGeneric:
-      title = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID);
-      description = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_DESCRIPTION_ANDROID);
-      ok_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
-      cancel_text = l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
-      break;
-  }
-  return Java_PlusAddressCreationErrorStateInfo_Constructor(
-      base::android::AttachCurrentThread(), base::to_underlying(error_type),
-      title, description, ok_text, cancel_text);
-}
-
-ScopedJavaLocalRef<jobject> GetAffiliationErrorStateInfo(
-    const PlusProfile& existing_plus_profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPlusAddressAndroidErrorStatesEnabled)) {
-    return ScopedJavaLocalRef<jobject>();
-  }
-
-  return Java_PlusAddressCreationErrorStateInfo_Constructor(
-      base::android::AttachCurrentThread(),
-      base::to_underlying(
-          PlusAddressCreationBottomSheetErrorType::kCreateAffiliation),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID),
-      l10n_util::GetStringFUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID,
-          GetOriginForDisplay(existing_plus_profile),
-          base::UTF8ToUTF16(*existing_plus_profile.plus_address)),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
-}
-
 }  // namespace
+
+PlusAddressCreationErrorStateInfo::PlusAddressCreationErrorStateInfo(
+    PlusAddressCreationBottomSheetErrorType error_type,
+    std::u16string title,
+    std::u16string description,
+    std::u16string ok_text,
+    std::u16string cancel_text)
+    : error_type(error_type),
+      title(title),
+      description(description),
+      ok_text(ok_text),
+      cancel_text(cancel_text) {}
+
+PlusAddressCreationErrorStateInfo::~PlusAddressCreationErrorStateInfo() =
+    default;
+
+PlusAddressCreationErrorStateInfo::PlusAddressCreationErrorStateInfo(
+    const PlusAddressCreationErrorStateInfo&) = default;
+PlusAddressCreationErrorStateInfo::PlusAddressCreationErrorStateInfo(
+    PlusAddressCreationErrorStateInfo&&) = default;
+PlusAddressCreationErrorStateInfo& PlusAddressCreationErrorStateInfo::operator=(
+    const PlusAddressCreationErrorStateInfo&) = default;
+PlusAddressCreationErrorStateInfo& PlusAddressCreationErrorStateInfo::operator=(
+    PlusAddressCreationErrorStateInfo&&) = default;
 
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
     base::WeakPtr<PlusAddressCreationController> controller)
@@ -268,23 +190,21 @@ void PlusAddressCreationViewAndroid::FinishConfirm() {
 }
 
 void PlusAddressCreationViewAndroid::ShowError(
-    PlusAddressCreationBottomSheetErrorType error_type) {
+    PlusAddressCreationErrorStateInfo error_info) {
   if (!java_object_) {
     return;
   }
-  Java_PlusAddressCreationViewBridge_showError(
-      base::android::AttachCurrentThread(), java_object_,
-      GetErrorStateInfo(error_type));
-}
-
-void PlusAddressCreationViewAndroid::ShowAffiliationError(
-    const PlusProfile& existing_profile) {
-  if (!java_object_) {
-    return;
+  ScopedJavaLocalRef<jobject> error_info_java_object;
+  if (base::FeatureList::IsEnabled(
+          features::kPlusAddressAndroidErrorStatesEnabled)) {
+    error_info_java_object = Java_PlusAddressCreationErrorStateInfo_Constructor(
+        base::android::AttachCurrentThread(),
+        base::to_underlying(error_info.error_type), error_info.title,
+        error_info.description, error_info.ok_text, error_info.cancel_text);
   }
   Java_PlusAddressCreationViewBridge_showError(
       base::android::AttachCurrentThread(), java_object_,
-      GetAffiliationErrorStateInfo(existing_profile));
+      error_info_java_object);
 }
 
 void PlusAddressCreationViewAndroid::HideRefreshButton() {
