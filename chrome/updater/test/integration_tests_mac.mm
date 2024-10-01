@@ -280,8 +280,11 @@ bool WaitForUpdaterExit() {
             ps_stdout, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
             base::SplitResult::SPLIT_WANT_NONEMPTY);
         for (const auto& command : commands) {
+          // Skip command lines referencing the symbol files, other processes
+          // can safely have those open (and often do on ASAN bots).
           if (command.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) !=
-              std::string::npos) {
+                  std::string::npos &&
+              command.find(".dSYM") == std::string::npos) {
             last_found = command;
             return false;
           }
