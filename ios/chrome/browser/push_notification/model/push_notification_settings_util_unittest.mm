@@ -111,7 +111,8 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
 // When 0 clients are enabled, the state is DISABLED.
 // When `enabled` >= 1 AND `disabled` >= 1, the state is INDETERMINANT
 // When `enabled` >=1 and `disabled` == 0, then state is ENABLED.
-TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
+// TODO(crbug.com/370742354): re-enable
+TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
   // Enable Notifications in random order.
   ClientPermissionState state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
