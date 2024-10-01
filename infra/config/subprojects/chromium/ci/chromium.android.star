@@ -681,8 +681,12 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "cast_receiver_junit_tests",
             "chromium_android_cast_receiver",
-            "chromium_android_cast_tests",
+            "chromium_android_cast_receiver_arm_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
         ],
     ),
     # TODO(vigeni): Remove as configuration has been stablized.
@@ -734,8 +738,12 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "cast_receiver_junit_tests",
             "chromium_android_cast_receiver",
-            "chromium_android_cast_tests",
+            "chromium_android_cast_receiver_arm_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
         ],
     ),
     # TODO(vigeni): Remove as configuration has been stablized.
@@ -787,8 +795,12 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "cast_receiver_junit_tests",
             "chromium_android_cast_receiver",
-            "chromium_android_cast_tests",
+            "chromium_android_cast_receiver_arm64_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
         ],
     ),
     # TODO(vigeni): Remove as configuration has been stablized.
@@ -840,8 +852,12 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "cast_receiver_junit_tests",
             "chromium_android_cast_receiver",
-            "chromium_android_cast_tests",
+            "chromium_android_cast_receiver_arm64_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
         ],
     ),
     # TODO(vigeni): Remove as configuration has been stablized.

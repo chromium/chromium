@@ -16,6 +16,39 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cast_android_cma_backend_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cast_android_cma_backend_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_android_cma_backend_unittests",
+        "test_id_prefix": "ninja://chromecast/media/cma/backend/android:cast_android_cma_backend_unittests/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cast_audio_backend_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -27,10 +60,12 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -58,10 +93,12 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -89,46 +126,17 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_cast_core_unittests",
         "test_id_prefix": "ninja://chromecast/cast_core:cast_cast_core_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "cast_display_settings_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "cast_display_settings_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "AP1A.240505.005",
-            "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_display_settings_unittests",
-        "test_id_prefix": "ninja://chromecast/ui/display_settings:cast_display_settings_unittests/"
       },
       {
         "args": [
@@ -151,46 +159,17 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_media_unittests",
         "test_id_prefix": "ninja://chromecast/media:cast_media_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "cast_shell_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "cast_shell_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "AP1A.240505.005",
-            "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_shell_unittests",
-        "test_id_prefix": "ninja://chromecast:cast_shell_unittests/"
       },
       {
         "args": [
@@ -213,10 +192,12 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

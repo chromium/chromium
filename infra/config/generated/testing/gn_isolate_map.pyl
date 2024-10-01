@@ -241,6 +241,10 @@
       "--disable-extensions",
     ],
   },
+  "cast_android_cma_backend_unittests": {
+    "label": "//chromecast/media/cma/backend/android:cast_android_cma_backend_unittests",
+    "type": "console_test_launcher",
+  },
   "cast_audio_backend_unittests": {
     "label": "//chromecast/media/cma/backend:cast_audio_backend_unittests",
     "type": "console_test_launcher",

@@ -390,6 +390,10 @@ targets.tests.junit_test(
 # needed.
 
 targets.tests.gtest_test(
+    name = "cast_android_cma_backend_unittests",
+)
+
+targets.tests.gtest_test(
     name = "cast_audio_backend_unittests",
 )
 

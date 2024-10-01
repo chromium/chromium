@@ -618,9 +618,7 @@ targets.bundle(
         "cast_audio_backend_unittests",
         "cast_base_unittests",
         "cast_cast_core_unittests",
-        "cast_display_settings_unittests",
         "cast_media_unittests",
-        "cast_shell_unittests",
         "cast_unittests",
     ],
     mixins = [
@@ -675,8 +673,20 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromium_android_cast_receiver_gtests",
+    name = "chromium_android_cast_receiver_arm_gtests",
     targets = [
+        "cast_android_cma_backend_unittests",
+        "cast_receiver_gtests",
+    ],
+    mixins = [
+        "chromium_pixel_2_pie",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_android_cast_receiver_arm64_gtests",
+    targets = [
+        "cast_android_cma_backend_unittests",
         "cast_receiver_gtests",
     ],
     mixins = [
@@ -685,22 +695,13 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromium_android_cast_tests",
-    targets = [
-        "cast_receiver_junit_tests",
-        "chromium_android_cast_receiver_gtests",
-    ],
-    mixins = [
-        "has_native_resultdb_integration",
-    ],
-)
-
-targets.bundle(
     name = "chromium_linux_cast_receiver_gtests",
     targets = [
         "cast_crash_unittests",
+        "cast_display_settings_unittests",
         "cast_graphics_unittests",
         "cast_receiver_gtests",
+        "cast_shell_unittests",
         "cast_shell_browsertests",
         "linux_flavor_specific_chromium_gtests",
     ],

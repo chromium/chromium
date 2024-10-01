@@ -35,6 +35,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
 
     # These targets are used by builders setting their tests in starlark
     'android_lint',
+    'cast_android_cma_backend_unittests',
     'cast_audio_backend_unittests',
     'cast_base_junit_tests',
     'cast_base_unittests',

@@ -302,8 +302,8 @@ targets.binaries.console_test_launcher(
 # TODO(issues.chromium.org/1516671): Remove unneeded cast_* suites.
 
 targets.binaries.console_test_launcher(
-    name = "cast_display_settings_unittests",
-    label = "//chromecast/ui/display_settings:cast_display_settings_unittests",
+    name = "cast_android_cma_backend_unittests",
+    label = "//chromecast/media/cma/backend/android:cast_android_cma_backend_unittests",
 )
 
 targets.binaries.console_test_launcher(
@@ -324,6 +324,11 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "cast_crash_unittests",
     label = "//chromecast/crash:cast_crash_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_display_settings_unittests",
+    label = "//chromecast/ui/display_settings:cast_display_settings_unittests",
 )
 
 targets.binaries.console_test_launcher(

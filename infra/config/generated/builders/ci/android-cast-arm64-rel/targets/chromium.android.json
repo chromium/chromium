@@ -16,6 +16,37 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cast_android_cma_backend_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cast_android_cma_backend_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP1A.240505.005",
+            "device_os_type": "userdebug",
+            "device_type": "tangorpro",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_android_cma_backend_unittests",
+        "test_id_prefix": "ninja://chromecast/media/cma/backend/android:cast_android_cma_backend_unittests/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cast_audio_backend_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -109,37 +140,6 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "cast_display_settings_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "cast_display_settings_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "AP1A.240505.005",
-            "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_display_settings_unittests",
-        "test_id_prefix": "ninja://chromecast/ui/display_settings:cast_display_settings_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
             "cast_media_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -160,37 +160,6 @@
         },
         "test": "cast_media_unittests",
         "test_id_prefix": "ninja://chromecast/media:cast_media_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "cast_shell_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "cast_shell_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "AP1A.240505.005",
-            "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_shell_unittests",
-        "test_id_prefix": "ninja://chromecast:cast_shell_unittests/"
       },
       {
         "args": [
