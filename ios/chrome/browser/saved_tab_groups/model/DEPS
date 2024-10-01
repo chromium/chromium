@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/data_sharing/public",
   "+components/saved_tab_groups",
   "+ios/chrome/browser/sync/model/data_type_store_service_factory.h",
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
