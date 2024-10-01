@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
 
@@ -22,6 +23,10 @@ class NavigationHandle;
 // code that just wishes to defer a commit, including activations to the
 // primary frame tree, should instead use a CommitDeferringCondition.
 class CONTENT_EXPORT NavigationThrottle {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Represents what a NavigationThrottle can decide to do to a navigation. Note
   // that this enum is implicitly convertable to ThrottleCheckResult.
