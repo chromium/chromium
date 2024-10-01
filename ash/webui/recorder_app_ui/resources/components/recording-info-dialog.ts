@@ -70,6 +70,7 @@ export class RecordingInfoDialog extends ReactiveLitElement {
         flex: 1;
         flex-flow: column;
         font: var(--cros-body-2-font);
+        overflow-wrap: anywhere;
       }
     }
   `;
