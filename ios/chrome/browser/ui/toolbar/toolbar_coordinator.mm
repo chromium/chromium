@@ -126,14 +126,14 @@
 
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
-  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     deviceSwitcherResult =
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(browser->GetProfile());
   }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
-               isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
+               isIncognito:browser->GetProfile()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
 
@@ -259,7 +259,7 @@
   // IsActive() value rather than checking -IsVisibleURLNewTabPage.
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   BOOL isNTP = NTPHelper && NTPHelper->IsActive();
-  BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.traitEnvironment);
 
   // Hide the toolbar when displaying content suggestions without the tab
@@ -611,7 +611,7 @@
 /// an incognito browser, the NTP is displayed, and whether the fakebox was
 /// pinned if it was selected.
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
-  if (self.browser->GetBrowserState()->IsOffTheRecord() ||
+  if (self.browser->GetProfile()->IsOffTheRecord() ||
       !IsSplitToolbarMode(self.traitEnvironment)) {
     return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
                                : OmniboxFocusTrigger::kOther;

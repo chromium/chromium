@@ -65,21 +65,21 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   AdaptiveToolbarMediatorTest() {
     ios::provider::test::SetVoiceSearchEnabled(false);
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder builder;
 
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
 
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(builder).Build();
+    test_browser_ = std::make_unique<TestBrowser>(profile_.get());
     WebNavigationBrowserAgent::CreateForBrowser(test_browser_.get());
 
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     test_web_state_ = std::make_unique<web::FakeWebState>();
-    test_web_state_->SetBrowserState(chrome_browser_state_.get());
+    test_web_state_->SetBrowserState(profile_.get());
     test_web_state_->SetNavigationManager(std::move(navigation_manager));
     test_web_state_->SetLoading(true);
     web_state_ = test_web_state_.get();
@@ -90,8 +90,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                              scenario:kTestMenuScenario];
     mediator_.templateURLService =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
     SetUpWebStateList();
@@ -155,7 +154,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
   void InsertNewWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(chrome_browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     GURL url("http://test/" + base::NumberToString(index));
@@ -179,7 +178,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
  private:
   std::unique_ptr<web::FakeWebState> test_web_state_;
@@ -500,7 +499,7 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElementsBackForward) {
   navigation_manager->GoBack();
 
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(chrome_browser_state_.get());
+  web_state->SetBrowserState(profile_.get());
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state_list_->InsertWebState(
       std::move(web_state),

@@ -47,11 +47,11 @@
   CHECK(IsTabGroupIndicatorEnabled());
   _view = [[TabGroupIndicatorView alloc] init];
   _view.displayedOnNTP = _displayedOnNTP;
-  _view.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  _view.incognito = self.browser->GetProfile()->IsOffTheRecord();
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   _mediator = [[TabGroupIndicatorMediator alloc]
           initWithProfile:self.browser->GetProfile()
       tabGroupSyncService:tabGroupSyncService
