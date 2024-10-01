@@ -111,6 +111,21 @@ enum class SafetyCheckNotificationsImpressionTrigger {
 // Feature flag to add the Tips module to the Magic Stack.
 BASE_DECLARE_FEATURE(kTipsMagicStack);
 
+// Name of the parameter that controls the experiment type for the Lens Shop
+// tip, determining whether or not a product image is displayed.
+extern const char kTipsLensShopExperimentType[];
+
+// Defines the different experiment arms for the Lens Shop tip, which
+// determine whether or not a product image is displayed (if available).
+enum class TipsLensShopExperimentType {
+  // The experiment arm that shows the product image (if available) in the
+  // Lens Shop tip.
+  kWithProductImage = 0,
+  // The experiment arm that does not show the product image in the Lens shop
+  // tip.
+  kWithoutProductImage = 1,
+};
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -356,6 +371,10 @@ bool IsSafetyCheckNotificationsEnabled();
 
 // Whether the Tips module should be shown in the Magic Stack.
 bool IsTipsMagicStackEnabled();
+
+// Returns the experiment type for the Lens Shop tip, which determines
+// whether or not a product image is displayed (if available).
+TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled();
 
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();

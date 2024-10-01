@@ -61,6 +61,8 @@ BASE_FEATURE(kTipsMagicStack,
              "TipsMagicStack",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kTipsLensShopExperimentType[] = "TipsLensShopExperimentType";
+
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
@@ -340,7 +342,16 @@ int SafetyCheckNotificationsImpressionLimit() {
 }
 
 bool IsTipsMagicStackEnabled() {
-  return base::FeatureList::IsEnabled(kTipsMagicStack);
+  return IsSegmentationTipsManagerEnabled() &&
+         base::FeatureList::IsEnabled(kTipsMagicStack);
+}
+
+TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled() {
+  return static_cast<TipsLensShopExperimentType>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kTipsMagicStack, kTipsLensShopExperimentType,
+          /*default_value=*/
+          (int)TipsLensShopExperimentType::kWithoutProductImage));
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,
