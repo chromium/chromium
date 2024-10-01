@@ -995,7 +995,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   // ui scale with the current font scale, the pixel size must be scaled
   // accordingly. Both scale and bounds might get updated later in the window
   // configuration process.
-  state.ui_scale = connection_->window_manager()->font_scale();
+  state.ui_scale = connection_->window_manager()->GetFontScale();
   state.size_px = gfx::ScaleToEnclosingRectIgnoringError(
                       gfx::Rect(state.bounds_dip.size()),
                       state.window_scale * state.ui_scale)
@@ -1444,12 +1444,10 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   // ui_scale determines how the window content, ie: UI, will be laid out and
   // sized. As of now, it is retrieved from the 'font scaling factor' system
   // setting (aka: text scaling factor).
-  const float new_ui_scale = connection_->window_manager()->font_scale();
+  const float new_ui_scale = connection_->window_manager()->GetFontScale();
   state.bounds_dip = gfx::ScaleToEnclosingRectIgnoringError(
       state.bounds_dip, state.ui_scale / new_ui_scale);
   state.ui_scale = new_ui_scale;
-  CHECK(connection_->IsUiScaleEnabled() || state.ui_scale == 1.0f)
-      << state.ui_scale;
 
   // Adjust state values if necessary.
   state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);

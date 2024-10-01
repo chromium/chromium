@@ -6022,6 +6022,27 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
   EXPECT_EQ(menu_window->root_surface()->state_.buffer_scale_float, 1.0f);
 }
 
+TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_SanitizeFontScale) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  auto test_font_scale = [&](float requested_font_scale,
+                             float sanitized_font_scale) {
+    EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+    connection_->window_manager()->SetFontScale(requested_font_scale);
+    Mock::VerifyAndClearExpectations(&delegate_);
+    WaylandTestBase::SyncDisplay();
+    EXPECT_EQ(sanitized_font_scale, window_->applied_state().ui_scale);
+    EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  };
+
+  // Set arbitrary font scale values and verify expectations.
+  test_font_scale(20.0f, 3.0f);
+  test_font_scale(0.10f, 0.5f);
+  test_font_scale(1.5f, 1.5f);
+  test_font_scale(-1.0f, 0.5f);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,

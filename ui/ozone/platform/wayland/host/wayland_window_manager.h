@@ -115,8 +115,8 @@ class WaylandWindowManager {
   // Creates a new unique gfx::AcceleratedWidget.
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
-  float font_scale() const { return font_scale_; }
   void SetFontScale(float new_font_scale);
+  float GetFontScale() const;
 
   void DumpState(std::ostream& out) const;
 
