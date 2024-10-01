@@ -19,6 +19,7 @@
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_helpers.h"
 #include "printing/units.h"
@@ -40,12 +41,7 @@ namespace {
 
 constexpr PdfInkBrush::Params kBasicBrushParams = {SK_ColorRED, 4.0f};
 
-struct InputData {
-  gfx::PointF position;
-  base::TimeDelta time;
-};
-
-constexpr auto kBasicInputs = std::to_array<InputData>({
+constexpr auto kBasicInputs = std::to_array<PdfInkInputData>({
     {{126.122f, 52.852f}, base::Seconds(0.0f)},
     {{127.102f, 52.2398f}, base::Seconds(0.031467f)},
     {{130.041f, 50.7704f}, base::Seconds(0.07934f)},
@@ -83,7 +79,7 @@ constexpr auto kBasicInputs = std::to_array<InputData>({
 });
 
 std::optional<ink::StrokeInputBatch> CreateInputBatch(
-    base::span<const InputData> inputs) {
+    base::span<const PdfInkInputData> inputs) {
   ink::StrokeInputBatch input_batch;
   for (const auto& input : inputs) {
     auto result = input_batch.Append(CreateInkStrokeInput(

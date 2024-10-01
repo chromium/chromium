@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace chrome_pdf {
 
@@ -19,6 +21,13 @@ struct TestAnnotationBrushMessageParams {
   int color_r;
   int color_g;
   int color_b;
+};
+
+// Used to generate ink::StrokeInput. Many tests may need both a `position` and
+// a `time` to consistently generate the same results.
+struct PdfInkInputData {
+  gfx::PointF position;
+  base::TimeDelta time;
 };
 
 base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
