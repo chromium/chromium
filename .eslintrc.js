@@ -402,6 +402,7 @@ module.exports = {
     // is no longer supported.
     // TODO(https://crbug.com/369766161): Bring directories into conformance to
     // re-enable linting.
+    'ash/webui/**',
     'chrome/browser/resources/ash/**/*.[jt]s',
     'chrome/browser/resources/chromeos/**',
     'chrome/test/data/webui/chromeos/**',
