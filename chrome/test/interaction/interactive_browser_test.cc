@@ -40,6 +40,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -760,6 +761,70 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ScrollIntoView(
       ExecuteJsAt(web_contents, where,
                   "(el) => { el.scrollIntoView({ behavior: 'instant' }); }")
           .SetDescription("ScrollIntoView()"));
+}
+
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
+    ui::ElementIdentifier web_contents,
+    const DeepQuery& where,
+    ui_controls::MouseButton button,
+    ui_controls::AcceleratorState modifiers) {
+  int js_button;
+  switch (button) {
+    case ui_controls::LEFT:
+      js_button = 0;
+      break;
+    case ui_controls::MIDDLE:
+      js_button = 1;
+      break;
+    case ui_controls::RIGHT:
+      js_button = 2;
+      break;
+  }
+
+  const bool shift = modifiers & ui_controls::AcceleratorState::kShift;
+  const bool alt = modifiers & ui_controls::AcceleratorState::kAlt;
+  const bool ctrl = modifiers & ui_controls::AcceleratorState::kControl;
+  const bool meta = modifiers & ui_controls::AcceleratorState::kCommand;
+
+  auto b2s = [](bool b) { return b ? "true" : "false"; };
+
+  const std::string command = base::StringPrintf(
+      R"(
+      function(el) {
+        const rect = el.getBoundingClientRect();
+        const left = Math.max(0, rect.x);
+        const top = Math.max(0, rect.y);
+        const right = Math.min(rect.x + rect.width, window.innerWidth);
+        const bottom = Math.min(rect.y + rect.height, window.innerHeight);
+        if (right <= left || bottom <= top) {
+          throw new Error(
+              'Target element is zero size or ' +
+              'has empty intersection with the viewport.');
+        }
+        const x = (left + right) / 2;
+        const y = (top + bottom) / 2;
+
+        const event = new MouseEvent(
+            'click',
+            {
+              bubbles: true,
+              cancelable: true,
+              clientX: x,
+              clientY: y,
+              button: %d,
+              shiftKey: %s,
+              altKey: %s,
+              ctrlKey: %s,
+              metaKey: %s
+            }
+        );
+        el.dispatchEvent(event);
+      }
+    )",
+      js_button, b2s(shift), b2s(alt), b2s(ctrl), b2s(meta));
+
+  return std::move(ExecuteJsAt(web_contents, where, command)
+                       .SetDescription("ClickElement()"));
 }
 
 // static

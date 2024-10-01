@@ -146,6 +146,8 @@ Verbs fall into a number of different categories:
     - `ScrollIntoView()` [Views, Browser]
       - Recommended before doing anything that needs the screen coordinates of
         a UI or DOM element that is in a scrollable container.
+    - `ClickElement()` [Browser]
+      - For use with instrumented webcontents; see below.
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:

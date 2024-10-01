@@ -4,6 +4,9 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <sstream>
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,6 +22,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -30,6 +34,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithLinks[] = "/links.html";
+constexpr char kDocumentWithClickDetection[] = "/click.html";
 constexpr char kScrollableDocument[] =
     "/scroll/scrollable_page_with_content.html";
 }  // namespace
@@ -559,6 +564,99 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));
+}
+
+using ClickElementParams =
+    std::tuple<ui_controls::MouseButton, ui_controls::AcceleratorState>;
+
+class InteractiveBrowserTestClickElementTest
+    : public InteractiveBrowserTestBrowsertest,
+      public testing::WithParamInterface<ClickElementParams> {
+ public:
+  InteractiveBrowserTestClickElementTest() = default;
+  ~InteractiveBrowserTestClickElementTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    InteractiveBrowserTestClickElementTest,
+    testing::Combine(
+        testing::Values(ui_controls::LEFT,
+                        ui_controls::MIDDLE,
+                        ui_controls::RIGHT),
+        testing::Values(ui_controls::AcceleratorState::kNoAccelerator,
+                        ui_controls::AcceleratorState::kShift,
+                        ui_controls::AcceleratorState::kControl,
+                        ui_controls::AcceleratorState::kAlt,
+                        ui_controls::AcceleratorState::kCommand,
+                        static_cast<ui_controls::AcceleratorState>(
+                            ui_controls::AcceleratorState::kAlt |
+                            ui_controls::AcceleratorState::kShift),
+                        static_cast<ui_controls::AcceleratorState>(
+                            ui_controls::AcceleratorState::kControl |
+                            ui_controls::AcceleratorState::kCommand |
+                            ui_controls::AcceleratorState::kAlt |
+                            ui_controls::AcceleratorState::kShift))),
+    [](const testing::TestParamInfo<ClickElementParams>& params) {
+      std::ostringstream oss;
+      switch (std::get<0>(params.param)) {
+        case ui_controls::LEFT:
+          oss << "Left";
+          break;
+        case ui_controls::MIDDLE:
+          oss << "Middle";
+          break;
+        case ui_controls::RIGHT:
+          oss << "Right";
+          break;
+      }
+      const auto accel = std::get<1>(params.param);
+      if (accel & ui_controls::AcceleratorState::kControl) {
+        oss << "_Control";
+      }
+      if (accel & ui_controls::AcceleratorState::kAlt) {
+        oss << "_Alt";
+      }
+      if (accel & ui_controls::AcceleratorState::kShift) {
+        oss << "_Shift";
+      }
+      if (accel & ui_controls::AcceleratorState::kCommand) {
+        oss << "_Meta";
+      }
+      return oss.str();
+    });
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestClickElementTest, ClickElement) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const auto mouse_button = std::get<0>(GetParam());
+  const auto modifier = std::get<1>(GetParam());
+  const DeepQuery kButton = {"#button"};
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      ClickElement(kWebContentsId, kButton, mouse_button, modifier),
+      CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.button",
+                      static_cast<int>(mouse_button)),
+      CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.altKey",
+                      (modifier & ui_controls::AcceleratorState::kAlt) != 0),
+      CheckJsResultAt(kWebContentsId, kButton,
+                      "el => el.lastClickEvent.shiftKey",
+                      (modifier & ui_controls::AcceleratorState::kShift) != 0),
+      CheckJsResultAt(
+          kWebContentsId, kButton, "el => el.lastClickEvent.ctrlKey",
+          (modifier & ui_controls::AcceleratorState::kControl) != 0),
+      CheckJsResultAt(
+          kWebContentsId, kButton, "el => el.lastClickEvent.metaKey",
+          (modifier & ui_controls::AcceleratorState::kCommand) != 0),
+      CheckJsResultAt(kWebContentsId, kButton,
+                      R"(
+            function(el) {
+              const x = el.lastClickEvent.x;
+              const y = el.lastClickEvent.y;
+              const rect = el.getBoundingClientRect();
+              return x >= rect.left && x < rect.right &&
+                     y >= rect.top && y < rect.bottom;
+            }
+          )"));
 }
 
 // Parameter for WebUI coverage tests.
