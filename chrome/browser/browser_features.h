@@ -64,6 +64,24 @@ extern const base::FeatureParam<std::string>
     kDevToolsExplainThisResourceDogfoodModelId;
 extern const base::FeatureParam<double>
     kDevToolsExplainThisResourceDogfoodTemperature;
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsExplainThisResourceDogfoodUserTier;
+
+BASE_DECLARE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsAiAssistancePerformanceAgentDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsAiAssistancePerformanceAgentDogfoodTemperature;
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiAssistancePerformanceAgentDogfoodUserTier;
+
+BASE_DECLARE_FEATURE(kDevToolsAiAssistanceFileAgentDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsAiAssistanceFileAgentDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsAiAssistanceFileAgentDogfoodTemperature;
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiAssistanceFileAgentDogfoodUserTier;
 
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);

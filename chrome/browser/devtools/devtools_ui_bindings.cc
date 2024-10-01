@@ -1589,8 +1589,46 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   explain_this_resource_dogfood_dict.Set(
       "temperature",
       features::kDevToolsExplainThisResourceDogfoodTemperature.Get());
+  explain_this_resource_dogfood_dict.Set(
+      "userTier",
+      features::kDevToolsExplainThisResourceDogfoodUserTier.GetName(
+          features::kDevToolsExplainThisResourceDogfoodUserTier.Get()));
   response_dict.Set("devToolsExplainThisResourceDogfood",
                     std::move(explain_this_resource_dogfood_dict));
+
+  base::Value::Dict ai_assistance_performance_agent_dogfood_dict;
+  ai_assistance_performance_agent_dogfood_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsAiAssistancePerformanceAgentDogfood));
+  ai_assistance_performance_agent_dogfood_dict.Set(
+      "modelId",
+      features::kDevToolsAiAssistancePerformanceAgentDogfoodModelId.Get());
+  ai_assistance_performance_agent_dogfood_dict.Set(
+      "temperature",
+      features::kDevToolsAiAssistancePerformanceAgentDogfoodTemperature.Get());
+  ai_assistance_performance_agent_dogfood_dict.Set(
+      "userTier",
+      features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier.GetName(
+          features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier
+              .Get()));
+  response_dict.Set("devToolsAiAssistancePerformanceAgentDogfood",
+                    std::move(ai_assistance_performance_agent_dogfood_dict));
+
+  base::Value::Dict ai_assistance_file_agent_dogfood_dict;
+  ai_assistance_file_agent_dogfood_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsAiAssistanceFileAgentDogfood));
+  ai_assistance_file_agent_dogfood_dict.Set(
+      "modelId", features::kDevToolsAiAssistanceFileAgentDogfoodModelId.Get());
+  ai_assistance_file_agent_dogfood_dict.Set(
+      "temperature",
+      features::kDevToolsAiAssistanceFileAgentDogfoodTemperature.Get());
+  ai_assistance_file_agent_dogfood_dict.Set(
+      "userTier",
+      features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.GetName(
+          features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.Get()));
+  response_dict.Set("devToolsAiAssistanceFileAgentDogfood",
+                    std::move(ai_assistance_file_agent_dogfood_dict));
 
   base::Value::Dict ve_logging_dict;
   ve_logging_dict.Set(
