@@ -21240,6 +21240,28 @@
             ]
         }
     ],
+    "ScreenlockReauthChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Reauth_Enabled",
+                    "enable_features": [
+                        "BiometricsAuthForPwdFill"
+                    ]
+                },
+                {
+                    "name": "Reauth_With_Promo_Enabled",
+                    "enable_features": [
+                        "BiometricsAuthForPwdFill",
+                        "ScreenlockReauthPromoCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenlockReauthPromoCard": [
         {
             "platforms": [
