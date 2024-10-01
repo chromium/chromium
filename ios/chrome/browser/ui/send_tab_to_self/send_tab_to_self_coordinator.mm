@@ -251,8 +251,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
                       targetDeviceName:(NSString*)deviceName {
-  SendTabToSelfSyncServiceFactory::GetForProfile(
-      self.browser->GetBrowserState())
+  SendTabToSelfSyncServiceFactory::GetForProfile(self.browser->GetProfile())
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
                  base::SysNSStringToUTF8(cacheGUID));
@@ -288,17 +287,17 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   switch (*displayReason) {
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
-      ChromeBrowserState* browserState = self.browser->GetBrowserState();
+      ProfileIOS* profile = self.browser->GetProfile();
       send_tab_to_self::SendTabToSelfSyncService* syncService =
-          SendTabToSelfSyncServiceFactory::GetForProfile(browserState);
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile);
       // This modal should not be launched in incognito mode where syncService
       // is undefined.
       DCHECK(syncService);
       ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+          ChromeAccountManagerServiceFactory::GetForProfile(profile);
       DCHECK(accountManagerService);
       id<SystemIdentity> account =
-          AuthenticationServiceFactory::GetForBrowserState(browserState)
+          AuthenticationServiceFactory::GetForProfile(profile)
               ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       DCHECK(account) << "The user must be signed in to share a tab";
       self.sendTabToSelfViewController =
@@ -352,7 +351,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   }
   __weak __typeof(self) weakSelf = self;
   _targetDeviceListWaiter = std::make_unique<TargetDeviceListWaiter>(
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()),
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile()),
       base::BindRepeating(
           [](__typeof(self) strongSelf) { return [strongSelf displayReason]; },
           weakSelf),
@@ -371,7 +370,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 - (std::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   return service ? service->GetEntryPointDisplayReason(_url) : std::nullopt;
 }
 
