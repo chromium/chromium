@@ -19,6 +19,14 @@ class XRGPUProjectionLayer final : public XRProjectionLayer {
                        XRGPULayerTextureSwapChain* depth_stencil_swap_chain_);
   ~XRGPUProjectionLayer() override = default;
 
+  // TODO(crbug.com/359428629): Implement WebGPU layer submission
+  void OnFrameStart(
+      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
+      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder)
+      override {}
+  void OnFrameEnd() override {}
+  void OnResize() override {}
+
   XRGPULayerTextureSwapChain* color_swap_chain() {
     return color_swap_chain_.Get();
   }

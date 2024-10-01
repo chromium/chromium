@@ -36,6 +36,9 @@ class XRRenderState : public ScriptWrappable {
   XRWebGLLayer* baseLayer() const { return base_layer_.Get(); }
   const FrozenArray<XRLayer>& layers() const { return *layers_.Get(); }
 
+  // Returns either baseLayer or layers[0], or nullptr if neither is set.
+  XRLayer* GetFirstLayer() const;
+
   HTMLCanvasElement* output_canvas() const;
 
   void Update(const XRRenderStateInit* init);

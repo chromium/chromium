@@ -64,7 +64,7 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRWebGLLayer;
+class XRLayer;
 
 template <typename IDLType>
 class FrozenArray;
@@ -579,7 +579,7 @@ class XRSession final : public EventTarget,
   HeapVector<Member<XRViewData>> views_;
 
   Member<XRInputSourceArray> input_sources_;
-  Member<XRWebGLLayer> prev_base_layer_;
+  Member<XRLayer> prev_base_layer_;
   Member<ResizeObserver> resize_observer_;
   Member<XRCanvasInputProvider> canvas_input_provider_;
   Member<Element> overlay_element_;

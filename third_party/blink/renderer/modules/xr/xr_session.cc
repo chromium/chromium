@@ -623,8 +623,9 @@ void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {
       }
     }
 
-    if (views_resized && render_state_->baseLayer()) {
-      render_state_->baseLayer()->OnResize();
+    XRLayer* base_layer = render_state_->GetFirstLayer();
+    if (views_resized && base_layer) {
+      base_layer->OnResize();
     }
   } else {  // Inline
     UpdateInlineView();
@@ -1600,10 +1601,12 @@ void XRSession::UpdateVisibilityState() {
 }
 
 void XRSession::MaybeRequestFrame() {
-  bool will_have_base_layer = !!render_state_->baseLayer();
+  bool will_have_base_layer = !!render_state_->GetFirstLayer();
   for (const auto& init : pending_render_state_) {
     if (init->hasBaseLayer()) {
       will_have_base_layer = !!init->baseLayer();
+    } else if (init->hasLayers()) {
+      will_have_base_layer = init->layers()->size() > 0;
     }
   }
 
@@ -1674,7 +1677,7 @@ void XRSession::DetachOutputCanvas(HTMLCanvasElement* canvas) {
 void XRSession::ApplyPendingRenderState() {
   DCHECK(!prev_base_layer_);
   if (pending_render_state_.size() > 0) {
-    prev_base_layer_ = render_state_->baseLayer();
+    prev_base_layer_ = render_state_->GetFirstLayer();
     HTMLCanvasElement* prev_ouput_canvas = render_state_->output_canvas();
 
     // Loop through each pending render state and apply it to the active one.
@@ -1685,9 +1688,9 @@ void XRSession::ApplyPendingRenderState() {
 
     // If this is an inline session and the base layer has changed, give it an
     // opportunity to update it's drawing buffer size.
-    if (!immersive() && render_state_->baseLayer() &&
-        render_state_->baseLayer() != prev_base_layer_) {
-      render_state_->baseLayer()->OnResize();
+    XRLayer* base_layer = render_state_->GetFirstLayer();
+    if (!immersive() && base_layer && base_layer != prev_base_layer_) {
+      base_layer->OnResize();
     }
 
     // If the output canvas changed, remove listeners from the old one and add
@@ -1980,8 +1983,7 @@ void XRSession::OnFrame(
 
     // Don't allow frames to be processed if there's no layers attached to the
     // session. That would allow tracking with no associated visuals.
-    XRWebGLLayer* frame_base_layer = render_state_->baseLayer();
-    if (!frame_base_layer) {
+    if (!render_state_->GetFirstLayer()) {
       DVLOG(2) << __func__ << ": frame_base_layer not present";
 
       // If we previously had a frame base layer, we need to still attempt to
@@ -2007,6 +2009,7 @@ void XRSession::OnFrame(
       return;
     }
 
+    XRLayer* frame_base_layer = render_state_->GetFirstLayer();
     frame_base_layer->OnFrameStart(output_mailbox_holder,
                                    camera_image_mailbox_holder);
 
@@ -2159,8 +2162,9 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
   output_width_ = element->OffsetWidth() * devicePixelRatio;
   output_height_ = element->OffsetHeight() * devicePixelRatio;
 
-  if (render_state_->baseLayer()) {
-    render_state_->baseLayer()->OnResize();
+  XRLayer* base_layer = render_state_->GetFirstLayer();
+  if (base_layer) {
+    base_layer->OnResize();
   }
 
   canvas_was_resized_ = true;

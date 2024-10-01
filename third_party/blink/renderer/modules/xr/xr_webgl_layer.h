@@ -74,9 +74,10 @@ class XRWebGLLayer final : public XRLayer {
 
   void OnFrameStart(
       const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
-  void OnFrameEnd();
-  void OnResize();
+      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder)
+      override;
+  void OnFrameEnd() override;
+  void OnResize() override;
 
   // Called from XRSession::OnFrame handler. Params are background texture
   // mailbox holder and its size respectively.
