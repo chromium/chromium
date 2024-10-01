@@ -235,6 +235,8 @@ public class JniPaymentApp extends PaymentApp {
         mNativeObject = 0;
     }
 
+    // TODO(crbug.com/40286193): Use an explicit destroy() method.
+    @SuppressWarnings("Finalize")
     @Override
     public void finalize() throws Throwable {
         dismissInstrument();

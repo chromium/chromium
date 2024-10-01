@@ -98,6 +98,7 @@ class AutoCloseableRouter implements Router {
      * @see Object#finalize()
      */
     @Override
+    @SuppressWarnings("Finalize") // TODO(crbug.com/40286193): Use LifetimeAssert instead.
     protected void finalize() throws Throwable {
         if (!mClosed) {
             mExecutor.execute(

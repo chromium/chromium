@@ -1710,7 +1710,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
     }
 
     @Override
+    @SuppressWarnings("Finalize")
     public void finalize() {
+        // TODO(crbug.com/40286193): Use an explicit close (or timer-based timeout?) rather than
+        // finalize, which
+        // discouraged and difficult to ensure actually runs.
         mCameraThreadHandler.getLooper().quit();
     }
 

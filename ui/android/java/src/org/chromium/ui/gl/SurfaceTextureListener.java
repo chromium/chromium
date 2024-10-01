@@ -27,6 +27,7 @@ class SurfaceTextureListener implements SurfaceTexture.OnFrameAvailableListener 
     }
 
     @Override
+    @SuppressWarnings("Finalize")  // TODO(crbug.com/40286193): Remove in favor of destroy().
     protected void finalize() throws Throwable {
         try {
             SurfaceTextureListenerJni.get()
