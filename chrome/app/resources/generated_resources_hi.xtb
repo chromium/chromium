@@ -2932,6 +2932,7 @@
 <translation id="304644035656848980">माइक्रोफ़ोन की झलक</translation>
 <translation id="3046910703532196514">वेबपेज, पूरा हुआ</translation>
 <translation id="304747341537320566">बोली इंजन</translation>
+<translation id="3047678109605649715">आपके डिवाइस पर <ph name="LANGUAGE" /> में आवाज़ों का ऐसेट इंस्टॉल नहीं है. अपने डिवाइस में स्टोरेज खाली करें और फिर से कोशिश करें.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> वेंडर के एचआईडी डिवाइस</translation>
 <translation id="3048589239114571785">चलाएं (k)</translation>
 <translation id="3048742847101793553">स्कैन न हो पाने की वजह से, आपके संगठन ने इस फ़ाइल को ब्लॉक कर दिया है.</translation>
@@ -7273,7 +7274,6 @@
 <translation id="6254892857036829079">बढ़िया</translation>
 <translation id="6257602895346497974">सिंक करना चालू करें...</translation>
 <translation id="625827534921607067">अगर पहले से कनेक्ट या कॉन्फ़िगर किए गए एक से ज़्यादा नेटवर्क उपलब्ध हैं, तो इस नेटवर्क को प्राथमिकता दी जाएगी</translation>
-<translation id="62586649943626337">टैब ग्रुप की मदद से, अपने टैब व्यवस्थित करें</translation>
 <translation id="6259776178973198997">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी रीफ़्रेश करें</translation>
 <translation id="6262371516389954471">आपके डिवाइस के डेटा का बैक अप Google पर अपलोड हो गया है. साथ ही, उसे Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) कर दिया गया है.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
@@ -7754,6 +7754,7 @@
 <translation id="6627743754845412571">आपके हाथों को ट्रैक करने की अनुमति नहीं है</translation>
 <translation id="6628316682330029452">ऐसे सर्टिफ़िकेट को क्लाइंट सर्टिफ़िकेट कहते हैं जो अन्य सर्वर पर आपकी पहचान करते हैं.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> पर अपलोड किया गया</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">बेहतर सुरक्षा</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> को आपकी ओर से अपनी पुष्टि करने के लिए प्रमाणपत्र का स्थायी ऐक्सेस चाहिए.</translation>
 <translation id="6634220840123396409">मुझे इस साइट पर भरोसा है, रेडियो बटन का ग्रुप, तीन में से दूसरा विकल्प</translation>

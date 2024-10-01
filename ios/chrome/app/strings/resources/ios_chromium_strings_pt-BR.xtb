@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
 <translation id="22313767259766852">Este endereço está salvo no Chromium. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Isso significa que o Chromium vai solicitar sempre o site para computador.</translation>
+<translation id="2270466829363945454">Compras</translation>
 <translation id="2313870531055795960">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chromium. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chromium também poderá enviar os URLs, incluindo partes do conteúdo da página, para o Navegação segura.</translation>
 <translation id="231828342043114302">Para receber conteúdo personalizado com base nos seus interesses, faça login no Chromium.</translation>
 <translation id="2326738825692478496">Alguns dos seus dados do Chromium ainda não foram salvos na sua Conta do Google.
@@ -130,6 +131,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="4432744876818348753">Faça login para aproveitar o Chromium ao máximo.</translation>
 <translation id="4445228361214254027">Sua organização desativou a capacidade de usar e salvar dados do Chromium na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
 <translation id="4498832288620833153">Adiciona os URLs inseridos à sua Lista de leitura no Chromium.</translation>
+<translation id="4508268628669724828">Volte aqui e veja mais dicas úteis para aproveitar o Chromium ao máximo.</translation>
 <translation id="452436063477828504">Garanta que você sempre possa usar os dados do Chromium na sua Conta do Google</translation>
 <translation id="4527452566931097835">Definir o Chromium como padrão?</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7228180817326917122">Dica do Chromium: escolha a posição da barra de endereço</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="7269362888766543920">Alguns complementos causam falhas do Chromium. Tente desinstalá-los.</translation>
+<translation id="7279391168585141365">Salve suas senhas no Chromium</translation>
 <translation id="7285031092584344905">Acesse suas senhas do Chromium e muito mais em outros apps.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>

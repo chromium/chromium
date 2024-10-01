@@ -272,6 +272,7 @@
 <translation id="1187722533808055681">ไม่ใช้งานการปลุก</translation>
 <translation id="1188807932851744811">ยังไม่อัปโหลดบันทึก</translation>
 <translation id="1190086046506744802">ห่างมาก</translation>
+<translation id="1190155014618058972">สร้างชุดแป้นที่กำหนดเอง</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{เข้าถึง 1 ไฟล์ที่จัดเก็บไว้บนคอมพิวเตอร์}other{เข้าถึง # ไฟล์ที่จัดเก็บไว้บนคอมพิวเตอร์}}</translation>
 <translation id="1190706173655543975">นโยบายสำหรับแอปพลิเคชัน Microsoft</translation>
 <translation id="1191353342579061195">เลือกธีมที่ตรงกับความต้องการของคุณ หากต้องการเปลี่ยนธีม วอลเปเปอร์ โปรแกรมรักษาหน้าจอ และอื่นๆ เพียงคลิกขวาที่เดสก์ท็อป</translation>
@@ -1130,6 +1131,7 @@
 <translation id="1794212650797661990">ซ่อนรหัสผ่านสําหรับ <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">ส่งความคิดเห็นเพื่อช่วยเราแก้ไขปัญหานี้</translation>
 <translation id="1795214765651529549">ใช้แบบคลาสสิก</translation>
+<translation id="1795438342141780114">รีเซ็ตเคอร์เซอร์ไปที่กึ่งกลาง</translation>
 <translation id="1795668164971917185">ครั้งถัดไปที่พบการดาวน์โหลดที่น่าสงสัย Google Safe Browsing จะสแกนการดาวน์โหลดดังกล่าวโดยอัตโนมัติโดยเป็นส่วนหนึ่งของ <ph name="LINK" /> ที่คุณเลือกไว้</translation>
 <translation id="1796588414813960292">ฟีเจอร์ที่ต้องใช้เสียงจะไม่ทำงาน</translation>
 <translation id="1797117170091578105">เล่นโดยใช้แป้นพิมพ์ Chromebook คุณปรับแต่งแป้นให้กับการทำงานที่เจาะจงได้</translation>
@@ -1814,6 +1816,7 @@
 <translation id="2278562042389100163">เปิดหน้าต่างเบราว์เซอร์</translation>
 <translation id="2278668501808246459">กำลังเริ่มต้นตัวจัดการคอนเทนเนอร์</translation>
 <translation id="2280486287150724112">ขอบขวา</translation>
+<translation id="228059581448666199">คลิกซ้ายที่เมาส์</translation>
 <translation id="2281863813036651454">คลิกเมาส์ซ้าย</translation>
 <translation id="2282146716419988068">การประมวลผลของ GPU</translation>
 <translation id="228293613124499805">เว็บไซต์ส่วนใหญ่ที่คุณเข้าชมอาจบันทึกข้อมูลลงในอุปกรณ์บ่อยๆ เพื่อปรับปรุงประสบการณ์การใช้งานโดยการบันทึกค่ากำหนดหรือข้อมูลที่คุณแชร์กับเว็บไซต์ เราขอแนะนำให้เปิดการตั้งค่านี้ไว้</translation>
@@ -4706,6 +4709,7 @@
 <translation id="4359408040881008151">ติดตั้งแล้วเนื่องจากมีส่วนขยายที่ต้องพึ่งพา</translation>
 <translation id="4359717112757026264">ทิวทัศน์ของเมือง</translation>
 <translation id="4359809482106103048">ข้อมูลโดยย่อด้านความปลอดภัย</translation>
+<translation id="4360738659108163902">คลิกขวาที่เมาส์</translation>
 <translation id="4361142739114356624">คีย์ส่วนตัวของใบรับรองไคลเอ็นต์นี้หายไปหรือไม่ถูกต้อง</translation>
 <translation id="4361745360460842907">เปิดเป็นแท็บ</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> เป็นบัญชีเริ่มต้นใน <ph name="DEVICE_TYPE" /> ของคุณ</translation>
@@ -5334,6 +5338,7 @@
 <translation id="482952334869563894">อุปกรณ์ USB จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">กำลังติดตั้งอัปเดตระบบปฏิบัติการ</translation>
 <translation id="4831226137013573603">ปิดเสียงไมโครโฟน</translation>
+<translation id="483262387981411190">หยุดการควบคุมใบหน้าชั่วคราวหรือใช้ต่อ</translation>
 <translation id="4833683849865011483">พบเครื่องพิมพ์ 1 เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
 <translation id="4835598628985424375">ทำปากจู๋โดยบีบริมฝีปากเข้าหากัน</translation>
 <translation id="4835677468087803981">ซ่อน PIN</translation>
@@ -5894,6 +5899,7 @@
 <translation id="5240931875940563122">ลงชื่อเข้าใช้ด้วยโทรศัพท์ Android</translation>
 <translation id="5242724311594467048">เปิดใช้งาน "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="5243522832766285132">โปรดลองอีกครั้งในอีกสักครู่</translation>
+<translation id="5243752692914402705">เมื่อเริ่มโหมดเลื่อนแล้ว ให้ขยับศีรษะไปในทิศทางที่ต้องการเลื่อน</translation>
 <translation id="5244234799035360187">ตอนนี้ OneDrive จะปรากฏในแอป Files</translation>
 <translation id="5244466461749935369">เก็บไว้ก่อน</translation>
 <translation id="5244474230056479698">กำลังซิงค์กับ <ph name="EMAIL" /></translation>
@@ -6642,6 +6648,7 @@
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806447147478173900">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ที่แสดงอยู่ใช้: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ค่าเริ่มต้น)</translation>
+<translation id="5807774529265708172">แสดงหรือซ่อนแป้นพิมพ์บนหน้าจอ</translation>
 <translation id="5809835394668218762">การดำเนินการเพิ่มเติมสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">PIN ต้องเป็นตัวเลข 6 หลัก</translation>
 <translation id="5810809306422959727">บัญชีนี้ไม่มีสิทธิ์ใช้การควบคุมโดยผู้ปกครอง</translation>
@@ -6835,6 +6842,7 @@
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google Safe Browsing สแกนไหม</translation>
 <translation id="5945363896952315544">คีย์ความปลอดภัยเก็บลายนิ้วมือไม่ได้อีก หากต้องการเพิ่มใหม่ ให้ลบลายนิ้วมือที่มีอยู่ออกก่อน</translation>
 <translation id="5946591249682680882">รหัสรายงาน <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">ดับเบิลคลิกที่เมาส์</translation>
 <translation id="5948476936444935795">ยกเลิกการนำเข้า</translation>
 <translation id="5948536763493709626">เชื่อมต่อแป้นพิมพ์หรือเมาส์ หรือตั้งค่าต่อโดยใช้หน้าจอสัมผัส หากกำลังใช้อุปกรณ์บลูทูธ ให้ตรวจสอบว่าอุปกรณ์พร้อมที่จะจับคู่</translation>
 <translation id="5949544233750246342">ไม่สามารถแยกวิเคราะห์ไฟล์</translation>
@@ -7258,7 +7266,6 @@
 <translation id="6254892857036829079">ยอดเยี่ยม</translation>
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
 <translation id="625827534921607067">ระบบจะเลือกเครือข่ายนี้หากมีมากกว่า 1 เครือข่ายที่เชื่อมต่อหรือกำหนดค่าไว้ก่อนหน้านี้</translation>
-<translation id="62586649943626337">จัดแท็บให้เป็นระเบียบด้วยกลุ่มแท็บ</translation>
 <translation id="6259776178973198997">รีเฟรชข้อมูลเจ้าของ Wi-Fi Direct</translation>
 <translation id="6262371516389954471">ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="6263082573641595914">รุ่นของผู้มีสิทธิ์ออกใบรับรองของ Microsoft</translation>
@@ -7737,6 +7744,7 @@
 <translation id="6627743754845412571">ไม่ได้รับอนุญาตให้ติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="6628316682330029452">ใบรับรองไคลเอ็นต์คือใบรับรองที่ระบุตัวตนของคุณให้เซิร์ฟเวอร์อื่นๆ ทราบ</translation>
 <translation id="6628328486509726751">อัปโหลด <ph name="WEBRTC_LOG_UPLOAD_TIME" /> แล้ว</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">รักษาความปลอดภัยได้รัดกุมยิ่งขึ้น</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ต้องการสิทธิ์ถาวรในการเข้าถึงใบรับรองเพื่อตรวจสอบสิทธิ์ตัวเองในนามของคุณ</translation>
 <translation id="6634220840123396409">กลุ่มปุ่มตัวเลือก "ฉันเชื่อถือเว็บไซต์นี้" 2 จาก 3</translation>
@@ -9585,6 +9593,7 @@
 <translation id="7958828865373988933">หากต้องการสร้างพาสคีย์สำหรับ <ph name="APP_NAME" /> ในคีย์ความปลอดภัย USB ให้เสียบและแตะได้เลย</translation>
 <translation id="7959074893852789871">ไฟล์มีใบรับรองหลายใบ แต่มีบางรายการที่ไม่ได้นำเข้า:</translation>
 <translation id="7959665254555683862">แท็บที่ไม่ระบุตัวตนใหม่</translation>
+<translation id="7960540720012720106">เปิดภาพรวมของหน้าต่าง</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
 <translation id="7963001036288347286">การเร่งความเร็วของทัชแพด</translation>
 <translation id="7963513503134856713">หน้าต่างเลื่อนไปทางขวา</translation>
@@ -9664,6 +9673,7 @@
 <translation id="8014154204619229810">โปรแกรมอัปเดตกำลังทำงาน โปรดรีเฟรชในอีก 1 นาทีเพื่อตรวจสอบอีกครั้ง</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ไม่สามารถเปลี่ยนกลับไปเป็นเวอร์ชันที่ติดตั้งไว้ก่อนหน้านี้ได้ โปรดลองอีกครั้งเพื่อ Powerwash อุปกรณ์ของคุณ</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{คัดลอก 1 ไฟล์แล้ว}other{คัดลอก {NUM_OF_FILES} ไฟล์แล้ว}}</translation>
+<translation id="8017004049696748317">เริ่มหรือหยุดการพิมพ์ตามคำบอก</translation>
 <translation id="8017176852978888182">ไดเรกทอรีที่แชร์ใน Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
@@ -9678,6 +9688,7 @@
 <translation id="8025291188699172126">เกี่ยวกับการอัปเดต</translation>
 <translation id="8026471514777758216">อุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="8026784703228858744">บันทึกบุ๊กมาร์กและอื่นๆ ด้วยการซิงค์</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{เข้าชมเมื่อ 0 วันที่ผ่านมา}=1{เข้าชมเมื่อ 1 วันที่ผ่านมา}other{เข้าชมเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="8028060951694135607">การกู้คืนคีย์ของ Microsoft</translation>
 <translation id="8028803902702117856">กำลังดาวน์โหลด <ph name="SIZE" /> <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ขนาด</translation>

@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Növbəti dəfə Chromium'un bu saytdakı <ph name="LANGUAGE_NAME" /> səhifələrini tərcümə etməyini istəyirsiniz?</translation>
 <translation id="22313767259766852">Bu ünvan Chromium-da yadda saxlanır. Onu Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="2236584955986023187">Yəni, Chromium hər dəfə masaüstü saytını tələb edəcək.</translation>
+<translation id="2270466829363945454">Mağaza</translation>
 <translation id="2313870531055795960">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="231828342043114302">Maraqlarınıza əsasən fərdiləşdirilmiş kontent qəbul etmək üçün Chromium-a daxil olun.</translation>
 <translation id="2326738825692478496">Müəyyən Chromium datası Google Hesabında yadda saxlanılmayıb.
@@ -130,6 +131,7 @@ Data parol ifadəsi ilə şifrələnib. Google Hesabında Chromium datasını is
 <translation id="4432744876818348753">Chromium'dan maksimum yararlanmaq üçün daxil olun.</translation>
 <translation id="4445228361214254027">Təşkilat Chromium datasını istifadə etmək və Google Hesabında yadda saxlamaq imkanını deaktiv edib. Yeni əlfəcin, parol və s. yalnız bu cihazda yadda saxlanacaq.</translation>
 <translation id="4498832288620833153">Daxil edilən URL-ləri Chromium-da oxu siyahısına əlavə edir.</translation>
+<translation id="4508268628669724828">Chromium-dan maksimum yararlanmaq məqsədilə daha faydalı tövsiyələr üçün buraya yenidən baxın.</translation>
 <translation id="452436063477828504">Google Hesabında hər zaman Chromium datasından istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="4527452566931097835">Chromium defolt olaraq ayarlansın?</translation>
 <translation id="4555020257205549924">Bu funksiya aktiv olduqda, Chromium Google Tərcümədən istifadə edərək başqa dillərdə yazılmış səhifələri tərcümə etməyi təklif edəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7228180817326917122">Chromium tövsiyəsi: Ünvan panelinin yerini seçin</translation>
 <translation id="725427773388857052">Chromium sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
 <translation id="7269362888766543920">Bəzi addonlar Chromium'da xətaya səbəb oldu. Lütfən, onları sistemdən silməyə cəhd edin.</translation>
+<translation id="7279391168585141365">Parollarınızı Chromium-da yadda saxlayın</translation>
 <translation id="7285031092584344905">Digər tətbiqlərdə Chromium parolu və s. məlumatlara daxil olun.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Seçilmiş data Chromium və sinxronizasiya olunmuş cihazdan silindi. Google Hesabınızın history.google.com linkində axtarış və digər Google xidmətlərindən fəaliyyət kimi axtarış tarixçəsi formaları ola bilər.</translation>

@@ -272,6 +272,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1187722533808055681">Reativações após inatividade</translation>
 <translation id="1188807932851744811">Registo não carregado.</translation>
 <translation id="1190086046506744802">Muito espaçado</translation>
+<translation id="1190155014618058972">Criar uma combinação de teclas personalizada</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Acesso a um ficheiro armazenado no computador}other{Acesso a # ficheiros armazenados no computador}}</translation>
 <translation id="1190706173655543975">Políticas de aplicações da Microsoft</translation>
 <translation id="1191353342579061195">Escolha o tema que se adequa às suas necessidades. Para alterar o tema, a imagem de fundo, a proteção de ecrã e muito mais, basta clicar com o botão direito no ambiente de trabalho.</translation>
@@ -1130,6 +1131,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1794212650797661990">Ocultar palavra-passe para <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envie-nos comentários para nos ajudar a corrigir este problema.</translation>
 <translation id="1795214765651529549">Usar tema clássico</translation>
+<translation id="1795438342141780114">Repor o cursor para o centro</translation>
 <translation id="1795668164971917185">Da próxima vez que a Navegação Segura do Google encontrar uma transferência suspeita, analisa-a automaticamente como parte da <ph name="LINK" /> que escolheu</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Pode personalizar as teclas para ações específicas.</translation>
@@ -1814,6 +1816,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2278562042389100163">Abrir janela do browser</translation>
 <translation id="2278668501808246459">A iniciar o gestor de contentores…</translation>
 <translation id="2280486287150724112">Margem direita</translation>
+<translation id="228059581448666199">Clicar com o botão esquerdo do rato</translation>
 <translation id="2281863813036651454">Clique com o botão esquerdo do rato</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
 <translation id="228293613124499805">É provável que a maioria dos sites que visita guarde dados no seu dispositivo, muitas vezes para melhorar a sua experiência ao guardar as suas preferências ou informações que partilha com o site. Recomendamos que mantenha esta definição ativada.</translation>
@@ -4709,6 +4712,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4359408040881008151">Instalada devido a extensão(ões) dependente(s).</translation>
 <translation id="4359717112757026264">Paisagens urbanas</translation>
 <translation id="4359809482106103048">Resumo de segurança</translation>
+<translation id="4360738659108163902">Clicar com o botão direito do rato</translation>
 <translation id="4361142739114356624">A chave privada para este certificado de cliente está em falta ou é inválida</translation>
 <translation id="4361745360460842907">Abrir como separador</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> é a conta predefinida no seu dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -5338,6 +5342,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="482952334869563894">Dispositivos USB do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">A instalar a atualização do SO…</translation>
 <translation id="4831226137013573603">desativação do som do microfone</translation>
+<translation id="483262387981411190">Pausar ou retomar o controlo facial</translation>
 <translation id="4833683849865011483">Foi encontrada 1 impressora no servidor de impressão.</translation>
 <translation id="4835598628985424375">Franzir os lábios pressionando-os juntos</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
@@ -5898,6 +5903,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5240931875940563122">Iniciar sessão com telemóvel Android</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tente novamente dentro de alguns momentos.</translation>
+<translation id="5243752692914402705">Quando iniciar o modo de deslocamento, mova a cabeça na direção para a qual quer deslocar a página</translation>
 <translation id="5244234799035360187">O OneDrive aparece agora na app Files</translation>
 <translation id="5244466461749935369">Manter por agora</translation>
 <translation id="5244474230056479698">A sincronizar com <ph name="EMAIL" /></translation>
@@ -6650,6 +6656,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5805697420284793859">Gestor de janelas</translation>
 <translation id="5806447147478173900">Armazenamento total usado pelos sites apresentados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predefinição)</translation>
+<translation id="5807774529265708172">Mostrar ou ocultar o teclado no ecrã</translation>
 <translation id="5809835394668218762">Mais ações para <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">O PIN tem de ter 6 dígitos</translation>
 <translation id="5810809306422959727">Esta conta não é elegível para o controlo parental</translation>
@@ -6843,6 +6850,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> pode ser perigoso. Quer enviar para a Navegação segura do Google para análise?</translation>
 <translation id="5945363896952315544">A sua chave de segurança não pode armazenar mais impressões digitais. Para adicionar uma nova, elimine primeiro uma impressão digital existente.</translation>
 <translation id="5946591249682680882">ID do relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Clicar duas vezes com o rato</translation>
 <translation id="5948476936444935795">Cancelar importação</translation>
 <translation id="5948536763493709626">Ligue um teclado ou um rato, ou continue a configuração através do seu ecrã tátil. Se estiver a utilizar dispositivos Bluetooth, certifique-se de que estão preparados para sincronizar.</translation>
 <translation id="5949544233750246342">Não é possível analisar o ficheiro</translation>
@@ -7267,7 +7275,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257602895346497974">Ativar a sincronização</translation>
 <translation id="625827534921607067">Esta rede é a preferida se estiver disponível mais do que uma rede ligada ou configurada anteriormente</translation>
-<translation id="62586649943626337">Organize os seus separadores com grupos de separadores</translation>
 <translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6262371516389954471">As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="6263082573641595914">Versão de AC Microsoft</translation>
@@ -7746,6 +7753,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6627743754845412571">Sem autorização para monitorizar as suas mãos</translation>
 <translation id="6628316682330029452">Os certificados de cliente são certificados que fazem a sua identificação perante outros servidores.</translation>
 <translation id="6628328486509726751">Carregado <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Maior segurança</translation>
 <translation id="6630752851777525409">A extensão <ph name="EXTENSION_NAME" /> quer um acesso permanente a um certificado para se autenticar automaticamente em seu nome.</translation>
 <translation id="6634220840123396409">Confio no site, grupo de botões de opção, 2 de 3</translation>
@@ -9595,6 +9603,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7958828865373988933">Se quiser criar uma chave de acesso para <ph name="APP_NAME" /> numa chave de segurança USB, insira-a e toque nela agora</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
+<translation id="7960540720012720106">Abrir a vista geral das janelas</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7963001036288347286">Aceleração do touchpad</translation>
 <translation id="7963513503134856713">Janela movida para a direita</translation>
@@ -9674,6 +9683,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8014154204619229810">O atualizador está em execução atualmente. Atualize dentro de um minuto para verificar novamente.</translation>
 <translation id="8014206674403687691">Não é possível reverter para a versão anteriormente instalada do <ph name="IDS_SHORT_PRODUCT_NAME" />. Repita o processo de Powerwash do dispositivo.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Copiou 1 ficheiro}other{Copiou {NUM_OF_FILES} ficheiros}}</translation>
+<translation id="8017004049696748317">Iniciar ou parar o ditado</translation>
 <translation id="8017176852978888182">Diretórios partilhados do Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Atalho editado</translation>
@@ -9688,6 +9698,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8025291188699172126">Acerca das atualizações</translation>
 <translation id="8026471514777758216">Todos os seus dispositivos</translation>
 <translation id="8026784703228858744">Guarde os seus marcadores, palavras-passe e muito mais com a sincronização</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitou há 0 dias}=1{Visitou há 1 dia}other{Visitou há # dias}}</translation>
 <translation id="8028060951694135607">Recuperação de chaves da Microsoft</translation>
 <translation id="8028803902702117856">A transferir <ph name="SIZE" />… <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamanho</translation>

@@ -2930,6 +2930,7 @@
 <translation id="304644035656848980">麥克風預覽畫面</translation>
 <translation id="3046910703532196514">完整的網頁</translation>
 <translation id="304747341537320566">語音引擎</translation>
+<translation id="3047678109605649715">裝置上沒有<ph name="LANGUAGE" />語音，請騰出裝置空間，然後再試一次。</translation>
 <translation id="3048336643003835855">來自供應商 <ph name="VENDOR_ID" /> 的 HID 裝置</translation>
 <translation id="3048589239114571785">播放 (K 鍵)</translation>
 <translation id="3048742847101793553">由於掃瞄失敗，因此檔案已被機構封鎖。</translation>
@@ -7260,7 +7261,6 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網絡，系統會優先使用此網絡</translation>
-<translation id="62586649943626337">使用分頁群組來整理分頁</translation>
 <translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資料</translation>
 <translation id="6262371516389954471">您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
@@ -7739,6 +7739,7 @@
 <translation id="6627743754845412571">不允許追蹤手部動作</translation>
 <translation id="6628316682330029452">用戶端憑證可用於向其他伺服器識別你的身分。</translation>
 <translation id="6628328486509726751">上載時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> 同 <ph name="KEY" /> 鍵</translation>
 <translation id="6630117778953264026">安全再升級</translation>
 <translation id="6630752851777525409">「<ph name="EXTENSION_NAME" />」要求憑證的永久存取權，以便代替您自我驗證。</translation>
 <translation id="6634220840123396409">我信任此網站，圓形按鈕群組，3 個按鈕中的第 2 個</translation>

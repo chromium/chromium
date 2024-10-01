@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Povećajte ili smanjite tekst i slike za sve web-lokacije koje posjetite</translation>
 <translation id="1984937141057606926">Dopušteno, osim treće strane</translation>
 <translation id="1985247341569771101">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati senzore kretanja uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati senzore kretanja.</translation>
+<translation id="1985716030964443178">Time će se sve web-lokacije na vašem popisu vratiti na zadano zumiranje</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL web-lokacije</translation>
 <translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2678468611080193228">Pokušajte privremeno dopustiti kolačiće treće strane, što znači manje zaštite, ali vjerojatnije je da će značajke web-lokacije funkcionirati</translation>
+<translation id="2682367912565197520">Brisanje spremljene razine zumiranja</translation>
 <translation id="2683434792633810741">Želite li izbrisati i poništiti?</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">E-adrese</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Sve web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Onemogućivanje web-lokacijama da znaju kad aktivno upotrebljavate ovaj uređaj</translation>
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
+<translation id="4419929467120297501">Chrome web-lokacijama blokira upotrebu kolačića trećih strana da vas ne bi pratile dok pregledavate. Otvorite postavke da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima trećih strana<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Skočni prozori i preusmjeravanja</translation>
 <translation id="443552056913301231">Tom će se radnjom izbrisati svi lokalni podaci, uključujući kolačiće, i poništiti sva dopuštenja za <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Isključivanje zvuka za određenu web-lokaciju.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite sigurno pregledavanje</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
+<translation id="4816495437032298535">Spremljeno zumiranje za web-lokacije</translation>
 <translation id="4836046166855586901">Prikaži upit kad web-lokacija želi znati kad aktivno upotrebljavam ovaj uređaj</translation>
 <translation id="483914009762354899">Uključi sve web-lokacije pod ovom domenom</translation>
 <translation id="4883854917563148705">Upravljane postavke ne mogu se vratiti na zadano</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Tom će se radnjom izbrisati svi lokalni podaci, uključujući kolačiće, i poništiti sva dopuštenja za domenu <ph name="DOMAIN" /> i sve njoj podređene web-lokacije</translation>
 <translation id="5264323282659631142">Ukloni '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Povucite od vrha zaslona i dodirnite gumb Natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
+<translation id="5292915569214461965">Blokirali ste web-lokacije da ne upotrebljavaju kolačiće trećih strana kako bi vas pratile dok pregledavate. Otvorite postavke da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima trećih strana<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama. Kad je ta postavka isključena, web-lokacije od vas ne mogu tražiti korištenje podataka koje su spremile o vama.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">U redu, shvaćam</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Odaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
+<translation id="6837658163275294267">Chrome većini web-lokacija ograničava upotrebu kolačića trećih strana kako bi vas pratile dok pregledavate. Otvorite postavke da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima trećih strana<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Reprodukcija medija</translation>
 <translation id="783819812427904514">Uključi kameru</translation>
 <translation id="7846076177841592234">Poništi odabir</translation>
+<translation id="7881140103901777395">Chrome većini web-lokacija ograničava upotrebu kolačića trećih strana. No kolačići trećih strana dopušteni su na ovoj web-lokaciji jer se ona oslanja na pružanje osnovnih usluga.\n\nOtvorite postavke da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima trećih strana<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dopuštanje zvuka za određenu web-lokaciju.</translation>
 <translation id="789180354981963912">Blokiraj kolačiće trećih strana u anonimnom načinu:</translation>
 <translation id="7940722705963108451">Podsjeti me</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za traženje Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu tražiti Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8737426583868847403">Ovdje će se prikazivati web-lokacije za koje spremite prilagođenu razinu zumiranja</translation>
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8800034312320686233">Web-lokacija ne funkcionira?</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>

@@ -72,6 +72,7 @@ Aspectes que cal tenir en compte:
 <translation id="2689064829982324496">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2703746758996815929">Per rebre consells útils sobre Chrome, activa les notificacions a la configuració d'iOS.</translation>
+<translation id="2728851697704606655">Tradueix amb Google Lens</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2754428955276778271">Algunes dades de Chrome encara no s'han desat al teu Compte de Google.
 
@@ -249,6 +250,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7581063337314642333">Visita la quadrícula de pestanyes a Chrome</translation>
 <translation id="7599894504325210080">Visualització ampliada de la funció Emplenament automàtic de Chrome</translation>
 <translation id="7642373780953416937">Rep alertes sobre qualsevol problema de privadesa o de seguretat que Chrome detecti automàticament.</translation>
+<translation id="7660356333829433649">Torna aquí per veure més consells útils i treure el màxim profit de Chrome.</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="7693590760643069321">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
@@ -259,6 +261,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="778855399387580014">Inicia una cerca en una pestanya nova de Chrome.</translation>
 <translation id="7792140019572081272">Chrome protegeix les teves dades sensibles amb Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
+<translation id="7861998090118873450">Desa les contrasenyes a Chrome</translation>
 <translation id="7897703007638178753">Mostra les pestanyes recents de Chrome</translation>
 <translation id="7948283758957877064">Novetats de Chrome</translation>
 <translation id="8000174216052461231">Consell de Chrome: obtén la seguretat més efectiva de Chrome</translation>
@@ -294,6 +297,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
+<translation id="8673726683583791503">Compra amb Google Lens</translation>
 <translation id="8727043961453758442">Aprofita Chrome al màxim</translation>
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>

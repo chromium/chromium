@@ -2922,6 +2922,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="304644035656848980">Teie mikrofoni eelvaade</translation>
 <translation id="3046910703532196514">Veebileht, valmis</translation>
 <translation id="304747341537320566">Kõnesünteesimootorid</translation>
+<translation id="3047678109605649715">Teie seadmes pole hääli, mis oleks järgmises keeles: <ph name="LANGUAGE" /> Vabastage oma seadmes ruumi ja proovige uuesti.</translation>
 <translation id="3048336643003835855">HID-seadmed teenusepakkujalt <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Esita (k)</translation>
 <translation id="3048742847101793553">Teie organisatsioon blokeeris selle faili, kuna skannimine ebaõnnestus.</translation>
@@ -7266,7 +7267,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6254892857036829079">Täiuslik</translation>
 <translation id="6257602895346497974">Lülitage sünkroonimine sisse …</translation>
 <translation id="625827534921607067">Seda võrku eelistatakse, kui saadaval on mitu eelnevalt ühendatud või seadistatud võrku</translation>
-<translation id="62586649943626337">Korraldage oma vahelehti vahelehegruppide abil</translation>
 <translation id="6259776178973198997">Värskenda WiFi Directi omanike teavet</translation>
 <translation id="6262371516389954471">Teie varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie Google'i konto parooliga.</translation>
 <translation id="6263082573641595914">Microsofti CA versioon</translation>
@@ -7745,6 +7745,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6627743754845412571">Saidid, millel ei ole luba teie käeliigutusi jälgida</translation>
 <translation id="6628316682330029452">Kliendisertifikaadid on sertifikaadid, mis teid teiste serverite jaoks tuvastavad.</translation>
 <translation id="6628328486509726751">Üles laaditud: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Tugevaim turvalisus</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> soovib püsijuurdepääsu sertifikaadile, et end teie nimel autentida.</translation>
 <translation id="6634220840123396409">Usaldan saiti, raadionuppude rühm, 2/3</translation>

@@ -3404,6 +3404,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Biznes Əməliyyatları</translation>
 <translation id="7244061187185055290">Nə axtardığınızı bir neçə sözlə təsvir edin</translation>
+<translation id="7250174481516136841">Kart imtiyazları haqqında <ph name="BEGIN_LINK" />ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">Şəbəkə konfiqurasiyası ONC standartına uyğun deyil. Konfiqurasiyanın hissələri import edilə bilməz.
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
@@ -3473,6 +3474,7 @@
 <translation id="7390545607259442187">Kartı Təsdiqləyin</translation>
 <translation id="7392089738299859607">Ünvanı yeniləyin</translation>
 <translation id="7393161616326137353">Macəra Oyunları</translation>
+<translation id="7393475648162498734">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin</translation>
 <translation id="739728382607845710">Ödəniş idarəedicisi işarəsi</translation>
 <translation id="7399616692258236448">İcazə verilənlərdən başqa bütün saytlar üçün məkan sorğuları avtomatik bloklanır</translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
@@ -4488,6 +4490,7 @@
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi <ph name="MINUTES" /> dəqiqə sonra başlayacaq</translation>
 <translation id="944540589955480312">Google Hesabında yadda saxlanan parol və giriş açarlarından istifadə edin</translation>
+<translation id="944578681290094302">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Kart imtiyazları haqqında ətraflı məlumat<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır.</translation>
 <translation id="945855313015696284">Aşağıdakı məlumatı yoxlayın və yanlış kartları silin</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> müqayisə edilsin?</translation>

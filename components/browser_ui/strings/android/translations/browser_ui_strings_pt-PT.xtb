@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Aumente ou diminua o tamanho do texto e das imagens de todos os sites que visitar</translation>
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
 <translation id="1985247341569771101">Quando esta opção está ativada, os sites podem usar os sensores de movimentos do dispositivo. Quando esta opção está desativada, os sites não podem usar os sensores de movimentos.</translation>
+<translation id="1985716030964443178">Esta ação vai repor todos os sites na sua lista para o zoom predefinido</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2678468611080193228">Experimente permitir os cookies de terceiros temporariamente, o que significa que tem menos proteção, mas é mais provável que as funcionalidades do site funcionem</translation>
+<translation id="2682367912565197520">Eliminar nível de zoom guardado</translation>
 <translation id="2683434792633810741">Eliminar e repor?</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Moradas de email</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
+<translation id="4419929467120297501">O Chrome impede que os sites usem cookies de terceiros para monitorizar o seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="443552056913301231">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Desative o som de um site específico.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Ative a Navegação Segura</translation>
 <translation id="4811450222531576619">Saiba mais sobre a respetiva origem e tópico</translation>
+<translation id="4816495437032298535">Zoom guardado para sites</translation>
 <translation id="4836046166855586901">Perguntar quando um site pretender saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
 <translation id="4883854917563148705">As definições geridas não podem ser repostas</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="DOMAIN" /> e todos os sites a este associados</translation>
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
+<translation id="5292915569214461965">Impediu os sites de usarem cookies de terceiros para monitorização do seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Quando esta opção está ativada, os sites podem pedir para usar informações que guardaram sobre si. Quando esta opção está desativada, os sites não lhe podem pedir para usar informações que guardaram sobre si.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Selecione uma opção para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
+<translation id="6837658163275294267">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros para monitorização do seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Use o Chrome por predefinição</translation>
 <translation id="6840760312327750441">Para agrupar separadores, toque sem soltar num separador. Em seguida, arraste-o para cima de outro separador.</translation>
 <translation id="6864395892908308021">Este dispositivo não suporta a tecnologia NFC.</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Multimédia em reprodução</translation>
 <translation id="783819812427904514">Reativar o som do vídeo</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
+<translation id="7881140103901777395">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque este depende deles para oferecer serviços básicos.\n\nAceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
 <translation id="789180354981963912">Bloqueie cookies de terceiros na Navegação anónima:</translation>
 <translation id="7940722705963108451">Lembrar-me</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Quando esta opção está ativada, os sites podem pedir para procurar dispositivos Bluetooth. Quando esta opção está desativada, os sites não podem procurar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
+<translation id="8737426583868847403">Os sites para os quais guarda um nível de zoom personalizado aparecem aqui</translation>
 <translation id="8751914237388039244">Selecionar uma imagem</translation>
 <translation id="8800034312320686233">O site não funciona?</translation>
 <translation id="8801436777607969138">Bloqueie JavaScript num site específico.</translation>

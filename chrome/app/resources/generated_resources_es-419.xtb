@@ -329,7 +329,9 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1227660082540388410">Edita la llave de acceso</translation>
 <translation id="1227993798763400520">No se pudo transmitir el contenido, vuelve a intentarlo</translation>
 <translation id="1230417814058465809">Se activó la protección estándar. Para obtener más seguridad, usa la protección mejorada.</translation>
+<translation id="1230961867057865279">No mostrar página en <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Recordaremos la red la próxima vez que uses tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">No mostrar página en <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Permitir que los sitios soliciten permiso para capturar y usar la entrada del mouse</translation>
 <translation id="1232569758102978740">Sin título</translation>
 <translation id="1233497634904001272">Vuelve a presionar tu llave de seguridad para completar la solicitud.</translation>
@@ -2915,6 +2917,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="304644035656848980">Vista previa de tu micrófono</translation>
 <translation id="3046910703532196514">Página web, completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en el dispositivo y vuelve a intentarlo.</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (k)</translation>
 <translation id="3048742847101793553">Tu organización bloqueó este archivo porque falló el análisis.</translation>
@@ -7259,7 +7262,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257602895346497974">Activar la sincronización…</translation>
 <translation id="625827534921607067">Se preferirá esta red si hay disponible más de una red conectada o configurada anteriormente</translation>
-<translation id="62586649943626337">Organiza tus pestañas con los grupos de pestañas</translation>
 <translation id="6259776178973198997">Actualizar información de los propietarios de Wi-Fi directo</translation>
 <translation id="6262371516389954471">Se suben las copias de seguridad a Google y se encriptan con la contraseña de tu Cuenta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidad de certificación de Microsoft</translation>
@@ -7738,6 +7740,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6627743754845412571">No pueden hacer un seguimiento de tus manos</translation>
 <translation id="6628316682330029452">Los certificados de clientes so certificados que te identifican ante otros servidores.</translation>
 <translation id="6628328486509726751">Fecha y hora de carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Mayor seguridad</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse en tu nombre.</translation>
 <translation id="6634220840123396409">Confío en el sitio, grupo de botones de selección, 2 de 3</translation>
@@ -8538,6 +8541,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
 <translation id="7214047272988222011">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el <ph name="LINK_BEGIN" />acceso a la cámara del sistema<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importar contraseñas</translation>
+<translation id="7217208603285112910">No mostrar selección en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">¿Quieres borrar los datos del sitio?</translation>
 <translation id="7219473482981809164">Encontramos múltiples perfiles disponibles para descargar. Antes de continuar, selecciona los que quieras descargar.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{No hay contraseñas poco seguras}=1{1 contraseña poco segura}other{{NUM_WEAK} contraseñas poco seguras}}</translation>
@@ -10100,6 +10104,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
+<translation id="8327490658947427005">No mostrar selección en <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Configuración de contenido y permisos</translation>
 <translation id="8328228852664998535">Si continúas, se borrarán de forma permanente tus contraseñas, llaves de acceso y otros datos de <ph name="BRAND" />. No se borrarán las cuentas que hayas creado para sitios ni apps.</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>

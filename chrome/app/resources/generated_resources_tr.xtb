@@ -2916,6 +2916,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="304644035656848980">Mikrofonunuzun önizlemesi</translation>
 <translation id="3046910703532196514">Web Sayfası, Tamamı</translation>
 <translation id="304747341537320566">Konuşma Motorları</translation>
+<translation id="3047678109605649715">Cihazınızda <ph name="LANGUAGE" /> ses yok. Cihazınızda yer açıp tekrar deneyin.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> tarafından sağlanan HID cihazları</translation>
 <translation id="3048589239114571785">Oynat (k)</translation>
 <translation id="3048742847101793553">Bu dosya taranamadığı için kuruluşunuz tarafından engellendi.</translation>
@@ -7258,7 +7259,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6254892857036829079">Mükemmel</translation>
 <translation id="6257602895346497974">Senkronizasyonu aç...</translation>
 <translation id="625827534921607067">Daha önce bağlanmış veya yapılandırılmış birden fazla ağ mevcutsa bu ağ tercih edilir</translation>
-<translation id="62586649943626337">Sekme gruplarıyla sekmelerinizi düzenleyin</translation>
 <translation id="6259776178973198997">WiFi Direct Sahip Bilgisini Yenile</translation>
 <translation id="6262371516389954471">Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
 <translation id="6263082573641595914">Microsoft CA Sürümü</translation>
@@ -7737,6 +7737,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6627743754845412571">Ellerinizi izlemesine izin verilmeyen siteler</translation>
 <translation id="6628316682330029452">İstemci sertifikaları, diğer sunuculara sizi tanıtan sertifikalardır.</translation>
 <translation id="6628328486509726751">Yüklenme zamanı: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Daha güçlü güvenlik</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> sizin adınıza kendi kimlik doğrulamasını yapmak için bir sertifikaya kalıcı erişim izni istiyor.</translation>
 <translation id="6634220840123396409">Siteye güveniyorum, radyo düğmesi grubu, 2/3</translation>

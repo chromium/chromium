@@ -333,7 +333,9 @@
 <translation id="1227660082540388410">تعديل مفتاح المرور</translation>
 <translation id="1227993798763400520">تعذَّر البث. يُرجى المحاولة مرة أخرى.</translation>
 <translation id="1230417814058465809">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
+<translation id="1230961867057865279">الصفحة ليست باللغة <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">سنتذكر شبكتك في المرة القادمة التي تستخدم فيها <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1231489110997683307">الصفحة ليست باللغة <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">يمكن للمواقع الإلكترونية طلب تخزين إدخالات الماوس واستخدامها</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1233497634904001272">يُرجى لمس مفتاح الأمان مرة أخرى لاستكمال الطلب.</translation>
@@ -2923,6 +2925,7 @@
 <translation id="304644035656848980">معاينة الميكروفون</translation>
 <translation id="3046910703532196514">صفحة الويب، كاملة</translation>
 <translation id="304747341537320566">محركات الكلام</translation>
+<translation id="3047678109605649715">ما مِن أصوات باللغة <ph name="LANGUAGE" /> على جهازك. يُرجى إخلاء مساحة على جهازك وإعادة المحاولة.</translation>
 <translation id="3048336643003835855">‏أجهزة HID من المورِّد <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏تشغيل (k)</translation>
 <translation id="3048742847101793553">حظرت مؤسستك هذا الملف بسبب تعذّر فحصه.</translation>
@@ -7265,7 +7268,6 @@
 <translation id="6254892857036829079">ممتاز</translation>
 <translation id="6257602895346497974">تفعيل المزامنة...</translation>
 <translation id="625827534921607067">سيتم تفضيل هذه الشبكة في حال توفُّر أكثر من شبكة تم إعدادها أو ربطها سابقًا.</translation>
-<translation id="62586649943626337">تنظيم علامات التبويب باستخدام مجموعات علامات التبويب</translation>
 <translation id="6259776178973198997">‏إعادة تحميل معلومات مالكي Wi-Fi Direct</translation>
 <translation id="6262371516389954471">‏يتمّ تحميل النُسخ الاحتياطية إلى Google ويتم ترميزها باستخدام كلمة مرور حسابك على Google.</translation>
 <translation id="6263082573641595914">‏إصدار المرجع المصدق (CA) لـ Microsoft</translation>
@@ -7752,6 +7754,7 @@
 <translation id="6627743754845412571">المواقع الإلكترونية التي لا يُسمح لها بتتبُّع حركات يديك</translation>
 <translation id="6628316682330029452">تُحدد شهادات العميل هويتك أمام الخوادم الأخرى.</translation>
 <translation id="6628328486509726751">تم التحميل في <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">مستوى أمان معزّز</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> يريد وصولاً دائمًا إلى شهادة للمصادقة الذاتية نيابةً عنك.</translation>
 <translation id="6634220840123396409">أثق في الموقع الإلكتروني، مجموعة أزرار الاختيار، 2 من 3</translation>
@@ -8553,6 +8556,7 @@
 <translation id="7212097698621322584">يُرجى إدخال رقم التعريف الشخصي الحالي لتغييره. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان، ثم إنشاء رقم تعريف شخصي جديد.</translation>
 <translation id="7214047272988222011">تم منح إذن الوصول إلى الكاميرا: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى كاميرا النظام<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">استيراد كلمات المرور</translation>
+<translation id="7217208603285112910">النص المُحدَّد ليس باللغة <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">هل تريد حذف بيانات الموقع الإلكتروني؟</translation>
 <translation id="7219473482981809164">تتوفَّر عدّة ملفات شخصية للتنزيل. يُرجى اختيار الملفات الشخصية التى تريد تنزيلها قبل المتابعة.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{ما مِن كلمات مرور ضعيفة.}=1{كلمة مرور ضعيفة واحدة}two{كلمتا مرور ضعيفتان ({NUM_WEAK})}few{{NUM_WEAK} كلمات مرور ضعيفة}many{{NUM_WEAK} كلمة مرور ضعيفة}other{{NUM_WEAK} كلمة مرور ضعيفة}}</translation>
@@ -10115,6 +10119,7 @@
 <translation id="8325413836429495820">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="8326478304147373412">‏PKCS #7، سلسلة شهادات</translation>
 <translation id="8327386430364625757">الخط الرياضي</translation>
+<translation id="8327490658947427005">النص المُحدَّد ليس باللغة <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">إعدادات المحتوى والأذونات</translation>
 <translation id="8328228852664998535">في حال المتابعة، سيتم حذف كلمات المرور ومفاتيح المرور والبيانات الأخرى نهائيًا من "<ph name="BRAND" />". ولن يتم حذف أي حسابات أنشأتها للمواقع الإلكترونية أو التطبيقات.</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>

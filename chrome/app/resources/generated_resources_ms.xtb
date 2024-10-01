@@ -272,6 +272,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1187722533808055681">Bangkit daripada melahu</translation>
 <translation id="1188807932851744811">Log belum dimuat naik.</translation>
 <translation id="1190086046506744802">Sangat jarang</translation>
+<translation id="1190155014618058972">Buat gabungan kunci tersuai</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Akses fail yang disimpan pada komputer anda}other{Akses # fail yang disimpan pada komputer anda}}</translation>
 <translation id="1190706173655543975">Dasar Aplikasi Microsoft</translation>
 <translation id="1191353342579061195">Pilih tema yang sesuai dengan keperluan anda. Untuk menukar tema, kertas dinding, penyelamat skrin dan pelbagai lagi, cuma klik kanan pada desktop.</translation>
@@ -1139,6 +1140,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1794212650797661990">Sembunyikan kata laluan untuk <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Hantar maklum balas untuk membantu kami menyelesaikan isu ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
+<translation id="1795438342141780114">Tetapkan semula kursor kepada bahagian tengah</translation>
 <translation id="1795668164971917185">Apabila Penyemakan Imbas Selamat Google mendapati muat turun yang mencurigakan selepas ini, Penyemakan Imbas Selamat Google akan mengimbas muat turun tersebut secara automatik sebagai sebahagian daripada <ph name="LINK" /> yang dipilih</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1797117170091578105">Main menggunakan papan kekunci Chromebook anda. Anda boleh menyesuaikan kekunci kepada tindakan tertentu.</translation>
@@ -1827,6 +1829,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2278562042389100163">Buka tetingkap penyemak imbas</translation>
 <translation id="2278668501808246459">Memulakan pengurus bekas</translation>
 <translation id="2280486287150724112">Jidar kanan</translation>
+<translation id="228059581448666199">Klik kiri tetikus</translation>
 <translation id="2281863813036651454">Klik kiri tetikus</translation>
 <translation id="2282146716419988068">Proses GPU</translation>
 <translation id="228293613124499805">Kebanyakan laman yang anda lawati mungkin menyimpan data pada peranti anda, selalunya untuk meningkatkan pengalaman anda dengan menyimpan pilihan anda atau maklumat yang anda kongsi dengan laman tersebut. Kami mengesyorkan agar anda membiarkan tetapan ini dihidupkan.</translation>
@@ -4721,6 +4724,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4359408040881008151">Dipasang kerana sambungan yang bergantung.</translation>
 <translation id="4359717112757026264">Pandangan bandar</translation>
 <translation id="4359809482106103048">Sekilas pandang tentang keselamatan</translation>
+<translation id="4360738659108163902">Klik kanan tetikus</translation>
 <translation id="4361142739114356624">Kunci Peribadi untuk Sijil Pelanggan ini tiada atau tidak sah</translation>
 <translation id="4361745360460842907">Buka sebagai tab</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> ialah akaun lalai pada <ph name="DEVICE_TYPE" /> anda</translation>
@@ -5350,6 +5354,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="482952334869563894">Peranti USB daripada vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Memasang kemas kini OS</translation>
 <translation id="4831226137013573603">redam mikrofon</translation>
+<translation id="483262387981411190">Jeda atau sambung semula kawalan wajah</translation>
 <translation id="4833683849865011483">Menjumpai 1 pencetak daripada pelayan cetak</translation>
 <translation id="4835598628985424375">Muncungkan bibir dengan merapatkan bibir</translation>
 <translation id="4835677468087803981">Sembunyikan PIN</translation>
@@ -5910,6 +5915,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5240931875940563122">Log masuk dengan telefon Android</translation>
 <translation id="5242724311594467048">Dayakan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Sila cuba lagi dalam beberapa ketika</translation>
+<translation id="5243752692914402705">Setelah anda memulakan mod tatal, alihkan kepala anda mengikut arah yang mahu anda tatal</translation>
 <translation id="5244234799035360187">Kini OneDrive akan dipaparkan pada apl Fail</translation>
 <translation id="5244466461749935369">Simpan untuk masa ini</translation>
 <translation id="5244474230056479698">Menyegerak ke <ph name="EMAIL" /></translation>
@@ -6661,6 +6667,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5805697420284793859">Pengurus tetingkap</translation>
 <translation id="5806447147478173900">Jumlah storan yang digunakan oleh laman yang dipaparkan: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Lalai)</translation>
+<translation id="5807774529265708172">Tunjukkan atau sembunyikan papan kekunci pada skrin</translation>
 <translation id="5809835394668218762">Lagi tindakan untuk <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">PIN mestilah 6 digit</translation>
 <translation id="5810809306422959727">Akaun ini tidak layak untuk kawalan ibu bapa</translation>
@@ -6854,6 +6861,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> mungkin berbahaya. Hantar kepada Penyemakan Imbas Selamat Google untuk diimbas?</translation>
 <translation id="5945363896952315544">Kunci keselamatan anda tidak dapat menyimpan sebarang cap jari lagi. Untuk menambah cap jari baharu, padamkan cap jari yang sedia ada dahulu.</translation>
 <translation id="5946591249682680882">ID Laporan <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Klik dua kali tetikus</translation>
 <translation id="5948476936444935795">Batalkan import</translation>
 <translation id="5948536763493709626">Sambungkan papan kekunci atau tetikus, atau teruskan persediaan menggunakan skrin sentuh anda. Jika anda menggunakan peranti Bluetooth, pastikan peranti anda sedia untuk digandingkan.</translation>
 <translation id="5949544233750246342">Tidak dapat menghurai fail</translation>
@@ -7278,7 +7286,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6254892857036829079">Sempurna</translation>
 <translation id="6257602895346497974">Hidupkan penyegerakan...</translation>
 <translation id="625827534921607067">Rangkaian ini akan dipilih jika lebih daripada satu rangkaian yang sebelum ini disambungkan atau dikonfigurasikan tersedia</translation>
-<translation id="62586649943626337">Susun tab anda menggunakan kumpulan tab</translation>
 <translation id="6259776178973198997">Segarkan semula Maklumat Pemilik Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Sandaran anda dimuat naik pada Google dan disulitkan menggunakan kata laluan Google Account anda.</translation>
 <translation id="6263082573641595914">Versi Microsoft CA</translation>
@@ -7757,6 +7764,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6627743754845412571">Tidak dibenarkan untuk menjejaki tangan anda</translation>
 <translation id="6628316682330029452">Sijil klien ialah sijil yang mengenal pasti identiti anda kepada pelayan lain.</translation>
 <translation id="6628328486509726751">Dimuat naik <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Keselamatan yang lebih kukuh</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> inginkan akses tetap kepada sijil untuk mengesahkan dirinya sendiri bagi pihak anda.</translation>
 <translation id="6634220840123396409">Saya mempercayai laman tersebut, kumpulan butang radio, 2 daripada 3</translation>
@@ -9606,6 +9614,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7958828865373988933">Jika anda mahu membuat kunci laluan untuk <ph name="APP_NAME" /> pada kunci keselamatan USB, masukkan dan sentuh kunci tersebut sekarang</translation>
 <translation id="7959074893852789871">Fail mengandungi berbilang sijil, beberapa daripadanya tidak diimport:</translation>
 <translation id="7959665254555683862">&amp;Tab Inkognito Baharu</translation>
+<translation id="7960540720012720106">Buka ikhtisar tetingkap</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7963001036288347286">Pemecutan pad sentuh</translation>
 <translation id="7963513503134856713">Tetingkap dialihkan ke kanan</translation>
@@ -9685,6 +9694,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8014154204619229810">Pengemaskinian sedang dijalankan. Muatkan semula dalam satu minit untuk memeriksa lagi.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> tidak dapat kembali kepada versi yang dipasang sebelumnya. Sila cuba Powerwash peranti anda lagi.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{1 fail telah disalin}other{{NUM_OF_FILES} fail telah disalin}}</translation>
+<translation id="8017004049696748317">Mulakan atau hentikan pengimlakan</translation>
 <translation id="8017176852978888182">Direktori kongsi Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Pintasan diedit</translation>
@@ -9699,6 +9709,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8025291188699172126">Tentang Kemaskinian</translation>
 <translation id="8026471514777758216">Semua peranti anda</translation>
 <translation id="8026784703228858744">Simpan penanda halaman anda dan pelbagai lagi dengan penyegerakan</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Dilawati 0 hari yang lalu}=1{Dilawati 1 hari yang lalu}other{Dilawati # hari yang lalu}}</translation>
 <translation id="8028060951694135607">Pemulihan Kekunci Microsoft</translation>
 <translation id="8028803902702117856">Memuat turun <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Saiz</translation>

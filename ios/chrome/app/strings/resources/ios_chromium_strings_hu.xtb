@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
 <translation id="22313767259766852">Ezt a címet jelenleg a Chromiumba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
+<translation id="2270466829363945454">Vásárlás</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="231828342043114302">Ha személyre szabott tartalmakat szeretne kapni az érdeklődési körei alapján, jelentkezzen be a Chromiumba.</translation>
 <translation id="2326738825692478496">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a Google-fiókjába.
@@ -130,6 +131,7 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="4432744876818348753">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chromiumból.</translation>
 <translation id="4445228361214254027">Szervezete letiltotta a Chromium-adatok Google-fiókban való használatát és mentését. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
 <translation id="4498832288620833153">A bevitt URL-eket felveszi a Chromiumban használt olvasólistájára.</translation>
+<translation id="4508268628669724828">Térjen vissza ide, ha további hasznos tippeket szeretne kapni arról, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
 <translation id="452436063477828504">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chromium-adatokat</translation>
 <translation id="4527452566931097835">Beállítja a Chromiumot alapértelmezett böngészőként?</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -241,6 +243,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7228180817326917122">Chromium-tipp: Válassza ki a címsáv helyét</translation>
 <translation id="725427773388857052">A Chromium segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="7269362888766543920">Bizonyos bővítmények a Chromium összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
+<translation id="7279391168585141365">Jelszavak mentése a Chromiumban</translation>
 <translation id="7285031092584344905">Hozzáférhet Chromium-jelszavaihoz és egyebekhez más alkalmazásokban.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>

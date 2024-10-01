@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2703746758996815929">如要取得 Chrome 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
+<translation id="2728851697704606655">透過 Google 智慧鏡頭翻譯</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
 <translation id="2754428955276778271">部分 Chrome 資料尚未儲存到 Google 帳戶，
 
@@ -249,6 +250,7 @@
 <translation id="7581063337314642333">開啟 Chrome 的分頁方格</translation>
 <translation id="7599894504325210080">Chrome 的自動填入檢視畫面已展開</translation>
 <translation id="7642373780953416937">接收 Chrome 自動偵測到的任何隱私權或安全性問題警示。</translation>
+<translation id="7660356333829433649">歡迎返回這裡查看更多實用提示，瞭解如何充分發揮 Chrome 的效用。</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
@@ -259,6 +261,7 @@
 <translation id="778855399387580014">在 Chrome 新分頁中進行搜尋。</translation>
 <translation id="7792140019572081272">Chrome 會使用 Face ID 保護你的私密資料。</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
+<translation id="7861998090118873450">在 Chrome 中儲存密碼</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 開啟的分頁</translation>
 <translation id="7948283758957877064">Chrome 新功能</translation>
 <translation id="8000174216052461231">Chrome 提示：享有 Chrome 最強大的安全防護</translation>
@@ -294,6 +297,7 @@
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8630122478628016441">開啟「關閉 Chrome 時鎖定無痕分頁」。</translation>
+<translation id="8673726683583791503">透過 Google 智慧鏡頭購物</translation>
 <translation id="8727043961453758442">充分運用 Chrome 的各項功能</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>

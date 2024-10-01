@@ -72,6 +72,7 @@ Megjegyzések:
 <translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2703746758996815929">Ha hasznos tippeket szeretne kapni a Chrome-ra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
+<translation id="2728851697704606655">Fordítás a Google Lens segítségével</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2754428955276778271">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a Google-fiókjába.
 
@@ -249,6 +250,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7581063337314642333">A laprács megnyitása a Chrome-ban</translation>
 <translation id="7599894504325210080">A Chrome automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="7642373780953416937">Értesítéseket kaphat a Chrome által automatikusan észlelt adatvédelmi és biztonsági problémákról.</translation>
+<translation id="7660356333829433649">Térjen vissza ide, ha további hasznos tippeket szeretne kapni arról, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="7662994914830945754">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="7693590760643069321">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
@@ -259,6 +261,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="778855399387580014">Keresés indítása új Chrome-lapon.</translation>
 <translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
+<translation id="7861998090118873450">Jelszavak mentése a Chrome-ban</translation>
 <translation id="7897703007638178753">Legutóbbi Chrome-lapok megtekintése</translation>
 <translation id="7948283758957877064">A Chrome újdonságai</translation>
 <translation id="8000174216052461231">Chrome-tipp: A Chrome legerősebb védelmét élvezheti</translation>
@@ -294,6 +297,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="8558480467877843976">Mostantól mindig a Chrome-ot használhatja, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint (illetve böngészik köztük).</translation>
 <translation id="8603022514504485810">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
+<translation id="8673726683583791503">Vásárlás a Google Lens segítségével</translation>
 <translation id="8727043961453758442">Hozza ki a legtöbbet a Chrome-ból</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>

@@ -72,6 +72,7 @@ Tasub teada
 <translation id="2689064829982324496">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chrome'ist<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2703746758996815929">Lülitage iOS-i seadetes märguanded sisse, et saada Chrome'i kohta kasulikke nõuandeid.</translation>
+<translation id="2728851697704606655">Tõlkige Google Lensi abil</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2754428955276778271">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
 
@@ -249,6 +250,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7581063337314642333">Ava Chrome'is vahelehtede ruudustik</translation>
 <translation id="7599894504325210080">Chrome'i automaattäite laiendatud vaade</translation>
 <translation id="7642373780953416937">Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chrome automaatselt teie eest tuvastab.</translation>
+<translation id="7660356333829433649">Siit leiate veel kasulikke näpunäiteid, kuidas Chrome’ist maksimumi võtta.</translation>
 <translation id="7662994914830945754">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
@@ -259,6 +261,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="778855399387580014">Alustage otsingut uuel Chrome'i vahelehel.</translation>
 <translation id="7792140019572081272">Chrome kaitseb teie delikaatseid isikuandmeid näotuvastuse abil.</translation>
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
+<translation id="7861998090118873450">Salvestage oma paroolid Chrome’i</translation>
 <translation id="7897703007638178753">Kuva Chrome'i hiljutised vahelehed</translation>
 <translation id="7948283758957877064">Mis on Chrome'is uut?</translation>
 <translation id="8000174216052461231">Chrome'i nõuanne: Chrome'i tugevaim kaitse</translation>
@@ -294,6 +297,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="8603022514504485810">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Lülitage sisse valik „Lukusta Chrome'i sulgemisel inkognito vahelehed“.</translation>
+<translation id="8673726683583791503">Ostelge Google Lensi abil</translation>
 <translation id="8727043961453758442">Kasutage Chrome'i parimal moel</translation>
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>

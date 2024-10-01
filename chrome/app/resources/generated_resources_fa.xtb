@@ -330,7 +330,9 @@
 <translation id="1227660082540388410">ویرایش گذرکلید</translation>
 <translation id="1227993798763400520">محتوا پخش نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="1230417814058465809">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از محافظت پیشرفته استفاده کنید.</translation>
+<translation id="1230961867057865279">صفحه به <ph name="LANGUAGE" /> نیست</translation>
 <translation id="1231426483209637778">دفعه بعدی که از <ph name="DEVICE_TYPE" /> استفاده کنید، شبکه‌تان را به‌خاطر می‌آوریم</translation>
+<translation id="1231489110997683307">صفحه به <ph name="LANGUAGE" /> نیست</translation>
 <translation id="1231572247662419826">سایت‌ها می‌توانند برای ضبط کردن و استفاده از ورودی موشواره درخواست کنند</translation>
 <translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1233497634904001272">برای تکمیل درخواست، دوباره کلید ایمنی را لمس کنید.</translation>
@@ -2928,6 +2930,7 @@
 <translation id="304644035656848980">پیش‌دید کردن میکروفون</translation>
 <translation id="3046910703532196514">صفحهٔ وب، کامل</translation>
 <translation id="304747341537320566">موتورهای گفتار</translation>
+<translation id="3047678109605649715">هیچ صدایی به زبان <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. فضای دستگاهتان را آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3048336643003835855">‏دستگاه‌های HID از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏پخش کردن (k)</translation>
 <translation id="3048742847101793553">سازمانتان این فایل را مسدود کرده است زیرا اسکن انجام نشد.</translation>
@@ -7272,7 +7275,6 @@
 <translation id="6254892857036829079">عالی</translation>
 <translation id="6257602895346497974">روشن کردن همگام‌سازی…</translation>
 <translation id="625827534921607067">اگر بیش‌از یک شبکه قبلاً متصل‌شده یا پیکربندی‌شده دردسترس باشد، این شبکه در اولویت خواهد بود</translation>
-<translation id="62586649943626337">سازمان‌دهی برگه‌ها با گروه‌های برگه</translation>
 <translation id="6259776178973198997">‏بازآوری اطلاعات مالکان Wi-Fi Direct</translation>
 <translation id="6262371516389954471">‏داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود.</translation>
 <translation id="6263082573641595914">‏نسخه CA Microsoft</translation>
@@ -7753,6 +7755,7 @@
 <translation id="6627743754845412571">برای ردیابی کردن دست‌هایتان مجاز نیست</translation>
 <translation id="6628316682330029452">گواهینامه‌های کارخواه گواهینامه‌هایی هستند که برای شناساندن شما به دیگر سرورها استفاده می‌شوند.</translation>
 <translation id="6628328486509726751">زمان بارگذاری <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">امنیت قوی‌تر</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> خواستار دسترسی دائم به یک گواهی است تا خودش را از طرف شما اصالت‌سنجی کند.</translation>
 <translation id="6634220840123396409">به این سایت اعتماد دارم، گروه دکمه رادیویی، ۲ از ۳</translation>
@@ -8553,6 +8556,7 @@
 <translation id="7212097698621322584">پین کنونی‌تان را برای تغییر پین وارد کنید. اگر پین‌ خود را نمی‌دانید، باید کلید ایمنی را بازنشانی کنید و سپس پین جدیدی ایجاد کنید.</translation>
 <translation id="7214047272988222011">مجاز است – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />دسترسی دوربین سیستم<ph name="LINK_END" /> را روشن کنید.</translation>
 <translation id="721490496276866468">درون‌بردن گذرواژه‌ها</translation>
+<translation id="7217208603285112910">بخش انتخاب‌شده به <ph name="LANGUAGE" /> نیست</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
 <translation id="7219473482981809164">چند نمایه پیدا کردیم که برای بارگیری دردسترس هستند. قبل‌از ادامه، نمایه‌های موردنظرتان را برای بارگیری انتخاب کنید.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{گذرواژه ضعیفی ندارید}=1{۱ گذرواژه ضعیف}one{{NUM_WEAK} گذرواژه ضعیف}other{{NUM_WEAK} گذرواژه ضعیف}}</translation>
@@ -10114,6 +10118,7 @@
 <translation id="8325413836429495820">اجازه ندارد بریده‌دان را ببیند</translation>
 <translation id="8326478304147373412">‏PKCS #7، زنجیره گواهی</translation>
 <translation id="8327386430364625757">قلم ریاضی</translation>
+<translation id="8327490658947427005">بخش انتخاب‌شده به <ph name="LANGUAGE" /> نیست</translation>
 <translation id="8327676037044516220">تنظیمات محتوا و اجازه‌ها</translation>
 <translation id="8328228852664998535">اگر ادامه دهید، گذرواژه‌ها، گذرکلیدها، و دیگر داده‌هایتان برای همیشه از <ph name="BRAND" /> حذف خواهد شد. حساب‌هایی که برای سایت‌ها یا برنامه‌ها ایجاد کرده‌اید، حذف نخواهند شد.</translation>
 <translation id="8328777765163860529">بستن همه</translation>
@@ -11361,7 +11366,7 @@
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (برنامه پشتیبانی‌نشده)</translation>
 <translation id="9219582468404818260">به ما کمک کنید تجربه‌ای بهتر در وب بسازیم</translation>
 <translation id="9219741625496141320">داده‌های مرور به‌طور خودکار حذف شد</translation>
-<translation id="9220525904950070496">حذف حساب</translation>
+<translation id="9220525904950070496">برداشتن حساب</translation>
 <translation id="9220723036554088545">فایلی بارگذاری کنید</translation>
 <translation id="9220820413868316583">انگشتتان را بردارید سپس دوباره امتحان کنید.</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>

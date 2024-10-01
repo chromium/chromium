@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">සමාන:</translation>
 <translation id="5130848777448318809">පෝනියෝ</translation>
 <translation id="5137451382116112100">පූර්ණ</translation>
+<translation id="5140788690559353412">ඔබට ඔබේ පාසල් ගිණුමට ප්‍රවේශය අහිමි වූ විට, ඔබට තවදුරටත් සම්බන්ධිත ඉ-තැපෑල සහ Gmail, Docs, Slides වැනි Google Drive ගොනු සහ තවත් බොහෝ දේ වෙත ප්‍රවේශය නොලැබෙනු ඇත.</translation>
 <translation id="5142961317498132443">සත්‍යාපනය</translation>
 <translation id="5144311987923128508">තහවුරු කිරීමේ බොත්තම දැන් අබලිතයි</translation>
 <translation id="5144887194300568405">පරිවර්තනය පිටපත් කරන්න</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) HTTP පමාව</translation>
 <translation id="6078323886959318429">කෙටිමඟක් එක් කරන්න</translation>
 <translation id="6091080061796993741">කහ</translation>
+<translation id="6093853427925392522">ඔබට ප්‍රවේශය අහිමි වීමට පෙර ඔබේ පාසල් ගිණුම් දත්ත ඔබේ පුද්ගලික ගිණුමට ගෙන යාමට Google වෙතින් අන්තර්ගත හුවමාරු යෙදුම භාවිත කිරීමට වග බලා ගන්න.</translation>
 <translation id="6104112872696127344">ස්කෑන් කිරීම අවලංගු කර ඇත</translation>
 <translation id="6106186594183574873">අවසන් කිරීමට, ඔබේ පැරණි මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="6108689792487843350">වාහල වෙත ළඟා විය නොහැකිය</translation>
@@ -1020,6 +1022,7 @@
 <translation id="6122191549521593678">සබැඳි</translation>
 <translation id="6122277663991249694">ChromeOS ආදාන ක්‍රම සේවය</translation>
 <translation id="6127426868813166163">සුදු</translation>
+<translation id="613049107179582049">Chromebook ශ්‍රව්‍ය ක්‍රියාත්මක විට, රෙකෝඩරය මෙම උපාංගයේ වාදනය වන සියලු ම ශ්‍රව්‍ය ග්‍රහණය කරයි</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">සයිබර්පන්ක්</translation>
 <translation id="6137767437444130246">පරිශීලක සහතිකය</translation>
@@ -1244,6 +1247,7 @@
 <translation id="7130438335435247835">ප්‍රවේශ ලක්ෂ්‍ය නම (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{නම් සේවාදායකය}one{නම් සේවාදායක}other{නම් සේවාදායක}}</translation>
 <translation id="7135814714616751706">කෙටිමං සොයන්න</translation>
+<translation id="7141470099673912333">අන්තර්ගත හුවමාරුව</translation>
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
 <translation id="7144878232160441200">නැවත උත්සහ කරන්න</translation>
 <translation id="7144954474087165241">දාගැබ</translation>
@@ -1536,6 +1540,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="86356131183441916">ලා දම්</translation>
 <translation id="8647595191512746911">ශ්‍රව්‍ය අනුපත</translation>
+<translation id="8650852232143958317">ඔබේ Gmail සහ Google Drive ගොනු ඔබ සමග රැගෙන යන්න</translation>
 <translation id="8651481478098336970">හඬ පරිමාව නිහඬ කිරීම</translation>
 <translation id="8655295600908251630">නාලිකාව</translation>
 <translation id="8655828773034788261">URL බෙදා ගන්න:</translation>

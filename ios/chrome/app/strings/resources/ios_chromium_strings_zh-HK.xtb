@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">您希望 Chromium 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="22313767259766852">此地址目前儲存在 Chromium 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2236584955986023187">這代表 Chromium 每次都會要求取得桌面版網站。</translation>
+<translation id="2270466829363945454">購物</translation>
 <translation id="2313870531055795960">使用儲存在 Chromium 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="231828342043114302">如要根據個人興趣接收個人化內容，請登入 Chromium。</translation>
 <translation id="2326738825692478496">部分 Chromium 資料尚未儲存至 Google 帳戶。
@@ -130,6 +131,7 @@
 <translation id="4432744876818348753">登入以充分運用 Chromium 的所有功能。</translation>
 <translation id="4445228361214254027">你的機構已關閉在 Google 帳戶中使用及儲存 Chromium 資料的功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
 <translation id="4498832288620833153">將輸入的網址新增至 Chromium 閱讀清單。</translation>
+<translation id="4508268628669724828">隨時回來查看更多實用貼士，讓 Chromium 發揮最大效益。</translation>
 <translation id="452436063477828504">請確保您可隨時使用 Google 帳戶中的 Chromium 資料</translation>
 <translation id="4527452566931097835">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@
 <translation id="7228180817326917122">Chromium 提示：選擇網址列位置</translation>
 <translation id="725427773388857052">Chromium 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="7269362888766543920">部份外掛程式導致 Chromium 當機，請解除安裝那些外掛程式。</translation>
+<translation id="7279391168585141365">在 Chromium 儲存密碼</translation>
 <translation id="7285031092584344905">在其他應用程式中使用你的 Chromium 密碼和其他資料。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">所選資料已從 Chromium 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>

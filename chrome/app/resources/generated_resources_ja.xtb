@@ -2912,6 +2912,7 @@
 <translation id="304644035656848980">マイクのプレビュー</translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
+<translation id="3047678109605649715">デバイスに <ph name="LANGUAGE" /> の音声がありません。デバイスで容量を確保してから、もう一度お試しください。</translation>
 <translation id="3048336643003835855">ベンダー <ph name="VENDOR_ID" /> の HID デバイス</translation>
 <translation id="3048589239114571785">再生（K）</translation>
 <translation id="3048742847101793553">このファイルはスキャンに失敗したため、組織でブロックされました。</translation>
@@ -7247,7 +7248,6 @@
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
-<translation id="62586649943626337">タブグループを使ってタブを整理できます</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
 <translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
@@ -7725,6 +7725,7 @@
 <translation id="6627743754845412571">ハンド トラッキングを許可しないサイト</translation>
 <translation id="6628316682330029452">クライアント証明書は、他のサーバーに対してユーザーの認証を行う証明書です。</translation>
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /> キー</translation>
 <translation id="6630117778953264026">セキュリティの強化</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> が、自身を自動的に認証できるよう、証明書への恒久的なアクセス許可を求めています。</translation>
 <translation id="6634220840123396409">このサイトを信頼している、ラジオボタン グループ、2/3</translation>

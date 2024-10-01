@@ -3409,6 +3409,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Poslovanje</translation>
 <translation id="7244061187185055290">Z nekaj besedami opišite, kaj iščete</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o ugodnostih kartic</translation>
 <translation id="7251437084390964440">Omrežna konfiguracija ne ustreza standardu ONC. Deli konfiguracije morda niso bili uvoženi.
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@ Dodatne podrobnosti:
 <translation id="7390545607259442187">Potrditev kartice</translation>
 <translation id="7392089738299859607">Posodobitev naslova</translation>
 <translation id="7393161616326137353">Pustolovske igre</translation>
+<translation id="7393475648162498734">Ob zaključku nakupa je prikazano, katere nagrade in ugodnosti so na voljo za vaše kartice</translation>
 <translation id="739728382607845710">Ikona rutine za obravnavo plačil</translation>
 <translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
@@ -4493,6 +4495,7 @@ Dodatne podrobnosti:
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="940524522703752213">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez <ph name="MINUTES" /> min</translation>
 <translation id="944540589955480312">Uporaba gesel in ključev za dostop, shranjenih v računu Google</translation>
+<translation id="944578681290094302">Ob zaključku nakupa je prikazano, katere nagrade in ugodnosti so na voljo za vaše kartice. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Preberite več o ugodnostih kartic<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem.</translation>
 <translation id="945855313015696284">Preverite spodnje podatke in izbrišite neveljavne kartice</translation>
 <translation id="94613679163347541">Želite primerjati kategorijo »<ph name="CATEGORY" />«?</translation>

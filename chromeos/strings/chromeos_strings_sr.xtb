@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">Слично:</translation>
 <translation id="5130848777448318809">понији</translation>
 <translation id="5137451382116112100">Цео екран</translation>
+<translation id="5140788690559353412">Када изгубите приступ школском налогу, више нећете имати приступ повезаном имејлу и фајловима на Google диску, као што су Gmail, Документи, Презентације и друго.</translation>
 <translation id="5142961317498132443">Потврда идентитета</translation>
 <translation id="5144311987923128508">Дугме за потврду је сада онемогућено</translation>
 <translation id="5144887194300568405">Копирајте превод</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) HTTP кашњење</translation>
 <translation id="6078323886959318429">Додај пречицу</translation>
 <translation id="6091080061796993741">жуте</translation>
+<translation id="6093853427925392522">Обавезно користите Google апликацију Пренос садржаја да бисте преместили податке са школског налога на лични налог пре него што изгубите приступ.</translation>
 <translation id="6104112872696127344">Скенирање је отказано</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">Назив приступне тачке (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7135814714616751706">Претражите пречице</translation>
+<translation id="7141470099673912333">Пренос садржаја</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7144954474087165241">Пагода</translation>
@@ -1537,6 +1540,7 @@
 <translation id="8626489604350149811">Још радњи за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлољубичасто</translation>
 <translation id="8647595191512746911">Транскрипција звука</translation>
+<translation id="8650852232143958317">Носите фајлове из Gmail-а и са Google диска са собом</translation>
 <translation id="8651481478098336970">искључи звук</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Дели URL:</translation>

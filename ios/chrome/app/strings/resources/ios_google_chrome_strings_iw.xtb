@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
+<translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>
 <translation id="2736805085127235148">‏ההתראות מ-Chrome מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="2754428955276778271">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google.
 
@@ -249,6 +250,7 @@
 <translation id="7581063337314642333">‏ביקור בתצוגת הכרטיסיות ב-Chrome</translation>
 <translation id="7599894504325210080">‏תצוגה מורחבת של המילוי האוטומטי ב-Chrome</translation>
 <translation id="7642373780953416937">‏אפשר לקבל התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה באופן אוטומטי.</translation>
+<translation id="7660356333829433649">‏כדאי לחזור לכאן כדי לקבל עוד טיפים שימושיים שיעזרו לך להפיק את המירב מ-Chrome.</translation>
 <translation id="7662994914830945754">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
@@ -259,6 +261,7 @@
 <translation id="778855399387580014">‏חיפוש בכרטיסיית Chrome חדשה.</translation>
 <translation id="7792140019572081272">‏Chrome שומר על האבטחה של מידע אישי רגיש באמצעות Face ID.</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
+<translation id="7861998090118873450">‏שמירת הסיסמאות ב-Chrome</translation>
 <translation id="7897703007638178753">‏הצגת הכרטיסיות האחרונות ב-Chrome</translation>
 <translation id="7948283758957877064">‏מה חדש ב-Chrome</translation>
 <translation id="8000174216052461231">‏טיפ ל-Chrome: כדאי ליהנות מרמת האבטחה הכי יעילה של Chrome</translation>
@@ -294,6 +297,7 @@
 <translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או מקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="8603022514504485810">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">‏מפעילים את האפשרות 'כרטיסיות פרטיות יינעלו כש-Chrome ייסגר'.</translation>
+<translation id="8673726683583791503">‏קניות באמצעות Google Lens</translation>
 <translation id="8727043961453758442">‏נהנים מהמיטב של Chrome</translation>
 <translation id="8765470054473112089">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="8772179140489533211">‏יוצגו הודעות לצורך כניסה אל Chrome.</translation>

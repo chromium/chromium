@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Vai vēlaties, lai Chromium nākamreiz piedāvātu šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Šī adrese pašlaik ir saglabāta pārlūkā Chromium. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tas nozīmē, ka Chromium katru reizi pieprasīs datoriem paredzēto vietni.</translation>
+<translation id="2270466829363945454">Veikals</translation>
 <translation id="2313870531055795960">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="231828342043114302">Lai saņemtu atbilstoši jūsu interesēm personalizētu saturu, pierakstieties pārlūkā Chromium.</translation>
 <translation id="2326738825692478496">Noteikti jūsu Chromium dati vēl nav saglabāti jūsu Google kontā.
@@ -130,6 +131,7 @@ Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai i
 <translation id="4432744876818348753">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chromium.</translation>
 <translation id="4445228361214254027">Jūsu organizācija ir izslēgusi iespēju izmantot un saglabāt Chromium datus jūsu Google kontā. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
 <translation id="4498832288620833153">Ievadītie URL tiek pievienoti jūsu lasīšanas sarakstam pārlūkā Chromium.</translation>
+<translation id="4508268628669724828">Atgriezieties šeit, lai skatītu citus noderīgus padomus par pilnvērtīgu Chromium izmantošanu.</translation>
 <translation id="452436063477828504">Parūpējieties, lai vienmēr varētu izmantot Google kontā saglabātos Chromium datus</translation>
 <translation id="4527452566931097835">Vai iestatīt Chromium par noklusējuma pārlūku?</translation>
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -241,6 +243,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7228180817326917122">Chromium padoms: izvēlieties adreses joslas pozīciju</translation>
 <translation id="725427773388857052">Chromium var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="7269362888766543920">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet tos.</translation>
+<translation id="7279391168585141365">Paroļu saglabāšana pārlūkā Chromium</translation>
 <translation id="7285031092584344905">Piekļūstiet savām Chromium parolēm un citiem datiem dažādās lietotnēs.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Atlasītie dati ir noņemti no pārlūka Chromium un sinhronizētajām ierīcēm. Jūsu Google kontam vietnē history.google.com var būt citu veidu pārlūkošanas vēstures dati, piemēram, meklēšanas vaicājumi un darbības citos Google pakalpojumos.</translation>

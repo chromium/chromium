@@ -5356,6 +5356,54 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
       Se a política for definida como verdadeira, as informações do sistema serão exibidas de maneira forçada.
       Se a política for definida como falsa, as informações do sistema serão ocultas de maneira forçada.
       Se a política não for definida, o comportamento padrão (exibir para Canary / Canal Dev) será aplicado. Os usuários podem alternar a visibilidade para operações específicas (por exemplo, Alt-V).</translation>
+<translation id="4946124666877421935">A definição da política especifica uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
+
+      Cada item da lista da política é um objeto com um elemento obrigatório:
+      <ph name="URL_LABEL" />, que é o URL do app da Web que será instalado.
+
+      Além de seis elementos opcionais:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
+      para a maneira como o app da Web é aberto (o padrão é uma nova guia).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
+      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do
+      <ph name="MS_WIN_NAME" />.
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (da versão 90 em diante do <ph name="PRODUCT_NAME" />)
+      permite substituir o nome do app se ele não for um
+      App Web Progressivo (PWA) ou o nome do app instalado
+      temporariamente se ele for um PWA, mas a autenticação for exigida antes de
+      concluir a instalação. Se um
+      <ph name="CUSTOM_NAME_LABEL" /> e um
+      <ph name="FALLBACK_APP_NAME_LABEL" /> forem fornecidos,
+      o segundo será ignorado.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
+      e da versão 112 em todos os outros sistemas operacionais de computador) permite substituir
+      permanentemente os nomes de todos os apps da Web e PWAs.
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
+      e da versão 112 em todos os outros sistemas operacionais de computador) permite
+      substituir o ícone dos apps instalados. Os ícones precisam ser quadrados,
+      ter no máximo 1 MB e estar em um destes formatos: jpeg, png, gif, webp, ico.
+      O valor de hash precisa ser o hash SHA256 do arquivo de ícone. O <ph name="URL_LABEL" />
+      precisa ser acessível sem autenticação para garantir que o ícone possa ser usado
+      na instalação do app.
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (da versão 107 em diante
+      do <ph name="PRODUCT_NAME" />). Se ativado, o <ph name="URL_LABEL" />
+      fornecido será instalado como um atalho, como se fosse feito pela opção "Criar atalho…"
+      na GUI do navegador para computador.
+      Observe que, quando instalado como um atalho, ele não será atualizado se o
+      manifesto no <ph name="URL_LABEL" /> mudar.
+      Se desativado ou não configurado, o app da Web no
+      <ph name="URL_LABEL" /> especificado será instalado normalmente.
+
+      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Será reinicializado quando o usuário sair se o Android tiver sido iniciado.</translation>
 <translation id="4950447493143157880">Nunca usar o cliente DNS integrado</translation>

@@ -3405,6 +3405,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7243771829620208687">I-RA0</translation>
 <translation id="7243898806468402921">Imisebenzi yebhizinisi</translation>
 <translation id="7244061187185055290">Ngamazwi ambalwa, chaza lokho okuseshayo</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> mayelana nekhadi lezinzuzo</translation>
 <translation id="7251437084390964440">Ukulungiselelwa kwenethiwekhi akuthobelani nokujwayelekile kwe-ONC. Izingxenye zokulungiselelwa kungenzeka zingangenizwa.
 Imininingwane engeziwe:
 <ph name="DEBUG_INFO" /></translation>
@@ -3474,6 +3475,7 @@ Imininingwane engeziwe:
 <translation id="7390545607259442187">Qinisekisa ikhadi</translation>
 <translation id="7392089738299859607">Buyekeza Ikheli</translation>
 <translation id="7393161616326137353">Amageyimu okuzidela</translation>
+<translation id="7393475648162498734">Bonisa ukuthi yimiphi imiklomelo nezinzuzo ezitholakalayo zamakhadi akho uma ukhokha</translation>
 <translation id="739728382607845710">Isithonjana sesibambi senkokhelo</translation>
 <translation id="7399616692258236448">Izicelo zendawo zivinjelwa ngokuzenzakalela kuwo wonke amasayithi ngaphandle kwalawo ovavumelayo</translation>
 <translation id="7399802613464275309">Ukuhlola kokuphepha</translation>
@@ -4489,6 +4491,7 @@ Imininingwane engeziwe:
 <translation id="939736085109172342">Ifolda entsha</translation>
 <translation id="940524522703752213">Ukulayisha kwefayela lakho ku-<ph name="CLOUD_PROVIDER" /> kuzoqala emizuzwini engu-<ph name="MINUTES" /></translation>
 <translation id="944540589955480312">Sebenzisa amaphasiwedi kanye nokhiye bokudlula abalondolozwe ku-Google Account yakho</translation>
+<translation id="944578681290094302">Bonisa ukuthi imiphi imiklomelo nezinzuzo ezitholakalayo zamakhadi akho uma ukhokha. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Funda ngezinzuzo zekhadi<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">I-Chrome ivimba amasayithi ekusebenziseni amakhukhi avela kwamanye amawebhusayithi ukuze akuthrekhe njengoba ubhrawuza.</translation>
 <translation id="945855313015696284">Hlola ulwazi olungezansi uphinde ususe noma imaphi amakhadi angavumelekile</translation>
 <translation id="94613679163347541">Qhathanisa okuthi <ph name="CATEGORY" />?</translation>

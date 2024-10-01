@@ -7265,7 +7265,6 @@ USB ડિવાઇસ</translation>
 <translation id="6254892857036829079">ઉત્તમ</translation>
 <translation id="6257602895346497974">સિંક કરવું ચાલુ કરો…</translation>
 <translation id="625827534921607067">જો અગાઉ કનેક્ટ કરેલા કે કન્ફિગર કરેલા એક કરતાં વધારે નેટવર્ક ઉપલબ્ધ હશે, તો આ નેટવર્કની પસંદગી કરવામાં આવશે</translation>
-<translation id="62586649943626337">ટૅબનાં ગ્રૂપ વડે તમારી ટૅબ વ્યવસ્થિત રાખો</translation>
 <translation id="6259776178973198997">WiFi Directના માલિકોની માહિતી રિફ્રેશ કરો</translation>
 <translation id="6262371516389954471">તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="6263082573641595914">Microsoft CA વર્ઝન</translation>
@@ -7746,6 +7745,7 @@ USB ડિવાઇસ</translation>
 <translation id="6627743754845412571">તમારા હાથને ટ્રૅક કરવાની મંજૂરી આપી નથી</translation>
 <translation id="6628316682330029452">અન્ય સર્વર સાથે તમારી ઓળખ કરાવતા સર્ટિફિકેટને ક્લાયન્ટ સર્ટિફિકેટ કહેવામાં આવે છે.</translation>
 <translation id="6628328486509726751">અપલોડ કર્યું <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">વધુ પ્રબળ સુરક્ષા</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ને તમારા વતી પોતાની પ્રમાણિત કરવા માટે પ્રમાણપત્રની કાયમી અ‍ૅક્સેસ જોઈએ છે.</translation>
 <translation id="6634220840123396409">મને સાઇટ પર વિશ્વાસ છે, રેડિયો બટન ગ્રૂપ, 3માંથી 2</translation>

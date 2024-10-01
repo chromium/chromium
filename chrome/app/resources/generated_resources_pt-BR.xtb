@@ -330,7 +330,9 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1227660082540388410">Editar chave de acesso</translation>
 <translation id="1227993798763400520">Falha ao transmitir. Tente novamente</translation>
 <translation id="1230417814058465809">A Proteção padrão está ativa. Para ter ainda mais segurança, selecione a Proteção reforçada.</translation>
+<translation id="1230961867057865279">A página não está em <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Vamos lembrar da sua rede na próxima vez que você usar o <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">A página não está em <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Os sites podem pedir para capturar e usar a entrada do mouse</translation>
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1233497634904001272">Toque na chave de segurança novamente para concluir a solicitação.</translation>
@@ -2931,6 +2933,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="304644035656848980">Prévia do seu microfone</translation>
 <translation id="3046910703532196514">Página da web, completa</translation>
 <translation id="304747341537320566">Mecanismos de fala</translation>
+<translation id="3047678109605649715">Não há vozes em <ph name="LANGUAGE" /> no seu dispositivo. Libere espaço no dispositivo e tente de novo.</translation>
 <translation id="3048336643003835855">Dispositivos HID do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Iniciar (k)</translation>
 <translation id="3048742847101793553">Sua organização bloqueou esse arquivo porque a verificação falhou.</translation>
@@ -7277,7 +7280,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
 <translation id="625827534921607067">Esta rede terá preferência se mais de uma rede conectada ou configurada anteriormente estiver disponível</translation>
-<translation id="62586649943626337">Organize as guias usando grupos</translation>
 <translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
 <translation id="6263082573641595914">Versão da autoridade de certificação da Microsoft</translation>
@@ -7758,6 +7760,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6627743754845412571">Sem permissão para acompanhamento das mãos</translation>
 <translation id="6628316682330029452">Os certificados do cliente são aqueles que identificam você para outros servidores.</translation>
 <translation id="6628328486509726751">Horário do envio: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Mais segurança</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> deseja acesso permanente a um certificado para autenticar-se no seu nome.</translation>
 <translation id="6634220840123396409">Confio no site, grupo de botões de opção, 2 de 3</translation>
@@ -8558,6 +8561,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7212097698621322584">Insira seu PIN atual para alterá-lo. Se você não sabe seu PIN, redefina a chave de segurança e crie um novo.</translation>
 <translation id="7214047272988222011">Concedida (<ph name="PERMISSION_DETAILS" />). Ative o <ph name="LINK_BEGIN" />acesso à câmera do sistema<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importar senhas</translation>
+<translation id="7217208603285112910">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
 <translation id="7219473482981809164">Há vários perfis disponíveis para download. Selecione aqueles de que você quer fazer o download antes de continuar.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nenhuma senha fraca}=1{1 senha fraca}one{{NUM_WEAK} senha fraca}other{{NUM_WEAK} senhas fracas}}</translation>
@@ -10120,6 +10124,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
 <translation id="8327386430364625757">Fonte matemática</translation>
+<translation id="8327490658947427005">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Permissões e configurações de conteúdo</translation>
 <translation id="8328228852664998535">Se você continuar, suas senhas, chaves de acesso e outros dados serão excluídos permanentemente do <ph name="BRAND" />. As contas que você criou em sites ou apps não serão excluídas.</translation>
 <translation id="8328777765163860529">Fechar todos</translation>

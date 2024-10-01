@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Dëshiron që Chromium të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="22313767259766852">Kjo adresë është ruajtur aktualisht në Chromium. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Kjo do të thotë që Chromium do kërkojë sajtin në desktop çdo herë.</translation>
+<translation id="2270466829363945454">Bli</translation>
 <translation id="2313870531055795960">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqes, te "Shfletimi i sigurt".</translation>
 <translation id="231828342043114302">Për të marrë përmbajtje të personalizuara bazuar në interesat e tu, identifikohu në Chromium.</translation>
 <translation id="2326738825692478496">Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në "Llogarinë tënde të Google".
@@ -130,6 +131,7 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="4432744876818348753">Identifikohu për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="4445228361214254027">Organizata jote e ka çaktivizuar aftësinë për të përdorur dhe ruajtur të dhënat e Chromium në "Llogarinë tënde të Google". Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
 <translation id="4498832288620833153">Shton URL-të e futura te lista e leximit në Chromium.</translation>
+<translation id="4508268628669724828">Kontrollo përsëri këtu për më shumë këshilla të dobishme për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="452436063477828504">Sigurohu që mund t'i përdorësh gjithmonë të dhënat e Chromium në "Llogarinë tënde të Google"</translation>
 <translation id="4527452566931097835">Të caktohet Chromium si parazgjedhje?</translation>
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -240,6 +242,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7228180817326917122">Këshillë për Chromium: Zgjidh pozicionin e shiritit të adresave</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
 <translation id="7269362888766543920">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Provo t'i çinstalosh ata.</translation>
+<translation id="7279391168585141365">Ruaj fjalëkalimet e tua në Chromium</translation>
 <translation id="7285031092584344905">Qasu te fjalëkalimet e tua të Chromium etj. nëpër aplikacione të tjera.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Të dhënat e zgjedhura janë hequr nga Chromium dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google në history.google.com.</translation>

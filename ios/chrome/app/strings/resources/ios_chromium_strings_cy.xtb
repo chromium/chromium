@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Ydych chi am i Chromium gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
 <translation id="22313767259766852">Mae'r cyfeiriad hwn wedi'i gadw i Chromium ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
+<translation id="2270466829363945454">Siopa</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="231828342043114302">I dderbyn cynnwys personol yn seiliedig ar eich diddordebau, mewngofnodwch i Chromium.</translation>
 <translation id="2326738825692478496">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto.
@@ -130,6 +131,7 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="4432744876818348753">Mewngofnodwch i gael y gorau o Chromium.</translation>
 <translation id="4445228361214254027">Diffoddodd eich sefydliad y gallu i ddefnyddio a chadw data Chromium yn eich Cyfrif Google. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
 <translation id="4498832288620833153">Yn ychwanegu'r cyfeiriadau URL sydd wedi'u mewnbynnu at eich rhestr ddarllen yn Chromium.</translation>
+<translation id="4508268628669724828">Dewch yn ôl yma am ragor o awgrymiadau defnyddiol i gael y gorau o Chromium.</translation>
 <translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4527452566931097835">Gosod Chromium fel y porwr diofyn?</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7228180817326917122">Awgrym Chromium: Dewiswch leoliad eich bar cyfeiriad</translation>
 <translation id="725427773388857052">Gall Chromium helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
 <translation id="7269362888766543920">Mae rhai ychwanegion yn achosi i Chromium dorri. Rhowch gynnig ar ddadosod nhw.</translation>
+<translation id="7279391168585141365">Cadw Eich Cyfrineiriau ar Chromium</translation>
 <translation id="7285031092584344905">Cyrchwch eich cyfrineiriau Chromium a rhagor ar draws apiau eraill.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Mae'r data a ddewisir wedi'u tynnu o Chromium a dyfeisiau sydd wedi'u cysoni. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori megis chwiliadau a gweithgarwch gan wasanaethau Google eraill yn history.google.com.</translation>

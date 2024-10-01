@@ -49,6 +49,7 @@
 <translation id="2195025571279539885">Chromium በሚቀጥለው ጊዜ ከዚህ ጣቢያ የመጡ የ<ph name="LANGUAGE_NAME" /> ገጾችን እንዲተረጎምልዎ ይፈልጋሉ?</translation>
 <translation id="22313767259766852">ይህ አድራሻ በአሁኑ ጊዜ Chromium ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="2236584955986023187">ይህ ማለት Chromium የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
+<translation id="2270466829363945454">ይግዙ</translation>
 <translation id="2313870531055795960">በChromium ላይ በተከማቹ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ሲያወርዱ Chromium እንዲሁም የገጽ ይዘት ቢትስንም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል።</translation>
 <translation id="231828342043114302">በፍላጎቶችዎ ላይ የተመሠረተ ግላዊነት የተላበሰ ይዘትን ለመቀበል ወደ Chromium ይግቡ።</translation>
 <translation id="2326738825692478496">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
@@ -129,6 +130,7 @@
 <translation id="4432744876818348753">ከChromium የሚችሉትን ሁሉ ለማግኘት በመለያ ይግቡ።</translation>
 <translation id="4445228361214254027">ድርጅትዎ በእርስዎ የGoogle መለያ ውስጥ Chromium ውሂብ የመጠቀም እና የማስቀመጥ አቅምን አጥፍቷል። አዳዲስ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
 <translation id="4498832288620833153">የገባውን ዩአርኤል በ Chromium ውስጥ ባለው የንባብ ዝርዝር ውስጥ ያክላል።</translation>
+<translation id="4508268628669724828">ከChromium ምርጡን ለማግኘት ለተጨማሪ ጠቃሚ ምክሮች ተመልሰው እዚህ ይምጡ።</translation>
 <translation id="452436063477828504">በGoogle መለያዎ ውስጥ በማንኛውም ጊዜ የChromium ውሂብን መጠቀም መቻልዎን ያረጋግጡ</translation>
 <translation id="4527452566931097835">Chromium እንደ ነባሪ ይቀናበር?</translation>
 <translation id="4555020257205549924">ይህ ባህሪ ሲበራ Chromium በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -240,6 +242,7 @@
 <translation id="7228180817326917122">Chromium ጠቃሚ ምክር፦ የአድራሻ አሞሌዎን ቦታ ይምረጡ</translation>
 <translation id="725427773388857052">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
 <translation id="7269362888766543920">አንዳንድ ተጨማሪዎች Chromium እንዲበላሽ ያደርጋሉ። እባክዎ እነሱን ለማራገፍ ይሞክሩ።</translation>
+<translation id="7279391168585141365">Chromium ላይ የይለፍ ቃላትዎን ያስቀምጡ</translation>
 <translation id="7285031092584344905">የእርስዎን የChromium የይለፍ ቃላት እና ሌሎችንም በሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">የተመረጠው ውሂብ ከChromium እና የሰመሩ መሣሪያዎች ተወግዷል። የGoogle መለያዎ history.google.com ላይ እንደ የሌሎች Google አገልግሎቶች ፍለጋዎች እና እንቅስቃሴ ያለ ሌሎች የአሰሳ ታሪክ ዓይነት ሊኖረው ይችላል።</translation>

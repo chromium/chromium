@@ -2916,6 +2916,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="304644035656848980">Pamja paraprake e mikrofonit tënd</translation>
 <translation id="3046910703532196514">Faqja e uebit, e plotë</translation>
 <translation id="304747341537320566">Motorët e ligjërimit</translation>
+<translation id="3047678109605649715">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Pastro hapësirën në pajisjen tënde dhe provo përsëri.</translation>
 <translation id="3048336643003835855">Pajisjet HID nga shitësi <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Luaj (k)</translation>
 <translation id="3048742847101793553">Organizata jote e bllokoi këtë skedar sepse skanimi dështoi.</translation>
@@ -7256,7 +7257,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6254892857036829079">E përkryer</translation>
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="625827534921607067">Ky rrjet do të jetë i preferuar nëse ofrohen më shumë se një rrjet i lidhur ose i konfiguruar më parë</translation>
-<translation id="62586649943626337">Organizo skedat e tua me grupet e skedave</translation>
 <translation id="6259776178973198997">Rifresko informacionet e zotëruesve të Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Rezervimet e tua ngarkohen te Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë sate të Google".</translation>
 <translation id="6263082573641595914">Versioni i autoritetit të certifikimit të Microsoft</translation>
@@ -7735,6 +7735,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6627743754845412571">Nuk lejohen që të gjurmojnë duart e tua</translation>
 <translation id="6628316682330029452">Certifikatat e klientit janë certifikatat që të identifikojnë ty në serverët e tjerë.</translation>
 <translation id="6628328486509726751">U ngarkua në <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Siguri më e fortë</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> kërkon qasje të përhershme te një certifikatë për t'u vërtetuar për ty.</translation>
 <translation id="6634220840123396409">Kam besim te sajti, grupi i butonave të radios, 2 nga 3</translation>

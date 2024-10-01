@@ -272,6 +272,7 @@
 <translation id="1187722533808055681">Буђења из стања мировања</translation>
 <translation id="1188807932851744811">Евиденција није отпремљена.</translation>
 <translation id="1190086046506744802">Веома размакнуто</translation>
+<translation id="1190155014618058972">Направите прилагођену комбинацију тастера</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Приступ датотеци сачуваној на рачунару}one{Приступ # датотеци сачуваној на рачунару}few{Приступ за # датотеке сачуване на рачунару}other{Приступ за # датотека сачуваних на рачунару}}</translation>
 <translation id="1190706173655543975">Microsoft смернице за апликације</translation>
 <translation id="1191353342579061195">Одаберите тему која одговара вашим потребама. Да бисте променили тему, позадину, чувар екрана и друго, само кликните десним тастером на радној површини.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="1794212650797661990">Сакријте лозинку за <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Шаљи повратне информације као помоћ за решавање овог проблема.</translation>
 <translation id="1795214765651529549">Користи класичну</translation>
+<translation id="1795438342141780114">Ресетујте курсор на центар</translation>
 <translation id="1795668164971917185">Када Google безбедно прегледање следећи пут пронађе сумњиво преузимање, аутоматски ће га скенирати у оквиру ставке <ph name="LINK" /> коју сте одабрали</translation>
 <translation id="1796588414813960292">Функције којима треба звук неће радити</translation>
 <translation id="1797117170091578105">Играјте помоћу Chromebook тастатуре. Можете да прилагодите тастере одређеним радњама.</translation>
@@ -1812,6 +1814,7 @@
 <translation id="2278562042389100163">Отварање прозора прегледача</translation>
 <translation id="2278668501808246459">Покреће се менаџер контејнера</translation>
 <translation id="2280486287150724112">Десна маргина</translation>
+<translation id="228059581448666199">Кликните левим тастером миша</translation>
 <translation id="2281863813036651454">Клик на леви тастер миша</translation>
 <translation id="2282146716419988068">GPU процес</translation>
 <translation id="228293613124499805">Већина сајтова које посећујете вероватно чува податке на уређају, често ради побољшања доживљаја тако што чува подешавања или информације које делите са сајтом. Препоручујемо да ово подешавање остане укључено.</translation>
@@ -4706,6 +4709,7 @@
 <translation id="4359408040881008151">Инсталиран је због зависних додатака.</translation>
 <translation id="4359717112757026264">Градски пејзажи</translation>
 <translation id="4359809482106103048">Кратак преглед безбедности</translation>
+<translation id="4360738659108163902">Кликните десним тастером миша</translation>
 <translation id="4361142739114356624">Приватни кључ за овај сертификат клијента недостаје или је неважећи</translation>
 <translation id="4361745360460842907">Отвори као картицу</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> је подразумевани налог за ваш <ph name="DEVICE_TYPE" /></translation>
@@ -5335,6 +5339,7 @@
 <translation id="482952334869563894">USB уређаји продавца <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Инсталира се ажурирање ОС-а</translation>
 <translation id="4831226137013573603">искључивање звука микрофона</translation>
+<translation id="483262387981411190">Паузирајте или наставите контролу лица</translation>
 <translation id="4833683849865011483">Пронађен је 1 штампач са сервера за штампање</translation>
 <translation id="4835598628985424375">Напућите усне тако што ћете их стиснути заједно</translation>
 <translation id="4835677468087803981">Сакриј PIN</translation>
@@ -5895,6 +5900,7 @@
 <translation id="5240931875940563122">Пријави ме помоћу Android телефона</translation>
 <translation id="5242724311594467048">Желите ли да омогућите „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Пробајте поново за неколико тренутака</translation>
+<translation id="5243752692914402705">Када започнете режим скроловања, померајте главу у правцу у ком желите да скролујете</translation>
 <translation id="5244234799035360187">OneDrive ће се сада појавити у апликацији Фајлови</translation>
 <translation id="5244466461749935369">Задржи за сада</translation>
 <translation id="5244474230056479698">Синхронизује се са <ph name="EMAIL" /></translation>
@@ -6645,6 +6651,7 @@
 <translation id="5805697420284793859">Менаџер прозора</translation>
 <translation id="5806447147478173900">Укупан меморијски простор који користе приказани сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (подразумевано)</translation>
+<translation id="5807774529265708172">Прикажите или сакријте тастатуру на екрану</translation>
 <translation id="5809835394668218762">Још радњи за <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">PIN мора да садржи 6 цифара</translation>
 <translation id="5810809306422959727">Овај налог не испуњава услове за родитељски надзор</translation>
@@ -6838,6 +6845,7 @@
 <translation id="5945002094477276055">Фајл <ph name="FILE_NAME" /> је можда опасан. Желите да га пошаљете Google безбедном прегледању на скенирање?</translation>
 <translation id="5945363896952315544">Безбедносни кључ не може више да чува отиске прстију. Да бисте додали нови отисак прста, прво избришите неки постојећи отисак прста.</translation>
 <translation id="5946591249682680882">ИД извештаја <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Двапут кликните мишем</translation>
 <translation id="5948476936444935795">Откажи увоз</translation>
 <translation id="5948536763493709626">Повежите тастатуру или миш или наставите подешавање помоћу додирног екрана. Ако користите Bluetooth уређаје, уверите се да су уређаји спремни за упаривање.</translation>
 <translation id="5949544233750246342">Рашчлањивање датотеке није успело</translation>
@@ -7262,7 +7270,6 @@
 <translation id="6254892857036829079">Савршен</translation>
 <translation id="6257602895346497974">Укључи синхронизацију...</translation>
 <translation id="625827534921607067">Ова мрежа ће имати приоритет ако је доступно више претходно повезаних или конфигурисаних мрежа</translation>
-<translation id="62586649943626337">Организујте картице помоћу група картица</translation>
 <translation id="6259776178973198997">Освежи информације о WiFi Direct власницима</translation>
 <translation id="6262371516389954471">Резервне копије се отпремају на Google и шифрују помоћу лозинке за Google налог.</translation>
 <translation id="6263082573641595914">Верзија Microsoft CA</translation>
@@ -7745,6 +7752,7 @@
 <translation id="6627743754845412571">Није им дозвољено да прате руке</translation>
 <translation id="6628316682330029452">Сертификати клијента су сертификати који вас идентификују за друге сервере.</translation>
 <translation id="6628328486509726751">Отпремљено <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Већа безбедност</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> жели трајни приступ сертификату да би потврдио сопствену аутентичност у ваше име.</translation>
 <translation id="6634220840123396409">Имам поверења у сајт, група дугмади за избор, 2. од 3</translation>
@@ -9594,6 +9602,7 @@
 <translation id="7958828865373988933">Ако желите да направите приступни кључ за апликацију <ph name="APP_NAME" /> на USB безбедносном кључу, уметните га и додирните одмах</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
 <translation id="7959665254555683862">Нова картица без архивирања</translation>
+<translation id="7960540720012720106">Отворите преглед прозора</translation>
 <translation id="7961015016161918242">Никад</translation>
 <translation id="7963001036288347286">Убрзавање тачпеда</translation>
 <translation id="7963513503134856713">Прозор је померен надесно</translation>
@@ -9673,6 +9682,7 @@
 <translation id="8014154204619229810">Програм за ажурирање је тренутно активан. Сачекајте мало, па освежите и проверите поново.</translation>
 <translation id="8014206674403687691">Није могуће вратити <ph name="IDS_SHORT_PRODUCT_NAME" /> на претходно инсталирану верзију. Покушајте да поново обавите Powerwash уређаја.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Копиран је 1 фајл}one{Копиран је {NUM_OF_FILES} фајл}few{Копирана су {NUM_OF_FILES} фајла}other{Копирано је {NUM_OF_FILES} фајлова}}</translation>
+<translation id="8017004049696748317">Покрените или зауставите диктирање</translation>
 <translation id="8017176852978888182">Дељени Linux директоријуми</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Пречица је измењена</translation>
@@ -9687,6 +9697,7 @@
 <translation id="8025291188699172126">О ажурирањима</translation>
 <translation id="8026471514777758216">Сви ваши уређаји</translation>
 <translation id="8026784703228858744">Сачувајте обележиваче, лозинке и друго уз синхронизацију</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Посетили сте пре 0 дана}=1{Посетили сте пре 1 дан}one{Посетили сте пре # дан}few{Посетили сте пре # дана}other{Посетили сте пре # дана}}</translation>
 <translation id="8028060951694135607">Microsoft опоравак кључа</translation>
 <translation id="8028803902702117856">Преузима се <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Величина</translation>

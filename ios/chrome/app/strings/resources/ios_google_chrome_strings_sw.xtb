@@ -72,6 +72,7 @@ Mambo ya kuzingatia:
 <translation id="2689064829982324496">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="2703746758996815929">Ili upate vidokezo muhimu vya Chrome, washa arifa kwenye mipangilio yako ya iOS.</translation>
+<translation id="2728851697704606655">Kutafsiri ukitumia Lenzi ya Google</translation>
 <translation id="2736805085127235148">Kwa sasa arifa za Chrome zimezimwa kwenye mipangilio ya kifaa chako.</translation>
 <translation id="2754428955276778271">Baadhi ya data yako ya Chrome bado haijahifadhiwa kwenye Akaunti yako ya Google.
 
@@ -249,6 +250,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7581063337314642333">Tembelea Gridi ya Kichupo kwenye Chrome</translation>
 <translation id="7599894504325210080">Mwonekano uliopanuliwa wa Kipengele cha Kujaza Kiotomatiki cha Chrome</translation>
 <translation id="7642373780953416937">Pokea arifa kuhusu matatizo yoyote ya faragha au ya usalama ambayo Chrome itatambua kiotomatiki kuwa yanakuathiri.</translation>
+<translation id="7660356333829433649">Angalia hapa tena ili upate vidokezo muhimu zaidi na unufaike zaidi kutokana na Chrome.</translation>
 <translation id="7662994914830945754">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, ingia katika akaunti na uwashe kipengele cha kusawazisha</translation>
 <translation id="7693590760643069321">Sasa unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
 <translation id="7698568245838009292">Chrome Inataka Kufikia Kamera</translation>
@@ -259,6 +261,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="778855399387580014">Anza kutafuta ukitumia kichupo kipya cha Chrome.</translation>
 <translation id="7792140019572081272">Chrome huweka data yako nyeti salama kwa kutumia Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome imesasishwa</translation>
+<translation id="7861998090118873450">Kuhifadhi Manenosiri yako kwenye Chrome</translation>
 <translation id="7897703007638178753">Angalia Vichupo vya Hivi Karibuni kwenye Chrome</translation>
 <translation id="7948283758957877064">Mapya katika Chrome</translation>
 <translation id="8000174216052461231">Kidokezo cha Chrome: Pata ulinzi thabiti zaidi wa Chrome</translation>
@@ -294,6 +297,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8558480467877843976">Sasa unaweza kutumia Chrome wakati wowote unapovinjari au kugusa viungo kwenye ujumbe, hati na programu nyingine.</translation>
 <translation id="8603022514504485810">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />kagua manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Washa kipengele cha “Funga Vichupo vya Faragha unapofunga Chrome.”</translation>
+<translation id="8673726683583791503">Kununua ukitumia Lenzi ya Google</translation>
 <translation id="8727043961453758442">Nufaika zaidi na Chrome</translation>
 <translation id="8765470054473112089">Unapoandika kwenye sehemu ya anwani au kisanduku cha kutafutia, Chrome hutuma unachokiandika kwenye mtambo wako chaguomsingi wa kutafuta ili upate mapendekezo bora. Kipengele hiki huwa kimezimwa katika Hali fiche.</translation>
 <translation id="8772179140489533211">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chrome.</translation>

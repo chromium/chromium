@@ -72,6 +72,7 @@ Things to consider:
 <translation id="2689064829982324496">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2703746758996815929">To get helpful Chrome tips, turn on notifications in your iOS settings.</translation>
+<translation id="2728851697704606655">Translate with Google Lens</translation>
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
 <translation id="2754428955276778271">Some of your Chrome data hasn't been saved in your Google Account yet.
 
@@ -249,6 +250,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7581063337314642333">Visit the Tab Grid in Chrome</translation>
 <translation id="7599894504325210080">Chrome autofill expanded view</translation>
 <translation id="7642373780953416937">Receive alerts on any privacy or security issues that Chrome automatically detects for you.</translation>
+<translation id="7660356333829433649">Check back here for more useful tips to get the most out of Chrome.</translation>
 <translation id="7662994914830945754">To see your tabs from wherever you use Chrome, sign in and turn on sync</translation>
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
@@ -259,6 +261,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
 <translation id="7792140019572081272">Chrome keeps your sensitive data secure with Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
+<translation id="7861998090118873450">Save your passwords on Chrome</translation>
 <translation id="7897703007638178753">See Chrome Recent Tabs</translation>
 <translation id="7948283758957877064">What’s new in Chrome</translation>
 <translation id="8000174216052461231">Chrome tip: Get Chrome's strongest security</translation>
@@ -294,6 +297,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="8603022514504485810">Google Password Manager couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
+<translation id="8673726683583791503">Shop with Google Lens</translation>
 <translation id="8727043961453758442">Get the most out of Chrome</translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>

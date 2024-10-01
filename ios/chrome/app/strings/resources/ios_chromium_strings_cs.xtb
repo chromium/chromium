@@ -49,6 +49,7 @@
 <translation id="2195025571279539885">Chcete, aby prohlížeč Chromium příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
 <translation id="22313767259766852">Tato adresa je aktuálně uložena v prohlížeči Chromium. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">To znamená, že Chromium bude pokaždé odesílat požadavek na web pro počítač.</translation>
+<translation id="2270466829363945454">Nakupování</translation>
 <translation id="2313870531055795960">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="231828342043114302">Pokud chcete dostávat personalizovaný obsah na základě svých zájmů, přihlaste se do prohlížeče Chromium.</translation>
 <translation id="2326738825692478496">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
@@ -129,6 +130,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="4432744876818348753">Pokud z Chromia chcete získat maximum, přihlaste se.</translation>
 <translation id="4445228361214254027">Vaše organizace vypnula možnost používat a ukládat data prohlížeče Chromium v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
 <translation id="4498832288620833153">Přidá zadané adresy URL do vašeho seznamu četby v prohlížeči Chromium.</translation>
+<translation id="4508268628669724828">Vraťte se sem pro další užitečné tipy, jak Chromium využít na maximum.</translation>
 <translation id="452436063477828504">Zajistěte, abyste mohli vždy používat data prohlížeče Chromium ve svém účtu Google</translation>
 <translation id="4527452566931097835">Nastavit Chromium jako výchozí prohlížeč?</translation>
 <translation id="4555020257205549924">Pokud je tato funkce zapnutá, bude Chromium nabízet překlad stránek v jiných jazycích pomocí Překladače Google.<ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -240,6 +242,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7228180817326917122">Tip pro Chromium: Vyberte si umístění adresního řádku</translation>
 <translation id="725427773388857052">Chromium vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami.</translation>
 <translation id="7269362888766543920">Některé doplňky způsobují selhání prohlížeče Chromium. Zkuste je prosím odinstalovat.</translation>
+<translation id="7279391168585141365">Ukládejte si v prohlížeči Chromium hesla</translation>
 <translation id="7285031092584344905">Získejte přístup ke svým heslům v prohlížeči Chromium a k dalším funkcím v jiných aplikacích.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Vybraná data byla z prohlížeče Chromium a synchronizovaných zařízení odstraněna. Na stránce history.google.com mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google, například vyhledávací dotazy a aktivita z ostatních služeb Google.</translation>

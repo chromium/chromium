@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">పోలినవి:</translation>
 <translation id="5130848777448318809">గుఱ్ఱం పిల్లలు</translation>
 <translation id="5137451382116112100">పూర్తిగా</translation>
+<translation id="5140788690559353412">మీ స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయినప్పుడు, మీరు Gmail, Docs, Slides, ఇంకా మరిన్నింటితో అనుబంధించిన ఈమెయిల్‌ను, Google Drive ఫైల్స్‌ను ఇక యాక్సెస్ చేయలేరు.</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
 <translation id="5144311987923128508">నిర్ధారించండి బటన్ ఇప్పుడు డిజేబుల్ చేయబడింది</translation>
 <translation id="5144887194300568405">అనువాదాన్ని కాపీ చేయండి</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="6091080061796993741">పసుపు రంగు</translation>
+<translation id="6093853427925392522">మీరు స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయే ముందు దానికి సంబంధించిన డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Googleకు చెందిన Content Transfer యాప్‌ను ఉపయోగించారని నిర్ధారించుకోండి.</translation>
 <translation id="6104112872696127344">స్కానింగ్ రద్దు చేయబడింది</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">యాక్సెస్ స్థానం పేరు (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7144954474087165241">పగోడా</translation>
@@ -1537,6 +1540,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="86356131183441916">లేత ఊదా రంగు</translation>
 <translation id="8647595191512746911">ఆడియో మాటల టైపింగ్</translation>
+<translation id="8650852232143958317">మీ Gmail, Google Drive ఫైల్స్‌ను మీతో పాటు తీసుకెళ్లండి</translation>
 <translation id="8651481478098336970">వాల్యూమ్‌ను మ్యూట్ చేస్తుంది</translation>
 <translation id="8655295600908251630">ఛానల్</translation>
 <translation id="8655828773034788261">URLను షేర్ చేయండి:</translation>

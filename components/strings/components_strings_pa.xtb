@@ -3404,6 +3404,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ਕਾਰੋਬਾਰੀ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="7244061187185055290">ਕੁਝ ਸ਼ਬਦਾਂ ਵਿੱਚ, ਵਰਣਨ ਕਰੋ ਕਿ ਤੁਸੀਂ ਕੀ ਲੱਭ ਰਹੇ ਹੋ</translation>
+<translation id="7250174481516136841">ਕਾਰਡ ਦੇ ਲਾਭਾਂ ਬਾਰੇ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ONC ਮਿਆਰ ਦੀ ਪਾਲਣਾ ਨਹੀਂ ਕਰਦਾ। ਸ਼ਾਇਦ ਸੰਰੂਪਣ ਦੇ ਭਾਗ ਆਯਾਤ ਨਾ ਕੀਤੇ ਗਏ ਹੋਣ।
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>
@@ -3473,6 +3474,7 @@
 <translation id="7390545607259442187">ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7392089738299859607">ਪਤਾ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7393161616326137353">ਰੁਮਾਂਚਕਾਰੀ ਗੇਮਾਂ</translation>
+<translation id="7393475648162498734">ਦੇਖੋ ਕਿ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਤੁਹਾਡੇ ਕਾਰਡਾਂ ਲਈ ਕਿਹੜੇ ਇਨਾਮ ਅਤੇ ਲਾਭ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="739728382607845710">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਦਾ ਪ੍ਰਤੀਕ</translation>
 <translation id="7399616692258236448">ਟਿਕਾਣਾ ਬੇਨਤੀਆਂ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਸਾਈਟਾਂ ਨੂੰ ਛੱਡ ਕੇ ਬਾਕੀ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7399802613464275309">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
@@ -4488,6 +4490,7 @@
 <translation id="939736085109172342">ਨਵਾਂ ਫੋਲਡਰ</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ <ph name="MINUTES" /> ਘੰਟਿਆਂ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗੀ</translation>
 <translation id="944540589955480312">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਵਰਤੋ</translation>
+<translation id="944578681290094302">ਦੇਖੋ ਕਿ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਤੁਹਾਡੇ ਕਾਰਡਾਂ ਲਈ ਕਿਹੜੇ ਇਨਾਮ ਅਤੇ ਲਾਭ ਉਪਲਬਧ ਹਨ। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ਕਾਰਡ ਦੇ ਲਾਭਾਂ ਬਾਰੇ ਜਾਣੋ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ, Chrome ਸਾਈਟਾਂ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="945855313015696284">ਹੇਠਾਂ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਦੀ ਜਾਂਚ ਕਰਕੇ ਕੋਈ ਵੀ ਅਵੈਧ ਕਾਰਡ ਮਿਟਾਓ</translation>
 <translation id="94613679163347541">ਕੀ <ph name="CATEGORY" /> ਦੀ ਤੁਲਨਾ ਕਰਨੀ ਹੈ?</translation>

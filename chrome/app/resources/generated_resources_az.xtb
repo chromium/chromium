@@ -327,7 +327,9 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1227660082540388410">Giriş açarına düzəliş edin</translation>
 <translation id="1227993798763400520">Yayımlamaq mümkün olmadı. Yenidən cəhd edin.</translation>
 <translation id="1230417814058465809">Standart qoruma aktivdir. Təhlükəsizliyi daha da artırmaq üçün qabaqcıl qoruma işlədin.</translation>
+<translation id="1230961867057865279">Səhifə <ph name="LANGUAGE" /> dilində deyil</translation>
 <translation id="1231426483209637778">Növbəti dəfə <ph name="DEVICE_TYPE" /> istifadə edəndə şəbəkəni xatırlayacağıq</translation>
+<translation id="1231489110997683307">Səhifə <ph name="LANGUAGE" /> dilində deyil</translation>
 <translation id="1231572247662419826">Saytlar maus daxiletməsini çəkmək və istifadə etmək icazəsi istəyə bilər</translation>
 <translation id="1232569758102978740">Başlıqsız</translation>
 <translation id="1233497634904001272">Sorğunu tamamlamaq üçün yenidən güvənlik açarına toxunun.</translation>
@@ -2917,6 +2919,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="304644035656848980">Mikrofon önizləməsi</translation>
 <translation id="3046910703532196514">Səhifə, Tam</translation>
 <translation id="304747341537320566">Nitq Mühərrikləri</translation>
+<translation id="3047678109605649715">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. Cihazınızda yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> adlı təminatçıdan HID cihazları</translation>
 <translation id="3048589239114571785">Oxudun (k)</translation>
 <translation id="3048742847101793553">Skanlanmadığı üçün təşkilat bu faylı blokladı.</translation>
@@ -7257,7 +7260,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6254892857036829079">Mükəmməl</translation>
 <translation id="6257602895346497974">Sinxronizasiyanı aktiv edin...</translation>
 <translation id="625827534921607067">Əvvəlcədən qoşulmuş və ya konfiqurasiya edilmiş bir neçə şəbəkə əlçatan olarsa, bu şəbəkə tərcih ediləcək</translation>
-<translation id="62586649943626337">Tablarınızı tab qrupları ilə təşkil edin</translation>
 <translation id="6259776178973198997">WiFi Direct sahib məlumatını təzələyin</translation>
 <translation id="6262371516389954471">Yedəkləmələriniz Google'a yüklənir və Google Hesabı parolunuzdan istifadə etməklə şifrlənir.</translation>
 <translation id="6263082573641595914">Microsoft CA Versiyası</translation>
@@ -7736,6 +7738,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6627743754845412571">Əllərinizi izləmək icazəsi verilməyib</translation>
 <translation id="6628316682330029452">Müştəri sertifikatları sizi digər serverlərə tanıdan sertifikatlardır.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> yüklənib</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Güclü güvənlik</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> sizin adınıza özü kimlik sənədi daimi çıxış istəyir.</translation>
 <translation id="6634220840123396409">Sayta etibar edirəm, radio düyməsi qrupu, 2/3</translation>
@@ -8535,6 +8538,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>
 <translation id="7214047272988222011">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem kamera girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="721490496276866468">Parolları import edin</translation>
+<translation id="7217208603285112910">Seçilmiş mətn <ph name="LANGUAGE" /> dilində deyil</translation>
 <translation id="7219254577985949841">Sayt datası silinsin?</translation>
 <translation id="7219473482981809164">Endirmək üçün əlçatan çox sayda profil tapmışıq. Başlamazdan əvvəl endirmək istədiklərinizi seçin.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Zəif parol yoxdur}=1{1 zəif parol}other{{NUM_WEAK} zəif parol}}</translation>
@@ -10096,6 +10100,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>
 <translation id="8327386430364625757">Riyazi şrift</translation>
+<translation id="8327490658947427005">Seçilmiş mətn <ph name="LANGUAGE" /> dilində deyil</translation>
 <translation id="8327676037044516220">İcazələr və məzmun ayarları</translation>
 <translation id="8328228852664998535">Davam etsəniz, parol, giriş açarı və digər data buradan həmişəlik silinəcək: <ph name="BRAND" />. Sayt və ya tətbiqlər üçün yaratdığınız hesablar silinməyəcək.</translation>
 <translation id="8328777765163860529">Hamısını Bağlayın</translation>

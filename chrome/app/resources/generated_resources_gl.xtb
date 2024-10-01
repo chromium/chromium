@@ -2917,6 +2917,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="304644035656848980">Vista previa do teu micrófono</translation>
 <translation id="3046910703532196514">Páxina web, completa</translation>
 <translation id="304747341537320566">Motores de fala</translation>
+<translation id="3047678109605649715">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Libera espazo e téntao de novo.</translation>
 <translation id="3048336643003835855">Dispositivos HID do provedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (K)</translation>
 <translation id="3048742847101793553">A túa organización bloqueou este ficheiro porque se produciu un erro durante a análise.</translation>
@@ -7261,7 +7262,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6254892857036829079">Perfecto</translation>
 <translation id="6257602895346497974">Activar sincronización…</translation>
 <translation id="625827534921607067">Esta rede terá preferencia se hai dispoñible máis dunha rede xa configurada ou á que te conectases anteriormente</translation>
-<translation id="62586649943626337">Organiza as túas pestanas en grupos</translation>
 <translation id="6259776178973198997">Actualizar información das persoas propietarias de Wi-Fi Direct</translation>
 <translation id="6262371516389954471">As copias de seguranza cárganse en Google e encríptanse co contrasinal da túa Conta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidade emisora de certificados de Microsoft</translation>
@@ -7740,6 +7740,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6627743754845412571">Permiso denegado para facer un seguimento das mans</translation>
 <translation id="6628316682330029452">Os certificados de cliente serven para identificarte noutros servidores.</translation>
 <translation id="6628328486509726751">Data da carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Máis seguranza</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse no teu nome.</translation>
 <translation id="6634220840123396409">Confío no sitio, grupo de botóns de opción, 2 de 3</translation>

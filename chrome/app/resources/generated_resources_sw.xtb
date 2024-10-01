@@ -2928,6 +2928,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="304644035656848980">Onyesho la kukagua maikrofoni yako</translation>
 <translation id="3046910703532196514">Ukurasa wa wavuti, Umekamilika</translation>
 <translation id="304747341537320566">Mitambo ya Sauti</translation>
+<translation id="3047678109605649715">Hakuna sauti za <ph name="LANGUAGE" /> kwenye kifaa chako. Futa vipengee ili upate nafasi kwenye kifaa chako kisha ujaribu tena.</translation>
 <translation id="3048336643003835855">Vifaa vya HID kutoka kwa muuzaji mwenye kitambulisho cha <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Cheza (k)</translation>
 <translation id="3048742847101793553">Shirika lako limezuia faili hii kwa sababu uchanganuzi haujafaulu.</translation>
@@ -7270,7 +7271,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6254892857036829079">Shwari</translation>
 <translation id="6257602895346497974">Washa kipengele cha kusawazisha...</translation>
 <translation id="625827534921607067">Mtandao huu utapendelewa ikiwa zaidi ya mtandao mmoja wa awali uliounganishwa au kuwekewa mipangilio unapatikana</translation>
-<translation id="62586649943626337">Panga vichupo vyako kwa kutumia kikundi cha vichupo</translation>
 <translation id="6259776178973198997">Onyesha upya Maelezo ya Seva Zinazounganisha Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Nakala unazohifadhi hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti yako ya Google.</translation>
 <translation id="6263082573641595914">Toleo la Mamlaka ya Cheti la Microsoft</translation>
@@ -7749,6 +7749,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6627743754845412571">Zisizoruhusiwa kufuatilia mijongeo ya mikono yako</translation>
 <translation id="6628316682330029452">Vyeti vya kompyuta teja ni vyeti vinavyokutambulisha kwenye seva nyingine.</translation>
 <translation id="6628328486509726751">Imepakia <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Usalama thabiti</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> inataka idhini ya kudumu ya kufikia cheti ili kujithibitisha kwa niaba yako.</translation>
 <translation id="6634220840123396409">Ninaiamini tovuti, kikundi cha kitufe cha mviringo, 2 kati ya 3</translation>

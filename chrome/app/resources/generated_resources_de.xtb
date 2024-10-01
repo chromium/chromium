@@ -2915,6 +2915,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="304644035656848980">Mikrofon-Audiovorschau</translation>
 <translation id="3046910703532196514">Webseite, vollständig</translation>
 <translation id="304747341537320566">Sprach-Engines</translation>
+<translation id="3047678109605649715">Auf deinem Gerät sind keine Stimmen für <ph name="LANGUAGE" /> vorhanden. Gib auf dem Gerät Speicherplatz frei und versuche es noch einmal.</translation>
 <translation id="3048336643003835855">HID-Geräte vom Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Abspielen (k)</translation>
 <translation id="3048742847101793553">Deine Organisation hat diese Datei blockiert, weil beim Scannen ein Fehler aufgetreten ist.</translation>
@@ -7252,7 +7253,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Synchronisierung aktivieren…</translation>
 <translation id="625827534921607067">Dieses Netzwerk wird bevorzugt, wenn mehr als ein zuvor verbundenes oder konfiguriertes Netzwerk verfügbar ist</translation>
-<translation id="62586649943626337">Organisiere deine Tabs mithilfe von Tabgruppen</translation>
 <translation id="6259776178973198997">Informationen für Wi-Fi Direct-Inhaber aktualisieren</translation>
 <translation id="6262371516389954471">Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt.</translation>
 <translation id="6263082573641595914">Microsoft - Version der Zertifizierungsstelle</translation>
@@ -7731,6 +7731,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6627743754845412571">Dürfen deine Handbewegungen nicht verfolgen</translation>
 <translation id="6628316682330029452">Clientzertifikate sind Zertifikate, die deine Identität gegenüber anderen Servern bestätigen.</translation>
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Erhöhte Sicherheit</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> fordert ständigen Zugriff auf ein Zertifikat an, um sich in deinem Namen zu authentifizieren.</translation>
 <translation id="6634220840123396409">Ich vertraue der Website, Optionsfeldgruppe, 2 von 3</translation>

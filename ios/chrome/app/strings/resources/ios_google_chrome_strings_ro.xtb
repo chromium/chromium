@@ -72,6 +72,7 @@ De reținut:
 <translation id="2689064829982324496">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2703746758996815929">Pentru a primi sfaturi utile privind Chrome, activează notificările din setările iOS.</translation>
+<translation id="2728851697704606655">Tradu cu Google Lens</translation>
 <translation id="2736805085127235148">Notificările din Chrome sunt momentan dezactivate în setările dispozitivului.</translation>
 <translation id="2754428955276778271">Unele date Chrome nu au fost salvate încă în Contul Google.
 
@@ -249,6 +250,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7581063337314642333">Accesează Grila de file din Chrome</translation>
 <translation id="7599894504325210080">Afișare extinsă pentru completarea automată în Chrome</translation>
 <translation id="7642373780953416937">Primește alerte cu privire la orice probleme de confidențialitate sau de securitate pe care Chrome le detectează automat pentru tine.</translation>
+<translation id="7660356333829433649">Revino aici pentru mai multe sfaturi utile și profită din plin de Chrome.</translation>
 <translation id="7662994914830945754">Pentru a vedea toate filele tale deschise în Chrome, conectează-te și activează sincronizarea</translation>
 <translation id="7693590760643069321">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
@@ -259,6 +261,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="778855399387580014">Începe o căutare într-o filă Chrome nouă.</translation>
 <translation id="7792140019572081272">Chrome îți păstrează în siguranță datele sensibile cu Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome este actualizat</translation>
+<translation id="7861998090118873450">Salvează-ți parolele în Chrome</translation>
 <translation id="7897703007638178753">Vezi filele recente din Chrome</translation>
 <translation id="7948283758957877064">Ce e nou în Chrome</translation>
 <translation id="8000174216052461231">Sfat pentru Chrome: beneficiază de cea mai puternică securitate de la Chrome</translation>
@@ -294,6 +297,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activează Blochează filele incognito când închizi Chrome.</translation>
+<translation id="8673726683583791503">Fă cumpărături cu Google Lens</translation>
 <translation id="8727043961453758442">Profită la maximum de Chrome</translation>
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>

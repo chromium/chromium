@@ -2932,6 +2932,7 @@
 <translation id="304644035656848980">Преглед на микрофонот</translation>
 <translation id="3046910703532196514">Веб-страница, целосна</translation>
 <translation id="304747341537320566">Софтвер за говор</translation>
+<translation id="3047678109605649715">Нема гласови на <ph name="LANGUAGE" /> на уредот. Ослободете простор на уредот и обидете се повторно.</translation>
 <translation id="3048336643003835855">HID-уреди од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пушти (k)</translation>
 <translation id="3048742847101793553">Вашата организација ја блокираше датотекава бидејќи скенирањето не успеа.</translation>
@@ -7276,7 +7277,6 @@
 <translation id="6254892857036829079">Совршено</translation>
 <translation id="6257602895346497974">Вклучете синхронизација…</translation>
 <translation id="625827534921607067">Оваа мрежа ќе има предност ако е достапна повеќе од една претходно поврзана или конфигурирана мрежа</translation>
-<translation id="62586649943626337">Организирајте ги картичките со групи картички</translation>
 <translation id="6259776178973198997">Освежи ги информациите за сопствениците на Wi-Fi Direct:</translation>
 <translation id="6262371516389954471">Вашиот бекап се прикачува во Google и се шифрира со лозинката за вашата сметка на Google.</translation>
 <translation id="6263082573641595914">Microsoft CA верзија</translation>
@@ -7757,6 +7757,7 @@
 <translation id="6627743754845412571">Сајтови без дозвола да ги следат рацете</translation>
 <translation id="6628316682330029452">Сертификати на клиент се сертификати што ве идентификуваат на други сервери.</translation>
 <translation id="6628328486509726751">Прикачено <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Посилна безбедност</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> сака постојан пристап до сертификат за да се автентицира во ваше име.</translation>
 <translation id="6634220840123396409">Имам доверба во сајтот, група тркалезни копчиња, 2 од 3</translation>

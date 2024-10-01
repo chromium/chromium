@@ -2934,6 +2934,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="304644035656848980">Mikrofono peržiūra</translation>
 <translation id="3046910703532196514">Tinklalapis, baigti</translation>
 <translation id="304747341537320566">Kalbų varikliai</translation>
+<translation id="3047678109605649715">Jūsų įrenginyje nėra balsų <ph name="LANGUAGE" />. Išvalykite erdvę įrenginyje ir bandykite dar kartą.</translation>
 <translation id="3048336643003835855">HID įrenginiai iš teikėjo <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Paleisti (k)</translation>
 <translation id="3048742847101793553">Jūsų organizacija užblokavo šį failą, nes nepavyko nuskaityti.</translation>
@@ -7279,7 +7280,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6254892857036829079">Nepriekaištinga</translation>
 <translation id="6257602895346497974">Įjungti sinchronizavimą...</translation>
 <translation id="625827534921607067">Šiam tinklui bus teikiama pirmenybė, jei pasiekiamas daugiau nei vienas anksčiau prijungtas arba sukonfigūruotas tinklas</translation>
-<translation id="62586649943626337">Tvarkykite skirtukus naudodami skirtukų grupes</translation>
 <translation id="6259776178973198997">Atnaujinti „Wi-Fi Direct“ savininkų informaciją</translation>
 <translation id="6262371516389954471">Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant „Google“ paskyros slaptažodį.</translation>
 <translation id="6263082573641595914">„Microsoft“ CA versija</translation>
@@ -7764,6 +7764,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6627743754845412571">Neleidžiama stebėti rankų</translation>
 <translation id="6628316682330029452">Kliento sertifikatai yra sertifikatai, identifikuojantys jus kituose serveriuose.</translation>
 <translation id="6628328486509726751">Įkelta <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Patikimesnė apsauga</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> nori nuolatinės prieigos prie sertifikato, kad galėtų save autentifikuoti jūsų vardu.</translation>
 <translation id="6634220840123396409">Pasitikiu svetaine, akučių grupė, 2 iš 3</translation>

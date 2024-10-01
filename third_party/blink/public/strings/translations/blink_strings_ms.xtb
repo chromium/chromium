@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Nilai mestilah <ph name="MINIMUM_DATE_OR_TIME" /> atau kemudian.</translation>
 <translation id="2761667185364618470">Sila tandakan kotak ini jika anda mahu teruskan.</translation>
 <translation id="2908441821576996758">Sila masukkan senarai alamat e-mel yang dipisahkan dengan koma.</translation>
+<translation id="2940013921954129954">Lokasi tepat dibenarkan</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Sila masukkan nilai yang sah. Medan tidak lengkap atau mengandungi tarikh yang tidak sah.</translation>
 <translation id="310520048233152454">Sila masukkan URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Mutu main balik teruk</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6820355525329141109">Tidak dapat memuatkan pemalam.</translation>
+<translation id="688706781007114099">Gunakan lokasi</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan 1 aksara).</translation>
 <translation id="709897737746224366">Sila padankan dengan format yang diminta.</translation>

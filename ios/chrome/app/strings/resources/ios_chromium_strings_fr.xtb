@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite ?</translation>
 <translation id="22313767259766852">Cette adresse est actuellement enregistrée dans Chromium. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Cela signifie que Chromium demandera la version pour ordinateur à chaque fois.</translation>
+<translation id="2270466829363945454">Acheter</translation>
 <translation id="2313870531055795960">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="231828342043114302">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chromium.</translation>
 <translation id="2326738825692478496">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
@@ -130,6 +131,7 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="4445228361214254027">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer les données Chromium dans votre compte Google. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
 <translation id="4498832288620833153">Ajoute les URL saisies à votre liste de lecture dans Chromium.</translation>
+<translation id="4508268628669724828">Revenez ici pour découvrir d'autres conseils utiles afin de profiter au maximum de Chromium.</translation>
 <translation id="452436063477828504">Assurez-vous de toujours pouvoir utiliser les données Chromium de votre compte Google</translation>
 <translation id="4527452566931097835">Utiliser Chromium par défaut ?</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="7228180817326917122">Astuce Chromium : choisissez la position de la barre d'adresse</translation>
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
+<translation id="7279391168585141365">Enregistrer vos mots de passe dans Chromium</translation>
 <translation id="7285031092584344905">Accéder à vos mots de passe Chromium et plus dans d'autres applis.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page history.google.com concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>

@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Gusto mo bang mag-alok ang Chromium na isalin ang mga <ph name="LANGUAGE_NAME" /> page mula sa site na ito sa susunod na pagkakataon?</translation>
 <translation id="22313767259766852">Kasalukuyang naka-save ang address na ito sa Chromium. Para magamit ito sa mga produkto ng Google, i-save ito sa iyong Google Account,<ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Nangangahulugan itong hihilingin ng Chromium ang pang-desktop na site sa lahat ng pagkakataon.</translation>
+<translation id="2270466829363945454">Mamili</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
 <translation id="231828342043114302">Para makatanggap ng naka-personalize na content batay sa iyong mga interes, mag-sign in sa Chromium.</translation>
 <translation id="2326738825692478496">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
@@ -130,6 +131,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
 <translation id="4445228361214254027">In-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chromium sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
 <translation id="4498832288620833153">Idaragdag ang mga in-input na URL sa iyong listahan ng babasahin sa Chromium.</translation>
+<translation id="4508268628669724828">Bumalik dito para sa higit pang kapaki-pakinabang na tip para masulit ang Chromium.</translation>
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4527452566931097835">Itakda ang Chromium bilang default?</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7228180817326917122">Tip sa Chromium: Piliin ang posisyon ng iyong address bar</translation>
 <translation id="725427773388857052">Makakatulong ang Chromium na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>
 <translation id="7269362888766543920">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Pakisubukang i-uninstall ang mga ito.</translation>
+<translation id="7279391168585141365">I-save ang Iyong Mga Password sa Chromium</translation>
 <translation id="7285031092584344905">I-access ang iyong mga password sa Chromium at higit pa sa iba pang app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Inalis ang piniling data mula sa Chromium at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>

@@ -2918,6 +2918,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="304644035656848980">Previsualització del micròfon</translation>
 <translation id="3046910703532196514">Pàgina web completa</translation>
 <translation id="304747341537320566">Motors de parla</translation>
+<translation id="3047678109605649715">No hi ha cap veu en <ph name="LANGUAGE" /> al teu dispositiu. Allibera espai al dispositiu i torna-ho a provar.</translation>
 <translation id="3048336643003835855">Dispositius d'interfície humana del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodueix (K)</translation>
 <translation id="3048742847101793553">La teva organització ha bloquejat aquest fitxer perquè l'anàlisi ha fallat.</translation>
@@ -7256,7 +7257,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257602895346497974">Activa la sincronització...</translation>
 <translation id="625827534921607067">Aquesta xarxa tindrà preferència si hi ha disponible més d'una xarxa configurada o a la qual t'hagis connectat anteriorment</translation>
-<translation id="62586649943626337">Organitza les pestanyes amb els grups de pestanyes</translation>
 <translation id="6259776178973198997">Actualitza la informació dels propietaris directes de la Wi‐Fi</translation>
 <translation id="6262371516389954471">Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del teu Compte de Google.</translation>
 <translation id="6263082573641595914">Versió de CA de Microsoft</translation>
@@ -7735,6 +7735,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6627743754845412571">Sense permís per fer un seguiment de les teves mans</translation>
 <translation id="6628316682330029452">Els certificats de client són certificats que t'identifiquen en altres servidors.</translation>
 <translation id="6628328486509726751">Data i hora de la pujada: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Més seguretat</translation>
 <translation id="6630752851777525409">L'extensió <ph name="EXTENSION_NAME" /> vol tenir accés permanent a un certificat per autenticar-se en nom vostre.</translation>
 <translation id="6634220840123396409">Confio en el lloc web, grup de botons d'opció, 2 de 3</translation>

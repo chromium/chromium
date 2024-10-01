@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Jadikan teks dan imej lebih besar atau lebih kecil untuk semua laman yang anda lawati</translation>
 <translation id="1984937141057606926">Dibenarkan, kecuali pihak ketiga</translation>
 <translation id="1985247341569771101">Apabila dihidupkan, laman dapat menggunakan penderia gerakan peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia gerakan.</translation>
+<translation id="1985716030964443178">Tindakan ini akan menetapkan semula semua laman dalam senarai anda kepada zum lalai</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
 <translation id="1994173015038366702">URL tapak</translation>
 <translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2678468611080193228">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
+<translation id="2682367912565197520">Padamkan tahap zum yang disimpan</translation>
 <translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Semua laman di bawah <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Sekat tapak daripada mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
+<translation id="4419929467120297501">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
 <translation id="443552056913301231">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Redam bunyi untuk tapak tertentu.</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4807122856660838973">Hidupkan Penyemakan Imbas Selamat</translation>
 <translation id="4811450222531576619">Ketahui tentang sumber dan topik halaman ini</translation>
+<translation id="4816495437032298535">Zum yang disimpan untuk laman</translation>
 <translation id="4836046166855586901">Tanya apabila laman ingin mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="483914009762354899">Sertakan semua laman di bawah domain ini</translation>
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="DOMAIN" /> serta semua laman dalam bahagian domain ini</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
+<translation id="5292915569214461965">Anda menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Apabila dihidupkan, laman dapat meminta untuk menggunakan maklumat yang disimpan tentang anda. Apabila dimatikan, laman tidak dapat meminta untuk menggunakan maklumat yang disimpan tentang anda.</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5301954838959518834">OK, faham</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Pilih pilihan untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="6837658163275294267">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Gunakan Chrome secara lalai</translation>
 <translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
+<translation id="7881140103901777395">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas.\n\nLawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="789180354981963912">Sekat kuki pihak ketiga dalam Inkognito:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Apabila dihidupkan, laman dapat meminta untuk mencari peranti Bluetooth. Apabila dimatikan, laman tidak dapat mencari peranti Bluetooth.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8737426583868847403">Laman yang anda simpan tahap zum tersuai akan dipaparkan di sini</translation>
 <translation id="8751914237388039244">Pilih imej</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8801436777607969138">Sekat JavaScript untuk tapak tertentu.</translation>

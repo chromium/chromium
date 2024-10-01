@@ -2930,6 +2930,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="304644035656848980">Esikatsele mikrofonia</translation>
 <translation id="3046910703532196514">Verkkosivu, täydellinen</translation>
 <translation id="304747341537320566">Puhemoottorit</translation>
+<translation id="3047678109605649715">Laitteella ei ole ääniä, joiden kieli on <ph name="LANGUAGE" />. Vapauta tilaa laitteelta ja yritä uudelleen.</translation>
 <translation id="3048336643003835855">HID-laitteet (myyjä: <ph name="VENDOR_ID" />)</translation>
 <translation id="3048589239114571785">Toista (k)</translation>
 <translation id="3048742847101793553">Organisaatiosi esti tiedoston, koska skannaus epäonnistui.</translation>
@@ -7272,7 +7273,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6254892857036829079">Täydellinen</translation>
 <translation id="6257602895346497974">Ota synkronointi käyttöön…</translation>
 <translation id="625827534921607067">Tätä verkkoa käytetään ensisijaisesti, jos saatavilla on vähintään kaksi aiemmin yhdistettyä tai määritettyä verkkoa</translation>
-<translation id="62586649943626337">Järjestä välilehdet välilehtiryhmien avulla</translation>
 <translation id="6259776178973198997">Päivitä Wi-Fi Direct ‑omistajien tiedot</translation>
 <translation id="6262371516389954471">Varmuuskopiot ladataan Googleen ja salataan Google-tilisi salasanalla.</translation>
 <translation id="6263082573641595914">Microsoftin varmenteen myöntäjän versio</translation>
@@ -7751,6 +7751,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6627743754845412571">Käsien seuraaminen ei sallittu</translation>
 <translation id="6628316682330029452">Asiakasvarmenteet ovat varmenteita, joiden perusteella muut palvelimet tunnistavat sinut.</translation>
 <translation id="6628328486509726751">Lähetetty <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Vahvempi suojaus</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> haluaa jatkuvan varmenteen käyttöoikeuden voidakseen varmentaa itsensä puolestasi.</translation>
 <translation id="6634220840123396409">Luotan sivustoon, valintanappiryhmä, 2/3</translation>

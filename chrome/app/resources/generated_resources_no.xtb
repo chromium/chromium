@@ -2925,6 +2925,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="304644035656848980">Forhåndsvisning av mikrofon</translation>
 <translation id="3046910703532196514">Nettside, fullstendig</translation>
 <translation id="304747341537320566">Talemotorer</translation>
+<translation id="3047678109605649715">Det finnes ingen stemmer på <ph name="LANGUAGE" /> på enheten din. Frigjør plass på enheten, og prøv igjen.</translation>
 <translation id="3048336643003835855">HID-enheter fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spill av (K)</translation>
 <translation id="3048742847101793553">Organisasjonen din har blokkert denne filen fordi skanningen mislyktes.</translation>
@@ -7264,7 +7265,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Slå på synkronisering</translation>
 <translation id="625827534921607067">Dette nettverket foretrekkes hvis mer enn ett tidligere tilkoblet eller konfigurert nettverk er tilgjengelig</translation>
-<translation id="62586649943626337">Organiser fanene dine med fanegrupper</translation>
 <translation id="6259776178973198997">Last inn informasjon om Wifi Direct-eiere på nytt</translation>
 <translation id="6262371516389954471">Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet til Google-kontoen din.</translation>
 <translation id="6263082573641595914">Microsoft sertifiseringsinstansversjon</translation>
@@ -7743,6 +7743,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6627743754845412571">Nettsteder som ikke har lov til å spore hendene dine</translation>
 <translation id="6628316682330029452">Klientsertifikater er sertifikater som identifiserer deg overfor andre tjenere.</translation>
 <translation id="6628328486509726751">Lastet opp <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Sterkere sikkerhet</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> vil ha permanent tilgang til et sertifikat for å autentisere seg på dine vegne.</translation>
 <translation id="6634220840123396409">Jeg stoler på nettstedet, gruppe med alternativknapper, 2 av 3</translation>

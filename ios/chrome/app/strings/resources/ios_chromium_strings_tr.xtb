@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
 <translation id="22313767259766852">Bu adres şu anda Chromum'da kayıtlıdır. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
 <translation id="2236584955986023187">Bu durumda Chromium her seferinde masaüstü siteyi ister.</translation>
+<translation id="2270466829363945454">Alışveriş</translation>
 <translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="231828342043114302">İlgi alanlarınıza dayalı kişiselleştirilmiş içerikler görmek için Chromium'da oturum açın.</translation>
 <translation id="2326738825692478496">Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
@@ -130,6 +131,7 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="4432744876818348753">Chromium'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="4445228361214254027">Kuruluşunuz, Chromium verilerini Google Hesabınızda kullanma ve kaydetme özelliğini devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
 <translation id="4498832288620833153">Girilen URL'leri Chromium'daki okuma listenize ekler.</translation>
+<translation id="4508268628669724828">Chromium'dan en iyi şekilde yararlanmanıza yardımcı olacak daha fazla ipucu için daha sonra burayı tekrar kontrol edin.</translation>
 <translation id="452436063477828504">Google Hesabınızdaki Chromium verilerini her zaman kullanabildiğinizden emin olun</translation>
 <translation id="4527452566931097835">Chromium varsayılan olarak ayarlansın mı?</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7228180817326917122">Chromium ipucu: Adres çubuğunuzun konumunu seçin</translation>
 <translation id="725427773388857052">Chromium; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="7269362888766543920">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen bunların yüklemesini kaldırmayı deneyin.</translation>
+<translation id="7279391168585141365">Şifrelerinizi Chromium'a Kaydedin</translation>
 <translation id="7285031092584344905">Diğer uygulamalardan Chromium şifrelerinize ve daha fazlasına erişin.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Seçilen veriler Chromium'dan ve senkronize edilen cihazlardan kaldırıldı. Google Hesabınızda diğer tarama geçmişi biçimleri (örneğin, history.google.com adresindeki diğer Google hizmetlerine bağlı aramalar ve etkinlikler) bulunabilir.</translation>

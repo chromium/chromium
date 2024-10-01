@@ -72,6 +72,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2689064829982324496">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="2703746758996815929">Para makakuha ng mga kapaki-pakinabang na tip sa Chrome, i-on ang mga notification sa iyong mga setting ng iOS.</translation>
+<translation id="2728851697704606655">Magsalin gamit ang Google Lens</translation>
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
 <translation id="2754428955276778271">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
 
@@ -249,6 +250,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7581063337314642333">Bisitahin ang Tab Grid sa Chrome</translation>
 <translation id="7599894504325210080">Naka-expand na view ng Autofill ng Chrome</translation>
 <translation id="7642373780953416937">Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Chrome para sa iyo.</translation>
+<translation id="7660356333829433649">Bumalik dito para sa higit pang kapaki-pakinabang na tip para masulit ang Chrome.</translation>
 <translation id="7662994914830945754">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in at i-on ang pag-sync</translation>
 <translation id="7693590760643069321">Magagamit mo na ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
@@ -259,6 +261,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
 <translation id="7792140019572081272">Pinapanatiling secure ng Chrome ang iyong sensitibong data gamit ang Face ID.</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
+<translation id="7861998090118873450">I-save ang Iyong Mga Password sa Chrome</translation>
 <translation id="7897703007638178753">Tingnan ang Mga Kamakailang Tab sa Chrome</translation>
 <translation id="7948283758957877064">Ano'ng Bago sa Chrome</translation>
 <translation id="8000174216052461231">Tip sa Chrome: Makuha ang pinakamalakas na seguridad ng Chrome</translation>
@@ -294,6 +297,7 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="8558480467877843976">Magagamit mo na ngayon ang Chrome sa tuwing magbo-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="8603022514504485810">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">I-on ang “I-lock ang mga tab na Incognito kapag isinara mo ang Chrome.”</translation>
+<translation id="8673726683583791503">Mamili gamit ang Google Lens</translation>
 <translation id="8727043961453758442">Sulitin ang Chrome</translation>
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>

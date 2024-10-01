@@ -3408,6 +3408,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Коммерческая деятельность</translation>
 <translation id="7244061187185055290">Кратко опишите, что вы хотите найти</translation>
+<translation id="7250174481516136841">Подробнее <ph name="BEGIN_LINK" />о преимуществах карт<ph name="END_LINK" />…</translation>
 <translation id="7251437084390964440">Некоторые элементы сетевой конфигурации невозможно импортировать, поскольку она не соответствует стандарту ONC.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
@@ -3477,6 +3478,7 @@
 <translation id="7390545607259442187">Подтвердите карту</translation>
 <translation id="7392089738299859607">Изменить адрес</translation>
 <translation id="7393161616326137353">Приключенческие игры</translation>
+<translation id="7393475648162498734">При оформлении покупок показывать, какие бонусы и преимущества дают карты</translation>
 <translation id="739728382607845710">Значок обработчика платежа</translation>
 <translation id="7399616692258236448">Запросы местоположения автоматически блокируются от всех сайтов, кроме тех, которым вы дали разрешение.</translation>
 <translation id="7399802613464275309">Проверка безопасности</translation>
@@ -4492,6 +4494,7 @@
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940524522703752213">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через <ph name="MINUTES" /> мин.</translation>
 <translation id="944540589955480312">Использовать пароли и ключи доступа, сохраненные в аккаунте Google</translation>
+<translation id="944578681290094302">При оформлении покупок показывать, какие бонусы и преимущества дают карты. Подробнее <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />о преимуществах карт<ph name="CARD_BENEFIT_HELP_LINK_END" />…</translation>
 <translation id="945646848072568856">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
 <translation id="945855313015696284">Проверьте данные и удалите недействительные карты.</translation>
 <translation id="94613679163347541">Сравнить товары из категории "<ph name="CATEGORY" />"?</translation>

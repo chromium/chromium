@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">Sinónimos:</translation>
 <translation id="5130848777448318809">póneis</translation>
 <translation id="5137451382116112100">Inteiro</translation>
+<translation id="5140788690559353412">Quando perde o acesso à sua conta escolar, deixa de ter acesso ao email e aos ficheiros do Google Drive associados, como o Gmail, o Docs, o Slides e muito mais.</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5144311987923128508">O botão Confirmar está desativado agora</translation>
 <translation id="5144887194300568405">Copiar tradução</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) Latência de HTTP</translation>
 <translation id="6078323886959318429">Atalho</translation>
 <translation id="6091080061796993741">amarela</translation>
+<translation id="6093853427925392522">Certifique-se de que usa a app Transferência de conteúdo da Google para mover os dados da sua conta escolar para a sua conta pessoal antes de perder o acesso.</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada.</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Pesquise atalhos</translation>
+<translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1537,6 +1540,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8647595191512746911">Transcrição de áudio</translation>
+<translation id="8650852232143958317">Leve os seus ficheiros do Google Drive e Gmail consigo</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Partilhar URL:</translation>

@@ -2934,6 +2934,7 @@
 <translation id="304644035656848980">Попередній перегляд мікрофона</translation>
 <translation id="3046910703532196514">Веб-сторінка, повністю</translation>
 <translation id="304747341537320566">Системи синтезу мовлення</translation>
+<translation id="3047678109605649715">На вашому пристрої немає голосових файлів такою мовою: <ph name="LANGUAGE" />. Звільніть пам’ять і повторіть спробу.</translation>
 <translation id="3048336643003835855">Пристрої HID від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Відтворити (k)</translation>
 <translation id="3048742847101793553">Ваша організація заблокувала цей файл, оскільки не вдалося перевірити його.</translation>
@@ -7273,7 +7274,6 @@
 <translation id="6254892857036829079">Чудова</translation>
 <translation id="6257602895346497974">Увімкнути синхронізацію…</translation>
 <translation id="625827534921607067">Якщо доступно кілька мереж, до яких ви раніше підключалися або які налаштовували, використовуватиметься ця мережа</translation>
-<translation id="62586649943626337">Упорядковуйте вкладки в групах</translation>
 <translation id="6259776178973198997">Оновити інформацію про власників Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
 <translation id="6263082573641595914">Версія ЦС Microsoft</translation>
@@ -7758,6 +7758,7 @@
 <translation id="6627743754845412571">Заборонено відстежувати руки</translation>
 <translation id="6628316682330029452">Сертифікати клієнта – це сертифікати, які ідентифікують вас для інших серверів.</translation>
 <translation id="6628328486509726751">Завантажено: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Надійніший захист</translation>
 <translation id="6630752851777525409">Розширенню <ph name="EXTENSION_NAME" /> потрібен постійний доступ до сертифіката, щоб проходити автентифікацію від вашого імені.</translation>
 <translation id="6634220840123396409">Я довіряю цьому сайту (група перемикачів, 2 з 3)</translation>

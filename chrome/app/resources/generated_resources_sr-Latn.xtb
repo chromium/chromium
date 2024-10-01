@@ -272,6 +272,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1187722533808055681">Buđenja iz stanja mirovanja</translation>
 <translation id="1188807932851744811">Evidencija nije otpremljena.</translation>
 <translation id="1190086046506744802">Veoma razmaknuto</translation>
+<translation id="1190155014618058972">Napravite prilagođenu kombinaciju tastera</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Pristup datoteci sačuvanoj na računaru}one{Pristup # datoteci sačuvanoj na računaru}few{Pristup za # datoteke sačuvane na računaru}other{Pristup za # datoteka sačuvanih na računaru}}</translation>
 <translation id="1190706173655543975">Microsoft smernice za aplikacije</translation>
 <translation id="1191353342579061195">Odaberite temu koja odgovara vašim potrebama. Da biste promenili temu, pozadinu, čuvar ekrana i drugo, samo kliknite desnim tasterom na radnoj površini.</translation>
@@ -1129,6 +1130,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1794212650797661990">Sakrijte lozinku za <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Šalji povratne informacije kao pomoć za rešavanje ovog problema.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
+<translation id="1795438342141780114">Resetujte kursor na centar</translation>
 <translation id="1795668164971917185">Kada Google bezbedno pregledanje sledeći put pronađe sumnjivo preuzimanje, automatski će ga skenirati u okviru stavke <ph name="LINK" /> koju ste odabrali</translation>
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebook tastature. Možete da prilagodite tastere određenim radnjama.</translation>
@@ -1812,6 +1814,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2278562042389100163">Otvaranje prozora pregledača</translation>
 <translation id="2278668501808246459">Pokreće se menadžer kontejnera</translation>
 <translation id="2280486287150724112">Desna margina</translation>
+<translation id="228059581448666199">Kliknite levim tasterom miša</translation>
 <translation id="2281863813036651454">Klik na levi taster miša</translation>
 <translation id="2282146716419988068">GPU proces</translation>
 <translation id="228293613124499805">Većina sajtova koje posećujete verovatno čuva podatke na uređaju, često radi poboljšanja doživljaja tako što čuva podešavanja ili informacije koje delite sa sajtom. Preporučujemo da ovo podešavanje ostane uključeno.</translation>
@@ -4706,6 +4709,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4359408040881008151">Instaliran je zbog zavisnih dodataka.</translation>
 <translation id="4359717112757026264">Gradski pejzaži</translation>
 <translation id="4359809482106103048">Kratak pregled bezbednosti</translation>
+<translation id="4360738659108163902">Kliknite desnim tasterom miša</translation>
 <translation id="4361142739114356624">Privatni ključ za ovaj sertifikat klijenta nedostaje ili je nevažeći</translation>
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> je podrazumevani nalog za vaš <ph name="DEVICE_TYPE" /></translation>
@@ -5335,6 +5339,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="482952334869563894">USB uređaji prodavca <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Instalira se ažuriranje OS-a</translation>
 <translation id="4831226137013573603">isključivanje zvuka mikrofona</translation>
+<translation id="483262387981411190">Pauzirajte ili nastavite kontrolu lica</translation>
 <translation id="4833683849865011483">Pronađen je 1 štampač sa servera za štampanje</translation>
 <translation id="4835598628985424375">Napućite usne tako što ćete ih stisnuti zajedno</translation>
 <translation id="4835677468087803981">Sakrij PIN</translation>
@@ -5895,6 +5900,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5240931875940563122">Prijavi me pomoću Android telefona</translation>
 <translation id="5242724311594467048">Želite li da omogućite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Probajte ponovo za nekoliko trenutaka</translation>
+<translation id="5243752692914402705">Kada započnete režim skrolovanja, pomerajte glavu u pravcu u kom želite da skrolujete</translation>
 <translation id="5244234799035360187">OneDrive će se sada pojaviti u aplikaciji Fajlovi</translation>
 <translation id="5244466461749935369">Zadrži za sada</translation>
 <translation id="5244474230056479698">Sinhronizuje se sa <ph name="EMAIL" /></translation>
@@ -6645,6 +6651,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5805697420284793859">Menadžer prozora</translation>
 <translation id="5806447147478173900">Ukupan memorijski prostor koji koriste prikazani sajtovi: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (podrazumevano)</translation>
+<translation id="5807774529265708172">Prikažite ili sakrijte tastaturu na ekranu</translation>
 <translation id="5809835394668218762">Još radnji za <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">PIN mora da sadrži 6 cifara</translation>
 <translation id="5810809306422959727">Ovaj nalog ne ispunjava uslove za roditeljski nadzor</translation>
@@ -6838,6 +6845,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5945002094477276055">Fajl <ph name="FILE_NAME" /> je možda opasan. Želite da ga pošaljete Google bezbednom pregledanju na skeniranje?</translation>
 <translation id="5945363896952315544">Bezbednosni ključ ne može više da čuva otiske prstiju. Da biste dodali novi otisak prsta, prvo izbrišite neki postojeći otisak prsta.</translation>
 <translation id="5946591249682680882">ID izveštaja <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Dvaput kliknite mišem</translation>
 <translation id="5948476936444935795">Otkaži uvoz</translation>
 <translation id="5948536763493709626">Povežite tastaturu ili miš ili nastavite podešavanje pomoću dodirnog ekrana. Ako koristite Bluetooth uređaje, uverite se da su uređaji spremni za uparivanje.</translation>
 <translation id="5949544233750246342">Raščlanjivanje datoteke nije uspelo</translation>
@@ -7262,7 +7270,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6254892857036829079">Savršen</translation>
 <translation id="6257602895346497974">Uključi sinhronizaciju...</translation>
 <translation id="625827534921607067">Ova mreža će imati prioritet ako je dostupno više prethodno povezanih ili konfigurisanih mreža</translation>
-<translation id="62586649943626337">Organizujte kartice pomoću grupa kartica</translation>
 <translation id="6259776178973198997">Osveži informacije o WiFi Direct vlasnicima</translation>
 <translation id="6262371516389954471">Rezervne kopije se otpremaju na Google i šifruju pomoću lozinke za Google nalog.</translation>
 <translation id="6263082573641595914">Verzija Microsoft CA</translation>
@@ -7745,6 +7752,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6627743754845412571">Nije im dozvoljeno da prate ruke</translation>
 <translation id="6628316682330029452">Sertifikati klijenta su sertifikati koji vas identifikuju za druge servere.</translation>
 <translation id="6628328486509726751">Otpremljeno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Veća bezbednost</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> želi trajni pristup sertifikatu da bi potvrdio sopstvenu autentičnost u vaše ime.</translation>
 <translation id="6634220840123396409">Imam poverenja u sajt, grupa dugmadi za izbor, 2. od 3</translation>
@@ -9594,6 +9602,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7958828865373988933">Ako želite da napravite pristupni ključ za aplikaciju <ph name="APP_NAME" /> na USB bezbednosnom ključu, umetnite ga i dodirnite odmah</translation>
 <translation id="7959074893852789871">Datoteka sadrži više sertifikata, od kojih neki nisu uvezeni:</translation>
 <translation id="7959665254555683862">Nova kartica bez arhiviranja</translation>
+<translation id="7960540720012720106">Otvorite pregled prozora</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7963001036288347286">Ubrzavanje tačpeda</translation>
 <translation id="7963513503134856713">Prozor je pomeren nadesno</translation>
@@ -9673,6 +9682,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8014154204619229810">Program za ažuriranje je trenutno aktivan. Sačekajte malo, pa osvežite i proverite ponovo.</translation>
 <translation id="8014206674403687691">Nije moguće vratiti <ph name="IDS_SHORT_PRODUCT_NAME" /> na prethodno instaliranu verziju. Pokušajte da ponovo obavite Powerwash uređaja.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Kopiran je 1 fajl}one{Kopiran je {NUM_OF_FILES} fajl}few{Kopirana su {NUM_OF_FILES} fajla}other{Kopirano je {NUM_OF_FILES} fajlova}}</translation>
+<translation id="8017004049696748317">Pokrenite ili zaustavite diktiranje</translation>
 <translation id="8017176852978888182">Deljeni Linux direktorijumi</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Prečica je izmenjena</translation>
@@ -9687,6 +9697,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8025291188699172126">O ažuriranjima</translation>
 <translation id="8026471514777758216">Svi vaši uređaji</translation>
 <translation id="8026784703228858744">Sačuvajte obeleživače, lozinke i drugo uz sinhronizaciju</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Posetili ste pre 0 dana}=1{Posetili ste pre 1 dan}one{Posetili ste pre # dan}few{Posetili ste pre # dana}other{Posetili ste pre # dana}}</translation>
 <translation id="8028060951694135607">Microsoft oporavak ključa</translation>
 <translation id="8028803902702117856">Preuzima se <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Veličina</translation>

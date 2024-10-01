@@ -2920,6 +2920,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="304644035656848980">Náhled mikrofonu</translation>
 <translation id="3046910703532196514">Webová stránka, úplná</translation>
 <translation id="304747341537320566">Moduly převodu textu na řeč</translation>
+<translation id="3047678109605649715">Na zařízení nejsou žádné hlasy pro jazyk <ph name="LANGUAGE" />. Uvolněte na zařízení místo a zkuste to znovu.</translation>
 <translation id="3048336643003835855">Zařízení HID od dodavatele <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Přehrát (k)</translation>
 <translation id="3048742847101793553">Vaše organizace tento soubor zablokovala, protože se ho nepodařilo zkontrolovat.</translation>
@@ -7256,7 +7257,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6254892857036829079">Perfektní</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
-<translation id="62586649943626337">Uspořádejte si karty pomocí skupin karet</translation>
 <translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
 <translation id="6262371516389954471">Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
@@ -7739,6 +7739,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6627743754845412571">Zákaz sledovat vaše ruce</translation>
 <translation id="6628316682330029452">Certifikáty klienta jsou certifikáty, které vás identifikují pro jiné servery.</translation>
 <translation id="6628328486509726751">Nahráno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Silnější zabezpečení</translation>
 <translation id="6630752851777525409">Rozšíření <ph name="EXTENSION_NAME" /> požaduje trvalý přístup k certifikátu, aby se vaším jménem mohlo ověřit.</translation>
 <translation id="6634220840123396409">Webu důvěřuji, skupina přepínačů, 2 ze 3</translation>

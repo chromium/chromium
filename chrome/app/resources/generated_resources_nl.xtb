@@ -2918,6 +2918,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="304644035656848980">Voorbeeld van je microfoongeluid</translation>
 <translation id="3046910703532196514">Webpagina, compleet</translation>
 <translation id="304747341537320566">Spraakengines</translation>
+<translation id="3047678109605649715">Er staan geen stemmen voor het <ph name="LANGUAGE" /> op je apparaat. Maak ruimte vrij op je apparaat en probeer het opnieuw.</translation>
 <translation id="3048336643003835855">HID-apparaten van leverancier <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Afspelen (k)</translation>
 <translation id="3048742847101793553">Je organisatie heeft dit bestand geblokkeerd, omdat de scan is mislukt.</translation>
@@ -7254,7 +7255,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
 <translation id="625827534921607067">Dit netwerk krijgt de voorkeur als er meer dan één eerder verbonden of ingesteld netwerk beschikbaar is</translation>
-<translation id="62586649943626337">Je tabbladen ordenen met tabbladgroepen</translation>
 <translation id="6259776178973198997">Informatie over Wifi Direct-eigenaren vernieuwen</translation>
 <translation id="6262371516389954471">Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="6263082573641595914">CA-versie van Microsoft</translation>
@@ -7733,6 +7733,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6627743754845412571">Geen toestemming om je handen te volgen</translation>
 <translation id="6628316682330029452">Clientcertificaten zijn certificaten waarmee je wordt geïdentificeerd voor andere servers.</translation>
 <translation id="6628328486509726751">Geüploade <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Betere beveiliging</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wil permanente toegang tot een certificaat om zichzelf names jou te verifiëren.</translation>
 <translation id="6634220840123396409">Ik vertrouw de site, groep met keuzerondjes, 2 van 3</translation>

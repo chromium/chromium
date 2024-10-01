@@ -2918,6 +2918,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="304644035656848980">Mikrofonoaren aurrebista</translation>
 <translation id="3046910703532196514">Webgune osoa</translation>
 <translation id="304747341537320566">Hizketa-motorrak</translation>
+<translation id="3047678109605649715">Ez dago <ph name="LANGUAGE" /> darabilen ahotsik gailuan. Egin tokia gailuan eta saiatu berriro.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> etxeko HID bidezko gailuak</translation>
 <translation id="3048589239114571785">Erreproduzitu (k)</translation>
 <translation id="3048742847101793553">Zure erakundeak fitxategia blokeatu du, ezin izan delako aztertu.</translation>
@@ -7255,7 +7256,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6254892857036829079">Ezin hobea</translation>
 <translation id="6257602895346497974">Aktibatu sinkronizazioa…</translation>
 <translation id="625827534921607067">Lehenago konektatutako edo konfiguratutako sare bat baino gehiago erabilgarri badaude, sare hau hobetsiko da</translation>
-<translation id="62586649943626337">Antolatu fitxak haiek taldekatuz</translation>
 <translation id="6259776178973198997">Freskatu WiFi Direct-en jabeen informazioa</translation>
 <translation id="6262371516389954471">Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuaren pasahitza erabilita enkriptatzen.</translation>
 <translation id="6263082573641595914">Microsoft CA bertsioa</translation>
@@ -7734,6 +7734,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6627743754845412571">Zure eskuen jarraipena egiteko baimenik ez dutenak</translation>
 <translation id="6628316682330029452">Bezero-ziurtagiriak beste zerbitzari batzuen aurrean identifikatzen zaituzten ziurtagiriak dira.</translation>
 <translation id="6628328486509726751">Kargatze-denbora: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Segurtasun handiagoa</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> luzapenak ziurtagiri baterako sarbide iraunkorra nahi du bere burua zure izenean autentifikatzeko.</translation>
 <translation id="6634220840123396409">Webguneaz fidatzen naiz, aukera-botoien taldea, hirutatik bigarrena</translation>

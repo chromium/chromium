@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">ມູນຄ່າຕ້ອງ <ph name="MINIMUM_DATE_OR_TIME" /> ຫຼື​ຕໍ່​ມາ​.</translation>
 <translation id="2761667185364618470">ກະລຸນາໝາຍຕິກໃສ່ຫ້ອງນີ້ ຖ້າທ່ານຕ້ອງການດໍາເນີນຕໍ່.</translation>
 <translation id="2908441821576996758">ກະລຸນາໃສ່ລາຍຊື່ທີ່ຢູ່ອີເມວທີ່​ແຍກ​ກັນ​ດ້ວຍ​ໝາຍ​ຈຸດ.</translation>
+<translation id="2940013921954129954">ອະນຸຍາດໃຫ້ເຂົ້າເຖິງສະຖານທີ່ແບບລະອຽດແລ້ວ</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ກະ​ລຸ​ນາ​ປ້ອນ​ຄ່າທີ່ໃຊ້ໄດ້​. ບ່ອນໃສ່ຂໍ້ມູນ​ບໍ່​ຄົບ​ຖ້ວນ​ ຫຼື​ມີ​ວັນທີໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="310520048233152454">ກະລຸນາປ້ອນ URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">ຄຸນນະພາບການຫຼິ້ນບໍ່ດີ</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6820355525329141109">ບໍ່ສາມາດໂຫຼດປລັກອິນໄດ້.</translation>
+<translation id="688706781007114099">ໃຊ້ສະຖານທີ່</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
 <translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>

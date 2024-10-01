@@ -3408,6 +3408,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Камерцыйная дзейнасць</translation>
 <translation id="7244061187185055290">Некалькімі словамі апішыце, што вы шукаеце</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра перавагі картак</translation>
 <translation id="7251437084390964440">Канфігурацыя сеткі не адпавядае стандарту ONC. Магчыма, некаторыя часткі канфігурацыі не былі імпартаваны.
 Падрабязныя звесткі:
 <ph name="DEBUG_INFO" /></translation>
@@ -3477,6 +3478,7 @@
 <translation id="7390545607259442187">Пацвердзіце картку</translation>
 <translation id="7392089738299859607">Абнавіць адрас</translation>
 <translation id="7393161616326137353">Прыгодніцкія гульні</translation>
+<translation id="7393475648162498734">Паказваць бонусы і перавагі картак пры аплаце</translation>
 <translation id="739728382607845710">Значок "Апрацоўшчык плацяжоў"</translation>
 <translation id="7399616692258236448">Запыты геаданых аўтаматычна блакіруюцца для ўсіх сайтаў, акрамя тых, якім вы далі дазвол</translation>
 <translation id="7399802613464275309">Праверка бяспекі</translation>
@@ -4493,6 +4495,7 @@
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940524522703752213">Запампоўванне файлаў у <ph name="CLOUD_PROVIDER" /> пачнецца праз <ph name="MINUTES" /> хв</translation>
 <translation id="944540589955480312">Выкарыстоўваць паролі і ключы доступу, захаваныя ў вашым Уліковым запісе Google</translation>
+<translation id="944578681290094302">Паказваць бонусы і перавагі картак пры аплаце. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Даведацца больш пра перавагі картак<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome блакіруе для сайтаў магчымасць выкарыстоўваць староннія файлы cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце.</translation>
 <translation id="945855313015696284">Праверце інфармацыю ніжэй і выдаліце няправільныя карткі</translation>
 <translation id="94613679163347541">Параўнаць тавары катэгорыі "<ph name="CATEGORY" />"?</translation>

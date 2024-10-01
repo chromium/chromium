@@ -7264,7 +7264,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6254892857036829079">Aʼlo darajada</translation>
 <translation id="6257602895346497974">Sinxronizatsiyani yoqish...</translation>
 <translation id="625827534921607067">Tanlangan tarmoq avvalgi ulangan yoki sozlangan tarmoqlarga qaraganda iloji boricha koʻproq ishlatiladi</translation>
-<translation id="62586649943626337">Varaqlaringizni varaqlar guruhiga jamlang</translation>
 <translation id="6259776178973198997">WiFi Direct egalari axborotini yangilash</translation>
 <translation id="6262371516389954471">Zaxiralar Google serverlariga yuklanadi va Google hisobingiz paroli bilan shifrlanadi.</translation>
 <translation id="6263082573641595914">Microsoft CA versiyasi</translation>
@@ -7743,6 +7742,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6627743754845412571">Qoʻllaringiz holatini kuzatishga ruxsat berilmagan</translation>
 <translation id="6628316682330029452">Boshqa xizmatlarda shaxsni tasdiqlash uchun zarur mijoz sertifikatlari</translation>
 <translation id="6628328486509726751">Yuklangan vaqti: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Kuchliroq xavfsizlik</translation>
 <translation id="6630752851777525409">“<ph name="EXTENSION_NAME" />” kengaytmasi sizning nomingizdan o‘zining haqiyligini tekshirish uchun sertifikatdan doimiy foydalanish uchun ruxsat so‘ramoqda.</translation>
 <translation id="6634220840123396409">Bu saytga ishonaman, tanlash tugmalari guruhi, 2/3</translation>

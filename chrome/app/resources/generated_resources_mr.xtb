@@ -2930,6 +2930,7 @@
 <translation id="304644035656848980">तुमच्या मायक्रोफोनचे पूर्वावलोकन</translation>
 <translation id="3046910703532196514">वेबपेज, संपूर्ण</translation>
 <translation id="304747341537320566">स्पीच इंजीन</translation>
+<translation id="3047678109605649715">तुमच्या डिव्हाइसवर कोणतेही <ph name="LANGUAGE" /> आवाज नाहीत. तुमच्या डिव्हाइसवरील जागा साफ करून पुन्हा प्रयत्न करा.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> या विक्रेत्याकडील HID डिव्हाइस</translation>
 <translation id="3048589239114571785">प्ले करा (k)</translation>
 <translation id="3048742847101793553">स्कॅन पूर्ण न झाल्याने तुमच्या संस्थेने ही फाइल ब्लॉक केली आहे.</translation>
@@ -7275,7 +7276,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6254892857036829079">उत्तम आहे</translation>
 <translation id="6257602895346497974">सिंक सुरू करा…</translation>
 <translation id="625827534921607067">पूर्वी कनेक्ट केलेले किंवा कॉन्फिगर केलेले एकापेक्षा जास्त नेटवर्क उपलब्ध असल्यास, या नेटवर्कला प्राधान्य दिले जाईल</translation>
-<translation id="62586649943626337">टॅब गटांसह तुमचे टॅब संगतवार लावा</translation>
 <translation id="6259776178973198997">वायफाय डिरेक्ट च्या मालकांसंबंधित माहिती रिफ्रेश करा</translation>
 <translation id="6262371516389954471">तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="6263082573641595914">Microsoft CA आवृत्ती</translation>
@@ -7754,6 +7754,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6627743754845412571">तुमचे हात ट्रॅक करण्याची अनुमती नाही</translation>
 <translation id="6628316682330029452">क्लायंट प्रमाणपत्रे ही इतर सर्व्हरवर तुमची ओळख करून देणारी प्रमाणपत्रे असतात.</translation>
 <translation id="6628328486509726751">अपलोड केलेली <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">अधिक मजबूत सुरक्षा</translation>
 <translation id="6630752851777525409">तुमच्यावतीने स्वत:स प्रमाणित करण्‍यासाठी प्रमाणपत्रामध्‍ये <ph name="EXTENSION_NAME" /> कायमचा ॲक्सेस इच्छितो.</translation>
 <translation id="6634220840123396409">माझा साइटवर विश्वास आहे, रेडिओ बटणाचा गट, ३ पैकी २</translation>

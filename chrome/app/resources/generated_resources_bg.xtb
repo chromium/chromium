@@ -2927,6 +2927,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="304644035656848980">Визуализация на микрофона ви</translation>
 <translation id="3046910703532196514">Уеб страница, цялата</translation>
 <translation id="304747341537320566">Машини за синтезиран говор</translation>
+<translation id="3047678109605649715">На устройството ви няма гласове за <ph name="LANGUAGE" />. Освободете място и опитайте отново.</translation>
 <translation id="3048336643003835855">HID устройства от доставчика <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пускане (k)</translation>
 <translation id="3048742847101793553">Организацията ви блокира този файл, защото сканирането не бе успешно.</translation>
@@ -7273,7 +7274,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6254892857036829079">Перфектно</translation>
 <translation id="6257602895346497974">Включване на синхронизирането...</translation>
 <translation id="625827534921607067">Тази мрежа ще бъде с приоритет, ако е налице повече от една мрежа, която е използвана или конфигурирана по-рано</translation>
-<translation id="62586649943626337">Организиране на разделите ви чрез групи</translation>
 <translation id="6259776178973198997">Опресняване на информацията за собствениците в Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
 <translation id="6263082573641595914">Версия на сертифициращ орган от Microsoft</translation>
@@ -7752,6 +7752,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6627743754845412571">Без разрешение за проследяване на ръцете ви</translation>
 <translation id="6628316682330029452">Сертификатите за клиентски програми ви идентифицират пред други сървъри.</translation>
 <translation id="6628328486509726751">Качено: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">По-голяма сигурност</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> иска постоянен достъп до сертификат, за да се удостоверява от ваше име.</translation>
 <translation id="6634220840123396409">Имам доверие на сайта, група бутони за избор, 2 от 3</translation>

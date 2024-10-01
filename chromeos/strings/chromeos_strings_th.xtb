@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">คล้ายกัน:</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
 <translation id="5137451382116112100">เต็ม</translation>
+<translation id="5140788690559353412">เมื่อคุณสูญเสียสิทธิ์เข้าถึงบัญชีโรงเรียน คุณจะไม่สามารถเข้าถึงอีเมลและไฟล์ใน Google ไดรฟ์ที่เชื่อมโยง เช่น Gmail, เอกสาร, สไลด์ และอื่นๆ ได้อีกต่อไป</translation>
 <translation id="5142961317498132443">การตรวจสอบสิทธิ์</translation>
 <translation id="5144311987923128508">ปิดใช้ปุ่มยืนยันแล้ว</translation>
 <translation id="5144887194300568405">คัดลอกคำแปล</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
 <translation id="6091080061796993741">เหลือง</translation>
+<translation id="6093853427925392522">โปรดใช้แอป Content Transfer โดย Google เพื่อย้ายข้อมูลบัญชีโรงเรียนไปยังบัญชีส่วนตัวก่อนที่คุณจะสูญเสียสิทธิ์เข้าถึง</translation>
 <translation id="6104112872696127344">ยกเลิกการสแกนแล้ว</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7144954474087165241">เจดีย์</translation>
@@ -1537,6 +1540,7 @@
 <translation id="8626489604350149811">การดำเนินการเพิ่มเติมสำหรับ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ม่วงอ่อน</translation>
 <translation id="8647595191512746911">การถอดเสียงเป็นคำ</translation>
+<translation id="8650852232143958317">นำไฟล์ Gmail และ Google ไดรฟ์ไปกับคุณ</translation>
 <translation id="8651481478098336970">ปิดเสียง</translation>
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655828773034788261">แชร์ URL:</translation>

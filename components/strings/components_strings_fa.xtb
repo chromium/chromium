@@ -3409,6 +3409,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">فعالیت‌های تجاری</translation>
 <translation id="7244061187185055290">آنچه را جستجو می‌کنید در چند کلمه توصیف کنید</translation>
+<translation id="7250174481516136841">درباره مزایای کارت <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">‏پیکربندی شبکه با استاندارد ONC مطابقت ندارد. ممکن است بعضی از قسمت‌های پیکربندی وارد نشود.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@
 <translation id="7390545607259442187">تأیید کارت</translation>
 <translation id="7392089738299859607">به‌روزرسانی نشانی</translation>
 <translation id="7393161616326137353">بازی‌های ماجراجویی</translation>
+<translation id="7393475648162498734">پاداش‌ها و مزایایی که برای کارت‌هایتان دردسترس است در زمان تصفیه‌حساب نشان داده می‌شود</translation>
 <translation id="739728382607845710">نماد کنترل‌كننده پرداخت</translation>
 <translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
@@ -4493,6 +4495,7 @@
 <translation id="939736085109172342">پوشهٔ جدید</translation>
 <translation id="940524522703752213">بارگذاری فایل در <ph name="CLOUD_PROVIDER" /> تا <ph name="MINUTES" /> دقیقه دیگر شروع خواهد شد</translation>
 <translation id="944540589955480312">‏استفاده از گذرواژه‌ها و گذرکلیدهای ذخیره‌شده در «حساب Google»</translation>
+<translation id="944578681290094302">پاداش‌ها و مزایایی که برای کارت‌هایتان دردسترس است در زمان تصفیه‌حساب نشان داده می‌شود. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />با مزایای کارت آشنا شوید<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند.</translation>
 <translation id="945855313015696284">اطلاعات زیر را بررسی و کارت‌های نامعتبر را حذف کنید</translation>
 <translation id="94613679163347541">‫<ph name="CATEGORY" /> مقایسه شود؟</translation>

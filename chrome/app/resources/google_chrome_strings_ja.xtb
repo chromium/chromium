@@ -402,6 +402,7 @@
 <translation id="6134085236017727171">マイクを使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="6135456723633883042">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chrome でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6145313976051292476">Chrome で PDF を開く</translation>
+<translation id="6150706324143004339">Google アカウントで Chrome のデータを使用、保存するには、Chrome を更新してください</translation>
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome のデータは組織によって削除されます。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

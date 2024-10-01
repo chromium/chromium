@@ -72,6 +72,7 @@ Considerações:
 <translation id="2689064829982324496">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="2703746758996815929">Para receber dicas úteis sobre o Chrome, ative as notificações nos ajustes do iOS.</translation>
+<translation id="2728851697704606655">Traduza com o Google Lens</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2754428955276778271">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
 
@@ -249,6 +250,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7581063337314642333">Acessar a grade de guias no Chrome</translation>
 <translation id="7599894504325210080">Visualização aberta do preenchimento automático do Chrome</translation>
 <translation id="7642373780953416937">Mostra alertas sobre problemas de privacidade ou segurança que o Chrome detectar automaticamente.</translation>
+<translation id="7660356333829433649">Volte aqui e veja mais dicas úteis para aproveitar o Chrome ao máximo.</translation>
 <translation id="7662994914830945754">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
 <translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
@@ -259,6 +261,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="778855399387580014">Inicie uma pesquisa em uma nova guia do Chrome.</translation>
 <translation id="7792140019572081272">O Chrome protege seus dados sensíveis com o Face ID.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
+<translation id="7861998090118873450">Salve suas senhas no Chrome</translation>
 <translation id="7897703007638178753">Conferir guias recentes do Chrome</translation>
 <translation id="7948283758957877064">Novidades do Chrome</translation>
 <translation id="8000174216052461231">Dica do Chrome: aproveite a segurança mais avançada do Chrome</translation>
@@ -294,6 +297,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>
+<translation id="8673726683583791503">Faça compras com o Google Lens</translation>
 <translation id="8727043961453758442">Aproveite o Chrome ao máximo</translation>
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>

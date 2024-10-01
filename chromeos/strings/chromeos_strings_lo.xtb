@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">ຄ້າຍກັນ:</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
 <translation id="5137451382116112100">ເຕັມໜ້າຈໍ</translation>
+<translation id="5140788690559353412">ເມື່ອທ່ານສູນເສຍສິດເຂົ້າເຖິງບັນຊີໂຮງຮຽນຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດເຂົ້າເຖິງອີເມວ ແລະ ໄຟລ໌ໃນ Google Drive ທີ່ເຊື່ອມໂຍງ ເຊັ່ນ: Gmail, Docs, Slides ແລະ ອື່ນໆໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
 <translation id="5144311987923128508">ປິດການນຳໃຊ້ປຸ່ມຢືນຢັນແລ້ວ</translation>
 <translation id="5144887194300568405">ສຳເນົາຄໍາແປ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) ການຕອບສະໜອງ HTTP</translation>
 <translation id="6078323886959318429">ເພີ່ມທາງລັດ</translation>
 <translation id="6091080061796993741">ເຫຼືອງ</translation>
+<translation id="6093853427925392522">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າທ່ານໃຊ້ແອັບ Content Transfer ໂດຍ Google ເພື່ອຍ້າຍຂໍ້ມູນບັນຊີໂຮງຮຽນຂອງທ່ານໄປໃສ່ບັນຊີສ່ວນຕົວຂອງທ່ານກ່ອນທີ່ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງ.</translation>
 <translation id="6104112872696127344">ຍົກເລີກການສະແກນແລ້ວ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
@@ -1246,6 +1248,7 @@
 <translation id="7130438335435247835">ຊື່ຈຸດການເຂົ້າເຖິງ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">ຊອກຫາທາງລັດ</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="7144954474087165241">ພະທາດ</translation>
@@ -1538,6 +1541,7 @@
 <translation id="8626489604350149811">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ສີມ່ວງອ່ອນ</translation>
 <translation id="8647595191512746911">ການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
+<translation id="8650852232143958317">ນຳເອົາໄຟລ໌ Gmail ແລະ Google Drive ຂອງທ່ານໄປກັບທ່ານ</translation>
 <translation id="8651481478098336970">ປິດ​ສຽງ</translation>
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8655828773034788261">ແບ່ງປັນ URL:</translation>

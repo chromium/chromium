@@ -2910,6 +2910,7 @@
 <translation id="304644035656848980">麦克风音频流预览</translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
+<translation id="3047678109605649715">您的设备上没有<ph name="LANGUAGE" />语音包。请释放出设备空间，然后重试。</translation>
 <translation id="3048336643003835855">来自供应商 <ph name="VENDOR_ID" /> 的 HID 设备</translation>
 <translation id="3048589239114571785">播放 (K)</translation>
 <translation id="3048742847101793553">由于扫描失败，贵组织已屏蔽此文件。</translation>
@@ -7246,7 +7247,6 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="625827534921607067">如果有多个之前已连接或配置好的网络可用，系统会优先选择此网络</translation>
-<translation id="62586649943626337">使用标签页分组整理标签页</translation>
 <translation id="6259776178973198997">刷新 Wi-Fi 直连所有者信息</translation>
 <translation id="6262371516389954471">您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
@@ -7725,6 +7725,7 @@
 <translation id="6627743754845412571">不允许跟踪您的双手</translation>
 <translation id="6628316682330029452">客户端证书是用于向其他服务器标识您身份的证书。</translation>
 <translation id="6628328486509726751">上传时间：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">更高的安全性</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />希望获得某个证书的永久访问权限，以便代表您进行自我身份验证。</translation>
 <translation id="6634220840123396409">我信任该网站，单选按钮分组，第 2 个，共 3 个</translation>

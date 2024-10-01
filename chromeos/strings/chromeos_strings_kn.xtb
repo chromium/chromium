@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">ಸಮಾನ:</translation>
 <translation id="5130848777448318809">ಪೋನಿಗಳು</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
+<translation id="5140788690559353412">ನಿಮ್ಮ ಶಾಲಾ ಖಾತೆಗೆ ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಂಡಾಗ, ನೀವು ಇನ್ನು ಮುಂದೆ ಸಂಯೋಜಿತ ಇಮೇಲ್‌ ಮತ್ತು Google Drive ಫೈಲ್‌ಗಳಾದ Gmail, Docs, Slides ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ.</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="5144311987923128508">ದೃಢೀಕರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5144887194300568405">ಅನುವಾದ ಕಾಪಿ ಮಾಡಿ</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">(Android) HTTP ವಿಳಂಬ</translation>
 <translation id="6078323886959318429">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಿ</translation>
 <translation id="6091080061796993741">ಹಳದಿ</translation>
+<translation id="6093853427925392522">ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುವ ಮೊದಲು ನಿಮ್ಮ ಶಾಲೆಯ ಖಾತೆಯ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಖಾತೆಗೆ ಸರಿಸಲು Google ನಿಂದ ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ ಆ್ಯಪ್‌ ಅನ್ನು ಬಳಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="6104112872696127344">ಸ್ಕ್ಯಾನಿಂಗ್ ರದ್ದುಗೊಂಡಿದೆ</translation>
 <translation id="6106186594183574873">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6108689792487843350">ಗೇಟ್‌ವೇ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರು (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7135814714616751706">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="7141470099673912333">ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7144954474087165241">ಪಗೋಡ</translation>
@@ -1537,6 +1540,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="86356131183441916">ತಿಳಿ ನೇರಳೆ</translation>
 <translation id="8647595191512746911">ಆಡಿಯೋ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್</translation>
+<translation id="8650852232143958317">ನಿಮ್ಮ Gmail ಮತ್ತು Google Drive ಫೈಲ್‌ಗಳನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="8651481478098336970">ವಾಲ್ಯೂಮ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8655828773034788261">URL ಹಂಚಿಕೊಳ್ಳಿ:</translation>

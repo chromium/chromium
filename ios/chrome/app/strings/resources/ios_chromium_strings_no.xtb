@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Vil du at Chromium skal tilby å oversette sider på <ph name="LANGUAGE_NAME" /> på dette nettstedet neste gang?</translation>
 <translation id="22313767259766852">Denne adressen er for øyeblikket lagret i Chromium. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Dette betyr at Chromium kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
+<translation id="2270466829363945454">Butikk</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="231828342043114302">For å få personlig tilpasset innhold basert på interessene dine, logg på Chromium.</translation>
 <translation id="2326738825692478496">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
@@ -130,6 +131,7 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
 <translation id="4445228361214254027">Organisasjonen din har slått av muligheten til å bruke og lagre Chromium-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
 <translation id="4498832288620833153">Legger til de angitte nettadressene på leselisten i Chromium.</translation>
+<translation id="4508268628669724828">Kom tilbake hit for å finne flere nyttige tips til å få mest mulig ut av Chromium.</translation>
 <translation id="452436063477828504">Sørg for at du alltid kan bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="4527452566931097835">Vil du angi Chromium som standard?</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7228180817326917122">Chromium-tips: Velg plassering for adressefeltet</translation>
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="7269362888766543920">Noen tillegg fører til at Chromium krasjer. Prøv å avinstallere dem.</translation>
+<translation id="7279391168585141365">Lagre passordene dine i Chromium</translation>
 <translation id="7285031092584344905">Få tilgang til Chromium-passord med mer i andre apper.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>

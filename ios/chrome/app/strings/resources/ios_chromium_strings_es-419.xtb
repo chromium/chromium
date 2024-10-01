@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="22313767259766852">Actualmente, esta dirección se guarda en Chromium. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Esto significa que Chromium solicitará la versión de escritorio del sitio cada vez.</translation>
+<translation id="2270466829363945454">Haz compras</translation>
 <translation id="2313870531055795960">Revisa las URL con una lista de sitios no seguros almacenados en Chromium. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado en función de tus intereses, accede a Chromium.</translation>
 <translation id="2326738825692478496">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
@@ -130,6 +131,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="4432744876818348753">Para aprovechar Chromium al máximo, accede a tu cuenta.</translation>
 <translation id="4445228361214254027">Tu organización desactivó la función para usar y guardar datos de Chromium en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
 <translation id="4498832288620833153">Agrega las URLs ingresadas a tu Lista de lectura en Chromium.</translation>
+<translation id="4508268628669724828">Vuelve a consultar esta información para obtener más sugerencias útiles y aprovechar Chromium al máximo.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu Cuenta de Google</translation>
 <translation id="4527452566931097835">¿Quieres establecer Chromium como navegador predeterminado?</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7228180817326917122">Sugerencia para Chromium: Elige la posición de la barra de direcciones</translation>
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="7269362888766543920">Algunos complementos causan fallos en Chromium. Intenta desinstalarlos.</translation>
+<translation id="7279391168585141365">Guarda tus contraseñas en Chromium</translation>
 <translation id="7285031092584344905">Accede a tus contraseñas de Chromium y más en otras apps.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Los datos seleccionados se quitaron de Chromium y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>

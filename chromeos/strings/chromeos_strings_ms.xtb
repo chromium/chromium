@@ -821,6 +821,7 @@
 <translation id="5108781503443873320">Serupa:</translation>
 <translation id="5130848777448318809">kuda padi</translation>
 <translation id="5137451382116112100">Penuh</translation>
+<translation id="5140788690559353412">Apabila anda kehilangan akses kepada akaun sekolah anda, anda tidak akan dapat mengakses e-mel dan fail Google Drive yang dikaitkan lagi seperti Gmail, Docs, Slides dan pelbagai lagi.</translation>
 <translation id="5142961317498132443">Pengesahan</translation>
 <translation id="5144311987923128508">Butang sahkan kini dilumpuhkan</translation>
 <translation id="5144887194300568405">Salin terjemahan</translation>
@@ -1008,6 +1009,7 @@
 <translation id="6075872808778243331">Kependaman HTTP (Android)</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6091080061796993741">kuning</translation>
+<translation id="6093853427925392522">Pastikan anda menggunakan apl Pemindahan Kandungan oleh Google untuk mengalihkan data akaun sekolah anda kepada akaun peribadi anda sebelum anda kehilangan akses.</translation>
 <translation id="6104112872696127344">Pengimbasan telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7130438335435247835">Nama Titik Capaian (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7135814714616751706">Pintasan carian</translation>
+<translation id="7141470099673912333">Pemindahan Kandungan</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1537,6 +1540,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8626489604350149811">Lagi tindakan untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8647595191512746911">Transkripsi audio</translation>
+<translation id="8650852232143958317">Bawa Gmail dan fail Google Drive anda bersama anda</translation>
 <translation id="8651481478098336970">redam kelantangan</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Kongsi URL:</translation>

@@ -3409,6 +3409,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operacje biznesowe</translation>
 <translation id="7244061187185055290">Opisz w kilku słowach, czego szukasz</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o korzyściach z karty</translation>
 <translation id="7251437084390964440">Konfiguracja sieci jest niezgodna ze standardem ONC. Jej część mogła nie zostać zaimportowana.
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
@@ -3478,6 +3479,7 @@ Dodatkowe informacje:
 <translation id="7390545607259442187">Potwierdź kartę</translation>
 <translation id="7392089738299859607">Zmień adres</translation>
 <translation id="7393161616326137353">Gry przygodowe</translation>
+<translation id="7393475648162498734">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>
 <translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
@@ -4492,6 +4494,7 @@ Dodatkowe informacje:
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="940524522703752213">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za <ph name="MINUTES" /> min</translation>
 <translation id="944540589955480312">Używaj haseł i kluczy dostępu zapisanych na koncie Google</translation>
+<translation id="944578681290094302">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Więcej informacji o korzyściach z karty<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu.</translation>
 <translation id="945855313015696284">Sprawdź poniższe informacje i usuń karty z błędami</translation>
 <translation id="94613679163347541">Porównać <ph name="CATEGORY" />?</translation>

@@ -2931,6 +2931,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="304644035656848980">Pratinjau mikrofon Anda</translation>
 <translation id="3046910703532196514">Halaman Web, Lengkap</translation>
 <translation id="304747341537320566">Mesin Ucapan</translation>
+<translation id="3047678109605649715">Tidak ada suara bahasa <ph name="LANGUAGE" /> di perangkat Anda. Kosongkan ruang penyimpanan di perangkat Anda, lalu coba lagi.</translation>
 <translation id="3048336643003835855">Perangkat HID dari vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Putar (k)</translation>
 <translation id="3048742847101793553">Organisasi Anda memblokir file ini karena pemindaian gagal.</translation>
@@ -7275,7 +7276,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6254892857036829079">Sempurna</translation>
 <translation id="6257602895346497974">Aktifkan sinkronisasi...</translation>
 <translation id="625827534921607067">Jaringan ini akan dipilih jika tersedia lebih dari satu jaringan yang sebelumnya terhubung atau dikonfigurasi</translation>
-<translation id="62586649943626337">Atur tab Anda dengan grup tab</translation>
 <translation id="6259776178973198997">Muat Ulang Info Pemilik Wi-Fi Langsung</translation>
 <translation id="6262371516389954471">Cadangan Anda diupload ke Google dan dienkripsi menggunakan sandi Akun Google Anda.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
@@ -7754,6 +7754,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6627743754845412571">Tidak diizinkan melacak tangan Anda</translation>
 <translation id="6628316682330029452">Sertifikat klien adalah sertifikat yang mengidentifikasi Anda ke server lain.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> yang diupload</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Keamanan yang lebih kuat</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> menginginkan akses permanen ke sertifikat untuk mengautentikasi dirinya sendiri atas nama Anda.</translation>
 <translation id="6634220840123396409">Saya memercayai situs ini, grup tombol pilihan, 2 dari 3</translation>

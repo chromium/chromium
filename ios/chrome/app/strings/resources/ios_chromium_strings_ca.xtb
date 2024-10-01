@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Aquesta adreça està desada a Chromium. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Això vol dir que Chromium sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
+<translation id="2270466829363945454">Botiga</translation>
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="231828342043114302">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chromium.</translation>
 <translation id="2326738825692478496">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
@@ -130,6 +131,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="4432744876818348753">Inicia la sessió per treure el màxim profit de Chromium.</translation>
 <translation id="4445228361214254027">La teva organització ha desactivat l'opció de fer servir i desar dades de Chromium al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
 <translation id="4498832288620833153">Afegeix a la llista de lectura de Chromium els URL introduïts.</translation>
+<translation id="4508268628669724828">Torna aquí per veure més consells útils i treure el màxim profit de Chromium.</translation>
 <translation id="452436063477828504">Assegura't de poder utilitzar sempre les dades de Chromium al teu Compte de Google</translation>
 <translation id="4527452566931097835">Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7228180817326917122">Consell de Chromium: tria la posició de la barra d'adreces</translation>
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
+<translation id="7279391168585141365">Desa les contrasenyes a Chromium</translation>
 <translation id="7285031092584344905">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>

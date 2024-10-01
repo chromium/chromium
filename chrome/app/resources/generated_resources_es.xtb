@@ -2919,6 +2919,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="304644035656848980">Vista previa de tu micrófono</translation>
 <translation id="3046910703532196514">Página web (completa)</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en tu dispositivo y vuelve a intentarlo.</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (K)</translation>
 <translation id="3048742847101793553">Tu organización ha bloqueado este archivo porque no se ha podido analizar.</translation>
@@ -7260,7 +7261,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257602895346497974">Activar sincronización...</translation>
 <translation id="625827534921607067">Esta red tendrá preferencia si hay disponible más de una red ya configurada o a la que te hayas conectado anteriormente</translation>
-<translation id="62586649943626337">Organiza tus pestañas con los grupos de pestañas</translation>
 <translation id="6259776178973198997">Actualizar información de propietarios de Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidad emisora de certificados de Microsoft</translation>
@@ -7739,6 +7739,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6627743754845412571">Sin permiso para monitorizar tus manos</translation>
 <translation id="6628316682330029452">Los certificados de cliente son certificados que te identifican en otros servidores.</translation>
 <translation id="6628328486509726751">Fecha y hora de subida: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Mayor seguridad</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> desea acceder de forma permanente a un certificado parar autenticarse en tu nombre.</translation>
 <translation id="6634220840123396409">Confío en el sitio, grupo de botones de selección, 2 de 3</translation>

@@ -332,7 +332,9 @@
 <translation id="1227660082540388410">Изменение ключа доступа</translation>
 <translation id="1227993798763400520">Не удалось начать трансляцию. Повторите попытку</translation>
 <translation id="1230417814058465809">Включена стандартная защита. Для большей безопасности используйте улучшенную защиту.</translation>
+<translation id="1230961867057865279">Язык страницы не <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">В следующий раз подключение к этой сети на устройстве <ph name="DEVICE_TYPE" /> будет выполнено автоматически.</translation>
+<translation id="1231489110997683307">Язык страницы не <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Сайты могут запрашивать разрешение на захват ввода, выполняемого с помощью мыши, и управление таким вводом</translation>
 <translation id="1232569758102978740">Без имени</translation>
 <translation id="1233497634904001272">Чтобы выполнить запрос, нажмите кнопку на электронном ключе ещё раз.</translation>
@@ -7264,7 +7266,6 @@
 <translation id="6254892857036829079">Отличное</translation>
 <translation id="6257602895346497974">Включить синхронизацию</translation>
 <translation id="625827534921607067">Устройство использует эту сеть, когда доступно несколько сетей, к которым вы подключались ранее</translation>
-<translation id="62586649943626337">Объединяйте вкладки в группы</translation>
 <translation id="6259776178973198997">Обновить информацию о владельцах Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Резервные копии загружаются в Google и шифруются с помощью пароля вашего аккаунта Google.</translation>
 <translation id="6263082573641595914">Версия ЦС Microsoft</translation>
@@ -7749,6 +7750,7 @@
 <translation id="6627743754845412571">Запрещено отслеживать движения рук</translation>
 <translation id="6628316682330029452">Сертификаты клиента нужны, чтобы идентифицировать вас на других серверах.</translation>
 <translation id="6628328486509726751">Время загрузки: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Более надежная защита</translation>
 <translation id="6630752851777525409">Расширение "<ph name="EXTENSION_NAME" />" запрашивает постоянный доступ к сертификату для прохождения аутентификации от вашего имени.</translation>
 <translation id="6634220840123396409">Я доверяю этому сайту, группа переключателей, 2 из 3</translation>
@@ -8549,6 +8551,7 @@
 <translation id="7212097698621322584">Сначала введите текущий PIN-код. Если вы его не знаете, сбросьте настройки электронного ключа и установите новый PIN-код.</translation>
 <translation id="7214047272988222011">Разрешено (<ph name="PERMISSION_DETAILS" />). Предоставьте <ph name="LINK_BEGIN" />доступ к камере на уровне системы<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Импорт паролей</translation>
+<translation id="7217208603285112910">Язык выбранного текста не <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Удалить данные сайта?</translation>
 <translation id="7219473482981809164">Доступно несколько профилей. Выберите, какие нужно скачать.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Нет простых паролей}=1{1 простой пароль}one{{NUM_WEAK} простой пароль}few{{NUM_WEAK} простых пароля}many{{NUM_WEAK} простых паролей}other{{NUM_WEAK} простого пароля}}</translation>
@@ -10110,6 +10113,7 @@
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
 <translation id="8327386430364625757">Математический шрифт</translation>
+<translation id="8327490658947427005">Язык выбранного текста не <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>
 <translation id="8328228852664998535">Если вы продолжите, пароли, ключи доступа и другие данные будут безвозвратно удалены из сервиса "<ph name="BRAND" />". Аккаунты, созданные вами на сайтах и в приложениях, будут сохранены.</translation>
 <translation id="8328777765163860529">Закрыть все</translation>

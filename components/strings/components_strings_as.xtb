@@ -3403,6 +3403,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ব্যৱসায়ৰ কাম</translation>
 <translation id="7244061187185055290">আপুনি কি সন্ধান কৰি আছে সেয়া কেইটামান শব্দত বৰ্ণনা কৰক</translation>
+<translation id="7250174481516136841">কাৰ্ডৰ লাভসমূহৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">নেটৱৰ্ক কনফিগাৰেশ্বনটোৱে ONC নীতি মানি নচলে। কনফিগাৰেশ্বনটোৰ কিছু অংশ হয়তো আমদানি কৰা হ’ব।
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
@@ -3472,6 +3473,7 @@
 <translation id="7390545607259442187">কাৰ্ডখন নিশ্চিত কৰক</translation>
 <translation id="7392089738299859607">ঠিকনা আপডে’ট কৰক</translation>
 <translation id="7393161616326137353">দুঃসাহসিক গে’ম</translation>
+<translation id="7393475648162498734">চেকআউটত আপোনাৰ কাৰ্ডসমূহৰ বাবে কোনবোৰ পুৰস্কাৰ আৰু লাভ উপলব্ধ সেয়া দেখুৱাওক</translation>
 <translation id="739728382607845710">পৰিশোধৰ নিয়ন্ত্ৰকৰ চিহ্ন</translation>
 <translation id="7399616692258236448">আপুনি অনুমতি দিয়াসমূহৰ বাদে আন আটাইবোৰ ছাইটৰ বাবে অৱস্থানৰ অনুৰোধসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="7399802613464275309">সুৰক্ষা পৰীক্ষা</translation>
@@ -4487,6 +4489,7 @@
 <translation id="939736085109172342">নতুন ফ'ল্ডাৰ</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড <ph name="MINUTES" /> মিনিটত আৰম্ভ হ’ব</translation>
 <translation id="944540589955480312">আপোনাৰ Google একাউণ্টত ছেভ কৰা পাছৱৰ্ড আৰু পাছকী ব্যৱহাৰ কৰক</translation>
+<translation id="944578681290094302">চেকআউটত আপোনাৰ কাৰ্ডসমূহৰ বাবে কোনবোৰ পুৰস্কাৰ আৰু লাভ উপলব্ধ সেয়া দেখুৱাওক। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />কাৰ্ডৰ লাভসমূহৰ বিষয়ে জানক<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ অৱৰোধ কৰে।</translation>
 <translation id="945855313015696284">তলৰ তথ্য পৰীক্ষা কৰক আৰু কোনো অমান্য কার্ড থাকিলে মচক</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> তুলনা কৰিব নেকি?</translation>

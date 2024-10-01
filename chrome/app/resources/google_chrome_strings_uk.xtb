@@ -403,6 +403,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6134085236017727171">Щоб використовувати мікрофон, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ці вкладки використовують додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити їх неактивними.</translation>
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
+<translation id="6150706324143004339">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, оновіть Chrome</translation>
 <translation id="6157638032135951407">Ваша організація видаляє дані Chrome, якщо вони не використовуються протягом <ph name="TIMEOUT_DURATION" />. Це може включати історію, дані автозаповнення й завантаження.</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

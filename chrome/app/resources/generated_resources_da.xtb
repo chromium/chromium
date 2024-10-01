@@ -2932,6 +2932,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="304644035656848980">Forhåndsvisning af din mikrofon</translation>
 <translation id="3046910703532196514">Webside, komplet</translation>
 <translation id="304747341537320566">Oplæsningsmaskiner</translation>
+<translation id="3047678109605649715">Der er ingen <ph name="LANGUAGE" /> stemmer på din enhed. Frigør plads på din enhed, og prøv igen.</translation>
 <translation id="3048336643003835855">HID-enheder fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Afspil (k)</translation>
 <translation id="3048742847101793553">Din organisation har blokeret denne fil, fordi scanningen mislykkedes.</translation>
@@ -7276,7 +7277,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Aktivér synkronisering...</translation>
 <translation id="625827534921607067">Dette netværk foretrækkes, hvis mere end ét forbundet eller konfigureret netværk er tilgængeligt</translation>
-<translation id="62586649943626337">Organiser dine faner med fanegrupper</translation>
 <translation id="6259776178973198997">Opdater oplysningerne om Wi-Fi Direct-ejere</translation>
 <translation id="6262371516389954471">Dine sikkerhedskopier uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto.</translation>
 <translation id="6263082573641595914">Version af Microsoft-nøglecenter</translation>
@@ -7757,6 +7757,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6627743754845412571">Har ikke tilladelse til at registrere dine hænder</translation>
 <translation id="6628316682330029452">Klientcertifikater er certifikater, der identificerer dig over for andre servere.</translation>
 <translation id="6628328486509726751">Uploadet <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Større sikkerhed</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ønsker permanent adgang til et certifikat for at godkende sig selv på dine vegne.</translation>
 <translation id="6634220840123396409">Jeg har tillid til websitet, alternativknapgruppe, 2 af 3</translation>

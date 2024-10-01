@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="2703746758996815929">Pour obtenir des conseils utiles sur Chrome, activez les notifications dans vos réglages iOS.</translation>
+<translation id="2728851697704606655">Traduire avec Lentille Google</translation>
 <translation id="2736805085127235148">Les notifications de Chrome sont présentement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2754428955276778271">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
 
@@ -249,6 +250,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7581063337314642333">Consulter la grille d'onglets dans Chrome</translation>
 <translation id="7599894504325210080">Affichage développé du remplissage automatique de Chrome</translation>
 <translation id="7642373780953416937">Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chrome détecte automatiquement pour vous.</translation>
+<translation id="7660356333829433649">Revenez ici pour consulter d'autres conseils utiles afin de tirer le meilleur parti de Chrome.</translation>
 <translation id="7662994914830945754">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous et activez la synchronisation</translation>
 <translation id="7693590760643069321">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
@@ -259,6 +261,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="778855399387580014">Lancez une recherche dans un nouvel onglet Chrome.</translation>
 <translation id="7792140019572081272">Chrome protège vos données confidentielles avec Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
+<translation id="7861998090118873450">Enregistrer vos mots de passe sur Chrome</translation>
 <translation id="7897703007638178753">Voir les onglets récents de Chrome</translation>
 <translation id="7948283758957877064">Quoi de neuf dans Chrome</translation>
 <translation id="8000174216052461231">Astuce Chrome : Bénéficiez de la sécurité la plus robuste de Chrome</translation>
@@ -294,6 +297,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez ou que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="8603022514504485810">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chrome ».</translation>
+<translation id="8673726683583791503">Magasiner avec Lentille Google</translation>
 <translation id="8727043961453758442">Tirez le meilleur parti de Chrome</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>

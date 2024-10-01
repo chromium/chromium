@@ -2933,6 +2933,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="304644035656848980">Rhagolwg o'ch meicroffon</translation>
 <translation id="3046910703532196514">Tudalen We, Wedi Gorffen</translation>
 <translation id="304747341537320566">Peiriannau Lleferydd</translation>
+<translation id="3047678109605649715">Does dim lleisiau <ph name="LANGUAGE" /> ar eich dyfais. Cliriwch le ar eich dyfais, a rhowch gynnig arall arni.</translation>
 <translation id="3048336643003835855">Dyfeisiau HID gan y gwerthwr <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Chwarae (k)</translation>
 <translation id="3048742847101793553">Mae eich sefydliad wedi rhwystro'r ffeil hon oherwydd bod y sgan wedi methu.</translation>
@@ -7277,7 +7278,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6254892857036829079">Perffaith</translation>
 <translation id="6257602895346497974">Troi cysoni ymlaen...</translation>
 <translation id="625827534921607067">Bydd y rhwydwaith hwn yn cael ei ffafrio os oes mwy nag un rhwydwaith sydd wedi'i gysylltu neu ei ffurfweddu o'r blaen ar gael</translation>
-<translation id="62586649943626337">Gallwch gadw trefn ar eich tabiau gyda grwpiau tabiau</translation>
 <translation id="6259776178973198997">Adnewyddu Gwybodaeth Perchnogion WiFi Uniongyrchol</translation>
 <translation id="6262371516389954471">Mae eich copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair eich Cyfrif Google.</translation>
 <translation id="6263082573641595914">Fersiwn Microsoft CA</translation>

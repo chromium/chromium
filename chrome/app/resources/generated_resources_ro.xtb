@@ -330,7 +330,9 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1227660082540388410">Editează cheia de acces</translation>
 <translation id="1227993798763400520">Nu s-a putut proiecta. Încearcă din nou.</translation>
 <translation id="1230417814058465809">Protecția standard este activată. Pentru securitate sporită, folosește protecția îmbunătățită.</translation>
+<translation id="1230961867057865279">Pagina nu este în <ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">Vom reține rețeaua ta data viitoare când folosești <ph name="DEVICE_TYPE" /></translation>
+<translation id="1231489110997683307">Pagina nu este în <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Site-urile pot solicita permisiunea de a captura și de a folosi intrările de la mouse</translation>
 <translation id="1232569758102978740">Fără titlu</translation>
 <translation id="1233497634904001272">Atinge din nou cheia de securitate pentru a finaliza solicitarea.</translation>
@@ -2919,6 +2921,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="304644035656848980">Previzualizarea microfonului</translation>
 <translation id="3046910703532196514">Pagina web, completă</translation>
 <translation id="304747341537320566">Motoare de vorbire</translation>
+<translation id="3047678109605649715">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Eliberează spațiu pe dispozitiv și încearcă din nou.</translation>
 <translation id="3048336643003835855">Dispozitive HID de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Redare (k)</translation>
 <translation id="3048742847101793553">Organizația ta a blocat fișierul, deoarece scanarea nu a reușit.</translation>
@@ -7260,7 +7263,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6254892857036829079">Perfectă</translation>
 <translation id="6257602895346497974">Activează sincronizarea...</translation>
 <translation id="625827534921607067">Această rețea va fi marcată ca preferată dacă sunt disponibile mai multe rețele conectate sau configurate anterior</translation>
-<translation id="62586649943626337">Organizează-ți filele cu grupurile de file</translation>
 <translation id="6259776178973198997">Actualizează informațiile despre proprietarii Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
 <translation id="6263082573641595914">Versiune CA Microsoft</translation>
@@ -7741,6 +7743,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6627743754845412571">Nu au permisiunea de a-ți urmări mâinile</translation>
 <translation id="6628316682330029452">Certificatele de client sunt certificate care te identifică pe alte servere.</translation>
 <translation id="6628328486509726751">Încărcat la <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Securitate sporită</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> dorește acces permanent la un certificat pentru a se autentifica în numele tău.</translation>
 <translation id="6634220840123396409">Am încredere în site, grup de butoane radio, 2 din 3</translation>
@@ -8541,6 +8544,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7212097698621322584">Introdu codul PIN actual pentru a-l schimba. Dacă nu știi codul PIN, trebuie să resetezi cheia de securitate, apoi să creezi un nou cod PIN.</translation>
 <translation id="7214047272988222011">Se permite – <ph name="PERMISSION_DETAILS" />. Activează <ph name="LINK_BEGIN" />accesul la camera foto a sistemului<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importă parole</translation>
+<translation id="7217208603285112910">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Ștergi datele privind site-ul?</translation>
 <translation id="7219473482981809164">Am detectat mai multe profiluri disponibile pentru descărcare. Selectează-le pe cele pe care vrei să le descarci înainte de a continua.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nicio parolă slabă}=1{O parolă slabă}few{{NUM_WEAK} parole slabe}other{{NUM_WEAK} de parole slabe}}</translation>
@@ -10103,6 +10107,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>
 <translation id="8327386430364625757">Font matematic</translation>
+<translation id="8327490658947427005">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">Permisiuni și setări privind conținutul</translation>
 <translation id="8328228852664998535">Dacă alegi să continui, parolele, cheile de acces și alte date se vor șterge definitiv din <ph name="BRAND" />. Conturile pe care le-ai creat pentru site-uri sau aplicații nu se vor șterge.</translation>
 <translation id="8328777765163860529">Închideți toate</translation>

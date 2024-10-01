@@ -2927,6 +2927,7 @@
 <translation id="304644035656848980">የማይክሮፎንዎ ቅድመ እይታ</translation>
 <translation id="3046910703532196514">ድረ-ገፅ፣ ሙሉ</translation>
 <translation id="304747341537320566">የንግግር ፕሮግራሞች</translation>
+<translation id="3047678109605649715">በመሣሪያዎ ላይ ምንም የ<ph name="LANGUAGE" /> ድምፆች የሉም። በመሣሪያዎ ላይ ቦታ ያጽዱ እና እንደገና ይሞክሩ።</translation>
 <translation id="3048336643003835855">የኤችአይዲ መሳሪያዎች ከአቅራቢ <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">አጫውት (k)</translation>
 <translation id="3048742847101793553">ቅኝቱ ስላልተሳካ ድርጅትዎ ይህን ፋይል አግዶታል።</translation>
@@ -7269,7 +7270,6 @@
 <translation id="6254892857036829079">ፍጹም</translation>
 <translation id="6257602895346497974">አስምርን አብራ...</translation>
 <translation id="625827534921607067">ከዚህ ቀደም የተገናኘ ወይም የተዋቀረ ከአንድ በላይ አውታረ መረብ የሚገኝ ከሆነ ይህ አውታረ መረብ ተመራጭ ይሆናል</translation>
-<translation id="62586649943626337">ትሮችዎን በትር ቡድኖች ያደራጁ</translation>
 <translation id="6259776178973198997">የWi-Fi Direct ባለቤቶች መረጃን አድስ</translation>
 <translation id="6262371516389954471">የእርስዎ ምትኬዎች ወደ Google ተሰቅለዋል እና የእርስዎን የGoogle መለያ የይለፍ ቃል በመጠቀም ተመስጥረዋል።</translation>
 <translation id="6263082573641595914">Microsoft CA ቅጂ</translation>
@@ -7750,6 +7750,7 @@
 <translation id="6627743754845412571">እጆችዎን ለመከታተል አልተፈቀደም</translation>
 <translation id="6628316682330029452">የደንበኛ የዕውቅና ማረጋገጫዎች እርስዎን ከሌሎች አገልጋዮች ጋር የሚለዩ የዕውቅና ማረጋገጫዎች ናቸው።ደደ</translation>
 <translation id="6628328486509726751">የተሰቀለው በ<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">ይበልጥ ጠንካራ ደህንነት</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> እርስዎን ወክሎ እራሱን ለማረጋገጥ የአንድ እውቅና ማረጋገጫ ዘላቂ መዳረሻ ይፈልጋል።</translation>
 <translation id="6634220840123396409">ጣቢያውን አምነዋለሁ፣ የራድዮ አዝራር ቡድን፣ 2 ከ3</translation>

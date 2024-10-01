@@ -3410,6 +3410,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operaciones comerciales</translation>
 <translation id="7244061187185055290">Describe en pocas palabras lo que estás buscando</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /> sobre los beneficios de las tarjetas</translation>
 <translation id="7251437084390964440">La configuración de red no cumple con el estándar ONC. Es posible que no se importen algunas partes de la configuración.
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
@@ -3479,6 +3480,7 @@ Detalles adicionales:
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
 <translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
+<translation id="7393475648162498734">Muestra qué recompensas y beneficios están disponibles para tus tarjetas durante la confirmación de la compra</translation>
 <translation id="739728382607845710">Ícono del controlador de pagos</translation>
 <translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
@@ -4495,6 +4497,7 @@ Detalles adicionales:
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940524522703752213">La carga de tu archivo a <ph name="CLOUD_PROVIDER" /> comenzará dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="944540589955480312">Usar contraseñas y llaves de acceso guardadas en tu Cuenta de Google</translation>
+<translation id="944578681290094302">Muestra qué recompensas y beneficios están disponibles para tus tarjetas durante la confirmación de la compra <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información sobre los beneficios de las tarjetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome impide que los sitios usen cookies de terceros para seguirte mientras navegas.</translation>
 <translation id="945855313015696284">Comprueba la información que se muestra a continuación y borra las tarjetas que no sean válidas</translation>
 <translation id="94613679163347541">¿Quieres comparar <ph name="CATEGORY" />?</translation>

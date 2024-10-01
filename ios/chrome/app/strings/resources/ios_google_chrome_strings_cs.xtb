@@ -72,6 +72,7 @@ Co je třeba zvážit:
 <translation id="2689064829982324496">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromu<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="2703746758996815929">Pokud chcete dostávat užitečné tipy pro Chrome, v nastavení systému iOS zapněte oznámení.</translation>
+<translation id="2728851697704606655">Překládejte text pomocí Google Lens</translation>
 <translation id="2736805085127235148">Oznámení prohlížeče Chrome jsou aktuálně v nastavení zařízení vypnutá.</translation>
 <translation id="2754428955276778271">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google.
 
@@ -249,6 +250,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7581063337314642333">Navštívit mřížku karet v prohlížeči Chrome</translation>
 <translation id="7599894504325210080">Rozbalené zobrazení automatického vyplňování prohlížeče Chrome</translation>
 <translation id="7642373780953416937">Nechte si zasílat upozornění na jakékoli problémy s ochranou soukromí nebo zabezpečením, které u vás Chrome automaticky zjistí.</translation>
+<translation id="7660356333829433649">Vraťte se sem pro další užitečné tipy, jak Chrome využít na maximum.</translation>
 <translation id="7662994914830945754">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, přihlaste se a zapněte synchronizaci</translation>
 <translation id="7693590760643069321">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="7698568245838009292">Chrome potřebuje přístup k fotoaparátu</translation>
@@ -259,6 +261,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="778855399387580014">Spustit vyhledávání na nové kartě Chromu.</translation>
 <translation id="7792140019572081272">Chrome chrání vaše citlivá data pomocí Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
+<translation id="7861998090118873450">Ukládejte si v Chromu hesla</translation>
 <translation id="7897703007638178753">Zobrazit nedávno použité karty prohlížeče Chrome</translation>
 <translation id="7948283758957877064">Novinky v Chromu</translation>
 <translation id="8000174216052461231">Tip pro Chrome: Získejte nejsilnější zabezpečení Chromu</translation>
@@ -294,6 +297,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8558480467877843976">Nyní můžete Chrome použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
 <translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>
+<translation id="8673726683583791503">Nakupujte pomocí Google Lens</translation>
 <translation id="8727043961453758442">Využití všech funkcí Chromu</translation>
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8772179140489533211">Zobrazuje výzvy k přihlášení do Chromu.</translation>

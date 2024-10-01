@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">ค่าต้องเป็น <ph name="MINIMUM_DATE_OR_TIME" /> หรือหลังจากนั้น</translation>
 <translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
 <translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
+<translation id="2940013921954129954">อนุญาตให้เข้าถึงตำแหน่งที่แน่นอนแล้ว</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">โปรดป้อนค่าที่ถูกต้อง ฟิลด์นี้ไม่สมบูรณ์หรือมีวันที่ที่ไม่ถูกต้อง</translation>
 <translation id="310520048233152454">โปรดป้อน URL</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">คุณภาพการเล่นต่ำ</translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6820355525329141109">ไม่สามารถโหลดปลั๊กอิน</translation>
+<translation id="688706781007114099">ใช้ตำแหน่ง</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี 1 ตัว)</translation>
 <translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>

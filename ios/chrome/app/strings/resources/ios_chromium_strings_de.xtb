@@ -49,6 +49,7 @@
 <translation id="2195025571279539885">Soll Chromium beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
 <translation id="22313767259766852">Diese Adresse ist derzeit in Chromium gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Das bedeutet, dass Chromium immer die Desktopversion der Website anfordert.</translation>
+<translation id="2270466829363945454">Einkaufen</translation>
 <translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="231828342043114302">Melde dich in Chromium an, um personalisierte Inhalte zu erhalten, die auf deinen Interessen basieren.</translation>
 <translation id="2326738825692478496">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
@@ -129,6 +130,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
 <translation id="4445228361214254027">Deine Organisation hat die Möglichkeit deaktiviert, Chromium-Daten in deinem Google-Konto zu speichern und zu nutzen. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
 <translation id="4498832288620833153">Fügt die eingegebenen URLs deiner Leseliste in Chromium hinzu.</translation>
+<translation id="4508268628669724828">Schaue später noch einmal hier vorbei, um weitere nützliche Tipps zu erhalten, wie du Chromium optimal nutzen kannst.</translation>
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4527452566931097835">Chromium als Standardbrowser festlegen?</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -240,6 +242,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7228180817326917122">Chromium-Tipp: Position der Adressleiste auswählen</translation>
 <translation id="725427773388857052">Chromium kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstalliere diese Add-ons.</translation>
+<translation id="7279391168585141365">Passwörter in Chromium speichern</translation>
 <translation id="7285031092584344905">Du kannst in anderen Apps auf Chromium-Passwörter und mehr zugreifen.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell findest du unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>

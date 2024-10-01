@@ -72,6 +72,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2689064829982324496">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2703746758996815929">Para obtener sugerencias útiles de Chrome, activa las notificaciones en la configuración de iOS.</translation>
+<translation id="2728851697704606655">Traduce con Google Lens</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2754428955276778271">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
 
@@ -249,6 +250,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7581063337314642333">Visitar la cuadrícula de pestañas en Chrome</translation>
 <translation id="7599894504325210080">Vista expandida de Autocompletar de Chrome</translation>
 <translation id="7642373780953416937">Recibe alertas sobre cualquier problema de privacidad o seguridad que Chrome detecte automáticamente.</translation>
+<translation id="7660356333829433649">Vuelve a consultar esta información para obtener más sugerencias útiles y aprovechar Chrome al máximo.</translation>
 <translation id="7662994914830945754">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta y activa la sincronización</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
@@ -259,6 +261,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="778855399387580014">Realiza una búsqueda en una nueva pestaña de Chrome.</translation>
 <translation id="7792140019572081272">Chrome protege tus datos sensibles con Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
+<translation id="7861998090118873450">Guarda tus contraseñas en Chrome</translation>
 <translation id="7897703007638178753">Ver las pestañas recientes de Chrome</translation>
 <translation id="7948283758957877064">Novedades de Chrome</translation>
 <translation id="8000174216052461231">Sugerencia de Chrome: Obtén la seguridad más sólida de Chrome</translation>
@@ -294,6 +297,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegas o presionas vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="8603022514504485810">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Activa "Bloquear las pestañas de incógnito cuando cierras Chrome".</translation>
+<translation id="8673726683583791503">Compra con Google Lens</translation>
 <translation id="8727043961453758442">Aprovecha Chrome al máximo</translation>
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra mensajes para acceder a Chrome.</translation>

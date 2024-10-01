@@ -5355,6 +5355,54 @@ El establecimiento de esta política permite controlar la presentación de conte
       Si se establece la política como verdadera, se mostrará la información del sistema de manera forzada.
       Si se establece como falsa, se ocultará la información de manera forzada.
       Si no se establece, se aplicará el comportamiento predeterminado (se mostrará en Canary y el canal para desarrolladores). Los usuarios pueden activar o desactivar la visibilidad en función de una operación específica (p. ej., Alt-V).</translation>
+<translation id="4946124666877421935">Si estableces la política, se especificará una lista de apps web que se instalan de manera silenciosa, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
+
+      Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la app web que se instalará)
+
+      y 6 miembros opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (establece la manera en la que se abrirá la app web; la opción predeterminada es una nueva pestaña)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      te permite anular el nombre de la app si no es una
+      app web progresiva (AWP), o el nombre de la app instalada
+      temporalmente si es una AWP, pero se requiere autenticación para que la
+      instalación pueda completarse. Si se proporcionan
+      <ph name="CUSTOM_NAME_LABEL" /> y
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      se ignorará este último).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (A partir de la versión 99 de <ph name="PRODUCT_OS_NAME" />,
+      y la versión 112 en los demás sistemas operativos de escritorio, te permite
+      anular de forma permanente el nombre de la app para todas las apps web y AWP).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (A partir de la versión 99 de<ph name="PRODUCT_OS_NAME" />,
+      y la versión 112 en los demás sistemas operativos de escritorio, te permite
+      anular el ícono de las apps instaladas. Los íconos deben tener forma cuadrada,
+      un tamaño máximo de 1 MB y uno de los siguientes formatos: jpeg, png, gif, webp o ico.
+      El valor de hash del archivo del ícono debe ser SHA256. Se debe poder acceder a <ph name="URL_LABEL" />
+      sin autenticación para garantizar que se pueda usar el ícono
+      después de instalar la app.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (A partir de la versión 107 de
+      <ph name="PRODUCT_NAME" />). Si se habilita, la <ph name="URL_LABEL" />
+      se instalará como acceso directo, como si se hiciera mediante la opción "Crear acceso directo…"
+      en la GUI del navegador para computadoras.
+      Ten en cuenta que, en caso de que se instale como acceso directo, no se actualizará si
+      cambia el manifiesto de <ph name="URL_LABEL" />.
+      Si se inhabilita o no se establece, la app web en la
+      <ph name="URL_LABEL" /> determinada se instalará normalmente.
+
+      Para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />, consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />.</translation>
 <translation id="494613465159630803">Receptor de Cast</translation>
 <translation id="494924690085329212">Reinicia cuando el usuario sale de su cuenta si se inició Android.</translation>
 <translation id="4950447493143157880">No usar nunca el cliente DNS integrado</translation>

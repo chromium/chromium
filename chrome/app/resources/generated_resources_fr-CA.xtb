@@ -2921,6 +2921,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="304644035656848980">Aperçu de votre microphone</translation>
 <translation id="3046910703532196514">Page Web, terminé</translation>
 <translation id="304747341537320566">Moteurs de reconnaissance vocale</translation>
+<translation id="3047678109605649715">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Libérez de l'espace sur votre appareil et réessayez.</translation>
 <translation id="3048336643003835855">Appareils HID du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Lire (K)</translation>
 <translation id="3048742847101793553">Votre organisation a bloqué ce fichier parce que l'analyse a échoué.</translation>
@@ -7263,7 +7264,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6254892857036829079">Parfaite</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="625827534921607067">Ce réseau sera préféré si plusieurs réseaux configurés ou auxquels vous vous êtes connectés précédemment sont accessibles</translation>
-<translation id="62586649943626337">Organisez vos onglets avec des groupes d'onglets</translation>
 <translation id="6259776178973198997">Actualiser les informations sur les propriétaires Wi-Fi direct</translation>
 <translation id="6262371516389954471">Vos sauvegardes sont téléversées vers les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google.</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
@@ -7744,6 +7744,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6627743754845412571">Le suivi des mains n'est pas autorisé</translation>
 <translation id="6628316682330029452">Les certificats clients sont des certificats qui vous identifient auprès d'autres serveurs.</translation>
 <translation id="6628328486509726751">Téléversement : <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Sécurité renforcée</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> souhaite un accès permanent à un certificat pour pouvoir s'identifier en votre nom.</translation>
 <translation id="6634220840123396409">Je fais confiance au site, groupe de boutons radio, 2 sur 3</translation>

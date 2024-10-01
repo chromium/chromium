@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">Ar norėtumėte, kad kitą kartą „Chromium“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
 <translation id="22313767259766852">Šis adresas šiuo metu išsaugotas naršyklėje „Chromium“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
+<translation id="2270466829363945454">Apsipirkimas</translation>
 <translation id="2313870531055795960">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="231828342043114302">Jei norite gauti pagal pomėgius suasmeninto turinio, prisijunkite prie „Chromium“.</translation>
 <translation id="2326738825692478496">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
@@ -130,6 +131,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="4432744876818348753">Prisijunkite, kad išnaudotumėte visas „Chromium“ galimybes.</translation>
 <translation id="4445228361214254027">Organizacija išjungė galimybę naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
 <translation id="4498832288620833153">Pridedami įvesti URL prie skaitymo sąrašo naršyklėje „Chromium“.</translation>
+<translation id="4508268628669724828">Čia rasite daugiau naudingų patarimų, kaip išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="452436063477828504">Užtikrinkite, kad visada galėtumėte naudoti „Chromium“ duomenis „Google“ paskyroje</translation>
 <translation id="4527452566931097835">Nustatyti „Chromium“ kaip numatytąją?</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7228180817326917122">„Chromium“ patarimas: pasirinkite adreso juostos poziciją</translation>
 <translation id="725427773388857052">„Chromium“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
 <translation id="7269362888766543920">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pabandykite juos pašalinti.</translation>
+<translation id="7279391168585141365">Slaptažodžių išsaugojimas naršyklėje „Chromium“</translation>
 <translation id="7285031092584344905">Pasiekite „Chromium“ slaptažodžius ir kitas funkcijas kitose programose.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Pasirinkti duomenys pašalinti iš „Chromium“ ir sinchronizuojamų įrenginių. Adresu history.google.com gali būti pateikta kitų formų jūsų „Google“ paskyros istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>

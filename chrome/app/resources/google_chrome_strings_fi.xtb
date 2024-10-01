@@ -403,6 +403,7 @@
 <translation id="6134085236017727171">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Nämä välilehdet käyttävät ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä niistä ei-aktiivisia.</translation>
 <translation id="6145313976051292476">Avaa PDF-tiedostot Chromessa</translation>
+<translation id="6150706324143004339">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää Chromen päivittämistä</translation>
 <translation id="6157638032135951407">Kun Chrome-data on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi poistaa sen. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

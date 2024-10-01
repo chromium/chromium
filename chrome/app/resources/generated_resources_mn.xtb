@@ -2927,6 +2927,7 @@
 <translation id="304644035656848980">Таны микрофоны урьдчилан үзэлт</translation>
 <translation id="3046910703532196514">Веб хуудас, дууссан</translation>
 <translation id="304747341537320566">Ярианы хөдөлгүүр</translation>
+<translation id="3047678109605649715">Таны төхөөрөмж дээр ямар ч <ph name="LANGUAGE" /> хэлээрх дуу хоолой байхгүй. Төхөөрөмж дээрх зайгаа цэвэрлээд, дахин оролдоно уу.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> нийлүүлэгчийн HID төхөөрөмжүүд</translation>
 <translation id="3048589239114571785">Тоглуулах (k)</translation>
 <translation id="3048742847101793553">Скан амжилтгүй болсон тул танай байгууллага энэ файлыг блоклосон.</translation>
@@ -7270,7 +7271,6 @@
 <translation id="6254892857036829079">Төгс</translation>
 <translation id="6257602895346497974">Синкийг асаах...</translation>
 <translation id="625827534921607067">Өмнө нь холбогдсон эсвэл тохируулсан нэгээс олон сүлжээ боломжтой байвал энэ сүлжээг илүүд үзнэ</translation>
-<translation id="62586649943626337">Табын бүлгүүдээр табуудаа цэгцэлнэ үү</translation>
 <translation id="6259776178973198997">WiFi Direct-н өмчлөгчдийн мэдээллийг сэргээх</translation>
 <translation id="6262371516389954471">Таны нөөцлөлтийг Google-д байршуулдаг бөгөөд таны Google Бүртгэлийн нууц үгийг ашиглан шифрлэдэг.</translation>
 <translation id="6263082573641595914">Microsoft-ийн CA хувилбар</translation>
@@ -7749,6 +7749,7 @@
 <translation id="6627743754845412571">Таны гарыг хянахыг зөвшөөрөөгүй</translation>
 <translation id="6628316682330029452">Клиентийн сертификат нь таныг бусад серверт тодорхойлох сертификат юм.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" />-ыг татаж авчирсан</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Илүү хүчирхэг аюулгүй байдал</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> нь таны өмнөөс өөрийгөө таниулах сертификат хандалт хийхийг хүсч байна.</translation>
 <translation id="6634220840123396409">Би энэ сайтад итгэдэг, радиа товчийн бүлэг, 3-аас 2</translation>

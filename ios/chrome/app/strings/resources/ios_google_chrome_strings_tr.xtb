@@ -72,6 +72,7 @@ Dikkate alınması gereken noktalar:
 <translation id="2689064829982324496">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="2703746758996815929">Faydalı Chrome ipuçları almak için iOS ayarlarınızdan bildirimleri açın.</translation>
+<translation id="2728851697704606655">Google Lens ile Çevirin</translation>
 <translation id="2736805085127235148">Chrome bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
 <translation id="2754428955276778271">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
 
@@ -249,6 +250,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7581063337314642333">Chrome'daki Sekme Izgarasına Git</translation>
 <translation id="7599894504325210080">Chrome otomatik doldurma genişletilmiş görünümü</translation>
 <translation id="7642373780953416937">Chrome'un sizin için otomatik olarak tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar alabilirsiniz.</translation>
+<translation id="7660356333829433649">Chrome'u en iyi şekilde kullanmanıza yardımcı olacak daha fazla ipucu için daha sonra burayı tekrar kontrol edin.</translation>
 <translation id="7662994914830945754">Chrome kullandığınız her yerde sekmelerinizi görmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="7693590760643069321">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="7698568245838009292">Chrome, Kameraya Erişmek İstiyor</translation>
@@ -259,6 +261,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="778855399387580014">Yeni bir Chrome sekmesinde arama başlatır.</translation>
 <translation id="7792140019572081272">Chrome, Face ID ile hassas verilerinizi güvende tutar.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
+<translation id="7861998090118873450">Şifrelerinizi Chrome'a Kaydedin</translation>
 <translation id="7897703007638178753">Chrome'daki Son Sekmeleri Göster</translation>
 <translation id="7948283758957877064">Chrome'daki Yenilikler</translation>
 <translation id="8000174216052461231">Chrome İpucu: Chrome'un en güçlü güvenlik özelliğinden yararlanın</translation>
@@ -294,6 +297,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Chrome'u kapattığınızda "Gizli sekmeleri kilitleyin" seçeneğini etkinleştirin.</translation>
+<translation id="8673726683583791503">Google Lens ile Alışveriş Yapın</translation>
 <translation id="8727043961453758442">Chrome'dan en iyi şekilde yararlanın</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>

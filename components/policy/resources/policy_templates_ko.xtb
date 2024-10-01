@@ -5223,6 +5223,52 @@ None으로 설정하거나 설정하지 않으면 ARC 앱에서 <ph name="PRODUC
       정책을 False로 설정하면 시스템 정보가 숨겨집니다.
       정책을 설정하지 않으면 기본 설정(Canary/개발자 채널 표시)이
       적용됩니다. 사용자는 작업별로 공개 상태를 전환할 수 있습니다(예: Alt-V).</translation>
+<translation id="4946124666877421935">정책을 설정하면 사용자 상호작용 없이 자동으로 설치하며 사용자가 제거하거나 사용 중지할 수 없는 웹 앱 목록이 지정됩니다.
+
+      정책 목록에 있는 각 항목은 필수 요소인
+      <ph name="URL_LABEL" />(설치할 웹 앱 URL)
+
+      및 다음 6개의 선택 요소로 구성된 객체입니다.
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (웹 앱이 열리는 방식에 관한 설정, 새 탭이 기본값임)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (<ph name="LINUX_OS_NAME" /> 및
+      <ph name="MS_WIN_NAME" /> 바탕화면 바로가기를 만들 경우 True)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> 버전 90부터
+      프로그레시브 웹 앱(PWA)이 아니면 앱 이름을 재정의하거나
+      PWA이지만 설치 완료 전 인증이 필요하면
+      임시로 설치된 앱 이름을
+      재정의할 수 있습니다. <ph name="CUSTOM_NAME_LABEL" /> 및
+      <ph name="FALLBACK_APP_NAME_LABEL" /> 모두
+      제공되는 경우
+      후자는 무시됩니다.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_OS_NAME" />
+      버전 99 및 기타 모든 데스크톱 운영체제의 버전 112부터 모든 웹 앱 및 PWA의
+      앱 이름을 영구적으로 재정의할 수 있습니다.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (<ph name="PRODUCT_OS_NAME" />
+      버전 99 및 기타 모든 데스크톱 운영체제의 버전 112부터 설치된 앱의 앱 아이콘을
+      재정의할 수 있습니다. 아이콘은
+      정사각형이어야 하며 최대 크기는 1MB입니다. 또한 jpeg, png, gif, webp, ico 중 하나의 형식을 사용해야 합니다.
+      해시 값은 아이콘 파일의 SHA256 해시여야 합니다. 앱 설치 시 아이콘을 사용할 수 있도록 <ph name="URL_LABEL" />에 인증 없이 액세스할 수 있어야 합니다.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      버전 107부터) 사용 설정하면 <ph name="URL_LABEL" /> 페이지가
+      데스크톱 브라우저 GUI에서 '단축키 만들기…' 옵션을 사용한 것처럼
+      단축키로 설치됩니다.
+      단축키로 설치된 경우 <ph name="URL_LABEL" />의 매니페스트가 변경되어도
+      해당 페이지는 업데이트되지 않습니다.
+      사용 중지하거나 설정하지 않으면 <ph name="URL_LABEL" />의 웹 앱이
+      일반적인 방식으로 설치됩니다.
+
+      <ph name="PRODUCT_OS_NAME" /> 실행기에 앱을 고정하는 방법은 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 정책을 참고하세요.</translation>
 <translation id="494613465159630803">Cast 수신기</translation>
 <translation id="494924690085329212">Android가 시작되었을 때 사용자가 로그아웃하면 재부팅</translation>
 <translation id="4950447493143157880">내장 DNS 클라이언트 사용 안함</translation>

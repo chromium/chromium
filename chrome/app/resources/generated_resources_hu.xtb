@@ -2930,6 +2930,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="304644035656848980">Mikrofon előnézete</translation>
 <translation id="3046910703532196514">Weboldal -- teljes</translation>
 <translation id="304747341537320566">Beszédmotorok</translation>
+<translation id="3047678109605649715">Nincs <ph name="LANGUAGE" /> nyelvű hang az eszközön. Szabadítson fel tárhelyet az eszközén, majd próbálkozzon újra.</translation>
 <translation id="3048336643003835855">HID-eszközök a következő gyártótól: <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Lejátszás (k)</translation>
 <translation id="3048742847101793553">Szervezete letiltotta ezt a fájlt, mert az ellenőrzés sikertelen volt.</translation>
@@ -7274,7 +7275,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6254892857036829079">Befejezett</translation>
 <translation id="6257602895346497974">Szinkronizálás bekapcsolása…</translation>
 <translation id="625827534921607067">Ez a hálózat akkor lesz előnyben részesítve, ha egynél több korábban csatlakoztatott vagy beállított hálózat áll rendelkezésre</translation>
-<translation id="62586649943626337">Rendezze lapjait lapcsoportokkal</translation>
 <translation id="6259776178973198997">Wi-Fi Direct tulajdonosi adatok frissítése</translation>
 <translation id="6262371516389954471">A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és az Ön Google-fiókjához használt jelszóval titkosítja őket.</translation>
 <translation id="6263082573641595914">Microsoft CA verzió</translation>
@@ -7753,6 +7753,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6627743754845412571">Nem követhetik nyomon az Ön kézmozgását</translation>
 <translation id="6628316682330029452">A klienstanúsítványok olyan tanúsítványok, amelyek más szerverek számára azonosítják Önt.</translation>
 <translation id="6628328486509726751">Feltöltve ekkor: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Nagyobb biztonság</translation>
 <translation id="6630752851777525409">A(z) <ph name="EXTENSION_NAME" /> végleges hozzáférést kér egy tanúsítványhoz, hogy az Ön nevében hitelesíthesse magát.</translation>
 <translation id="6634220840123396409">Megbízom a webhelyben, választógombcsoport, 3/2.</translation>

@@ -1229,6 +1229,7 @@
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
 <translation id="6715020873764921614">Все равно скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
+<translation id="671928215901716392">Блокировать экран</translation>
 <translation id="6719634564325948108">Связать с помощью QR-кода?</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
 <translation id="6734310707649923383">Вы можете посмотреть посещенные страницы или удалить их из истории.</translation>

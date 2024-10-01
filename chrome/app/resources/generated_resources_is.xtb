@@ -7277,7 +7277,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6254892857036829079">Fullkomið</translation>
 <translation id="6257602895346497974">Kveikja á samstillingu...</translation>
 <translation id="625827534921607067">Þetta net hefur forgang ef fleiri en eitt net sem áður hafa verið notuð eða grunnstillt eru í boði.</translation>
-<translation id="62586649943626337">Flokkaðu flipa með „flipahópum“</translation>
 <translation id="6259776178973198997">Endurnýja upplýsingar um WiFi Direct-eigendur</translation>
 <translation id="6262371516389954471">Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
 <translation id="6263082573641595914">CA-útgáfa Microsoft</translation>
@@ -7758,6 +7757,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6627743754845412571">Ekki leyfilegt að rekja handahreyfingar</translation>
 <translation id="6628316682330029452">Biðlaravottorð eru vottorð sem auðkenna þig gagnvart öðrum biðlurum.</translation>
 <translation id="6628328486509726751">Hlaðið inn <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Sterkara öryggi</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> vill varanlegan aðgang að vottorði til að sannvotta sig sjálft fyrir þína hönd.</translation>
 <translation id="6634220840123396409">Ég treysti vefsvæðinu, hringhnappahópur tvö af þremur</translation>

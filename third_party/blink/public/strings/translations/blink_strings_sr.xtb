@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Вредност мора да буде <ph name="MINIMUM_DATE_OR_TIME" /> или новија.</translation>
 <translation id="2761667185364618470">Потврдите избор у овом пољу за потврду уколико желите да наставите.</translation>
 <translation id="2908441821576996758">Унесите листу имејл адреса раздвојених зарезима.</translation>
+<translation id="2940013921954129954">Прецизна локација је дозвољена</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Унесите важећу вредност. Поље није попуњено или садржи неважећи датум.</translation>
 <translation id="310520048233152454">Унесите URL адресу.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Лош квалитет снимка</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6820355525329141109">Учитавање додатне компоненте није успело.</translation>
+<translation id="688706781007114099">Користите локацију</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Продужите овај текст на бар <ph name="MIN_CHARACTERS" /> знак(ов)а (тренутно користите 1 знак).</translation>
 <translation id="709897737746224366">Изаберите захтевани формат.</translation>

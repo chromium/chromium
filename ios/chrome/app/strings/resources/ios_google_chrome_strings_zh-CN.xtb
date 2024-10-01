@@ -72,6 +72,7 @@
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2703746758996815929">若要获取实用 Chrome 提示，请在 iOS 设置中开启通知。</translation>
+<translation id="2728851697704606655">使用 Google 智能镜头翻译</translation>
 <translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2754428955276778271">部分 Chrome 数据尚未保存到您的 Google 账号。
 
@@ -247,6 +248,7 @@
 <translation id="7581063337314642333">访问 Chrome 中的标签页网格</translation>
 <translation id="7599894504325210080">Chrome 自动填充视图已展开</translation>
 <translation id="7642373780953416937">接收有关 Chrome 为您自动检测到的任何隐私或安全问题的提醒。</translation>
+<translation id="7660356333829433649">欢迎回来查看更多实用提示，了解如何充分利用 Chrome。</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
@@ -257,6 +259,7 @@
 <translation id="778855399387580014">在新的 Chrome 标签页中发起搜索。</translation>
 <translation id="7792140019572081272">Chrome 可利用面容 ID 确保您的敏感数据安全。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
+<translation id="7861998090118873450">在 Chrome 中保存密码</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 打开的标签页</translation>
 <translation id="7948283758957877064">Chrome 中的新变化</translation>
 <translation id="8000174216052461231">Chrome 提示：获享 Chrome 的最强安全保护</translation>
@@ -290,6 +293,7 @@
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8630122478628016441">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>
+<translation id="8673726683583791503">使用 Google 智能镜头购物</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>

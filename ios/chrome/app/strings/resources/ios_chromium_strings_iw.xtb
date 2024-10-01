@@ -50,6 +50,7 @@
 <translation id="2195025571279539885">‏רוצה ש-Chromium יציע בפעם הבאה לתרגם דפים ב<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
 <translation id="22313767259766852">‏הכתובת הזו שמורה ב-Chromium. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">‏כלומר, Chromium תמיד יבקש את האתר למחשב.</translation>
+<translation id="2270466829363945454">קניות</translation>
 <translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
 <translation id="231828342043114302">‏כדי לקבל תוכן בהתאמה אישית על סמך תחומי העניין שלך, עליך להיכנס אל Chromium.</translation>
 <translation id="2326738825692478496">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
@@ -130,6 +131,7 @@
 <translation id="4432744876818348753">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון.</translation>
 <translation id="4445228361214254027">‏הארגון שלך השבית את האפשרות להשתמש בנתוני Chromium ולשמור אותם בחשבון Google. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
 <translation id="4498832288620833153">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chromium.</translation>
+<translation id="4508268628669724828">‏כדאי לחזור לכאן כדי לקבל עוד טיפים שימושיים שיעזרו לך להפיק את המירב מ-Chromium.</translation>
 <translation id="452436063477828504">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="4527452566931097835">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -241,6 +243,7 @@
 <translation id="7228180817326917122">‏טיפ ל-Chromium: אפשר לבחור את המיקום של סרגל הכתובות</translation>
 <translation id="725427773388857052">‏Chromium יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="7269362888766543920">‏תוספים מסוימים גורמים ל-Chromium לקרוס. כדאי להסיר אותם.</translation>
+<translation id="7279391168585141365">‏שמירת הסיסמאות ב-Chromium</translation>
 <translation id="7285031092584344905">‏גישה לסיסמאות ולעוד אפשרויות ב-Chromium מאפליקציות נוספות.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">‏הנתונים שבחרת הוסרו מ-Chromium ומהמכשירים המסונכרנים. ייתכן שבכתובת history.google.com יהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>

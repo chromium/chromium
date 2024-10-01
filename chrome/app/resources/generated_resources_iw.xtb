@@ -2930,6 +2930,7 @@
 <translation id="304644035656848980">תצוגה מקדימה של המיקרופון</translation>
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
+<translation id="3047678109605649715">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך לפנות מקום במכשיר ולנסות שוב.</translation>
 <translation id="3048336643003835855">‏מכשירי HID מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏הפעלה (k)</translation>
 <translation id="3048742847101793553">הקובץ הזה נחסם על ידי הארגון שלך כי הסריקה נכשלה.</translation>
@@ -7275,7 +7276,6 @@
 <translation id="6254892857036829079">מושלם</translation>
 <translation id="6257602895346497974">הפעלת סנכרון...</translation>
 <translation id="625827534921607067">אם יש יותר מרשת אחת שכבר חוברה או הוגדרה, הרשת הזו תקבל עדיפות</translation>
-<translation id="62586649943626337">מארגנים את הכרטיסיות באמצעות קבוצות כרטיסיות</translation>
 <translation id="6259776178973198997">‏רענון פרטי הבעלים של Wi-Fi ישיר</translation>
 <translation id="6262371516389954471">‏הגיבויים נשמרים ב-Google ומוצפנים באמצעות הסיסמה של חשבון Google שלך.</translation>
 <translation id="6263082573641595914">‏גרסת רשות אישורים של Microsoft</translation>
@@ -7758,6 +7758,7 @@
 <translation id="6627743754845412571">אין הרשאה לעקוב אחר תנועות הידיים שלך</translation>
 <translation id="6628316682330029452">אישורי לקוח מאפשרים לשרתים אחרים לזהות אותך.</translation>
 <translation id="6628328486509726751">הועלה בתאריך <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">רמת אבטחה גבוהה יותר</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> מעוניין בגישה קבועה לאישור כדי לאמת את עצמו בשמך.</translation>
 <translation id="6634220840123396409">האתר מהימן בעיניי, קבוצת לחצני בחירה, 2 מתוך 3</translation>

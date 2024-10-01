@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Uvećavajte ili umanjujte tekst i slike za sve sajtove koje posećujete</translation>
 <translation id="1984937141057606926">Dozvoljeni, osim treće strane</translation>
 <translation id="1985247341569771101">Kada je uključeno, sajtovi mogu da koriste senzore pokreta uređaja. Kada je isključeno, sajtovi ne mogu da koriste senzore pokreta.</translation>
+<translation id="1985716030964443178">Time ćete resetovati sve sajtove na listi na podrazumevano zumiranje</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL sajta</translation>
 <translation id="2004697686368036666">Funkcije na nekim sajtovima mogu da ne rade</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2678468611080193228">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu, ali veću verovatnoću da će funkcije sajta raditi</translation>
+<translation id="2682367912565197520">Izbriši sačuvani nivo zumiranja</translation>
 <translation id="2683434792633810741">Želite da izbrišete i resetujete?</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Imejl adrese</translation>
@@ -209,6 +211,7 @@
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Ne dozvolite sajtovima da znaju kada aktivno koristite ovaj uređaj</translation>
 <translation id="4412992751769744546">Dozvoli kolačiće treće strane</translation>
+<translation id="4419929467120297501">Chrome onemogućava sajtovima da vas prate pomoću kolačića treće strane dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Iskačući prozori i preusmeravanja</translation>
 <translation id="443552056913301231">Ovom radnjom ćete izbrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Isključi zvuk za određeni sajt</translation>
@@ -230,6 +233,7 @@
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite Bezbedno pregledanje</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
+<translation id="4816495437032298535">Sačuvano zumiranje za sajtove</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="483914009762354899">Uvrsti sve sajtove u okviru ovog domena</translation>
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
@@ -266,6 +270,7 @@
 <translation id="5246825184569358663">Ovom radnjom ćete izbrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="DOMAIN" /> i sve sajtove u okviru njega</translation>
 <translation id="5264323282659631142">Uklonite „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Prevucite od vrha ekrana i dodirnite dugme Nazad da biste izašli iz režima celog ekrana.</translation>
+<translation id="5292915569214461965">Onemogućili ste sajtovima da vas prate pomoću kolačića treće strane dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kada je uključeno, sajtovi mogu da traže da koriste informacije koje su sačuvali o vama. Kada je isključeno, sajtovi ne mogu da traže da koriste informacije koje su sačuvali o vama.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Važi</translation>
@@ -377,6 +382,7 @@
 <translation id="6787751205395685251">Izaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6818926723028410516">Izaberite stavke</translation>
+<translation id="6837658163275294267">Chrome sprečava većinu sajtova da koriste kolačiće treće strane da bi vas pratili dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Podrazumevano koristite Chrome</translation>
 <translation id="6840760312327750441">Da biste grupisali kartice, dodirnite karticu i zadržite je. Zatim je prevucite na drugu karticu.</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može da čita NFC</translation>
@@ -441,6 +447,7 @@
 <translation id="7835852323729233924">Reprodukcija medija</translation>
 <translation id="783819812427904514">Uključite zvuk videa</translation>
 <translation id="7846076177841592234">Otkaži izbor</translation>
+<translation id="7881140103901777395">Chrome sprečava većinu sajtova da koriste kolačiće treće strane. Međutim, kolačići treće strane su dozvoljeni na ovom sajtu zato što se Chrome oslanja na njih da bi pružao osnovne usluge.\n\nPosetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dozvoli zvuk za određeni sajt.</translation>
 <translation id="789180354981963912">Blokirajte kolačiće trećih strana u režimu bez arhiviranja:</translation>
 <translation id="7940722705963108451">Podseti me</translation>
@@ -503,6 +510,7 @@
 <translation id="8721719390026067591">Kada je uključeno, sajtovi mogu da pitaju da traže Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da traže Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8737426583868847403">Ovde će se prikazivati sajtovi za koje čuvate prilagođeni nivo zumiranja</translation>
 <translation id="8751914237388039244">Izaberite sliku</translation>
 <translation id="8800034312320686233">Da li sajt ne radi?</translation>
 <translation id="8801436777607969138">Blokirajte JavaScript za određeni sajt.</translation>

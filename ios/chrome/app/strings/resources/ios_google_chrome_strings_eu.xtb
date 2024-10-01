@@ -72,6 +72,7 @@ Kontuan hartu beharrekoak:
 <translation id="2689064829982324496">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chrome-ko saioa<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
 <translation id="2703746758996815929">Chrome-ri buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
+<translation id="2728851697704606655">Itzuli Google Lens-ekin</translation>
 <translation id="2736805085127235148">Chrome-ren jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="2754428955276778271">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.
 
@@ -249,6 +250,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7581063337314642333">Bisitatu fitxen sareta Chrome-n</translation>
 <translation id="7599894504325210080">Chrome-ren betetze automatikoaren ikuspegi zabaldua</translation>
 <translation id="7642373780953416937">Jaso Chrome-k zuretzat automatikoki hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
+<translation id="7660356333829433649">Itzuli hona Chrome-ri etekinik handiena ateratzeko aholku erabilgarri gehiago jasotzeko.</translation>
 <translation id="7662994914830945754">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>
@@ -259,6 +261,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="778855399387580014">Hasi bilaketa Chrome-ren fitxa berri batean.</translation>
 <translation id="7792140019572081272">Chrome-k Face ID bidez babesten ditu zure kontuzko datuak.</translation>
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
+<translation id="7861998090118873450">Gorde pasahitzak Chrome-n</translation>
 <translation id="7897703007638178753">Ikusi Chrome-ren azkenaldiko fitxak</translation>
 <translation id="7948283758957877064">Chrome-ren berritasunak</translation>
 <translation id="8000174216052461231">Chrome-rako aholkua: lortu Chrome-ren segurtasun sendoena</translation>
@@ -294,6 +297,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8558480467877843976">Orain, Chrome erabili ahalko duzu arakatzen duzunean, edo mezuetako, dokumentuetako eta aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="8603022514504485810">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Aktibatu "Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean".</translation>
+<translation id="8673726683583791503">Arakatu produktuak Google Lens-ekin</translation>
 <translation id="8727043961453758442">Atera ahalik eta etekin handiena Chrome-ri</translation>
 <translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
