@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
 
-#include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 
 namespace blink {
 

@@ -15,7 +15,6 @@
 namespace blink {
 
 enum class AxisEdge { kStart, kCenter, kEnd, kFirstBaseline, kLastBaseline };
-enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 struct GridItemIndices {
   wtf_size_t begin{kNotFound};

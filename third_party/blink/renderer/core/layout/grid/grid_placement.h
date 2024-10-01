@@ -7,12 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class GridItems;
 
 // This class encapsulates the Grid Item Placement Algorithm described by
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
