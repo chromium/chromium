@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -322,8 +321,10 @@ bool UnifiedSideSearchController::ShouldAutomaticallyTriggerAfterNavigation(
   const GURL& previously_committed_url =
       navigation_handle->GetPreviousPrimaryMainFrameURL();
   const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
-  const int auto_triggering_return_count =
-      features::kSideSearchAutoTriggeringReturnCount.Get();
+
+  // How many times a user has to return to a given SRP before we automatically
+  // trigger the side search side panel for that SRP on a subsequent navigation.
+  constexpr int kAutoTriggeringReturnCount = 2;
 
   // Trigger the side panel only if we've returned to the same SRP n times and
   // this is the first navigation after navigating away from the Google SRP. We
@@ -332,7 +333,7 @@ bool UnifiedSideSearchController::ShouldAutomaticallyTriggerAfterNavigation(
   // etc.
   return is_renderer_initiated &&
          tab_contents_helper->returned_to_previous_srp_count() ==
-             auto_triggering_return_count &&
+             kAutoTriggeringReturnCount &&
          previously_committed_url == tab_contents_helper->last_search_url();
 }
 

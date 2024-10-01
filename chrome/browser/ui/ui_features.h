@@ -167,9 +167,6 @@ BASE_DECLARE_FEATURE(kSideSearch);
 BASE_DECLARE_FEATURE(kSideSearchFeedback);
 BASE_DECLARE_FEATURE(kSearchWebInSidePanel);
 
-BASE_DECLARE_FEATURE(kSideSearchAutoTriggering);
-extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
-
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
