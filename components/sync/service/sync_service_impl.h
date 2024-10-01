@@ -466,10 +466,6 @@ class SyncServiceImpl : public SyncService,
   // an action set on it.
   SyncProtocolError last_actionable_error_;
 
-  // Tracks the set of failed data types (those that encounter an error
-  // or must delay loading for some reason).
-  DataTypeStatusTable::TypeErrorMap data_type_error_map_;
-
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 
   std::unique_ptr<SyncStoppedReporter> sync_stopped_reporter_;

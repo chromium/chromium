@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_DATA_TYPE_MANAGER_MOCK_H_
 #define COMPONENTS_SYNC_TEST_DATA_TYPE_MANAGER_MOCK_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/local_data_description.h"
@@ -71,10 +71,10 @@ class DataTypeManagerMock : public DataTypeManager {
               GetEntityCountsForDebugging,
               (base::RepeatingCallback<void(const TypeEntitiesCount&)>),
               (const override));
-  MOCK_METHOD(const DataTypeController::TypeMap&,
-              GetControllerMap,
-              (),
-              (const override));
+  MOCK_METHOD(DataTypeController*,
+              GetControllerForTest,
+              (DataType type),
+              (override));
 
  private:
   DataTypeManager::ConfigureResult result_;

@@ -473,6 +473,11 @@ void DataTypeManagerImpl::GetEntityCountsForDebugging(
   }
 }
 
+DataTypeController* DataTypeManagerImpl::GetControllerForTest(DataType type) {
+  CHECK(base::Contains(controllers_, type));
+  return controllers_.at(type).get();
+}
+
 // static
 DataTypeSet DataTypeManagerImpl::GetDataTypesInState(
     DataTypeConfigState state,
@@ -885,8 +890,7 @@ void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
   base::TimeDelta configure_time = base::Time::Now() - last_restart_time_;
 
   ConfigureResult result = {.status = status,
-                            .requested_types = preferred_types_,
-                            .data_type_status_table = data_type_status_table_};
+                            .requested_types = preferred_types_};
 
   const std::string prefix_uma =
       (last_requested_context_.reason == CONFIGURE_REASON_NEW_CLIENT)
@@ -1021,11 +1025,6 @@ void DataTypeManagerImpl::GetLocalDataDescriptions(
         base::BindOnce(&JoinTypeAndLocalDataDescription, type)
             .Then(barrier_callback));
   }
-}
-
-const DataTypeController::TypeMap& DataTypeManagerImpl::GetControllerMap()
-    const {
-  return controllers_;
 }
 
 void DataTypeManagerImpl::TriggerLocalDataMigration(DataTypeSet types) {

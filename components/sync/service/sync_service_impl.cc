@@ -459,15 +459,20 @@ void SyncServiceImpl::StartSyncingWithServer() {
 }
 
 DataTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
   return data_type_manager_->GetRegisteredDataTypes();
 }
 
 bool SyncServiceImpl::HasAnyDatatypeErrorForTest(DataTypeSet types) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto type : types) {
-    auto it = data_type_error_map_.find(type);
-    if (it != data_type_error_map_.end() &&
-        it->second.error_type() == syncer::SyncError::DATATYPE_ERROR) {
+  CHECK_IS_TEST();
+  CHECK(data_type_manager_);
+
+  for (DataType type : types) {
+    DataTypeController* controller =
+        data_type_manager_->GetControllerForTest(type);  // IN-TEST
+    if (controller && controller->state() == DataTypeController::FAILED) {
       return true;
     }
   }
@@ -477,12 +482,14 @@ bool SyncServiceImpl::HasAnyDatatypeErrorForTest(DataTypeSet types) const {
 void SyncServiceImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(DataTypeSet)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
+
   if (!engine_ || !engine_->IsInitialized()) {
     std::move(cb).Run(DataTypeSet());
     return;
   }
 
-  engine_->GetThrottledDataTypesForTest(std::move(cb));
+  engine_->GetThrottledDataTypesForTest(std::move(cb));  // IN-TEST
 }
 
 // static
@@ -1239,7 +1246,6 @@ void SyncServiceImpl::OnNewInvalidatedDataTypes() {
 void SyncServiceImpl::OnConfigureDone(
     const DataTypeManager::ConfigureResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  data_type_error_map_ = result.data_type_status_table.GetAllErrors();
 
   DVLOG(1) << "SyncServiceImpl::OnConfigureDone called with status: "
            << result.status;
@@ -1493,17 +1499,18 @@ void SyncServiceImpl::OnSelectedTypesPrefChange() {
 
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
   return sync_client_.get();
 }
 
 void SyncServiceImpl::ReportDataTypeErrorForTest(DataType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
-  CHECK(data_type_manager_->GetControllerMap().find(type) !=
-        data_type_manager_->GetControllerMap().end());
-  data_type_manager_->GetControllerMap()
-      .find(type)
-      ->second->ReportBridgeErrorForTest();  // IN-TEST
+
+  DataTypeController* controller =
+      data_type_manager_->GetControllerForTest(type);  // IN-TEST
+  CHECK(controller);
+  controller->ReportBridgeErrorForTest();  // IN-TEST
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
@@ -1720,13 +1727,15 @@ SyncCycleSnapshot SyncServiceImpl::GetLastCycleSnapshotForDebugging() const {
 void SyncServiceImpl::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
-  engine_->HasUnsyncedItemsForTest(std::move(cb));
+  engine_->HasUnsyncedItemsForTest(std::move(cb));  // IN-TEST
 }
 
 BackendMigrator* SyncServiceImpl::GetBackendMigratorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
   return migrator_.get();
 }
 
@@ -2112,11 +2121,13 @@ void SyncServiceImpl::ReconfigureDatatypeManager(
 
 bool SyncServiceImpl::IsRetryingAccessTokenFetchForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return auth_manager_->IsRetryingAccessTokenFetchForTest();
+  CHECK_IS_TEST();
+  return auth_manager_->IsRetryingAccessTokenFetchForTest();  // IN-TEST
 }
 
 std::string SyncServiceImpl::GetAccessTokenForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
   return auth_manager_->access_token();
 }
 
@@ -2159,7 +2170,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
 
   // If a previous request (with the wrong callback) already failed, the next
   // one would be backed off, which breaks tests. So reset the backoff.
-  auth_manager_->ResetRequestAccessTokenBackoffForTest();
+  auth_manager_->ResetRequestAccessTokenBackoffForTest();  // IN-TEST
 
   create_http_post_provider_factory_cb_ = create_http_post_provider_factory_cb;
 
@@ -2176,6 +2187,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
 
 SyncEncryptionHandler::Observer*
 SyncServiceImpl::GetEncryptionObserverForTest() {
+  CHECK_IS_TEST();
   return &crypto_;
 }
 
@@ -2250,6 +2262,7 @@ void SyncServiceImpl::GetLocalDataDescriptions(
     DataTypeSet types,
     base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Some code paths in GetLocalDataDescriptionsImpl() are synchronous, e.g.
   // if `types` have synchronous DataTypeLocalDataBatchUploader implementations.
   // Having an API that is sometime sync and sometimes async can be unexpected

@@ -8,19 +8,20 @@
 #include <set>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/model/sync_error.h"
-#include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/data_type_status_table.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/type_status_map_for_debugging.h"
 
 namespace syncer {
 
 struct ConfigureContext;
 class DataTypeConfigurer;
+class DataTypeController;
 struct LocalDataDescription;
 
 // This interface is for managing the start up and shut down life cycle
@@ -46,7 +47,6 @@ class DataTypeManager {
   struct ConfigureResult {
     ConfigureStatus status = ABORTED;
     DataTypeSet requested_types;
-    DataTypeStatusTable data_type_status_table;
   };
 
   virtual ~DataTypeManager() = default;
@@ -165,10 +165,7 @@ class DataTypeManager {
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const = 0;
 
-  // Exposes direct access to underlying controllers. Avoid using if possible,
-  // as DataTypeManager usually offers higher-level APIs.
-  // TODO(crbug.com/40901755): Remove this getter.
-  virtual const DataTypeController::TypeMap& GetControllerMap() const = 0;
+  virtual DataTypeController* GetControllerForTest(DataType type) = 0;
 };
 
 }  // namespace syncer

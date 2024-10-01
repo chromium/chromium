@@ -62,20 +62,13 @@ class MockDataTypeManagerObserver : public DataTypeManagerObserver {
   MOCK_METHOD(void, OnConfigureStart, (), (override));
 };
 
-MATCHER_P(ConfigureSucceededWithFailedTypes, error_map, "") {
+MATCHER(ConfigureSucceeded, "") {
   if (arg.status != DataTypeManager::OK) {
     *result_listener << "Status not OK: "
                      << DataTypeManager::ConfigureStatusToString(arg.status);
     return false;
   }
-  return testing::ExplainMatchResult(
-      error_map, arg.data_type_status_table.GetAllErrors(), result_listener);
-}
-
-MATCHER(ConfigureSucceeded, "") {
-  return testing::ExplainMatchResult(
-      ConfigureSucceededWithFailedTypes(testing::IsEmpty()), arg,
-      result_listener);
+  return true;
 }
 
 MATCHER(ConfigureAborted, "") {
@@ -261,11 +254,8 @@ class DataTypeManagerImplTest : public testing::Test {
   // been previously added via InitDataTypeManager().
   FakeDataTypeController* GetController(DataType data_type) const {
     CHECK(dtm_);
-    auto it = dtm_->GetControllerMap().find(data_type);
-    if (it == dtm_->GetControllerMap().end()) {
-      return nullptr;
-    }
-    return static_cast<FakeDataTypeController*>(it->second.get());
+    return static_cast<FakeDataTypeController*>(
+        dtm_->GetControllerForTest(data_type));
   }
 
   // Gets the batch uploader for the given type, which should have
@@ -469,12 +459,13 @@ TEST_F(DataTypeManagerImplTest, OneWaitingForCrypto) {
 
   // Step 4.
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(PASSWORDS, IsCryptoError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
   Configure({PASSWORDS});
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(DataTypeSet(), FinishDownload());  // Control types.
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(PASSWORDS));
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(PASSWORDS)->state());
 
   // Step 5.
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
@@ -981,8 +972,7 @@ TEST_F(DataTypeManagerImplTest, PrioritizedConfigurationDownloadError) {
   // failure.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   // Initially only PRIORITY_PREFERENCES is configured.
   Configure({BOOKMARKS, PRIORITY_PREFERENCES});
@@ -1040,13 +1030,13 @@ TEST_F(DataTypeManagerImplTest, FailingPreconditionKeepData) {
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
-  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(0U, configurer_.connected_types().size());
 
   // Bookmarks should start normally now.
@@ -1079,14 +1069,14 @@ TEST_F(DataTypeManagerImplTest, FailingPreconditionClearData) {
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsPolicyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
 
-  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(0U, configurer_.connected_types().size());
 
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
@@ -1102,8 +1092,7 @@ TEST_F(DataTypeManagerImplTest, UnreadyTypeResetReconfigure) {
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   // Second Configure sets a flag to perform reconfiguration after the first one
@@ -1116,8 +1105,9 @@ TEST_F(DataTypeManagerImplTest, UnreadyTypeResetReconfigure) {
   // Reconfiguration should update unready errors. Bookmarks shouldn't start.
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   EXPECT_EQ(DataTypeSet(), FinishDownload());  // regular types
-  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(0U, configurer_.connected_types().size());
 }
 
@@ -1129,13 +1119,13 @@ TEST_F(DataTypeManagerImplTest, UnreadyTypeLaterReady) {
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
-  ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   ASSERT_EQ(0U, configurer_.connected_types().size());
 
   // Bookmarks should start normally now.
@@ -1152,6 +1142,8 @@ TEST_F(DataTypeManagerImplTest, UnreadyTypeLaterReady) {
   EXPECT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());
 
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_TRUE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(1U, configurer_.connected_types().size());
 }
 
@@ -1166,17 +1158,16 @@ TEST_F(DataTypeManagerImplTest, MultipleUnreadyTypesLaterReadyAtTheSameTime) {
   // Both types are never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_,
-              OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                  UnorderedElementsAre(Pair(BOOKMARKS, IsUnreadyError()),
-                                       Pair(PREFERENCES, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS, PREFERENCES});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  ASSERT_FALSE(dtm_->GetActiveDataTypes().Has(PREFERENCES));
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   ASSERT_EQ(DataTypeController::NOT_RUNNING,
             GetController(PREFERENCES)->state());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   ASSERT_EQ(0U, configurer_.connected_types().size());
 
   // Both types should start normally now.
@@ -1215,10 +1206,7 @@ TEST_F(DataTypeManagerImplTest, MultipleUnreadyTypesLaterOneOfThemReady) {
   // Both types are never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_,
-              OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                  UnorderedElementsAre(Pair(BOOKMARKS, IsUnreadyError()),
-                                       Pair(PREFERENCES, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS, PREFERENCES});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
@@ -1238,9 +1226,7 @@ TEST_F(DataTypeManagerImplTest, MultipleUnreadyTypesLaterOneOfThemReady) {
             GetController(PREFERENCES)->state());
 
   // Set the expectations for the reconfiguration - just prefs are unready now.
-  EXPECT_CALL(observer_,
-              OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                  ElementsAre(Pair(PREFERENCES, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   EXPECT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());
@@ -1258,8 +1244,7 @@ TEST_F(DataTypeManagerImplTest,
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsUnreadyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
@@ -1303,13 +1288,13 @@ TEST_F(DataTypeManagerImplTest, ModelLoadError) {
   // Bookmarks is never started due to hitting a model load error.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   // No need to finish the download of BOOKMARKS since it was never started.
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
   EXPECT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
   EXPECT_EQ(0U, configurer_.connected_types().size());
@@ -1337,11 +1322,11 @@ TEST_F(DataTypeManagerImplTest, ErrorBeforeStartup) {
   EXPECT_CALL(observer_, OnConfigureStart());
   Configure({BOOKMARKS, PREFERENCES});
 
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   EXPECT_EQ(AddControlTypesTo({PREFERENCES}), FinishDownload());
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
   EXPECT_TRUE(dtm_->GetActiveDataTypes().Has(PREFERENCES));
   EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
@@ -1673,11 +1658,12 @@ TEST_F(DataTypeManagerImplTest, ShouldDoNothingForAlreadyStoppedTypes) {
   // Bookmarks is never started due to failing preconditions.
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsPolicyError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS});
-  EXPECT_EQ(DataTypeSet(), FinishDownload());
+  ASSERT_EQ(DataTypeSet(), FinishDownload());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
   // No need to finish the download of BOOKMARKS since it was never started.
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
 
@@ -1701,8 +1687,7 @@ TEST_F(DataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
       ModelError(FROM_HERE, "test error"));
   ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   // Data type error should cause re-configuration.
   task_environment_.RunUntilIdle();
@@ -1727,8 +1712,7 @@ TEST_F(DataTypeManagerImplTest, ShouldFinishConfigureIfSomeTypesTimeout) {
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   Configure({BOOKMARKS, PREFERENCES});
 
@@ -1843,8 +1827,7 @@ TEST_F(DataTypeManagerImplTest, ShouldHandleStoppingTypesFailure) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
 
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   // BOOKMARKS should not be started since it is in a FAILED state.
   Configure({BOOKMARKS});
@@ -1877,8 +1860,7 @@ TEST_F(DataTypeManagerImplTest, ShouldHandleStoppedTypesFailure) {
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, OnConfigureStart());
-  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceededWithFailedTypes(
-                             ElementsAre(Pair(BOOKMARKS, IsDataTypeError())))));
+  EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
   // BOOKMARKS should not be started since it is in a FAILED state.
   Configure({BOOKMARKS});

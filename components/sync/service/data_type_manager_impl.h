@@ -15,6 +15,7 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
+#include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/model_load_manager.h"
 
 namespace syncer {
@@ -71,7 +72,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
-  const DataTypeController::TypeMap& GetControllerMap() const override;
+  DataTypeController* GetControllerForTest(DataType type) override;
 
   // `ModelLoadManagerDelegate` implementation.
   void OnAllDataTypesReadyForConfigure() override;
