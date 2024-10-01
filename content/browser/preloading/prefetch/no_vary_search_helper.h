@@ -69,8 +69,11 @@ enum class MatchType {
   // URL is exactly the same.
   kExact,
 
-  // URL is equivalent due to the received No-Vary-Search data.
-  kNoVarySearch,
+  // URL is equivalent due to the received No-Vary-Search header.
+  kNoVarySearchHeader,
+
+  // URL is equivalent due to the No-Vary-Search hint.
+  kNoVarySearchHint,
 
   // The non-ref/query parts of URL are the same.
   kOther
@@ -156,9 +159,19 @@ void IterateCandidates(
       continue;
     }
 
-    const auto match_type = it->second->IsNoVarySearchHeaderMatch(key_url)
-                                ? MatchType::kNoVarySearch
-                                : MatchType::kOther;
+    const MatchType match_type = [&]() {
+      const auto& prefetch_container = it->second;
+      if (prefetch_container->IsNoVarySearchHeaderMatch(key_url)) {
+        return MatchType::kNoVarySearchHeader;
+      } else if (prefetch_container->ShouldWaitForNoVarySearchHeader(key_url)) {
+        return MatchType::kNoVarySearchHint;
+      } else {
+        return MatchType::kOther;
+      }
+
+      NOTREACHED();
+    }();
+
     if (callback.Run(it->second, match_type) ==
         IterateCandidateResult::kFinish) {
       break;
@@ -182,13 +195,14 @@ base::WeakPtr<PrefetchContainer> MatchUrl(
              const Value& prefetch_container, MatchType match_type) {
             switch (match_type) {
               case MatchType::kExact:
-              case MatchType::kNoVarySearch:
+              case MatchType::kNoVarySearchHeader:
                 // TODO(crbug.com/40064891): Revisit which PrefetchContainer to
                 // return when there are multiple candidates. Currently we
                 // return the first PrefetchContainer in URL lexicographic
                 // order.
                 *result = prefetch_container->GetWeakPtr();
                 return IterateCandidateResult::kFinish;
+              case MatchType::kNoVarySearchHint:
               case MatchType::kOther:
                 return IterateCandidateResult::kContinue;
             }

@@ -261,6 +261,47 @@ concept MatchCandidate =
       ostream << t;
     };
 
+// Do not use it outside of this header.
+//
+// Collects "potentially matching" `PrefetchContainer`s.
+//
+// "potentially matching" is either:
+//
+// - Exact match
+// - No-Vary-Search header match.
+// - No-Vary-Search hint match and non redirect header is not still arrived.
+template <class T>
+  requires MatchCandidate<T>
+std::vector<T*> CollectPotentialMatchPrefetchContainers(
+    const std::map<PrefetchContainer::Key, std::unique_ptr<T>>& prefetches,
+    const PrefetchContainer::Key& navigated_key) {
+  std::vector<T*> result;
+
+  // Note that exact match one is at the head if exists by the property of
+  // `IterateCandidates()`.
+  no_vary_search::IterateCandidates(
+      navigated_key, prefetches,
+      base::BindRepeating(
+          [](const PrefetchContainer::Key& navigated_key,
+             std::vector<T*>* result,
+             const std::unique_ptr<T>& prefetch_container,
+             no_vary_search::MatchType match_type) {
+            switch (match_type) {
+              case no_vary_search::MatchType::kExact:
+              case no_vary_search::MatchType::kNoVarySearchHeader:
+              case no_vary_search::MatchType::kNoVarySearchHint:
+                result->push_back(prefetch_container.get());
+                break;
+              case no_vary_search::MatchType::kOther:
+                break;
+            }
+            return no_vary_search::IterateCandidateResult::kContinue;
+          },
+          navigated_key, base::Unretained(&result)));
+
+  return result;
+}
+
 // Collects `PrefetchContainer`s that are expected to match to `navigated_key`.
 //
 // This is defined with the template for testing the first phase of
@@ -272,43 +313,15 @@ std::vector<T*> CollectMatchCandidatesGeneric(
     const PrefetchContainer::Key& navigated_key,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
-  std::vector<T*> matches;
-  std::vector<T*> hint_matches;
-  DVLOG(1) << "CollectMatchCandidatesGeneric(" << navigated_key << ")";
-  // Search for an exact or No-Vary-Search match first.
-  no_vary_search::IterateCandidates(
-      navigated_key, prefetches,
-      base::BindRepeating(
-          [](const PrefetchContainer::Key& navigated_key,
-             std::vector<T*>* matches, std::vector<T*>* hint_matches,
-             const std::unique_ptr<T>& prefetch_container,
-             no_vary_search::MatchType match_type) {
-            switch (match_type) {
-              case no_vary_search::MatchType::kExact:
-              case no_vary_search::MatchType::kNoVarySearch:
-                matches->push_back(prefetch_container.get());
-                break;
-              case no_vary_search::MatchType::kOther:
-                if (prefetch_container->ShouldWaitForNoVarySearchHeader(
-                        navigated_key.url())) {
-                  hint_matches->push_back(prefetch_container.get());
-                }
-                break;
-            }
-            return no_vary_search::IterateCandidateResult::kContinue;
-          },
-          navigated_key, base::Unretained(&matches),
-          base::Unretained(&hint_matches)));
+  std::vector<T*> candidates =
+      CollectPotentialMatchPrefetchContainers(prefetches, navigated_key);
 
-  // Insert the No-Vary-Search hint matches at the end of `matches`.
-  matches.insert(matches.end(), hint_matches.begin(), hint_matches.end());
-
-  for (T* prefetch_container : matches) {
+  for (T* prefetch_container : candidates) {
     prefetch_container->SetServingPageMetrics(serving_page_metrics_container);
     prefetch_container->UpdateServingPageMetrics();
   }
 
-  std::erase_if(matches, [](const auto* prefetch_container) {
+  std::erase_if(candidates, [](const auto* prefetch_container) {
     if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
       DVLOG(1) << "CollectMatchCandidatesGeneric: skipped "
                << "because already considered to serve: "
@@ -355,7 +368,7 @@ std::vector<T*> CollectMatchCandidatesGeneric(
     return false;
   });
 
-  return matches;
+  return candidates;
 }
 
 }  // namespace content
