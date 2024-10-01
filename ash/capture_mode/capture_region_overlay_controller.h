@@ -35,6 +35,12 @@ class ASH_EXPORT CaptureRegionOverlayController {
   // be called from backend services once the backend implementation is ready.
   void OnTextDetected(std::optional<ScannerText> detected_text);
 
+  // Notifies the controller of translated text to show on the overlay. The
+  // controller will track `translated_text`, e.g. to paint later if needed.
+  // TODO(b/367549273): This method is currently only used in tests. It should
+  // be called from backend services once the backend implementation is ready.
+  void OnTranslatedTextFetched(std::optional<ScannerText> translated_text);
+
   // Paints the capture region overlay onto `canvas`. `region_bounds_in_canvas`
   // specifies the coordinates of `canvas` to paint the overlay.
   void PaintCaptureRegionOverlay(
@@ -47,7 +53,14 @@ class ASH_EXPORT CaptureRegionOverlayController {
   void PaintDetectedTextRegions(gfx::Canvas& canvas,
                                 const gfx::Rect& region_bounds_in_canvas) const;
 
+  // Paints translated text onto the overlay. `region_bounds_in_canvas`
+  // specifies the coordinates of `canvas` which should contain the overlay.
+  void PaintTranslatedText(gfx::Canvas& canvas,
+                           const gfx::Rect& region_bounds_in_canvas) const;
+
   std::optional<ScannerText> detected_text_;
+
+  std::optional<ScannerText> translated_text_;
 };
 
 }  // namespace ash

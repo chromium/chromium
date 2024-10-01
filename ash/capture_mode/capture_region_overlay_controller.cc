@@ -12,6 +12,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,6 +25,10 @@ namespace {
 // TODO(b/367548979): Use correct style constants for detected text regions.
 constexpr SkColor kDetectedTextRegionColor = SK_ColorCYAN;
 constexpr float kDetectedTextRegionOpacity = 0.3f;
+
+// TODO(b/367549273): Use correct colors to paint translated text.
+constexpr SkColor kTranslatedTextColor = SK_ColorBLACK;
+constexpr SkColor kTranslatedTextBackgroundColor = SK_ColorWHITE;
 
 // Translates and rotates `canvas` so that `center_rotated_box` is upright and
 // centered on the canvas. The components of `center_rotated_box` should be
@@ -55,12 +60,16 @@ void CaptureRegionOverlayController::OnTextDetected(
   detected_text_ = std::move(detected_text);
 }
 
+void CaptureRegionOverlayController::OnTranslatedTextFetched(
+    std::optional<ScannerText> translated_text) {
+  translated_text_ = std::move(translated_text);
+}
+
 void CaptureRegionOverlayController::PaintCaptureRegionOverlay(
     gfx::Canvas& canvas,
     const gfx::Rect& region_bounds_in_canvas) const {
   PaintDetectedTextRegions(canvas, region_bounds_in_canvas);
-
-  // TODO(b/367549273): Paint the translated text UI.
+  PaintTranslatedText(canvas, region_bounds_in_canvas);
 }
 
 void CaptureRegionOverlayController::PaintDetectedTextRegions(
@@ -81,6 +90,34 @@ void CaptureRegionOverlayController::PaintDetectedTextRegions(
       TranslateAndRotateCanvas(canvas, region_bounds_in_canvas,
                                line.bounding_box());
       canvas.DrawRect(GetRectCenteredAtOrigin(line.bounding_box().size), flags);
+      canvas.Restore();
+    }
+  }
+}
+
+void CaptureRegionOverlayController::PaintTranslatedText(
+    gfx::Canvas& canvas,
+    const gfx::Rect& region_bounds_in_canvas) const {
+  if (!translated_text_.has_value()) {
+    return;
+  }
+
+  // TODO(b/367549273): Paint translated text with correct styling.
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setColor(kTranslatedTextBackgroundColor);
+  for (const ScannerText::Paragraph& paragraph :
+       translated_text_->paragraphs()) {
+    for (const ScannerText::Line& line : paragraph.lines()) {
+      canvas.Save();
+      TranslateAndRotateCanvas(canvas, region_bounds_in_canvas,
+                               line.bounding_box());
+      const gfx::Rect centered_bounds =
+          GetRectCenteredAtOrigin(line.bounding_box().size);
+      canvas.DrawRect(centered_bounds, flags);
+      canvas.DrawStringRect(translated_text_->GetTextFromRange(line.range()),
+                            gfx::FontList(), kTranslatedTextColor,
+                            centered_bounds);
       canvas.Restore();
     }
   }
