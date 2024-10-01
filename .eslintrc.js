@@ -300,7 +300,8 @@ module.exports = {
   // We do not allow per-directory custom eslint rules. This section exists for
   // rules that are in the process of being applied to the whole code base.
   {
-    'files': ['ui/webui/resources/**/*.[jt]s'],
+    'files': ['content/browser/resources/**/*.[jt]s',
+              'ui/webui/resources/**/*.[jt]s',],
     'rules': {
       'eqeqeq': ['error', 'always', {'null': 'ignore'}],
     }
@@ -318,6 +319,9 @@ module.exports = {
     'chrome/test/data/webui/chromeos/async_gen.js',
     'chrome/test/data/webui/chromeos/cr_focus_row_behavior_interactive_test.js',
     'chrome/test/data/webui/chromeos/**/*_browsertest.js',
+
+    // No point linting auto-generated files.
+    'tools/typescript/definitions/**',
 
     // ESLint is disabled for camera_app_ui and recorder_app_ui as they
     // used a custom eslint plugin that does not work with the latest eslint,
