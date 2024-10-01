@@ -64,7 +64,6 @@ BASE_DECLARE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
-BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForChildUsers);
 
 // For users who support separate "profile" and "account" password stores -
 // see password_manager::features_util::CanCreateAccountStore() - and have
