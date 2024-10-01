@@ -87,6 +87,19 @@ class SupervisedUserPendingStateNavigationTest
         [&]() { return page_title == contents()->GetTitle(); }));
   }
 
+  void WaitForBlockedUrlInterstitial(
+      content::WebContents* interstitial_contents) {
+    // Search for string that only appears in the blocked url interstitial.
+    ASSERT_TRUE(base::test::RunUntil([interstitial_contents]() {
+      return ui_test_utils::FindInPage(
+                 interstitial_contents,
+                 l10n_util::GetStringUTF16(
+                     IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2),
+                 /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+                 /*selection_rect=*/nullptr) == 1;
+    }));
+  }
+
   void SignInSupervisedUserAndWaitForInterstitialReload(
       content::WebContents* content) {
     Profile* profile =
@@ -202,16 +215,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 
 // Tests that the sign-in tabs opened through the re-auth interstitial
 // are closed on re-authentication.
-// TODO(https://crbug.com/370115099): This test fails on Linux MSan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
-  DISABLED_TestReauthInterstitialClosesSignInTabsAndReloads
-#else
-#define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
-  TestReauthInterstitialClosesSignInTabsAndReloads
-#endif
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
-                       MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads) {
+                       TestReauthInterstitialClosesSignInTabsAndReloads) {
   base::HistogramTester histogram_tester;
 
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
@@ -274,14 +279,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
       1);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
-  // Check the blocked url interstitial is displayed.
-  EXPECT_EQ(
-      ui_test_utils::FindInPage(
-          interstitial_contents,
-          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2),
-          /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
-          /*selection_rect=*/nullptr),
-      1);
+  WaitForBlockedUrlInterstitial(interstitial_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
