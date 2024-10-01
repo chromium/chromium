@@ -503,8 +503,7 @@ suite('AutofillSectionAddressTests', function() {
         emailAddress, getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
   });
 
-  // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifyPhoneAndEmailAreRemoved', function() {
+  test('verifyPhoneAndEmailAreRemoved', function() {
     const address = createEmptyAddressEntry();
 
     const phoneNumber = '(555) 555-5555';
@@ -520,7 +519,7 @@ suite('AutofillSectionAddressTests', function() {
     });
     address.fields.push({type: FieldType.EMAIL_ADDRESS, value: emailAddress});
 
-    return createAddressDialog(address).then(function(dialog) {
+    return createAddressDialog(address).then(async function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
       assertGT(rows.length, 0, 'dialog should contain address rows');
 
@@ -533,18 +532,26 @@ suite('AutofillSectionAddressTests', function() {
       assertTrue(!!phoneInput, 'phone element should be the first cr-input');
       assertTrue(!!emailInput, 'email element should be the second cr-input');
 
-      assertEquals(phoneNumber, phoneInput.value);
-      assertEquals(emailAddress, emailInput.value);
+      assertEquals(
+          phoneNumber, phoneInput.value,
+          'The input should have the corresponding address field value.');
+      assertEquals(
+          emailAddress, emailInput.value,
+          'The input should have the corresponding address field value.');
 
       phoneInput.value = '';
       emailInput.value = '';
+      await flushTasks();
 
       return expectEvent(dialog, 'save-address', function() {
                dialog.$.saveButton.click();
              }).then(function() {
         assertFalse(
-            !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
-        assertFalse(!!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
+            !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER),
+            'The phone field should be empty.');
+        assertFalse(
+            !!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS),
+            'The email field should be empty.');
       });
     });
   });
