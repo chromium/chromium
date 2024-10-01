@@ -65,6 +65,16 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
                 Robolectric.buildActivity(FragmentActivity.class).create().start().resume().get();
         mModalDialogManager = new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
         mModalDialogManagerSupplier = () -> mModalDialogManager;
+    }
+
+    private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
+                .thenReturn(type);
+    }
+
+    private void initializeExportFlowCoordinator() {
+        // The coordinator needs to be created after the warning type is set for testing because it
+        // will store the warning type in a member variable.
         mCoordinator =
                 new PasswordAccessLossExportFlowCoordinator(
                         mActivity,
@@ -74,19 +84,19 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
                         mChromeShutDownRunnable);
     }
 
-    private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
-        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
-                .thenReturn(type);
-    }
-
     private void setUpSyncService() {
         SyncService syncService = Mockito.mock(SyncService.class);
         SyncServiceFactory.setInstanceForTesting(syncService);
     }
 
     @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testShowsExportDialog() {
+        setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        initializeExportFlowCoordinator();
         mCoordinator.startExportFlow();
+
         verify(mExportDialogCoordinator).showExportDialog();
     }
 
@@ -95,6 +105,7 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testShowsImportDialogWhenDeletionFinished() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        initializeExportFlowCoordinator();
         setUpSyncService();
         mCoordinator.onPasswordsDeletionFinished();
 
@@ -107,6 +118,7 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testDoesNotShowImportDialogForNoGmsCoreWarningTypeAndRestartsChrome() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
+        initializeExportFlowCoordinator();
         mCoordinator.onPasswordsDeletionFinished();
 
         // Chrome should be terminated.

@@ -35,6 +35,8 @@ public class PasswordAccessLossExportFlowCoordinator
     private final Runnable mChromeShutDownRunnable;
     private final PasswordAccessLossExportDialogCoordinator mExportDialogCoordinator;
 
+    private final @PasswordAccessLossWarningType int mWarningType;
+
     public PasswordAccessLossExportFlowCoordinator(
             FragmentActivity activity,
             Profile profile,
@@ -42,11 +44,11 @@ public class PasswordAccessLossExportFlowCoordinator
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mWarningType = getAccessLossWarningType();
         // In case the warning is prompted for the NEW_GMS_CORE_MIGRATION_FAILED case, the user will
         // be redirected to the import flow in GMS Core. Therefore, Chrome should be restarted
         // instead of shut down so that it doesn't interfere with GMS Core opening.
-        boolean shouldRestartChrome =
-                getAccessLossWarningType() == PasswordAccessLossWarningType.NO_GMS_CORE;
+        boolean shouldRestartChrome = mWarningType == PasswordAccessLossWarningType.NO_GMS_CORE;
         mChromeShutDownRunnable = () -> ApplicationLifetime.terminate(shouldRestartChrome);
         mExportDialogCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(mActivity, mProfile, this);
@@ -62,6 +64,7 @@ public class PasswordAccessLossExportFlowCoordinator
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mWarningType = getAccessLossWarningType();
         mChromeShutDownRunnable = chromeShutDownRunnable;
         mExportDialogCoordinator = exportDialogCoordinator;
     }
@@ -89,8 +92,7 @@ public class PasswordAccessLossExportFlowCoordinator
 
     @Override
     public void onPasswordsDeletionFinished() {
-        if (getAccessLossWarningType()
-                != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+        if (mWarningType != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
             mChromeShutDownRunnable.run();
             return;
         }
