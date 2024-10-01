@@ -115,6 +115,12 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-brya-chrome",
+)
+
+# TODO(b/339354038): Remove once migration to un-suffixed try biulder
+# completes.
+chrome_internal_verifier(
     builder = "chromeos-brya-chrome-skylab",
 )
 
