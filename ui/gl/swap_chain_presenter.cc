@@ -64,25 +64,6 @@ bool IsProtectedVideo(gfx::ProtectedVideoType protected_video_type) {
   return protected_video_type != gfx::ProtectedVideoType::kClear;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OverlayFullScreenTypes {
-  kWindowMode,
-  kFullScreenMode,
-  kFullScreenInWidthOnly,
-  kFullScreenInHeightOnly,
-  kOverSizedFullScreen,
-  kNotAvailable,
-  kMaxValue = kNotAvailable,
-};
-
-enum : size_t {
-  kSwapChainImageIndex = 0,
-  kNV12ImageIndex = 0,
-  kYPlaneImageIndex = 0,
-  kUVPlaneImageIndex = 1,
-};
-
 const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
   switch (type) {
     case gfx::ProtectedVideoType::kClear:
