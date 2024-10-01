@@ -20,6 +20,7 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/management_bubble.h"
+#include "ash/login/ui/management_disclosure_dialog.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -128,6 +129,8 @@ class ASH_EXPORT LockContentsView
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();
+  // Shows the current device privacy disclosures.
+  void ShowManagementDisclosureDialog();
   void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
@@ -226,9 +229,6 @@ class ASH_EXPORT LockContentsView
 
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
-
-  // Called by LockScreen.
-  void SetManagementDisclosureClient(ManagementDisclosureClient* client);
 
  private:
   using DisplayLayoutAction = base::RepeatingCallback<void(bool landscape)>;
@@ -473,6 +473,10 @@ class ASH_EXPORT LockContentsView
   raw_ptr<views::View> user_adding_screen_indicator_ = nullptr;
   // Bubble for displaying warning banner message.
   raw_ptr<LoginErrorBubble> warning_banner_bubble_;
+
+  // The current ManagementDisclosureDialog, if one exists.
+  // Shows the list of device privacy disclosures.
+  base::WeakPtr<ManagementDisclosureDialog> management_disclosure_dialog_;
 
   // View that is shown on login timeout with camera usage.
   raw_ptr<LoginCameraTimeoutView, AcrossTasksDanglingUntriaged>

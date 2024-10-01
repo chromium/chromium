@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_
 
+#include <vector>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace base {
 class RefCountedMemory;
@@ -43,6 +46,8 @@ class ManagementUI : public content::WebUIController {
       ui::ResourceScaleFactor scale_factor);
 
   static std::u16string GetManagementPageSubtitle(Profile* profile);
+
+  static void GetLocalizedStrings(std::vector<webui::LocalizedString>& strings);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_

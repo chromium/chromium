@@ -65,6 +65,7 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -290,8 +291,7 @@ LockContentsView::LockContentsView(
     LockScreen::ScreenType screen_type,
     LoginDataDispatcher* data_dispatcher,
     std::unique_ptr<LoginDetachableBaseModel> detachable_base_model)
-    : NonAccessibleView(),
-      screen_type_(screen_type),
+    : screen_type_(screen_type),
       data_dispatcher_(data_dispatcher),
       detachable_base_model_(std::move(detachable_base_model)) {
   data_dispatcher_->AddObserver(this);
@@ -338,11 +338,6 @@ LockContentsView::LockContentsView(
       views::BoxLayout::MainAxisAlignment::kEnd);
   bottom_status_indicator_->SetLayoutManager(
       std::move(bottom_status_indicator_layout));
-
-  // TODO(b/330527825): Implement the management disclosure client that will be
-  // used to display the new disclosure.
-  // SetManagementDisclosureClient(
-  // Shell::Get()->login_screen_controller()->GetManagementDisclosureClient());
 
   std::string enterprise_domain_manager = Shell::Get()
                                               ->system_tray_model()
@@ -567,15 +562,34 @@ void LockContentsView::ShowParentAccessDialog() {
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
 }
 
+void LockContentsView::ShowManagementDisclosureDialog() {
+  if (management_disclosure_dialog_) {
+    // Do not create another dialog if one already exists.
+    return;
+  }
+
+  auto* dialog = new ManagementDisclosureDialog(
+      Shell::Get()->login_screen_controller()
+                  ->GetManagementDisclosureClient() != nullptr
+          ? Shell::Get()
+                ->login_screen_controller()
+                ->GetManagementDisclosureClient()
+                ->GetDisclosures()
+          : std::vector<std::u16string>(),
+      base::BindOnce(
+          [](base::WeakPtr<ManagementDisclosureDialog> dialog) {
+            dialog.reset();
+          },
+          management_disclosure_dialog_));
+  // Save the dialog so it doesn't go out of scope before it is
+  // used and closed.
+  management_disclosure_dialog_ = dialog->GetWeakPtr();
+}
+
 void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   has_kiosk_apps_ = has_kiosk_apps;
 
   UpdateKioskDefaultMessageVisibility();
-}
-
-void LockContentsView::SetManagementDisclosureClient(
-    ManagementDisclosureClient* client) {
-  management_disclosure_client_ = client;
 }
 
 void LockContentsView::Layout(PassKey) {
@@ -702,7 +716,7 @@ void LockContentsView::ApplyUserChanges(
     if (old_state) {
       new_users.push_back(std::move(*old_state));
     } else {
-      new_users.push_back(UserState(user));
+      new_users.emplace_back(user);
     }
   }
 
@@ -2394,7 +2408,14 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
   if (bottom_status_indicator_state_ != BottomIndicatorState::kManagedDevice) {
     return;
   }
-  management_bubble_->Show();
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kImprovedManagementDisclosure)) {
+    ShowManagementDisclosureDialog();
+  } else {
+    // Fallback to original bubble if management_disclosure not enabled.
+    management_bubble_->Show();
+  }
 }
 
 void LockContentsView::OnBackToSigninButtonTapped() {
@@ -2440,7 +2461,7 @@ void LockContentsView::OnPinUnlock(bool is_primary) {
       is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
   AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
   data_dispatcher_->SetPinEnabledForUser(user, true,
-                                         /*avaiable_at=*/ std::nullopt);
+                                         /*available_at=*/std::nullopt);
   HideAuthErrorMessage();
 }
 

@@ -197,6 +197,10 @@ void LockScreen::ShowParentAccessDialog() {
   contents_view_->ShowParentAccessDialog();
 }
 
+void LockScreen::ShowManagementDisclosureDialog() {
+  contents_view_->ShowManagementDisclosureDialog();
+}
+
 void LockScreen::SetHasKioskApp(bool has_kiosk_apps) {
   contents_view_->SetHasKioskApp(has_kiosk_apps);
 }

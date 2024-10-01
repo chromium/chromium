@@ -73,6 +73,8 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   void FocusNextUser();
   void FocusPreviousUser();
   void ShowParentAccessDialog();
+  // Shows the current device privacy disclosures.
+  void ShowManagementDisclosureDialog();
   void SetHasKioskApp(bool has_kiosk_apps);
 
   // TrayActionObserver:

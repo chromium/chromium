@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_events_proxy_impl.h"
 #include "chrome/browser/ash/net/vpn_list_forwarder.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_util_impl.h"
+#include "chrome/browser/ui/ash/management_disclosure/management_disclosure_client_impl.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
@@ -95,6 +97,7 @@
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
@@ -372,6 +375,12 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+  management_disclosure_client_ =
+      std::make_unique<ManagementDisclosureClientImpl>(
+          g_browser_process->platform_part()->browser_policy_connector_ash(),
+          Profile::FromBrowserContext(
+              ash::BrowserContextHelper::Get()->GetSigninBrowserContext())
+              ->GetOriginalProfile());
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.
   g_browser_process->platform_part()->InitializeDeviceDisablingManager();
@@ -511,6 +520,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();
+  management_disclosure_client_.reset();
   graduation_manager_.reset();
 
   ash::privacy_hub_util::SetAppAccessNotifier(nullptr);

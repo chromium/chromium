@@ -67,6 +67,7 @@ class ExoParts;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
+class ManagementDisclosureClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegate;
@@ -181,6 +182,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Initialized in PostProfileInit in all configs:
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
+  std::unique_ptr<ManagementDisclosureClientImpl> management_disclosure_client_;
   std::unique_ptr<MediaClientImpl> media_client_;
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;

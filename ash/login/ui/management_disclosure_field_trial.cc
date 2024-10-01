@@ -19,7 +19,7 @@ namespace ash::management_disclosure_field_trial {
 namespace {
 
 // The field trial name.
-const char kTrialName[] = "ManagementDisclosureView";
+const char kTrialName[] = "ManagementDisclosure";
 
 // Group names for the trial.
 const char kEnabledGroup[] = "Enabled";

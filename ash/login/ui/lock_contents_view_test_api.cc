@@ -113,6 +113,11 @@ LoginCameraTimeoutView* LockContentsViewTestApi::login_camera_timeout_view()
   return view_->login_camera_timeout_view_;
 }
 
+base::WeakPtr<ManagementDisclosureDialog>
+LockContentsViewTestApi::management_disclosure_dialog() const {
+  return view_->management_disclosure_dialog_;
+}
+
 LoginBigUserView* LockContentsViewTestApi::FindBigUser(
     const AccountId& account_id) {
   LoginBigUserView* big_view =

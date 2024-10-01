@@ -12,8 +12,13 @@ static_library("management_disclosure") {
     "management_disclosure_client_impl.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
   ]
 }

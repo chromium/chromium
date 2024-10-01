@@ -58,6 +58,85 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
   source->AddString("pageSubtitle",
                     ManagementUI::GetManagementPageSubtitle(profile));
 
+  std::vector<webui::LocalizedString> localized_strings;
+  ManagementUI::GetLocalizedStrings(localized_strings);
+  source->AddLocalizedStrings(localized_strings);
+
+  source->SetDefaultResource(IDR_MANAGEMENT_MANAGEMENT_HTML);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddString("managementDeviceLearnMoreUrl",
+                    chrome::kLearnMoreEnterpriseURL);
+  source->AddString("managementAccountLearnMoreUrl",
+                    chrome::kManagedUiLearnMoreUrl);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  const size_t dlp_events_count =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile() &&
+              policy::DlpRulesManagerFactory::GetForPrimaryProfile()
+                  ->GetReportingManager()
+          ? policy::DlpRulesManagerFactory::GetForPrimaryProfile()
+                ->GetReportingManager()
+                ->events_reported()
+          : 0;
+  source->AddString(kManagementReportDlpEvents,
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
+  source->AddString("pluginVmDataCollection",
+                    l10n_util::GetStringFUTF16(
+                        IDS_MANAGEMENT_REPORT_PLUGIN_VM,
+                        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kManagementResources, kManagementResourcesSize),
+      IDR_MANAGEMENT_MANAGEMENT_HTML);
+  return source;
+}
+
+}  // namespace
+
+// static
+base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_MANAGEMENT_FAVICON, scale_factor);
+}
+
+// static
+std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
+  if (!connector->IsDeviceEnterpriseManaged() &&
+      !profile->GetProfilePolicyConnector()->IsManaged()) {
+    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
+                                      l10n_util::GetStringUTF16(device_type));
+  }
+
+  std::string account_manager = connector->GetEnterpriseDomainManager();
+
+  if (account_manager.empty()) {
+    account_manager =
+        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
+  }
+  if (account_manager.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
+                                      l10n_util::GetStringUTF16(device_type));
+  }
+  return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                    l10n_util::GetStringUTF16(device_type),
+                                    base::UTF8ToUTF16(account_manager));
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  return chrome::GetManagementPageSubtitle(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// static
+void ManagementUI::GetLocalizedStrings(
+    std::vector<webui::LocalizedString>& strings) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
 #if BUILDFLAG(IS_CHROMEOS)
       {"learnMore", IDS_LEARN_MORE},
@@ -189,75 +268,9 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kProfileReportingLearnMore, IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE},
   };
 
-  source->AddLocalizedStrings(kLocalizedStrings);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddString("managementDeviceLearnMoreUrl",
-                    chrome::kLearnMoreEnterpriseURL);
-  source->AddString("managementAccountLearnMoreUrl",
-                    chrome::kManagedUiLearnMoreUrl);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  const size_t dlp_events_count =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile() &&
-              policy::DlpRulesManagerFactory::GetForPrimaryProfile()
-                  ->GetReportingManager()
-          ? policy::DlpRulesManagerFactory::GetForPrimaryProfile()
-                ->GetReportingManager()
-                ->events_reported()
-          : 0;
-  source->AddString(kManagementReportDlpEvents,
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
-  source->AddString("pluginVmDataCollection",
-                    l10n_util::GetStringFUTF16(
-                        IDS_MANAGEMENT_REPORT_PLUGIN_VM,
-                        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kManagementResources, kManagementResourcesSize),
-      IDR_MANAGEMENT_MANAGEMENT_HTML);
-  return source;
-}
-
-}  // namespace
-
-// static
-base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
-    ui::ResourceScaleFactor scale_factor) {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      IDR_MANAGEMENT_FAVICON, scale_factor);
-}
-
-// static
-std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
-  if (!connector->IsDeviceEnterpriseManaged() &&
-      !profile->GetProfilePolicyConnector()->IsManaged()) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
-                                      l10n_util::GetStringUTF16(device_type));
+  for (auto i : kLocalizedStrings) {
+    strings.push_back(i);
   }
-
-  std::string account_manager = connector->GetEnterpriseDomainManager();
-
-  if (account_manager.empty())
-    account_manager =
-        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
-  if (account_manager.empty()) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
-                                      l10n_util::GetStringUTF16(device_type));
-  }
-  return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                    l10n_util::GetStringUTF16(device_type),
-                                    base::UTF8ToUTF16(account_manager));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  return chrome::GetManagementPageSubtitle(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
