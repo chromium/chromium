@@ -69,10 +69,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // todo(crbug/1267243) Make snapshot always return the current frame.
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
-  // Copies the back buffer to given shared image resource provider which must
-  // be webgpu compatible. Returns true on success.
-  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
-                                             SourceDrawingBuffer) final;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool* frame_pool,
       SourceDrawingBuffer src_buffer,

@@ -174,13 +174,6 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
   }
 
-  return CopyRenderingResultsFromDrawingBuffer(resource_provider,
-                                               source_buffer);
-}
-
-bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
-    CanvasResourceProvider* resource_provider,
-    SourceDrawingBuffer source_buffer) {
   // TODO(crbug.com/1367056): Handle source_buffer == kFrontBuffer.
   // By returning false here the canvas will show up as black in the scenarios
   // that copy the front buffer, such as printing.

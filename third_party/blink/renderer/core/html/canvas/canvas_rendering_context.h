@@ -209,11 +209,6 @@ class CORE_EXPORT CanvasRenderingContext
     return false;
   }
 
-  virtual bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
-                                                     SourceDrawingBuffer) {
-    return false;
-  }
-
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If
   // successful, take (using std::move) `callback` and issue it with the
