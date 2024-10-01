@@ -7,34 +7,50 @@ console-dir-es6.js:22 Object
     Symbol(a): 3
     Symbol(a): Symbol(Symbol.iterator)
     [[Prototype]]: Object
+
+
 console-dir-es6.js:25 Symbol()
+
+
 console-dir-es6.js:29 Map(1)
     [[Entries]]
         0: {Object => Object}
     size: 1
     [[Prototype]]: Map
+
+
 console-dir-es6.js:29 WeakMap
     [[Entries]]
         0: {Object => Object}
     [[Prototype]]: WeakMap
+
+
 console-dir-es6.js:33 Set(1)
     [[Entries]]
         0: Object
     size: 1
     [[Prototype]]: Set
+
+
 console-dir-es6.js:33 WeakSet
     [[Entries]]
         0: Object
     [[Prototype]]: WeakSet
+
+
 console-dir-es6.js:41 Set(1)
     [[Entries]]
         0: Set(1)
     size: 1
     [[Prototype]]: Set
+
+
 console-dir-es6.js:44 WeakMap
     [[Entries]]
         No properties
     [[Prototype]]: WeakMap
+
+
 console-dir-es6.js:52 MapIterator
     [[Entries]]
         0: Object
@@ -43,6 +59,8 @@ console-dir-es6.js:52 MapIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "keys"
+
+
 console-dir-es6.js:53 MapIterator
     [[Entries]]
         0: Object
@@ -51,6 +69,8 @@ console-dir-es6.js:53 MapIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-dir-es6.js:54 MapIterator
     [[Entries]]
         0: {Object => Object}
@@ -59,6 +79,8 @@ console-dir-es6.js:54 MapIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-dir-es6.js:52 SetIterator
     [[Entries]]
         0: Object
@@ -67,6 +89,8 @@ console-dir-es6.js:52 SetIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-dir-es6.js:53 SetIterator
     [[Entries]]
         0: Object
@@ -75,6 +99,8 @@ console-dir-es6.js:53 SetIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-dir-es6.js:54 SetIterator
     [[Entries]]
         0: {Object => Object}
@@ -83,6 +109,8 @@ console-dir-es6.js:54 SetIterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-dir-es6.js:92 Array(27)
     0: class 
     1: class classWithWhitespace
@@ -113,6 +141,8 @@ console-dir-es6.js:92 Array(27)
     26: ƒ (c = ")", {a: b})
     length: 27
     [[Prototype]]: Array(0)
+
+
 console-dir-es6.js:100 Array(4)
     0: badArrow(x = a => {…}
     1: ƒ (a = ")
@@ -120,4 +150,6 @@ console-dir-es6.js:100 Array(4)
     3: ƒ (a = class{ constructor()
     length: 4
     [[Prototype]]: Array(0)
+
+
 

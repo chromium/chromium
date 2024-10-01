@@ -2,6 +2,8 @@ Tests asynchronous call stacks printed in console.
 
 Set timer for test function.
 Console was cleared
+
+
 async-callstack-in-console.js:28 console.trace
 
 timeout1 @ async-callstack-in-console.js:28
@@ -9,6 +11,8 @@ timeout1 @ async-callstack-in-console.js:28
 setTimeout
 
 testFunction @ async-callstack-in-console.js:23
+
+
 async-callstack-in-console.js:35 Uncaught Error: foo
     at timeout2 (async-callstack-in-console.js:35:17)
 
@@ -21,6 +25,8 @@ timeout1 @ async-callstack-in-console.js:29
 setTimeout
 
 testFunction @ async-callstack-in-console.js:23
+
+
 async-callstack-in-console.js:40 console.trace
 
 timeout3 @ async-callstack-in-console.js:40
@@ -36,6 +42,8 @@ timeout1 @ async-callstack-in-console.js:29
 setTimeout
 
 testFunction @ async-callstack-in-console.js:23
+
+
 async-callstack-in-console.js:48 Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://www.example.com') does not match the recipient window's origin ('http://127.0.0.1:8000').
 
 tryPostMessage @ async-callstack-in-console.js:48
@@ -53,4 +61,6 @@ timeout1 @ async-callstack-in-console.js:29
 setTimeout
 
 testFunction @ async-callstack-in-console.js:23
+
+
 

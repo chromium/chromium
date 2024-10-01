@@ -2,6 +2,8 @@ Tests how debugger presents special properties of closures, bound functions and 
 properties-special.js:13 Boolean
     [[Prototype]]: Boolean
     [[PrimitiveValue]]: true
+
+
 properties-special.js:14 ƒ anonymous(a,b)
     arguments: null
     caller: null
@@ -11,6 +13,8 @@ properties-special.js:14 ƒ anonymous(a,b)
     [[FunctionLocation]]: properties-special.js:14
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
+
+
 properties-special.js:15 ƒ bound ()
     length: 1
     name: "bound "
@@ -20,6 +24,8 @@ properties-special.js:15 ƒ bound ()
     [[TargetFunction]]: ƒ (a,b)
     [[BoundThis]]: Object
     [[BoundArgs]]: Array(1)
+
+
 properties-special.js:16 ƒ* anonymous()
     length: 0
     name: ""
@@ -30,4 +36,6 @@ properties-special.js:16 ƒ* anonymous()
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
+
+
 
