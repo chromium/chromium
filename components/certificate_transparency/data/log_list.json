@@ -1,6 +1,6 @@
 {
-  "version": "46.6",
-  "log_list_timestamp": "2024-09-30T12:55:37Z",
+  "version": "47.1",
+  "log_list_timestamp": "2024-10-01T12:55:40Z",
   "operators": [
     {
       "name": "Google",
@@ -63,8 +63,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -79,8 +79,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -143,8 +143,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -159,8 +159,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
