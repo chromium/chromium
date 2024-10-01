@@ -2096,6 +2096,8 @@ void LensOverlayController::AddBackgroundBlur() {
     // Add our blur layer to the view.
     overlay_view_->SetPaintToLayer();
     overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
+    overlay_view_->layer()->StackAtBottom(
+        lens_overlay_blur_layer_delegate_->layer());
     lens_overlay_blur_layer_delegate_->layer()->SetBounds(
         overlay_view_->layer()->bounds());
     return;
