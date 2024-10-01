@@ -60,6 +60,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
@@ -1897,7 +1898,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // HTTPS-Only Mode interstitial.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, SlowHttps_ShouldInterstitial) {
   // Set timeout to zero so that HTTPS upgrades immediately timeout.
-  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(0);
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
 
   // Set up a custom HTTPS server that times out without sending a response.
   net::EmbeddedTestServer timeout_server{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -1993,6 +1994,178 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
 
   EXPECT_EQ("bar.com", contents->GetLastCommittedURL().host());
+}
+
+// Regression test for crbug.com/41488861.
+// Tests that a slow fallback load is not cancelled with timeout.
+// bad-ssl.com is configured to return a slow load over http. Navigating to
+// http://bad-ssl.com should upgrade and immediately fall back, then display the
+// http response without cancelling it for timeout.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       CancelTimeoutForFallbackNavigations) {
+  net::EmbeddedTestServer http_server;
+  net::EmbeddedTestServer https_server{net::EmbeddedTestServer::TYPE_HTTPS};
+
+  // Make the HTTP server return a slow response.
+  http_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        // The HTTP load needs to be slower than the 1 second timeout configured
+        // by the the test.
+        auto slow_http_response =
+            std::make_unique<net::test_server::DelayedHttpResponse>(
+                base::Seconds(2));
+        slow_http_response->set_content_type("text/html");
+        slow_http_response->set_content("hello from http");
+        return std::move(slow_http_response);
+      }));
+  ASSERT_TRUE(http_server.Start());
+  ASSERT_TRUE(https_server.Start());
+
+  // Set the timeout short enough, but not zero. We can't set it to zero
+  // because it'll cancel the HTTPS load with timeout instead of an error.
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::Seconds(1));
+
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server.port());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server.port());
+
+  GURL http_url(http_server.GetURL("bad-https.com", "/"));
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 1);
+    histograms()->ExpectBucketCount("Net.ErrorCodesForMainFrame4",
+                                    -net::ERR_ABORTED, 1);
+  } else {
+    // Shouldn't record any net errors.
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 0);
+  }
+
+  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+}
+
+// Creates a redirect response.
+std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
+    const GURL& dest_url,
+    const net::test_server::HttpRequest& request) {
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+      new net::test_server::BasicHttpResponse);
+  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+  http_response->AddCustomHeader("Location", dest_url.spec());
+  return std::move(http_response);
+}
+
+// Creates a response that causes a redirect loop over https and returns a slow
+// response over http.
+std::unique_ptr<net::test_server::HttpResponse> RedirectLoopResponse(
+    int& http_port,
+    int& https_port,
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == "/redirect") {
+    // Over https, this URL redirects to itself.
+    if (request.GetURL().SchemeIs("https")) {
+      GURL url(base::StringPrintf("http://a.com:%d/redirect", http_port));
+      return RedirectResponseHandler(url, request);
+    }
+    // Over http, it prints a slow hello. This should delay longer than the
+    // HTTPS upgrade timeout which is set to 1 second.
+    auto slow_http_response =
+        std::make_unique<net::test_server::DelayedHttpResponse>(
+            base::Seconds(2));
+    slow_http_response->set_content_type("text/html");
+    slow_http_response->set_content("hello from http");
+    return std::move(slow_http_response);
+  }
+  return nullptr;
+}
+
+// Another regression test for crbug.com/41488861.
+// Tests that a slow load that's detected as a redirect loop will not display
+// a flash of a net error page.
+//
+// Assume that a.com/redirect:
+// - Shows a slow loading response when loaded over http
+// - Redirects to http://a.com/redirect when loaded over https.
+//
+// The flow of the test is as follows:
+// 1. Load http://a.com/redirect.
+// 2. http://a.com/redirect is upgraded to http.
+// 3. https://a.com/redirect redirects to http://a.com/redirect
+// 4. This triggers a redirect loop (the URL was seen at step 1).
+// 5. a.com is allowlisted and http://a.com/redirect is loaded as fallback.
+// 6. http://a.com/redirect prints a message after a slow load.
+//
+// This flow should never display a net error page with ERR_TIMED_OUT to the
+// user. If the interstitial is enabled, it should be displayed at the final
+// step.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       RedirectLoopWithSlowRedirect_ShouldInterstitial) {
+  net::EmbeddedTestServer redirect_server_http;
+  net::EmbeddedTestServer redirect_server_https{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  // Set the timeout short enough, but not zero. We can't set it to zero
+  // because it'll cancel the HTTPS load with timeout instead of an error.
+  // The HTTP load in this test needs to be slower than this timeout for the
+  // test to be meaningful.
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::Seconds(1));
+
+  // We don't know the ports without starting the servers and we can't start
+  // the servers without registering request handlers. Pass them as refs so
+  // that we can change them later.
+  int http_port = 0;
+  int https_port = 0;
+  redirect_server_http.RegisterRequestHandler(base::BindRepeating(
+      &RedirectLoopResponse, std::ref(http_port), std::ref(https_port)));
+  redirect_server_https.RegisterRequestHandler(base::BindRepeating(
+      &RedirectLoopResponse, std::ref(http_port), std::ref(https_port)));
+
+  ASSERT_TRUE(redirect_server_http.Start());
+  ASSERT_TRUE(redirect_server_https.Start());
+
+  http_port = redirect_server_http.port();
+  https_port = redirect_server_https.port();
+
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(redirect_server_http.port());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(
+      redirect_server_https.port());
+
+  GURL http_url(redirect_server_http.GetURL("a.com", "/redirect"));
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 1);
+    histograms()->ExpectBucketCount("Net.ErrorCodesForMainFrame4",
+                                    -net::ERR_ABORTED, 1);
+  } else {
+    // Shouldn't record any net errors.
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 0);
+  }
+
+  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeRedirectLoop,
+                                  1);
 }
 
 // Tests that navigating to an HTTPS page that downgrades to HTTP on the same
