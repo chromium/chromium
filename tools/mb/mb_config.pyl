@@ -27,13 +27,9 @@
   # this dict to look up which config to use for a given bot.
   'builder_groups': {
     'chrome': {
-      'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
-      'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_skylab_reclient',
-      'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official_skylab_reclient',
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_reclient',
-      'linux-lacros-chrome': 'official_reclient_lacros_include_unwind_tables',
       'mac-chrome': 'official_reclient_mac',
       'win-branded-rel': 'chrome_branded_reclient_minimal_symbols',
       'win-chrome': 'official_reclient_x86',
@@ -42,8 +38,6 @@
 
     'chrome.gpu.fyi': {
       'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
-      'Lacros FYI Release (jacuzzi)': 'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient',
-      'Lacros FYI Release (octopus)': 'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient',
     },
 
     'chrome.pgo': {
@@ -77,7 +71,6 @@
       'codesearch-gen-chromium-cronet': 'codesearch_gen_chromium_cronet_bot_reclient',
       'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot_reclient',
       'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot_reclient',
-      'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot_reclient',
       'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot_reclient',
       'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot_reclient',
       'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_android_bot_reclient',
@@ -94,9 +87,6 @@
       'android_arm64_high_end-builder-perf': 'official_reclient_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_high_end_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size_reclient',
-      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_reclient',
-      'chromeos-arm-generic-lacros-builder-perf': 'chromeos_arm-generic_lacros_official_reclient',
-      'chromeos-arm64-generic-lacros-builder-perf': 'chromeos_arm64-generic_lacros_official_reclient',
       'linux-builder-perf': 'official_linux_perf',
       'linux-builder-perf-pgo': 'official_reclient_linux_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
@@ -130,9 +120,6 @@
       'android_arm64_high_end-builder-perf': 'official_reclient_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_high_end_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size_reclient',
-      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_reclient',
-      'chromeos-arm-generic-lacros-builder-perf': 'chromeos_arm-generic_lacros_official_reclient',
-      'chromeos-arm64-generic-lacros-builder-perf': 'chromeos_arm64-generic_lacros_official_reclient',
       'linux-builder-perf': 'official_linux_perf',
       'linux-builder-perf-pgo': 'official_reclient_linux_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
@@ -182,7 +169,6 @@
       'android-buildspeed-dbg': 'android_debug_bot_reclient_fastbuild',
       'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
-      'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
       'linux-finch-smoke-chrome': 'official_reclient',
       'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
@@ -215,12 +201,8 @@
     },
 
     'tryserver.chrome': {
-      'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_skylab',
-      'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_skylab',
-      'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official_skylab',
       'linux-chrome': 'official_reclient',
       'linux-finch-smoke-chrome': 'official_reclient',
-      'linux-lacros-chrome': 'official_reclient_lacros_include_unwind_tables',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       'mac-chrome': 'official_reclient_mac',
       'win-branded-compile-rel': 'chrome_branded_reclient_minimal_symbols',
@@ -338,43 +320,8 @@
       'chrome_branded', 'minimal_symbols', 'release_bot_reclient',
     ],
 
-    'chromeos_amd64-generic_lacros_official_reclient': [
-      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
-    ],
-
-    # This is the same as 'chromeos_amd64-generic_lacros_official', except for
-    # the 'is_skylab' arg. Please keep them in sync.
-    'chromeos_amd64-generic_lacros_official_skylab': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-    'chromeos_amd64-generic_lacros_official_skylab_reclient': [
-      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-
     'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols', 'ozone_headless'
-    ],
-
-    'chromeos_arm-generic_lacros_official_reclient': [
-      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
-    ],
-
-    'chromeos_arm-generic_lacros_official_skylab': [
-      'chromeos_arm-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-    'chromeos_arm-generic_lacros_official_skylab_reclient': [
-      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-
-    'chromeos_arm64-generic_lacros_official_reclient': [
-      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
-    ],
-
-    'chromeos_arm64-generic_lacros_official_skylab': [
-      'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-    'chromeos_arm64-generic_lacros_official_skylab_reclient': [
-      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_reclient': [
@@ -431,12 +378,6 @@
       'codesearch_ios_reclient', 'ios', 'ios_disable_code_signing'
     ],
 
-    # Lacros uses different gn args to build for chromeOS device vs. Linux. For
-    # simplicity, we only generate codesearch x-refs for lacros on Linux.
-    'codesearch_gen_chromium_lacros_bot_reclient': [
-      'codesearch_reclient', 'lacros_on_linux', 'use_cups',
-    ],
-
     'codesearch_gen_chromium_mac_bot_reclient': [
       'codesearch_reclient', 'mac',
     ],
@@ -447,16 +388,6 @@
 
     'debug_bot_reclient': [
       'debug_bot_reclient',
-    ],
-
-    'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [
-      'chromeos', 'jacuzzi', 'official', 'release_bot_reclient', 'no_symbols',
-      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm64',
-    ],
-
-    'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient': [
-      'chromeos', 'octopus', 'official', 'release_bot_reclient', 'no_symbols',
-      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'gpu_tests_android_release_trybot_arm64_reclient': [
@@ -545,11 +476,6 @@
 
     'official_reclient_fuchsia_arm64_perf': [
       'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
-    ],
-
-    'official_reclient_lacros_include_unwind_tables': [
-      'official', 'reclient', 'lacros', 'minimal_symbols', 'include_unwind_tables',
-      'also_build_ash_chrome',
     ],
 
     'official_reclient_linux_perf_pgo': [
@@ -718,22 +644,6 @@
   # This is a dict mapping a given 'mixin' name to a dict of settings that
   # mb should use. See //tools/mb/docs/user_guide.md for more information.
   'mixins': {
-    'also_build_ash_chrome': {
-      'gn_args': 'also_build_ash_chrome=true'
-    },
-
-    'also_build_lacros_chrome_for_architecture_amd64': {
-      'gn_args': 'also_build_lacros_chrome_for_architecture="amd64"',
-    },
-
-    'also_build_lacros_chrome_for_architecture_arm64': {
-      'gn_args': 'also_build_lacros_chrome_for_architecture="arm64"',
-    },
-
-    'amd64-generic-crostoolchain': {
-      'args_file': '//build/args/chromeos/amd64-generic-crostoolchain.gni',
-    },
-
     # We build Android with codecs on most bots to ensure maximum test
     # coverage, but use 'android_without_codecs' on bots responsible for
     # building publicly advertised non-Official Android builds --
@@ -772,16 +682,8 @@
       'args_file': '//build/args/chromeos/arm-generic.gni',
     },
 
-    'arm-generic-crostoolchain': {
-      'args_file': '//build/args/chromeos/arm-generic-crostoolchain.gni',
-    },
-
     'arm64': {
       'gn_args': 'target_cpu="arm64"',
-    },
-
-    'arm64-generic-crostoolchain': {
-      'args_file': '//build/args/chromeos/arm64-generic-crostoolchain.gni',
     },
 
     'arm64_host': {
@@ -834,37 +736,8 @@
       'gn_args': 'target_os="chromeos"',
     },
 
-    'chromeos_amd64-generic-crostoolchain': {
-      'mixins': ['chromeos_device', 'amd64-generic-crostoolchain',]
-    },
-
-    'chromeos_amd64-generic-crostoolchain_reclient': {
-      'mixins': ['chromeos_device_reclient', 'amd64-generic-crostoolchain', 'ozone_headless']
-    },
-
-    'chromeos_arm-generic-crostoolchain': {
-      'mixins': ['chromeos_device', 'arm-generic-crostoolchain',]
-    },
-
-    'chromeos_arm-generic-crostoolchain_reclient': {
-      'mixins': ['chromeos_device_reclient', 'arm-generic-crostoolchain', 'ozone_headless']
-    },
-
-    'chromeos_arm64-generic-crostoolchain': {
-      'mixins': ['chromeos_device', 'arm64-generic-crostoolchain',]
-    },
-
-    'chromeos_arm64-generic-crostoolchain_reclient': {
-      'mixins': ['chromeos_device_reclient', 'arm64-generic-crostoolchain', 'ozone_headless']
-    },
-
     'chromeos_codecs': {
       'mixins': ['ffmpeg_branding_chromeos', 'proprietary_codecs'],
-    },
-
-    'chromeos_device': {
-      'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
-      'mixins': ['dcheck_off', 'reclient'],
     },
 
     'chromeos_device_reclient': {
@@ -1031,14 +904,6 @@
       'args_file': '//build/args/chromeos/kevin.gni',
     },
 
-    'lacros': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true'
-    },
-
-    'lacros_on_linux': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true'
-    },
-
     'lsan': {
       'gn_args': 'is_lsan=true',
     },
@@ -1077,10 +942,6 @@
 
     'no_widevine_cdm_host_verification': {
       'gn_args': 'ignore_missing_widevine_signing_cert=true',
-    },
-
-    'octopus': {
-      'args_file': '//build/args/chromeos/octopus.gni',
     },
 
     'official': {

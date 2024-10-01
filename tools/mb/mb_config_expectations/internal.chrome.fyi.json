@@ -45,23 +45,6 @@
       "use_thin_lto": true
     }
   },
-  "lacros-arm-generic-chrome-fyi-reclient": {
-    "args_file": "//build/args/chromeos/arm-generic-crostoolchain.gni",
-    "gn_args": {
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "ozone_platform_headless": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
