@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -495,7 +496,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        NoForcedInterceptionShowsDialogIfFeatureEnabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
-      kShowEnterpriseDialogForAllManagedAccountsSignin);
+      features::kEnterpriseUpdatedProfileCreationScreen);
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -523,7 +524,7 @@ TEST_P(
     NoForcedInterceptionShowsNoDialogIfFeatureEnabledButDisabledDialogByPolicy) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
-      kShowEnterpriseDialogForAllManagedAccountsSignin);
+      features::kEnterpriseUpdatedProfileCreationScreen);
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(

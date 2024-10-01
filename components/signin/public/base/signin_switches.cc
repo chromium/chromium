@@ -179,12 +179,6 @@ BASE_FEATURE(kStableDeviceId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables showing the enterprise dialog after every signin into a managed
-// account.
-BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
-             "ShowEnterpriseDialogForAllManagedAccountsSignin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disables signout for enteprise managed profiles
 BASE_FEATURE(kDisallowManagedProfileSignout,
              "DisallowManagedProfileSignout",

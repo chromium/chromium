@@ -981,6 +981,9 @@ chromium-metrics-reviews@google.com.
   <int value="22"
       label="DiceResponseHandler::Signin from sign in promo after password
              save (obsolete)"/>
+  <int value="23"
+      label="DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult from
+             enterprise forced profile creation dialog"/>
 </enum>
 
 <enum name="SyncButtonClicked">

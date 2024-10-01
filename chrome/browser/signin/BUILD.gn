@@ -61,6 +61,7 @@ source_set("impl") {
       "//chrome/browser/search_engines",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/signin",
       "//chrome/common:channel_info",
       "//chrome/common:constants",

@@ -478,8 +478,9 @@ enum class SourceForRefreshTokenOperation {
   kAccountReconcilor_RevokeTokensNotInCookies = 21,
   // DEPRECATED on 05/2024
   // kDiceResponseHandler_PasswordPromoSignin = 22,
+  kEnterpriseForcedProfileCreation_UserDecline = 23,
 
-  kMaxValue = kAccountReconcilor_RevokeTokensNotInCookies,
+  kMaxValue = kEnterpriseForcedProfileCreation_UserDecline,
 };
 
 // Different types of reporting. This is used as a histogram suffix.
