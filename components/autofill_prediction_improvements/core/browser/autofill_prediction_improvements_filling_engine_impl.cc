@@ -154,6 +154,10 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
         // in the suggestion as the main text.
         select_option_text = predicted_select_option_it->text;
       }
+      // Skip predictions for non-empty text fields.
+      else if (field.IsTextInputElement() && !field.value().empty()) {
+        continue;
+      }
 
       const std::u16string label =
           filled_form_field_proto.normalized_label().empty()

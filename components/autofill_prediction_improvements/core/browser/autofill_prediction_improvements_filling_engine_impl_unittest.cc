@@ -108,6 +108,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   AddFieldToResponse(response,
                      "Country - response equals selected value, not filled", "",
                      "2");
+  AddFieldToResponse(response, "Field has value, not filled", "", "value");
   optimization_guide::proto::Any any;
   any.set_type_url(response.GetTypeName());
   response.SerializeToString(any.mutable_value());
@@ -139,7 +140,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
            .value = u"2",
            .form_control_type = autofill::FormControlType::kSelectOne,
            .select_options = {{.value = u"1", .text = u"France"},
-                              {.value = u"2", .text = u"Spain"}}}}};
+                              {.value = u"2", .text = u"Spain"}}},
+          {.label = u"Field has value, not filled", .value = u"value"}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
 
   optimization_guide::proto::AXTreeUpdate ax_tree;
