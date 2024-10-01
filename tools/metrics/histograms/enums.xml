@@ -27825,6 +27825,17 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Invalid Key Length"/>
 </enum>
 
+<!-- LINT.IfChange(OsDefaultsChoiceDialogStatus) -->
+
+<enum name="OsDefaultsChoiceDialogStatus">
+  <int value="0" label="Unknown: Dialog dismissed or abandoned before showing"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="ChoiceLaunch"/>
+  <int value="3" label="ChoiceConfirmation"/>
+</enum>
+
+<!-- LINT.ThenChange() -->
+
 <enum name="OSXNSException">
   <int value="0" label="NSGenericException"/>
   <int value="1" label="NSRangeException"/>
