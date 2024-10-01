@@ -461,7 +461,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 
   // Then, add the other accounts in the order of the accounts in the cookie
   // jar.
-  for (auto& account_info : accounts_in_jar.signed_in_accounts) {
+  for (auto& account_info : accounts_in_jar.GetSignedInAccounts()) {
     DCHECK(!account_info.id.empty());
     if (account_info.id == default_account_id ||
         (restrict_to_accounts_eligible_for_sync &&

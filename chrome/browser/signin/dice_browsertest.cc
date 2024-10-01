@@ -1457,9 +1457,9 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
       account_info.account_id));
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(cookie_jar.signed_in_accounts.size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.signed_in_accounts[0].email,
+  ASSERT_TRUE(cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
                                   kMainGmailEmail));
 }
 
@@ -1480,9 +1480,9 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
       primary_account.account_id));
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(cookie_jar.signed_in_accounts.size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.signed_in_accounts[0].email,
+  ASSERT_TRUE(cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
                                   kMainGmailEmail));
 }
 

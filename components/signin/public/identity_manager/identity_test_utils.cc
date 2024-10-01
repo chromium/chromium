@@ -562,7 +562,7 @@ void AddCookieAccount(IdentityManager* identity_manager,
 
   std::vector<CookieParamsForTest> gaia_cookie_accounts;
   for (const gaia::ListedAccount& existing_cookie_account :
-       cookie_info.signed_in_accounts) {
+       cookie_info.GetSignedInAccounts()) {
     if (existing_cookie_account.email == cookie_account_to_add.email &&
         existing_cookie_account.gaia_id == cookie_account_to_add.gaia_id) {
       // No need to add the account, a matching one is already present. Abort.
@@ -617,11 +617,11 @@ void TriggerListAccount(
       identity_manager->GetAccountsInCookieJar();
   // Construct the cookie params with the actual cookies in the cookie jar.
   std::vector<CookieParamsForTest> cookie_params;
-  for (auto& account : cookie_jar.signed_in_accounts) {
+  for (auto& account : cookie_jar.GetSignedInAccounts()) {
     cookie_params.emplace_back(account.email, account.gaia_id,
                                /*signed_out=*/false);
   }
-  for (auto& account : cookie_jar.signed_out_accounts) {
+  for (auto& account : cookie_jar.GetSignedOutAccounts()) {
     cookie_params.emplace_back(account.email, account.gaia_id,
                                /*signed_out=*/true);
   }

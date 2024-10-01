@@ -167,7 +167,6 @@ TEST_F(IdentityUtilsIsUsernameAllowedTest, MatchingWildcardPatterns) {
 }
 
 TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
-  AccountsInCookieJarInfo cookie_info;
   const int cookie_accounts_count = 3;
   std::vector<gaia::ListedAccount> cookie_accounts(cookie_accounts_count);
   for (int i = 0; i < cookie_accounts_count; ++i) {
@@ -175,29 +174,34 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
   }
 
   // No accounts in cookie, no identity manager.
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(/*identity_manager=*/nullptr,
-                                               cookie_info),
-              testing::UnorderedElementsAre());
+  EXPECT_THAT(
+      GetAllGaiaIdsForKeyedPreferences(/*identity_manager=*/nullptr,
+                                       AccountsInCookieJarInfo(true, {}, {})),
+      testing::UnorderedElementsAre());
 
   // No accounts in cookie, empty identity manager.
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {}, {})),
               testing::UnorderedElementsAre());
 
   // Signed in cookie, empty identity manager.
-  cookie_info.signed_in_accounts = {cookie_accounts[0]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(true, {cookie_accounts[0]}, {})),
               testing::UnorderedElementsAre("0"));
 
   // Signed out cookie, empty identity manager.
-  cookie_info.signed_in_accounts = {};
-  cookie_info.signed_out_accounts = {cookie_accounts[0]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(true, {}, {cookie_accounts[0]})),
               testing::UnorderedElementsAre("0"));
 
   // Signed out and signed in cookies, empty identity manager.
-  cookie_info.signed_in_accounts = {cookie_accounts[0], cookie_accounts[1]};
-  cookie_info.signed_out_accounts = {cookie_accounts[2]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(
+                      true, {cookie_accounts[0], cookie_accounts[1]},
+                      {cookie_accounts[2]})),
               testing::UnorderedElementsAre("0", "1", "2"));
 
   AccountInfo account_info = MakePrimaryAccountAvailable();
@@ -205,23 +209,24 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
   cookie_for_primary_account.gaia_id = account_info.gaia;
 
   // No accounts in cookie, primary account in identity manager.
-  cookie_info.signed_in_accounts = {};
-  cookie_info.signed_out_accounts = {};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {}, {})),
               testing::UnorderedElementsAre(account_info.gaia));
 
   // Primary account is valid in cookies.
-  cookie_info.signed_in_accounts = {cookie_for_primary_account,
-                                    cookie_accounts[0]};
-  cookie_info.signed_out_accounts = {cookie_accounts[1]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(
+                      true, {cookie_for_primary_account, cookie_accounts[0]},
+                      {cookie_accounts[1]})),
               testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
 
   // Primary account is invalid in cookies.
-  cookie_info.signed_in_accounts = {cookie_accounts[0]};
-  cookie_info.signed_out_accounts = {cookie_accounts[1],
-                                     cookie_for_primary_account};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(
+                      true, {cookie_accounts[0]},
+                      {cookie_accounts[1], cookie_for_primary_account})),
               testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
 }
 

@@ -200,7 +200,7 @@ void MaybeClearAccountKeyedPreferences(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     SyncUserSettingsImpl& user_settings) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
     // Clear settings for accounts no longer in the cookie jar. On Android
     // and iOS this is done when the account is removed from the OS instead.
     std::vector<signin::GaiaIdHash> hashes =
@@ -1079,7 +1079,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   if (identity_manager_) {
     signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
         identity_manager_->GetAccountsInCookieJar();
-    if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+    if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
       OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                                 GoogleServiceAuthError::AuthErrorNone());
     }
@@ -1825,9 +1825,9 @@ void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
   }
 
   bool cookie_jar_mismatch =
-      HasCookieJarMismatch(accounts_in_cookie_jar_info.signed_in_accounts);
+      HasCookieJarMismatch(accounts_in_cookie_jar_info.GetSignedInAccounts());
   bool cookie_jar_empty =
-      accounts_in_cookie_jar_info.signed_in_accounts.empty();
+      accounts_in_cookie_jar_info.GetSignedInAccounts().empty();
 
   DVLOG(1) << "Cookie jar mismatch: " << cookie_jar_mismatch;
   DVLOG(1) << "Cookie jar empty: " << cookie_jar_empty;

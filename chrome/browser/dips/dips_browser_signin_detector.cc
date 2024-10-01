@@ -40,7 +40,7 @@ DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
 
   // Check the cookie jar in case the identity manager updated the accounts
   // before the observation kicked-in.
-  for (const auto& account : accounts.signed_in_accounts) {
+  for (const auto& account : accounts.GetSignedInAccounts()) {
     RecordInteractionsIfRelevant(
         identity_manager_->FindExtendedAccountInfoByAccountId(account.id));
   }

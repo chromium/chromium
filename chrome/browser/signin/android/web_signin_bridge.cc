@@ -45,7 +45,7 @@ WebSigninBridge::WebSigninBridge(signin::IdentityManager* identity_manager,
 
   signin::AccountsInCookieJarInfo info =
       identity_manager_->GetAccountsInCookieJar();
-  if (info.accounts_are_fresh) {
+  if (info.AreAccountsFresh()) {
     OnAccountsInCookieUpdated(info, GoogleServiceAuthError::AuthErrorNone());
   }
 }
@@ -58,7 +58,8 @@ WebSigninBridge::~WebSigninBridge() {
 void WebSigninBridge::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  for (const auto& account : accounts_in_cookie_jar_info.signed_in_accounts) {
+  for (const auto& account :
+       accounts_in_cookie_jar_info.GetSignedInAccounts()) {
     if (account.valid && account.gaia_id == signin_account_.gaia) {
       OnSigninCompleted(GoogleServiceAuthError());
       return;

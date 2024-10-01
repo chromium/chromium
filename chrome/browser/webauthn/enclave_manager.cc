@@ -3612,13 +3612,13 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
 
   const signin::AccountsInCookieJarInfo in_jar =
       identity_manager_->GetAccountsInCookieJar();
-  if (in_jar.accounts_are_fresh) {
+  if (in_jar.AreAccountsFresh()) {
     // If the user has signed out of any non-primary accounts, erase their
     // enclave state.
     const base::flat_set<std::string> gaia_ids_in_cookie_jar =
         base::STLSetUnion<base::flat_set<std::string>>(
-            GetGaiaIDs(in_jar.signed_in_accounts),
-            GetGaiaIDs(in_jar.signed_out_accounts));
+            GetGaiaIDs(in_jar.GetSignedInAccounts()),
+            GetGaiaIDs(in_jar.GetSignedOutAccounts()));
     const base::flat_set<std::string> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());
     base::flat_set<std::string> to_remove =

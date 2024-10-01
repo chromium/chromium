@@ -23,7 +23,7 @@ class Time;
 }  // namespace base
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 }  // namespace signin
 
 namespace signin_metrics {

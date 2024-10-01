@@ -520,7 +520,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   // above).
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager_->GetAccountsInCookieJar();
-  if (accounts_in_cookie_jar.accounts_are_fresh) {
+  if (accounts_in_cookie_jar.AreAccountsFresh()) {
     OnAccountsInCookieUpdated(
         accounts_in_cookie_jar,
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));
@@ -615,7 +615,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   const std::vector<gaia::ListedAccount>& accounts(
-      accounts_in_cookie_jar_info.signed_in_accounts);
+      accounts_in_cookie_jar_info.GetSignedInAccounts());
   VLOG(1) << "AccountReconcilor::OnAccountsInCookieUpdated: "
           << "CookieJar " << accounts.size() << " accounts, "
           << "Reconcilor's state is " << is_reconcile_started_ << ", "

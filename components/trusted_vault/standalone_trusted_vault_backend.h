@@ -31,7 +31,7 @@ class Clock;
 }  // namespace base
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 }  // namespace signin
 
 namespace trusted_vault {

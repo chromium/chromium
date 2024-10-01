@@ -396,8 +396,9 @@ bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
 bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  return identity_manager &&
-         !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
+  return identity_manager && !identity_manager->GetAccountsInCookieJar()
+                                  .GetSignedInAccounts()
+                                  .empty();
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {

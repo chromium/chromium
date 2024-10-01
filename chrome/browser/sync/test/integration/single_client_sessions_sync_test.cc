@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -254,18 +255,20 @@ class SingleClientSessionsSyncTest : public SyncTest {
   // SyncServiceImpl and waits for change to propagate to sync engine.
   void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountInfo> accounts,
                                       bool expected_cookie_jar_mismatch) {
-    signin::AccountsInCookieJarInfo cookies;
-    cookies.accounts_are_fresh = true;
-    for (const CoreAccountInfo& account : accounts) {
-      cookies.signed_in_accounts.emplace_back();
-      cookies.signed_in_accounts.back().id = account.account_id;
-      cookies.signed_in_accounts.back().gaia_id = account.gaia;
-      cookies.signed_in_accounts.back().email = account.email;
-    }
+    std::vector<gaia::ListedAccount> signed_in_accounts =
+        base::ToVector(accounts, [](const CoreAccountInfo& account) {
+          gaia::ListedAccount listed_account;
+          listed_account.id = account.account_id;
+          listed_account.gaia_id = account.gaia;
+          listed_account.email = account.email;
+          return listed_account;
+        });
+    signin::AccountsInCookieJarInfo cookies(/*accounts_are_fresh_param=*/true,
+                                            signed_in_accounts, {});
     base::RunLoop run_loop;
     EXPECT_EQ(expected_cookie_jar_mismatch,
               GetClient(0)->service()->HasCookieJarMismatch(
-                  cookies.signed_in_accounts));
+                  cookies.GetSignedInAccounts()));
     GetClient(0)->service()->OnAccountsInCookieUpdatedWithCallback(
         cookies, run_loop.QuitClosure());
     run_loop.Run();

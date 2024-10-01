@@ -60,7 +60,7 @@ class PrivacySandboxSettingsDelegate;
 
 namespace signin {
 
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 struct AccountAvailabilityOptions;
 class IdentityManagerTest;
 class IdentityTestEnvironment;
@@ -134,16 +134,16 @@ class IdentityManager : public KeyedService,
     virtual void OnRefreshTokensLoaded() {}
 
     // Called whenever the list of Gaia accounts in the cookie jar has changed.
-    // |accounts_in_cookie_jar_info.accounts| is ordered by the order of the
-    // accounts in the cookie.
+    // The result of `accounts_in_cookie_jar_info.GetSignedInAccounts()` is
+    // ordered by the order of the accounts in the cookie.
     //
     // This observer method is also called when fetching the list of accounts
     // in Gaia cookies fails after a number of internal retries. In this case:
-    // * |error| hold the last error to fetch the list of accounts;
-    // * |accounts_in_cookie_jar_info.accounts_are_fresh| is set to false as
+    // * `error` hold the last error to fetch the list of accounts;
+    // * `accounts_in_cookie_jar_info.AreAccountsFresh()` is set to false as
     //   the accounts information is considered stale;
-    // * |accounts_in_cookie_jar_info.accounts| holds the last list of known
-    //   accounts in the cookie jar.
+    // * `accounts_in_cookie_jar_info.GetSignedInAccounts()` returns the last
+    //   list of known accounts in the cookie jar.
     virtual void OnAccountsInCookieUpdated(
         const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
         const GoogleServiceAuthError& error) {}

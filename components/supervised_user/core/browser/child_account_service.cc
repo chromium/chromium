@@ -106,9 +106,9 @@ ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() const {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
   bool primary_account_has_cookie =
-      accounts_in_cookie_jar_info.accounts_are_fresh &&
+      accounts_in_cookie_jar_info.AreAccountsFresh() &&
       base::ranges::any_of(
-          accounts_in_cookie_jar_info.signed_in_accounts,
+          accounts_in_cookie_jar_info.GetSignedInAccounts(),
           [primary_account_id](const gaia::ListedAccount& account) {
             return account.id == primary_account_id && account.valid;
           });

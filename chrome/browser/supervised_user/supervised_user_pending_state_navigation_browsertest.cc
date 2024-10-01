@@ -106,7 +106,7 @@ class SupervisedUserPendingStateNavigationTest
                 signin::ConsentLevel::kSignin)));
 
     ASSERT_TRUE(
-        identity_manager()->GetAccountsInCookieJar().accounts_are_fresh);
+        identity_manager()->GetAccountsInCookieJar().AreAccountsFresh());
 
     // Wait for the re-auth page to be asynchronously reloaded.
     observer.WaitForNavigationFinished();

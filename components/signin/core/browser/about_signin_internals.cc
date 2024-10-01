@@ -532,13 +532,13 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
 
   base::Value::List cookie_info;
   for (const auto& signed_in_account :
-       accounts_in_cookie_jar_info.signed_in_accounts) {
+       accounts_in_cookie_jar_info.GetSignedInAccounts()) {
     AddCookieEntry(cookie_info, signed_in_account.raw_email,
                    signed_in_account.gaia_id,
                    signed_in_account.valid ? "Valid" : "Invalid");
   }
 
-  if (accounts_in_cookie_jar_info.signed_in_accounts.size() == 0) {
+  if (accounts_in_cookie_jar_info.GetSignedInAccounts().size() == 0) {
     AddCookieEntry(cookie_info, "No Accounts Present.", std::string(),
                    std::string());
   }

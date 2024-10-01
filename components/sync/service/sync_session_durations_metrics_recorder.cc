@@ -66,7 +66,7 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
   // if we don't have them yet.
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
-  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
     OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                               GoogleServiceAuthError::AuthErrorNone());
   }
@@ -137,19 +137,20 @@ void SyncSessionDurationsMetricsRecorder::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   DVLOG(1) << "Cookie state change. accounts: "
-           << accounts_in_cookie_jar_info.signed_in_accounts.size()
-           << " fresh: " << accounts_in_cookie_jar_info.accounts_are_fresh
+           << accounts_in_cookie_jar_info.GetSignedInAccounts().size()
+           << " fresh: " << accounts_in_cookie_jar_info.AreAccountsFresh()
            << " err: " << error.ToString();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
     // Return early if there's an error. This should only happen if there's an
     // actual error getting the account list. If there are any auth errors with
-    // the tokens, those accounts will be moved to signed_out_accounts instead.
+    // the tokens, those accounts will be moved to signed out accounts in
+    // AccountsInCookieJarInfo.
     return;
   }
 
-  DCHECK(accounts_in_cookie_jar_info.accounts_are_fresh);
-  if (accounts_in_cookie_jar_info.signed_in_accounts.empty()) {
+  DCHECK(accounts_in_cookie_jar_info.AreAccountsFresh());
+  if (accounts_in_cookie_jar_info.GetSignedInAccounts().empty()) {
     // No signed in account.
     if (cookie_signin_status_ == FeatureState::ON && signin_session_timer_) {
       LogSigninDuration(signin_session_timer_->Elapsed());

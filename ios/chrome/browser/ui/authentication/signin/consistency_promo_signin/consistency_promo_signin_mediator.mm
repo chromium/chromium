@@ -285,7 +285,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   if (error.state() == GoogleServiceAuthError::State::NONE &&
       self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin) &&
-      accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
+      accountsInCookieJarInfo.GetSignedInAccounts().size() > 0) {
     // Reset dismissal count.
     if (self.accessPoint ==
         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {

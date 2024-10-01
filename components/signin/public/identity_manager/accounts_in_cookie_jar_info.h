@@ -12,24 +12,31 @@
 namespace signin {
 
 // Container for a response to get the accounts in the cookie jar.
-struct AccountsInCookieJarInfo {
-  // True if the accounts info from cookie is fresh and does not need to be
-  // updated.
-  bool accounts_are_fresh = true;
-
-  // The current list of signed in accounts from the cookie jar.
-  std::vector<gaia::ListedAccount> signed_in_accounts;
-
-  // The current list of signed out accounts from the cookie jar.
-  std::vector<gaia::ListedAccount> signed_out_accounts;
-
+class AccountsInCookieJarInfo {
+ public:
   AccountsInCookieJarInfo();
   AccountsInCookieJarInfo(
       bool accounts_are_fresh_param,
       const std::vector<gaia::ListedAccount>& signed_in_accounts_param,
       const std::vector<gaia::ListedAccount>& signed_out_accounts_param);
   AccountsInCookieJarInfo(const AccountsInCookieJarInfo& other);
+  AccountsInCookieJarInfo& operator=(const AccountsInCookieJarInfo& other);
   ~AccountsInCookieJarInfo();
+
+  // True if the accounts info from cookie is fresh and does not need to be
+  // updated.
+  bool AreAccountsFresh() const;
+
+  // The current list of signed in accounts from the cookie jar.
+  const std::vector<gaia::ListedAccount>& GetSignedInAccounts() const;
+
+  // The current list of signed out accounts from the cookie jar.
+  const std::vector<gaia::ListedAccount>& GetSignedOutAccounts() const;
+
+ private:
+  bool accounts_are_fresh_ = true;
+  std::vector<gaia::ListedAccount> signed_in_accounts_;
+  std::vector<gaia::ListedAccount> signed_out_accounts_;
 };
 
 }  // namespace signin

@@ -100,11 +100,11 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
-  EXPECT_TRUE(accounts_in_cookie_jar.signed_out_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedInAccounts().size());
+  EXPECT_TRUE(accounts_in_cookie_jar.GetSignedOutAccounts().empty());
   const gaia::ListedAccount& account =
-      accounts_in_cookie_jar.signed_in_accounts[0];
+      accounts_in_cookie_jar.GetSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
@@ -132,11 +132,12 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  ASSERT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
-  ASSERT_EQ(1u, accounts_in_cookie_jar.signed_out_accounts.size());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  ASSERT_TRUE(accounts_in_cookie_jar.GetSignedInAccounts().empty());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedOutAccounts().size());
   EXPECT_TRUE(gaia::AreEmailsSame(
-      test_account->user, accounts_in_cookie_jar.signed_out_accounts[0].email));
+      test_account->user,
+      accounts_in_cookie_jar.GetSignedOutAccounts()[0].email));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
@@ -159,11 +160,11 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_1 =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_1.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar_1.signed_in_accounts.size());
-  EXPECT_TRUE(accounts_in_cookie_jar_1.signed_out_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar_1.AreAccountsFresh());
+  ASSERT_EQ(1u, accounts_in_cookie_jar_1.GetSignedInAccounts().size());
+  EXPECT_TRUE(accounts_in_cookie_jar_1.GetSignedOutAccounts().empty());
   const gaia::ListedAccount& account_1 =
-      accounts_in_cookie_jar_1.signed_in_accounts[0];
+      accounts_in_cookie_jar_1.GetSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account_1.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_1.id));
   EXPECT_FALSE(
@@ -176,12 +177,12 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_2.accounts_are_fresh);
-  ASSERT_EQ(2u, accounts_in_cookie_jar_2.signed_in_accounts.size());
-  EXPECT_TRUE(accounts_in_cookie_jar_2.signed_out_accounts.empty());
-  EXPECT_EQ(accounts_in_cookie_jar_2.signed_in_accounts[0].id, account_1.id);
+  EXPECT_TRUE(accounts_in_cookie_jar_2.AreAccountsFresh());
+  ASSERT_EQ(2u, accounts_in_cookie_jar_2.GetSignedInAccounts().size());
+  EXPECT_TRUE(accounts_in_cookie_jar_2.GetSignedOutAccounts().empty());
+  EXPECT_EQ(accounts_in_cookie_jar_2.GetSignedInAccounts()[0].id, account_1.id);
   const gaia::ListedAccount& account_2 =
-      accounts_in_cookie_jar_2.signed_in_accounts[1];
+      accounts_in_cookie_jar_2.GetSignedInAccounts()[1];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account_2.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_2.id));
   EXPECT_FALSE(
@@ -191,9 +192,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_3 =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_3.accounts_are_fresh);
-  ASSERT_TRUE(accounts_in_cookie_jar_3.signed_in_accounts.empty());
-  EXPECT_EQ(2u, accounts_in_cookie_jar_3.signed_out_accounts.size());
+  EXPECT_TRUE(accounts_in_cookie_jar_3.AreAccountsFresh());
+  ASSERT_TRUE(accounts_in_cookie_jar_3.GetSignedInAccounts().empty());
+  EXPECT_EQ(2u, accounts_in_cookie_jar_3.GetSignedOutAccounts().size());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 }
 
@@ -224,8 +225,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_2.accounts_are_fresh);
-  ASSERT_TRUE(accounts_in_cookie_jar_2.signed_in_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar_2.AreAccountsFresh());
+  ASSERT_TRUE(accounts_in_cookie_jar_2.GetSignedInAccounts().empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -291,10 +292,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedInAccounts().size());
   const gaia::ListedAccount& account =
-      accounts_in_cookie_jar.signed_in_accounts[0];
+      accounts_in_cookie_jar.GetSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
   EXPECT_FALSE(
@@ -319,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  EXPECT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  EXPECT_TRUE(accounts_in_cookie_jar.GetSignedInAccounts().empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -379,10 +380,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   // Check accounts in cookies in the new profile.
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       signin::test::identity_manager(new_browser)->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedInAccounts().size());
   const gaia::ListedAccount& account =
-      accounts_in_cookie_jar.signed_in_accounts[0];
+      accounts_in_cookie_jar.GetSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account.email));
 
   // Check the primary account in the new profile is set and syncing.
@@ -400,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
       0, PrimarySyncAccountWait::kWaitForCleared);
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_2.accounts_are_fresh);
-  ASSERT_TRUE(accounts_in_cookie_jar_2.signed_in_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar_2.AreAccountsFresh());
+  ASSERT_TRUE(accounts_in_cookie_jar_2.GetSignedInAccounts().empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -448,10 +449,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   // Check accounts in cookies.
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar.signed_in_accounts.size());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedInAccounts().size());
   const gaia::ListedAccount& account =
-      accounts_in_cookie_jar.signed_in_accounts[0];
+      accounts_in_cookie_jar.GetSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account.email));
 
   // Check the primary account is set and syncing.
@@ -503,8 +504,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   // Check Chrome has no accounts.
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
-  EXPECT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
+  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
+  EXPECT_TRUE(accounts_in_cookie_jar.GetSignedInAccounts().empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));

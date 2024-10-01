@@ -71,7 +71,8 @@ bool HasModulesEnabled(
               switches::kSignedOutNtpModulesSwitch) ||
           (/* Can be null if Chrome signin is disabled. */ identity_manager &&
            identity_manager->GetAccountsInCookieJar()
-                   .signed_in_accounts.size() > 0));
+                   .GetSignedInAccounts()
+                   .size() > 0));
 }
 
 }  // namespace ntp

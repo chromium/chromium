@@ -162,7 +162,7 @@ void SupervisionMixin::SetPendingStateForPrimaryAccount() {
 
   signin::AccountsInCookieJarInfo cookie_jar =
       identity_manager->GetAccountsInCookieJar();
-  CHECK(!identity_manager->GetAccountsInCookieJar().accounts_are_fresh);
+  CHECK(!identity_manager->GetAccountsInCookieJar().AreAccountsFresh());
   CHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
 }

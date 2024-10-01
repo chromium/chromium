@@ -181,8 +181,8 @@ void HandleSignoutConfirmationChoice(
       // Sign out from all accounts on the web if needed.
       signin::AccountsInCookieJarInfo accounts_in_cookies =
           identity_manager->GetAccountsInCookieJar();
-      if (!accounts_in_cookies.accounts_are_fresh ||
-          !accounts_in_cookies.signed_in_accounts.empty()) {
+      if (!accounts_in_cookies.AreAccountsFresh() ||
+          !accounts_in_cookies.GetSignedInAccounts().empty()) {
         browser->signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }
