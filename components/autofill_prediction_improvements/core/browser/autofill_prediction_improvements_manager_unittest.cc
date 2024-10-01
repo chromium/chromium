@@ -509,6 +509,81 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
           HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
+// Tests that the filling suggestion label is correct when only one field can be
+// filled.
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    FillingSuggestion_OneFieldCanBeFilled_CreateLabelThatContainsOnlyOneFieldData) {
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(), {u"Jane", u"First name"}}});
+
+  std::vector<Suggestion> suggestions_to_show;
+  EXPECT_TRUE(
+      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
+                                       /*should_add_trigger_suggestion=*/true));
+  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value, u"Fill First name");
+}
+
+// Tests that the filling suggestion label is correct when 3 fields can be
+// filled.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       FillingSuggestion_ThreeFieldsCanBeFilled_UserSingularAndMoreString) {
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST},
+                 {.role = autofill::ADDRESS_HOME_STREET_NAME,
+                  .heuristic_type = autofill::ADDRESS_HOME_STREET_NAME},
+                 {.role = autofill::ADDRESS_HOME_STATE,
+                  .heuristic_type = autofill::ADDRESS_HOME_STATE,
+                  .form_control_type = autofill::FormControlType::kSelectOne}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(), {u"Jane", u"First name"}},
+      {form.fields()[1].global_id(), {u"Country roads str", u"Street name"}},
+      {form.fields()[2].global_id(), {u"33", u"state", u"West Virginia"}}});
+
+  std::vector<Suggestion> suggestions_to_show;
+  EXPECT_TRUE(
+      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
+                                       /*should_add_trigger_suggestion=*/true));
+  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value,
+            u"Fill First name, Street name & 1 more field");
+}
+
+// Tests that the filling suggestion label is correct when more than 3 fields
+// can be filled.
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    FillingSuggestion_MoreThanThreeFieldsCanBeFilled_UserPluralAndMoreString) {
+  autofill::test::FormDescription form_description = {
+      .fields = {
+          {.role = autofill::NAME_FIRST,
+           .heuristic_type = autofill::NAME_FIRST},
+          {.role = autofill::NAME_LAST, .heuristic_type = autofill::NAME_LAST},
+          {.role = autofill::ADDRESS_HOME_STREET_NAME,
+           .heuristic_type = autofill::ADDRESS_HOME_STREET_NAME},
+          {.role = autofill::ADDRESS_HOME_STATE,
+           .heuristic_type = autofill::ADDRESS_HOME_STATE,
+           .form_control_type = autofill::FormControlType::kSelectOne}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(), {u"Jane", u"First name"}},
+      {form.fields()[1].global_id(), {u"Doe", u"Last name"}},
+      {form.fields()[2].global_id(), {u"Country roads str", u"Street name"}},
+      {form.fields()[3].global_id(), {u"33", u"state", u"West Virginia"}}});
+
+  std::vector<Suggestion> suggestions_to_show;
+  EXPECT_TRUE(
+      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
+                                       /*should_add_trigger_suggestion=*/true));
+  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value,
+            u"Fill First name, Last name & 2 more fields");
+}
+
 class AutofillPredictionImprovementsManagerUserFeedbackTest
     : public AutofillPredictionImprovementsManagerTest,
       public testing::WithParamInterface<

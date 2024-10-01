@@ -9,8 +9,17 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown when the user focuses a prediction improvements field." translateable="false">
     Fill all
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_MORE" desc="Text displayed as label to indicate more fields will be filled." translateable="false">
-    &amp; more
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT" desc="Text shown as a label when the user sees a prediction improvements suggestion." translateable="false">
+    Fill
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR" desc="The separator character used in the prediction improvements label." translateable="false">
+    , '''
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD" desc="Text displayed as label to indicate more fields will be filled." translateable="false">
+    &amp; 1 more field
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS" desc="Text displayed as label to indicate more fields will be filled." translateable="false">
+    &amp; <ph name="N_FIELDS">$1<ex>4</ex></ph> more fields
   </message>
 
   <!-- Save prompt -->

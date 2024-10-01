@@ -36,6 +36,8 @@ namespace autofill_prediction_improvements {
 
 namespace {
 
+constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
+
 // Define `field_types_to_fill` as Autofill address types +
 // `IMPROVED_PREDICTION`.
 // TODO(crbug.com/364808228): Remove `UNKNOWN_TYPE` from `field_types_to_fill`.
@@ -213,8 +215,6 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   {
-    // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
-    // file.
     autofill::Suggestion fill_all_child(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
@@ -225,7 +225,13 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   }
   // Add the child suggestion for the triggering field on top.
   suggestion.children.emplace_back(CreateChildSuggestionForFilling(prediction));
-  // Then add child suggestions for all remaining, non-empty fields.
+  // Initialize as 1 because of the suggestion added above.
+  size_t n_fields_to_fill = 1;
+  // The label depends on the fields that will be filled.
+  std::u16string label =
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
+      u" " + prediction.label;
   for (const auto& [child_field_global_id, child_prediction] : (*cache_)) {
     // Only add a child suggestion if the field is not the triggering field and
     // the value to fill is not empty.
@@ -235,16 +241,34 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     }
     suggestion.children.emplace_back(
         CreateChildSuggestionForFilling(child_prediction));
+    ++n_fields_to_fill;
+    if (n_fields_to_fill == 2) {
+      label += l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR) +
+               child_prediction.label;
+    }
   }
-  if (!suggestion.children.empty()) {
-    suggestion.labels.emplace_back();
-    // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
-    // file.
-    suggestion.labels.back().emplace_back(u"& more");
-    suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-    suggestion.children.emplace_back(
-        CreateEditPredictionImprovementsInformation());
+
+  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
+  suggestion.children.emplace_back(
+      CreateEditPredictionImprovementsInformation());
+
+  if (n_fields_to_fill > kNumberFieldsToShowInSuggestionLabel) {
+    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled, include
+    // the "& More".
+    size_t number_of_more_fields_to_fill =
+        n_fields_to_fill - kNumberFieldsToShowInSuggestionLabel;
+    const std::u16string more_fields_label_substr =
+        number_of_more_fields_to_fill > 1
+            ? l10n_util::GetStringFUTF16(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS,
+                  base::NumberToString16(number_of_more_fields_to_fill))
+            : l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD);
+    label = base::StrCat({label, u" ", more_fields_label_substr});
   }
+  suggestion.labels.emplace_back();
+  suggestion.labels.back().emplace_back(label);
 
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
