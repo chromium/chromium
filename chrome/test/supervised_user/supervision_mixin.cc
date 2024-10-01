@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -62,18 +63,6 @@ bool IdentityManagerAlreadyHasPrimaryAccount(
 SupervisionMixin::SupervisionMixin(
     InProcessBrowserTestMixinHost& test_mixin_host,
     InProcessBrowserTest* test_base,
-    const Options& options)
-    : InProcessBrowserTestMixin(&test_mixin_host),
-      test_base_(test_base),
-      fake_gaia_mixin_(&test_mixin_host),
-      api_mock_setup_mixin_(test_mixin_host, test_base),
-      consent_level_(options.consent_level),
-      email_(options.email),
-      sign_in_mode_(options.sign_in_mode) {}
-
-SupervisionMixin::SupervisionMixin(
-    InProcessBrowserTestMixinHost& test_mixin_host,
-    InProcessBrowserTest* test_base,
     raw_ptr<net::EmbeddedTestServer> embedded_test_server,
     const Options& options)
     : InProcessBrowserTestMixin(&test_mixin_host),
@@ -85,6 +74,10 @@ SupervisionMixin::SupervisionMixin(
                                         embedded_test_server,
                                         options.embedded_test_server_options),
       api_mock_setup_mixin_(test_mixin_host, test_base),
+      google_auth_state_waiter_mixin_(
+          test_mixin_host,
+          test_base,
+          GetExpectedAuthState(options.sign_in_mode)),
       consent_level_(options.consent_level),
       email_(options.email),
       sign_in_mode_(options.sign_in_mode) {}
@@ -102,6 +95,18 @@ void SupervisionMixin::SetUpOnMainThread() {
   SetUpIdentityTestEnvironment();
   ConfigureIdentityTestEnvironment();
   SetUpTestServer();
+}
+
+// static
+ChildAccountService::AuthState SupervisionMixin::GetExpectedAuthState(
+    SignInMode sign_in_mode) {
+  switch (sign_in_mode) {
+    case SignInMode::kSignedOut:
+      return ChildAccountService::AuthState::NOT_AUTHENTICATED;
+    case SignInMode::kRegular:
+    case SignInMode::kSupervised:
+      return ChildAccountService::AuthState::AUTHENTICATED;
+  }
 }
 
 void SupervisionMixin::SetUpTestServer() {

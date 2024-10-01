@@ -63,10 +63,6 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
                    supervised_user::FilteringBehaviorReason reason,
                    bool uncertain);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  bool ShouldShowReauthInterstitial(const Profile* profile, bool is_main_frame);
-#endif
-
   void OnInterstitialResult(CallbackActions continue_request,
                             bool already_requested_permission,
                             bool is_main_frame);

@@ -54,6 +54,10 @@ class SupervisedUserVerificationPage
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  // Whether the user is in a suitable auth state for this page to be shown.
+  static bool ShouldShowPage(
+      const supervised_user::ChildAccountService& child_account_service);
+
   // `request_url` is the URL which triggered the interstitial page. It can be
   // a main frame or a subresource URL.
   // `child_account_service` should only be null for demo interstitials, such as
@@ -82,9 +86,6 @@ class SupervisedUserVerificationPage
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
-  // Reloads the interstitial page and records metrics if necessary.
-  void OnReauthenticationCompleted();
-
  protected:
   void CommandReceived(const std::string& command) override;
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
@@ -92,6 +93,7 @@ class SupervisedUserVerificationPage
   int GetHTMLTemplateId() override;
 
  private:
+  void OnGoogleAuthStateUpdate();
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
   void RecordReauthStatusMetrics(Status status);
   void RecordYouTubeReauthStatusUkm(Status status);

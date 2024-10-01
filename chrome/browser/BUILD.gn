@@ -4128,8 +4128,6 @@ static_library("browser") {
       "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       "supervised_user/supervised_user_verification_controller_client.cc",
       "supervised_user/supervised_user_verification_controller_client.h",
-      "supervised_user/supervised_user_verification_page.cc",
-      "supervised_user/supervised_user_verification_page.h",
       "support_tool/data_collector.h",
       "support_tool/data_collector_utils.cc",
       "support_tool/data_collector_utils.h",
@@ -6856,6 +6854,8 @@ static_library("browser") {
       "supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h",
       "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.cc",
       "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
+      "supervised_user/supervised_user_verification_page.cc",
+      "supervised_user/supervised_user_verification_page.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",

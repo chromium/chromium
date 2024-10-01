@@ -31,6 +31,29 @@ const security_interstitials::SecurityInterstitialPage::TypeID
     SupervisedUserVerificationPage::kTypeForTesting =
         &SupervisedUserVerificationPage::kTypeForTesting;
 
+// static
+bool SupervisedUserVerificationPage::ShouldShowPage(
+    const supervised_user::ChildAccountService& child_account_service) {
+  switch (child_account_service.GetGoogleAuthState()) {
+    case supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED:
+    case supervised_user::ChildAccountService::AuthState::AUTHENTICATED:
+      // The user is fully signed out or fully signed in. Don't show the
+      // interstitial.
+      return false;
+
+    case supervised_user::ChildAccountService::AuthState::PENDING:
+    case supervised_user::ChildAccountService::AuthState::
+        TRANSIENT_MOVING_TO_AUTHENTICATED:
+      // The user is in a stable pending state, or a transient state. Show the
+      // interstitial, as a parent approval request or YouTube visit would not
+      // be successful with the correct behavior.
+      //
+      // In the transient case, an update to AUTHENTICATED state may shortly
+      // follow, which will trigger this interstitial to be refreshed.
+      return true;
+  }
+}
+
 SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
     const std::string& email_to_reauth,
@@ -59,7 +82,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     // is authenticated.
     google_auth_state_subscription_ =
         child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
-            &SupervisedUserVerificationPage::OnReauthenticationCompleted,
+            &SupervisedUserVerificationPage::OnGoogleAuthStateUpdate,
             base::Unretained(this)));
     RecordReauthStatusMetrics(Status::SHOWN);
   }
@@ -72,7 +95,16 @@ SupervisedUserVerificationPage::GetTypeForTesting() {
   return SupervisedUserVerificationPage::kTypeForTesting;
 }
 
-void SupervisedUserVerificationPage::OnReauthenticationCompleted() {
+void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
+  // This callback doesn't guarantee that the state has changed, or that it has
+  // transitioned to fully signed in.
+  // If we're still in a state where we should be showing this interstitial,
+  // drop out.
+  CHECK(child_account_service_);
+  if (ShouldShowPage(*child_account_service_)) {
+    return;
+  }
+
   RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
   controller()->Reload();
 }

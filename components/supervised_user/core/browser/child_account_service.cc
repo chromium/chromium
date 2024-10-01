@@ -30,6 +30,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace supervised_user {
 
@@ -95,19 +96,38 @@ void ChildAccountService::AddChildStatusReceivedCallback(
 }
 #endif
 
-ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
-      identity_manager_->GetAccountsInCookieJar();
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
-    return AuthState::PENDING;
+ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() const {
+  CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (primary_account_id.empty()) {
+    return AuthState::NOT_AUTHENTICATED;
   }
 
-  bool first_account_authenticated =
-      !accounts_in_cookie_jar_info.signed_in_accounts.empty() &&
-      accounts_in_cookie_jar_info.signed_in_accounts[0].valid;
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+      identity_manager_->GetAccountsInCookieJar();
+  bool primary_account_has_cookie =
+      accounts_in_cookie_jar_info.accounts_are_fresh &&
+      base::ranges::any_of(
+          accounts_in_cookie_jar_info.signed_in_accounts,
+          [primary_account_id](const gaia::ListedAccount& account) {
+            return account.id == primary_account_id && account.valid;
+          });
+  bool primary_account_has_token =
+      !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
 
-  return first_account_authenticated ? AuthState::AUTHENTICATED
-                                     : AuthState::NOT_AUTHENTICATED;
+  if (primary_account_has_cookie && primary_account_has_token) {
+    return AuthState::AUTHENTICATED;
+  }
+  if (primary_account_has_token && !primary_account_has_cookie) {
+    // The account reconcilor should automatically fix this state, by rebuilding
+    // the account cookie.
+    return AuthState::TRANSIENT_MOVING_TO_AUTHENTICATED;
+  }
+  // We either have no token or cookie (in which case we're in the stable
+  // pending state), or we have a cookie and no token (in which case the
+  // reconcilor will eventually get us to the stable pending state).
+  return AuthState::PENDING;
 }
 
 base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
@@ -185,11 +205,38 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
 
   SetSupervisionStatusAndNotifyObservers(info.is_child_account ==
                                          signin::Tribool::kTrue);
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (account_info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (account_info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  OnAuthStateUpdated();
 }
 
 void ChildAccountService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnAuthStateUpdated() {
   UpdateForceGoogleSafeSearch();
   google_auth_state_observers_.Notify();
 }

@@ -212,6 +212,7 @@ class SupervisionExtensionTestBase
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode = GetMixinSigninMode()}};
 };
 
@@ -583,11 +584,6 @@ class SupervisedUserSkipParentalApprovalModeReleaseTest
   }
 
  private:
-  supervised_user::SupervisionMixin supervision_mixin_{
-      mixin_host_,
-      this,
-      {.sign_in_mode = GetMixinSigninMode()}};
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
