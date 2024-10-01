@@ -304,7 +304,7 @@ void Location::SetLocation(const String& url,
     argv.push_back(completed_url);
     // We use the CurrentDOMWindow here. `dom_window` might be remote here.
     activity_logger->LogEvent(CurrentDOMWindow(incumbent_window->GetIsolate()),
-                              "blinkSetAttribute", argv.size(), argv.data());
+                              "blinkSetAttribute", argv);
   }
 
   ResourceRequestHead resource_request(completed_url);

@@ -1227,6 +1227,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/web_dom_activity_logger.h',
+        ],
+        'allowed': [
+            'v8::Local',
+            'v8::Value',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.cc',
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h',
         ],

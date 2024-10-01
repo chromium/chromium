@@ -38,12 +38,12 @@ DomActivityLoggersForIsolatedWorld() {
 void V8DOMActivityLogger::LogMethod(ScriptState* script_state,
                                     const char* api_name,
                                     v8::FunctionCallbackInfo<v8::Value> info) {
-  v8::LocalVector<v8::Value> loggerArgs(info.GetIsolate());
-  loggerArgs.reserve(info.Length());
+  v8::LocalVector<v8::Value> logger_args(info.GetIsolate());
+  logger_args.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {
-    loggerArgs.push_back(info[i]);
+    logger_args.push_back(info[i]);
   }
-  LogMethod(script_state, api_name, info.Length(), loggerArgs.data());
+  LogMethod(script_state, api_name, logger_args);
 }
 
 void V8DOMActivityLogger::SetActivityLogger(
