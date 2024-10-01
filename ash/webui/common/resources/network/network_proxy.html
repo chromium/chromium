@@ -40,7 +40,7 @@
     hidden$="[[!matches_(proxy_.type.activeValue, 'PAC')]]">
   <cr-input id="pacInput" class="flex"
       label="[[i18n('networkProxyAutoConfig')]]"
-      value="{{proxy_.pac.activeValue}}" on-change="onPACChange_"
+      value="{{proxy_.pac.activeValue}}" on-change="onPacChange_"
       disabled="[[!isEditable_('pac', managedProperties, editable,
           useSharedProxies)]]">
   </cr-input>
@@ -120,7 +120,7 @@
           aria-label="[[i18n('networkProxyExceptionInputA11yLabel')]]"
           on-keypress="onAddProxyExclusionKeypress_">
         <cr-button id="proxyExclusionButton"
-            on-click="onAddProxyExclusionTap_"
+            on-click="onAddProxyExclusionClicked_"
             slot="suffix"
             disabled="[[shouldProxyExclusionButtonBeDisabled_(
                 proxyExclusionInputValue_)]]">
@@ -131,7 +131,7 @@
   </div>
 
   <cr-button id="saveManualProxy"
-      on-click="onSaveProxyTap_" class="action-button"
+      on-click="onSaveProxyClicked_" class="action-button"
       disabled="[[!isSaveManualProxyEnabled_(managedProperties,
           proxyIsUserModified_, proxy_.*)]]">
     [[i18n('save')]]

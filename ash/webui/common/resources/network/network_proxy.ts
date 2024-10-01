@@ -17,30 +17,35 @@ import './network_proxy_exclusions.js';
 import './network_proxy_input.js';
 import './network_shared.css.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {ManagedManualProxySettings, ManagedProperties, ManagedProxyLocation, ManagedProxySettings, ManagedStringList, ProxyLocation, ProxySettings} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {IPConfigType, OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {ManagedManualProxySettings, ManagedProperties, ManagedProxyLocation, ManagedProxySettings, ManagedStringList, ManualProxySettings, ProxyLocation, ProxySettings} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {IPConfigType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_proxy.html.js';
 import {OncMojo} from './onc_mojo.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {CrPolicyNetworkBehaviorMojoInterface}
- */
-const NetworkProxyElementBase =
-    mixinBehaviors([CrPolicyNetworkBehaviorMojo, I18nBehavior], PolymerElement);
+function createDefaultProxySettings(): ManagedProxySettings {
+  return {
+    type: OncMojo.createManagedString('Direct'),
+    manual: undefined,
+    excludeDomains: undefined,
+    pac: undefined,
+  };
+}
 
-/** @polymer */
-class NetworkProxyElement extends NetworkProxyElementBase {
+type Constructor<T> = new (...args: any[]) => T;
+
+const NetworkProxyElementBase =
+    mixinBehaviors([CrPolicyNetworkBehaviorMojo], I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&
+                CrPolicyNetworkBehaviorMojoInterface>;
+
+export class NetworkProxyElement extends NetworkProxyElementBase {
   static get is() {
-    return 'network-proxy';
+    return 'network-proxy' as const;
   }
 
   static get template() {
@@ -55,7 +60,6 @@ class NetworkProxyElement extends NetworkProxyElementBase {
         value: false,
       },
 
-      /** @type {!ManagedProperties|undefined} */
       managedProperties: {
         type: Object,
         observer: 'managedPropertiesChanged_',
@@ -70,18 +74,16 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
       /**
        * UI visible / edited proxy configuration.
-       * @private {!ManagedProxySettings}
        */
       proxy_: {
         type: Object,
         value() {
-          return this.createDefaultProxySettings_();
+          return createDefaultProxySettings();
         },
       },
 
       /**
        * The Web Proxy Auto Discovery URL extracted from managedProperties.
-       * @private
        */
       wpad_: {
         type: String,
@@ -90,7 +92,6 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
       /**
        * Whether or not to use the same manual proxy for all protocols.
-       * @private
        */
       useSameProxy_: {
         type: Boolean,
@@ -100,8 +101,6 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
       /**
        * Array of proxy configuration types.
-       * @private {!Array<string>}
-       * @const
        */
       proxyTypes_: {
         type: Array,
@@ -111,7 +110,6 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
       /**
        * The current value of the proxy exclusion input.
-       * @private
        */
       proxyExclusionInputValue_: {
         type: String,
@@ -121,7 +119,6 @@ class NetworkProxyElement extends NetworkProxyElementBase {
       /**
        * Set to true while modifying proxy values so that an update does not
        * override the edited values.
-       * @private {boolean}
        */
       proxyIsUserModified_: {
         type: Boolean,
@@ -131,23 +128,30 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  editable: boolean;
+  managedProperties: ManagedProperties|undefined;
+  useSharedProxies: boolean;
+  private proxy_: ManagedProxySettings;
+  private wpad_: string;
+  private useSameProxy_: boolean;
+  private proxyTypes_: [];
+  private proxyExclusionInputValue_: string;
+  private proxyIsUserModified_: boolean;
+
+  /**
+   * Saved ExcludeDomains properties so that switching to a non-Manual type
+   * does not loose any set exclusions while the UI is open.
+   */
+  private savedManual_: ManagedManualProxySettings|undefined = undefined;
+
+  /**
+   * Saved Manual properties so that switching to another type does not loose
+   * any set properties while the UI is open.
+   */
+  private savedExcludeDomains_: ManagedStringList|undefined = undefined;
+
+  override connectedCallback() {
     super.connectedCallback();
-
-    /**
-     * Saved ExcludeDomains properties so that switching to a non-Manual type
-     * does not loose any set exclusions while the UI is open.
-     * @private {!ManagedManualProxySettings|undefined}
-     */
-    this.savedManual_ = undefined;
-
-    /**
-     * Saved Manual properties so that switching to another type does not loose
-     * any set properties while the UI is open.
-     * @private {!ManagedStringList|undefined}
-     */
-    this.savedExcludeDomains_ = undefined;
     this.reset();
   }
 
@@ -160,12 +164,9 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     this.updateProxy_();
   }
 
-  /**
-   * @param {!ManagedProperties|undefined} newValue
-   * @param {!ManagedProperties|undefined} oldValue
-   * @private
-   */
-  managedPropertiesChanged_(newValue, oldValue) {
+  private managedPropertiesChanged_(
+      newValue: ManagedProperties|undefined,
+      oldValue: ManagedProperties|undefined) {
     if ((newValue && newValue.guid) !== (oldValue && oldValue.guid)) {
       // Clear saved manual properties and exclude domains if we're updating
       // to show a different network.
@@ -181,15 +182,11 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     this.updateProxy_();
   }
 
-  /**
-   * @return {boolean} True if any input elements are currently being edited.
-   * @private
-   */
-  isInputEditInProgress_() {
+  private isInputEditInProgress_(): boolean {
     if (!this.editable) {
       return false;
     }
-    const activeElement = this.shadowRoot.activeElement;
+    const activeElement = this.shadowRoot!.activeElement;
     if (!activeElement) {
       return false;
     }
@@ -219,23 +216,14 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     return this.isEditable_(property);
   }
 
-  /**
-   * @param {?ManagedProxyLocation|undefined} a
-   * @param {?ManagedProxyLocation|undefined} b
-   * @return {boolean}
-   * @private
-   */
-  proxyMatches_(a, b) {
+  private proxyMatches_(
+      a: ManagedProxyLocation|undefined|null,
+      b: ManagedProxyLocation|undefined|null): boolean {
     return !!a && !!b && a.host.activeValue === b.host.activeValue &&
         a.port.activeValue === b.port.activeValue;
   }
 
-  /**
-   * @param {number} port
-   * @return {!ManagedProxyLocation}
-   * @private
-   */
-  createDefaultProxyLocation_(port) {
+  private createDefaultProxyLocation_(port: number): ManagedProxyLocation {
     return {
       host: OncMojo.createManagedString(''),
       port: OncMojo.createManagedInt(port),
@@ -244,20 +232,19 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
   /**
    * Returns a copy of |inputProxy| with all required properties set correctly.
-   * @param {!ManagedProxySettings} inputProxy
-   * @return {!ManagedProxySettings}
-   * @private
    */
-  validateProxy_(inputProxy) {
-    const proxy =
-        /** @type {!ManagedProxySettings} */ (Object.assign({}, inputProxy));
+  private validateProxy_(inputProxy: ManagedProxySettings):
+      ManagedProxySettings {
+    const proxy = {...inputProxy};
     const type = proxy.type.activeValue;
     if (type === 'PAC') {
       if (!proxy.pac) {
         proxy.pac = OncMojo.createManagedString('');
       }
     } else if (type === 'Manual') {
-      proxy.manual = proxy.manual || this.savedManual_ || {};
+      proxy.manual =
+          proxy.manual || this.savedManual_ || new ManagedManualProxySettings();
+      assert(proxy.manual);
       if (!proxy.manual.httpProxy) {
         proxy.manual.httpProxy = this.createDefaultProxyLocation_(80);
       }
@@ -271,13 +258,13 @@ class NetworkProxyElement extends NetworkProxyElementBase {
           proxy.excludeDomains || this.savedExcludeDomains_ || {
             activeValue: [],
             policySource: PolicySource.kNone,
+            policyValue: undefined,
           };
     }
     return proxy;
   }
 
-  /** @private */
-  updateProxy_() {
+  private updateProxy_(): void {
     if (!this.managedProperties) {
       return;
     }
@@ -288,11 +275,11 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     // settings and use the default value.
     if (this.isShared_() && proxySettings &&
         !this.isControlled(proxySettings.type) && !this.useSharedProxies) {
-      proxySettings = null;  // Ignore proxy settings.
+      proxySettings = undefined;  // Ignore proxy settings.
     }
 
     const proxy = proxySettings ? this.validateProxy_(proxySettings) :
-                                  this.createDefaultProxySettings_();
+                                  createDefaultProxySettings();
 
     if (proxy.type.activeValue === 'WPAD') {
       // Set the Web Proxy Auto Discovery URL for display purposes.
@@ -308,11 +295,7 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     microTask.run(() => this.setProxy_(proxy));
   }
 
-  /**
-   * @param {!ManagedProxySettings} proxy
-   * @private
-   */
-  setProxy_(proxy) {
+  private setProxy_(proxy: ManagedProxySettings): void {
     this.proxy_ = proxy;
     if (proxy.manual) {
       const manual = proxy.manual;
@@ -322,8 +305,8 @@ class NetworkProxyElement extends NetworkProxyElementBase {
         // If all four proxies match, enable the 'use same proxy' toggle.
         this.useSameProxy_ = true;
       } else if (
-          !manual.secureHttpProxy.host.activeValue &&
-          !manual.socks.host.activeValue) {
+          !manual.secureHttpProxy?.host?.activeValue &&
+          !manual.socks?.host?.activeValue) {
         // Otherwise if no proxies other than http have a host value, also
         // enable the 'use same proxy' toggle.
         this.useSameProxy_ = true;
@@ -332,28 +315,12 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     this.proxyIsUserModified_ = false;
   }
 
-  /** @private */
-  useSameProxyChanged_() {
+  private useSameProxyChanged_(): void {
     this.proxyIsUserModified_ = true;
   }
 
-  /**
-   * @return {!ManagedProxySettings}
-   * @private
-   */
-  createDefaultProxySettings_() {
-    return {
-      type: OncMojo.createManagedString('Direct'),
-    };
-  }
-
-  /**
-   * @param {?ManagedProxyLocation|undefined}
-   *     location
-   * @return {!ProxyLocation|undefined}
-   * @private
-   */
-  getProxyLocation_(location) {
+  private getProxyLocation_(location: ManagedProxyLocation|undefined|
+                            null): ProxyLocation|undefined {
     if (!location) {
       return undefined;
     }
@@ -365,43 +332,38 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
   /**
    * Called when the proxy changes in the UI.
-   * @private
    */
-  sendProxyChange_() {
+  private sendProxyChange_(): void {
     const proxyType = OncMojo.getActiveString(this.proxy_.type);
     if (!proxyType || (proxyType === 'PAC' && !this.proxy_.pac)) {
       return;
     }
 
-    const proxy = /** @type {!ProxySettings} */ ({
-      type: proxyType,
-      excludeDomains: OncMojo.getActiveValue(this.proxy_.excludeDomains),
-    });
+    const proxy = new ProxySettings();
+    proxy.type = proxyType;
+    proxy.excludeDomains =
+        OncMojo.getActiveValue(this.proxy_.excludeDomains) as string[] |
+        undefined;
 
     if (proxyType === 'Manual') {
-      let manual = {};
+      let manual = new ManualProxySettings();
       if (this.proxy_.manual) {
-        this.savedManual_ =
-            /** @type{!ManagedManualProxySettings}*/ (
-                Object.assign({}, this.proxy_.manual));
+        this.savedManual_ = {...this.proxy_.manual};
         manual = {
           httpProxy: this.getProxyLocation_(this.proxy_.manual.httpProxy),
           secureHttpProxy:
               this.getProxyLocation_(this.proxy_.manual.secureHttpProxy),
+          ftpProxy: undefined,
           socks: this.getProxyLocation_(this.proxy_.manual.socks),
         };
       }
       if (this.proxy_.excludeDomains) {
-        this.savedExcludeDomains_ =
-            /** @type{!ManagedStringList}*/ (
-                Object.assign({}, this.proxy_.excludeDomains));
+        this.savedExcludeDomains_ = {...this.proxy_.excludeDomains};
       }
       const defaultProxy = manual.httpProxy || {host: '', port: 80};
       if (this.useSameProxy_) {
-        manual.secureHttpProxy =
-            /** @type {!ProxyLocation} */ (Object.assign({}, defaultProxy));
-        manual.socks =
-            /** @type {!ProxyLocation} */ (Object.assign({}, defaultProxy));
+        manual.secureHttpProxy = {...defaultProxy};
+        manual.socks = {...defaultProxy};
       } else {
         // Remove properties with empty hosts to unset them.
         if (manual.httpProxy && !manual.httpProxy.host) {
@@ -428,14 +390,12 @@ class NetworkProxyElement extends NetworkProxyElementBase {
 
   /**
    * Event triggered when the selected proxy type changes.
-   * @param {!Event} event
-   * @private
    */
-  onTypeChange_(event) {
+  private onTypeChange_(event: Event): void {
     if (!this.proxy_ || !this.proxy_.type) {
       return;
     }
-    const target = /** @type {!HTMLSelectElement} */ (event.target);
+    const target = event.target as HTMLSelectElement;
     const type = target.value;
     this.proxy_.type.activeValue = type;
     this.set('proxy_', this.validateProxy_(this.proxy_));
@@ -448,7 +408,7 @@ class NetworkProxyElement extends NetworkProxyElementBase {
         proxyTypeChangeIsReady = true;
         break;
       case 'PAC':
-        elementToFocus = this.shadowRoot.querySelector('#pacInput');
+        elementToFocus = this.shadowRoot!.querySelector('#pacInput');
         // If a PAC is already set, send the type change now, otherwise wait
         // until the user provides a PAC value.
         proxyTypeChangeIsReady = !!OncMojo.getActiveString(this.proxy_.pac);
@@ -458,7 +418,7 @@ class NetworkProxyElement extends NetworkProxyElementBase {
         // until the 'send' button is clicked.
         proxyTypeChangeIsReady = false;
         elementToFocus =
-            this.shadowRoot.querySelector('#manualProxy network-proxy-input');
+            this.shadowRoot!.querySelector('#manualProxy network-proxy-input');
         break;
     }
 
@@ -476,18 +436,15 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     }
   }
 
-  /** @private */
-  onPACChange_() {
+  private onPacChange_(): void {
     this.sendProxyChange_();
   }
 
-  /** @private */
-  onProxyInputChange_() {
+  private onProxyInputChange_(): void {
     this.proxyIsUserModified_ = true;
   }
 
-  /** @private */
-  onAddProxyExclusionTap_() {
+  private onAddProxyExclusionClicked_(): void {
     assert(this.proxyExclusionInputValue_);
     this.push(
         'proxy_.excludeDomains.activeValue', this.proxyExclusionInputValue_);
@@ -496,47 +453,31 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     this.proxyIsUserModified_ = true;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddProxyExclusionKeypress_(event) {
+  private onAddProxyExclusionKeypress_(event: KeyboardEvent): void {
     if (event.key !== 'Enter') {
       return;
     }
     event.stopPropagation();
-    this.onAddProxyExclusionTap_();
+    this.onAddProxyExclusionClicked_();
   }
 
-  /**
-   * @param {string} proxyExclusionInputValue
-   * @return {boolean}
-   * @private
-   */
-  shouldProxyExclusionButtonBeDisabled_(proxyExclusionInputValue) {
+  private shouldProxyExclusionButtonBeDisabled_(proxyExclusionInputValue:
+                                                    string): boolean {
     return !proxyExclusionInputValue;
   }
 
   /**
    * Event triggered when the proxy exclusion list changes.
-   * @param {!Event} event The remove proxy exclusions change event.
-   * @private
    */
-  onProxyExclusionsChange_(event) {
+  private onProxyExclusionsChange_(): void {
     this.proxyIsUserModified_ = true;
   }
 
-  /** @private */
-  onSaveProxyTap_() {
+  private onSaveProxyClicked_(): void {
     this.sendProxyChange_();
   }
 
-  /**
-   * @param {string} proxyType The proxy type.
-   * @return {string} The description for |proxyType|.
-   * @private
-   */
-  getProxyTypeDesc_(proxyType) {
+  private getProxyTypeDesc_(proxyType: string): string {
     if (proxyType === 'Manual') {
       return this.i18n('networkProxyTypeManual');
     }
@@ -549,38 +490,25 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     return this.i18n('networkProxyTypeDirect');
   }
 
-  /**
-   * @param {string} propertyName
-   * @return {boolean} Whether the named property setting is editable.
-   * @private
-   */
-  isEditable_(propertyName) {
+  private isEditable_(propertyName: string): boolean {
     if (!this.editable || (this.isShared_() && !this.useSharedProxies)) {
       return false;
     }
-    const property = /** @type {!OncMojo.ManagedProperty|undefined} */ (
-        this.get('proxySettings.' + propertyName, this.managedProperties));
+    const property =
+        this.get('proxySettings.' + propertyName, this.managedProperties);
     if (!property) {
       return true;  // Default to editable if property is not defined.
     }
     return this.isPropertyEditable_(property);
   }
 
-  /**
-   * @param {!OncMojo.ManagedProperty|undefined} property
-   * @return {boolean} Whether |property| is editable.
-   * @private
-   */
-  isPropertyEditable_(property) {
+  private isPropertyEditable_(property: OncMojo.ManagedProperty|
+                              undefined): boolean {
     return !!property && !this.isNetworkPolicyEnforced(property) &&
         !this.isExtensionControlled(property);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isShared_() {
+  private isShared_(): boolean {
     if (!this.managedProperties) {
       return false;
     }
@@ -588,11 +516,7 @@ class NetworkProxyElement extends NetworkProxyElementBase {
     return source === OncSource.kDevice || source === OncSource.kDevicePolicy;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isSaveManualProxyEnabled_() {
+  private isSaveManualProxyEnabled_(): boolean {
     if (!this.proxyIsUserModified_) {
       return false;
     }
@@ -606,13 +530,7 @@ class NetworkProxyElement extends NetworkProxyElementBase {
         !!this.get('socks.host.activeValue', manual);
   }
 
-  /**
-   * @param {string} property The property to test
-   * @param {string} value The value to test against
-   * @return {boolean} True if property === value
-   * @private
-   */
-  matches_(property, value) {
+  private matches_(property: string, value: string): boolean {
     return property === value;
   }
 }
