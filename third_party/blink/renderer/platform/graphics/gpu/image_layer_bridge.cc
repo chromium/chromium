@@ -49,11 +49,19 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   const auto paint_image = source->PaintImageForCurrentFrame();
   const auto image_info = paint_image.GetSkImageInfo().makeWH(
       source->Size().width(), source->Size().height());
+#if BUILDFLAG(IS_LINUX)
+  // TODO(b/330865436): On Linux, CanvasResourceProvider doesn't always check
+  // for SCANOUT support correctly on X11 and it's never supported in
+  // practice. Therefore, don't include it until this flow is reworked.
+  constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+#else
   // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
   // if possible. This is safe because the prerequisite capabilities are checked
   // downstream in CanvasResourceProvider::CreateSharedImageProvider.
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#endif  // BUILDFLAG(IS_LINUX)
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
