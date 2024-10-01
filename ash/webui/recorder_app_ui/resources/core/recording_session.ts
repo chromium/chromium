@@ -350,6 +350,11 @@ export class RecordingSession {
       }
       await this.currentSodaSession.session.stop();
       this.currentSodaSession.unsubscribe();
+      // TODO: b/369277555 - Investigate why SODA does not convert all results
+      // to final.
+      this.transcription.value = this.sodaEventTransformer.getTranscription(
+        /* shouldFinalizeTranscription= */ true
+      );
       this.currentSodaSession = null;
     });
   }

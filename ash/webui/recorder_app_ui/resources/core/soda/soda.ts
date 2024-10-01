@@ -130,13 +130,24 @@ export class SodaEventTransformer {
 
   constructor(private readonly speakerLabelEnabled: boolean) {}
 
-  getTranscription(): Transcription {
+  getTranscription(shouldFinalizeTranscription: boolean = false):
+    Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {
         tokens.push(textSeparator);
       }
-      tokens.push(...this.partialResultTokens);
+      if (shouldFinalizeTranscription) {
+        const partialResultTokens = structuredClone(this.partialResultTokens);
+        for (const token of partialResultTokens) {
+          if (token.kind === 'textPart') {
+            delete token.partial;
+          }
+        }
+        tokens.push(...partialResultTokens);
+      } else {
+        tokens.push(...this.partialResultTokens);
+      }
     }
     return new Transcription(tokens);
   }
