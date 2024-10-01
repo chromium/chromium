@@ -89,8 +89,8 @@
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
   if (IsTabGroupSyncEnabled()) {
     tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            self.browser->GetProfile());
     tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
                                             syncService);
   } else {
@@ -196,9 +196,9 @@
 }
 
 - (void)insertNewWebStateAtGridIndex:(int)index withURL:(const GURL&)newTabURL {
-  CHECK(self.browser->GetBrowserState());
+  CHECK(self.browser->GetProfile());
 
-  web::WebState::CreateParams params(self.browser->GetBrowserState());
+  web::WebState::CreateParams params(self.browser->GetProfile());
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   int webStateListIndex = _tabGroup->range().range_begin() + index;
@@ -440,10 +440,9 @@
   if (!self.browser || !group) {
     return NO;
   }
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!browserState ||
-      !IsAddNewTabAllowedByPolicy(browserState->GetPrefs(),
-                                  browserState->IsOffTheRecord())) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!profile || !IsAddNewTabAllowedByPolicy(profile->GetPrefs(),
+                                              profile->IsOffTheRecord())) {
     return NO;
   }
 
@@ -452,7 +451,7 @@
     return NO;
   }
 
-  web::WebState::CreateParams params(browserState);
+  web::WebState::CreateParams params(profile);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   web::NavigationManager::WebLoadParams loadParams((GURL(kChromeUINewTabURL)));

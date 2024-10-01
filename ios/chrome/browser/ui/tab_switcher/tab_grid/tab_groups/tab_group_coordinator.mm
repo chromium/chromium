@@ -73,7 +73,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
-            incognito:self.browser->GetBrowserState()->IsOffTheRecord()
+            incognito:self.browser->GetProfile()->IsOffTheRecord()
              tabGroup:_tabGroup];
 
   _viewController.gridViewController.delegate = self;
@@ -89,7 +89,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetBrowserState()
+             initWithProfile:self.browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   _viewController.mutator = _mediator;
@@ -210,7 +210,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
-  BOOL incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
   if ([_mediator isItemWithIDSelected:itemID]) {
     if (incognito) {
       base::RecordAction(base::UserMetricsAction(

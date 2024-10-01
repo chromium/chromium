@@ -33,7 +33,7 @@ class Browser;
 // Updates the incognito browser. Should only be sets when both the current
 // incognito browser and the new incognito browser are either nil or contain no
 // tabs. This must be called after the incognito browser has been deleted
-// because the incognito browser state is deleted.
+// because the incognito profile is deleted.
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
 // The view controller, if any, that is active.

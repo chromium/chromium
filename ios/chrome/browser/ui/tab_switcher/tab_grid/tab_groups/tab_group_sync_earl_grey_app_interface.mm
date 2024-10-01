@@ -15,11 +15,11 @@ namespace {
 
 // Returns the first regular (= non-incognito) browser from the loaded browser
 // states.
-ChromeBrowserState* GetRegularBrowser() {
-  for (ChromeBrowserState* browser_state :
+ProfileIOS* GetRegularBrowser() {
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    if (!browser_state->IsOffTheRecord()) {
-      return browser_state;
+    if (!profile->IsOffTheRecord()) {
+      return profile;
     }
   }
   return nullptr;
@@ -29,7 +29,7 @@ ChromeBrowserState* GetRegularBrowser() {
 tab_groups::FakeTabGroupSyncService* GetFakeTabGroupSyncService() {
   CHECK(IsTabGroupSyncEnabled());
   return static_cast<tab_groups::FakeTabGroupSyncService*>(
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           GetRegularBrowser()));
 }
 

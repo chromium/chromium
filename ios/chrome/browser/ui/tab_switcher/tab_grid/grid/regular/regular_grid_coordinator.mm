@@ -109,10 +109,10 @@
                    forProtocol:@protocol(TabsAnimationCommands)];
 
   BOOL regularModeEnabled =
-      !IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+      !IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs());
 
   _contextMenuProvider = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetBrowserState()
+             initWithProfile:self.browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   GridContainerViewController* container =

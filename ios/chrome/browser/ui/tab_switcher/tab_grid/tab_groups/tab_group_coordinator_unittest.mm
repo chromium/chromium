@@ -41,9 +41,9 @@ class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
     feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
+        profile_.get(),
         std::make_unique<TabGroupCoordinatorFakeWebStateListDelegate>());
 
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
@@ -79,10 +79,10 @@ class TabGroupCoordinatorTest : public PlatformTest {
 
   ~TabGroupCoordinatorTest() override { [coordinator_ stop]; }
 
-  // Needed for test browser state created by TestBrowser().
+  // Needed for test profile created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   TabGroupCoordinator* coordinator_;

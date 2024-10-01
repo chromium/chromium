@@ -33,7 +33,7 @@
 
 - (void)start {
   Browser* browser = self.browser;
-  CHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!browser->GetProfile()->IsOffTheRecord());
 
   _mediator =
       [[TabGridToolbarsMediator alloc] initWithModeHolder:self.modeHolder];
@@ -67,8 +67,8 @@
 
 - (void)showSavedTabGroupIPH {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   if (!tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSavedTabGroupClosed)) {
     return;
@@ -114,8 +114,8 @@
 - (void)savedTabGroupIPHDismissed {
   [self.topToolbar resetLastPageControlHighlight];
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   tracker->Dismissed(feature_engagement::kIPHiOSSavedTabGroupClosed);
 }
 

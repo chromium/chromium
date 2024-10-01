@@ -65,18 +65,17 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 class TabGroupsPanelMediatorTest : public PlatformTest {
  protected:
   TabGroupsPanelMediatorTest() : web_state_list_(&web_state_list_delegate_) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     // Create a regular browser.
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     mode_holder_ = [[TabGridModeHolder alloc] init];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<BrowserList> browser_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;

@@ -49,22 +49,21 @@ class TabStripMediatorUtilsTest : public PlatformTest {
   TabStripMediatorUtilsTest() {
     feature_list_.InitWithFeatures(
         {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = std::move(browser_state_builder).Build();
+    profile_ = std::move(profile_builder).Build();
     mock_service_ = static_cast<tab_groups::MockTabGroupSyncService*>(
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
     other_browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<FakeWebStateListDelegate>());
     other_web_state_list_ = other_browser_->GetWebStateList();
     BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+        BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
         browser_list, mock_service_);
     browser_list->AddBrowser(browser_.get());
@@ -76,7 +75,7 @@ class TabStripMediatorUtilsTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;
   std::unique_ptr<TestBrowser> other_browser_;

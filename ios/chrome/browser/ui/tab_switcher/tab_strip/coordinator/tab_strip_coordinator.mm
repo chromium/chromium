@@ -82,26 +82,25 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(TabStripCommands)];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  CHECK(profile);
   self.tabStripViewController = [[TabStripViewController alloc] init];
   self.tabStripViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.tabStripViewController.overrideUserInterfaceStyle =
-      browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
-                                     : UIUserInterfaceStyleUnspecified;
-  self.tabStripViewController.isIncognito = browserState->IsOffTheRecord();
+      profile->IsOffTheRecord() ? UIUserInterfaceStyleDark
+                                : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isIncognito = profile->IsOffTheRecord();
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(browserState);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
                              tabGroupSyncService:tabGroupSyncService
                                      browserList:browserList];
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.browserState = browserState;
+  self.mediator.profile = profile;
   self.mediator.browser = self.browser;
   self.mediator.tabStripHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
@@ -109,7 +108,7 @@
   self.contextMenuHelper = [[TabStripContextMenuHelper alloc]
       initWithBrowserList:browserList
              webStateList:self.browser->GetWebStateList()];
-  self.contextMenuHelper.incognito = browserState->IsOffTheRecord();
+  self.contextMenuHelper.incognito = profile->IsOffTheRecord();
   self.contextMenuHelper.mutator = self.mediator;
   self.contextMenuHelper.handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
@@ -188,13 +187,13 @@
 
 - (void)showAlertForLastTabDragged:
     (TabStripLastTabDraggedAlertCommand*)command {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (browserState->IsOffTheRecord()) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile->IsOffTheRecord()) {
     return;
   }
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
@@ -274,7 +273,7 @@
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
   if (!IsTabGroupSyncEnabled() ||
-      self.browser->GetBrowserState()->IsOffTheRecord()) {
+      self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
 

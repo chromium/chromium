@@ -39,8 +39,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     [mediator_ currentlySelectedGrid:YES];
 
     tab_restore_service_ =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        IOSChromeTabRestoreServiceFactory::GetForProfile(profile_.get());
   }
 
   void TearDown() override {
@@ -141,7 +140,7 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
 TEST_F(RegularGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
   // IncognitoModePrefs::kEnabled Means that users may open pages in both
   // Incognito mode and normal mode
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kEnabled)));
@@ -157,7 +156,7 @@ TEST_F(RegularGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
 
   // IncognitoModePrefs::kDisabled Means that users may not open pages in
   // Incognito mode. Only normal mode is available for browsing.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
@@ -170,7 +169,7 @@ TEST_F(RegularGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
 
   // IncognitoModePrefs::kForced Means that users may open pages *ONLY* in
   // Incognito mode. Normal mode is not available for browsing.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));

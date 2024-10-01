@@ -96,10 +96,9 @@
 
 - (void)start {
   Browser* browser = self.browser;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   BOOL editMode = _tabGroup != nullptr;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);

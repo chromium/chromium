@@ -183,7 +183,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [super start];
 
   _contextMenuProvider = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetActiveBrowser()->GetBrowserState()
+             initWithProfile:self.browser->GetActiveBrowser()->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   Browser* browser = self.browser;

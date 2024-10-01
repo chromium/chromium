@@ -43,14 +43,14 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 #pragma mark - TabContextMenuProvider
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-              tabContextMenuDelegate:
-                  (id<TabContextMenuDelegate>)tabContextMenuDelegate {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+         tabContextMenuDelegate:
+             (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
   if (self) {
-    _browserState = browserState;
+    _profile = profile;
     _contextMenuDelegate = tabContextMenuDelegate;
-    _incognito = _browserState->IsOffTheRecord();
+    _incognito = _profile->IsOffTheRecord();
   }
   return self;
 }
@@ -165,7 +165,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
           }];
     }
 
-    if (_browserState) {
+    if (_profile) {
       const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
       if (currentlyBookmarked) {
         bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
@@ -178,7 +178,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       }
       // Bookmarking can be disabled from prefs (from an enterprise policy),
       // if that's the case grey out the option in the menu.
-      BOOL isEditBookmarksEnabled = _browserState->GetPrefs()->GetBoolean(
+      BOOL isEditBookmarksEnabled = _profile->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled);
       if (!isEditBookmarksEnabled && bookmarkAction) {
         bookmarkAction.attributes = UIMenuElementAttributesDisabled;
@@ -214,7 +214,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   if (IsTabGroupInGridEnabled()) {
-    std::set<const TabGroup*> groups = GetAllGroupsForProfile(_browserState);
+    std::set<const TabGroup*> groups = GetAllGroupsForProfile(_profile);
 
     auto actionResult = ^(const TabGroup* group) {
       [weakSelf handleAddWebState:tabID toGroup:group];
@@ -359,7 +359,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(_browserState);
+      ios::BookmarkModelFactory::GetForProfile(_profile);
   return item && bookmarkModel->IsBookmarked(item.URL);
 }
 
@@ -369,8 +369,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     return NO;
   }
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
 
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
@@ -389,8 +388,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns the TabItem object representing the tab with `identifier.
 - (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
   const BrowserList::BrowserType browser_types =
       _incognito ? BrowserList::BrowserType::kIncognito
                  : BrowserList::BrowserType::kRegularAndInactive;
@@ -413,14 +411,13 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     [self.contextMenuDelegate createNewTabGroupWithIdentifier:webStateID
                                                     incognito:self.incognito];
   } else {
-    MoveTabToGroup(webStateID, group, _browserState);
+    MoveTabToGroup(webStateID, group, _profile);
   }
 }
 
 // Handles the result of the remove from group block.
 - (void)handleRemoveWebStateFromGroup:(web::WebStateID)webStateID {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
 
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
@@ -438,8 +435,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns the group of the given `webStateID`.
 - (const TabGroup*)groupForWebState:(web::WebStateID)webStateID {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
 
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {

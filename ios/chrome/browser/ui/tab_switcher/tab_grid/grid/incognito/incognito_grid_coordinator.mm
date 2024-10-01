@@ -65,10 +65,8 @@
                                 toolbarsMutator:toolbarsMutator
                            gridMediatorDelegate:delegate])) {
     _browser = browser->AsWeakPtr();
-    _incognitoEnabled =
-        !IsIncognitoModeDisabled(self.browser->GetBrowserState()
-                                     ->GetOriginalChromeBrowserState()
-                                     ->GetPrefs());
+    _incognitoEnabled = !IsIncognitoModeDisabled(
+        self.browser->GetProfile()->GetOriginalProfile()->GetPrefs());
   }
   return self;
 }
@@ -127,7 +125,7 @@
   self.gridContainerViewController = container;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetBrowserState()
+             initWithProfile:self.browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   if (_incognitoEnabled) {
@@ -163,14 +161,14 @@
   _browser.reset();
   if (incognitoBrowser) {
     _browser = incognitoBrowser->AsWeakPtr();
-    _tabContextMenuHelper.browserState = incognitoBrowser->GetBrowserState();
+    _tabContextMenuHelper.profile = incognitoBrowser->GetProfile();
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(TabGroupsCommands)];
 
     _mediator.tabGroupsHandler = self;
   } else {
-    _tabContextMenuHelper.browserState = nullptr;
+    _tabContextMenuHelper.profile = nullptr;
   }
 }
 

@@ -133,8 +133,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 @interface BaseGridMediator () <CRWWebStateObserver,
                                 SnapshotStorageObserver,
                                 TabGridModeObserving>
-// The browser state from the browser.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The profile from the browser.
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 @end
 
@@ -197,7 +197,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
-  _browserState = browser ? browser->GetBrowserState() : nullptr;
+  _profile = browser ? browser->GetProfile() : nullptr;
 
   [self.snapshotStorage addObserver:self];
 
@@ -227,7 +227,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)disconnect {
   _browser.reset();
-  _browserState = nil;
+  _profile = nil;
   _consumer = nil;
   _delegate = nil;
   _toolbarsMutator = nil;
@@ -338,9 +338,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)insertNewWebStateAtGridIndex:(int)index withURL:(const GURL&)newTabURL {
   // The incognito mediator's Browser is briefly set to nil after the last
-  // incognito tab is closed.  This occurs because the incognito BrowserState
+  // incognito tab is closed.  This occurs because the incognito profile
   // needs to be destroyed to correctly clear incognito browsing data.  Don't
-  // attempt to create a new WebState with a nil BrowserState.
+  // attempt to create a new WebState with a nil profile.
   if (!self.browser) {
     return;
   }
@@ -355,8 +355,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     return;
   }
 
-  DCHECK(self.browserState);
-  web::WebState::CreateParams params(self.browserState);
+  DCHECK(self.profile);
+  web::WebState::CreateParams params(self.profile);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   int webStateListIndex =
@@ -457,8 +457,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if (IsTabGroupSyncEnabled() && !deleteGroup) {
     [self showTabGroupSnackbarOrIPH:1];
     tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            self.browser->GetProfile());
     tab_groups::utils::CloseTabGroupLocally(group, groupWebStateList,
                                             syncService);
   } else {
@@ -499,7 +499,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
-  return self.browserState->IsOffTheRecord() == tabGroupInfo.incognito;
+  return self.profile->IsOffTheRecord() == tabGroupInfo.incognito;
 }
 
 - (void)recordExternalURLDropped {
@@ -849,9 +849,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     return NO;
   }
 
-  if (self.browserState &&
-      !IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
-                                  self.browserState->IsOffTheRecord())) {
+  if (self.profile &&
+      !IsAddNewTabAllowedByPolicy(self.profile->GetPrefs(),
+                                  self.profile->IsOffTheRecord())) {
     return NO;
   }
 
@@ -879,10 +879,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // If this is a search result, it may contain items from other windows or
     // from the inactive browser - check inactive browser and other windows
     // before giving up.
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(self.browserState);
+    BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
     Browser* browser = GetBrowserForNonPinnedTabWithId(
-        browserList, itemID, self.browserState->IsOffTheRecord());
+        browserList, itemID, self.profile->IsOffTheRecord());
 
     if (!browser) {
       return;
@@ -976,11 +975,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     return;
   }
 
-  BOOL incognito = self.browserState->IsOffTheRecord();
+  BOOL incognito = self.profile->IsOffTheRecord();
   // If this is a search result, it may contain items from other windows or
   // from the inactive browser - check other windows before giving up.
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
   Browser* browser = GetBrowserForGroup(browserList, tabGroup, incognito);
 
   if (!browser) {
@@ -1062,10 +1060,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridSearchCloseTabFromAnotherWindow"));
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
   Browser* browser = GetBrowserForNonPinnedTabWithId(
-      browserList, itemID, self.browserState->IsOffTheRecord());
+      browserList, itemID, self.profile->IsOffTheRecord());
 
   // If this tab is still associated with another browser, remove it from the
   // associated web state list.
@@ -1092,8 +1089,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if (closedGroupsCount > 0) {
     tab_groups::TabGroupSyncService* syncService = nil;
     if (IsTabGroupSyncEnabled()) {
-      syncService = tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      syncService = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
     }
 
     // Find and close all groups in `groupIDs`.
@@ -1126,7 +1123,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
   const bool allTabsClosed = webStateList->empty();
   if (allTabsClosed) {
-    if (!self.browserState->IsOffTheRecord()) {
+    if (!self.profile->IsOffTheRecord()) {
       base::RecordAction(base::UserMetricsAction(
           "MobileTabGridSelectionCloseAllRegularTabsConfirmed"));
     } else {
@@ -1190,7 +1187,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)searchItemsWithText:(NSString*)searchText {
   TabsSearchService* searchService =
-      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+      TabsSearchServiceFactory::GetForProfile(self.profile);
   const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);
   searchService->Search(
       searchTerm,
@@ -1247,9 +1244,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion {
-  CHECK(!self.browserState->IsOffTheRecord());
+  CHECK(!self.profile->IsOffTheRecord());
   TabsSearchService* search_service =
-      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+      TabsSearchServiceFactory::GetForProfile(self.profile);
   const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);
   search_service->SearchHistory(searchTerm,
                                 base::BindOnce(^(size_t resultCount) {
@@ -1293,7 +1290,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.browserState);
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.profile);
 }
 
 - (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
@@ -1316,12 +1313,12 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (tabInfo.profile != self.browserState) {
+    if (tabInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
 
-    if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
+    if (self.profile->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
 
@@ -1331,7 +1328,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
     TabGroupInfo* tabGroupInfo =
         static_cast<TabGroupInfo*>(dragItem.localObject);
-    if (tabGroupInfo.profile != self.browserState) {
+    if (tabGroupInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
@@ -1601,7 +1598,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       [weakSelf addSelectedElementsToGroup:group];
     };
     UIMenuElement* addToGroup = [actionFactory
-        menuToAddTabToGroupWithGroups:GetAllGroupsForProfile(_browserState)
+        menuToAddTabToGroupWithGroups:GetAllGroupsForProfile(_profile)
                          numberOfTabs:_selectedEditingItems.tabsCount
                                 block:addToGroupBlock];
     [actions addObject:[UIMenu menuWithTitle:@""
@@ -1626,7 +1623,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   // Bookmarking can be disabled from prefs (from an enterprise policy),
   // if that's the case grey out the option in the menu.
   BOOL isEditBookmarksEnabled =
-      self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+      self.browser->GetProfile()->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled);
   if (!isEditBookmarksEnabled) {
     bookmarkAction.attributes = UIMenuElementAttributesDisabled;
@@ -1652,7 +1649,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     WebStateList::ScopedBatchOperation lock =
         self.webStateList->StartBatchOperation();
     for (web::WebStateID webStateID : selectedTabs) {
-      MoveTabToGroup(webStateID, group, _browserState);
+      MoveTabToGroup(webStateID, group, _profile);
     }
   }
 }
@@ -1662,10 +1659,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if (_webStateList->ContainsGroup(group)) {
     return _webStateList;
   }
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
-  Browser* browser = GetBrowserForGroup(browserList, group,
-                                        self.browserState->IsOffTheRecord());
+  BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
+  Browser* browser =
+      GetBrowserForGroup(browserList, group, self.profile->IsOffTheRecord());
   if (!browser) {
     return nullptr;
   }

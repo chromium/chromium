@@ -96,24 +96,22 @@ class TabStripMediatorTest : public PlatformTest {
   TabStripMediatorTest() {
     feature_list_.InitWithFeatures(
         {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
     tab_group_sync_service_ = std::make_unique<
         ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 
-    browser_state_ = std::move(browser_state_builder).Build();
+    profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
-        std::make_unique<TabStripFakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<TabStripFakeWebStateListDelegate>());
     other_browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
-        std::make_unique<TabStripFakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<TabStripFakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
 
     SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
@@ -128,7 +126,7 @@ class TabStripMediatorTest : public PlatformTest {
 
   void InitializeMediator() {
     BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+        BrowserListFactory::GetForProfile(profile_.get());
     browser_list->AddBrowser(browser_.get());
     browser_list->AddBrowser(other_browser_.get());
 
@@ -136,7 +134,7 @@ class TabStripMediatorTest : public PlatformTest {
         [[TabStripMediator alloc] initWithConsumer:consumer_
                                tabGroupSyncService:tab_group_sync_service_.get()
                                        browserList:browser_list];
-    mediator_.browserState = browser_state_.get();
+    mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
     mediator_.tabStripHandler = tab_strip_handler_;
@@ -144,11 +142,11 @@ class TabStripMediatorTest : public PlatformTest {
 
   void AddWebState(bool pinned = false) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
         web_state.get(),
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        ios::FaviconServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
     web_state_list_->InsertWebState(
         std::move(web_state),
@@ -172,7 +170,7 @@ class TabStripMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeTabStripHandler* tab_strip_handler_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<WebStateList> web_state_list_;
@@ -263,11 +261,10 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state,
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state, ios::FaviconServiceFactory::GetForProfile(
+                       profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
   }
 
   InitializeMediator();
@@ -445,11 +442,10 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state,
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state, ios::FaviconServiceFactory::GetForProfile(
+                       profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
   }
 
   InitializeMediator();
@@ -649,11 +645,10 @@ TEST_F(TabStripMediatorTest, AddTab) {
             consumer_.selectedItem.identifier);
 
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(browser_state_.get());
+  web_state->SetBrowserState(profile_.get());
   favicon::WebFaviconDriver::CreateForWebState(
-      web_state.get(),
-      ios::FaviconServiceFactory::GetForBrowserState(
-          browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+      web_state.get(), ios::FaviconServiceFactory::GetForProfile(
+                           profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
   web_state_list_->InsertWebState(std::move(web_state),
                                   WebStateList::InsertionParams::AtIndex(1));
@@ -733,7 +728,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('b');
 
   InitializeMediator();
@@ -758,7 +753,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('d');
 
   InitializeMediator();
@@ -783,7 +778,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('f');
 
   InitializeMediator();
@@ -808,7 +803,7 @@ TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('g');
 
   InitializeMediator();
@@ -1093,8 +1088,8 @@ TEST_F(TabStripMediatorTest, DropInternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1121,8 +1116,8 @@ TEST_F(TabStripMediatorTest, DropExternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1151,8 +1146,8 @@ TEST_F(TabStripMediatorTest, DropTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1178,8 +1173,8 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b [ 0 c ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b [ 0 c ]",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1225,13 +1220,13 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b",
+                                                       browser_->GetProfile()));
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription other_builder(other_web_state_list);
   ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
-      "| d* [ 0 e ] f", other_browser_->GetBrowserState()));
+      "| d* [ 0 e ] f", other_browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1279,8 +1274,8 @@ TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* [ 0 b c ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* [ 0 b c ]",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1326,8 +1321,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";
@@ -1384,8 +1379,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
@@ -1431,8 +1426,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";
@@ -1489,13 +1484,13 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription other_builder(other_web_state_list);
   ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
-      "| [ 0 a* b ] c d e", other_browser_->GetBrowserState()));
+      "| [ 0 a* b ] c d e", other_browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";

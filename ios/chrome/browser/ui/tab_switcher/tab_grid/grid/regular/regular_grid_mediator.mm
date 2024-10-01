@@ -132,7 +132,7 @@
   // enabled page can make it to a disabled page by releasing the
   // button press after switching to the disabled page (b/273416844 is an
   // example).
-  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs())) {
     return;
   }
 
@@ -166,7 +166,7 @@
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
-  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs())) {
     [self.toolbarsMutator
         setToolbarConfiguration:
             [TabGridToolbarsConfiguration

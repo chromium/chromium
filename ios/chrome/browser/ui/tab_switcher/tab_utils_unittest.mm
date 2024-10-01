@@ -15,17 +15,16 @@
 class TabSwitcherUtilsTest : public PlatformTest {
  public:
   TabSwitcherUtilsTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     // Creates all kind of browsers.
-    browser_regular_ = std::make_unique<TestBrowser>(browser_state_.get());
-    browser_inactive_ = std::make_unique<TestBrowser>(browser_state_.get());
-    browser_incognito_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
+    browser_regular_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_inactive_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_incognito_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
     // Add them to the apropriate lists.
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_regular_.get());
     browser_list_->AddBrowser(browser_inactive_.get());
     browser_list_->AddBrowser(browser_incognito_.get());
@@ -48,7 +47,7 @@ class TabSwitcherUtilsTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_regular_;
   std::unique_ptr<TestBrowser> browser_inactive_;
   std::unique_ptr<TestBrowser> browser_incognito_;
@@ -58,8 +57,8 @@ class TabSwitcherUtilsTest : public PlatformTest {
 
 TEST_F(TabSwitcherUtilsTest, GetTheCorrectBrowser) {
   for (Browser* browser : browsers_) {
-    ChromeBrowserState* browserState = browser->GetBrowserState();
-    BOOL incognito = browserState->IsOffTheRecord();
+    ProfileIOS* profile = browser->GetProfile();
+    BOOL incognito = profile->IsOffTheRecord();
     web::WebState* inserted_web_state = AddTabToBrowser(browser);
     ASSERT_EQ(browser,
               GetBrowserForTabWithId(browser_list_.get(),

@@ -43,7 +43,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     builder_ =
         std::make_unique<WebStateListBuilderFromDescription>(web_state_list);
     ASSERT_TRUE(builder_->BuildWebStateListFromDescription(
-        "| f [ 1 a* b c ] d e ", browser_->GetBrowserState()));
+        "| f [ 1 a* b c ] d e ", browser_->GetProfile()));
 
     mode_holder_ = [[TabGridModeHolder alloc] init];
 
@@ -139,7 +139,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 // the grid.
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   auto other_browser = std::make_unique<TestBrowser>(
-      browser_state_.get(), scene_state_,
+      profile_.get(), scene_state_,
       std::make_unique<BrowserWebStateListDelegate>());
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 

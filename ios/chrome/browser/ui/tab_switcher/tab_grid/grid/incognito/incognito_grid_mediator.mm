@@ -54,7 +54,7 @@
   BOOL _selected;
   // Identity manager providing AccountInfo capabilities to determine
   // supervision status. This identity manager is not available for
-  // the incognito browser state and need to be passed in.
+  // the incognito profile and need to be passed in.
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer to track changes to supervision-related capabilities.
   std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
@@ -220,7 +220,7 @@
   [super setBrowser:browser];
 
   if (browser) {
-    PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+    PrefService* prefService = browser->GetProfile()->GetPrefs();
     DCHECK(prefService);
 
     if (!base::FeatureList::IsEnabled(
@@ -243,7 +243,7 @@
   Browser* browser = self.browser;
   DCHECK(browser);
 
-  return browser->GetBrowserState()->GetPrefs();
+  return browser->GetProfile()->GetPrefs();
 }
 
 - (void)setReauthSceneAgent:(IncognitoReauthSceneAgent*)reauthSceneAgent {
@@ -308,7 +308,7 @@
 // Returns YES if incognito is disabled.
 - (BOOL)isIncognitoModeDisabled {
   DCHECK(self.browser);
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   if (IsIncognitoModeDisabled(prefService)) {
     return YES;
   }

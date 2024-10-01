@@ -647,7 +647,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 #pragma mark - TabStripMutator
 
 - (void)addNewItem {
-  if (!self.webStateList || !self.browserState) {
+  if (!self.webStateList || !self.profile) {
     return;
   }
   const auto insertionParams = WebStateList::InsertionParams::Automatic();
@@ -763,12 +763,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 - (void)addItem:(TabSwitcherItem*)item
         toGroup:(const TabGroup*)destinationGroup {
-  if (!self.webStateList || !self.browserState) {
+  if (!self.webStateList || !self.profile) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripAddItemToGroup"));
 
-  const bool incognito = self.browserState->IsOffTheRecord();
+  const bool incognito = self.profile->IsOffTheRecord();
   Browser* browserOfGroup =
       GetBrowserForGroup(_browserList, destinationGroup, incognito);
 
@@ -795,7 +795,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)addNewTabInGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList || !self.browserState) {
+  if (!self.webStateList || !self.profile) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripNewTabInGroup"));
@@ -883,7 +883,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.browserState);
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.profile);
 }
 
 - (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
@@ -921,12 +921,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (tabInfo.profile != self.browserState) {
+    if (tabInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
 
-    if (_browserState->IsOffTheRecord() == tabInfo.incognito) {
+    if (_profile->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
 
@@ -940,7 +940,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
     TabGroupInfo* tabGroupInfo =
         base::apple::ObjCCast<TabGroupInfo>(dragItem.localObject);
-    if (tabGroupInfo.profile != self.browserState) {
+    if (tabGroupInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
@@ -961,7 +961,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       }
     }
 
-    if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
+    if (self.profile->IsOffTheRecord() == tabGroupInfo.incognito) {
       return UIDropOperationMove;
     }
     // Tabs of different profiles (regular/incognito) cannot be dropped.
@@ -1186,9 +1186,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     DCHECK(false) << "Reentrant web state insertion!";
     return;
   }
-  DCHECK(_browserState);
+  DCHECK(_profile);
 
-  web::WebState::CreateParams params(_browserState);
+  web::WebState::CreateParams params(_profile);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   web::NavigationManager::WebLoadParams loadParams(newTabURL);
@@ -1405,15 +1405,15 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // `insertionParams`.
 - (void)insertAndActivateNewWebStateWithInsertionParams:
     (WebStateList::InsertionParams)insertionParams {
-  CHECK(self.browserState);
+  CHECK(self.profile);
   CHECK(self.webStateList);
 
-  if (!IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
-                                  self.browserState->IsOffTheRecord())) {
+  if (!IsAddNewTabAllowedByPolicy(self.profile->GetPrefs(),
+                                  self.profile->IsOffTheRecord())) {
     return;
   }
 
-  web::WebState::CreateParams params(self.browserState);
+  web::WebState::CreateParams params(self.profile);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   GURL url(kChromeUINewTabURL);

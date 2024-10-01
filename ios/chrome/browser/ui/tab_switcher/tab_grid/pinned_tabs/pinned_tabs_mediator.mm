@@ -66,8 +66,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
 // The list from the browser.
 @property(nonatomic, assign) WebStateList* webStateList;
-// The browser state from the browser.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The profile from the browser.
+@property(nonatomic, readonly) ProfileIOS* profile;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<PinnedTabCollectionConsumer> consumer;
 
@@ -114,7 +114,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   _browser = browser;
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
-  _browserState = browser ? browser->GetBrowserState() : nullptr;
+  _profile = browser ? browser->GetProfile() : nullptr;
 
   if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
@@ -458,8 +458,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     return;
   }
 
-  DCHECK(self.browserState);
-  web::WebState::CreateParams params(self.browserState);
+  DCHECK(self.profile);
+  web::WebState::CreateParams params(self.profile);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   web::NavigationManager::WebLoadParams loadParams(newTabURL);

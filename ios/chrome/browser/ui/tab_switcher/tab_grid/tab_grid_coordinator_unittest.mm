@@ -100,27 +100,23 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
       }
     }
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        ios::BookmarkModelFactory::GetInstance(),
-        ios::BookmarkModelFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
+                              ios::BookmarkModelFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     bookmarks::test::WaitForBookmarkModelToLoad(
-        ios::BookmarkModelFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        ios::BookmarkModelFactory::GetForProfile(profile_.get()));
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Set up ApplicationCommands mock.
     id mock_application_handler =
@@ -132,8 +128,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     AddAgentsToBrowser(browser_.get());
 
     incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState(),
-        scene_state_);
+        profile_->GetOffTheRecordProfile(), scene_state_);
     AddAgentsToBrowser(incognito_browser_.get());
 
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
@@ -182,7 +177,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;
