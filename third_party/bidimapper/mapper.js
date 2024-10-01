@@ -777,6 +777,9 @@
             if (!context) {
                 throw new InvalidArgumentException(`No browsing context with id ${params.context}`);
             }
+            if (!context.isTopLevelContext()) {
+                throw new InvalidArgumentException('Traversing history is only supported on the top-level context');
+            }
             await context.traverseHistory(params.delta);
             return {};
         }
@@ -4445,10 +4448,14 @@
                     return this.#browserProcessor.close();
                 case 'browser.createUserContext':
                     return await this.#browserProcessor.createUserContext(command.params);
+                case 'browser.getClientWindows':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'browser.getUserContexts':
                     return await this.#browserProcessor.getUserContexts();
                 case 'browser.removeUserContext':
                     return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParams(command.params));
+                case 'browser.setClientWindowState':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 // keep-sorted end
                 // Browsing Context domain
                 // keep-sorted start block=yes
@@ -4801,6 +4808,11 @@
                 }
                 deepSerializedValue.internalId = internalIdMap.get(weakLocalObjectReference);
                 delete deepSerializedValue['weakLocalObjectReference'];
+            }
+            if (deepSerializedValue.type === 'node' &&
+                Object.hasOwn(deepSerializedValue?.value, 'frameId')) {
+                // `frameId` is not needed in BiDi as it is not yet specified.
+                delete deepSerializedValue.value['frameId'];
             }
             // Platform object is a special case. It should have only `{type: object}`
             // without `value` field.
@@ -5671,6 +5683,8 @@
                 url: this.url,
                 userContext: this.userContext,
                 originalOpener: this.#originalOpener ?? null,
+                // TODO(#2646): Implement Client Window correctly
+                clientWindow: '',
                 children: maxDepth > 0
                     ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
                     : null,
@@ -6997,6 +7011,19 @@
         }
         return "info" /* Log.Level.Info */;
     }
+    function getLogMethod(consoleApiType) {
+        switch (consoleApiType) {
+            case 'warning':
+                return 'warn';
+            case 'startGroup':
+                return 'group';
+            case 'startGroupCollapsed':
+                return 'groupCollapsed';
+            case 'endGroup':
+                return 'groupEnd';
+        }
+        return consoleApiType;
+    }
     class LogManager {
         #eventManager;
         #realmStorage;
@@ -7077,8 +7104,7 @@
                                 timestamp: Math.round(params.timestamp),
                                 stackTrace: getBidiStackTrace(params.stackTrace),
                                 type: 'console',
-                                // Console method is `warn`, not `warning`.
-                                method: params.type === 'warning' ? 'warn' : params.type,
+                                method: getLogMethod(params.type),
                                 args,
                             },
                         },
@@ -7877,9 +7903,9 @@
         /** Returns the HTTP status code associated with this request if any. */
         get #statusCode() {
             return (this.#responseOverrides?.statusCode ??
-                this.#response.info?.status ??
+                this.#response.paused?.responseStatusCode ??
                 this.#response.extraInfo?.statusCode ??
-                this.#response.paused?.responseStatusCode);
+                this.#response.info?.status);
         }
         get #requestHeaders() {
             let headers = [];
@@ -14336,14 +14362,31 @@
     const BrowserCommandSchema = z.lazy(() => z.union([
         Browser$1.CloseSchema,
         Browser$1.CreateUserContextSchema,
+        Browser$1.GetClientWindowsSchema,
         Browser$1.GetUserContextsSchema,
         Browser$1.RemoveUserContextSchema,
+        Browser$1.SetClientWindowStateSchema,
+        z.object({}),
     ]));
     z.lazy(() => z.union([
         Browser$1.CreateUserContextResultSchema,
         Browser$1.GetUserContextsResultSchema,
     ]));
     var Browser$1;
+    (function (Browser) {
+        Browser.ClientWindowSchema = z.lazy(() => z.string());
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.ClientWindowInfoSchema = z.lazy(() => z.object({
+            active: z.boolean(),
+            clientWindow: Browser.ClientWindowSchema,
+            height: JsUintSchema,
+            state: z.enum(['fullscreen', 'maximized', 'minimized', 'normal']),
+            width: JsUintSchema,
+            x: JsIntSchema,
+            y: JsIntSchema,
+        }));
+    })(Browser$1 || (Browser$1 = {}));
     (function (Browser) {
         Browser.UserContextSchema = z.lazy(() => z.string());
     })(Browser$1 || (Browser$1 = {}));
@@ -14368,6 +14411,17 @@
         Browser.CreateUserContextResultSchema = z.lazy(() => Browser.UserContextInfoSchema);
     })(Browser$1 || (Browser$1 = {}));
     (function (Browser) {
+        Browser.GetClientWindowsSchema = z.lazy(() => z.object({
+            method: z.literal('browser.getClientWindows'),
+            params: EmptyParamsSchema,
+        }));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.GetClientWindowsResultSchema = z.lazy(() => z.object({
+            clientWindows: z.array(Browser.ClientWindowInfoSchema),
+        }));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
         Browser.GetUserContextsSchema = z.lazy(() => z.object({
             method: z.literal('browser.getUserContexts'),
             params: EmptyParamsSchema,
@@ -14387,6 +14441,36 @@
     (function (Browser) {
         Browser.RemoveUserContextParametersSchema = z.lazy(() => z.object({
             userContext: Browser.UserContextSchema,
+        }));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.SetClientWindowStateSchema = z.lazy(() => z.object({
+            method: z.literal('browser.setClientWindowState'),
+            params: Browser.SetClientWindowStateParametersSchema,
+        }));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.SetClientWindowStateParametersSchema = z.lazy(() => z.union([
+            z
+                .object({
+                clientWindow: Browser.ClientWindowSchema,
+            })
+                .and(Browser.ClientWindowNamedStateSchema),
+            Browser.ClientWindowRectStateSchema,
+        ]));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.ClientWindowNamedStateSchema = z.lazy(() => z.object({
+            state: z.enum(['fullscreen', 'maximized', 'minimized']),
+        }));
+    })(Browser$1 || (Browser$1 = {}));
+    (function (Browser) {
+        Browser.ClientWindowRectStateSchema = z.lazy(() => z.object({
+            state: z.literal('normal'),
+            width: JsUintSchema.optional(),
+            height: JsUintSchema.optional(),
+            x: JsIntSchema.optional(),
+            y: JsIntSchema.optional(),
         }));
     })(Browser$1 || (Browser$1 = {}));
     const BrowsingContextCommandSchema = z.lazy(() => z.union([
@@ -14435,6 +14519,7 @@
     (function (BrowsingContext) {
         BrowsingContext.InfoSchema = z.lazy(() => z.object({
             children: z.union([BrowsingContext.InfoListSchema, z.null()]),
+            clientWindow: Browser$1.ClientWindowSchema,
             context: BrowsingContext.BrowsingContextSchema,
             originalOpener: z.union([
                 BrowsingContext.BrowsingContextSchema,
