@@ -332,7 +332,7 @@
     "bases": ["images"],
     "args": ["--force-color-profile=srgb",
              "--force-raster-color-profile=color-spin-gamma24"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   "The stable suite tests for conformance to HTML/web specifications, and",
   "detects unintentional changes to web exposed surface, so should not expire.",
