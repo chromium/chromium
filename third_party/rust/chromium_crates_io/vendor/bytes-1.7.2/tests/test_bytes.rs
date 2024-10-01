@@ -676,6 +676,43 @@ fn advance_bytes_mut() {
     assert_eq!(a, b"d zomg wat wat"[..]);
 }
 
+// Ensures BytesMut::advance reduces always capacity
+//
+// See https://github.com/tokio-rs/bytes/issues/725
+#[test]
+fn advance_bytes_mut_remaining_capacity() {
+    // reduce the search space under miri
+    let max_capacity = if cfg!(miri) { 16 } else { 256 };
+    for capacity in 0..=max_capacity {
+        for len in 0..=capacity {
+            for advance in 0..=len {
+                eprintln!("testing capacity={capacity}, len={len}, advance={advance}");
+                let mut buf = BytesMut::with_capacity(capacity);
+
+                buf.resize(len, 42);
+                assert_eq!(buf.len(), len, "resize should write `len` bytes");
+                assert_eq!(
+                    buf.remaining(),
+                    len,
+                    "Buf::remaining() should equal BytesMut::len"
+                );
+
+                buf.advance(advance);
+                assert_eq!(
+                    buf.remaining(),
+                    len - advance,
+                    "Buf::advance should reduce the remaining len"
+                );
+                assert_eq!(
+                    buf.capacity(),
+                    capacity - advance,
+                    "Buf::advance should reduce the remaining capacity"
+                );
+            }
+        }
+    }
+}
+
 #[test]
 #[should_panic]
 fn advance_past_len() {

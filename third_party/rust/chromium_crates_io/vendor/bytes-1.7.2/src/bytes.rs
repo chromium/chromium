@@ -142,6 +142,7 @@ impl Bytes {
         Bytes::from_static(EMPTY)
     }
 
+    /// Creates a new empty `Bytes`.
     #[cfg(all(loom, test))]
     pub fn new() -> Self {
         const EMPTY: &[u8] = &[];
@@ -172,6 +173,7 @@ impl Bytes {
         }
     }
 
+    /// Creates a new `Bytes` from a static slice.
     #[cfg(all(loom, test))]
     pub fn from_static(bytes: &'static [u8]) -> Self {
         Bytes {
@@ -1301,7 +1303,7 @@ unsafe fn shallow_clone_vec(
     offset: *const u8,
     len: usize,
 ) -> Bytes {
-    // If  the buffer is still tracked in a `Vec<u8>`. It is time to
+    // If the buffer is still tracked in a `Vec<u8>`. It is time to
     // promote the vec to an `Arc`. This could potentially be called
     // concurrently, so some care must be taken.
 

@@ -37,6 +37,19 @@ fn test_get_u16() {
 }
 
 #[test]
+fn test_get_int() {
+    let mut buf = &b"\xd6zomg"[..];
+    assert_eq!(-42, buf.get_int(1));
+    let mut buf = &b"\xd6zomg"[..];
+    assert_eq!(-42, buf.get_int_le(1));
+
+    let mut buf = &b"\xfe\x1d\xc0zomg"[..];
+    assert_eq!(0xffffffffffc01dfeu64 as i64, buf.get_int_le(3));
+    let mut buf = &b"\xfe\x1d\xc0zomg"[..];
+    assert_eq!(0xfffffffffffe1dc0u64 as i64, buf.get_int(3));
+}
+
+#[test]
 #[should_panic]
 fn test_get_u16_buffer_underflow() {
     let mut buf = &b"\x21"[..];

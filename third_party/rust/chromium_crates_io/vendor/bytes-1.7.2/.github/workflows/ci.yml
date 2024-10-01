@@ -13,7 +13,7 @@ on:
 env:
   RUSTFLAGS: -Dwarnings
   RUST_BACKTRACE: 1
-  nightly: nightly-2022-11-12
+  nightly: nightly-2024-09-15
 
 defaults:
   run:
@@ -136,6 +136,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup update $nightly && rustup default $nightly
       - name: Miri
         run: ci/miri.sh
 
@@ -160,6 +162,7 @@ jobs:
       - minrust
       - cross
       - tsan
+      - miri
       - loom
     runs-on: ubuntu-latest
     steps:

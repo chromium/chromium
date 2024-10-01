@@ -13,33 +13,33 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/buf_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/buf_mut.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/chain.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/limit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/reader.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/take.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/uninit_slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/vec_deque.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/buf/writer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/bytes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/bytes_mut.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/fmt/debug.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/fmt/hex.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/fmt/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/loom.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/buf_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/buf_mut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/chain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/limit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/take.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/uninit_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/vec_deque.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/buf/writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/bytes_mut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/fmt/debug.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/fmt/hex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/fmt/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/loom.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/src/serde.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.7.1"
+  cargo_pkg_version = "1.7.2"
   cargo_pkg_authors =
       "Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>"
   cargo_pkg_name = "bytes"

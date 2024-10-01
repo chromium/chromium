@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-rustup toolchain install nightly --component miri
-rustup override set nightly
+rustup component add miri
 cargo miri setup
 
 export MIRIFLAGS="-Zmiri-strict-provenance"

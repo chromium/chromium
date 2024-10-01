@@ -13,11 +13,16 @@
 edition = "2018"
 rust-version = "1.39"
 name = "bytes"
-version = "1.7.1"
+version = "1.7.2"
 authors = [
     "Carl Lerche <me@carllerche.com>",
     "Sean McArthur <sean@seanmonstar.com>",
 ]
+build = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Types and traits for working with bytes"
 readme = "README.md"
 keywords = [
@@ -37,6 +42,66 @@ rustdoc-args = [
     "--cfg",
     "docsrs",
 ]
+
+[lib]
+name = "bytes"
+path = "src/lib.rs"
+
+[[test]]
+name = "test_buf"
+path = "tests/test_buf.rs"
+
+[[test]]
+name = "test_buf_mut"
+path = "tests/test_buf_mut.rs"
+
+[[test]]
+name = "test_bytes"
+path = "tests/test_bytes.rs"
+
+[[test]]
+name = "test_bytes_odd_alloc"
+path = "tests/test_bytes_odd_alloc.rs"
+
+[[test]]
+name = "test_bytes_vec_alloc"
+path = "tests/test_bytes_vec_alloc.rs"
+
+[[test]]
+name = "test_chain"
+path = "tests/test_chain.rs"
+
+[[test]]
+name = "test_debug"
+path = "tests/test_debug.rs"
+
+[[test]]
+name = "test_iter"
+path = "tests/test_iter.rs"
+
+[[test]]
+name = "test_reader"
+path = "tests/test_reader.rs"
+
+[[test]]
+name = "test_serde"
+path = "tests/test_serde.rs"
+
+[[test]]
+name = "test_take"
+path = "tests/test_take.rs"
+
+[[bench]]
+name = "buf"
+path = "benches/buf.rs"
+
+[[bench]]
+name = "bytes"
+path = "benches/bytes.rs"
+
+[[bench]]
+name = "bytes_mut"
+path = "benches/bytes_mut.rs"
 
 [dependencies.serde]
 version = "1.0.60"

@@ -110,7 +110,7 @@ impl UninitSlice {
         unsafe { self[index..].as_mut_ptr().write(byte) }
     }
 
-    /// Copies bytes  from `src` into `self`.
+    /// Copies bytes from `src` into `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///

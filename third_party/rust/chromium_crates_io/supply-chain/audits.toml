@@ -417,6 +417,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.6.1 -> 1.7.1"
 notes = "Many changes but they seem to meet the low bar of safe-to-run."
 
+[[audits.bytes]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.7.1 -> 1.7.2"
+
 [[audits.cfg-if]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

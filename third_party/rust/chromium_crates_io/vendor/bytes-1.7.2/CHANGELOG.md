@@ -1,3 +1,17 @@
+# 1.7.2 (September 17, 2024)
+
+### Fixed
+
+- Fix default impl of `Buf::{get_int, get_int_le}` (#732)
+
+### Documented
+
+- Fix double spaces in comments and doc comments (#731)
+
+### Internal changes
+
+- Ensure BytesMut::advance reduces capacity (#728) 
+
 # 1.7.1 (August 1, 2024)
 
 This release reverts the following change due to a regression:
