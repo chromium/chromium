@@ -58,13 +58,18 @@ class PlusAddressSettingServiceImplTest : public testing::Test {
   raw_ptr<TestPlusAddressSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
 
+// For settings that the client knows about, the correct values are returned.
 TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
   ON_CALL(bridge(), GetSetting("has_feature_enabled"))
       .WillByDefault(
           Return(CreateSettingSpecifics("has_feature_enabled", true)));
-  // For settings that the client knows about, the correct values are returned.
   EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
-  // For settings that the client hasn't received, defaults are returned.
+}
+
+// For settings that the client doesn't know about, setting-specific defaults
+// are returned.
+TEST_F(PlusAddressSettingServiceImplTest, GetValue_Defaults) {
+  EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
   EXPECT_FALSE(service().GetHasAcceptedNotice());
 }
 
