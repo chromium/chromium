@@ -458,6 +458,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
       /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
   search_engine_->AddProvider(CreateFileSearchProvider(profile_));
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
+  filtered_search_engine_ = nullptr;
+  current_filter_category_ = std::nullopt;
 
   ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 

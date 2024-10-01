@@ -636,6 +636,38 @@ TEST_F(PickerClientImplTest,
                         GURL("https://foo.com/primary"))))));
 }
 
+TEST_F(PickerClientImplTest,
+       SearchCategoryAfterSwitchingActiveUserReturnsResultsFromNewUser) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
+  AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
+  AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
+  client.StartCrosSearch(u"foo", ash::PickerCategory::kLinks,
+                         base::DoNothing());
+  SwitchActiveUser("secondary@test");
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> result_future;
+  client.StartCrosSearch(
+      u"foo", ash::PickerCategory::kLinks,
+      base::BindLambdaForTesting(
+          [&result_future](ash::AppListSearchResultType result_type,
+                           std::vector<ash::PickerSearchResult> results) {
+            if (result_type == ash::AppListSearchResultType::kOmnibox) {
+              result_future.SetValue(std::move(results));
+            }
+          }));
+
+  const auto& results = result_future.Get();
+  ASSERT_THAT(results, Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
+                           Field("url", &ash::PickerBrowsingHistoryResult::url,
+                                 GURL("https://foo.com/secondary")))));
+  ASSERT_THAT(results,
+              Not(Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
+                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+                        GURL("https://foo.com/primary"))))));
+}
+
 class PickerClientImplEditorTest : public PickerClientImplTest {
  public:
   ash::input_method::EditorMediator& GetEditorMediator(Profile* profile) {
