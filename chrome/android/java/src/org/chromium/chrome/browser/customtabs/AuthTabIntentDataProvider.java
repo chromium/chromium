@@ -80,6 +80,8 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         GURL redirectUrl = new GURL(UrlConstants.HTTPS_URL_PREFIX + host + path);
         mRedirectHost = redirectUrl.getHost();
         mRedirectPath = redirectUrl.getPath();
+
+        logFeatureUsage();
     }
 
     @Override
@@ -165,5 +167,26 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public String getAuthRedirectScheme() {
         return mRedirectScheme;
+    }
+
+    /**
+     * Logs the usage of Auth Tab features to a large enum histogram in order to track usage by
+     * apps.
+     */
+    private void logFeatureUsage() {
+        if (!CustomTabsFeatureUsage.isEnabled()) return;
+        CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
+
+        // Ordering: Log all the features ordered by enum, when they apply.
+        featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_LAUNCH_AUTH_TAB);
+        if (mRedirectScheme != null) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_REDIRECT_SCHEME);
+        }
+        if (mRedirectHost != null) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_HOST);
+        }
+        if (mRedirectPath != null) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH);
+        }
     }
 }
