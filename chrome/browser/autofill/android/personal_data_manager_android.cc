@@ -390,32 +390,6 @@ void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
       {card});
 }
 
-void PersonalDataManagerAndroid::AddServerCreditCardForTest(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcard) {
-  std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
-  PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  personal_data_manager_->payments_data_manager().AddServerCreditCardForTest(
-      std::move(card));
-  personal_data_manager_->NotifyPersonalDataObserver();
-}
-
-void PersonalDataManagerAndroid::AddServerCreditCardForTestWithAdditionalFields(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcard,
-    const base::android::JavaParamRef<jstring>& jnickname,
-    jint jcard_issuer) {
-  std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
-  PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  card->SetNickname(ConvertJavaStringToUTF16(jnickname));
-  card->set_card_issuer(static_cast<CreditCard::Issuer>(jcard_issuer));
-  personal_data_manager_->payments_data_manager().AddServerCreditCardForTest(
-      std::move(card));
-  personal_data_manager_->NotifyPersonalDataObserver();
-}
-
 void PersonalDataManagerAndroid::RemoveByGUID(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
@@ -446,39 +420,6 @@ void PersonalDataManagerAndroid::RecordAndLogProfileUse(
   }
 }
 
-void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jguid,
-    jint count,
-    jint days_since_last_used) {
-  DCHECK(count >= 0 && days_since_last_used >= 0);
-
-  AutofillProfile profile =
-      *personal_data_manager_->address_data_manager().GetProfileByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  profile.set_use_count(static_cast<size_t>(count));
-  profile.set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
-  personal_data_manager_->address_data_manager().UpdateProfile(profile);
-}
-
-jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jguid) {
-  const AutofillProfile* profile =
-      personal_data_manager_->address_data_manager().GetProfileByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  return profile->use_count();
-}
-
-jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jguid) {
-  const AutofillProfile* profile =
-      personal_data_manager_->address_data_manager().GetProfileByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  return profile->use_date().ToTimeT();
-}
-
 void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
@@ -488,57 +429,6 @@ void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
   if (card) {
     personal_data_manager_->payments_data_manager().RecordUseOfCard(card);
   }
-}
-
-void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jguid,
-    jint count,
-    jint days_since_last_used) {
-  DCHECK(count >= 0 && days_since_last_used >= 0);
-
-  CreditCard* card =
-      personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  card->set_use_count(static_cast<size_t>(count));
-  card->set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
-
-  personal_data_manager_->NotifyPersonalDataObserver();
-}
-
-jint PersonalDataManagerAndroid::GetCreditCardUseCountForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jguid) {
-  const CreditCard* card =
-      personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  return card->use_count();
-}
-
-jlong PersonalDataManagerAndroid::GetCreditCardUseDateForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jguid) {
-  const CreditCard* card =
-      personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  return card->use_date().ToTimeT();
-}
-
-// TODO(crbug.com/40477114): Use a mock clock for testing.
-jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(JNIEnv* env) {
-  return base::Time::Now().ToTimeT();
-}
-
-jlong PersonalDataManagerAndroid::GetDateNDaysAgoForTesting(
-    JNIEnv* env,
-    jint days) {
-  return (AutofillClock::Now() - base::Days(days)).ToTimeT();
-}
-
-void PersonalDataManagerAndroid::ClearServerDataForTesting(JNIEnv* env) {
-  personal_data_manager_->payments_data_manager()
-      .ClearAllServerDataForTesting();  // IN-TEST
-  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 jboolean PersonalDataManagerAndroid::HasProfiles(JNIEnv* env) {
@@ -560,11 +450,6 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
   }
   // Show the toggle switch only if FIDO authentication is available.
   return IsCreditCardFidoAuthenticationEnabled();
-}
-
-void PersonalDataManagerAndroid::SetSyncServiceForTesting(JNIEnv* env) {
-  personal_data_manager_->payments_data_manager().SetSyncingForTest(
-      true);  // IN-TEST
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -849,16 +734,6 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
       env, "org/chromium/components/autofill/payments/BankAccount");
   return base::android::ToTypedJavaArrayOfObjects(env, j_bank_accounts_list,
                                                   type.obj());
-}
-
-void PersonalDataManagerAndroid::AddMaskedBankAccountForTest(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbank_account) {
-  BankAccount bank_account =
-      CreateNativeBankAccountFromJava(env, jbank_account);
-  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
-      bank_account);  // IN-TEST
-  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 jboolean PersonalDataManagerAndroid::IsAutofillManaged(JNIEnv* env) {

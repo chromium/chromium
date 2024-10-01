@@ -829,26 +829,7 @@ public class PersonalDataManager implements Destroyable {
 
     public static String getBasicCardIssuerNetwork(String cardNumber, boolean emptyIfInvalid) {
         ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getBasicCardIssuerNetwork(
-                        cardNumber,
-                        emptyIfInvalid);
-    }
-
-    public void addServerCreditCardForTest(CreditCard card) {
-        ThreadUtils.assertOnUiThread();
-        assert !card.getIsLocal();
-        PersonalDataManagerJni.get()
-                .addServerCreditCardForTest(mPersonalDataManagerAndroid, card); // IN-TEST
-    }
-
-    public void addServerCreditCardForTestWithAdditionalFields(
-            CreditCard card, String nickname, int cardIssuer) {
-        ThreadUtils.assertOnUiThread();
-        assert !card.getIsLocal();
-        PersonalDataManagerJni.get()
-                .addServerCreditCardForTestWithAdditionalFields(
-                        mPersonalDataManagerAndroid, card, nickname, cardIssuer);
+        return PersonalDataManagerJni.get().getBasicCardIssuerNetwork(cardNumber, emptyIfInvalid);
     }
 
     public void deleteCreditCard(String guid) {
@@ -920,12 +901,6 @@ public class PersonalDataManager implements Destroyable {
         return PersonalDataManagerJni.get().getMaskedBankAccounts(mPersonalDataManagerAndroid);
     }
 
-    public void addMaskedBankAccountForTest(BankAccount bankAccount) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get()
-                .addMaskedBankAccountForTest(mPersonalDataManagerAndroid, bankAccount);
-    }
-
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -938,25 +913,6 @@ public class PersonalDataManager implements Destroyable {
         PersonalDataManagerJni.get().recordAndLogProfileUse(mPersonalDataManagerAndroid, guid);
     }
 
-    protected void setProfileUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get()
-                .setProfileUseStatsForTesting(
-                        mPersonalDataManagerAndroid, guid, count, daysSinceLastUsed);
-    }
-
-    int getProfileUseCountForTesting(String guid) {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getProfileUseCountForTesting(mPersonalDataManagerAndroid, guid); // IN-TEST
-    }
-
-    long getProfileUseDateForTesting(String guid) {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getProfileUseDateForTesting(mPersonalDataManagerAndroid, guid); // IN-TEST
-    }
-
     /**
      * Records the use of the credit card associated with the specified {@code guid}. Effectively
      * increments the use count of the credit card and set its use date to the current time. Also
@@ -967,44 +923,6 @@ public class PersonalDataManager implements Destroyable {
     public void recordAndLogCreditCardUse(String guid) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().recordAndLogCreditCardUse(mPersonalDataManagerAndroid, guid);
-    }
-
-    protected void setCreditCardUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get()
-                .setCreditCardUseStatsForTesting(
-                        mPersonalDataManagerAndroid, guid, count, daysSinceLastUsed);
-    }
-
-    int getCreditCardUseCountForTesting(String guid) {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getCreditCardUseCountForTesting(mPersonalDataManagerAndroid, guid); // IN-TEST
-    }
-
-    long getCreditCardUseDateForTesting(String guid) {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getCreditCardUseDateForTesting(mPersonalDataManagerAndroid, guid); // IN-TEST
-    }
-
-    long getCurrentDateForTesting() {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getCurrentDateForTesting(mPersonalDataManagerAndroid); // IN-TEST
-    }
-
-    long getDateNDaysAgoForTesting(int days) {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getDateNDaysAgoForTesting( // IN-TEST
-                        mPersonalDataManagerAndroid, days);
-    }
-
-    protected void clearServerDataForTesting() {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get()
-                .clearServerDataForTesting(mPersonalDataManagerAndroid); // IN-TEST
     }
 
     protected void clearImageDataForTesting() {
@@ -1189,10 +1107,6 @@ public class PersonalDataManager implements Destroyable {
                 .isAutofillCreditCardManaged(mPersonalDataManagerAndroid);
     }
 
-    public void setSyncServiceForTesting() {
-        PersonalDataManagerJni.get().setSyncServiceForTesting(mPersonalDataManagerAndroid);
-    }
-
     private void fetchCreditCardArtImages() {
         mImageFetcher.prefetchImages(
                 getCreditCardsToSuggest().stream()
@@ -1291,54 +1205,15 @@ public class PersonalDataManager implements Destroyable {
 
         String setCreditCard(long nativePersonalDataManagerAndroid, CreditCard card);
 
-        long getDateNDaysAgoForTesting(long nativePersonalDataManagerAndroid, int days); // IN-TEST
-
         void updateServerCardBillingAddress(long nativePersonalDataManagerAndroid, CreditCard card);
 
         String getBasicCardIssuerNetwork(String cardNumber, boolean emptyIfInvalid);
-
-        void addServerCreditCardForTest(
-                long nativePersonalDataManagerAndroid, CreditCard card); // IN-TEST
-
-        void addServerCreditCardForTestWithAdditionalFields(
-                long nativePersonalDataManagerAndroid,
-                CreditCard card,
-                String nickname,
-                int cardIssuer);
 
         void removeByGUID(long nativePersonalDataManagerAndroid, String guid);
 
         void recordAndLogProfileUse(long nativePersonalDataManagerAndroid, String guid);
 
-        void setProfileUseStatsForTesting(
-                long nativePersonalDataManagerAndroid,
-                String guid,
-                int count,
-                int daysSinceLastUsed);
-
-        int getProfileUseCountForTesting(
-                long nativePersonalDataManagerAndroid, String guid); // IN-TEST
-
-        long getProfileUseDateForTesting(
-                long nativePersonalDataManagerAndroid, String guid); // IN-TEST
-
         void recordAndLogCreditCardUse(long nativePersonalDataManagerAndroid, String guid);
-
-        void setCreditCardUseStatsForTesting(
-                long nativePersonalDataManagerAndroid,
-                String guid,
-                int count,
-                int daysSinceLastUsed);
-
-        int getCreditCardUseCountForTesting(
-                long nativePersonalDataManagerAndroid, String guid); // IN-TEST
-
-        long getCreditCardUseDateForTesting(
-                long nativePersonalDataManagerAndroid, String guid); // IN-TEST
-
-        long getCurrentDateForTesting(long nativePersonalDataManagerAndroid); // IN-TEST
-
-        void clearServerDataForTesting(long nativePersonalDataManagerAndroid); // IN-TEST
 
         boolean hasProfiles(long nativePersonalDataManagerAndroid);
 
@@ -1354,8 +1229,6 @@ public class PersonalDataManager implements Destroyable {
 
         String toCountryCode(String countryName);
 
-        void setSyncServiceForTesting(long nativePersonalDataManagerAndroid);
-
         AutofillImageFetcher getOrCreateJavaImageFetcher(long nativePersonalDataManagerAndroid);
 
         void addServerIbanForTest(long nativePersonalDataManagerAndroid, Iban iban); // IN-TEST
@@ -1369,8 +1242,5 @@ public class PersonalDataManager implements Destroyable {
         boolean isValidIban(long nativePersonalDataManagerAndroid, String ibanValue);
 
         BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
-
-        void addMaskedBankAccountForTest(
-                long nativePersonalDataManagerAndroid, BankAccount bankAccount); // IN-TEST
     }
 }

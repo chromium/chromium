@@ -19,6 +19,8 @@ import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.util.HumanReadables;
 
 import org.hamcrest.Matcher;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Helper class for testing AutofillProfiles. */
+@JNINamespace("autofill")
 public class AutofillTestHelper {
     private final CallbackHelper mOnPersonalDataChangedHelper = new CallbackHelper();
 
@@ -68,8 +71,7 @@ public class AutofillTestHelper {
     }
 
     void setSyncServiceForTesting() {
-        runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().setSyncServiceForTesting());
+        runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().setSyncService());
     }
 
     AutofillProfile getProfile(final String guid) {
@@ -146,8 +148,7 @@ public class AutofillTestHelper {
 
     public void addServerCreditCard(final CreditCard card) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().addServerCreditCardForTest(card));
+        runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().addServerCreditCard(card));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -156,8 +157,8 @@ public class AutofillTestHelper {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         runOnUiThreadBlocking(
                 () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .addServerCreditCardForTestWithAdditionalFields(
+                        AutofillTestHelperJni.get()
+                                .addServerCreditCardWithAdditionalFields(
                                         card, nickname, cardIssuer));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
@@ -197,8 +198,8 @@ public class AutofillTestHelper {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         runOnUiThreadBlocking(
                 () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .setProfileUseStatsForTesting(guid, count, daysSinceLastUsed));
+                        AutofillTestHelperJni.get()
+                                .setProfileUseStats(guid, count, daysSinceLastUsed));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -209,10 +210,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the profile.
      */
     public int getProfileUseCountForTesting(final String guid) {
-        return runOnUiThreadBlocking(
-                () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .getProfileUseCountForTesting(guid));
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getProfileUseCount(guid));
     }
 
     /**
@@ -224,8 +222,7 @@ public class AutofillTestHelper {
      *     Windows epoch. For more details see the comment header in time.h.
      */
     public long getProfileUseDateForTesting(final String guid) {
-        return runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().getProfileUseDateForTesting(guid));
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getProfileUseDate(guid));
     }
 
     /**
@@ -256,8 +253,8 @@ public class AutofillTestHelper {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         runOnUiThreadBlocking(
                 () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .setCreditCardUseStatsForTesting(guid, count, daysSinceLastUsed));
+                        AutofillTestHelperJni.get()
+                                .setCreditCardUseStats(guid, count, daysSinceLastUsed));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -268,10 +265,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the credit card.
      */
     public int getCreditCardUseCountForTesting(final String guid) {
-        return runOnUiThreadBlocking(
-                () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .getCreditCardUseCountForTesting(guid));
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getCreditCardUseCount(guid));
     }
 
     /**
@@ -283,10 +277,7 @@ public class AutofillTestHelper {
      *     the Windows epoch. For more details see the comment header in time.h.
      */
     public long getCreditCardUseDateForTesting(final String guid) {
-        return runOnUiThreadBlocking(
-                () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .getCreditCardUseDateForTesting(guid));
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getCreditCardUseDate(guid));
     }
 
     /**
@@ -297,8 +288,7 @@ public class AutofillTestHelper {
      *     more details see the comment header in time.h.
      */
     public long getCurrentDateForTesting() {
-        return runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().getCurrentDateForTesting());
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getCurrentDate());
     }
 
     /**
@@ -310,8 +300,7 @@ public class AutofillTestHelper {
      *     For more details see the comment header in time.h.
      */
     public long getDateNDaysAgoForTesting(final int days) {
-        return runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().getDateNDaysAgoForTesting(days));
+        return runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().getDateNDaysAgo(days));
     }
 
     public void addServerIban(final Iban iban) throws TimeoutException {
@@ -347,8 +336,7 @@ public class AutofillTestHelper {
      * #addServerCreditCard(CreditCard)}}.
      */
     public void clearAllDataForTesting() throws TimeoutException {
-        runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().clearServerDataForTesting());
+        runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().clearServerData());
         runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().clearImageDataForTesting());
         // Clear remaining local profiles and cards.
@@ -489,10 +477,7 @@ public class AutofillTestHelper {
     }
 
     public static void addMaskedBankAccount(BankAccount bankAccount) {
-        runOnUiThreadBlocking(
-                () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .addMaskedBankAccountForTest(bankAccount));
+        runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().addMaskedBankAccount(bankAccount));
     }
 
     private void registerDataObserver() {
@@ -587,5 +572,35 @@ public class AutofillTestHelper {
                 /* edgeFlags= */ 0,
                 /* source= */ InputDevice.SOURCE_CLASS_POINTER,
                 /* flags= */ flags);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long getDateNDaysAgo(int days);
+
+        void addServerCreditCard(CreditCard card);
+
+        void addServerCreditCardWithAdditionalFields(
+                CreditCard card, String nickname, int cardIssuer);
+
+        void setProfileUseStats(String guid, int count, int daysSinceLastUsed);
+
+        int getProfileUseCount(String guid);
+
+        long getProfileUseDate(String guid);
+
+        void setCreditCardUseStats(String guid, int count, int daysSinceLastUsed);
+
+        int getCreditCardUseCount(String guid);
+
+        long getCreditCardUseDate(String guid);
+
+        long getCurrentDate();
+
+        void clearServerData();
+
+        void setSyncService();
+
+        void addMaskedBankAccount(BankAccount bankAccount);
     }
 }
