@@ -39,12 +39,12 @@ class UrgentPageDiscardingPolicyTest
   }
 
   void TearDown() override {
-    graph()->TakeFromGraph(policy_);
+    policy_ = nullptr;
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
  private:
-  raw_ptr<UrgentPageDiscardingPolicy, DanglingUntriaged> policy_;
+  raw_ptr<UrgentPageDiscardingPolicy> policy_ = nullptr;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
