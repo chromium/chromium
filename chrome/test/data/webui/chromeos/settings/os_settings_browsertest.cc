@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
   RunSettingsTest("internet_page/passpoint_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPagePasspointRemoveDialog) {
   RunSettingsTest("internet_page/passpoint_remove_dialog_test.js");
 }

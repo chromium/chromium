@@ -908,12 +908,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSectionNetwork", IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK},
       {"networkSectionNetworkExpandA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL},
-      {"networkSectionPasspointRemovalTitle",
-       IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE},
-      {"networkSectionPasspointRemovalDescription",
-       IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION},
-      {"networkSectionPasspointRemovalInformation",
-       IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_INFORMATION},
       {"networkSectionPasspointGoToSubscriptionTitle",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_TITLE},
       {"networkSectionPasspointGoToSubscriptionInformation",
@@ -1132,8 +1126,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_PASSPOINT_LEARN_MORE_A11Y},
       {"passpointRemoveCancelA11yLabel",
        IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y},
-      {"passpointRemoveConfirmA11yLabel",
-       IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

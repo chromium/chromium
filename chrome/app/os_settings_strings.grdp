@@ -4818,15 +4818,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the network address configuration settings. Only visible by screen reader software.">
     Show network address settings
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE" desc="Settings > Internet > Network details: Title of the Passpoint network removal dialog.">
-    Forget this subscription?
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
-    By forgetting this network you will also remove the Passpoint subscription and its associated networks.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information on the Passpoint subscription displayed in the network removal dialog.">
-    Your Passpoint provider will be removed from this device only. To make changes to your subscription, contact the subscription provider.
-  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_TITLE" desc="Settings > Network > Wi-Fi > Network details: Title of the Passpoint removal dialog that leads the user to the subscription page.">
     Remove this network in Passpoint subscription page?
   </message>
@@ -5060,9 +5051,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y" desc="A11y label for the Cancel button of the dialog displayed when a Passpoint network is removed.">
     Cancel forgetting subscription
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y" desc="A11y label for the Confirm button of the dialog displayed when a Passpoint network is removed.">
-    Confirm subscription removal
   </message>
 
   <!-- Users Page (OS Settings) -->
