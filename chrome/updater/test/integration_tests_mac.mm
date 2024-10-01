@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -269,18 +270,25 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 bool WaitForUpdaterExit() {
+  std::string last_found;
   return WaitFor(
-      [] {
+      [&] {
         std::string ps_stdout;
         EXPECT_TRUE(
             base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
-        if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
-            std::string::npos) {
-          return true;
+        std::vector<std::string_view> commands = base::SplitStringPiece(
+            ps_stdout, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+            base::SplitResult::SPLIT_WANT_NONEMPTY);
+        for (const auto& command : commands) {
+          if (command.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) !=
+              std::string::npos) {
+            last_found = command;
+            return false;
+          }
         }
-        return false;
+        return true;
       },
-      [] { VLOG(0) << "Still waiting for updater to exit..."; });
+      [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
 base::FilePath GetRealUpdaterLowerVersionPath() {
