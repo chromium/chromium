@@ -229,7 +229,7 @@ SavedTabGroup& SavedTabGroup::AddTabFromSync(SavedTabGroupTab tab) {
     // numbered position on remote update.
     UpdateTabPositionsImpl();
   } else {
-    // TODO(crbug.com/351357559): consider removing the following line for saved
+    // TODO(crbug.com/369768775): consider removing the following line for saved
     // tab groups because update time is used from sync.
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   }
