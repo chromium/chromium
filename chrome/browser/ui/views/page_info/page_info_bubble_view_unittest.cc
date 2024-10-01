@@ -1148,8 +1148,10 @@ class PageInfoBubbleViewCookies3pcdButtonTest
       public testing::WithParamInterface<bool> {
  public:
   PageInfoBubbleViewCookies3pcdButtonTest() {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kTrackingProtection3pcd);
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx},
+        {});
     web_contents_helper_ =
         std::make_unique<ScopedWebContentsTestHelper>(GetParam());
   }
@@ -1240,7 +1242,9 @@ class PageInfoBubbleViewTrackingProtectionSubpageTitleTest
  public:
   PageInfoBubbleViewTrackingProtectionSubpageTitleTest() {
     feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd}, {});
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx},
+        {});
     web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(
         testing::get<2>(GetParam()));
   }
