@@ -63,7 +63,7 @@
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        TestBackButtonMainFrame) {
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   // TODO(crbug.com/368578425): handle this in SupervisionMixin.
   supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
       ChildAccountServiceFactory::GetForProfile(browser()->profile()),
@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   // TODO(crbug.com/368578425): handle this in SupervisionMixin.
   supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
       ChildAccountServiceFactory::GetForProfile(browser()->profile()),
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListIsStrippedInRemoteApproval) {
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   // TODO(crbug.com/368578425): handle this in SupervisionMixin.
   supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
       ChildAccountServiceFactory::GetForProfile(browser()->profile()),
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListForUnstripedHostSkipsStrippingInRemoteApproval) {
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   // TODO(crbug.com/368578425): handle this in SupervisionMixin.
   supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
       ChildAccountServiceFactory::GetForProfile(browser()->profile()),
@@ -1010,7 +1010,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        RememberAlreadyRequestedHosts) {
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   // TODO(crbug.com/368578425): handle this in SupervisionMixin.
   supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
       ChildAccountServiceFactory::GetForProfile(browser()->profile()),
