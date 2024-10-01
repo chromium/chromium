@@ -349,6 +349,7 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)presentConsentFlow {
   [self createConsentViewController];
   [self showConsentViewController];
+  lens::RecordPermissionRequestedToBeShown(true, self.currentInvocationSource);
 }
 
 - (void)hideLensUI:(BOOL)animated {
@@ -368,23 +369,7 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)destroyLensUI:(BOOL)animated
                reason:(lens::LensOverlayDismissalSource)dismissalSource {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
-
-  // Session foreground duration metrics.
-  if (_foregroundTime != base::TimeTicks()) {
-    _foregroundDuration =
-        _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
-  }
-  lens::RecordSessionForegroundDuration(self.currentInvocationSource,
-                                        _foregroundDuration);
-
-  // Session duration metrics.
-  base::TimeDelta sessionDuration = _invocationTime.Elapsed();
-  lens::RecordSessionDuration(self.currentInvocationSource, sessionDuration);
-
-  // Session end UKM metrics.
-  lens::RecordUKMSessionEndMetrics(self.associatedTabSourceId,
-                                   self.currentInvocationSource,
-                                   _searchPerformedInSession, sessionDuration);
+  [self recordDismissalMetrics:dismissalSource];
 
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
@@ -521,6 +506,9 @@ const CGFloat kMenuSymbolSize = 18;
   self.browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kLensOverlayConditionsAccepted, true);
   _consentViewController = nil;
+  lens::RecordPermissionUserAction(
+      lens::LensPermissionUserAction::kAcceptButtonPressed,
+      self.currentInvocationSource);
 
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
@@ -531,11 +519,16 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)didTapSecondaryActionButton {
+  lens::RecordPermissionUserAction(
+      lens::LensPermissionUserAction::kCancelButtonPressed,
+      self.currentInvocationSource);
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
 }
 
 - (void)didPressLearnMore {
+  lens::RecordPermissionUserAction(lens::LensPermissionUserAction::kLinkOpened,
+                                   self.currentInvocationSource);
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kLearnMoreLensURL)
                    inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
@@ -943,6 +936,36 @@ const CGFloat kMenuSymbolSize = 18;
   lens::RecordTimeToFirstInteraction(self.currentInvocationSource,
                                      _invocationTime.Elapsed(),
                                      self.associatedTabSourceId);
+}
+
+/// Metrics recorded on lens overlay dismissal.
+- (void)recordDismissalMetrics:
+    (lens::LensOverlayDismissalSource)dismissalSource {
+  lens::LensOverlayInvocationSource invocationSource =
+      self.currentInvocationSource;
+
+  // Invocation metrics.
+  lens::RecordInvocation(invocationSource);
+  lens::RecordInvocationResultedInSearch(invocationSource,
+                                         _searchPerformedInSession);
+  // Dismissal metric.
+  lens::RecordDismissal(dismissalSource);
+
+  // Session foreground duration metrics.
+  if (_foregroundTime != base::TimeTicks()) {
+    _foregroundDuration =
+        _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
+  }
+  lens::RecordSessionForegroundDuration(invocationSource, _foregroundDuration);
+
+  // Session duration metrics.
+  base::TimeDelta sessionDuration = _invocationTime.Elapsed();
+  lens::RecordSessionDuration(invocationSource, sessionDuration);
+
+  // Session end UKM metrics.
+  lens::RecordUKMSessionEndMetrics(self.associatedTabSourceId,
+                                   self.currentInvocationSource,
+                                   _searchPerformedInSession, sessionDuration);
 }
 
 @end
