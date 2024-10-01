@@ -134,8 +134,10 @@ class ChromeSigninClient : public SigninClient {
   virtual std::optional<size_t> GetExtensionsCount();
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void RecordOpenTabCount(signin_metrics::AccessPoint access_point,
                           signin::ConsentLevel consent_level);
+#endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
