@@ -70,6 +70,9 @@ class CvcStorageMetricsTest
       card_.set_guid(kCardGuid);
       personal_data().test_payments_data_manager().AddServerCreditCard(card_);
     }
+    test_api(autofill_manager())
+        .SetFourDigitCombinationsInDOM(
+            {base::UTF16ToUTF8(card_.LastFourDigits())});
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -124,7 +127,7 @@ TEST_P(CvcStorageMetricsTest, LogShownMetrics) {
   features.InitWithFeatures(
       /* enabled_features */
       {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableCvcStorageAndFillingEnhancement},
+       features::kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement},
       /* disabled_features */ {});
   personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
       true);
