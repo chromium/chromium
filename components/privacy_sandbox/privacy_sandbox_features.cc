@@ -148,7 +148,7 @@ BASE_FEATURE(kAlwaysBlock3pcsIncognito,
 
 BASE_FEATURE(kTrackingProtection3pcdUx,
              "TrackingProtection3pcdUx",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFingerprintingProtectionUserBypass,
              "FingerprintingProtectionUserBypass",
