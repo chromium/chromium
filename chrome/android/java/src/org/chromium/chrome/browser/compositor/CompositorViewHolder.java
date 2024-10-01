@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 
@@ -1632,12 +1631,7 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void invalidateAccessibilityProvider() {
-        if (mNodeProvider != null) {
-            mNodeProvider.sendEventForVirtualView(
-                    mNodeProvider.getAccessibilityFocusedVirtualViewId(),
-                    AccessibilityEventCompat.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
-            mNodeProvider.invalidateRoot();
-        }
+        if (mNodeProvider != null) mNodeProvider.invalidateRoot();
     }
 
     // ChromeAccessibilityUtil.Observer
