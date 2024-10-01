@@ -370,7 +370,7 @@ bool IsReadAloudLanguagePackDownloadingEnabled() {
 
 BASE_FEATURE(kReadAnythingReadAloudAutomaticWordHighlighting,
              "ReadAnythingReadAloudAutomaticWordHighlighting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
          base::FeatureList::IsEnabled(
