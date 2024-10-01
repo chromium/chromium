@@ -50,15 +50,10 @@ void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
   oobe_configuration_.CheckConfiguration();
 }
 
-void EnrollmentTestHelper::DisableFREOnFlex() {
+void EnrollmentTestHelper::EnableFREOnFlex() {
   command_line_->GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
-}
-
-void EnrollmentTestHelper::EnableFREOnFlex() {
-  // This is a no-op right now, but we keep this in case we need to revert
-  // this CL.
+      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
 }
 
 const std::string*

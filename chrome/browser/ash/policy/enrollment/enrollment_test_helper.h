@@ -34,9 +34,8 @@ class EnrollmentTestHelper {
   // Configures OobeConfiguration with an enrollment token for testing.
   void SetUpEnrollmentTokenConfig(
       const char config[] = kEnrollmentTokenOobeConfig);
-  // Ensures that FRE (Forced Re-Enrollment) is disabled on Flex.
-  void DisableFREOnFlex();
-  // Ensures that FRE (Forced Re-Enrollment) is enabled on Flex.
+  // Forces FRE (Forced Re-Enrollment) to be enabled on Flex via command line
+  // switch.
   void EnableFREOnFlex();
   // Obtains the enrollment token set in OOBE configuration, returning nullptr
   // if not present.

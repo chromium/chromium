@@ -64,11 +64,6 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
     enrollment_test_helper_.EnableFREOnFlex();
   }
 
-  void SetUpFlexDeviceWithFREOnFlexDisabled() {
-    enrollment_test_helper_.SetUpFlexDevice();
-    enrollment_test_helper_.DisableFREOnFlex();
-  }
-
   void SetupFREEnabled() {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableForcedReEnrollment,
@@ -360,7 +355,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexEnabledByCommandLineSwitch) {
   SetUpFlexDeviceWithFREOnFlexEnabled();
 
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(), is_google_branded_);
+  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                 &fake_statistics_provider_),
             AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
@@ -377,8 +372,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
-       FRERequiredOnFlexFREOnFlexDisabledByCommandLineSwitch) {
-  SetUpFlexDeviceWithFREOnFlexDisabled();
+       FRERequiredOnFlexNotEnabledByCommandLineSwitch) {
+  enrollment_test_helper_.SetUpFlexDevice();
 
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
@@ -387,20 +382,6 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 }
 
 // TODO(b/353731379): Remove when removing legacy state determination code.
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FRERequiredOnFlexFREOnFlexNoCommandLineSwitch) {
-  enrollment_test_helper_.SetUpFlexDevice();
-  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
-      false);
-
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(), is_google_branded_);
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &fake_statistics_provider_),
-            is_google_branded_
-                ? AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired
-                : AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
-}
-
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
   enrollment_test_helper_.SetUpFlexDevice();
@@ -796,7 +777,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
     if (device_os_ == DeviceOs::Nonchrome) {
       enrollment_test_helper_.SetUpNonchromeDevice();
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
-      SetUpFlexDeviceWithFREOnFlexDisabled();
+      enrollment_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {
       SetUpFlexDeviceWithFREOnFlexEnabled();
     }
@@ -805,8 +786,8 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
   }
 
   bool IsFRESupportedByDevice() {
-    return google_branded_ && (device_os_ == DeviceOs::Chrome ||
-                               device_os_ == DeviceOs::FlexWithFRE);
+    return (google_branded_ && device_os_ == DeviceOs::Chrome) ||
+           device_os_ == DeviceOs::FlexWithFRE;
   }
 
   bool IsOfficialGoogleOS() {
