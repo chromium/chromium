@@ -4124,7 +4124,7 @@ chromium-metrics-reviews@google.com.
     enum="FeedbackAppContactUserConsentType" expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether users allow Google to contact them about the issues. Fires
     when feedback report is being sent.
@@ -4135,7 +4135,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the length of description in the textbox. Fires when the feedback
     report is being sent.
@@ -4145,7 +4145,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs" units="ms"
     expires_after="2024-11-03">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the elapsed time from the start of fetching Debugd logs via the
     GetBigFeedbackLogs dbus method to when the data has been retrieved. Fires
@@ -4159,7 +4159,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-23">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records a summary of the actions the user took before exiting the app. Fires
     when user closes the feedback app, case includes: User quits on search page
@@ -4175,7 +4175,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.EmptyCount"
     units="logs" expires_after="2025-07-30">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of logs with empty data retrieved from debugd for
     feedback reports. Fires during the process of sending a feedback report on
@@ -4187,7 +4187,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.NotAvailableCount"
     units="logs" expires_after="2025-07-30">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of logs with not available data retrieved from debugd for
     feedback reports. Fires during the process of sending a feedback report on
@@ -4199,7 +4199,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.OtherCount"
     units="logs" expires_after="2024-11-03">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of logs with data not empty or not available retrieved
     from debugd for feedback reports. Fires during the process of sending a
@@ -4211,7 +4211,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.Success"
     enum="Boolean" expires_after="2024-11-03">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the success status of fetching the feedback logs via debus method
     GetBigFeedbackLogs. Fires during the process of sending a feedback report on
@@ -4223,7 +4223,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ChromeOSApp.GetFeedbackLogsV2.DBusResult"
     enum="GetFeedbackLogsV2DbusResult" expires_after="2024-11-17">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the different results of fetching the feedback logs via debus method
     GetFeedbackLogsV2. Fires during the process of sending a feedback report on
@@ -4236,7 +4236,7 @@ chromium-metrics-reviews@google.com.
     enum="FeedbackAppHelpContentOutcome" expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the outcome of checking help contents. Fires when user leaves the
     search page by clicking continue or by clicking x on top right to close the
@@ -4248,7 +4248,7 @@ chromium-metrics-reviews@google.com.
     units="numbers" expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of help content results returned in each search. Fires
     when user clicks and views the help content on search page.
@@ -4259,7 +4259,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the email is included when the feedback report is submitted.
     Fires when user's feedback report is being sent.
@@ -4270,7 +4270,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether attached file is included when the feedback report is
     submitted. Fires when user's feedback report is being sent.
@@ -4281,7 +4281,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the screenshot is included when the feedback report is
     submitted. Fires when a user's feedback report is successfully sent.
@@ -4292,7 +4292,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the system and information is included when the feedback
     report is submitted. Fires when a user's feedback report is being sent.
@@ -4303,7 +4303,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the page url is included when the feedback report is
     submitted. Fires when user's feedback report is being sent.
@@ -4314,7 +4314,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the Feedback App is open. Emitted when the app is
     closed.
@@ -4325,7 +4325,7 @@ chromium-metrics-reviews@google.com.
     enum="FeedbackAppPostSubmitAction" expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the first action that the users take after sending feedback. Fires
     on the first action taken on post submit page after the user has sent the
@@ -4337,7 +4337,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the Feedback App is open on {FeedbackAppPage}
     page. Fires when the user closes the app or starts new report after feedback
@@ -4354,7 +4354,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record number of times the user viewed the help content. Fires when user
     clicks help content on search page.
@@ -4365,7 +4365,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record number of times the user viewed the attached image. Fires when user
     clicks the thumbnail and views the larger image.
@@ -4376,7 +4376,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record number of times the user viewed the metrics. Fires when user clicks
     metrics link and views metrics.
@@ -4387,7 +4387,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-01-05">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record number of times the user viewed the screenshot. Fires when user
     clicks the thumbnail on and views the larger screenshot.
@@ -4398,7 +4398,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record number of times the user viewed the system and app information. Fires
     when system and app info link is clicked.
@@ -4409,7 +4409,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-11-03">
   <owner>xiangdongkong@google.com</owner>
   <owner>fernandex@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the elapsed time from the start of fetching system information to
     when the data has been retrieved. Fires during the process of sending a
@@ -4421,7 +4421,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>fernandex@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the elapsed time from when the feedback app window is opened to when
     the backend receives the send report request submitted by a user. Fires
@@ -4433,7 +4433,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.Duration.FormSubmitToConfirmation" units="ms"
     expires_after="2022-08-21">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the elapsed time from when the backend receives the send report
     request submitted by a user to when it starts to send confirmation back to
@@ -4445,7 +4445,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.Duration.FormSubmitToSendQueue" units="ms"
     expires_after="2025-07-30">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the elapsed time from when the backend receives the send report
     request submitted by a user and the report has been added to the send queue.
@@ -4564,7 +4564,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ReportSending.Online" enum="Boolean"
     expires_after="2025-01-21">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the user is online when the feedback report was submitted.
   </summary>
@@ -4573,7 +4573,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.ReportSending.Result"
     enum="FeedbackReportSendingResult" expires_after="2025-03-23">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the feedback report sending states to help track the success rate of
     feedback report offline submission.
@@ -4583,7 +4583,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.RequestSource" enum="FeedbackSource"
     expires_after="2025-03-09">
   <owner>afakhry@chromium.org</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Records the source that requested showing the feedback app.</summary>
 </histogram>
 

@@ -209,7 +209,7 @@ void FeedbackUploader::DispatchReport() {
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "cros-feedback-app@google.com"
+              email: "cros-device-enablement@google.com"
             }
           }
           user_data {

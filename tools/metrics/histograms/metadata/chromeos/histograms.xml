@@ -1261,7 +1261,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Debugd.Perf.GetBigFeedbackLogs.{SubTaskName}"
     units="ms" expires_after="2023-07-01">
   <owner>xiangdongkong@google.com</owner>
-  <owner>cros-feedback-app@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the total time it takes for each sub task of
     LogTool::GetBigFeedbackLogs to complete. Recording happens on each call to
