@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -122,6 +123,8 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
     item->relative_time = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
         base::Time::Now() - scored_url_row.row.last_visit()));
+    item->short_date_time = base::UTF16ToUTF8(
+        base::TimeFormatShortDate(scored_url_row.row.last_visit()));
     item->last_url_visit_timestamp =
         scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch();
 

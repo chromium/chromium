@@ -37,8 +37,12 @@ struct SearchResultItem {
   // The URL formatted for display.
   string url_for_display;
 
-  // A localized string for the last visit time for the above URL, from history.
+  // A localized string for how long it has been since the last visit time for
+  // the above URL, from history.
   string relative_time;
+
+  // A localized string for the last visit time for the above URL, from history.
+  string short_date_time;
 
   // The last visit time for the above URL, from history. Used for removing
   // history item.

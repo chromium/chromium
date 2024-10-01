@@ -29,6 +29,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         url: {url: 'http://google.com'},
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
+        shortDateTime: 'Sept 2, 2022',
         sourcePassage: 'Google description',
         lastUrlVisitTimestamp: 1000,
         answerData: null,
@@ -38,6 +39,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         url: {url: 'http://youtube.com'},
         urlForDisplay: 'youtube.com',
         relativeTime: '4 hours ago',
+        shortDateTime: 'Sept 2, 2022',
         sourcePassage: 'Youtube description',
         lastUrlVisitTimestamp: 2000,
         answerData: null,
@@ -464,6 +466,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         url: {url: 'http://answer.com'},
         urlForDisplay: 'Answer.com',
         relativeTime: '2 months ago',
+        shortDateTime: 'Sept 2, 2022',
         sourcePassage: 'Answer description',
         lastUrlVisitTimestamp: 2000,
         answerData: {answerTextDirectives: []},
@@ -482,9 +485,11 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertTrue(!!answerSource);
       assertFalse(answerSource.hidden);
       assertEquals('http://answer.com', answerSource.getAttribute('href'));
-      assertEquals(
-          'Answer.com',
-          answerSource.querySelector<HTMLElement>('.result-url')!.innerText);
+
+      const answerUrlAndDate =
+          answerSource.querySelector<HTMLElement>('.result-url')!.innerText;
+      assertTrue(answerUrlAndDate.startsWith('Answer.com'));
+      assertTrue(answerUrlAndDate.endsWith('Sept 2, 2022'));
       assertEquals(
           getFaviconForPageURL('http://answer.com', true),
           answerSource.querySelector<HTMLElement>(

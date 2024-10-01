@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -209,6 +210,9 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
             base::UTF16ToUTF8(ui::TimeFormat::Simple(
                 ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
                 base::Time::Now() - scored_url_row.row.last_visit())));
+  EXPECT_EQ(mojo_result->items[0]->short_date_time,
+            base::UTF16ToUTF8(
+                base::TimeFormatShortDate(scored_url_row.row.last_visit())));
   EXPECT_EQ(mojo_result->items[0]->last_url_visit_timestamp,
             scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(mojo_result->items[0]->url_for_display, "google.com");
