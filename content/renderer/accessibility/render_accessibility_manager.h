@@ -79,6 +79,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   // Communication with the browser process.
   void HandleAccessibilityEvents(
       ui::AXUpdatesAndEvents& updates_and_events,
+      ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
       uint32_t reset_token,
       blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
 

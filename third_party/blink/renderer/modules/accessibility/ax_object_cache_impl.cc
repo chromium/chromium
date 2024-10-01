@@ -126,6 +126,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h"
@@ -3302,9 +3303,10 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
 
     // ***** Serialize Location Changes *****
     // Even if there are no dirty objects, we ensure pending location changes
-    // are sent. However, we wait until the document load is complete because
-    // layout often shifts during the load process.
-    if (reset_token_ && GetDocument().IsLoadCompleted()) {
+    // are sent.
+    if (reset_token_ && !changed_bounds_ids_.empty()) {
+      DCHECK(!did_serialize);  // Location changes should have been sent with
+                               // full serialization.
       SerializeLocationChanges();
     }
 
@@ -3403,9 +3405,16 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   // There should be no more dirty objects.
   CHECK(!HasObjectsPendingSerialization());
 
+  /* If there's location updates pending, send them on the way. */
+  ui::AXLocationAndScrollUpdates location_and_scroll_changes;
+  if (!changed_bounds_ids_.empty()) {
+    location_and_scroll_changes = TakeLocationChangsForSerialization();
+  }
+
   /* Send the actual serialization message.*/
   bool success = client->SendAccessibilitySerialization(
-      std::move(updates), std::move(events), had_load_complete_messages);
+      std::move(updates), std::move(events),
+      std::move(location_and_scroll_changes), had_load_complete_messages);
 
   if (!success) {
     // In some cases, like in web tests or if a11y is off, serialization doesn't
@@ -5254,12 +5263,55 @@ Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
   return active_aria_modal_dialog_;
 }
 
+ui::AXLocationAndScrollUpdates
+AXObjectCacheImpl::TakeLocationChangsForSerialization() {
+  CHECK(!changed_bounds_ids_.empty());
+
+  TRACE_EVENT0("accessibility",
+               load_sent_ ? "TakeLocationChangsForSerialization"
+                          : "TakeLocationChangsForSerializationLoading");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.TakeLocationChangsForSerialization");
+
+  ui::AXLocationAndScrollUpdates changes;
+  changes.location_changes.reserve(changed_bounds_ids_.size());
+
+  for (AXID changed_bounds_id : changed_bounds_ids_) {
+    if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
+      DCHECK(!obj->IsDetached());
+      // Only update locations that are already known.
+      auto bounds = cached_bounding_boxes_.find(changed_bounds_id);
+      if (bounds == cached_bounding_boxes_.end()) {
+        continue;
+      }
+
+      ui::AXRelativeBounds new_location;
+      bool clips_children;
+      obj->PopulateAXRelativeBounds(new_location, &clips_children);
+      if (bounds->value == new_location) {
+        continue;
+      }
+
+      cached_bounding_boxes_.Set(changed_bounds_id, new_location);
+      changes.location_changes.emplace_back(changed_bounds_id, new_location);
+    }
+  }
+
+  changed_bounds_ids_.clear();
+  last_location_serialization_time_ =
+      base::Time::Now();  // Since this method is non-recoverable, update the
+                          // time here and assume this serializtion will arrive.
+  return changes;
+}
+
 void AXObjectCacheImpl::SerializeLocationChanges() {
-  CHECK(GetDocument().IsActive());
-  if (changed_bounds_ids_.empty()) {
+  // We wait until the document load is complete because layout often shifts
+  // during the load process.
+  if (!GetDocument().IsLoadCompleted()) {
     return;
   }
 
+  CHECK(GetDocument().IsActive());
   TRACE_EVENT0("accessibility", load_sent_ ? "SerializeLocationChanges"
                                            : "SerializeLocationChangesLoading");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -5292,35 +5344,25 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
 
   weak_factory_for_loc_updates_pipeline_.Invalidate();
 
-  ax::mojom::blink::AXLocationAndScrollUpdatesPtr changes =
+  ui::AXLocationAndScrollUpdates changes = TakeLocationChangsForSerialization();
+
+  // Convert to blink mojom type
+  ax::mojom::blink::AXLocationAndScrollUpdatesPtr location_and_scroll_changes =
       ax::mojom::blink::AXLocationAndScrollUpdates::New();
-  changes->location_changes.reserve(changed_bounds_ids_.size());
-  for (AXID changed_bounds_id : changed_bounds_ids_) {
-    if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
-      DCHECK(!obj->IsDetached());
-      // Only update locations that are already known.
-      auto bounds = cached_bounding_boxes_.find(changed_bounds_id);
-      if (bounds == cached_bounding_boxes_.end())
-        continue;
-
-      ui::AXRelativeBounds new_location;
-      bool clips_children;
-      obj->PopulateAXRelativeBounds(new_location, &clips_children);
-      if (bounds->value == new_location)
-        continue;
-
-      cached_bounding_boxes_.Set(changed_bounds_id, new_location);
-      changes->location_changes.push_back(
-          ax::mojom::blink::AXLocationChange::New(changed_bounds_id,
-                                                  new_location));
-    }
+  for (auto& item : changes.location_changes) {
+    location_and_scroll_changes->location_changes.push_back(
+        ax::mojom::blink::AXLocationChange::New(item.id, item.new_location));
   }
-  changed_bounds_ids_.clear();
-  if (!changes->location_changes.empty()) {
+  for (auto& item : changes.scroll_changes) {
+    location_and_scroll_changes->scroll_changes.push_back(
+        ax::mojom::blink::AXScrollChange::New(item.id, item.scroll_x,
+                                              item.scroll_y));
+  }
+
+  if (!location_and_scroll_changes->location_changes.empty()) {
     CHECK(reset_token_);
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
-        std::move(changes), *reset_token_);
-    last_location_serialization_time_ = base::Time::Now();
+        std::move(location_and_scroll_changes), *reset_token_);
   }
 }
 

@@ -96,6 +96,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/events/types/scroll_types.h"
 #include "v8/include/v8.h"
@@ -709,6 +710,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual bool SendAccessibilitySerialization(
       std::vector<ui::AXTreeUpdate> updates,
       std::vector<ui::AXEvent> events,
+      ui::AXLocationAndScrollUpdates location_and_scroll_updates,
       bool had_load_complete_messages) {
     return false;
   }

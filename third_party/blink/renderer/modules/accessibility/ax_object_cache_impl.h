@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_error_types.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 
@@ -530,9 +531,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   }
 
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
-  // since the last query. Sends the resulting vector over mojo to the browser
-  // process. Clears the vector so that the next time it's
-  // called, it will only retrieve objects that have changed since now.
+  // since the last query. Note that this function is destructive and clears the
+  // vector so that the next time it's called, it will only retrieve objects
+  // that have changed since now.
+  ui::AXLocationAndScrollUpdates TakeLocationChangsForSerialization();
+
+  // Sends the location changes over mojo to the browser process.
   void SerializeLocationChanges();
 
   // This method is used to fulfill AXTreeSnapshotter requests.

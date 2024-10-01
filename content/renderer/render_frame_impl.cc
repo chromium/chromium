@@ -4884,12 +4884,14 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
 bool RenderFrameImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
+    ui::AXLocationAndScrollUpdates location_and_scroll_updates,
     bool had_load_complete_messages) {
   // This function should never be called from a11y unless it's enabled.
   CHECK(IsAccessibilityEnabled());
 
   return render_accessibility_manager_->GetRenderAccessibilityImpl()
       ->SendAccessibilitySerialization(std::move(updates), std::move(events),
+                                       std::move(location_and_scroll_updates),
                                        had_load_complete_messages);
 }
 

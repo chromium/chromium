@@ -57,17 +57,24 @@ class RenderAccessibilityHostInterceptor
         base::Unretained(&receiver_)));
   }
 
-  void HandleAXEvents(const ui::AXUpdatesAndEvents& updates_and_events,
-                      uint32_t reset_token,
-                      HandleAXEventsCallback callback) override {
+  void HandleAXEvents(
+      const ui::AXUpdatesAndEvents& updates_and_events,
+      const ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
+      uint32_t reset_token,
+      HandleAXEventsCallback callback) override {
     NOTREACHED();
   }
-  void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
-                      uint32_t reset_token,
-                      HandleAXEventsCallback callback) override {
+  void HandleAXEvents(
+      ui::AXUpdatesAndEvents& updates_and_events,
+      ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
+      uint32_t reset_token,
+      HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
                             updates_and_events.updates.begin(),
                             updates_and_events.updates.end());
+    for (auto& change : location_and_scroll_updates.location_changes) {
+      location_changes_.emplace_back(std::move(change));
+    }
     std::move(callback).Run();
   }
 

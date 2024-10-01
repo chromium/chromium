@@ -52,6 +52,7 @@ interface RenderAccessibilityHost {
   // TODO(crbug.com/1088484) tracks work to improve the payload size.
   [UnlimitedSize]
   HandleAXEvents(ax.mojom.AXUpdatesAndEvents events_and_updates,
+                 ax.mojom.AXLocationAndScrollUpdates location_and_scroll_updates,
                  uint32 reset_token) => ();
 
   // Sent to update the browser of the location of accessibility objects.

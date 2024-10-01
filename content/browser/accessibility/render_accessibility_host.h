@@ -52,12 +52,16 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
 
   ~RenderAccessibilityHost() override;
 
-  void HandleAXEvents(const ui::AXUpdatesAndEvents& updates_and_events,
-                      uint32_t reset_token,
-                      HandleAXEventsCallback callback) override;
-  void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
-                      uint32_t reset_token,
-                      HandleAXEventsCallback callback) override;
+  void HandleAXEvents(
+      const ui::AXUpdatesAndEvents& updates_and_events,
+      const ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
+      uint32_t reset_token,
+      HandleAXEventsCallback callback) override;
+  void HandleAXEvents(
+      ui::AXUpdatesAndEvents& updates_and_events,
+      ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
+      uint32_t reset_token,
+      HandleAXEventsCallback callback) override;
 
   void HandleAXLocationChanges(const ui::AXLocationAndScrollUpdates& changes,
                                uint32_t reset_token) override;

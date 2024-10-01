@@ -10436,6 +10436,7 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 void RenderFrameHostImpl::HandleAXEvents(
     const ui::AXTreeID& tree_id,
     ui::AXUpdatesAndEvents updates_and_events,
+    ui::AXLocationAndScrollUpdates location_and_scroll_updates,
     uint32_t reset_token,
     mojo::ReportBadMessageCallback report_bad_message_callback) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
@@ -10511,6 +10512,16 @@ void RenderFrameHostImpl::HandleAXEvents(
   }
 
   GetOrCreateBrowserAccessibilityManager();
+
+  if (!location_and_scroll_updates.location_changes.empty() ||
+      !location_and_scroll_updates.scroll_changes.empty()) {
+    HandleAXLocationChanges(
+        tree_id, std::move(location_and_scroll_updates), reset_token,
+        std::move(report_bad_message_callback));  // There's no calls to
+                                                  // report_bad_message_callback
+                                                  // below this line so should
+                                                  // be safe to move it.
+  }
 
   for (auto& update : updates_and_events.updates) {
     if (update.has_tree_data) {

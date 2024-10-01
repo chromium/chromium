@@ -470,6 +470,7 @@ std::string RenderAccessibilityImpl::GetLanguage() {
 bool RenderAccessibilityImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
+    ui::AXLocationAndScrollUpdates location_and_scroll_updates,
     bool had_load_complete_messages) {
   if (had_load_complete_messages) {
     loading_stage_ = LoadingStage::kLoadCompleted;
@@ -550,7 +551,7 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
   CHECK(!weak_factory_for_pending_events_.HasWeakPtrs());
   CHECK(reset_token_);
   render_accessibility_manager_->HandleAccessibilityEvents(
-      updates_and_events, *reset_token_,
+      updates_and_events, location_and_scroll_updates, *reset_token_,
       base::BindOnce(&RenderAccessibilityImpl::OnSerializationReceived,
                      weak_factory_for_pending_events_.GetWeakPtr()));
 

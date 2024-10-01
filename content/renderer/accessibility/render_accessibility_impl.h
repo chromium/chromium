@@ -135,9 +135,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     ax::mojom::Event event_type = ax::mojom::Event::kNone);
   // Called when it is safe to begin a serialization.
   // Returns true if a serialization occurs.
-  bool SendAccessibilitySerialization(std::vector<ui::AXTreeUpdate> updates,
-                                      std::vector<ui::AXEvent> events,
-                                      bool had_load_complete_messages);
+  bool SendAccessibilitySerialization(
+      std::vector<ui::AXTreeUpdate> updates,
+      std::vector<ui::AXEvent> events,
+      ui::AXLocationAndScrollUpdates location_and_scroll_updates,
+      bool had_load_complete_messages);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
