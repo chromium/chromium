@@ -261,27 +261,30 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
 
 void BirchCoralProvider::HandleCoralResponse(
     std::unique_ptr<CoralResponse> response) {
+  std::vector<BirchCoralItem> items;
+  groups_.clear();
   if (!response) {
+    LOG(ERROR) << "Failed to receive coral response.";
+    response_.reset();
+    Shell::Get()->birch_model()->SetCoralItems(items);
     return;
   }
   // TODO(yulunwu) update `birch_model_`
   response_ = std::move(response);
-  groups_.clear();
   CHECK(HasValidClusterCount(response_->groups().size()));
-  std::vector<BirchCoralItem> items;
-  // TODO(owenzhang): Remove placeholder page_urls.
-  std::vector<GURL> page_urls;
-  page_urls.emplace_back(("https://chromeunboxed.com/"));
-  page_urls.emplace_back(("https://www.unrealengine.com/"));
-  page_urls.emplace_back(("https://godotengine.org/"));
-
-  std::vector<std::string> app_ids;
-  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
-  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
-  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
 
   for (size_t i = 0; i < response_->groups().size(); ++i) {
     groups_[i] = response_->groups()[i].Clone();
+    std::vector<GURL> page_urls;
+    std::vector<std::string> app_ids;
+    for (const auto& entity : groups_[i]->entities) {
+      if (entity->is_tab_url()) {
+        page_urls.push_back(entity->get_tab_url());
+      }
+      if (entity->is_app_id()) {
+        app_ids.push_back(entity->get_app_id());
+      }
+    }
     items.emplace_back(base::UTF8ToUTF16(groups_[i]->title),
                        /*subtitle=*/std::u16string(), page_urls, app_ids,
                        /*cluster_id=*/int(i));
