@@ -385,6 +385,17 @@ bool IsContextNeededForScreen(OobeScreenId screen_id) {
          screen_id == LocalDataLossWarningScreenView::kScreenId;
 }
 
+std::string SetupTypeToString(WizardContext::AuthChangeFlow flow_type) {
+  switch (flow_type) {
+    case WizardContext::AuthChangeFlow::kInitialSetup:
+      return "Initial Setup";
+    case WizardContext::AuthChangeFlow::kReauthentication:
+      return "ReAuth";
+    case WizardContext::AuthChangeFlow::kRecovery:
+      return "Recovery";
+  }
+}
+
 }  // namespace
 
 // static
@@ -2022,7 +2033,9 @@ void WizardController::SkipToLoginForTesting() {
 void WizardController::OnScreenExit(OobeScreenId screen,
                                     const std::string& exit_reason) {
   VLOG(1) << "Wizard screen " << screen
-          << " exited with reason: " << exit_reason;
+          << " exited with reason: " << exit_reason << " during setup type: "
+          << SetupTypeToString(
+                 wizard_context_->knowledge_factor_setup.auth_setup_flow);
   // Do not perform checks and record stats for the skipped screen.
   if (exit_reason == BaseScreen::kNotApplicable) {
     return;
