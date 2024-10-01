@@ -85,14 +85,14 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
   // Initializes the OptimizationGuide service as well as the
   // `AboutThisSiteTabHelper` to be tested and the test browser and web state.
   void InitService() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
-    web_state_.SetBrowserState(browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+    web_state_.SetBrowserState(profile_.get());
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_,
                                               optimization_guide_service_);
@@ -101,16 +101,16 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
   // Initializes the OptimizationGuide service as well as the
   // `AboutThisSiteTabHelper`, the test browser and web state for an off the
   // record session. Should only be called after `InitService()` so the
-  // `browser_state_` has been initialized.
+  // `profile_` has been initialized.
   void InitOTRService() {
-    ChromeBrowserState* otr_browser_state =
-        browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {TestChromeBrowserState::TestingFactory{
+    ProfileIOS* otr_profile =
+        profile_->CreateOffTheRecordProfileWithTestingFactories(
+            {TestProfileIOS::TestingFactory{
                 OptimizationGuideServiceFactory::GetInstance(),
                 OptimizationGuideServiceFactory::GetDefaultFactory()}});
     optimization_guide_service_otr_ =
-        OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
-    web_state_otr_.SetBrowserState(otr_browser_state);
+        OptimizationGuideServiceFactory::GetForProfile(otr_profile);
+    web_state_otr_.SetBrowserState(otr_profile);
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_otr_,
                                               optimization_guide_service_otr_);
@@ -156,7 +156,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   web::FakeWebState web_state_otr_;
   web::FakeNavigationContext context_;
