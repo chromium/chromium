@@ -393,6 +393,10 @@ EditableCombobox::EditableCombobox(
   if (display_arrow) {
     arrow_ = AddControlElement(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
+    // We need this so the arrow icon is not covered when the combo box view is
+    // hovered
+    arrow_->SetPaintToLayer();
+    arrow_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
