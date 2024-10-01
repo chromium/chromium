@@ -15,6 +15,7 @@ action("remoting_me2me_host_archive") {
     "ChromotingHostService.pkgproj",
     "ChromotingHostUninstaller.pkgproj",
     "LaunchAgents/org.chromium.chromoting.plist",
+    "LaunchDaemons/org.chromium.chromoting.broker.plist",
     "Scripts/keystone_install.sh",
     "Scripts/remoting_postflight.sh",
     "Scripts/remoting_preflight.sh",

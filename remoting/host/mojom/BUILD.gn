@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "agent_process_broker.mojom",
     "chromoting_host_services.mojom",
     "desktop_session.mojom",
     "keyboard_layout.mojom",

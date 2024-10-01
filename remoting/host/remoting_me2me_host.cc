@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -96,6 +97,7 @@
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
 #include "remoting/host/me2me_heartbeat_service_client.h"
+#include "remoting/host/mojom/agent_process_broker.mojom.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
@@ -128,6 +130,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include "base/file_descriptor_posix.h"
 #include "remoting/host/pam_authorization_factory_posix.h"
 #include "remoting/host/posix/signal_handler.h"
@@ -136,6 +139,7 @@
 #if BUILDFLAG(IS_APPLE)
 #include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/desktop_capturer_checker.h"
+#include "remoting/host/mac/agent_process_broker_client.h"
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -162,6 +166,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <commctrl.h>
+
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -181,9 +186,8 @@ using remoting::protocol::PairingRegistry;
 // The following creates a section that tells Mac OS X that it is OK to let us
 // inject input in the login screen. Just the name of the section is important,
 // not its contents.
-__attribute__((used))
-__attribute__((section("__CGPreLoginApp,__cgpreloginapp")))
-static const char magic_section[] = "";
+__attribute__((used)) __attribute__((section(
+    "__CGPreLoginApp,__cgpreloginapp"))) static const char magic_section[] = "";
 
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -231,6 +235,7 @@ const char kHostOfflineReasonPolicyReadError[] = "POLICY_READ_ERROR";
 const char kHostOfflineReasonPolicyChangeRequiresRestart[] =
     "POLICY_CHANGE_REQUIRES_RESTART";
 const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
+const char kHostOfflineReasonSuspended[] = "SUSPENDED";
 
 // File to write webrtc trace events to. If not specified, webrtc trace events
 // will not be enabled.
@@ -255,6 +260,9 @@ class HostProcess : public ConfigWatcher::Delegate,
                     public HeartbeatSender::Delegate,
                     public IPC::Listener,
                     public base::RefCountedThreadSafe<HostProcess>,
+#if BUILDFLAG(IS_MAC)
+                    public mojom::AgentProcess,
+#endif
                     public mojom::RemotingHostControl,
                     public mojom::WorkerProcessControl {
  public:
@@ -282,6 +290,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   // FtlHostChangeNotificationListener::Listener overrides.
   void OnHostDeleted() override;
 
+#if BUILDFLAG(IS_MAC)
+  // mojom::AgentProcess overrides.
+  void ResumeProcess() override;
+  void SuspendProcess() override;
+#endif
+
  private:
   // See SetState method for a list of allowed state transitions.
   enum HostState {
@@ -301,6 +315,11 @@ class HostProcess : public ConfigWatcher::Delegate,
 
     // Host has been stopped (host process will end soon).
     HOST_STOPPED,
+
+    // Host has been suspended. Meaning it cannot send heartbeats or connect to
+    // signaling. In this state, it may either resume (transition to
+    // HOST_STARTING) or shut down (transition to HOST_GOING_OFFLINE_TO_STOP).
+    HOST_SUSPENDED,
   };
 
   enum PolicyState {
@@ -415,7 +434,17 @@ class HostProcess : public ConfigWatcher::Delegate,
       int peer_pid) override;
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  void ConnectAgentProcessBroker();
+  void OnAgentProcessBrokerDisconnected();
+#endif
+
   std::unique_ptr<ChromotingHostContext> context_;
+
+#if BUILDFLAG(IS_MAC)
+  // Created and used on the network thread.
+  std::unique_ptr<AgentProcessBrokerClient> agent_process_broker_client_;
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Watch for certificate changes and kill the host when changes occur
@@ -717,10 +746,15 @@ void HostProcess::OnConfigWatcherError() {
 
 // Allowed state transitions (enforced via DCHECKs in SetState method):
 //   STARTING->STARTED (once we have valid config + policy)
+//   STARTING->SUSPENDED (on Mac where host processes need to be brokered)
 //   STARTING->GOING_OFFLINE_TO_STOP
 //   STARTING->GOING_OFFLINE_TO_RESTART
 //   STARTED->GOING_OFFLINE_TO_STOP
 //   STARTED->GOING_OFFLINE_TO_RESTART
+//   STARTED->SUSPENDED (informed by broker process to give way to process with
+//                       higher priority)
+//   SUSPENDED->STARTING (resumed by broker process)
+//   SUSPENDED->GOING_OFFLINE_TO_STOP
 //   GOING_OFFLINE_TO_RESTART->GOING_OFFLINE_TO_STOP
 //   GOING_OFFLINE_TO_RESTART->STARTING (after OnHostOfflineReasonAck)
 //   GOING_OFFLINE_TO_STOP->STOPPED (after OnHostOfflineReasonAck)
@@ -736,21 +770,29 @@ void HostProcess::SetState(HostState target_state) {
     case HOST_STARTING:
       DCHECK((target_state == HOST_STARTED) ||
              (target_state == HOST_GOING_OFFLINE_TO_STOP) ||
-             (target_state == HOST_GOING_OFFLINE_TO_RESTART))
+             (target_state == HOST_GOING_OFFLINE_TO_RESTART) ||
+             (target_state == HOST_SUSPENDED))
           << state_ << " -> " << target_state;
       break;
     case HOST_STARTED:
       DCHECK((target_state == HOST_GOING_OFFLINE_TO_STOP) ||
-             (target_state == HOST_GOING_OFFLINE_TO_RESTART))
+             (target_state == HOST_GOING_OFFLINE_TO_RESTART) ||
+             (target_state == HOST_SUSPENDED))
           << state_ << " -> " << target_state;
       break;
     case HOST_GOING_OFFLINE_TO_RESTART:
       DCHECK((target_state == HOST_GOING_OFFLINE_TO_STOP) ||
-             (target_state == HOST_STARTING))
+             (target_state == HOST_STARTING) ||
+             (target_state == HOST_SUSPENDED))
           << state_ << " -> " << target_state;
       break;
     case HOST_GOING_OFFLINE_TO_STOP:
       DCHECK_EQ(target_state, HOST_STOPPED);
+      break;
+    case HOST_SUSPENDED:
+      DCHECK((target_state == HOST_GOING_OFFLINE_TO_STOP) ||
+             (target_state == HOST_STARTING))
+          << state_ << " -> " << target_state;
       break;
     case HOST_STOPPED:  // HOST_STOPPED is a terminal state.
     default:
@@ -1151,6 +1193,30 @@ void HostProcess::OnHostDeleted() {
   ShutdownHost(kHostDeletedExitCode);
 }
 
+#if BUILDFLAG(IS_MAC)
+
+void HostProcess::ResumeProcess() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  if (state_ == HOST_GOING_OFFLINE_TO_STOP) {
+    return;
+  }
+  HOST_LOG << "Resuming process";
+  SetState(HOST_STARTING);
+  StartHostIfReady();
+}
+
+void HostProcess::SuspendProcess() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  if (state_ == HOST_SUSPENDED || state_ == HOST_GOING_OFFLINE_TO_STOP) {
+    return;
+  }
+  HOST_LOG << "Suspending process";
+  SetState(HOST_SUSPENDED);
+  GoOffline(kHostOfflineReasonSuspended);
+}
+
+#endif
+
 #if BUILDFLAG(IS_WIN)
 void HostProcess::ApplyHostConfig(base::Value::Dict config) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
@@ -1211,6 +1277,29 @@ void HostProcess::BindChromotingHostServices(
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+
+void HostProcess::ConnectAgentProcessBroker() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  agent_process_broker_client_ = std::make_unique<AgentProcessBrokerClient>(
+      base::BindOnce(&HostProcess::OnAgentProcessBrokerDisconnected,
+                     base::Unretained(this)));
+  if (!agent_process_broker_client_->ConnectToServer()) {
+    LOG(ERROR) << "Failed to connect to agent process broker.";
+    ShutdownHost(kInitializationFailed);
+    return;
+  }
+  agent_process_broker_client_->OnAgentProcessLaunched(this);
+}
+
+void HostProcess::OnAgentProcessBrokerDisconnected() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  HOST_LOG << "Host terminated by agent process broker.";
+  ShutdownHost(kTerminatedByAgentProcessBroker);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 // Applies the host config, returning true if successful.
 bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
@@ -1465,42 +1554,41 @@ void HostProcess::ApplyUsernamePolicy() {
   HOST_LOG << "Policy requires host username match.";
 
 #if BUILDFLAG(IS_APPLE)
-    // On Mac, we run as root at the login screen, so the username won't match.
-    // However, there's no need to enforce the policy at the login screen, as
-    // the client will have to reconnect if a login occurs.
+  // On Mac, we run as root at the login screen, so the username won't match.
+  // However, there's no need to enforce the policy at the login screen, as
+  // the client will have to reconnect if a login occurs.
   if (getuid() == 0) {
     return;
   }
 #endif
 
-    // Curtain-mode on Windows presents the standard OS login prompt to the user
-    // for each connection, removing the need for an explicit user-name matching
-    // check.
+  // Curtain-mode on Windows presents the standard OS login prompt to the user
+  // for each connection, removing the need for an explicit user-name matching
+  // check.
 #if BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
-    if (desktop_environment_options_.enable_curtaining()) {
-      return;
-    }
+  if (desktop_environment_options_.enable_curtaining()) {
+    return;
+  }
 #endif  // BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
 
-    std::string username = GetUsername();
-    LOG(INFO) << "Current local username is '" << username << "'";
-    std::set<std::string> allowed_emails;
-    for (const std::string& owner_email : host_owner_emails_) {
-      auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
-      if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
-        LOG(INFO) << owner_email << " matches the local username";
-        allowed_emails.emplace(owner_email);
-      } else {
-        LOG(WARNING) << owner_email << " does not match the local username";
-      }
+  std::string username = GetUsername();
+  LOG(INFO) << "Current local username is '" << username << "'";
+  std::set<std::string> allowed_emails;
+  for (const std::string& owner_email : host_owner_emails_) {
+    auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
+    if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
+      LOG(INFO) << owner_email << " matches the local username";
+      allowed_emails.emplace(owner_email);
+    } else {
+      LOG(WARNING) << owner_email << " does not match the local username";
     }
+  }
 
-    host_owner_emails_.swap(allowed_emails);
-    if (host_owner_emails_.empty()) {
-      LOG(ERROR)
-          << "No owner emails are allowed based on match username policy.";
-      ShutdownHost(kUsernameMismatchExitCode);
-    }
+  host_owner_emails_.swap(allowed_emails);
+  if (host_owner_emails_.empty()) {
+    LOG(ERROR) << "No owner emails are allowed based on match username policy.";
+    ShutdownHost(kUsernameMismatchExitCode);
+  }
 }
 
 bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
@@ -1531,26 +1619,6 @@ bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
   }
 
   desktop_environment_options_.set_enable_curtaining(*curtain_required);
-
-#if BUILDFLAG(IS_APPLE)
-  if (*curtain_required) {
-    // When curtain mode is in effect on Mac, the host process runs in the
-    // user's switched-out session, but launchd will also run an instance at
-    // the console login screen.  Even if no user is currently logged-on, we
-    // can't support remote-access to the login screen because the current host
-    // process model disconnects the client during login, which would leave
-    // the logged in session un-curtained on the console until they reconnect.
-    //
-    // TODO(jamiewalch): Fix this once we have implemented the multi-process
-    // daemon architecture (crbug.com/134894)
-    if (getuid() == 0) {
-      LOG(ERROR) << "Running the host in the console login session is not yet "
-                    "supported.";
-      ShutdownHost(kLoginScreenNotSupportedExitCode);
-      return false;
-    }
-  }
-#endif
 
   if (*curtain_required) {
     HOST_LOG << "Policy requires curtain-mode.";
@@ -1749,6 +1817,15 @@ void HostProcess::StartHost() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!host_);
 
+#if BUILDFLAG(IS_MAC)
+  if (!agent_process_broker_client_) {
+    HOST_LOG << "Suspending process to wait for broker outcome";
+    SetState(HOST_SUSPENDED);
+    ConnectAgentProcessBroker();
+    return;
+  }
+#endif
+
   // This thread is used as a network thread in WebRTC.
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
@@ -1845,7 +1922,7 @@ void HostProcess::StartHost() {
   daemon_channel_->GetRemoteAssociatedInterface(&remote);
   host_event_logger_ = std::make_unique<IpcHostEventLogger>(
       host_->status_monitor(), std::move(remote));
-#else  // !defined(REMOTING_MULTI_PROCESS)
+#else   // !defined(REMOTING_MULTI_PROCESS)
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
@@ -1890,6 +1967,7 @@ void HostProcess::ShutdownHost(HostExitCodes exit_code) {
   *exit_code_out_ = exit_code;
 
   switch (state_) {
+    case HOST_SUSPENDED:
     case HOST_STARTING:
     case HOST_STARTED:
       SetState(HOST_GOING_OFFLINE_TO_STOP);
@@ -1911,7 +1989,8 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!host_offline_reason.empty());
   DCHECK((state_ == HOST_GOING_OFFLINE_TO_STOP) ||
-         (state_ == HOST_GOING_OFFLINE_TO_RESTART));
+         (state_ == HOST_GOING_OFFLINE_TO_RESTART) ||
+         (state_ == HOST_SUSPENDED));
 
   // Shut down everything except the HostSignalingManager.
   host_.reset();
@@ -1923,9 +2002,16 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
 
   // Before shutting down HostSignalingManager, send the |host_offline_reason|
   // if possible (i.e. if we have the config).
-  if (host_offline_reason == ExitCodeToString(kHostDeletedExitCode)) {
-    // Host is deleted. There is no need to report the host offline reason back
-    // to directory.
+  if (
+      // Host is deleted. There is no need to report the host offline reason
+      // back to directory.
+      host_offline_reason == ExitCodeToString(kHostDeletedExitCode) ||
+      // kTerminatedByAgentProcessBroker and kHostOfflineReasonSuspended imply
+      // that there is another host process heartbeating. Reporting the offline
+      // reason will make the host appear to be offline.
+      host_offline_reason ==
+          ExitCodeToString(kTerminatedByAgentProcessBroker) ||
+      host_offline_reason == kHostOfflineReasonSuspended) {
     OnHostOfflineReasonAck(true);
     return;
   } else if (!config_.empty()) {
@@ -1970,10 +2056,14 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
 
     config_watcher_.reset();
 
+#if BUILDFLAG(IS_MAC)
+    agent_process_broker_client_.reset();
+#endif
+
     // Complete the rest of shutdown on the main thread.
     context_->ui_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&HostProcess::ShutdownOnUiThread, this));
-  } else {
+  } else if (state_ != HOST_SUSPENDED) {
     NOTREACHED();
   }
 }

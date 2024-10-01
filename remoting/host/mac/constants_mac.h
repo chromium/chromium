@@ -7,8 +7,14 @@
 
 namespace remoting {
 
+// The bundle ID for the Remoting Host.
+extern const char kBundleId[];
+
 // The name of the Remoting Host service that is registered with launchd.
 extern const char kServiceName[];
+
+// The name of the Remoting Host broker that is registered with launchd.
+extern const char kBrokerName[];
 
 // Use a single configuration file, instead of separate "auth" and "host" files.
 // This is because the SetConfigAndStart() API only provides a single
@@ -42,6 +48,9 @@ extern const char kHostEnabledPath[];
 
 // The .plist file for the Chromoting service.
 extern const char kServicePlistPath[];
+
+// The .plist file for the Chromoting agent broker.
+extern const char kBrokerPlistPath[];
 
 // Path to the host log file
 extern const char kLogFilePath[];

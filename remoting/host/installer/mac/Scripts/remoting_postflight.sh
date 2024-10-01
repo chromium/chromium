@@ -11,6 +11,7 @@ SERVICE_NAME=org.chromium.chromoting
 CONFIG_FILE="$HELPERTOOLS/$SERVICE_NAME.json"
 OLD_SCRIPT_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me.sh"
 PLIST=/Library/LaunchAgents/org.chromium.chromoting.plist
+BROKER_PLIST=/Library/LaunchDaemons/org.chromium.chromoting.broker.plist
 PAM_CONFIG=/etc/pam.d/chrome-remote-desktop
 ENABLED_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me_enabled"
 ENABLED_FILE_BACKUP="$ENABLED_FILE.backup"
@@ -131,6 +132,9 @@ if [[ -n "$USER" && "$USER" != "root" ]]; then
 fi
 
 if [[ -r "$USERS_TMP_FILE" ]]; then
+  logger Starting broker service
+  launchctl load -w $BROKER_PLIST
+
   for uid in $(sort "$USERS_TMP_FILE" | uniq); do
     logger Starting service for user "$uid".
 

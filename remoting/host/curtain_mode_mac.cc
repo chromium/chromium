@@ -140,6 +140,23 @@ SessionWatcher::~SessionWatcher() {
 }
 
 void SessionWatcher::ActivateCurtain() {
+  if (getuid() == 0) {
+    // When curtain mode is in effect on Mac, the host process runs in the
+    // user's switched-out session, but launchd will also run an instance at
+    // the console login screen.  Even if no user is currently logged-on, we
+    // can't support remote-access to the login screen because the current host
+    // process model disconnects the client during login, which would leave
+    // the logged in session un-curtained on the console until they reconnect.
+    //
+    // In case of fast user switch, there will be two host processes running,
+    // one as the logged on user and another one as root. AgentProcessBroker
+    // will terminate the root host process in that case.
+    // TODO: crbug.com/366071356 - Create a new error code for this situation.
+    LOG(ERROR)
+        << "Connecting to the console login session is not yet supported.";
+    DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
+    return;
+  }
   // Try to install the switch-in handler. Do this before switching out the
   // current session so that the console session is not affected if it fails.
   if (!InstallEventHandler()) {

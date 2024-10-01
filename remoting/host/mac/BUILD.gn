@@ -25,6 +25,7 @@ source_set("constants") {
   defines = [
     "HOST_BUNDLE_NAME=\"" + me2me_host_bundle_name + "\"",
     "HOST_LEGACY_BUNDLE_NAME=\"" + me2me_host_legacy_bundle_name + "\"",
+    "HOST_BUNDLE_ID=\"" + host_bundle_id + "\"",
   ]
 
   sources = [
@@ -59,6 +60,20 @@ source_set("permission_checking") {
   frameworks = [ "AVFoundation.framework" ]
 }
 
+source_set("agent_process_broker_client") {
+  sources = [
+    "agent_process_broker_client.cc",
+    "agent_process_broker_client.h",
+  ]
+  deps = [
+    "//base",
+    "//components/named_mojo_ipc_server",
+    "//mojo/public/cpp/platform",
+    "//remoting/host:ipc_constants",
+    "//remoting/host/mojom",
+  ]
+}
+
 executable("remoting_me2me_host_service") {
   sources = [ "host_service_main.cc" ]
   configs += [ "//remoting/build/config:version" ]
@@ -75,6 +90,41 @@ bundle_data("remoting_me2me_host_service_bundle_data") {
   sources = [ "$root_out_dir/remoting_me2me_host_service" ]
   outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
   public_deps = [ ":remoting_me2me_host_service" ]
+}
+
+source_set("agent_process_broker") {
+  sources = [
+    "agent_process_broker.cc",
+    "agent_process_broker.h",
+  ]
+  deps = [
+    "//base",
+    "//components/named_mojo_ipc_server",
+    "//mojo/public/cpp/platform",
+    "//remoting/base",
+    "//remoting/host:ipc_constants",
+    "//remoting/host:mojo_caller_security_checker",
+    "//remoting/host/base",
+    "//remoting/host/mojom",
+  ]
+}
+
+executable("remoting_agent_process_broker") {
+  sources = [ "agent_process_broker_main.cc" ]
+  configs += [ "//remoting/build/config:version" ]
+  deps = [
+    ":agent_process_broker",
+    "//base",
+    "//mojo/core/embedder",
+    "//remoting/base",
+    "//remoting/base:logging",
+  ]
+}
+
+bundle_data("remoting_agent_process_broker_bundle_data") {
+  sources = [ "$root_out_dir/remoting_agent_process_broker" ]
+  outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+  public_deps = [ ":remoting_agent_process_broker" ]
 }
 
 # remoting_me2me_host-InfoPlist.strings
@@ -127,6 +177,7 @@ target("mac_app_bundle", "remoting_me2me_host") {
     ]
   }
   deps += [
+    ":remoting_agent_process_broker_bundle_data",
     ":remoting_host_resources",
     ":remoting_me2me_host_service_bundle_data",
     "//remoting/host:remoting_infoplist_strings",
@@ -212,4 +263,22 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
   defines =
       [ "VERSION=" + "$chrome_version_major" + "." + "$remoting_version_patch" +
         "." + "$chrome_version_build" + "." + "$chrome_version_patch" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "agent_process_broker_unittest.cc" ]
+
+  deps = [
+    ":agent_process_broker",
+    ":agent_process_broker_client",
+    "//base",
+    "//base/test:test_support",
+    "//components/named_mojo_ipc_server:named_mojo_ipc_server",
+    "//mojo/public/cpp/platform",
+    "//remoting/host/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

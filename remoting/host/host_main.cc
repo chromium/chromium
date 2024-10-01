@@ -260,9 +260,12 @@ int HostMain(int argc, char** argv) {
 
   mojo::core::Init({
 #if BUILDFLAG(IS_WIN)
-    .is_broker_process = main_routine == &DaemonProcessMain
+      .is_broker_process = main_routine == &DaemonProcessMain
+#elif BUILDFLAG(IS_MAC)
+      // The broker process on Mac is the agent process broker.
+      .is_broker_process = false
 #else
-    .is_broker_process = main_routine == &HostProcessMain
+      .is_broker_process = main_routine == &HostProcessMain
 #endif
   });
 

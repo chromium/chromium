@@ -177,6 +177,7 @@ int HostService::RunHost() {
           LOG(ERROR) << "Too many host failures. Giving up.";
           return 1;
         }
+        // TODO: crbug.com/366071356 - use exponential backoff
         base::TimeDelta relaunch_in = kMinimumRelaunchInterval - host_lifetime;
         HOST_LOG << "Relaunching in " << relaunch_in;
         base::PlatformThread::Sleep(relaunch_in);
