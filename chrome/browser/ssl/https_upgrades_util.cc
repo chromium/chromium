@@ -75,15 +75,24 @@ bool IsBalancedModeEnabled(PrefService* prefs) {
   return prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
 }
 
+bool IsBalancedModeInterstitialEnabledBySiteEngagementHeuristic(
+    const HttpInterstitialState& state) {
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForEngagedSites) ||
+      !IsBalancedModeAvailable()) {
+    return false;
+  }
+  return state.enabled_by_engagement_heuristic;
+}
+
 bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
   // Balance mode is _uniquely_ enabled only when other HFM variants aren't
-  // enabled.
+  // enabled (except for Site Engagement heuristic which enables Balanced Mode
+  // when it's available).
   if (state.enabled_by_pref) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForEngagedSites) &&
-      state.enabled_by_engagement_heuristic) {
+  if (IsBalancedModeInterstitialEnabledBySiteEngagementHeuristic(state)) {
     return false;
   }
   if (base::FeatureList::IsEnabled(
@@ -110,17 +119,14 @@ bool IsInterstitialEnabled(const HttpInterstitialState& state) {
   if (IsStrictInterstitialEnabled(state)) {
     return true;
   }
-  // ...or when balanced mode is enabled.
-  return (IsBalancedModeAvailable() && state.enabled_in_balanced_mode);
+  if (IsBalancedModeAvailable() && state.enabled_in_balanced_mode) {
+    return true;
+  }
+  return IsBalancedModeInterstitialEnabledBySiteEngagementHeuristic(state);
 }
 
 bool IsStrictInterstitialEnabled(const HttpInterstitialState& state) {
   if (state.enabled_by_pref) {
-    return true;
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForEngagedSites) &&
-      state.enabled_by_engagement_heuristic) {
     return true;
   }
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
@@ -139,11 +145,11 @@ bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
   if (state.enabled_by_pref) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForEngagedSites) &&
-      state.enabled_by_engagement_heuristic) {
-    return false;
+
+  if (IsBalancedModeInterstitialEnabledBySiteEngagementHeuristic(state)) {
+    return true;
   }
+
   if (base::FeatureList::IsEnabled(
           features::kHttpsFirstModeV2ForTypicallySecureUsers) &&
       state.enabled_by_typically_secure_browsing) {

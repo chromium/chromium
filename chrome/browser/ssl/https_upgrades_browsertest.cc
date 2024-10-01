@@ -183,7 +183,8 @@ class HttpsUpgradesBrowserTest
       case HttpsUpgradesTestType::kHttpsFirstModeWithSiteEngagement:
         // HFM pref is disabled in SetUpOnMainThread.
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites},
+            /*enabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites,
+                                  features::kHttpsFirstBalancedMode},
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
@@ -201,8 +202,9 @@ class HttpsUpgradesBrowserTest
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{features::
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
-                                  features::kHttpsFirstModeV2ForEngagedSites},
-            /*disabled_features=*/{features::kHttpsFirstBalancedMode});
+                                  features::kHttpsFirstModeV2ForEngagedSites,
+                                  features::kHttpsFirstBalancedMode},
+            /*disabled_features=*/{});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeIncognito:
@@ -943,6 +945,9 @@ IN_PROC_BROWSER_TEST_P(
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
+  const bool is_interstitial_due_to_se_heuristic =
+      IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled() &&
+      !InBalancedMode();
 
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
@@ -952,9 +957,6 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
-    bool is_interstitial_due_to_se_heuristic =
-        IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled() &&
-        !InBalancedMode();
     EXPECT_EQ(is_interstitial_due_to_se_heuristic
                   ? HFMInterstitialType::kSiteEngagement
                   : HFMInterstitialType::kStandard,
@@ -971,9 +973,9 @@ IN_PROC_BROWSER_TEST_P(
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
 
   // Check engagement heuristic metrics. These are only recorded when the
-  // interstitial isn't enabled by the user pref.
-  if (IsSiteEngagementHeuristicEnabled() &&
-      !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+  // site engagement heuristic is enabled and the interstitial is due to this
+  // heuristic and not because of prefs.
+  if (is_interstitial_due_to_se_heuristic) {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
     histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                     Event::kUpgradeAttempted, 1);
@@ -1066,9 +1068,13 @@ IN_PROC_BROWSER_TEST_P(
     }
   }
 
+  // Check engagement heuristic metrics. These are only recorded when the
+  // site engagement heuristic is enabled and the interstitial is due to this
+  // heuristic and not because of prefs.
   if (IsSiteEngagementHeuristicEnabled() &&
       !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
-    // Shouldn't change because the interstitial wasn't due to the heuristic:
+    // Event histogram shouldn't change because Site Engagement heuristic didn't
+    // kick in.
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
 
     // Check host count.
@@ -1097,7 +1103,8 @@ IN_PROC_BROWSER_TEST_P(
         kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1),
         1);
   } else {
-    // Shouldn't change:
+    // Event histogram shouldn't change because Site Engagement heuristic didn't
+    // kick in.
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
 
     // If HFM pref was enabled, no SE metrics should be recorded because HFM
@@ -1176,7 +1183,7 @@ IN_PROC_BROWSER_TEST_P(
   histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
 
   // Check engagement heuristic metrics. These are only recorded when the
-  // interstitial isn't enabled across all sites.
+  // site engagement interstitial is enabled.
   if (IsSiteEngagementHeuristicEnabled() &&
       !IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     // Check the heuristic state. The heuristic should enable HFM for

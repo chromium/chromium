@@ -11466,6 +11466,26 @@
             ]
         }
     ],
+    "HttpsFirstModeV2ForEngagedSites": [
+        {
+            "platforms": [
+                "android",
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstModeV2ForEngagedSites"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
@@ -11481,26 +11501,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HttpsFirstModeV2ForTypicallySecureUsers"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HttpsUpgrades": [
-        {
-            "platforms": [
-                "android",
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithHttpsFirstModeForEngagedSites_20231003",
-                    "enable_features": [
-                        "HttpsFirstModeV2ForEngagedSites"
                     ]
                 }
             ]

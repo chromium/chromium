@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -87,8 +89,10 @@ class HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest
     : public HttpsFirstModeSettingsTrackerTest {
  public:
   HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest() {
-    feature_list()->InitAndEnableFeature(
-        features::kHttpsFirstModeV2ForEngagedSites);
+    feature_list()->InitWithFeatures(
+        /*enabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites,
+                              features::kHttpsFirstBalancedMode},
+        /*disabled_features=*/{});
   }
 };
 
@@ -102,7 +106,7 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
 // Check that changing the HFM pref clears Site Engagement heuristic's HTTPS
 // enforcelist and effectively disables the heuristic.
 TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
-       SiteEngagementHeuristic_ShouldNotEnableIfPrefIsSet) {
+       ShouldNotEnableHeuristicIfPrefIsSet) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -121,10 +125,11 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
   clock_ptr->SetNow(base::Time::NowFromSystemTime());
 
   // Site Engagement heuristic should enforce HTTPS on hosts with high
-  // engagement score.
+  // engagement score if Balanced Mode is available.
   GURL https_url("https://example.com");
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+
   EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
       GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
@@ -146,10 +151,9 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
 }
 
 // Check that high site engagement scores of HTTPS URLs with non-default ports
-// do not auto-enable HTTPS-First Mode.
-TEST_F(
-    HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
-    SiteEngagementHeuristic_ShouldIgnoreEngagementScoreOfUrlWithNonDefaultPort) {
+// do not auto-enable HTTPS-First Balanced Mode.
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
+       ShouldIgnoreEngagementScoreOfUrlWithNonDefaultPort) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -190,7 +194,56 @@ TEST_F(
 }
 
 TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
-       SiteEngagementHeuristic_ShouldEnforceHttps) {
+       BalancedModeExceptions) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  state->SetClockForTesting(std::move(clock));
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  // HTTPS-First Balanced Mode should ignore non-unique hostnames.
+  GURL https_url("https://site.test");
+  GURL http_url("http://site.test");
+
+  // HFM should initially be disabled on this site by default.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      http_url, profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+  // Increase the score. This should still not enable HFM on site.test.
+  engagement_service->ResetBaseScoreForURL(https_url, 90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      http_url, profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
+       ShouldEnforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -421,10 +474,10 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
       kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(2), 1);
 }
 
-// If a site was previously been HTTPS-enforced no longer is in the site
+// If a site that was previously HTTPS-enforced is no longer in the site
 // engagement list, it should no longer be HTTPS-enforced anymore.
 TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
-       SiteEngagementHeuristic_NoEngagementScoreShouldUnenforceHttps) {
+       NoEngagementScoreShouldUnenforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -441,11 +494,12 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
   GURL https_url("https://example.com");
   GURL http_url("http://example.com");
 
-  // Increase the HTTPS engagement score to enable HFM on this host.
+  // Increase the HTTPS engagement score. This will enable HFM Balanced Mode on
+  // this host if available.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
   EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
-      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+      http_url, profile()->GetDefaultStoragePartition()));
 
   // Clear up the engagement scores. This should remove the enforcement.
   HostContentSettingsMap* settings_map =
@@ -459,11 +513,37 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
   // Sites that fall outside the site engagement list should no longer have
   // HTTPS enforced.
   EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
-      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+      http_url, profile()->GetDefaultStoragePartition()));
   EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
-      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
+      https_url, profile()->GetDefaultStoragePartition()));
+}
 
-  service->Shutdown();
+// If a non-unique hostname was HTTPS-enforced by a previous version of Chrome,
+// it should be removed from the enforcement list when possible.
+TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
+       PreviouslyEnforcedNonUniqueHostnameShouldBeRemoved) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  GURL http_url("http://site.test");
+  state->SetHttpsEnforcementForHost(http_url.host(), /*enforce=*/true,
+                                    profile()->GetDefaultStoragePartition());
+
+  // The heuristic should clean up the enforcement list and remove non-unique
+  // hostnames.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      http_url, profile()->GetDefaultStoragePartition()));
 }
 
 // Tests the Typically Secure User heuristic to ensure that it respects the
@@ -568,8 +648,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   profile()->SetCreationTimeForTesting(now - base::Days(20));
 
   // Enable the feature flag explicitly for this test.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  feature_list()->InitAndEnableFeature(
       features::kHttpsFirstModeV2ForTypicallySecureUsers);
 
   HttpsFirstModeService* hfm_service =
@@ -604,7 +683,7 @@ class TypicallySecureUserTest : public HttpsFirstModeSettingsTrackerTest {
   TypicallySecureUserTest() {
     base::FieldTrialParams feature_params;
     feature_params["min-recent-navigations"] = "5";
-    feature_list_.InitAndEnableFeatureWithParameters(
+    feature_list()->InitAndEnableFeatureWithParameters(
         features::kHttpsFirstModeV2ForTypicallySecureUsers, feature_params);
   }
 
@@ -642,7 +721,6 @@ class TypicallySecureUserTest : public HttpsFirstModeSettingsTrackerTest {
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<HttpsFirstModeService> hfm_service_;
   base::SimpleTestClock clock_;
 };
@@ -852,8 +930,7 @@ TEST_F(TypicallySecureUserTest, HFMEnabled) {
 // (TypicallySecureUserTest.PrefUpdatedByHeuristic_ShouldNotClearAllowlist)
 // checks that a heuristic auto-enabling HFM does NOT clear the allowlist.
 TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated_ShouldClearAllowlist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+  feature_list()->InitAndDisableFeature(features::kHttpsFirstBalancedMode);
 
   // Instantiate the service so that it can track pref changes.
   HttpsFirstModeService* service =
@@ -941,8 +1018,7 @@ TEST_F(TypicallySecureUserTest,
 // Tests that the correct setting at startup is logged, when the Balanced Mode
 // feature flag is enabled but not on by default.
 TEST_F(HttpsFirstModeSettingsTrackerTest, StartupBalancedModeAvailable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+  feature_list()->InitAndEnableFeature(features::kHttpsFirstBalancedMode);
 
   base::HistogramTester histograms;
   HttpsFirstModeService* service =

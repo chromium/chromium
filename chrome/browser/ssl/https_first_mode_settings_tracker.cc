@@ -29,6 +29,7 @@
 #include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -447,6 +448,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
   // status.
   if (!base::FeatureList::IsEnabled(
           features::kHttpsFirstModeV2ForEngagedSites) ||
+      !IsBalancedModeAvailable() ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
@@ -482,6 +484,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
 void HttpsFirstModeService::ProcessEngagedSitesList(
     base::OnceClosure done_callback,
     const std::vector<site_engagement::mojom::SiteEngagementDetails>& details) {
+  DCHECK(IsBalancedModeAvailable());
+
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile_->GetSSLHostStateDelegate());
@@ -518,11 +522,25 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     const GURL& url,
     site_engagement::SiteEngagementService* engagement_service,
     StatefulSSLHostStateDelegate* state) {
+  DCHECK(IsBalancedModeAvailable());
+
   DCHECK(url.port().empty()) << "Url should have a default port";
   bool enforced =
       state->IsHttpsEnforcedForUrl(url, profile_->GetDefaultStoragePartition());
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
+
+  // If a non-unique hostname is in the enforcement list, it must have been
+  // added by a previous version of Chrome, so remove it. Otherwise, ignore
+  // non-unique hostnames.
+  if (net::IsHostnameNonUnique(url.host())) {
+    if (enforced) {
+      state->SetHttpsEnforcementForHost(url.host(),
+                                        /*enforced=*/false,
+                                        profile_->GetDefaultStoragePartition());
+    }
+    return;
+  }
 
   double https_score = engagement_service->GetScore(https_url);
   double http_score = engagement_service->GetScore(http_url);
