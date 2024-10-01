@@ -152,11 +152,6 @@ void VideoToolboxFrameConverter::Initialize() {
     DestroyStub();
     return;
   }
-
-  texture_rectangle_ = stub_->decoder_context()
-                           ->GetFeatureInfo()
-                           ->feature_flags()
-                           .arb_texture_rectangle;
 }
 
 void VideoToolboxFrameConverter::DestroyStub() {
