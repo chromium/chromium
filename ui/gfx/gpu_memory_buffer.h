@@ -101,6 +101,22 @@ class GFX_EXPORT GpuMemoryBuffer {
   // Returns false on failure.
   virtual bool Map() = 0;
 
+  // Maps each plane of the buffer into the client's address space so it can be
+  // written to by the CPU. The default implementation is blocking and just
+  // calls Map(). However, on some platforms the implementations are
+  // non-blocking. In that case the result callback will be executed on the
+  // GpuMemoryThread if some work in the GPU service is required for mapping, or
+  // will be executed immediately in the current sequence. Warning: Make sure
+  // the GMB isn't destroyed before the callback is run otherwise GPU process
+  // might try to write in destroyed shared memory region. Don't attempt to Map,
+  // Unmap or get memory before the callback is executed. Otherwise a CHECK will
+  // fire.
+  virtual void MapAsync(base::OnceCallback<void(bool)> result_cb);
+
+  // Indicates if the `MapAsync` is non-blocking. Otherwise it's just calling
+  // `Map()` directly.
+  virtual bool AsyncMappingIsNonBlocking() const;
+
   // Returns a pointer to the memory address of a plane. Buffer must have been
   // successfully mapped using a call to Map() before calling this function.
   virtual void* memory(size_t plane) = 0;

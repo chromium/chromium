@@ -83,9 +83,17 @@ class GPU_EXPORT ClientSharedImage
 
     ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer);
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        bool is_already_mapped);
+    static void StartCreateAsync(
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb);
+    static void FinishCreateAsync(
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
+        bool success);
 
-    bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer);
+    bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped);
 
     // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
     // simplicity and will be removed later.
@@ -151,6 +159,17 @@ class GPU_EXPORT ClientSharedImage
   // which can be used to read/write to the CPU mapped memory. The SharedImage
   // backing this ClientSI must have been created with CPU_READ/CPU_WRITE usage.
   std::unique_ptr<ScopedMapping> Map();
+
+  // Maps |mailbox| into CPU visible memory and returns a ScopedMapping object
+  // which can be used to read/write to the CPU mapped memory. The SharedImage
+  // backing this ClientSI must have been created with CPU_READ/CPU_WRITE usage.
+  // Default implementation is blocking. However, on some platforms, where
+  // possible, the implementation is non-blocking and may execute the callback
+  // on the GpuMemoryThread. But if no GPU work is necessary, it still may
+  // execute the callback immediately in the current sequence. Note: `this` must
+  // be kept alive until the result callback is executed.
+  void MapAsync(
+      base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb);
 
   // Returns an unowned copy of the current ClientSharedImage. This function
   // is a temporary workaround for the situation where a ClientSharedImage may
@@ -293,6 +312,11 @@ class GPU_EXPORT ClientSharedImage
     CHECK(gpu_memory_buffer_);
     return gpu_memory_buffer_->GetType() ==
            gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+  }
+
+  bool AsyncMappingIsNonBlocking() const {
+    CHECK(gpu_memory_buffer_);
+    return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
   }
 
   // This pair of functions are used by SharedImageTexture to notify

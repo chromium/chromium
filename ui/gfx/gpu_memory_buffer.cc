@@ -48,6 +48,14 @@ GpuMemoryBufferHandle& GpuMemoryBufferHandle::operator=(
 
 GpuMemoryBufferHandle::~GpuMemoryBufferHandle() = default;
 
+void GpuMemoryBuffer::MapAsync(base::OnceCallback<void(bool)> result_cb) {
+  std::move(result_cb).Run(Map());
+}
+
+bool GpuMemoryBuffer::AsyncMappingIsNonBlocking() const {
+  return false;
+}
+
 GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   GpuMemoryBufferHandle handle;
   handle.type = type;

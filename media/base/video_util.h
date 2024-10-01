@@ -152,6 +152,19 @@ MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> frame);
 
+// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
+// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
+// format, unless the video frame is backed by DXGI GMB.
+// The returned VideoFrame owns the |frame|.
+// If the underlying buffer is DXGI, then it will be copied to shared memory
+// in GPU process.
+// If the GPU process is involved, the callback will be called in the
+// GpuMemoryThread. Otherwise it will be involved immediately in the current
+// sequence.
+MEDIA_EXPORT void ConvertToMemoryMappedFrameAsync(
+    scoped_refptr<VideoFrame> frame,
+    base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb);
+
 // This function synchronously reads pixel data from textures associated with
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.

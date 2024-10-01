@@ -25,7 +25,10 @@
 
 namespace gpu {
 
-GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {}
+GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {
+  base::AutoLock auto_lock(map_lock_);
+  CHECK(!async_mapping_in_progress_);
+}
 
 std::unique_ptr<GpuMemoryBufferImplDXGI>
 GpuMemoryBufferImplDXGI::CreateFromHandle(
@@ -97,8 +100,9 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
   return base::DoNothing();
 }
 
-bool GpuMemoryBufferImplDXGI::Map() {
-  base::AutoLock auto_lock(map_lock_);
+std::optional<bool> GpuMemoryBufferImplDXGI::PrepareToMap(bool is_async) {
+  CHECK(!async_mapping_in_progress_);
+
   if (map_count_++)
     return true;
 
@@ -106,7 +110,7 @@ bool GpuMemoryBufferImplDXGI::Map() {
     return true;
   }
 
-  DCHECK(!shared_memory_handle_);
+  CHECK(!shared_memory_handle_);
   CHECK(gpu_memory_buffer_manager_);
   CHECK(shared_memory_pool_);
 
@@ -117,6 +121,18 @@ bool GpuMemoryBufferImplDXGI::Map() {
     return false;
   }
 
+  async_mapping_in_progress_ = is_async;
+
+  return std::nullopt;
+}
+
+bool GpuMemoryBufferImplDXGI::Map() {
+  base::AutoLock auto_lock(map_lock_);
+  std::optional<bool> result = PrepareToMap(/*is_async=*/false);
+  if (result.has_value()) {
+    return *result;
+  }
+
   // Need to perform mapping in GPU process
   if (!gpu_memory_buffer_manager_->CopyGpuMemoryBufferSync(
           CloneHandle(), shared_memory_handle_->GetRegion().Duplicate())) {
@@ -125,6 +141,46 @@ bool GpuMemoryBufferImplDXGI::Map() {
     return false;
   }
 
+  return true;
+}
+
+void GpuMemoryBufferImplDXGI::MapAsync(
+    base::OnceCallback<void(bool)> result_cb) {
+  std::optional<bool> result;
+  {
+    base::AutoLock auto_lock(map_lock_);
+    result = PrepareToMap(/*is_async=*/true);
+    if (!result.has_value()) {
+      // Need to perform mapping in GPU process
+      // Unretained is safe because of GMB isn't destroyed before the callback
+      // executes. This is CHECKed in the destructor.
+      gpu_memory_buffer_manager_->CopyGpuMemoryBufferAsync(
+          CloneHandle(), shared_memory_handle_->GetRegion().Duplicate(),
+          base::BindOnce(&GpuMemoryBufferImplDXGI::CheckAsyncMapResult,
+                         base::Unretained(this), std::move(result_cb)));
+      return;
+    }
+  }
+  // Must not hold the lock while callback is run.
+  std::move(result_cb).Run(/*success=*/*result);
+}
+
+void GpuMemoryBufferImplDXGI::CheckAsyncMapResult(
+    base::OnceCallback<void(bool)> result_cb,
+    bool result) {
+  {
+    // Must not hold the lock during the `result_cb`.
+    base::AutoLock auto_lock(map_lock_);
+    if (!result) {
+      --map_count_;
+    }
+    CHECK(async_mapping_in_progress_);
+    async_mapping_in_progress_ = false;
+  }
+  std::move(result_cb).Run(result);
+}
+
+bool GpuMemoryBufferImplDXGI::AsyncMappingIsNonBlocking() const {
   return true;
 }
 
@@ -148,8 +204,9 @@ void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
 }
 
 void GpuMemoryBufferImplDXGI::Unmap() {
-  base::AutoLock al(map_lock_);
+  base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
+  CHECK(!async_mapping_in_progress_);
   if (--map_count_)
     return;
 

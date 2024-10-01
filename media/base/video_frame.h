@@ -581,6 +581,26 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // then directly return ClientSharedImage::ScopedMapping object instead.
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage() const;
 
+  // Gets the ScopedMapping object which clients can use to access the CPU
+  // visible memory and other metadata for the gpu buffer backing this
+  // VideoFrame(via GpuMemoryBuffer or MappableSI).
+  // This isn't guaranteed to be always async.
+  // If 'AsyncMappingIsNonBlocking()' is 'false', this will run the callback
+  // in the current sequence. Otherwise, the callback will be invoked in the
+  // GpuMemoryThread.
+  // Note: the frame must not be destroyed before the result callback is
+  // executed.
+  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
+  // enabled for VideoFrame, rename this method to MapSharedImageAsync(). It can
+  // then directly return ClientSharedImage::ScopedMapping object instead.
+  void MapGMBOrSharedImageAsync(
+      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+          result_cb) const;
+
+  // Returns true if the underlying SharedImage or GMB can be mapped truly
+  // asynchronously: with an unblocking request to the GPU process.
+  bool AsyncMappingIsNonBlocking() const;
+
   // Gets the GpuMemoryBufferHandle backing the VideoFrame. Note that most of
   // VideoFrame clients currently use ::GetGpuMemoryBuffer() above only to clone
   // a handle from it. Those clients will be switched to using this new api.
@@ -869,6 +889,15 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const bool enable_mappable_si,
       ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
+
+  void MakeScopedMappingForGpuMemoryBuffer(
+      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+          result_cb,
+      bool success) const;
+  void WrapScopedSharedImageMapping(
+      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+          result_cb,
+      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const;
 
   // Return the alignment for the whole frame, calculated as the max of the
   // alignment for each individual plane.

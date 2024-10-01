@@ -99,23 +99,47 @@ ClientSharedImage::ScopedMapping::~ScopedMapping() {
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer) {
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    bool is_already_mapped) {
   auto scoped_mapping = base::WrapUnique(new ScopedMapping());
-  if (!scoped_mapping->Init(gpu_memory_buffer)) {
+  if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
   }
   return scoped_mapping;
 }
 
+// static
+void ClientSharedImage::ScopedMapping::StartCreateAsync(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
+  gpu_memory_buffer->MapAsync(
+      base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
+                     gpu_memory_buffer, std::move(result_cb)));
+}
+
+// static
+void ClientSharedImage::ScopedMapping::FinishCreateAsync(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
+    bool success) {
+  std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
+  if (success) {
+    mapping = ClientSharedImage::ScopedMapping::Create(
+        gpu_memory_buffer, /*is_already_mapped=*/true);
+  }
+  std::move(result_cb).Run(std::move(mapping));
+}
+
 bool ClientSharedImage::ScopedMapping::Init(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer) {
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    bool is_already_mapped) {
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "No GpuMemoryBuffer.";
     return false;
   }
 
-  if (!gpu_memory_buffer->Map()) {
+  if (!is_already_mapped && !gpu_memory_buffer->Map()) {
     LOG(ERROR) << "Failed to map the buffer.";
     return false;
   }
@@ -278,11 +302,18 @@ ClientSharedImage::~ClientSharedImage() {
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
-  auto scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get());
+  auto scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
+                                              /*is_already_mapped=*/false);
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping";
   }
   return scoped_mapping;
+}
+
+void ClientSharedImage::MapAsync(
+    base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
+  ScopedMapping::StartCreateAsync(gpu_memory_buffer_.get(),
+                                  std::move(result_cb));
 }
 
 #if BUILDFLAG(IS_APPLE)

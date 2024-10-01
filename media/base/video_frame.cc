@@ -1319,6 +1319,41 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
   return nullptr;
 }
 
+void VideoFrame::MapGMBOrSharedImageAsync(
+    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+        result_cb) const {
+  if (wrapped_frame_) {
+    wrapped_frame_->MapGMBOrSharedImageAsync(std::move(result_cb));
+    return;
+  }
+  if (is_mappable_si_enabled_) {
+    CHECK(HasTextures());
+    // `base::Unretained()` is safe because of the requirement for callers to
+    // keep the VideoFrame alive until the callback executes.
+    shared_image_->MapAsync(
+        base::BindOnce(&VideoFrame::WrapScopedSharedImageMapping,
+                       base::Unretained(this), std::move(result_cb)));
+    return;
+  }
+  if (gpu_memory_buffer_) {
+    // `base::Unretained()` is safe because of the requirement for callers to
+    // keep the VideoFrame alive until the callback executes.
+    gpu_memory_buffer_->MapAsync(
+        base::BindOnce(&VideoFrame::MakeScopedMappingForGpuMemoryBuffer,
+                       base::Unretained(this), std::move(result_cb)));
+    return;
+  }
+  std::move(result_cb).Run(nullptr);
+}
+
+bool VideoFrame::AsyncMappingIsNonBlocking() const {
+  return wrapped_frame_ ? wrapped_frame_->AsyncMappingIsNonBlocking()
+                        : (gpu_memory_buffer_ &&
+                           gpu_memory_buffer_->AsyncMappingIsNonBlocking()) ||
+                              (shared_image_ &&
+                               shared_image_->AsyncMappingIsNonBlocking());
+}
+
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   if (wrapped_frame_) {
     return wrapped_frame_->GetGpuMemoryBufferHandle();
@@ -1910,6 +1945,25 @@ size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
 gfx::Size VideoFrame::ScopedMapping::Size() {
   return gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
                             : scoped_mapping_->Size();
+}
+void VideoFrame::MakeScopedMappingForGpuMemoryBuffer(
+    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+        result_cb,
+    bool success) const {
+  std::move(result_cb).Run(success
+                               ? base::WrapUnique(new VideoFrame::ScopedMapping(
+                                     gpu_memory_buffer_.get(), nullptr))
+                               : nullptr);
+}
+
+void VideoFrame::WrapScopedSharedImageMapping(
+    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
+        result_cb,
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const {
+  std::move(result_cb).Run(mapping
+                               ? base::WrapUnique(new VideoFrame::ScopedMapping(
+                                     nullptr, std::move(mapping)))
+                               : nullptr);
 }
 
 }  // namespace media
