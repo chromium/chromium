@@ -33,6 +33,7 @@
 
 #include "base/notreached.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-blink-forward.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -264,6 +265,19 @@ DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
 
   if (DOMHighResTimeStamp worker_ready_time = WorkerReady())
     return worker_ready_time;
+
+  // If the fetch came from service worker static routing API and the actual
+  // source type is cache, we will not have a fetch start. For compatibility,
+  // we set this to responseStart (as written in explainer
+  // https://github.com/WICG/service-worker-static-routing-api/blob/main/resource-timing-api.md
+  // ).
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterTimingInfo) &&
+      info_->service_worker_router_info &&
+      info_->service_worker_router_info->actual_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kCache) {
+    return responseStart();
+  }
 
   return PerformanceEntry::startTime();
 }
