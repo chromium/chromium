@@ -67,11 +67,15 @@
 #       Extra flags passed to the plugin. See cc_generator_options.
 #
 #   deps (optional)
-#       DEPRECATED: use proto_deps or link_deps instead (crbug.com/938011).
+#       DEPRECATED: use proto_deps, link_deps or public_link_deps instead
+#       (crbug.com/938011).
 #       Additional dependencies.
 #
 #   link_deps (optional)
-#       Additional dependencies linked to library.
+#       Additional deps for the generated C++ library.
+#
+#   link_public_deps (optional)
+#       Additional public_deps for the generated C++ library.
 #
 #   proto_deps (optional)
 #       Additional dependencies required before running protoc.
@@ -626,6 +630,9 @@ template("proto_library") {
     }
     if (defined(invoker.link_deps)) {
       deps += invoker.link_deps
+    }
+    if (defined(invoker.link_public_deps)) {
+      public_deps += invoker.link_public_deps
     }
   }
 
