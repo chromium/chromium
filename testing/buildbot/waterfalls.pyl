@@ -102,13 +102,13 @@
         ],
         'mixins': [
           'skylab-cft',
+          'cros-cbx-dut',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
-        'cros_dut_pool': 'chrome',
       },
       'chromeos-jacuzzi-chrome': {
         'additional_compile_targets': [
@@ -386,13 +386,13 @@
         ],
         'mixins': [
           'skylab-cft',
+          'cros-cbx-dut',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
-        'cros_dut_pool': 'chrome',
       },
       'chromeos-jacuzzi-chrome-preuprev': {
         'additional_compile_targets': [
@@ -6461,13 +6461,13 @@
         ],
         'mixins': [
           'skylab-cft',
+          'cros-cbx-dut',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
-        'cros_dut_pool': 'chrome',
       },
       'chromeos-eve-chrome': {
         # This builder is build only.
