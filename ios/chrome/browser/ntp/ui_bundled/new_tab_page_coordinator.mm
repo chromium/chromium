@@ -614,6 +614,10 @@
   [self presentLensIconBubbleNow];
 }
 
+- (void)dismissAccountMenu {
+  [self stopAccountMenuCoordinator];
+}
+
 #pragma mark - Setters
 
 - (void)setSelectedFeed:(FeedType)selectedFeed {

@@ -802,6 +802,8 @@ enum class ToolbarKind {
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
+
+  [self dismissAccountMenu];
 }
 
 #pragma mark - Private
@@ -851,6 +853,14 @@ enum class ToolbarKind {
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
+}
+
+// Dismisses the account menu.
+- (void)dismissAccountMenu {
+  if (!_NTPCoordinator) {
+    return;
+  }
+  [_NTPCoordinator dismissAccountMenu];
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
@@ -2149,6 +2159,7 @@ enum class ToolbarKind {
   [_enhancedSafeBrowsingPromoCoordinator stop];
   _enhancedSafeBrowsingPromoCoordinator = nil;
 }
+
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
