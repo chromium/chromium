@@ -446,8 +446,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
               autofill::payments::PaymentsAutofillClient::UnmaskCardReason::
                   kAutofill,
               weak_ptr_factory_.GetWeakPtr(),
-              cvc_authenticator.GetAsFullCardRequestUIDelegate(),
-              autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());
+              cvc_authenticator.GetAsFullCardRequestUIDelegate());
         }
       }
     }

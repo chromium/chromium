@@ -69,14 +69,13 @@ void CreditCardCvcAuthenticator::Authenticate(
         card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
         last_committed_primary_main_frame_origin, *context_token,
-        *selected_challenge_option,
-        client_->GetLastCommittedPrimaryMainFrameOrigin());
+        *selected_challenge_option);
   }
 
   full_card_request_->GetFullCard(
       card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-      client_->GetLastCommittedPrimaryMainFrameOrigin(), context_token);
+      context_token);
 }
 
 void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(

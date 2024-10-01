@@ -65,11 +65,6 @@ extern const char
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
-// Title and description for the flag to send merchant_domain as a top-level
-// parameter in card unmask requests.
-extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
-extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
-
 // Title and description for the flag to control the latency optimization where
 // the risk data pre-fetched during retrieval.
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];

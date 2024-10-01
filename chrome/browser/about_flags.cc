@@ -10561,14 +10561,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kProfilesReordering)},
 #endif
 
-    {"autofill-enable-merchant-domain-in-unmask-card-request",
-     flag_descriptions::kAutofillEnableMerchantDomainInUnmaskCardRequestName,
-     flag_descriptions::
-         kAutofillEnableMerchantDomainInUnmaskCardRequestDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableMerchantDomainInUnmaskCardRequest)},
-
     {"autofill-require-valid-local-cards-in-settings",
      flag_descriptions::kAutofillRequireValidLocalCardsInSettingsName,
      flag_descriptions::kAutofillRequireValidLocalCardsInSettingsDescription,

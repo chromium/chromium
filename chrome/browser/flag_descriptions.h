@@ -340,9 +340,6 @@ extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 extern const char kAutofillEnableManualFallbackIPHName[];
 extern const char kAutofillEnableManualFallbackIPHDescription[];
 
-extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
-extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
-
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 

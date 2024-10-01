@@ -73,11 +73,6 @@ CreateUnmaskRequestDetailsForVcn3ds(
     request_details.last_committed_primary_main_frame_origin = origin.GetURL();
   }
 
-  if (!client.IsOffTheRecord()) {
-    request_details.merchant_domain_for_footprints =
-        client.GetLastCommittedPrimaryMainFrameOrigin();
-  }
-
   request_details.selected_challenge_option = context.challenge_option;
   request_details.redirect_completion_result =
       std::move(redirect_completion_result);

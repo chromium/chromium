@@ -101,7 +101,6 @@ PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
   otp = other.otp;
   last_committed_primary_main_frame_origin =
       other.last_committed_primary_main_frame_origin;
-  merchant_domain_for_footprints = other.merchant_domain_for_footprints;
   selected_challenge_option = other.selected_challenge_option;
   client_behavior_signals = other.client_behavior_signals;
   redirect_completion_result = other.redirect_completion_result;

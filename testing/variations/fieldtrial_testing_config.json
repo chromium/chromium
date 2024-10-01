@@ -1852,25 +1852,6 @@
             ]
         }
     ],
-    "AutofillEnableMerchantDomainInUnmaskCardRequest": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AutofillEnableMerchantDomainInUnmaskCardRequest",
-                    "enable_features": [
-                        "AutofillEnableMerchantDomainInUnmaskCardRequest"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableNewCardProfileRankingAlgorithm": [
         {
             "platforms": [

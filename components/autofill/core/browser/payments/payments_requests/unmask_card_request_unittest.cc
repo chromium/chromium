@@ -17,7 +17,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
 
 namespace autofill::payments {
 
@@ -41,20 +40,6 @@ class UnmaskCardRequestTest : public testing::Test {
   bool IsIncludedInRequestContent(const std::string& field_name_or_value) {
     return GetRequest()->GetRequestContent().find(field_name_or_value) !=
            std::string::npos;
-  }
-
-  // Returns true if `field_name_or_value` is included in the `request_`'s
-  // request content exactly `n` times, false otherwise.
-  bool IsIncludedInRequestContentNTimes(const std::string& field_name_or_value,
-                                        size_t n) {
-    std::string content = GetRequest()->GetRequestContent();
-    size_t count = 0;
-    std::size_t found = content.find(field_name_or_value);
-    while (found != std::string::npos) {
-      count++;
-      found = content.find(field_name_or_value, found + 1);
-    }
-    return count == n;
   }
 
   // Returns the response details that was created for the current test
@@ -82,8 +67,6 @@ class UnmaskCardRequestTest : public testing::Test {
         base::UTF8ToUTF16(test::NextYear());
     request_details.user_response.cvc = u"123";
     request_details.risk_data = "some risk data";
-    request_details.merchant_domain_for_footprints =
-        url::Origin::Create(GURL("https://example.com/"));
     request_details.client_behavior_signals = {
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName};
     return request_details;
@@ -100,8 +83,6 @@ class UnmaskCardRequestTest : public testing::Test {
 // Test to ensure that the request content is correctly populated for a regular
 // unmask request.
 TEST_F(UnmaskCardRequestTest, GetRequestContent) {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
             "payments/apis-secure/creditcardservice/"
             "getrealpan?s7e_suffix=chromewallet");
@@ -118,29 +99,10 @@ TEST_F(UnmaskCardRequestTest, GetRequestContent) {
   EXPECT_TRUE(IsIncludedInRequestContent("encrypted_cvc"));
   EXPECT_TRUE(IsIncludedInRequestContent("&s7e_13_cvc=123"));
   EXPECT_TRUE(IsIncludedInRequestContent("client_behavior_signals"));
-  EXPECT_TRUE(IsIncludedInRequestContent("merchant_domain"));
   EXPECT_TRUE(IsIncludedInRequestContent(
       "%5B2%5D"));  // '[2]' here stands for the
                     // kShowingCardArtImageAndCardProductName in the
                     // client_behavior_signals.
-}
-
-TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenFlagDisabled) {
-  feature_list_.InitAndDisableFeature(
-      features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
-  EXPECT_FALSE(IsIncludedInRequestContent("merchant_domain"));
-}
-
-TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenMissingField) {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
-  PaymentsNetworkInterface::UnmaskRequestDetails request_details =
-      GetDefaultUnmaskRequestDetails();
-  request_details.merchant_domain_for_footprints = std::nullopt;
-  request_ = std::make_unique<UnmaskCardRequest>(
-      request_details, /*full_sync_enabled=*/true,
-      /*callback=*/base::DoNothing());
-  EXPECT_FALSE(IsIncludedInRequestContent("merchant_domain"));
 }
 
 // Test to ensure response is correctly parsed when the FIDO challenge is
@@ -245,8 +207,6 @@ class VirtualCardUnmaskCardRequestTest
     request_details.risk_data = "some risk data";
     request_details.last_committed_primary_main_frame_origin =
         GURL("https://example.com/");
-    request_details.merchant_domain_for_footprints =
-        url::Origin::Create(GURL("https://example.com/"));
     request_details.selected_challenge_option =
         test::GetCardUnmaskChallengeOptions(
             {CardUnmaskChallengeOptionType::kCvc})[0];
@@ -258,8 +218,6 @@ class VirtualCardUnmaskCardRequestTest
 };
 
 TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
   if (IsCvcChallengeOption()) {
     EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
               "payments/apis-secure/creditcardservice/"
@@ -282,16 +240,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
-    EXPECT_TRUE(IsIncludedInRequestContentNTimes("merchant_domain", 2));
     EXPECT_FALSE(IsIncludedInRequestContent("client_behavior_signals"));
   }
-}
-
-TEST_P(VirtualCardUnmaskCardRequestTest,
-       IncludesOneMerchantDomainWhenFlagDisabled) {
-  feature_list_.InitAndDisableFeature(
-      features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
-  EXPECT_TRUE(IsIncludedInRequestContentNTimes("merchant_domain", 1));
 }
 
 TEST_P(VirtualCardUnmaskCardRequestTest,

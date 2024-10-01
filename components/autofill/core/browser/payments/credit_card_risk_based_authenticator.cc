@@ -60,10 +60,6 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
     unmask_request_details_->last_committed_primary_main_frame_origin =
         autofill_client_->GetLastCommittedPrimaryMainFrameURL()
             .DeprecatedGetOriginAsURL();
-    if (!autofill_client_->IsOffTheRecord()) {
-      unmask_request_details_->merchant_domain_for_footprints =
-          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
-    }
   }
 
   // Add appropriate ClientBehaviorConstants to the request based on the

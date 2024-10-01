@@ -136,10 +136,6 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     // A vector of signals used to share client behavior with the Payments
     // server.
     std::vector<ClientBehaviorConstants> client_behavior_signals;
-    // The origin of the primary main frame where the unmasking happened. Should
-    // only be populated when the client is not in incognito mode since it will
-    // be used for personalization.
-    std::optional<url::Origin> merchant_domain_for_footprints;
     // The token received in the final redirect of a PaymentsWindowManager flow,
     // which is the only scenario where this field should be populated.
     PaymentsWindowManager::RedirectCompletionResult redirect_completion_result;

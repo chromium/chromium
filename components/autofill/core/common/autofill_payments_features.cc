@@ -131,12 +131,6 @@ BASE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes,
              "AutofillEnableLogFormEventsToAllParsedFormTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the merchant_domain field is included in requests to unmask a
-// card.
-BASE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest,
-             "AutofillEnableMerchantDomainInUnmaskCardRequest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on desktop.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop,

@@ -755,11 +755,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-enable-merchant-domain-in-unmask-card-request",
-    "owners": [ "hdhandapani@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-new-card-art-and-network-images",
     "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
     "expiry_milestone": 130
