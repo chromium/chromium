@@ -14,11 +14,12 @@ import java.util.Map;
 @Lifetime.Temporary
 public class PrefetchParams {
     public final @Nullable Map<String, String> additionalHeaders;
-    public final @Nullable String noVarySearchHint;
+    public final @Nullable NoVarySearchData noVarySearchData;
 
     public PrefetchParams(
-            @Nullable Map<String, String> additionalHeaders, @Nullable String noVarySearchHint) {
+            @Nullable Map<String, String> additionalHeaders,
+            @Nullable NoVarySearchData noVarySearchData) {
         this.additionalHeaders = additionalHeaders;
-        this.noVarySearchHint = noVarySearchHint;
+        this.noVarySearchData = noVarySearchData;
     }
 }

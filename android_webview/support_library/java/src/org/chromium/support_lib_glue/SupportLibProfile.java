@@ -14,10 +14,12 @@ import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
 
+import com.android.webview.chromium.NoVarySearchData;
 import com.android.webview.chromium.PrefetchParams;
 import com.android.webview.chromium.Profile;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.support_lib_boundary.NoVarySearchDataBoundaryInterface;
 import org.chromium.support_lib_boundary.PrefetchParamsBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
@@ -94,15 +96,31 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
         PrefetchParamsBoundaryInterface prefetchParams =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         PrefetchParamsBoundaryInterface.class, callbackInvocation);
+
+        NoVarySearchDataBoundaryInterface noVarySearchData =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        NoVarySearchDataBoundaryInterface.class,
+                        prefetchParams.getNoVarySearchData());
+
         mProfileImpl.prefetchUrl(
                 url,
                 new PrefetchParams(
                         prefetchParams.getAdditionalHeaders(),
-                        prefetchParams.getNoVarySearchHint()),
+                        mapNoVarySearchData(noVarySearchData)),
                 value ->
                         resultCallback.onReceiveValue(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                         new SupportLibPrefetchOperationResult(value))));
+    }
+
+    private NoVarySearchData mapNoVarySearchData(
+            NoVarySearchDataBoundaryInterface noVarySearchData) {
+        if (noVarySearchData == null) return null;
+        return new NoVarySearchData(
+                noVarySearchData.getVaryOnKeyOrder(),
+                noVarySearchData.getIgnoreDifferencesInParameters(),
+                noVarySearchData.getIgnoredQueryParameters(),
+                noVarySearchData.getConsideredQueryParameters());
     }
 
     @Override

@@ -82,7 +82,7 @@ public class Profile {
             String url,
             PrefetchParams params,
             ValueCallback<PrefetchOperationResult> resultCallback) {
-        // TODO(334016945): do the actual implementation
+        // TODO(334016945): do the actual implementation AND add the params validation.
     }
 
     public void clearPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {

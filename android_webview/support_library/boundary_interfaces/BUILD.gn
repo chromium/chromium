@@ -11,6 +11,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/NoVarySearchDataBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchOperationResultBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchParamsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchStatusCodeBoundaryInterface.java",

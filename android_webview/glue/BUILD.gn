@@ -48,6 +48,7 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/GlueApiHelperForQ.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForR.java",
     "java/src/com/android/webview/chromium/GraphicsUtils.java",
+    "java/src/com/android/webview/chromium/NoVarySearchData.java",
     "java/src/com/android/webview/chromium/PacProcessorImpl.java",
     "java/src/com/android/webview/chromium/PrefetchOperationResult.java",
     "java/src/com/android/webview/chromium/PrefetchOperationStatusCode.java",
