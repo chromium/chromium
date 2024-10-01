@@ -174,7 +174,10 @@ export class PlatformHandler extends PlatformHandlerBase {
         stackTrace: stackStr,
         columnNumber: colNo,
       },
-      /* callback= */ () => {}
+      /* callback= */
+      () => {
+        // Do nothing after error reported.
+      },
     );
   }
 

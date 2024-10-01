@@ -168,7 +168,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   }
 
   private sendSuggestTitleEvent(
-    suggestionAccepted: boolean, acceptedIndex = -1
+    suggestionAccepted: boolean,
+    acceptedIndex = -1,
   ) {
     // Skip sending the event if there is no transcription or suggested titles.
     const suggestedTitle = this.suggestedTitles?.value;

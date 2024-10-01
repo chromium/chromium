@@ -13,27 +13,19 @@
 // Select "JavaScript", "@typescript-eslint/parser", "Transform: ESLint v8"
 // on the top options.
 
-/* global require */
-
-// This file is using CommonJS modules instead of ES module since the .eslintrc
-// currently don't support ES module.
-// TODO(pihsun): Convert this file to ES module when we have newer version of
-// ESLint that supports it.
-
 // The @typescript-eslint/utils import needs to be full path since there
 // doesn't seem to be a way to tell ESLint to find the import at that path. And
 // it needs to be in one single string so TypeScript would recognize the type
 // import and infer types correctly.
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/naming-convention */
-const {
-  TSESTree,
+
+/* eslint-disable @stylistic/max-len */
+import {
   ESLintUtils,
   TSESLint,
-} = require(  // eslint-disable-next-line max-len
-    '../../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js');
-/* eslint-enable @typescript-eslint/naming-convention */
-/* eslint-enable @typescript-eslint/no-var-requires */
+  TSESTree,
+} from
+  '../../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+/* eslint-enable @stylistic/max-len */
 
 // This file is written in JavaScript with types in jsdoc, since ESLint can't
 // use .ts file directly, and we don't want a separate compile pass before lint
@@ -70,7 +62,7 @@ function assert(condition, optMessage) {
  */
 const parameterCommentFormatRule = ESLintUtils.RuleCreator.withoutDocs({
   create: (context) => {
-    const sourceCode = context.getSourceCode();
+    const sourceCode = context.sourceCode;
     return {
       /* eslint-disable-next-line @typescript-eslint/naming-convention */
       CallExpression(node) {
@@ -96,7 +88,7 @@ const parameterCommentFormatRule = ESLintUtils.RuleCreator.withoutDocs({
   meta: {
     messages: {
       inlineCommentError: 'Inline block comment for parameters' +
-          ' should be in the form of /* var= */',
+        ' should be in the form of /* var= */',
     },
     type: 'suggestion',
     schema: [],
@@ -132,7 +124,7 @@ const genericParameterOnDeclarationType = ESLintUtils.RuleCreator.withoutDocs({
         return;
       }
       const typeAnnotationTypeName =
-          typeAnnotation.typeAnnotation.typeName.name;
+        typeAnnotation.typeAnnotation.typeName.name;
 
       if (newTypeName === typeAnnotationTypeName) {
         if (typeAnnotation.typeAnnotation.typeArguments !== undefined) {
@@ -162,7 +154,7 @@ const genericParameterOnDeclarationType = ESLintUtils.RuleCreator.withoutDocs({
   meta: {
     messages: {
       genericTypeParametersToNew:
-          'Generic type parameters can be moved to the new expression.',
+        'Generic type parameters can be moved to the new expression.',
       redundantType: 'Redundant type annotation.',
     },
     type: 'suggestion',
@@ -173,15 +165,15 @@ const genericParameterOnDeclarationType = ESLintUtils.RuleCreator.withoutDocs({
 
 /* eslint-disable cra/todo-format */
 const BAD_TODO_FORMAT_REGEX = new RegExp(
-    'TODO' +
-        ('(' +
-         '\\(' +            // Old format TODO: Starts with 'TODO('
-         '(?![a-z]+\\))' +  // And isn't followed by '<ldap>)'
-         '|' +
-         ': ' +                 // New format TODO: Starts with 'TODO:'
-         '(?!(b\\/\\d+) - )' +  // And isn't followed by 'b/<num> - '
-         ')'),
-    'gd',
+  'TODO' +
+    ('(' +
+     '\\(' +            // Old format TODO: Starts with 'TODO('
+     '(?![a-z]+\\))' +  // And isn't followed by '<ldap>)'
+     '|' +
+     ': ' +                 // New format TODO: Starts with 'TODO:'
+     '(?!(b\\/\\d+) - )' +  // And isn't followed by 'b/<num> - '
+     ')'),
+  'gd',
 );
 /* eslint-enable cra/todo-format */
 
@@ -246,7 +238,7 @@ function reportRegexMatches(context, loc, str, regex, messageId) {
  */
 const todoFormatRule = ESLintUtils.RuleCreator.withoutDocs({
   create: (context) => {
-    const sourceCode = context.getSourceCode();
+    const {sourceCode} = context;
     return {
       /* eslint-disable-next-line @typescript-eslint/naming-convention */
       Program() {
@@ -254,11 +246,11 @@ const todoFormatRule = ESLintUtils.RuleCreator.withoutDocs({
         for (const comment of comments) {
           const commentValue = comment.value;
           reportRegexMatches(
-              context,
-              comment.loc,
-              commentValue,
-              BAD_TODO_FORMAT_REGEX,
-              'invalidTodo',
+            context,
+            comment.loc,
+            commentValue,
+            BAD_TODO_FORMAT_REGEX,
+            'invalidTodo',
           );
         }
       },
@@ -273,11 +265,11 @@ const todoFormatRule = ESLintUtils.RuleCreator.withoutDocs({
         }
         for (const el of quasi.quasis) {
           reportRegexMatches(
-              context,
-              el.loc,
-              el.value.raw,
-              BAD_TODO_FORMAT_REGEX,
-              'invalidTodo',
+            context,
+            el.loc,
+            el.value.raw,
+            BAD_TODO_FORMAT_REGEX,
+            'invalidTodo',
           );
         }
       },
@@ -286,7 +278,7 @@ const todoFormatRule = ESLintUtils.RuleCreator.withoutDocs({
   meta: {
     messages: {
       invalidTodo:
-          'Use either `TODO(ldap)` or `TODO: b/123 -`, see go/todo-style',
+        'Use either `TODO(ldap)` or `TODO: b/123 -`, see go/todo-style',
     },
     type: 'suggestion',
     schema: [],
@@ -299,12 +291,9 @@ const todoFormatRule = ESLintUtils.RuleCreator.withoutDocs({
 // TODO(pihsun): Add a rule for checking object literal {foo: foo} -> {foo}.
 
 const rules = {
-  /* eslint-disable @typescript-eslint/naming-convention */
   'parameter-comment-format': parameterCommentFormatRule,
   'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
   'todo-format': todoFormatRule,
-  /* eslint-enable @typescript-eslint/naming-convention */
 };
 
-/* global module */
-module.exports = {rules};
+export default {rules};

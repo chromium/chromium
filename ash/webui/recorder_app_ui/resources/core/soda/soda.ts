@@ -131,8 +131,7 @@ export class SodaEventTransformer {
 
   constructor(private readonly speakerLabelEnabled: boolean) {}
 
-  getTranscription(shouldFinalizeTranscription: boolean = false):
-    Transcription {
+  getTranscription(shouldFinalizeTranscription = false): Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {

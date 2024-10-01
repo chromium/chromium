@@ -28,12 +28,12 @@ export class GenaiError extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     :host {
       align-items: center;
-      text-align: center;
       display: flex;
       flex-flow: column;
       font: var(--cros-button-1-font);
       gap: 16px;
       padding: 32px;
+      text-align: center;
     }
   `;
 

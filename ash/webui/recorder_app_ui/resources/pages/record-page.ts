@@ -348,7 +348,7 @@ export class RecordPage extends ReactiveLitElement {
     micId: {type: String},
   };
 
-  includeSystemAudio: boolean = false;
+  includeSystemAudio = false;
 
   micId: string|null = null;
 
@@ -586,22 +586,24 @@ export class RecordPage extends ReactiveLitElement {
     }
   };
 
-  override async connectedCallback(): Promise<void> {
+  override connectedCallback(): void {
     super.connectedCallback();
     // TODO(pihsun): auto-starting the recording since this page is arrived
     // from clicking "record" button from the main page. Reconsider how to do
     // this properly.
-    await this.startRecording();
+    // TODO(pihsun): Check if ignoring this promise return would be fine.
+    void this.startRecording();
     document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
-  override async disconnectedCallback(): Promise<void> {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
     // Cancel current recording when leaving page / hot reloading.
     // TODO: b/336963138 - Have a confirmation before leaving.
     // TODO: b/336963138 - Exit handler for the whole page.
-    await this.cancelRecording();
+    // TODO(pihsun): Check if ignoring this promise return would be fine.
+    void this.cancelRecording();
   }
 
   private toggleTranscriptionShown() {

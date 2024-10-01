@@ -15,8 +15,8 @@ import {
   nothing,
   PropertyDeclarations,
   PropertyValues,
-  ref,
   Ref,
+  ref,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -150,7 +150,8 @@ export class TranscriptionView extends ReactiveLitElement {
         .seekable & {
           cursor: pointer;
 
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             background: var(--cros-sys-highlight_shape);
             outline: none;
           }

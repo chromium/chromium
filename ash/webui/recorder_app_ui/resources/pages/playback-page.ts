@@ -708,8 +708,8 @@ export class PlaybackPage extends ReactiveLitElement {
     }
 
     return html`<spoken-message aria-live="polite" role="status">
-        ${formatDuration({seconds: spokenTime}, 1)}
-      </spoken-message>`;
+      ${formatDuration({seconds: spokenTime}, 1)}
+    </spoken-message>`;
   }
 
   private renderAudioTimeline() {

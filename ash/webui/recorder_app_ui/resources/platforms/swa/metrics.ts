@@ -120,13 +120,15 @@ function getTranscriptionEnableState(
   }
 }
 
-function convertToMicrophoneType(isInternalMicrophone: boolean
+function convertToMicrophoneType(
+  isInternalMicrophone: boolean,
 ): CrOSEvents_RecorderAppMicrophoneType {
   return isInternalMicrophone ? CrOSEvents_RecorderAppMicrophoneType.INTERNAL :
                                 CrOSEvents_RecorderAppMicrophoneType.EXTERNAL;
 }
 
-function convertTranscriptionLocaleType(language: TranscriptionLanguage
+function convertTranscriptionLocaleType(
+  language: TranscriptionLanguage,
 ): CrOSEvents_RecorderAppTranscriptionLocale {
   switch (language) {
     case TranscriptionLanguage.NONE:
@@ -329,8 +331,10 @@ export class EventsSender extends EventsSenderBase {
   override sendExportEvent(params: ExportEventParams): void {
     const {exportSettings, transcriptionAvailable} = params;
     const audioFormat = convertToAudioFormat(exportSettings);
-    const transcriptFormat =
-      convertToTranscriptFormat(exportSettings, transcriptionAvailable);
+    const transcriptFormat = convertToTranscriptFormat(
+      exportSettings,
+      transcriptionAvailable,
+    );
 
     const event = new CrOSEvents_RecorderApp_Export()
                     .setAudioFormat(audioFormat)
@@ -349,7 +353,9 @@ export class EventsSender extends EventsSenderBase {
         return this.sendExportPerf(duration, event.recordingSize);
       case 'record':
         return this.sendRecordingSavingPerf(
-          duration, event.audioDuration, event.wordCount
+          duration,
+          event.audioDuration,
+          event.wordCount,
         );
       case 'summary':
         return this.sendSummaryPerf(duration, event.wordCount);

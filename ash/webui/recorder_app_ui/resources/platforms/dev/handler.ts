@@ -315,7 +315,7 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
   string {
   return label.replace(/\$(.|$|\n)/g, (m) => {
     assert(
-      m.match(/\$[$1-9]/) !== null,
+      /\$[$1-9]/.exec(m) !== null,
       'Unescaped $ found in localized string.',
     );
     if (m === '$$') {
