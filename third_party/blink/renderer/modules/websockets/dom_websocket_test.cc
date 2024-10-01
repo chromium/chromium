@@ -866,13 +866,15 @@ TEST(DOMWebSocketTest, binaryType) {
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   EXPECT_EQ("blob", websocket_scope.Socket().binaryType());
 
-  websocket_scope.Socket().setBinaryType("arraybuffer");
+  websocket_scope.Socket().setBinaryType(
+      V8BinaryType(V8BinaryType::Enum::kArraybuffer));
 
-  EXPECT_EQ("arraybuffer", websocket_scope.Socket().binaryType());
+  EXPECT_EQ("arraybuffer", websocket_scope.Socket().binaryType().AsString());
 
-  websocket_scope.Socket().setBinaryType("blob");
+  websocket_scope.Socket().setBinaryType(
+      V8BinaryType(V8BinaryType::Enum::kBlob));
 
-  EXPECT_EQ("blob", websocket_scope.Socket().binaryType());
+  EXPECT_EQ("blob", websocket_scope.Socket().binaryType().AsString());
 }
 
 // FIXME: We should add tests for suspend / resume.
