@@ -463,7 +463,7 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
        base::Seconds(0)},
       {PrerenderingState::kActivatedNoActivationStart, std::nullopt,
        base::Seconds(2), base::Seconds(0)},
-      // max(0, 2 - 10)
+      // crash due to incorrect data
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(2),
        base::Seconds(-1)},
       // max(0, 12 - 10)
