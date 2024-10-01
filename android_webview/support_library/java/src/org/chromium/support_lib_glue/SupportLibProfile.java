@@ -124,9 +124,17 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     }
 
     @Override
-    public void cancelPrefetch(String url) {
+    public void cancelPrefetch(
+            String url,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    resultCallback) {
         recordApiCall(ApiCall.CANCEL_PREFETCH);
-        mProfileImpl.cancelPrefetch(url);
+        mProfileImpl.cancelPrefetch(
+                url,
+                value ->
+                        resultCallback.onReceiveValue(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibPrefetchOperationResult(value))));
     }
 
     @Override

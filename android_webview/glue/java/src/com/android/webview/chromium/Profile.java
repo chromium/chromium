@@ -89,7 +89,7 @@ public class Profile {
         // TODO(334016945): do the actual implementation
     }
 
-    public void cancelPrefetch(String url) {
+    public void cancelPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 }
