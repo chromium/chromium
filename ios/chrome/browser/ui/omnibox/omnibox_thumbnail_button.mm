@@ -93,17 +93,19 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   // If the frame's size or layout constraints are adjusted, the displayed
   // thumbnail image should be resized proportionally to avoid cropping.
   lastSize = frameSize;
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
   UIImage* imageToSet =
       self.isSelected
-          ? [self thumbnailImageWithDiscardIntentOverlay:_thumbnailImage]
-          : _thumbnailImage;
+          ? [self thumbnailImageWithDiscardIntentOverlay:resizedImage]
+          : resizedImage;
 
   [self applyThumbnailImage:imageToSet animated:NO];
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
   _thumbnailImage = image;
-  [self applyThumbnailImage:_thumbnailImage animated:NO];
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
+  [self applyThumbnailImage:resizedImage animated:NO];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
