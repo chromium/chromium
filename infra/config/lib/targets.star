@@ -537,6 +537,9 @@ def _variant(
             identifies the variant of the test being run. When tests are
             expanded with the variant, this will be appended to the test
             name.
+        generate_pyl_entry: If true, the generated variants.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py.
         enabled: Whether or not the variant is enabled. By default, a
             variant is enabled. If a variant is not enabled, then it
             will be ignored when expanding a test suite with variants.
