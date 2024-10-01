@@ -1212,6 +1212,10 @@ crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-half
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-005.html [ Failure ]
 
+# CSS Inline `initial-letter` property.
+crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure ]
+crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vrl.html [ Failure ]
+
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]

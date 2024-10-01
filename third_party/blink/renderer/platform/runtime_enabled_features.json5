@@ -2392,6 +2392,11 @@
       status: "stable",
     },
     {
+      // crbug.com/370217727
+      name: "InitialLetterRaiseBySpecified",
+      status: "stable",
+    },
+    {
       name: "InlineBlockInSameLine",
       status: "stable",
     },
