@@ -286,12 +286,21 @@ stack_scan_supported =
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
 # related args to `false`.
 #
+# We also disable PA-Everywhere and PA-based features in two types of
+# toolchains:
+# - Toolchains that disable PA-Everywhere explicitly.
+# - The rust host build tools toochain, which builds DLLs to dlopen into the
+#   compiler for proc macros. We would want any allocations to use the same
+#   paths as the compiler.
+#
 # Do not clear the following, as they can function outside of PartitionAlloc
 # - has_64_bit_pointers
 # - has_memory_tagging
 if (!use_partition_alloc ||
     (defined(toolchain_allows_use_partition_alloc_as_malloc) &&
-     !toolchain_allows_use_partition_alloc_as_malloc)) {
+     !toolchain_allows_use_partition_alloc_as_malloc) ||
+    (defined(toolchain_for_rust_host_build_tools) &&
+     toolchain_for_rust_host_build_tools)) {
   use_partition_alloc_as_malloc = false
   glue_core_pools = false
   enable_backup_ref_ptr_support = false
