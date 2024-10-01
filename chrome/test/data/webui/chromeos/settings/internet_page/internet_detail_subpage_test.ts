@@ -642,68 +642,7 @@ suite('<settings-internet-detail-subpage>', () => {
           'network-proxy-section'));
     });
 
-    test('WiFi Passpoint removal shows a dialog', async () => {
-      loadTimeData.overrideValues({
-        isPasspointSettingsEnabled: false,
-      });
-      init();
-      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-      const wifiNetwork =
-          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
-      wifiNetwork.source = OncSource.kUser;
-      wifiNetwork.connectable = true;
-      wifiNetwork.typeProperties.wifi!.passpointId = 'a_passpoint_id';
-      wifiNetwork.typeProperties.wifi!.passpointMatchType = MatchType.kHome;
-      mojoApi.setManagedPropertiesForTest(wifiNetwork);
-
-      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
-      await flushTasks();
-
-      const forgetButton = getButton('forgetButton');
-      assertFalse(forgetButton.hidden);
-      assertFalse(forgetButton.disabled);
-
-      // Click the button and check the dialog is displayed.
-      forgetButton.click();
-      await waitAfterNextRender(forgetButton);
-      const removeDialog = getPasspointRemoveDialog();
-      let dialogElement =
-          removeDialog.shadowRoot!.querySelector<CrDialogElement>('#dialog');
-      assertTrue(!!dialogElement);
-      assertTrue(dialogElement.open);
-
-      // Check "Cancel" dismiss the dialog.
-      const cancelButton =
-          removeDialog.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#cancelButton');
-      assertTrue(!!cancelButton);
-      cancelButton.click();
-      await flushTasks();
-      dialogElement =
-          removeDialog.shadowRoot!.querySelector<CrDialogElement>('#dialog');
-      assertTrue(!!dialogElement);
-      assertFalse(dialogElement.open);
-
-      // Check "Confirm" triggers network removal
-      forgetButton.click();
-      await flushTasks();
-      const confirmButton =
-          removeDialog.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#confirmButton');
-      assertTrue(!!confirmButton);
-      confirmButton.click();
-      await flushTasks();
-      dialogElement =
-          removeDialog.shadowRoot!.querySelector<CrDialogElement>('#dialog');
-      assertTrue(!!dialogElement);
-      assertFalse(dialogElement.open);
-      await mojoApi.whenCalled('forgetNetwork');
-    });
-
     test('WiFi Passpoint removal leads to subscription page', async () => {
-      loadTimeData.overrideValues({
-        isPasspointSettingsEnabled: true,
-      });
       init();
 
       const subId = 'a_passpoint_id';
@@ -763,9 +702,6 @@ suite('<settings-internet-detail-subpage>', () => {
     test(
         'WiFi network removal without Passpoint does not show a dialog',
         async () => {
-          loadTimeData.overrideValues({
-            isPasspointSettingsEnabled: false,
-          });
           init();
           mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
           const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
@@ -787,59 +723,47 @@ suite('<settings-internet-detail-subpage>', () => {
               '#passpointRemovalDialog'));
         });
 
-    [true, false].forEach(isPasspointSettingsEnabled => {
-      test('WiFi network with Passpoint shows provider row', async () => {
-        loadTimeData.overrideValues({
-          isPasspointSettingsEnabled,
-        });
-        init();
+    test('WiFi network with Passpoint shows provider row', async () => {
+      init();
 
-        const subId = 'a_passpoint_id';
-        setSubscriptionForTest({
-          id: subId,
-          friendlyName: 'My Passpoint provider',
-          domains: [],
-          provisioningSource: '',
-          expirationEpochMs: 0n,
-          trustedCa: null,
-        });
-        mojoApi.resetForTest();
-        mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-        const wifiNetwork =
-            getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
-        wifiNetwork.source = OncSource.kUser;
-        wifiNetwork.connectable = true;
-        wifiNetwork.typeProperties.wifi!.passpointId = subId;
-        wifiNetwork.typeProperties.wifi!.passpointMatchType = MatchType.kHome;
-        mojoApi.setManagedPropertiesForTest(wifiNetwork);
-
-        internetDetailPage.init(
-            'wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
-        await flushTasks();
-
-        const row =
-            internetDetailPage.shadowRoot!.querySelector<HTMLButtonElement>(
-                '#passpointProviderRow');
-        // The row is present only when Passpoint is enabled.
-        assertEquals(isPasspointSettingsEnabled, !!row);
-
-        if (isPasspointSettingsEnabled) {
-          const showDetailPromise =
-              eventToPromise('show-passpoint-detail', window);
-          assertTrue(!!row);
-          row.click();
-          const showDetailEvent = await showDetailPromise;
-          assertEquals(subId, showDetailEvent.detail.id);
-        }
+      const subId = 'a_passpoint_id';
+      setSubscriptionForTest({
+        id: subId,
+        friendlyName: 'My Passpoint provider',
+        domains: [],
+        provisioningSource: '',
+        expirationEpochMs: 0n,
+        trustedCa: null,
       });
+      mojoApi.resetForTest();
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi!.passpointId = subId;
+      wifiNetwork.typeProperties.wifi!.passpointMatchType = MatchType.kHome;
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushTasks();
+
+      const row =
+          internetDetailPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#passpointProviderRow');
+      // The row is present only when Passpoint is enabled.
+      assertTrue(!!row);
+
+      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      assertTrue(!!row);
+      row.click();
+      const showDetailEvent = await showDetailPromise;
+      assertEquals(subId, showDetailEvent.detail.id);
     });
 
     test(
         'WiFi network without Passpoint does not show provider row',
         async () => {
-          loadTimeData.overrideValues({
-            isPasspointSettingsEnabled: true,
-          });
           init();
           mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
           const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
@@ -855,9 +779,6 @@ suite('<settings-internet-detail-subpage>', () => {
         });
 
     test('WiFi network with Passpoint has no configure button', async () => {
-      loadTimeData.overrideValues({
-        isPasspointSettingsEnabled: true,
-      });
       init();
 
       const subId = 'a_passpoint_id';

@@ -431,65 +431,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampDeviceTestAltAndSplitAndBacklightEnabled::DescribeParams);
 
-class OSSettingsRevampMochaTestApnAndPasspointEnabled
-    : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampMochaTestApnAndPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kApnRevamp,
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampMochaTestApnAndPasspointEnabled,
-    testing::Bool(),
-    OSSettingsRevampMochaTestApnAndPasspointEnabled::DescribeParams);
-
-class OSSettingsRevampInternetTestApnAndPasspointEnabled
-    : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampInternetTestApnAndPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kApnRevamp,
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampInternetTestApnAndPasspointEnabled,
-    testing::Bool(),
-    OSSettingsRevampInternetTestApnAndPasspointEnabled::DescribeParams);
-
-class OSSettingsRevampInternetTestPasspointEnabled
-    : public OSSettingsRevampMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kPasspointSettings};
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampInternetTestPasspointEnabled,
-    testing::Bool(),
-    OSSettingsRevampInternetTestPasspointEnabled::DescribeParams);
-
 class OSSettingsRevampNearbyShareTestSharingEnabled
     : public OSSettingsRevampMochaTest {
  private:
@@ -992,8 +933,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageApnDetailDialog) {
   RunSettingsTest("internet_page/apn_detail_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestApnAndPasspointEnabled,
-                       InternetPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsMochaTestApnRevamp, InternetPage) {
   RunSettingsTest("internet_page/internet_page_test.js");
 }
 
@@ -1050,12 +990,12 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("internet_page/internet_detail_menu_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestApnAndPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsMochaTestApnRevamp,
                        InternetPageInternetDetailSubpage) {
   RunSettingsTest("internet_page/internet_detail_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageInternetKnownNetworksSubpage) {
   RunSettingsTest("internet_page/internet_known_networks_subpage_test.js");
 }
@@ -1093,7 +1033,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("internet_page/network_summary_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPagePasspointSubpage) {
   RunSettingsTest("internet_page/passpoint_subpage_test.js");
 }

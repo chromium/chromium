@@ -307,11 +307,9 @@ export function createRoutes(): OsSettingsRoutes {
     r.APN =
         createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
   }
-  if (loadTimeData.getBoolean('isPasspointSettingsEnabled')) {
-    r.PASSPOINT_DETAIL = createSubpage(
-        r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
-        Subpage.kPasspointDetails);
-  }
+  r.PASSPOINT_DETAIL = createSubpage(
+      r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
+      Subpage.kPasspointDetails);
 
   // Bluetooth section.
   r.BLUETOOTH = createSection(

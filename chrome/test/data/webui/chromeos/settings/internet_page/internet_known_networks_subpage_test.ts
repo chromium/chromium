@@ -173,41 +173,7 @@ suite('<settings-internet-known-networks-subpage>', () => {
           notPreferredMenuButton.title);
     });
 
-    test('Passpoint is disabled', async () => {
-      loadTimeData.overrideValues({isPasspointSettingsEnabled: false});
-      await init();
-      internetKnownNetworksPage.networkType = NetworkType.kWiFi;
-      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-      passpointServiceApi.addSubscription({
-        id: 'a_passpoint_id',
-        friendlyName: 'My Passpoint provider',
-        domains: [],
-        provisioningSource: '',
-        expirationEpochMs: 0n,
-        trustedCa: null,
-      });
-      const preferredWifi =
-          OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2');
-      preferredWifi.priority = 1;
-      const notPreferredWifi =
-          OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
-      setNetworksForTest([
-        notPreferredWifi,
-        preferredWifi,
-      ]);
-
-      const params = new URLSearchParams();
-      params.append(
-          'settingId', settingMojom.Setting.kForgetWifiNetwork.toString());
-      Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
-      await flushTasks();
-
-      assertNull(internetKnownNetworksPage.shadowRoot!.querySelector(
-          '#passpointSubscriptionList'));
-    });
-
     test('Passpoint is enabled without subscriptions', async () => {
-      loadTimeData.overrideValues({isPasspointSettingsEnabled: true});
       await init();
       internetKnownNetworksPage.networkType = NetworkType.kWiFi;
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -232,7 +198,6 @@ suite('<settings-internet-known-networks-subpage>', () => {
     });
 
     test('Passpoint is enabled with subscriptions', async () => {
-      loadTimeData.overrideValues({isPasspointSettingsEnabled: true});
       await init();
       internetKnownNetworksPage.networkType = NetworkType.kWiFi;
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -286,7 +251,6 @@ suite('<settings-internet-known-networks-subpage>', () => {
     });
 
     test('Passpoint menu allows removal', async () => {
-      loadTimeData.overrideValues({isPasspointSettingsEnabled: true});
       await init();
       internetKnownNetworksPage.networkType = NetworkType.kWiFi;
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);

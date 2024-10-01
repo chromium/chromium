@@ -153,10 +153,8 @@ export class SettingsInternetKnownNetworksPageElement extends
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
-    if (this.isPasspointSettingsEnabled) {
-      this.passpointService_ =
-          MojoConnectivityProvider.getInstance().getPasspointService();
-    }
+    this.passpointService_ =
+        MojoConnectivityProvider.getInstance().getPasspointService();
   }
 
   /**
@@ -230,8 +228,7 @@ export class SettingsInternetKnownNetworksPageElement extends
   }
 
   private async refreshSubscriptions_(): Promise<void> {
-    if (!this.isPasspointSettingsEnabled ||
-        this.networkType !== NetworkType.kWiFi) {
+    if (this.networkType !== NetworkType.kWiFi) {
       this.passpointSubscriptionsList_ = [];
       return;
     }
@@ -268,7 +265,7 @@ export class SettingsInternetKnownNetworksPageElement extends
   private shouldShowPasspointSection_(subscriptionsList:
                                           PasspointSubscription[]): boolean {
     return this.networkType === NetworkType.kWiFi &&
-        this.isPasspointSettingsEnabled && subscriptionsList.length > 0;
+        subscriptionsList.length > 0;
   }
 
   private getSubscriptionDisplayName_(subscription: PasspointSubscription):

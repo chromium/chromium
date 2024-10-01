@@ -312,15 +312,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isPasspointSettingsEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isPasspointSettingsEnabled') &&
-              loadTimeData.getBoolean('isPasspointSettingsEnabled');
-        },
-      },
-
       isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
@@ -416,7 +407,6 @@ export class SettingsInternetDetailPageElement extends
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
-  private isPasspointSettingsEnabled_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
@@ -480,10 +470,8 @@ export class SettingsInternetDetailPageElement extends
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
-    if (this.isPasspointSettingsEnabled_) {
-      this.passpointService_ =
-          MojoConnectivityProvider.getInstance().getPasspointService();
-    }
+    this.passpointService_ =
+        MojoConnectivityProvider.getInstance().getPasspointService();
 
     this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
 
@@ -1047,8 +1035,7 @@ export class SettingsInternetDetailPageElement extends
 
     const response = await this.networkConfig_.getManagedProperties(this.guid);
     this.getPropertiesCallback_(response.result);
-    if (this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(this.managedProperties_)) {
+    if (this.isPasspointWifi_(this.managedProperties_)) {
       const response = await this.passpointService_.getPasspointSubscription(
           this.managedProperties_!.typeProperties.wifi!.passpointId!);
       this.passpointSubscription_ = response.result;
@@ -1444,8 +1431,7 @@ export class SettingsInternetDetailPageElement extends
          ConnectionStateType.kNotConnected)) {
       return false;
     }
-    if (this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(managedProperties)) {
+    if (this.isPasspointWifi_(managedProperties)) {
       // Passpoint networks are automatically configured using Passpoint
       // subscriptions. We don't want the user to change the configuration
       // (b/282114074).
@@ -2313,8 +2299,7 @@ export class SettingsInternetDetailPageElement extends
 
   private shouldShowPasspointProviderRow_(managedProperties: ManagedProperties|
                                           undefined): boolean {
-    return this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(managedProperties);
+    return this.isPasspointWifi_(managedProperties);
   }
 
   private getPasspointSubscriptionName_(subscription: PasspointSubscription|
@@ -2337,15 +2322,8 @@ export class SettingsInternetDetailPageElement extends
 
   private onPasspointRemovalDialogConfirm_(): void {
     this.getPasspointRemovalDialog_().close();
-
-    if (this.isPasspointSettingsEnabled_) {
-      // When Passpoint settings page is enabled, the removal dialog leads the
-      // user to the subscription page.
-      this.onPasspointRowClicked_();
-      return;
-    }
-
-    this.forgetNetwork_();
+    // The removal dialog leads the user to the subscription page.
+    this.onPasspointRowClicked_();
   }
 
   private showCellularChooseNetwork_(managedProperties: ManagedProperties):
