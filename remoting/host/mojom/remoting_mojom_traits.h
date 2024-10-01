@@ -1480,6 +1480,10 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed;
       case ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD:
         return remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod;
+      case ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
+        return remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported;
+      case ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED:
+        return remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged;
     }
 
     NOTREACHED();
@@ -1557,6 +1561,12 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
       case remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod:
         *out = ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported:
+        *out = ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged:
+        *out = ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
         return true;
     }
 

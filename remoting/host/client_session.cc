@@ -1016,9 +1016,7 @@ void ClientSession::OnLocalSessionPoliciesChanged(
     const SessionPolicies& new_policies) {
   DCHECK(local_session_policy_update_subscription_);
   HOST_LOG << "Effective policies have changed. Terminating session.";
-  // TODO: crbug.com/359977809 - create a new error code for session policy
-  // changed.
-  DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR);
+  DisconnectSession(ErrorCode::SESSION_POLICIES_CHANGED);
 }
 
 void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,

@@ -156,12 +156,16 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     // This error can only take place for windows builds which is not a part for
     // commercial CRD.
     case ErrorCode::ELEVATION_ERROR:
+    // This error is only reported on Mac.
+    case ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
       return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
     case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
       return ExtendedStartCrdSessionResultCode::
           kFailureReauthzPolicyCheckFailed;
     case ErrorCode::NO_COMMON_AUTH_METHOD:
       return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
+    case ErrorCode::SESSION_POLICIES_CHANGED:
+      return ExtendedStartCrdSessionResultCode::kFailureSessionPoliciesChanged;
   }
   NOTREACHED();
 }
@@ -209,6 +213,7 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
     case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
     case ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod:
+    case ExtendedStartCrdSessionResultCode::kFailureSessionPoliciesChanged:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.
