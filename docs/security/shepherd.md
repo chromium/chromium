@@ -556,7 +556,7 @@ remove any PII.
 
 For cases in which we are just delaying public disclosure (such as when a
 security issue impacts other products or vendors), please add the
-`SecurityEmbargo` hotlist (hotlistID: 1053360) and set a date in the `Next
+`SecurityEmbargo` hotlist (hotlistID: 5432549) and set a date in the `Next
 Action` field so that disclosure can be re-evaluated at that time.
 
 ### Protecting researcher identities
