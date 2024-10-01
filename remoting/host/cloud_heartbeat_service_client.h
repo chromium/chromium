@@ -33,7 +33,6 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
  public:
   CloudHeartbeatServiceClient(
       const std::string& directory_id,
-      const std::string& api_key,
       OAuthTokenGetter* oauth_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 

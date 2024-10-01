@@ -29,11 +29,10 @@ using UpdateRemoteAccessHostRequest =
 
 CloudHeartbeatServiceClient::CloudHeartbeatServiceClient(
     const std::string& directory_id,
-    const std::string& api_key,
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
-      client_(api_key, oauth_token_getter, url_loader_factory) {}
+      client_(/*api_key=*/"", oauth_token_getter, url_loader_factory) {}
 
 CloudHeartbeatServiceClient::~CloudHeartbeatServiceClient() = default;
 

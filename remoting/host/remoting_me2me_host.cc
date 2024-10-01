@@ -437,7 +437,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string service_account_email_;
-  std::string cloud_api_key_;
   base::Value::Dict config_;
   std::set<std::string> host_owner_emails_;
 
@@ -1302,15 +1301,6 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     return false;
   }
 
-  if (is_cloud_host_) {
-    const std::string* cloud_api_key = config.FindString(kCloudApiKeyPath);
-    if (!cloud_api_key || cloud_api_key->empty()) {
-      LOG(ERROR) << "Host config is missing the cloud_api_key.";
-      return false;
-    }
-    cloud_api_key_ = *cloud_api_key;
-  }
-
   return true;
 }
 
@@ -1717,8 +1707,7 @@ void HostProcess::InitializeSignaling() {
   std::unique_ptr<HeartbeatServiceClient> service_client;
   if (is_cloud_host_) {
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
-        host_id_, cloud_api_key_, oauth_token_getter_.get(),
-        context_->url_loader_factory());
+        host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
     // TODO: joedow - Implement CorpHeartbeatServiceClient.
     // } else if (is_corp_host_) {
     //   service_client = std::make_unique<CorpHeartbeatServiceClient>(

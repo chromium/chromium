@@ -28,7 +28,6 @@ const char kHostTypeHintPath[] = "host_type_hint";
 const char kCorpHostTypeHint[] = "corp";
 const char kCloudHostTypeHint[] = "cloud";
 const char kMe2MeHostTypeHint[] = "me2me";
-const char kCloudApiKeyPath[] = "cloud_api_key";
 
 // Deprecated values.
 const char kDeprecatedHostOwnerEmailConfigPath[] = "host_owner_email";

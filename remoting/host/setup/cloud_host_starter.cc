@@ -168,7 +168,6 @@ void CloudHostStarter::ApplyConfigValues(base::Value::Dict& config) {
   } else {
     config.Set(kHostTypeHintPath, kCloudHostTypeHint);
     config.Set(kRequireSessionAuthorizationPath, true);
-    config.Set(kCloudApiKeyPath, params().api_key);
   }
 }
 
