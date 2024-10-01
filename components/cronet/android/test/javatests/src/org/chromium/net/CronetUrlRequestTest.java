@@ -2875,12 +2875,12 @@ public class CronetUrlRequestTest {
         }
     }
 
-    @Test
-    @SmallTest
     /**
      * Open many connections and cancel them right away. This test verifies all internal sockets and
      * other Closeables are properly closed. See crbug.com/726193.
      */
+    @Test
+    @SmallTest
     public void testGzipCancel() throws Exception {
         String url = NativeTestServer.getFileURL("/gzipped.html");
         for (int i = 0; i < 100; i++) {
@@ -2912,10 +2912,10 @@ public class CronetUrlRequestTest {
         }
     }
 
+    /** Do a HEAD request and get back a 404. */
     @Test
     @SmallTest
     @RequiresMinApi(8) // JavaUrlRequest fixed in API level 8: crrev.com/499303
-    /** Do a HEAD request and get back a 404. */
     public void test404Head() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -2997,12 +2997,12 @@ public class CronetUrlRequestTest {
         assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
     }
 
-    @Test
-    @SmallTest
     /**
      * Initiate many requests concurrently to make sure neither Cronet implementation crashes.
      * Regression test for https://crbug.com/844031.
      */
+    @Test
+    @SmallTest
     public void testManyRequests() throws Exception {
         String url = NativeTestServer.getMultiRedirectURL();
         final int numRequests = 2000;

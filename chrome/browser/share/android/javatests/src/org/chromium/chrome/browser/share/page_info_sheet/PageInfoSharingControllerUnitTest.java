@@ -883,7 +883,9 @@ public class PageInfoSharingControllerUnitTest {
                                     .findViewById(R.id.learn_more_text);
                     var learnMoreTextLinks = learnMoreText.getClickableSpans();
                     assertNotEquals(
-                            "TextView should contain clickable spans", 0, learnMoreTextLinks);
+                            "TextView should contain clickable spans",
+                            0,
+                            learnMoreTextLinks.length);
                     // Click first span, which should contain a "learn more" text and link to a web
                     // page.
                     learnMoreTextLinks[0].onClick(learnMoreText);

@@ -356,7 +356,8 @@ class DropdownItemViewInfoListBuilder {
                 nextSuggestionLogicalIndex++;
             } else {
                 assert false
-                        : "Unsupported group render type: " + currentGroupConfig.getRenderType();
+                        : "Unsupported group render type: "
+                                + currentGroupConfig.getRenderType().name();
             }
 
             previousGroupConfig = currentGroupConfig;

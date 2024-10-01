@@ -791,7 +791,7 @@ public final class LaunchTest {
                         (Class<? extends Activity>)
                                 Class.forName(startedActivityIntent.getComponent().getClassName());
             } catch (ClassNotFoundException e) {
-                Assert.fail();
+                throw new RuntimeException(e);
             }
             buildActivityFully(startedActivityClass, startedActivityIntent);
         }

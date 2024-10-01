@@ -192,9 +192,9 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         assertNull(mTabGridDialogView.getBindingToken());
 
         String title = "1024 tabs";
-        assertNotEquals(title, mTitleTextView.getText());
+        assertNotEquals(title, mTitleTextView.getText().toString());
         mModel.set(TabGridDialogProperties.HEADER_TITLE, title);
-        assertNotEquals(title, mTitleTextView.getText());
+        assertNotEquals(title, mTitleTextView.getText().toString());
 
         mModel.set(TabGridDialogProperties.BINDING_TOKEN, 4);
         assertEquals(mTabGridDialogView.getBindingToken().intValue(), 4);
@@ -240,7 +240,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testSetHeaderTitle() {
         String title = "1024 tabs";
-        assertNotEquals(title, mTitleTextView.getText());
+        assertNotEquals(title, mTitleTextView.getText().toString());
 
         mModel.set(TabGridDialogProperties.HEADER_TITLE, title);
 

@@ -14,8 +14,8 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-@JNINamespace("plus_addresses")
 /** Contains necessary information to show a meaningful error message to the user. */
+@JNINamespace("plus_addresses")
 class PlusAddressCreationNormalStateInfo {
     private final String mTitle;
     private final String mDescription;

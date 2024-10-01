@@ -557,11 +557,10 @@ public abstract class PersistedTabData implements UserData {
     public static void performStorageMaintenance(List<Integer> liveTabIds) {
         ThreadUtils.assertOnUiThread();
         for (Class<? extends PersistedTabData> clazz : sSupportedMaintenanceClasses) {
+            // Maintenance is supported only for regular Tabs.
+            boolean isEncrypted = false;
             PersistedTabDataConfiguration config =
-                    PersistedTabDataConfiguration.get(
-                            clazz, false
-                            /** Maintenance is only supported for regular Tabs */
-                            );
+                    PersistedTabDataConfiguration.get(clazz, isEncrypted);
             PersistedTabDataStorage storage = config.getStorage();
             storage.performMaintenance(liveTabIds, config.getId());
         }

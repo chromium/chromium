@@ -811,13 +811,13 @@ public class Decoder {
      * array of booleans.
      */
     private DataHeader readDataHeaderForBooleanArray(
-            long expectedLength, boolean containsHasValueBitfield) {
+            int expectedLength, boolean containsHasValueBitfield) {
         DataHeader dataHeader = readDataHeader();
 
-        long packedBoolSize = (dataHeader.elementsOrVersion + 7) / 8;
-        long expectedSize = DataHeader.HEADER_SIZE + packedBoolSize;
+        int packedBoolSize = (dataHeader.elementsOrVersion + 7) / 8;
+        int expectedSize = DataHeader.HEADER_SIZE + packedBoolSize;
         if (containsHasValueBitfield) {
-            long hasValueBitfieldSize = packedBoolSize;
+            int hasValueBitfieldSize = packedBoolSize;
             expectedSize += hasValueBitfieldSize;
         }
 

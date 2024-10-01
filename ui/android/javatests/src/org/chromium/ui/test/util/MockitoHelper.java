@@ -50,7 +50,7 @@ public class MockitoHelper {
     }
 
     /** When no argument is needed. */
-    public static <T> Stubber doRunnable(Runnable runnable) {
+    public static Stubber doRunnable(Runnable runnable) {
         return Mockito.doAnswer(
                 ignored -> {
                     runnable.run();

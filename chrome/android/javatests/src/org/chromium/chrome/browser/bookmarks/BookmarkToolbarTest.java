@@ -247,7 +247,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         for (int menuId : applicableMenuIds) {
             boolean isVisible = !hiddenIdSet.contains(menuId);
             MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(menuId);
-            assertNotNull(menuId);
             assertEquals(
                     "Mismatched visibility for menu item " + menuItem,
                     isVisible,
@@ -259,7 +258,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         for (int menuId : applicableMenuIds) {
             boolean isEnabled = !disabledIds.contains(menuId);
             MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(menuId);
-            assertNotNull(menuId);
             assertEquals(
                     "Mismatched enabled state for menu item " + menuItem,
                     isEnabled,

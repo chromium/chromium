@@ -128,13 +128,11 @@ public class ShareSheetCoordinator
                         if (bottomSheet == mBottomSheet) {
                             mBottomSheet
                                     .getContentView()
-                                    .addOnLayoutChangeListener(
-                                            ShareSheetCoordinator.this::onLayoutChange);
+                                    .addOnLayoutChangeListener(ShareSheetCoordinator.this);
                         } else {
                             mBottomSheet
                                     .getContentView()
-                                    .removeOnLayoutChangeListener(
-                                            ShareSheetCoordinator.this::onLayoutChange);
+                                    .removeOnLayoutChangeListener(ShareSheetCoordinator.this);
                         }
                     }
                 };

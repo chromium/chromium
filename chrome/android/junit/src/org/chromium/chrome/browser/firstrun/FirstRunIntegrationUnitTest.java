@@ -98,7 +98,7 @@ public final class FirstRunIntegrationUnitTest {
             activityClass =
                     (Class<? extends Activity>) Class.forName(intent.getComponent().getClassName());
         } catch (ClassNotFoundException e) {
-            Assert.fail();
+            throw new RuntimeException(e);
         }
         createActivity(activityClass, intent);
     }

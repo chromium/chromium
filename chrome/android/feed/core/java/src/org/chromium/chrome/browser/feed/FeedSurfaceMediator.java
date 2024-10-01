@@ -550,8 +550,7 @@ public class FeedSurfaceMediator
         mSigninManager.getIdentityManager().addObserver(this);
 
         mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
-        mSectionHeaderModel.set(
-                SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
+        mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
 
         setUpWebFeedTab();
 

@@ -9,6 +9,7 @@ import org.jni_zero.CalledByNative;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("InputStreamSlowMultibyteRead")
 class InputStreamUnittest {
     private InputStreamUnittest() {}
 

@@ -269,7 +269,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
         PropertyModel model = mCoordinator.createBasePropertyModel(READING_LIST_BOOKMARK_ID);
         assertFalse(mCoordinator.shouldShowImagesForFolder(READING_LIST_BOOKMARK_ID));
 
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE));
         assertEquals(0, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));

@@ -678,6 +678,8 @@ public class CronetTestRule implements TestRule {
         ExperimentalCronetEngine.Builder getCronetEngineBuilder(Context context);
     }
 
+    // Warning should go away once we can use java.util.function.Function.
+    @SuppressWarnings("ImmutableEnumChecker")
     public enum CronetImplementation {
         STATICALLY_LINKED(
                 context ->

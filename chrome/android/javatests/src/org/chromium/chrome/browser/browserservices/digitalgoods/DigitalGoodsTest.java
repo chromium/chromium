@@ -198,7 +198,7 @@ public class DigitalGoodsTest {
                     try {
                         Assert.assertNotEquals("null", exec(variable));
                     } catch (TimeoutException e) {
-                        Assert.fail();
+                        throw new RuntimeException(e);
                     }
                 });
     }

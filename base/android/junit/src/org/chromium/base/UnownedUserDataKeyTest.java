@@ -124,6 +124,7 @@ public class UnownedUserDataKeyTest {
         mHost2 = null;
     }
 
+    @SuppressWarnings({"SelfAssertion", "JUnitIncompatibleType"})
     @Test
     public void testKeyEquality() {
         assertEquals(Foo.KEY, Foo.KEY);

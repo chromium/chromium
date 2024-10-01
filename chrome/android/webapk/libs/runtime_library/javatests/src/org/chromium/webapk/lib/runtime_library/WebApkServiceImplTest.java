@@ -103,9 +103,8 @@ public class WebApkServiceImplTest {
                             context.getPackageName(), PackageManager.GET_META_DATA);
             return appInfo.uid;
         } catch (Exception e) {
-            Assert.fail();
+            throw new RuntimeException(e);
         }
-        return -1;
     }
 
     /**

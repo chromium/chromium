@@ -105,7 +105,7 @@ public class ContentViewLocationTest {
             mActivityTestRule.launchContentShellWithUrlSync(
                     "content/test/data/android/geolocation.html");
         } catch (Throwable t) {
-            Assert.fail();
+            throw new RuntimeException(t);
         }
 
         mTestCallbackHelperContainer =

@@ -70,8 +70,8 @@ public class PasswordAccessLossWarningHelper {
         coordinator.showSheet(model);
     }
 
-    @Nullable
     /** Creates the model that has the text and functionality appropriate for the warning type. */
+    @Nullable
     PropertyModel getModelForWarningType(@PasswordAccessLossWarningType int warningType) {
         switch (warningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:

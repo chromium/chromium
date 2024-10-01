@@ -454,11 +454,8 @@ class AudioSinkAudioTrackImpl {
         return (playtimeLeftNsecs < 0) ? 0 : playtimeLeftNsecs / 1000; // return usecs
     }
 
+    /** Closes the instance by stopping playback and releasing the AudioTrack object. */
     @CalledByNative
-    /**
-     * Closes the instance by stopping playback and releasing the AudioTrack
-     * object.
-     */
     private void close() {
         Log.i(mTag, "Close AudioSinkAudioTrackImpl!");
         if (!isStopped()) mAudioTrack.stop();

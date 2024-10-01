@@ -509,6 +509,7 @@ public class AutocompleteMatch {
     }
 
     @Override
+    @SuppressWarnings("LiteProtoToString")
     public String toString() {
         List<String> pieces =
                 Arrays.asList(

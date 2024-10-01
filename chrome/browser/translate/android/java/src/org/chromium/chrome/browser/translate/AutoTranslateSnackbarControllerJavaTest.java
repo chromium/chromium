@@ -87,14 +87,14 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         Assert.assertEquals("en", data.getTargetLanguage());
     }
 
-    @Test
-    @SmallTest
     /**
      * The target language is stored in Translate format, which uses the old deprecated Java codes
      * for several languages (Hebrew, Indonesian), and uses "tl" while Chromium uses "fil" for
      * Tagalog/Filipino. This tests that when using Translate format codes the Chrome version is
      * displayed in the Snackbar.
      */
+    @Test
+    @SmallTest
     public void testShowSnackbarChromeLanguage() throws Exception {
         // Use the Translate tag tl which Chrome should display as "Filipino"
         showSnackbar("tl");

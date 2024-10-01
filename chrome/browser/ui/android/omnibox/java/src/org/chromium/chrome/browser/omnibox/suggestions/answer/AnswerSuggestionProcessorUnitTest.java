@@ -339,7 +339,8 @@ public class AnswerSuggestionProcessorUnitTest {
         for (AnswerType type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createAnswerSuggestion(type, "", 1, "", 1, null);
             // Note: model is re-created on every iteration.
-            Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
+            Assert.assertNotNull(
+                    "No icon associated with type: " + type.name(), suggHelper.getIcon());
         }
     }
 
@@ -348,7 +349,8 @@ public class AnswerSuggestionProcessorUnitTest {
         for (AnswerType type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, 0, false);
             // Note: model is re-created on every iteration.
-            Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
+            Assert.assertNotNull(
+                    "No icon associated with type: " + type.name(), suggHelper.getIcon());
         }
     }
 

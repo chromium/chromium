@@ -481,13 +481,13 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
     /**
      * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
      * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
      * View is set.
      */
+    @Test
+    @MediumTest
     public void testOnClickListenersAttachedWithMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
@@ -532,13 +532,13 @@ public class HistorySyncTest {
                 });
     }
 
-    @Test
-    @MediumTest
     /**
      * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
      * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
      * View is set.
      */
+    @Test
+    @MediumTest
     public void testOnClickListenersAttachedWithNonMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 

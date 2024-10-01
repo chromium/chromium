@@ -101,7 +101,7 @@ public class NewTabPageNavigationTest {
         Assert.assertEquals(UrlConstants.NTP_URL, url);
 
         // Check that the NTP is actually displayed.
-        Assert.assertNotNull(tab.getNativePage() instanceof NewTabPage);
+        Assert.assertTrue(tab.getNativePage() instanceof NewTabPage);
     }
 
     /** Tests navigating to the tab switcher from the NTP. */

@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -441,7 +440,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenReturn(result);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }
@@ -459,7 +458,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenThrow(ex);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }

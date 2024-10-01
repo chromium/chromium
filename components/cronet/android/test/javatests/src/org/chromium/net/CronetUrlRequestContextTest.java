@@ -1813,17 +1813,11 @@ public class CronetUrlRequestContextTest {
         String url = NativeTestServer.getFileURL("/cacheable.txt");
 
         // When cache is disabled, making a request does not write to the cache.
-        checkRequestCaching(
-                cronetEngine, url, false, true
-                /** disable cache */
-                );
+        checkRequestCaching(cronetEngine, url, false, true);
         checkRequestCaching(cronetEngine, url, false);
 
         // When cache is enabled, the second request is cached.
-        checkRequestCaching(
-                cronetEngine, url, false, true
-                /** disable cache */
-                );
+        checkRequestCaching(cronetEngine, url, false, true);
         checkRequestCaching(cronetEngine, url, true);
 
         // Shut down the server, next request should have a cached response.

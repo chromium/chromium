@@ -69,7 +69,7 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
             try {
                 createNewCustomTabSessionForIntent(intent);
             } catch (TimeoutException e) {
-                Assert.fail();
+                throw new RuntimeException(e);
             }
         }
         super.startCustomTabActivityWithIntent(intent);

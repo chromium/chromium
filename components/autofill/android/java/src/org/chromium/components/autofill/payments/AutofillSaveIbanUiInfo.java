@@ -17,11 +17,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@JNINamespace("autofill")
 /**
  * The android version of the C++ AutofillSaveIbanUiInfo providing UI resources for the save IBAN
  * bottom sheet.
  */
+@JNINamespace("autofill")
 public class AutofillSaveIbanUiInfo {
     private final String mAcceptText;
     private final String mCancelText;
@@ -64,8 +64,6 @@ public class AutofillSaveIbanUiInfo {
         return mTitleText;
     }
 
-    @CalledByNative
-    @VisibleForTesting
     /**
      * Construct the {@link AutofillSaveIbanUiInfo} given all the members. This constructor is used
      * for native binding purposes.
@@ -80,6 +78,8 @@ public class AutofillSaveIbanUiInfo {
      *     {@code 0} for local save.
      * @param titleText A bottom sheet title UI string. This value must not be {@code null}.
      */
+    @CalledByNative
+    @VisibleForTesting
     /* package */ AutofillSaveIbanUiInfo(
             @JniType("std::u16string") String acceptText,
             @JniType("std::u16string") String cancelText,

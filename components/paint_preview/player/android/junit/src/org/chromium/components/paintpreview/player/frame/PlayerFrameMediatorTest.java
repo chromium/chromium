@@ -341,9 +341,7 @@ public class PlayerFrameMediatorTest {
         // we should have only one column.
         Bitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
         Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new Bitmap[4][1]));
-        Assert.assertEquals(
-                new ArrayList<Pair<View, Rect>>(),
-                mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+        Assert.assertEquals(List.of(), mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
     }
 
     /**

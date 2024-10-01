@@ -200,7 +200,7 @@ public class OptimizationGuidePushNotificationManager {
     @VisibleForTesting
     public static String cacheKey(OptimizationType optimizationType) {
         return ChromePreferenceKeys.OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.createKey(
-                optimizationType.toString());
+                optimizationType.name());
     }
 
     public static void setNativeIsInitializedForTesting(Boolean nativeIsInitialized) {

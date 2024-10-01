@@ -198,7 +198,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
             // Termination shouldn't take long. Use 1 min which should be more than enough.
             mExecutorService.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            fail("ExecutorService is interrupted while waiting for termination");
+            throw new RuntimeException(e);
         }
         assertThat(mExecutorService.isTerminated()).isTrue();
     }

@@ -2209,11 +2209,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 };
 
         mUndoBarPopupController =
-                new UndoBarController(
-                        this,
-                        mTabModelSelector,
-                        this::getSnackbarManager,
-                        dialogVisibilitySupplier);
+                new UndoBarController(this, mTabModelSelector, this, dialogVisibilitySupplier);
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             TabModelUtils.runOnTabStateInitialized(

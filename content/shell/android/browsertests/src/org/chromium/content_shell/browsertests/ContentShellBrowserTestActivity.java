@@ -102,13 +102,13 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                         });
     }
 
-    @Override
     /**
      * Ensure that the user data directory gets overridden to getPrivateDataDirectory() (which is
      * cleared at the start of every run); the directory that ANDROID_APP_DATA_DIR is set to in the
-     * context of Java browsertests is not cleared as it also holds persistent state, which
-     * causes test failures due to state bleedthrough. See crbug.com/617734 for details.
+     * context of Java browsertests is not cleared as it also holds persistent state, which causes
+     * test failures due to state bleedthrough. See crbug.com/617734 for details.
      */
+    @Override
     protected String getUserDataDirectoryCommandLineSwitch() {
         return "user-data-dir";
     }

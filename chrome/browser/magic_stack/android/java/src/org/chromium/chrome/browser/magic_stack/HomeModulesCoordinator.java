@@ -140,7 +140,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         super.onViewRecycled(holder);
                     }
                 };
-        mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
+        mModuleRegistry.registerAdapter(mAdapter, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 

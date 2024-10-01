@@ -27,6 +27,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Test class for {@link AccountCapabilities}. */
 @RunWith(ParameterizedRunner.class)
@@ -81,7 +82,7 @@ public final class AccountCapabilitiesTest {
     }
 
     /** Populates all capabilities with the given response value. */
-    public static HashMap<String, Integer> populateCapabilitiesResponse(
+    public static Map<String, Integer> populateCapabilitiesResponse(
             @AccountManagerDelegate.CapabilityResponse int value) {
         HashMap<String, Integer> response = new HashMap<>();
         for (String capabilityName :
@@ -182,33 +183,21 @@ public final class AccountCapabilitiesTest {
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseException(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities(new HashMap<>());
+        AccountCapabilities capabilities = new AccountCapabilities(Map.of());
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseYes(String capabilityName) {
-        AccountCapabilities capabilities =
-                new AccountCapabilities(
-                        new HashMap<String, Boolean>() {
-                            {
-                                put(capabilityName, true);
-                            }
-                        });
+        AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, true));
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseNo(String capabilityName) {
-        AccountCapabilities capabilities =
-                new AccountCapabilities(
-                        new HashMap<String, Boolean>() {
-                            {
-                                put(capabilityName, false);
-                            }
-                        });
+        AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, false));
         Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
     }
 
