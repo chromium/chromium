@@ -1867,13 +1867,13 @@ void CrostiniManager::ExportDiskImage(guest_os::GuestId vm_id,
     return;
   }
   if (user_id_hash.empty()) {
-    LOG(ERROR) << "vm_name is required";
+    LOG(ERROR) << "user_id_hash is required";
     std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
     return;
   }
 
   if (disk_image_callbacks_.find(vm_id) != disk_image_callbacks_.end()) {
-    LOG(ERROR) << "Disk image export currently running for " << vm_id;
+    LOG(ERROR) << "Disk image operation currently running for " << vm_id;
     std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
   }
   disk_image_callbacks_.emplace(vm_id, std::move(callback));
@@ -1922,6 +1922,76 @@ void CrostiniManager::OnExportDiskImage(
   // complete, otherwise this is an error.
   if (response->status() != vm_tools::concierge::DISK_STATUS_IN_PROGRESS) {
     LOG(ERROR) << "Failed to export disk image: status=" << response->status()
+               << ", failure_reason=" << response->failure_reason();
+    std::move(it->second).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    disk_image_callbacks_.erase(it);
+  }
+
+  disk_image_uuid_to_guest_id_.emplace(response->command_uuid(), vm_id);
+}
+
+void CrostiniManager::ImportDiskImage(guest_os::GuestId vm_id,
+                                      std::string user_id_hash,
+                                      base::FilePath import_path,
+                                      CrostiniResultCallback callback) {
+  if (vm_id.vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  if (user_id_hash.empty()) {
+    LOG(ERROR) << "user_id_hash is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+
+  if (disk_image_callbacks_.find(vm_id) != disk_image_callbacks_.end()) {
+    LOG(ERROR) << "Disk image operation currently running for " << vm_id;
+    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+  }
+  disk_image_callbacks_.emplace(vm_id, std::move(callback));
+
+  base::File file(import_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Failed to open " << import_path;
+    return;
+  }
+
+  vm_tools::concierge::ImportDiskImageRequest request;
+  request.set_vm_name(vm_id.vm_name);
+  request.set_cryptohome_id(user_id_hash);
+  // All vm's are stored in root except pluginvm, which is not supported in this
+  // flow.
+  request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  request.set_source_size(file.GetLength());
+
+  GetConciergeClient()->ImportDiskImage(
+      base::ScopedFD(file.TakePlatformFile()), std::move(request),
+      base::BindOnce(&CrostiniManager::OnImportDiskImage,
+                     weak_ptr_factory_.GetWeakPtr(), vm_id));
+}
+
+void CrostiniManager::OnImportDiskImage(
+    guest_os::GuestId vm_id,
+    std::optional<vm_tools::concierge::ImportDiskImageResponse> response) {
+  auto it = disk_image_callbacks_.find(vm_id);
+  if (it == disk_image_callbacks_.end()) {
+    LOG(ERROR) << "No import callback for " << vm_id;
+    return;
+  }
+
+  if (!response) {
+    LOG(ERROR) << "Failed to import disk image. Empty response.";
+    std::move(it->second).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    disk_image_callbacks_.erase(it);
+    return;
+  }
+
+  // If import has started, the callback will be invoked when the
+  // DiskImageProgressSignal signal indicates that import is
+  // complete, otherwise this is an error.
+  if (response->status() != vm_tools::concierge::DISK_STATUS_IN_PROGRESS) {
+    LOG(ERROR) << "Failed to import image: status=" << response->status()
                << ", failure_reason=" << response->failure_reason();
     std::move(it->second).Run(CrostiniResult::DISK_IMAGE_FAILED);
     disk_image_callbacks_.erase(it);
