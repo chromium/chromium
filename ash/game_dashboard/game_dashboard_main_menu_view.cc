@@ -104,14 +104,20 @@ constexpr float kDetailRowCornerRadius = 16.0f;
 constexpr int kTileCornerRadius = 20;
 // Line height for feature tiles with sub-labels
 constexpr int kTileLabelLineHeight = 16;
-// Feature Tile default padding when there are less than 4 Feature Tiles in the
-// Shortcut Tiles Row.
-constexpr gfx::Insets kDefaultTilePadding = gfx::Insets::TLBR(0, 24, 10, 24);
+// Feature Tile default padding when there are 3 Feature Tiles in the
+// Shortcut Tiles row. Also used as the default padding when creating
+// a Feature Tile.
+constexpr gfx::Insets kThreeTilePadding = gfx::Insets::TLBR(0, 24, 10, 24);
+// Feature tile padding when there are 2 Feature Tiles in the Shortcut Tiles
+// row.
+constexpr gfx::Insets kTwoTilePadding = gfx::Insets::TLBR(10, 12, 10, 24);
 // Feature Tile padding when there are 4 Feature Tiles in the Shortcut Tiles
-// Row.
+// row.
 constexpr gfx::Insets kFourTilePadding = gfx::Insets::TLBR(0, 10, 10, 10);
 // Feature Tile Icon Padding.
-constexpr gfx::Insets kTileIconPadding = gfx::Insets::TLBR(12, 8, 4, 8);
+constexpr gfx::Insets kCompactTileIconPadding = gfx::Insets::TLBR(12, 8, 4, 8);
+// Primary Feature Tile Icon Padding.
+constexpr gfx::Insets kPrimaryTileIconPadding = gfx::Insets::TLBR(8, 20, 8, 8);
 // Primary Feature Tile Label Padding.
 constexpr gfx::Insets kPrimaryTileLabelPadding = gfx::Insets::TLBR(0, 0, 0, 15);
 // Clock View Padding.
@@ -166,7 +172,7 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   tile->SetLabel(text);
   tile->SetTooltipText(text);
   tile->SetButtonCornerRadius(kTileCornerRadius);
-  tile->SetTitleContainerMargins(kDefaultTilePadding);
+  tile->SetTitleContainerMargins(kThreeTilePadding);
 
   // Default state colors.
   tile->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
@@ -192,7 +198,7 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   views::ImageButton* tile_icon = tile->icon_button();
   if (type == FeatureTile::TileType::kCompact) {
     // Adjust internal spacing.
-    tile_icon->SetProperty(views::kMarginsKey, kTileIconPadding);
+    tile_icon->SetProperty(views::kMarginsKey, kCompactTileIconPadding);
 
     // Adjust line and text specifications.
     tile_label->SetFontList(
@@ -208,7 +214,7 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
     // Resize the icon and its margins.
     tile_icon->SetPreferredSize(
         gfx::Size(20, tile_icon->GetPreferredSize().height()));
-    tile_icon->SetProperty(views::kMarginsKey, kTileIconPadding);
+    tile_icon->SetProperty(views::kMarginsKey, kPrimaryTileIconPadding);
 
     // Adjust line specifications and enable text wrapping.
     tile_label->SetProperty(views::kMarginsKey, kPrimaryTileLabelPadding);
@@ -1075,14 +1081,15 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
     screenshot_tile->sub_label()->SetVisible(false);
   }
 
-  // Shortcut tiles row holds up to 4 tiles, and always contains the
-  // 'toolbar_tile' and the 'screenshot_tile'. If there are 4 tiles in the row,
-  // the padding is set to 'kFourTilePadding', otherwise, the padding is set to
-  // 'kDefaultTilePadding'.
-  const auto title_container_margin = (game_controls_tile_ && record_game_tile_)
-                                          ? kFourTilePadding
-                                          : kDefaultTilePadding;
-  for (auto tile : container->children()) {
+  // Shortcut Tiles row holds up to 4 tiles. Set the padding accordingly to
+  // the amount of tiles in the Shortcut Tiles row.
+  auto tiles = container->children();
+  const auto tile_count = tiles.size();
+  DCHECK(tile_count >= 2 && tile_count <= 4);
+  const auto title_container_margin = tile_count == 4   ? kFourTilePadding
+                                      : tile_count == 3 ? kThreeTilePadding
+                                                        : kTwoTilePadding;
+  for (auto tile : tiles) {
     // Ensure that the Feature Tiles stretch out to equal width and height in
     // the Feature Tile row.
     tile->SetPreferredSize(gfx::Size(1, tile->GetPreferredSize().height()));
