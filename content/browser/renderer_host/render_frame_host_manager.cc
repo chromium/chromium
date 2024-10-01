@@ -4146,13 +4146,14 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
       // Then we should remove the null-check for the RenderWidgetHostView in
       // RenderWidgetHostImpl::RendererWidgetCreated().
       delegate_->CreateRenderWidgetHostViewForRenderManager(render_view_host);
-      // If we are recovering a crashed frame in the same SiteInstance and we
-      // are not skipping early commit then we will create a proxy and that will
-      // prevent the regular outer delegate reattach path in
+      // If we are recovering a crashed frame in the same SiteInstanceGroup and
+      // we are not skipping early commit then we will create a proxy and that
+      // will prevent the regular outer delegate reattach path in
       // CreateRenderViewForRenderManager() from working.
       if (recovering_without_early_commit &&
-          render_frame_host_->GetSiteInstance() == instance)
+          render_frame_host_->GetSiteInstance()->group() == instance->group()) {
         delegate_->ReattachOuterDelegateIfNeeded();
+      }
     }
     // And since we are reusing the RenderViewHost make sure it is hidden, like
     // a new RenderViewHost would be, until navigation commits.
