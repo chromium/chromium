@@ -251,6 +251,7 @@ concept MatchCandidate =
       t.GetServableState(cacheable_duration);
       t.GetNoVarySearchHint();
       t.IsNoVarySearchHeaderMatch(url);
+      t.ShouldWaitForNoVarySearchHeader(url);
       t.HasPrefetchStatus();
       t.GetPrefetchStatus();
       t.HasPrefetchBeenConsideredToServe();
@@ -288,21 +289,9 @@ std::vector<T*> CollectMatchCandidatesGeneric(
                 matches->push_back(prefetch_container.get());
                 break;
               case no_vary_search::MatchType::kOther:
-                if (const auto& nvs_expected =
-                        prefetch_container->GetNoVarySearchHint()) {
-                  // We cannot match based on the NVS hint once we have the
-                  // response headers. If we have matching NVS header,
-                  // the entry would have matched with kNoVarySearch above.
-                  // We only match based on the hint if we have not yet
-                  // received the headers.
-                  if (prefetch_container->GetServableState(
-                          PrefetchCacheableDuration()) ==
-                          PrefetchContainer::ServableState::
-                              kShouldBlockUntilHeadReceived &&
-                      nvs_expected->AreEquivalent(
-                          navigated_key.url(), prefetch_container->GetURL())) {
-                    hint_matches->push_back(prefetch_container.get());
-                  }
+                if (prefetch_container->ShouldWaitForNoVarySearchHeader(
+                        navigated_key.url())) {
+                  hint_matches->push_back(prefetch_container.get());
                 }
                 break;
             }

@@ -1877,6 +1877,13 @@ bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
          no_vary_search_data->AreEquivalent(url, GetURL());
 }
 
+bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
+      GetNoVarySearchHint();
+  return !GetNonRedirectHead() && no_vary_search_hint &&
+         no_vary_search_hint->AreEquivalent(url, GetURL());
+}
+
 void PrefetchContainer::OnUnregisterCandidate(
     const GURL& navigated_url,
     bool is_served,

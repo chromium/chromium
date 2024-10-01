@@ -53,6 +53,17 @@ class MockContainer {
            no_vary_search_data->AreEquivalent(url, GetURL());
   }
 
+  bool ShouldWaitForNoVarySearchHeader(const GURL& url) const {
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
+        GetNoVarySearchHint();
+    // It's not trivial to implement `PrefetchContainer::GetNonRedirectHead()`.
+    // Use `servable_state_` instead.
+    bool simulate_get_non_redirect_head_is_null =
+        (servable_state_ != PrefetchContainer::ServableState::kServable);
+    return simulate_get_non_redirect_head_is_null && no_vary_search_hint &&
+           no_vary_search_hint->AreEquivalent(url, GetURL());
+  }
+
   // We don't test on this property.
   bool HasPrefetchBeenConsideredToServe() const { return false; }
 

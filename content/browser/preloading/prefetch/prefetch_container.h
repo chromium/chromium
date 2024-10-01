@@ -657,6 +657,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool IsExactMatch(const GURL& url) const;
   bool IsNoVarySearchHeaderMatch(const GURL& url) const;
+  // Checks that the URL matches to the NoVarySearch hint with a precondition.
+  //
+  // The precondition is that a non redirect header is not received, as
+  // NoVarySearch hint is a mechanism to wait prefetches that is expected to
+  // receive NoVarySearch header.
+  bool ShouldWaitForNoVarySearchHeader(const GURL& url) const;
 
   // Records metrics when serving result is determined.
   //
