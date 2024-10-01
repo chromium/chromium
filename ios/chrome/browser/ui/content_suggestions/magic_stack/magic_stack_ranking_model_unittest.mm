@@ -349,6 +349,7 @@ class MagicStackRankingModelTest : public PlatformTest {
                                             GetForProfile(GetBrowserState())
                     shoppingService:commerce::ShoppingServiceFactory::
                                         GetForBrowserState(GetBrowserState())
+                        authService:authenticationService
                         prefService:GetBrowserState()->GetPrefs()
                          localState:GetLocalState()
                     moduleMediators:@[

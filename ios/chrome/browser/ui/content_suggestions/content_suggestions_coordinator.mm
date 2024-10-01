@@ -356,7 +356,7 @@
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
   }
-  if (IsPriceTrackingPromoCardEnabled(shoppingService)) {
+  if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(
@@ -441,6 +441,7 @@
                   shoppingService:commerce::ShoppingServiceFactory::
                                       GetForBrowserState(
                                           self.browser->GetBrowserState())
+                      authService:self.authService
                       prefService:prefs
                        localState:GetApplicationContext()->GetLocalState()
                   moduleMediators:moduleMediators];
