@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("blind_sign_message_android_impl") {
+  sources = [
+    "blind_sign_message_android_impl.cc",
+    "blind_sign_message_android_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+  deps = [ "//components/ip_protection/common:ip_protection_telemetry" ]
+}
+
+source_set("blind_sign_message_android_impl_unittest") {
+  testonly = true
+  sources = [ "blind_sign_message_android_impl_unittest.cc" ]
+  deps = [
+    ":blind_sign_message_android_impl",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("ip_protection_token_ipc_fetcher") {
+  sources = [
+    "ip_protection_token_ipc_fetcher.cc",
+    "ip_protection_token_ipc_fetcher.h",
+  ]
+  public_deps = [
+    ":blind_sign_message_android_impl",
+    "//base",
+    "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    "//components/ip_protection/common:ip_protection_token_fetcher",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+}

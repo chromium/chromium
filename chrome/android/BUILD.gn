@@ -602,7 +602,6 @@ if (current_toolchain == default_toolchain) {
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
       "//components/installedapp/android:java",
-      "//components/ip_protection/android/android_auth_client_lib/client:ip_protection_auth_client_java",
       "//components/javascript_dialogs/android:java",
       "//components/language/android:java",
       "//components/location/android:location_java",

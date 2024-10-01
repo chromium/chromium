@@ -155,6 +155,14 @@ class IpProtectionTelemetry {
 
 // Get the singleton instance of this type. This will be implemented by each
 // subclass, with only one being built on any particular platform.
+//
+// TODO: https://crbug.com/352005196 - this mechanism basically relies on
+// dependency injection through the build system, which is awkward as it means
+// this module will not link on its own, opens the door to conflicting
+// definitions coming from separate branches of the build graph, and it also
+// makes it impossible to pass state. This should be made explicit through
+// proper dependency injection (i.e. having platform-specific code explicitly
+// pass an instance of `IpProtectionTelemetry` to code that needs it).
 IpProtectionTelemetry& Telemetry();
 
 }  // namespace ip_protection

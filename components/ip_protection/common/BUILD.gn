@@ -1,0 +1,440 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ip_protection_config_getter") {
+  sources = [ "ip_protection_config_getter.h" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("ip_protection_config_getter_mojo_impl") {
+  sources = [
+    "ip_protection_config_getter_mojo_impl.cc",
+    "ip_protection_config_getter_mojo_impl.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_data_types",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+  deps = [ ":ip_protection_core_impl" ]
+}
+
+source_set("ip_protection_config_http") {
+  sources = [
+    "ip_protection_config_http.cc",
+    "ip_protection_config_http.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("ip_protection_config_http_unittest") {
+  testonly = true
+  sources = [ "ip_protection_config_http_unittest.cc" ]
+  deps = [
+    ":ip_protection_config_http",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_control") {
+  sources = [ "ip_protection_control.h" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_control_mojo") {
+  sources = [
+    "ip_protection_control_mojo.cc",
+    "ip_protection_control_mojo.h",
+  ]
+  public_deps = [
+    ":ip_protection_control",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("ip_protection_core") {
+  sources = [ "ip_protection_core.h" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_token_manager",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_core_host_helper") {
+  sources = [
+    "ip_protection_core_host_helper.cc",
+    "ip_protection_core_host_helper.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+    "//components/ip_protection:get_proxy_config_proto",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("ip_protection_core_impl") {
+  sources = [
+    "ip_protection_core_impl.cc",
+    "ip_protection_core_impl.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_control",
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_token_manager",
+    "//base",
+    "//net",
+  ]
+  deps = [
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_manager_impl",
+  ]
+}
+
+source_set("ip_protection_core_impl_unittest") {
+  testonly = true
+  sources = [ "ip_protection_core_impl_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_impl",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_proxy_config_manager_impl",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_data_types") {
+  sources = [
+    "ip_protection_data_types.cc",
+    "ip_protection_data_types.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("ip_protection_data_types_unittest") {
+  testonly = true
+  sources = [ "ip_protection_data_types_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_proxy_config_direct_fetcher") {
+  sources = [
+    "ip_protection_proxy_config_direct_fetcher.cc",
+    "ip_protection_proxy_config_direct_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_fetcher",
+    "//base",
+    "//components/ip_protection:get_proxy_config_proto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("ip_protection_proxy_config_direct_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_proxy_config_direct_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_host_helper",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_direct_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_proxy_config_fetcher") {
+  sources = [
+    "ip_protection_proxy_config_fetcher.cc",
+    "ip_protection_proxy_config_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("ip_protection_proxy_config_manager") {
+  sources = [ "ip_protection_proxy_config_manager.h" ]
+}
+
+source_set("ip_protection_proxy_config_manager_impl") {
+  sources = [
+    "ip_protection_proxy_config_manager_impl.cc",
+    "ip_protection_proxy_config_manager_impl.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    "//base",
+    "//net",
+  ]
+  deps = [ ":ip_protection_telemetry" ]
+}
+
+source_set("ip_protection_proxy_config_manager_impl_unittest") {
+  testonly = true
+  sources = [ "ip_protection_proxy_config_manager_impl_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_telemetry",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_proxy_delegate") {
+  sources = [
+    "ip_protection_proxy_delegate.cc",
+    "ip_protection_proxy_delegate.h",
+  ]
+  public_deps = [
+    ":ip_protection_core",
+    ":ip_protection_telemetry",
+    ":masked_domain_list_manager",
+    "//base",
+    "//net",
+  ]
+  deps = [
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_token_manager_impl",
+  ]
+}
+
+source_set("ip_protection_proxy_delegate_unittest") {
+  testonly = true
+  sources = [ "ip_protection_proxy_delegate_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_impl",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_proxy_delegate",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_manager",
+    ":masked_domain_list_manager",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net:gtest_util",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_telemetry") {
+  sources = [ "ip_protection_telemetry.h" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("ip_protection_telemetry_uma") {
+  sources = [
+    "ip_protection_telemetry_uma.cc",
+    "ip_protection_telemetry_uma.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_telemetry",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_token_direct_fetcher") {
+  sources = [
+    "ip_protection_token_direct_fetcher.cc",
+    "ip_protection_token_direct_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_http",
+    ":ip_protection_token_fetcher",
+    "//base",
+    "//services/network/public/cpp",
+  ]
+  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+}
+
+source_set("ip_protection_token_fetcher") {
+  sources = [
+    "ip_protection_token_fetcher.cc",
+    "ip_protection_token_fetcher.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+}
+
+source_set("ip_protection_token_manager") {
+  sources = [ "ip_protection_token_manager.h" ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_data_types",
+  ]
+}
+
+source_set("ip_protection_token_manager_impl") {
+  sources = [
+    "ip_protection_token_manager_impl.cc",
+    "ip_protection_token_manager_impl.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_token_manager",
+    "//base",
+  ]
+  deps = [ ":ip_protection_telemetry" ]
+}
+
+source_set("ip_protection_token_manager_impl_unittest") {
+  testonly = true
+  sources = [ "ip_protection_token_manager_impl_unittest.cc" ]
+  deps = [
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_manager",
+    ":ip_protection_token_manager_impl",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("masked_domain_list_manager") {
+  sources = [
+    "masked_domain_list_manager.cc",
+    "masked_domain_list_manager.h",
+  ]
+  public_deps = [
+    ":url_matcher_with_bypass",
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+  deps = [
+    ":ip_protection_telemetry",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("masked_domain_list_manager_unittest") {
+  testonly = true
+  sources = [ "masked_domain_list_manager_unittest.cc" ]
+  deps = [
+    ":masked_domain_list_manager",
+    "//base",
+    "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("mock_blind_sign_auth") {
+  testonly = true
+  sources = [
+    "mock_blind_sign_auth.cc",
+    "mock_blind_sign_auth.h",
+  ]
+  public_deps = [
+    "//net/third_party/quiche:blind_sign_auth",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("url_matcher_with_bypass") {
+  sources = [
+    "url_matcher_with_bypass.cc",
+    "url_matcher_with_bypass.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("url_matcher_with_bypass_unittest") {
+  testonly = true
+  sources = [ "url_matcher_with_bypass_unittest.cc" ]
+  deps = [
+    ":url_matcher_with_bypass",
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+}
