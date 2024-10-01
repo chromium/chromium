@@ -1279,18 +1279,14 @@ bool ShouldBoostRenderProcessForLoading(
     return is_prerendering;
   }
 
-  if (is_prerendering &&
-      blink::features::kBoostRenderProcessForLoadingPrioritizePrerendering
-          .Get()) {
-    return true;
-  }
-
   switch (lifecycle_state) {
     case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
     case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
     case RenderFrameHostImpl::LifecycleStateImpl::kActive:
       return true;
     case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+      return blink::features::
+          kBoostRenderProcessForLoadingPrioritizePrerendering.Get();
     case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
     case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
     case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
@@ -1361,7 +1357,7 @@ bool IsTargetUrlOfBoostRenderProcessForLoading(const GURL& url) {
 void RecordIsProcessBackgrounded(const char* timing_string,
                                  base::Process::Priority process_priority) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Navigation.IsProcessBackgrounded.", timing_string}),
+      base::StrCat({"Navigation.IsProcessBackgrounded2.", timing_string}),
       process_priority == base::Process::Priority::kBestEffort);
 }
 
@@ -11831,17 +11827,18 @@ void RenderFrameHostImpl::CommitNavigation(
           .Record(ukm::UkmRecorder::Get());
     }
 
-    if (ShouldBoostRenderProcessForLoading(lifecycle_state_,
+    if (common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame() &&
+        ShouldBoostRenderProcessForLoading(lifecycle_state_,
                                            frame_tree_->is_prerendering()) &&
-        common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame() &&
         // By default, bump the process priority only for browser (embedder)
         // initiated prerendering, as a user is more likely to visit the page
         // than the renderer initiated prerendering (i.e., speculation rules).
         (!navigation_request->IsRendererInitiated() ||
-         BoostRendererInitiatedNavigation())) {
-      if (IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
-        BoostRenderProcessForLoading();
-      }
+         BoostRendererInitiatedNavigation()) &&
+        IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
+      BoostRenderProcessForLoading();
+    }
+    if (common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
       RecordIsProcessBackgrounded("OnCommit", GetProcess()->GetPriority());
     }
 

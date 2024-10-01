@@ -1224,7 +1224,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.IsProcessBackgrounded.{Timing}" enum="Boolean"
+<histogram name="Navigation.IsProcessBackgrounded2.{Timing}" enum="Boolean"
     expires_after="2025-02-16">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
