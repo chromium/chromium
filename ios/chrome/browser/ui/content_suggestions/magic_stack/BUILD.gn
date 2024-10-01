@@ -33,6 +33,7 @@ source_set("ranking_model") {
     "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//components/segmentation_platform/embedder/home_modules",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/public",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
@@ -42,6 +43,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
@@ -54,6 +56,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
+    "//ios/chrome/browser/ui/content_suggestions/tips",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -123,6 +126,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
+    "//ios/chrome/browser/ui/content_suggestions/tips",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",

@@ -1985,6 +1985,15 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.Tips" units="index"
+    expires_after="2025-01-26">
+  <owner>bwwilliams@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Tips module when a user clicks on it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Disabled" enum="IOSMagicStackModuleType"
     expires_after="2025-05-03">
   <owner>thegreenfrog@chromium.org</owner>

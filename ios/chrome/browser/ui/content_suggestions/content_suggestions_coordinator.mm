@@ -26,6 +26,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -132,6 +133,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
@@ -147,6 +149,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
+using segmentation_platform::TipIdentifier;
 
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsCommands,
@@ -227,6 +231,7 @@
   // Module mediators.
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  TipsMagicStackMediator* _tipsMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
@@ -410,6 +415,13 @@
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
   }
+
+  if (IsTipsMagicStackEnabled()) {
+    _tipsMediator = [[TipsMagicStackMediator alloc]
+        initWithIdentifier:TipIdentifier::kUnknown];
+    [moduleMediators addObject:_tipsMediator];
+  }
+
   if (!ShouldPutMostVisitedSitesInMagicStack()) {
     ContentSuggestionsViewController* viewController =
         [[ContentSuggestionsViewController alloc] init];
@@ -486,6 +498,7 @@
   _shortcutsMediator = nil;
   [_safetyCheckMediator disconnect];
   _safetyCheckMediator = nil;
+  _tipsMediator = nil;
   [_setUpListMediator disconnect];
   _setUpListMediator = nil;
   [_mostVisitedTilesMediator disconnect];
@@ -623,6 +636,12 @@
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       registry->NotifyCardShown(
           segmentation_platform::kPriceTrackingNotificationPromo);
+      break;
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      // TODO(crbug.com/370484933): Integrate the Tips (Magic Stack) module with
+      // the Ephemeral module infrastructure. Once integrated, notify the
+      // registry that the Tips card was shown.
       break;
     default:
       NOTREACHED();

@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tips") {
+  sources = [
+    "tips_magic_stack_mediator.h",
+    "tips_magic_stack_mediator.mm",
+    "tips_module_state.h",
+    "tips_module_state.mm",
+    "tips_module_view.h",
+    "tips_module_view.mm",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/content_suggestions/magic_stack:public" ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tips_magic_stack_mediator_unittest.mm",
+    "tips_module_view_unittest.mm",
+  ]
+  deps = [
+    ":tips",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//testing/gtest",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

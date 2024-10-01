@@ -398,6 +398,8 @@ the generic promo launch. -->
   <int value="13" label="Set Up List Notifications"/>
   <int value="14" label="Placeholder"/>
   <int value="15" label="Price Tracking Promo"/>
+  <int value="16" label="Tips (with Product Image)"/>
+  <int value="17" label="Tips"/>
 </enum>
 
 <enum name="IOSMiniMapConsentOutcome">

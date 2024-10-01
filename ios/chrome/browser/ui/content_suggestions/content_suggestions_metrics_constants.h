@@ -43,6 +43,7 @@ extern const char kMagicStackModuleEngagementTabResumptionIndexHistogram[];
 extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
 extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
 extern const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[];
+extern const char kMagicStackModuleEngagementTipsIndexHistogram[];
 extern const char kMagicStackModuleDisabledHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
 extern const char kIOSSafetyCheckMagicStackHiddenReason[];

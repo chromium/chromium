@@ -376,6 +376,9 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       // Price Tracking Promo design does not use title.
       return @"";
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     default:
       NOTREACHED_IN_MIGRATION();
       return @"";
@@ -498,9 +501,12 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kTips:
       return YES;
     case ContentSuggestionsModuleType::kTabResumption:
       return !IsTabResumption1_5Enabled();
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+      return NO;
     default:
       return NO;
   }

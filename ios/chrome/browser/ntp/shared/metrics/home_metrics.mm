@@ -198,6 +198,8 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
       // Ephemeral Card
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kInvalid:
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram,

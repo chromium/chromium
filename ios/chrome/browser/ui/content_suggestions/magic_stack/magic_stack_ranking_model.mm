@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import <optional>
+
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -11,6 +13,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
@@ -46,6 +50,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
+
+using segmentation_platform::TipIdentifier;
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
@@ -82,6 +90,7 @@
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  TipsMagicStackMediator* _tipsMediator;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
 }
@@ -130,6 +139,8 @@
         _safetyCheckMediator =
             static_cast<SafetyCheckMagicStackMediator*>(mediator);
         _safetyCheckMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[TipsMagicStackMediator class]]) {
+        _tipsMediator = static_cast<TipsMagicStackMediator*>(mediator);
       } else {
         // Known module mediators need to be handled.
         NOTREACHED_IN_MIGRATION();
@@ -147,6 +158,7 @@
   _priceTrackingPromoMediator = nil;
   _shortcutsMediator = nil;
   _safetyCheckMediator = nil;
+  _tipsMediator = nil;
 }
 
 #pragma mark - Public
@@ -354,6 +366,7 @@
   }
 
   MagicStackModule* card;
+
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
       if (IsPriceTrackingPromoCardEnabled(_shoppingService, _authService,
@@ -361,6 +374,43 @@
         _ephemeralCardToShow =
             ContentSuggestionsModuleType::kPriceTrackingPromo;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+        break;
+      }
+    }
+
+    // TODO(crbug.com/370484933): Integrate the Tips (Magic Stack) module with
+    // the Ephemeral module infrastructure. Once integrated, use the Ephemeral
+    // module's label targeting to determine which tip variation to show.
+    if (IsTipsMagicStackEnabled()) {
+      // Check if a forced tip state is set through Experimental Settings.
+      std::optional<int> forcedTipState =
+          experimental_flags::GetForcedTipsMagicStackState();
+
+      // Convert the forced tip state to a `TipIdentifier`, defaulting to
+      // `kUnknown` if no forced state is set.
+      TipIdentifier tipIdentifier =
+          static_cast<TipIdentifier>(forcedTipState.value_or(0));
+
+      // If not `kUnknown`, a forced tip state is active. Reconfigure the Tips
+      // mediator and module with the new forced tip, and add it to the Magic
+      // Stack.
+      if (tipIdentifier != TipIdentifier::kUnknown) {
+        // Check if the 'TipsMagicStackLensShopWithImage' experimental override
+        // is set to determine whether to display a product image inside the
+        // Lens Shop tip.
+        BOOL displayLensShopWithImage =
+            tipIdentifier == TipIdentifier::kLensShop &&
+            experimental_flags::ShouldDisplayLensShopTipWithImage();
+
+        _ephemeralCardToShow =
+            displayLensShopWithImage
+                ? ContentSuggestionsModuleType::kTipsWithProductImage
+                : ContentSuggestionsModuleType::kTips;
+
+        [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
+
+        card = _tipsMediator.state;
+
         break;
       }
     }
@@ -537,6 +587,13 @@
                                          .priceTrackingPromoItemToShow];
         }
         break;
+      case ContentSuggestionsModuleType::kTips:
+      case ContentSuggestionsModuleType::kTipsWithProductImage: {
+        if (IsTipsMagicStackEnabled()) {
+          [magicStackOrder addObject:_tipsMediator.state];
+        }
+        break;
+      }
       default:
         break;
     }
