@@ -465,39 +465,46 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
        base::Seconds(2), base::Seconds(0)},
       // max(0, 2 - 10)
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(2),
-       base::Seconds(0)},
+       base::Seconds(-1)},
       // max(0, 12 - 10)
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(12),
        base::Seconds(2)},
   };
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
   for (const auto& test_case : test_cases) {
     page_load_metrics::FakePageLoadMetricsObserverDelegate delegate;
     delegate.prerendering_state_ = test_case.prerendering_state;
     delegate.activation_start_ = test_case.activation_start;
 
-    base::TimeDelta got =
-        CorrectEventAsNavigationOrActivationOrigined(delegate, test_case.event);
-    EXPECT_EQ(test_case.expected_result, got);
+    auto test_expectation_runner =
+        [&](base::TimeDelta event,
+            std::optional<base::TimeDelta> expected_result) {
+          if (expected_result->is_negative()) {
+            EXPECT_DEATH(CorrectEventAsNavigationOrActivationOrigined(
+                             delegate, timing, event),
+                         "");
+          } else {
+            base::TimeDelta got = CorrectEventAsNavigationOrActivationOrigined(
+                delegate, timing, event);
+            EXPECT_EQ(expected_result, got);
+          }
+        };
+
+    test_expectation_runner(test_case.event, test_case.expected_result);
 
     // Currently, multiple implementations of PageLoadMetricsObserver is
     // ongoing. We'll left the old version for a while.
     // TODO(crbug.com/40222513): Delete below.
-
-    page_load_metrics::mojom::PageLoadTiming timing;
-    page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing.activation_start = test_case.activation_start;
-
-    base::TimeDelta got2 = CorrectEventAsNavigationOrActivationOrigined(
-        delegate, timing, test_case.event);
-    EXPECT_EQ(test_case.expected_result, got2);
+    test_expectation_runner(test_case.event, test_case.expected_result);
 
     // In some path, this function is called with old PageLoadTiming, which can
     // lack activation_start. The result is the same for such case.
     timing.activation_start = std::nullopt;
-    base::TimeDelta got3 = CorrectEventAsNavigationOrActivationOrigined(
-        delegate, timing, test_case.event);
-    EXPECT_EQ(test_case.expected_result, got3);
+    test_expectation_runner(test_case.event, test_case.expected_result);
   }
 }
 

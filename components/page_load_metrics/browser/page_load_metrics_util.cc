@@ -217,7 +217,8 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
       return zero;
     case PrerenderingState::kActivated: {
       base::TimeDelta corrected = event - delegate.GetActivationStart().value();
-      return std::max(zero, corrected);
+      CHECK_GE(corrected, zero);
+      return corrected;
     }
   }
 }
