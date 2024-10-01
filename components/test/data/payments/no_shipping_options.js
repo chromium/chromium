@@ -10,10 +10,10 @@
  */
 function buy() {  // eslint-disable-line
   try {
-    var details = {
+    const details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
     };
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{
           supportedMethods: 'basic-card',
           data: {

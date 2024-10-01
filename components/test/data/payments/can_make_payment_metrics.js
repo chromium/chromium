@@ -5,7 +5,7 @@
  */
 
 // Global variable. Used by abort().
-var request;
+let request;
 
 const bobPayMethod = Object.freeze({
   supportedMethods: 'https://bobpay.test',

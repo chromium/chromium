@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var request = null;
-var showPromise = null;
+let request = null;
+let showPromise = null;
 
 /**
  * Helper function that launches the PaymentRequest UI with the specified

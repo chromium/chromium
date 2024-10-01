@@ -90,7 +90,7 @@ async function getShowResponse(methodName) {
  *        objects.
  */
 function buyWithMethods(methodData) {
-  var request = new PaymentRequest(methodData, defaultDetails);
+  const request = new PaymentRequest(methodData, defaultDetails);
   run(() => {
     return request.canMakePayment();
   });
@@ -109,7 +109,7 @@ function show() {
  *        objects.
  */
 function showWithMethods(methodData) {
-  var request = new PaymentRequest(methodData, defaultDetails);
+  const request = new PaymentRequest(methodData, defaultDetails);
   run(() => {
     return request.show();
   });
@@ -128,8 +128,8 @@ function hasEnrolledInstrument() {
  *        objects.
  */
  function hasEnrolledInstrumentWithMethods(methodData) {
-  var request = new PaymentRequest(methodData, defaultDetails);
-  run(() => {
-    return request.hasEnrolledInstrument();
-  });
+   const request = new PaymentRequest(methodData, defaultDetails);
+   run(() => {
+     return request.hasEnrolledInstrument();
+   });
 }

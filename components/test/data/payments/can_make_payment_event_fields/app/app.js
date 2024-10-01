@@ -5,7 +5,7 @@
  */
 
 /** {object} - The "canmakepayment" event field check results. */
-let details = {};
+const details = {};
 
 self.addEventListener('canmakepayment', (event) => {
   // "if" condition checks.

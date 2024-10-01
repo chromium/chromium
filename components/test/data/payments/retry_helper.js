@@ -26,7 +26,7 @@ function getPaymentResponse(options) {
  * @return {Promise<PaymentResponse>} Payment response
  */
 function getPaymentResponseWithMethod(options, methodData) {
-  var details = {
+  const details = {
     total: {
       label: 'Total',
       amount: {
@@ -45,7 +45,7 @@ function getPaymentResponseWithMethod(options, methodData) {
     }],
   };
 
-  var request = new PaymentRequest(methodData, details, options);
+  const request = new PaymentRequest(methodData, details, options);
   request.onshippingaddresschange = function(e) {
     e.updateWith(details);
   };

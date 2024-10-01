@@ -6,9 +6,9 @@
 
 /** Invokes PaymentRequest with a very long request identifier. */
 function buy() {
-  var foo = Object.freeze({supportedMethods: 'basic-card'});
-  var defaultMethods = Object.freeze([foo]);
-  var defaultDetails = Object.freeze({
+  const foo = Object.freeze({supportedMethods: 'basic-card'});
+  const defaultMethods = Object.freeze([foo]);
+  const defaultDetails = Object.freeze({
     total: {
       label: 'Label',
       amount: {
@@ -17,12 +17,12 @@ function buy() {
       },
     },
   });
-  var newDetails = Object.assign({}, defaultDetails, {
+  const newDetails = Object.assign({}, defaultDetails, {
     id: ''.padStart(100000000, '\n very long id \t \n '),
   });
   try {
     // eslint-disable-next-line no-unused-vars
-    var request = new PaymentRequest(defaultMethods, newDetails);
+    const request = new PaymentRequest(defaultMethods, newDetails);
   } catch (error) {
     print(error);
   }

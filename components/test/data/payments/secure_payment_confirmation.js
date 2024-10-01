@@ -7,7 +7,7 @@
 // Most test callers immediately wait on the response from
 // |getStatusForMethodData|. However some tests trigger the UI and then interact
 // with it, and to support those we save the promise for later retrieval.
-var statusPromise = null;
+let statusPromise = null;
 
 /**
  * Return the outstanding status promise, if any.

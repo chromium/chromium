@@ -9,7 +9,7 @@ const METHOD_NAME = CURRENT_URL.substring(0, CURRENT_URL.lastIndexOf('/')) +
     '/method_manifest.json';
 const SW_SRC_URL = 'app.js';
 let request;
-let supportedInstruments = [];
+const supportedInstruments = [];
 
 /**
  * Delegates handling of the provided options to the payment handler.
@@ -20,7 +20,7 @@ async function enableDelegations(delegations) {
   info('enableDelegations: ' + JSON.stringify(delegations));
   try {
     await navigator.serviceWorker.ready;
-    let registration =
+    const registration =
         await navigator.serviceWorker.getRegistration(SW_SRC_URL);
     if (!registration) {
       return 'The payment handler is not installed.';

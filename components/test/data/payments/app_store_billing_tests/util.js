@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var timeoutID1;
-var timeoutID2;
+let timeoutID1;
+let timeoutID2;
 
 /**
  * Prints the given error message.
@@ -18,7 +18,7 @@ function error(msg) {
   if (timeoutID2) {
     window.clearTimeout(timeoutID2);
   }
-  let element = document.createElement('pre');
+  const element = document.createElement('pre');
   element.innerHTML = msg;
   element.className = 'error';
   document.getElementById('msg').appendChild(element);
@@ -39,7 +39,7 @@ function error(msg) {
  * @param {string} msg - The information message to print.
  */
 function info(msg) {
-  let element = document.createElement('pre');
+  const element = document.createElement('pre');
   element.innerHTML = msg;
   element.className = 'info';
   document.getElementById('msg').appendChild(element);
@@ -51,7 +51,7 @@ function info(msg) {
  * @return {object} The resulting dictionary.
  */
 function toDictionary(addr) {
-  let dict = {};
+  const dict = {};
   if (addr) {
     if (addr.toJSON) {
       return addr;
@@ -77,7 +77,7 @@ function toDictionary(addr) {
  * @param {PaymentResponse} resp - The payment response.
  */
 function done(message, resp) {
-  let element = document.getElementById('contents');
+  const element = document.getElementById('contents');
   element.innerHTML = message;
 
   if (resp.toJSON) {
@@ -85,23 +85,23 @@ function done(message, resp) {
     return;
   }
 
-  let shippingOption = resp.shippingOption ?
+  const shippingOption = resp.shippingOption ?
       'shipping, delivery, pickup option: ' + resp.shippingOption + '<br/>' :
       '';
 
-  let shippingAddress = resp.shippingAddress ?
+  const shippingAddress = resp.shippingAddress ?
       'shipping, delivery, pickup address: ' +
           JSON.stringify(toDictionary(resp.shippingAddress), undefined, 2) +
           '<br/>' :
       '';
 
-  let instrument =
+  const instrument =
       'instrument:' + JSON.stringify(resp.details, undefined, 2) + '<br/>';
 
-  let method = 'method: ' + resp.methodName + '<br/>';
-  let email = resp.payerEmail ? 'email: ' + resp.payerEmail + '<br/>' : '';
-  let phone = resp.payerPhone ? 'phone: ' + resp.payerPhone + '<br/>' : '';
-  let name = resp.payerName ? 'name: ' + resp.payerName + '<br/>' : '';
+  const method = 'method: ' + resp.methodName + '<br/>';
+  const email = resp.payerEmail ? 'email: ' + resp.payerEmail + '<br/>' : '';
+  const phone = resp.payerPhone ? 'phone: ' + resp.payerPhone + '<br/>' : '';
+  const name = resp.payerName ? 'name: ' + resp.payerName + '<br/>' : '';
 
 
   info(

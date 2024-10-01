@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var request;
-var request2;
+let request;
+let request2;
 
 /**
  * Show a Payment Request.

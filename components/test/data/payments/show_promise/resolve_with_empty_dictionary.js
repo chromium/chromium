@@ -15,7 +15,7 @@ function buy(supportedMethods) {
     return;
   }
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods}], {
           total: {
             label: 'Total',

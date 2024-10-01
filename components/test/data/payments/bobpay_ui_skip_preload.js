@@ -10,11 +10,11 @@
  * @return {PaymentRequest} The PaymentRequest object.
  */
 function initPaymentRequest() {
-  var supportedInstruments = [{
+  const supportedInstruments = [{
     supportedMethods: 'https://bobpay.test',
   }];
 
-  var details = {
+  const details = {
     total: {
       label: 'Donation',
       amount: {
@@ -49,7 +49,7 @@ function initPaymentRequest() {
  * showing.
  */
 function buy() {
-  var request = initPaymentRequest();
+  let request = initPaymentRequest();
   request.show()
       .then(function(instrumentResponse) {
         window.setTimeout(function() {
