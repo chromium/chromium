@@ -4029,6 +4029,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-supervised-user-new-profile-sign-in-iph",
+    "owners": ["anthie@google.com", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "enable-surface-control",
     "owners": [ "vikassoni@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 150

@@ -8105,6 +8105,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(
          supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings)},
+
+    {"enable-supervised-user-new-profile-sign-in-iph",
+     flag_descriptions::kEnableSupervisedUserProfileSignInIphName,
+     flag_descriptions::kEnableSupervisedUserProfileSignInIphDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHSupervisedUserProfileSigninFeature)},
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
