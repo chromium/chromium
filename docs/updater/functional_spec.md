@@ -1442,9 +1442,10 @@ If a user installs an app using an online installer, the updater will transition
 out of eula-required mode and begin normal operation.
 
 On Windows, applications can signal the updater that the user has accepted Terms
-of Service by writing `HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID}` →
-`usagestats` (DWORD): `1`. The updater will then transition out of eula-required
-mode and begin normal operation the next time it runs periodic tasks.
+of Service by writing
+`HKLM\SOFTWARE\{Company}\Update\ClientStateMedium\{AppID}` → `eulaaccepted`
+(DWORD): `1`. The updater will then transition out of eula-required mode and
+begin normal operation the next time it runs periodic tasks.
 
 Once operating normally, the updater only returns to eula-required mode when
 it is uninstalled and then reinstalled with `--eularequired`.
