@@ -9,37 +9,13 @@
   }
 </script>
 <script type=module>
-import {mojo} from "/gen/mojo/public/js/bindings.js";
-import {NonAssociatedWebTestControlHostRemote} from "/gen/content/web_test/common/web_test.mojom.m.js";
-import {ByteString} from "/gen/mojo/public/mojom/base/byte_string.mojom.m.js";
-import {LCPCriticalPathPredictorNavigationTimeHint} from "/gen/third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.m.js";
-
-if (!window.testRunner) {
-  console.log("This test requires window.testRunner.")
-}
-
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
-if (window.location.search != "?start") {
-  const hint = new LCPCriticalPathPredictorNavigationTimeHint();
-
-  hint.lcpInfluencerScripts = [
+import {setupLCPTest} from "../lcp_critical_path_predictor/resources/common.js";
+await setupLCPTest({
+  lcpInfluencerScripts : [
     {url: new URL('/low-priority-async-script-execution/resources/lcp-img-insert.js', location).toString()},
     {url: new URL('/low-priority-async-script-execution/resources/lcp-img-create.js', location).toString()}
-  ];
-  // All fields are non-nullable.
-  hint.lcpElementLocators = [];
-  hint.fetchedFonts = [];
-  hint.preconnectOrigins = [];
-  hint.unusedPreloads = [];
-
-  const web_test_control_host_remote = new NonAssociatedWebTestControlHostRemote();
-  web_test_control_host_remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
-  web_test_control_host_remote.setLCPPNavigationHint(hint);
-
-  window.location.search = '?start';
-}
-
+  ]
+});
 </script>
 <?php
 // Do not output the HTML below this PHP block until the test is reloaded with

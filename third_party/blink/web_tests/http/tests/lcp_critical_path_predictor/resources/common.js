@@ -3,15 +3,22 @@ import {mojo} from '/gen/mojo/public/js/bindings.js';
 import {ByteString} from '/gen/mojo/public/mojom/base/byte_string.mojom.m.js';
 import {LCPCriticalPathPredictorNavigationTimeHint} from '/gen/third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.m.js';
 
-export async function setupLCPTest(lcp_locator_protos) {
+export async function setupLCPTest(params = {}) {
+  if (!window.testRunner) {
+    console.log('This test requires window.testRunner.')
+  }
+
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+
   if (window.location.search != '?start') {
     const hint = new LCPCriticalPathPredictorNavigationTimeHint();
     // All fields are non-nullable.
     hint.lcpElementLocators = [];
-    hint.lcpInfluencerScripts = [];
-    hint.fetchedFonts = [];
-    hint.preconnectOrigins = [];
-    hint.unusedPreloads = [];
+    hint.lcpInfluencerScripts = params.lcpInfluencerScripts || [];
+    hint.fetchedFonts = params.fetchedFonts || [];
+    hint.preconnectOrigins = params.preconnectOrigins || [];
+    hint.unusedPreloads = params.unusedPreloads || [];
 
     let getLCPBytes = async function(proto_file) {
       const resp = await fetch(
@@ -23,10 +30,10 @@ export async function setupLCPTest(lcp_locator_protos) {
       return bytes;
     };
 
-    if (lcp_locator_protos) {
-      for (let proto of lcp_locator_protos) {
-        hint.lcpElementLocators.push(await getLCPBytes(proto));
-      }
+    const lcp_locator_protos =
+        Array.isArray(params) ? params : params.lcp_locator_protos || [];
+    for (let proto of lcp_locator_protos) {
+      hint.lcpElementLocators.push(await getLCPBytes(proto));
     }
 
     const web_test_control_host_remote =

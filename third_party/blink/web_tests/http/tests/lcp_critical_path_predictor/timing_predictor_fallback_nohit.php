@@ -2,13 +2,6 @@
 <script src="/priorities/resources/common.js"></script>
 <script type=module>
 import {setupLCPTest} from "./resources/common.js";
-
-if (!window.testRunner) {
-  console.log("This test requires window.testRunner.")
-}
-
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
 await setupLCPTest();
 </script>
 <?php
