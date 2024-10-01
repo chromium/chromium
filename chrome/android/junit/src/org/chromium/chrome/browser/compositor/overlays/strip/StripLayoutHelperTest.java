@@ -3924,13 +3924,16 @@ public class StripLayoutHelperTest {
         // Verify.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertTrue("Should be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
-        assertNotEquals("Should be tab margin after tab 0.", 0, tabs[0].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 4.", 0, tabs[4].getTrailingMargin());
+        assertNotEquals(
+                "Should be tab margin after tab 4.", 0, tabs[4].getTrailingMargin(), EPSILON);
 
         assertEquals(
                 "TouchableRect does not match. Touch size should match the strip during drag.",
@@ -3962,22 +3965,26 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertEquals(
                 "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 1.", 0, tabs[1].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin());
+        assertNotEquals(
+                "Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
 
         // Now hover between 1st and 2nd tab:
         // tabWidth(265) - overlapWidth(28) = 237
         mStripLayoutHelper.updateReorderPositionForTabDrop(237.f);
 
         // Verify.
-        assertNotEquals("Should be tab margin after tab 0.", 0, tabs[0].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin());
+        assertNotEquals(
+                "Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
     }
 
     @Test
@@ -4007,7 +4014,8 @@ public class StripLayoutHelperTest {
                 "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+        assertNotEquals(
+                "Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
 
         // Hover in end gap:
         mStripLayoutHelper.updateReorderPositionForTabDrop(1100);
@@ -4017,7 +4025,8 @@ public class StripLayoutHelperTest {
                 "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
-        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+        assertNotEquals(
+                "Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
     }
 
     @Test

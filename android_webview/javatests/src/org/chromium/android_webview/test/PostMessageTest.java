@@ -301,7 +301,7 @@ public class PostMessageTest extends AwParameterizedTest {
                                         mWebServer.getBaseUrl(),
                                         null);
                             } catch (UnsupportedEncodingException e) {
-                                Assert.fail();
+                                throw new RuntimeException(e);
                             }
                         });
         expectTitle(testString);

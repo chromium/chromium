@@ -121,6 +121,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         verify(mViewTreeObserver).removeOnGlobalLayoutListener(mImpl);
     }
 
+    @Test
     public void testRecalculateOmniboxAlignment_phone() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
@@ -138,6 +139,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                 alignment);
     }
 
+    @Test
     public void testRecalculateOmniboxAlignment_bottomWindowPadding() {
         mBottomWindowPadding = 40;
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();

@@ -465,7 +465,7 @@ public class JsSandboxServiceTest {
         // Invalid offset extending beyond end of file.
         // Note that file contains only ascii characters for testing purposes, hence we
         // can assume the length of the string to be the number of bytes it contains.
-        long offsetBeyondEof = fileContent.length() + 10;
+        long offsetBeyondEof = (long) fileContent.length() + 10;
         try (AssetFileDescriptor afd =
                 new AssetFileDescriptor(pfd, offsetBeyondEof, fileContent.length())) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -532,7 +532,7 @@ public class JsSandboxServiceTest {
         // Read only up to call to `hello();
         // File contains only ascii characters for testing purposes, hence we can predict the
         // number of bytes to remove from the end.
-        long length = fileContent.length() - "bye();".length();
+        long length = (long) fileContent.length() - "bye();".length();
         try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
@@ -588,7 +588,7 @@ public class JsSandboxServiceTest {
         // Declare length beyond EOF.
         // Note that file contains only ascii characters for testing purposes, hence we
         // can assume the length of the string to be the number of bytes it contains.
-        long length = fileContent.length() + 10;
+        long length = (long) fileContent.length() + 10;
         try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);

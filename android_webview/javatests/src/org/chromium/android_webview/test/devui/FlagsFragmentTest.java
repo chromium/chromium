@@ -572,10 +572,10 @@ public class FlagsFragmentTest {
         return flagInteraction;
     }
 
+    /** Verify if the baseFeature flag contains only "Default", "Enabled" , "Disabled" states. */
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    /** Verify if the baseFeature flag contains only "Default", "Enabled" , "Disabled" states. */
     public void testFlagStates_baseFeature() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
 
@@ -594,10 +594,10 @@ public class FlagsFragmentTest {
         testFlagStatesHelper(firstBaseFeaturePosition);
     }
 
+    /** Verify if the commandline flag contains only "Default", "Enabled" states. */
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    /** Verify if the commandline flag contains only "Default", "Enabled" states. */
     public void testFlagStates_commandLineFlag() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
 

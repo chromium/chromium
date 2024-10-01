@@ -51,7 +51,7 @@ public class SplashUtilsTest {
         try {
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
         } catch (Exception e) {
-            Assert.fail();
+            throw new RuntimeException(e);
         }
         int firstColor = pixels[0];
         for (int i = 1; i < pixels.length; ++i) {
