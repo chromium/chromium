@@ -1,8 +1,5 @@
 use simd_adler32::Adler32;
-use std::{
-    convert::TryInto,
-    io::{self, Seek, SeekFrom, Write},
-};
+use std::io::{self, Seek, SeekFrom, Write};
 
 use crate::tables::{
     BITMASKS, HUFFMAN_CODES, HUFFMAN_LENGTHS, LENGTH_TO_LEN_EXTRA, LENGTH_TO_SYMBOL,
@@ -82,32 +79,13 @@ impl<W: Write> Compressor<W> {
     }
 
     fn write_headers(&mut self) -> io::Result<()> {
-        self.write_bits(0x0178, 16)?; // zlib header
-
-        self.write_bits(0b1, 1)?; // BFINAL
-        self.write_bits(0b10, 2)?; // Dynamic Huffman block
-
-        self.write_bits((HUFFMAN_LENGTHS.len() - 257) as u64, 5)?; // # of length / literal codes
-        self.write_bits(0, 5)?; // 1 distance code
-        self.write_bits(15, 4)?; // 16 code length codes
-
-        // Write code lengths for code length alphabet
-        for _ in 0..3 {
-            self.write_bits(0, 3)?;
-        }
-        for _ in 0..16 {
-            self.write_bits(4, 3)?;
-        }
-
-        // Write code lengths for length/literal alphabet
-        for &len in &HUFFMAN_LENGTHS {
-            self.write_bits((len.reverse_bits() >> 4) as u64, 4)?;
-        }
-
-        // Write code lengths for distance alphabet
-        for _ in 0..1 {
-            self.write_bits(0b1000, 4)?;
-        }
+        const HEADER: [u8; 54] = [
+            120, 1, 237, 192, 3, 160, 36, 89, 150, 198, 241, 255, 119, 238, 141, 200, 204, 167,
+            114, 75, 99, 174, 109, 219, 182, 109, 219, 182, 109, 219, 182, 109, 105, 140, 158, 150,
+            74, 175, 158, 50, 51, 34, 238, 249, 118, 183, 106, 122, 166, 135, 59, 107, 213, 15,
+        ];
+        self.writer.write_all(&HEADER[..53]).unwrap();
+        self.write_bits(HEADER[53] as u64, 5)?;
 
         Ok(())
     }

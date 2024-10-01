@@ -13,14 +13,19 @@
 edition = "2021"
 rust-version = "1.57.0"
 name = "fdeflate"
-version = "0.3.4"
+version = "0.3.5"
 authors = ["The image-rs Developers"]
+build = false
 include = [
     "/src",
     "README.md",
     "LICENSE-APACHE",
     "LICENSE-MIT",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Fast specialized deflate implementation"
 homepage = "https://github.com/image-rs/fdeflate"
 documentation = "https://docs.rs/fdeflate"
@@ -28,6 +33,10 @@ readme = "README.md"
 categories = ["compression"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/image-rs/fdeflate"
+
+[lib]
+name = "fdeflate"
+path = "src/lib.rs"
 
 [dependencies.simd-adler32]
 version = "0.3.4"

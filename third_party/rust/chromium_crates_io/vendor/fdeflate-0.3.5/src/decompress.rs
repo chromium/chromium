@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 use simd_adler32::Adler32;
 
 use crate::tables::{
@@ -193,7 +191,7 @@ impl Decompressor {
     fn fill_buffer(&mut self, input: &mut &[u8]) {
         if input.len() >= 8 {
             self.buffer |= u64::from_le_bytes(input[..8].try_into().unwrap()) << self.nbits;
-            *input = &mut &input[(63 - self.nbits as usize) / 8..];
+            *input = &input[(63 - self.nbits as usize) / 8..];
             self.nbits |= 56;
         } else {
             let nbytes = input.len().min((63 - self.nbits as usize) / 8);
@@ -203,7 +201,7 @@ impl Decompressor {
                 .checked_shl(self.nbits as u32)
                 .unwrap_or(0);
             self.nbits += nbytes as u8 * 8;
-            *input = &mut &input[nbytes..];
+            *input = &input[nbytes..];
         }
     }
 
@@ -410,6 +408,12 @@ impl Decompressor {
         compression: &mut CompressedBlock,
         max_search_bits: u8,
     ) -> Result<(), DecompressionError> {
+        // If there is no code assigned for the EOF symbol then the bitstream is invalid.
+        if code_lengths[256] == 0 {
+            // TODO: Return a dedicated error in this case.
+            return Err(DecompressionError::BadLiteralLengthHuffmanTree);
+        }
+
         // Build the literal/length code table.
         let lengths = &code_lengths[..288];
         let codes: [u16; 288] = crate::compute_codes(&lengths.try_into().unwrap())
@@ -745,7 +749,7 @@ impl Decompressor {
                     (dist_entry >> 8) as u8,
                     dist_entry as u8,
                 )
-            } else {
+            } else if self.nbits > litlen_code_bits + length_extra_bits + 9 {
                 let mut dist_extra_bits = 0;
                 let mut dist_base = 0;
                 let mut dist_advance_bits = 0;
@@ -763,6 +767,8 @@ impl Decompressor {
                     return Err(DecompressionError::InvalidDistanceCode);
                 }
                 (dist_base, dist_extra_bits, dist_advance_bits)
+            } else {
+                break;
             };
             bits >>= dist_code_bits;
 
@@ -1068,7 +1074,7 @@ pub fn decompress_to_vec_bounded(
 
 #[cfg(test)]
 mod tests {
-    use crate::tables::{self, LENGTH_TO_LEN_EXTRA, LENGTH_TO_SYMBOL};
+    use crate::tables::{LENGTH_TO_LEN_EXTRA, LENGTH_TO_SYMBOL};
 
     use super::*;
     use rand::Rng;
@@ -1084,7 +1090,7 @@ mod tests {
         let decompressed = decompress_to_vec(&compressed).unwrap();
         assert_eq!(decompressed.len(), data.len());
         for (i, (a, b)) in decompressed.chunks(1).zip(data.chunks(1)).enumerate() {
-            assert_eq!(a, b, "chunk {}..{}", i * 1, i * 1 + 1);
+            assert_eq!(a, b, "chunk {}..{}", i, i + 1);
         }
         assert_eq!(&decompressed, data);
     }
@@ -1095,8 +1101,8 @@ mod tests {
         //     .bytes()
         //     .collect::<Result<Vec<_>, _>>()
         //     .unwrap();
-        let decompressed = decompress_to_vec(&data).unwrap();
-        let decompressed2 = miniz_oxide::inflate::decompress_to_vec_zlib(&data).unwrap();
+        let decompressed = decompress_to_vec(data).unwrap();
+        let decompressed2 = miniz_oxide::inflate::decompress_to_vec_zlib(data).unwrap();
         for i in 0..decompressed.len().min(decompressed2.len()) {
             if decompressed[i] != decompressed2[i] {
                 panic!(
@@ -1171,7 +1177,7 @@ mod tests {
 
     #[test]
     fn constant() {
-        roundtrip_miniz_oxide(&vec![0; 50]);
+        roundtrip_miniz_oxide(&[0; 50]);
         roundtrip_miniz_oxide(&vec![5; 2048]);
         roundtrip_miniz_oxide(&vec![128; 2048]);
         roundtrip_miniz_oxide(&vec![254; 2048]);
@@ -1266,5 +1272,63 @@ mod tests {
             assert_eq!(input_consumed, compressed.len());
             assert_eq!(output_written, 0);
         }
+    }
+
+    mod test_utils;
+    use test_utils::{decompress_by_chunks, TestDecompressionError};
+
+    fn verify_no_sensitivity_to_input_chunking(
+        input: &[u8],
+    ) -> Result<Vec<u8>, TestDecompressionError> {
+        let r_whole = decompress_by_chunks(input, vec![input.len()], false);
+        let r_bytewise = decompress_by_chunks(input, std::iter::repeat(1), false);
+        assert_eq!(r_whole, r_bytewise);
+        r_whole // Returning an arbitrary result, since this is equal to `r_bytewise`.
+    }
+
+    /// This is a regression test found by the `buf_independent` fuzzer from the `png` crate.  When
+    /// this test case was found, the results were unexpectedly different when 1) decompressing the
+    /// whole input (successful result) vs 2) decompressing byte-by-byte
+    /// (`Err(InvalidDistanceCode)`).
+    #[test]
+    fn test_input_chunking_sensitivity_when_handling_distance_codes() {
+        let result = verify_no_sensitivity_to_input_chunking(include_bytes!(
+            "../tests/input-chunking-sensitivity-example1.zz"
+        ))
+        .unwrap();
+        assert_eq!(result.len(), 281);
+        assert_eq!(simd_adler32::adler32(&result.as_slice()), 751299);
+    }
+
+    /// This is a regression test found by the `inflate_bytewise3` fuzzer from the `fdeflate`
+    /// crate.  When this test case was found, the results were unexpectedly different when 1)
+    /// decompressing the whole input (`Err(DistanceTooFarBack)`) vs 2) decompressing byte-by-byte
+    /// (successful result)`).
+    #[test]
+    fn test_input_chunking_sensitivity_when_no_end_of_block_symbol_example1() {
+        let err = verify_no_sensitivity_to_input_chunking(include_bytes!(
+            "../tests/input-chunking-sensitivity-example2.zz"
+        ))
+        .unwrap_err();
+        assert_eq!(
+            err,
+            TestDecompressionError::ProdError(DecompressionError::BadLiteralLengthHuffmanTree)
+        );
+    }
+
+    /// This is a regression test found by the `inflate_bytewise3` fuzzer from the `fdeflate`
+    /// crate.  When this test case was found, the results were unexpectedly different when 1)
+    /// decompressing the whole input (`Err(InvalidDistanceCode)`) vs 2) decompressing byte-by-byte
+    /// (successful result)`).
+    #[test]
+    fn test_input_chunking_sensitivity_when_no_end_of_block_symbol_example2() {
+        let err = verify_no_sensitivity_to_input_chunking(include_bytes!(
+            "../tests/input-chunking-sensitivity-example3.zz"
+        ))
+        .unwrap_err();
+        assert_eq!(
+            err,
+            TestDecompressionError::ProdError(DecompressionError::BadLiteralLengthHuffmanTree)
+        );
     }
 }
