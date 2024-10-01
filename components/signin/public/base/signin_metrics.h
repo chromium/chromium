@@ -671,6 +671,16 @@ void RecordOpenTabCountOnSignin(signin_metrics::AccessPoint access_point,
                                 signin::ConsentLevel consent_level,
                                 size_t tabs_count);
 
+// Records the history opt-in state, at the moment of signin or turning on sync.
+// For `ConsentLevel::kSync` users, this is true by default. Conversely, for
+// `ConsentLevel::kSignin` users, it's false by default, unless the same user
+// was previously signed in and has opted in then. Note that, depending on the
+// signin entry point and other conditions, the user may be presented with a
+// history opt-in right after this is recorded.
+void RecordHistoryOptInStateOnSignin(signin_metrics::AccessPoint access_point,
+                                     signin::ConsentLevel consent_level,
+                                     bool opted_in);
+
 // -----------------------------------------------------------------------------
 // User actions
 // -----------------------------------------------------------------------------

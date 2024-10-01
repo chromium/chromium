@@ -1803,14 +1803,36 @@ void SyncServiceImpl::OnAccountsInCookieUpdated(
 
 void SyncServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    return;
+  // When setting the primary account (at either ConsentLevel), record metrics.
+  for (signin::ConsentLevel consent_level :
+       {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+    switch (event_details.GetEventTypeFor(consent_level)) {
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
+        signin_metrics::AccessPoint access_point =
+            event_details.GetSetPrimaryAccountAccessPoint().value();
+
+        // The history opt-in state can only be queried after sync's internal
+        // account state has been updated. That may or may not have happened
+        // yet; depends on the order of IdentityManager observers
+        // (SyncServiceImpl vs SyncAuthManager).
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &SyncServiceImpl::RecordHistoryOptInStateOnSigninHistograms,
+                weak_factory_.GetWeakPtr(), access_point, consent_level));
+    }
   }
 
-  MaybeClearAccountKeyedPreferences(identity_manager_,
-                                    identity_manager_->GetAccountsInCookieJar(),
-                                    *user_settings_);
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    MaybeClearAccountKeyedPreferences(
+        identity_manager_, identity_manager_->GetAccountsInCookieJar(),
+        *user_settings_);
+  }
 }
 
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
@@ -2171,6 +2193,14 @@ void SyncServiceImpl::RemoveClientFromServer() const {
     sync_stopped_reporter_->ReportSyncStopped(access_token, cache_guid,
                                               birthday);
   }
+}
+
+void SyncServiceImpl::RecordHistoryOptInStateOnSigninHistograms(
+    signin_metrics::AccessPoint access_point,
+    signin::ConsentLevel consent_level) {
+  signin_metrics::RecordHistoryOptInStateOnSignin(
+      access_point, consent_level,
+      user_settings_->GetSelectedTypes().Has(UserSelectableType::kHistory));
 }
 
 const GURL& SyncServiceImpl::GetSyncServiceUrlForDebugging() const {

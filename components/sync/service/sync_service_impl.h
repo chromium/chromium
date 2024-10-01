@@ -346,6 +346,11 @@ class SyncServiceImpl : public SyncService,
   // Tell the sync server that this client has disabled sync.
   void RemoveClientFromServer() const;
 
+  // Records histograms about the history opt-in state.
+  void RecordHistoryOptInStateOnSigninHistograms(
+      signin_metrics::AccessPoint access_point,
+      signin::ConsentLevel consent_level);
+
   // True if setup has been completed at least once and is not in progress.
   bool CanConfigureDataTypes(bool bypass_setup_in_progress_check) const;
 

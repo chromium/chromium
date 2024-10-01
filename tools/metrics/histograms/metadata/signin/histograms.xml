@@ -1218,6 +1218,48 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.HistoryAlreadyOptedInAccessPoint.{ConsentLevel}"
+    enum="SigninAccessPoint" expires_after="2025-08-31">
+  <owner>treib@google.com</owner>
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the signin access point at the moment when the user is
+    {ConsentLevel} Chrome, if they're already opted in to history sync. See also
+    `Signin.HistoryOptInState.*`.
+  </summary>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.HistoryOptInState.{ConsentLevel}" enum="BooleanOptedIn"
+    expires_after="2025-08-31">
+  <owner>treib@google.com</owner>
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the user's history opt-in state, at the moment when the user is
+    {ConsentLevel} Chrome. For `ConsentLevel::kSync` users, this is true by
+    default, but may be false if the user had previously enabled sync and turned
+    history off. Conversely, for `ConsentLevel::kSignin` users, it's false by
+    default, unless the same user was previously signed in and has opted in
+    then. Note that, depending on the signin entry point and other conditions,
+    the user may be presented with a history opt-in right after this histogram
+    records a &quot;false&quot; sample - for those cases, see
+    `Signin.HistorySyncOptIn.Completed`. See also
+    `Signin.HistoryAlreadyOptedInAccessPoint.*`, which for the &quot;true&quot;
+    samples in this histogram records their signin access point.
+  </summary>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.HistorySyncOptIn.{OptInFlowEvent}"
     enum="SigninAccessPoint" expires_after="2025-02-23">
   <owner>myuu@google.com</owner>
