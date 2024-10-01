@@ -1092,7 +1092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedCertPolicyCacheSize" units="KB"
-    expires_after="2024-10-08">
+    expires_after="2025-10-08">
   <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
