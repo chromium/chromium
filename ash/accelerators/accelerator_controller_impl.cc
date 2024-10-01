@@ -1030,6 +1030,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kLockPressed:
     case AcceleratorAction::kLockReleased:
       return CanHandleLockButton(accelerator);
+    case AcceleratorAction::kResizePipWindow:
+      return accelerators::CanResizePipWindow();
 
     // The following are always enabled.
     case AcceleratorAction::kBrightnessDown:
@@ -1675,6 +1677,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case kTouchFingerprintSensor3:
       accelerators::TouchFingerprintSensor(3);
+      break;
+    case AcceleratorAction::kResizePipWindow:
+      accelerators::ResizePipWindow();
       break;
   }
 

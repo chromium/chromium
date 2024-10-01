@@ -188,6 +188,7 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="TilingWindowResizeUp"/>
   <int value="135" label="TilingWindowResizeDown"/>
   <int value="136" label="ToggleMouseKeys"/>
+  <int value="137" label="ResizePipWindow"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>

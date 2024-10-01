@@ -4216,6 +4216,9 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PIP" desc="Label for accelerator action - Focus on the picture-in-picture window.">
         Focus on the picture-in-picture window
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW" desc="Label for accelerator action - Resize the picture-in-picture window.">
+        Switch between the maximum or current size of the picture-in-picture window
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Move focus to previous pane.">
         Move focus to previous pane
       </message>

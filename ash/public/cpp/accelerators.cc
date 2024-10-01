@@ -313,6 +313,10 @@ const AcceleratorData kAcceleratorData[] = {
 
     // TODO(yusukes): Handle VKEY_MEDIA_STOP, and VKEY_MEDIA_LAUNCH_MAIL.
 
+    // PIP-resize shortcut.
+    {true, ui::VKEY_X, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kResizePipWindow},
+
     // ARC-specific shortcut.
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kToggleResizeLockMenu},

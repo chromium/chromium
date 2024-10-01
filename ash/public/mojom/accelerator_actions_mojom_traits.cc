@@ -291,6 +291,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kWindowMinimize;
     case ash::AcceleratorAction::kMinimizeTopWindowOnBack:
       return mojom_accelerator_action::kMinimizeTopWindowOnBack;
+    case ash::AcceleratorAction::kResizePipWindow:
+      return mojom_accelerator_action::kResizePipWindow;
     case ash::AcceleratorAction::kDebugClearUseKMeansPref:
       return mojom_accelerator_action::kDebugClearUseKMeansPref;
     case ash::AcceleratorAction::kDebugKeyboardBacklightToggle:
@@ -769,6 +771,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kMinimizeTopWindowOnBack:
       *out = ash::AcceleratorAction::kMinimizeTopWindowOnBack;
+      return true;
+    case mojom_accelerator_action::kResizePipWindow:
+      *out = ash::AcceleratorAction::kResizePipWindow;
       return true;
     case mojom_accelerator_action::kDebugClearUseKMeansPref:
       *out = ash::AcceleratorAction::kDebugClearUseKMeansPref;

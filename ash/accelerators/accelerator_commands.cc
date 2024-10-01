@@ -68,6 +68,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -652,6 +653,10 @@ bool CanPerformMagnifierZoom() {
          Shell::Get()->docked_magnifier_controller()->GetEnabled();
 }
 
+bool CanResizePipWindow() {
+  return Shell::Get()->pip_controller()->CanResizePip();
+}
+
 bool CanScreenshot(bool take_screenshot) {
   // |AcceleratorAction::kTakeScreenshot| is allowed when user session is
   // blocked.
@@ -1153,6 +1158,10 @@ void ResetDisplayZoom() {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(point);
   display_manager->ResetDisplayZoom(display.id());
+}
+
+void ResizePipWindow() {
+  Shell::Get()->pip_controller()->HandleKeyboardShortcut();
 }
 
 void RestoreTab() {

@@ -220,17 +220,17 @@ TEST_F(PipControllerTest, TuckHandleIsShownAtCorrectPosition) {
   EXPECT_FALSE(test_api.scoped_window_tucker());
 }
 
-
-class PipDoubleTapHandlerTest : public AshTestBase,
-                                public testing::WithParamInterface<bool> {
+class PipToggleResizeFeatureTest : public AshTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
-  PipDoubleTapHandlerTest()
+  PipToggleResizeFeatureTest()
       : scoped_feature_list_(features::kPipDoubleTapToResize) {}
 
-  PipDoubleTapHandlerTest(const PipDoubleTapHandlerTest&) = delete;
-  PipDoubleTapHandlerTest& operator=(const PipDoubleTapHandlerTest&) = delete;
+  PipToggleResizeFeatureTest(const PipToggleResizeFeatureTest&) = delete;
+  PipToggleResizeFeatureTest& operator=(const PipToggleResizeFeatureTest&) =
+      delete;
 
-  ~PipDoubleTapHandlerTest() override = default;
+  ~PipToggleResizeFeatureTest() override = default;
 
   std::unique_ptr<aura::Window> CreateAppWindow(
       const gfx::Rect& bounds,
@@ -272,11 +272,18 @@ class PipDoubleTapHandlerTest : public AshTestBase,
     }
   }
 
+  void PressHotKey(aura::Window* window) {
+    auto* event_generator = GetEventGenerator();
+
+    event_generator->PressKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
+    event_generator->ReleaseKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(PipDoubleTapHandlerTest, TestSingleClick) {
+TEST_P(PipToggleResizeFeatureTest, TestSingleClick) {
   // Tests that single clicking a normal window or a PiP window does not change
   // the bounds.
   for (WindowStateType state_type :
@@ -302,7 +309,7 @@ TEST_P(PipDoubleTapHandlerTest, TestSingleClick) {
   }
 }
 
-TEST_P(PipDoubleTapHandlerTest, TestDoubleClickWithPip) {
+TEST_P(PipToggleResizeFeatureTest, TestDoubleClickWithPip) {
   auto window = CreateAppWindow(gfx::Rect(kExpectedPipDefaultSize),
                                 WindowStateType::kPip);
 
@@ -311,7 +318,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickWithPip) {
   EXPECT_TRUE(WindowState::Get(window.get())->bounds_changed_by_user());
 }
 
-TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtMaxSize) {
+TEST_P(PipToggleResizeFeatureTest, TestDoubleClickAtMaxSize) {
   auto window =
       CreateAppWindow(gfx::Rect(kExpectedPipMaxSize), WindowStateType::kPip);
 
@@ -324,7 +331,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtMaxSize) {
             gfx::Rect(kExpectedPipDefaultSize));
 }
 
-TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtNonMaxSize) {
+TEST_P(PipToggleResizeFeatureTest, TestDoubleClickAtNonMaxSize) {
   auto window = CreateAppWindow(gfx::Rect(300, 300), WindowStateType::kPip);
 
   DoubleTapWindowCenter(window.get());
@@ -332,7 +339,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtNonMaxSize) {
   auto* window_state = WindowState::Get(window.get());
 
   EXPECT_TRUE(window_state->bounds_changed_by_user());
-  // Expect it to go to max size on the first double-click/tap.
+  // Expect it to go to max size on the first hotkey press.
   EXPECT_EQ(GetFakeWindowStateLastBounds(window_state),
             gfx::Rect(kExpectedPipMaxSize));
 
@@ -347,7 +354,40 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtNonMaxSize) {
   EXPECT_EQ(GetFakeWindowStateLastBounds(window_state), gfx::Rect(300, 300));
 }
 
+TEST_P(PipToggleResizeFeatureTest, TestHotkeyWithPipWindow) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300), WindowStateType::kPip);
+
+  PressHotKey(window.get());
+
+  auto* window_state = WindowState::Get(window.get());
+
+  EXPECT_TRUE(window_state->bounds_changed_by_user());
+}
+
+TEST_P(PipToggleResizeFeatureTest, TestHotKeyToggleTheSizeOfThePipWindow) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300), WindowStateType::kPip);
+
+  PressHotKey(window.get());
+
+  auto* window_state = WindowState::Get(window.get());
+
+  EXPECT_TRUE(window_state->bounds_changed_by_user());
+  // Expect it to go to max size on the first double-click/tap.
+  EXPECT_EQ(GetFakeWindowStateLastBounds(window_state),
+            gfx::Rect(kExpectedPipMaxSize));
+
+  window =
+      CreateAppWindow(gfx::Rect(kExpectedPipMaxSize), WindowStateType::kPip);
+  window_state = WindowState::Get(window.get());
+
+  // Check when re-pressing the hotkey, if the window goes back to the last
+  // user-defined size.
+  PressHotKey(window.get());
+  EXPECT_TRUE(window_state->bounds_changed_by_user());
+  EXPECT_EQ(GetFakeWindowStateLastBounds(window_state), gfx::Rect(300, 300));
+}
+
 // Assume true is for mouse clicks and false is for gesture taps.
-INSTANTIATE_TEST_SUITE_P(All, PipDoubleTapHandlerTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, PipToggleResizeFeatureTest, testing::Bool());
 
 }  // namespace ash

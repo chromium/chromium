@@ -754,6 +754,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
                                  /*locked=*/false,
                                  mojom::AcceleratorLayoutStyle::kDefault,
                                  mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kResizePipWindow,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kResizePipWindow,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW,
+            mojom::AcceleratorCategory::kDevice,
+            mojom::AcceleratorSubcategory::kMedia,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kKeyboardBacklightToggle,
         AcceleratorLayoutDetails(
             AcceleratorAction::kKeyboardBacklightToggle,

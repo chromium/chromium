@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PowerReleased"/>
   <variant name="PrintUiHierarchies"/>
   <variant name="PrivacyScreenToggle"/>
+  <variant name="ResizePipWindow"/>
   <variant name="RestoreTab"/>
   <variant name="RotateScreen"/>
   <variant name="RotateWindow"/>

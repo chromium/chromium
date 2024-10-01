@@ -322,6 +322,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kMediaPrevTrack,
     AcceleratorAction::kMediaFastForward,
     AcceleratorAction::kFocusPip,
+    AcceleratorAction::kResizePipWindow,
 
     // Device > Input
     AcceleratorAction::kKeyboardBacklightToggle,

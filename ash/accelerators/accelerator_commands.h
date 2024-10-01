@@ -111,6 +111,8 @@ ASH_EXPORT bool CanUnpinWindow();
 
 ASH_EXPORT bool CanWindowSnap();
 
+ASH_EXPORT bool CanResizePipWindow();
+
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.
 // Note: These functions should be independent and not depend on ui::Accelerator
@@ -448,6 +450,9 @@ ASH_EXPORT void WindowSnap(AcceleratorAction action);
 
 // Changes the display zooming up or down.
 ASH_EXPORT bool ZoomDisplay(bool up);
+
+// Resize the pip window.
+ASH_EXPORT void ResizePipWindow();
 
 }  // namespace accelerators
 }  // namespace ash
