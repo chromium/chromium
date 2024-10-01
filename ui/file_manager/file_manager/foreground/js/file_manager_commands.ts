@@ -22,7 +22,7 @@ import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash} from '../../common/js/trash.js';
-import {isNullOrUndefined, visitURL} from '../../common/js/util.js';
+import {debug, isNullOrUndefined, visitURL} from '../../common/js/util.js';
 import {FileSystemType, isRecentArcEntry, RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {readSubDirectories, updateFileData} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -124,7 +124,7 @@ export class UnmountCommand extends FilesCommand {
         await fileManager.volumeManager.unmount(volume);
       } catch (error) {
         console.warn('Cannot unmount (redacted):', error);
-        console.debug(`Cannot unmount '${volume.volumeId}':`, error);
+        debug(`Cannot unmount '${volume.volumeId}':`, error);
         if (error !== VolumeError.PATH_NOT_MOUNTED) {
           errorCallback(volume.volumeType);
         }

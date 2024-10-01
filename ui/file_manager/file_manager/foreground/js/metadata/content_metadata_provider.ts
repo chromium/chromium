@@ -334,7 +334,7 @@ export class ContentMetadataProvider extends MetadataProvider {
    * @param arglist Log arguments.
    */
   private onLog_(message: string) {
-    console.log('ContentMetadataProvider log:' + message);
+    console.info('ContentMetadataProvider log:' + message);
   }
 
   /**

@@ -8,6 +8,7 @@ import {getFileData} from '../../state/store.js';
 
 import {recordEnum} from './metrics.js';
 import {VolumeType} from './shared_types.js';
+import {debug} from './util.js';
 import {RootType} from './volume_manager_types.js';
 
 /**
@@ -71,7 +72,7 @@ export function recordViewingVolumeTypeUma(
   }
 
   if (!UMA_VOLUME_TYPES.includes(volumeType)) {
-    console.debug(`Unknown volume type: ${volumeType} for key ${fileKey}`);
+    debug(`Unknown volume type: ${volumeType} for key ${fileKey}`);
     console.warn(`Unknown volume type: ${volumeType}`);
     return;
   }

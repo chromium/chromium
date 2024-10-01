@@ -16,7 +16,7 @@ import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders, TRASH_CONFIG} from '../../common/js/trash.js';
-import {FileErrorToDomError} from '../../common/js/util.js';
+import {debug, FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {directoryContentSelector, fetchDirectoryContents} from '../../state/ducks/current_directory.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
@@ -1498,7 +1498,7 @@ export class StoreScanner extends ContentScanner {
     for (const k of keys) {
       const entry = getFileData(state, k)?.entry;
       if (!entry) {
-        console.debug(`Failed to find entry for ${k}`);
+        debug(`Failed to find entry for ${k}`);
         continue;
       }
       entries.push(entry);

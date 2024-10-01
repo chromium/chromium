@@ -19,7 +19,7 @@ import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../com
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
-import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
+import {debug, descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {type FileTasks as StoreFileTasks} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
@@ -683,7 +683,7 @@ export class FileTasks {
         await this.volumeManager_.cancelMounting(url);
       } catch (error) {
         console.warn('Cannot cancel archive (redacted):', error);
-        console.log(`Cannot cancel archive '${url}':`, error);
+        console.info(`Cannot cancel archive '${url}':`, error);
       }
     };
 
@@ -784,7 +784,7 @@ export class FileTasks {
       this.progressCenter_.updateItem(item);
 
       console.warn('Cannot mount (redacted):', error);
-      console.debug(`Cannot mount '${url}':`, error);
+      debug(`Cannot mount '${url}':`, error);
     }
   }
 

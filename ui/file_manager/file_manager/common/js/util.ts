@@ -296,3 +296,9 @@ export type DeepPartial<T> = T extends Builtin ? T : T extends {} ?
  */
 export type GetActionFactoryPayload<A extends ActionFactory<any>> =
     A extends ActionFactory<infer T>? T : unknown;
+
+
+export function debug(...vars: unknown[]) {
+  // eslint-disable-next-line no-console
+  console.debug(...vars);
+}

@@ -16,11 +16,11 @@ class ConsoleLogger implements MetadataParserLogger {
   }
 
   log(...args: Array<Object|string>) {
-    console.log(...args);
+    console.info(...args);
   }
 
   vlog(...args: Array<Object|string>) {
-    console.log(...args);
+    console.info(...args);
   }
 }
 

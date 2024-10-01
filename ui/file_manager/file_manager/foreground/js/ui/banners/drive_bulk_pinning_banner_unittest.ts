@@ -18,7 +18,7 @@ import type {DriveBulkPinningBanner} from './drive_bulk_pinning_banner.js';
 import type {EducationalBanner} from './educational_banner.js';
 
 export function setUp() {
-  console.log('Setting up drive-bulk-pinning-banner element');
+  console.info('Setting up drive-bulk-pinning-banner element');
   document.body.innerHTML = getTrustedHTML
   `<xf-bulk-pinning-dialog></xf-bulk-pinning-dialog>
       <drive-bulk-pinning-banner></drive-bulk-pinning-banner>`;

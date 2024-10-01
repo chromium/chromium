@@ -380,7 +380,7 @@ export async function directoryTreeExpandFolder() {
       'sub-folder-0', numberOfSubSubFolders);
 
   const testTime = Date.now() - start;
-  console.log(`[measurement] Test time: ${testTime}ms`);
+  console.info(`[measurement] Test time: ${testTime}ms`);
 }
 
 /**

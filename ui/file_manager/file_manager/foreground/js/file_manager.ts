@@ -29,7 +29,7 @@ import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
+import {debug, getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
 import type {VolumeType} from '../../common/js/volume_manager_types.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
@@ -633,7 +633,7 @@ export class FileManager {
       if (!this.bulkPinningInitialized_) {
         chrome.fileManagerPrivate.onBulkPinProgress.addListener(
             (progress: chrome.fileManagerPrivate.BulkPinProgress) => {
-              console.debug('Got bulk-pinning event:', progress);
+              debug('Got bulk-pinning event:', progress);
               this.store_.dispatch(updateBulkPinProgress(progress));
             });
 
@@ -642,7 +642,7 @@ export class FileManager {
 
       const progress = await promise;
       if (progress) {
-        console.debug('Got initial bulk-pinning state:', progress);
+        debug('Got initial bulk-pinning state:', progress);
         this.store_.dispatch(updateBulkPinProgress(progress));
       }
     } catch (e) {
@@ -807,7 +807,7 @@ export class FileManager {
       try {
         json = JSON.parse(decodeURIComponent(query));
       } catch (e) {
-        console.debug(`Error parsing location.search "${query}" due to ${e}`);
+        debug(`Error parsing location.search "${query}" due to ${e}`);
       }
     }
     this.launchParams_ = new LaunchParam(json);
@@ -1383,7 +1383,7 @@ export class FileManager {
           // don't need to log the failure.
           if (error1.name !== 'NotFoundError') {
             console.warn(error1.stack || error1);
-            console.log(error1);
+            console.info(error1);
           }
           if (error2.name !== 'NotFoundError') {
             console.warn(error2.stack || error2);
@@ -1586,7 +1586,7 @@ export class FileManager {
 
     if (this.bulkPinningAvailable_ !== prefs.driveFsBulkPinningAvailable) {
       this.bulkPinningAvailable_ = prefs.driveFsBulkPinningAvailable;
-      console.debug(`Bulk-pinning is now ${
+      debug(`Bulk-pinning is now ${
           this.bulkPinningAvailable_ ? 'available' : 'unavailable'}`);
       if (this.bulkPinningAvailable_) {
         await this.initBulkPinning_();
@@ -1645,13 +1645,13 @@ export class FileManager {
             NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE'])) {
       this.ui_.nudgeContainer.clearSeen(
           NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']);
-      console.debug('Reset OneDrive move to cloud nudge');
+      debug('Reset OneDrive move to cloud nudge');
     }
     if (prefs.officeFileMovedGoogleDrive === 0 &&
         await this.ui_.nudgeContainer.checkSeen(
             NudgeType['DRIVE_MOVED_FILE_NUDGE'])) {
       this.ui_.nudgeContainer.clearSeen(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
-      console.debug('Reset Google Drive move to cloud nudge');
+      debug('Reset Google Drive move to cloud nudge');
     }
   }
 
