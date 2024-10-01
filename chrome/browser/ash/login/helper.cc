@@ -240,5 +240,27 @@ bool IsFullManagementDisclosureNeeded(
          IsProxyUsed(local_state);
 }
 
+void SetAuthFactorsForUser(const AccountId& user,
+                           const SessionAuthFactors& auth_factors,
+                           LoginScreenModel* login_screen) {
+  cryptohome::AuthFactorsSet available_factors;
+  if (auth_factors.FindAnyPasswordFactor()) {
+    available_factors.Put(cryptohome::AuthFactorType::kPassword);
+  }
+  auto* pin_factor = auth_factors.FindPinFactor();
+  if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
+    available_factors.Put(cryptohome::AuthFactorType::kPin);
+  }
+  if (auth_factors.FindSmartCardFactor()) {
+    available_factors.Put(cryptohome::AuthFactorType::kSmartCard);
+  }
+  cryptohome::PinLockAvailability pin_available_at = std::nullopt;
+  if (pin_factor && pin_factor->GetPinStatus().IsLockedFactor()) {
+    pin_available_at = pin_factor->GetPinStatus().AvailableAt();
+  }
+  login_screen->SetAuthFactorsForUser(user, available_factors,
+                                      pin_available_at);
+}
+
 }  // namespace login
 }  // namespace ash

@@ -1067,24 +1067,9 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
                      << error->get_cryptohome_error();
           return;
         }
-        const auto& factors_data = user_context->GetAuthFactorsData();
-        cryptohome::AuthFactorsSet available_factors;
-        if (factors_data.FindAnyPasswordFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPassword);
-        }
-        auto* pin_factor = factors_data.FindPinFactor();
-        if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPin);
-        }
-        if (factors_data.FindSmartCardFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kSmartCard);
-        }
-        cryptohome::PinLockAvailability pin_available_at = std::nullopt;
-        if (pin_factor && pin_factor->GetPinStatus().IsLockedFactor()) {
-          pin_available_at = pin_factor->GetPinStatus().AvailableAt();
-        }
-        LoginScreen::Get()->GetModel()->SetAuthFactorsForUser(
-            user_context->GetAccountId(), available_factors, pin_available_at);
+        login::SetAuthFactorsForUser(user_context->GetAccountId(),
+                                     user_context->GetAuthFactorsData(),
+                                     LoginScreen::Get()->GetModel());
       }));
 }
 

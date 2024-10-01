@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 
@@ -75,8 +76,12 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   void OnAuthenticated(const AccountId& account_id,
                        base::OnceCallback<void(bool)> success_callback,
                        bool success);
+  void UpdateAuthFactorsAvailability(const user_manager::User* user);
   void UpdatePinKeyboardState(const AccountId& account_id);
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
+  void OnAuthSessionStarted(bool user_exists,
+                            std::unique_ptr<ash::UserContext> user_context,
+                            std::optional<ash::AuthenticationError> error);
   void OnPinCanAuthenticate(const AccountId& account_id,
                             bool can_authenticate,
                             cryptohome::PinLockAvailability available_at);
@@ -92,6 +97,8 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
 
   // Fetches system information and sends it to the UI over mojo.
   std::unique_ptr<MojoSystemInfoDispatcher> system_info_updater_;
+
+  AuthPerformer auth_performer_;
 
   base::WeakPtrFactory<ViewsScreenLocker> weak_factory_{this};
 };

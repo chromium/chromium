@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -45,7 +48,8 @@
 namespace ash {
 
 ViewsScreenLocker::ViewsScreenLocker()
-    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
+    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
+      auth_performer_(UserDataAuthClient::Get()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
   user_selection_screen_ =
       std::make_unique<ChromeUserSelectionScreen>(DisplayedScreen::LOCK_SCREEN);
@@ -76,8 +80,12 @@ void ViewsScreenLocker::Init(const user_manager::UserList& users) {
     // use them.
     for (user_manager::User* user :
          user_manager::UserManager::Get()->GetLoggedInUsers()) {
-      UpdatePinKeyboardState(user->GetAccountId());
-      UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      if (features::IsAllowPasswordlessSetupEnabled()) {
+        UpdateAuthFactorsAvailability(user);
+      } else {
+        UpdatePinKeyboardState(user->GetAccountId());
+        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      }
     }
   }
 
@@ -193,6 +201,18 @@ void ViewsScreenLocker::OnAuthenticated(
   }
 }
 
+void ViewsScreenLocker::UpdateAuthFactorsAvailability(
+    const user_manager::User* user) {
+  auto user_context = std::make_unique<UserContext>(*user);
+  const bool ephemeral =
+      user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+          user->GetAccountId());
+  auth_performer_.StartAuthSession(
+      std::move(user_context), ephemeral, ash::AuthSessionIntent::kVerifyOnly,
+      base::BindOnce(&ViewsScreenLocker::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       account_id, quick_unlock::Purpose::kUnlock,
@@ -206,6 +226,25 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
       ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
   LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
       account_id, enable_challenge_response);
+}
+
+void ViewsScreenLocker::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<ash::UserContext> user_context,
+    std::optional<ash::AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to start auth session, code "
+               << error->get_cryptohome_error();
+    return;
+  }
+  const AccountId& account_id = user_context->GetAccountId();
+  const auto& auth_factors = user_context->GetAuthFactorsData();
+  login::SetAuthFactorsForUser(account_id, auth_factors,
+                               LoginScreen::Get()->GetModel());
+  if (!auth_factors.FindPinFactor()) {
+    // Check for pref-based PIN.
+    UpdatePinKeyboardState(account_id);
+  }
 }
 
 void ViewsScreenLocker::OnPinCanAuthenticate(
