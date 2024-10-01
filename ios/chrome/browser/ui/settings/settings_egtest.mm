@@ -281,6 +281,10 @@ id<GREYMatcher> ClearBrowsingDataCell() {
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
           forUserPref:browsing_data::prefs::kDeleteTimePeriod];
 
+  // Disable closing tabs as it's on by default in delete browsing data.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   // Load `kUrl` and check that cookie is not set.

@@ -1112,6 +1112,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Set pref to select deletion of cookies.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1136,6 +1138,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Set pref to keep cookies.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1163,6 +1167,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCache];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1189,6 +1195,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCache];
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   [self openQuickDeleteFromThreeDotMenu];
 

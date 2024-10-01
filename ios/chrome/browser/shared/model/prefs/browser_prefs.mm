@@ -106,6 +106,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
@@ -1285,6 +1286,11 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kBrowserLockdownModeEnabled, prefs);
+
+  // Added 09/2024.
+  if (IsIosQuickDeleteEnabled()) {
+    browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
+  }
 }
 
 void MigrateObsoleteUserDefault() {
