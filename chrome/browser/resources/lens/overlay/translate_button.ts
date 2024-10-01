@@ -8,11 +8,12 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons_lit.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert, assertInstanceof} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -50,9 +51,11 @@ export interface TranslateButtonElement {
     languagePicker: HTMLDivElement,
     sourceAutoDetectButton: CrButtonElement,
     sourceLanguageButton: CrButtonElement,
+    sourceLanguagePickerBackButton: CrIconButtonElement,
     sourceLanguagePickerContainer: DomRepeat,
     sourceLanguagePickerMenu: HTMLDivElement,
     targetLanguageButton: CrButtonElement,
+    targetLanguagePickerBackButton: CrIconButtonElement,
     targetLanguagePickerContainer: DomRepeat,
     targetLanguagePickerMenu: HTMLDivElement,
     translateDisableButton: CrButtonElement,
@@ -79,6 +82,12 @@ export class TranslateButtonElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      languagePickerButtonsVisible: {
+        type: Boolean,
+        computed: `computeLanguagePickerButtonsVisible(
+              isTranslateModeEnabled, sourceLanguageMenuVisible,
+              targetLanguageMenuVisible)`,
+      },
       shouldShowStarsIcon: {
         type: Boolean,
         computed: 'computeShouldShowStarsIcon(sourceLanguage)',
@@ -100,6 +109,8 @@ export class TranslateButtonElement extends PolymerElement {
   private eventTracker_: EventTracker = new EventTracker();
   // Whether the translate mode on the lens overlay has been enabled.
   private isTranslateModeEnabled: boolean = false;
+  // Whether the language picker buttons are currently visible.
+  private languagePickerButtonsVisible: boolean;
   // Whether the stars icon is visible on the source language button.
   private shouldShowStarsIcon: boolean;
   // The currently selected source language to translate to. If null, we should
@@ -196,11 +207,19 @@ export class TranslateButtonElement extends PolymerElement {
   private onSourceLanguageButtonClick() {
     this.sourceLanguageMenuVisible = !this.sourceLanguageMenuVisible;
     this.targetLanguageMenuVisible = false;
+    // We need to wait for the language picker to render before focusing.
+    afterNextRender(this, () => {
+      this.$.sourceLanguagePickerBackButton.focus();
+    });
   }
 
   private onTargetLanguageButtonClick() {
     this.targetLanguageMenuVisible = !this.targetLanguageMenuVisible;
     this.sourceLanguageMenuVisible = false;
+    // We need to wait for the language picker to render before focusing.
+    afterNextRender(this, () => {
+      this.$.targetLanguagePickerBackButton.focus();
+    });
   }
 
   private onSourceLanguageMenuItemClick(event: PointerEvent) {
@@ -255,8 +274,10 @@ export class TranslateButtonElement extends PolymerElement {
       focusShimmerOnRegion(
           this, /*top=*/ 0, /*left=*/ 0, /*width=*/ 0, /*height=*/ 0,
           ShimmerControlRequester.TRANSLATE);
+      this.$.sourceLanguageButton.focus();
     } else {
       unfocusShimmer(this, ShimmerControlRequester.TRANSLATE);
+      this.$.translateEnableButton.focus();
     }
 
     // Dispatch event to let other components know the overlay translate mode
@@ -346,6 +367,14 @@ export class TranslateButtonElement extends PolymerElement {
   private hideLanguagePickerMenus() {
     this.$.sourceLanguagePickerMenu.scroll(0, 0);
     this.$.targetLanguagePickerMenu.scroll(0, 0);
+    // Depending on which language picker menu was opened, return focus to
+    // the corresponding language button.
+    if (this.sourceLanguageMenuVisible) {
+      this.$.sourceLanguageButton.focus();
+    } else {
+      this.$.targetLanguageButton.focus();
+    }
+
     this.targetLanguageMenuVisible = false;
     this.sourceLanguageMenuVisible = false;
   }
@@ -399,8 +428,13 @@ export class TranslateButtonElement extends PolymerElement {
     return this.isTranslateModeEnabled ? -1 : 0;
   }
 
-  private getTabIndexForLanguagePicker(): number {
-    return this.isTranslateModeEnabled ? 0 : -1;
+  private getTabIndexForLanguagePickerButtons(): number {
+    return this.computeLanguagePickerButtonsVisible() ? 0 : -1;
+  }
+
+  private computeLanguagePickerButtonsVisible(): boolean {
+    return this.isTranslateModeEnabled && !this.sourceLanguageMenuVisible &&
+        !this.targetLanguageMenuVisible;
   }
 
   private getAutoCheckedClass(

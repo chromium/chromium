@@ -397,8 +397,9 @@
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick"
-        aria-hidden="[[!isTranslateModeEnabled]]"
-        tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
+        aria-hidden="[[!languagePickerButtonsVisible]]"
+        tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
+                    sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
@@ -409,8 +410,9 @@
     <span id="arrowRightIcon"></span>
     <cr-button id="targetLanguageButton" class="button language-picker-button"
         on-click="onTargetLanguageButtonClick"
-        aria-hidden="[[!isTranslateModeEnabled]]"
-        tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
+        aria-hidden="[[!languagePickerButtonsVisible]]"
+        tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
+                    sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
         [[getTargetLanguageDisplayName(targetLanguage)]]
       </span>
@@ -419,17 +421,18 @@
   <div id="translateDisableButtonContainer">
     <cr-button id="translateDisableButton" class="button"
       on-click="onTranslateButtonClick"
-      aria-hidden="[[!isTranslateModeEnabled]]"
-      tabindex$="[[getTabIndexForLanguagePicker(isTranslateModeEnabled)]]">
+      aria-hidden="[[!languagePickerButtonsVisible]]"
+      tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
+                  sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
     </cr-button>
     <span id="translateDisableIcon" class="translate-icon"></span>
   </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
       aria-labelledby="sourceLanguageButton">
     <div class="language-picker-menu-title-section">
-      <cr-icon-button iron-icon="cr:arrow-back"
-          class="language-picker-menu-back-button" role="button"
-          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+      <cr-icon-button id="sourceLanguagePickerBackButton"
+          iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
+          role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
           on-click="hideLanguagePickerMenus"></cr-icon-button>
       <div class="language-picker-menu-title">$i18n{translateFrom}</div>
     </div>
@@ -471,9 +474,9 @@
   <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
       aria-labelledby="targetLanguageButton">
     <div class="language-picker-menu-title-section">
-      <cr-icon-button iron-icon="cr:arrow-back"
-          class="language-picker-menu-back-button" role="button"
-          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+      <cr-icon-button id="targetLanguagePickerBackButton"
+          iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
+          role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
           on-click="hideLanguagePickerMenus"></cr-icon-button>
       <div class="language-picker-menu-title">$i18n{translateTo}</div>
     </div>

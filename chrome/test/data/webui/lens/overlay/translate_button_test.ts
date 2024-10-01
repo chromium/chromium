@@ -590,4 +590,143 @@ suite('OverlayTranslateButton', function() {
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
   });
+
+  test('TranslateTabAndFocusOrder', async () => {
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Only the enable button should be tabbable.
+    assertEquals(
+        0, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // After clicking the translate button the source language button should
+    // have focus and the enable button should not be tabbable.
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.sourceLanguageButton);
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    // The source language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // None of the language picker buttons should be tabbable.
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+
+    // The back button in the source language picker menu should have focus.
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.sourceLanguagePickerBackButton);
+
+    // Clicking the back button should close the picker menu and return focus to
+    // the source language button.
+    overlayTranslateButtonElement.$.sourceLanguagePickerBackButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.sourceLanguageButton);
+
+    // Clicking the target language button should open the picker menu.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    // The target language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // None of the language picker buttons should be tabbable.
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+    // The back button in the target language picker menu should have focus.
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.targetLanguagePickerBackButton);
+
+    // Clicking the back button should close the picker menu and return focus to
+    // the target language button.
+    overlayTranslateButtonElement.$.targetLanguagePickerBackButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        0, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.targetLanguageButton);
+
+    // Clicking the translate disable button should close translate mode and
+    // return focus to the translate enable button.
+    overlayTranslateButtonElement.$.translateDisableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Only the enable button should be tabbable again.
+    assertEquals(
+        0, overlayTranslateButtonElement.$.translateEnableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.translateDisableButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.sourceLanguageButton.tabIndex);
+    assertEquals(
+        -1, overlayTranslateButtonElement.$.targetLanguageButton.tabIndex);
+
+    // Verify focus on the translate enable button.
+    assertEquals(
+        overlayTranslateButtonElement.shadowRoot!.activeElement,
+        overlayTranslateButtonElement.$.translateEnableButton);
+  });
 });
