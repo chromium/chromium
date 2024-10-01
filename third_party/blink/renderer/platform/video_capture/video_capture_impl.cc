@@ -490,6 +490,10 @@ VideoCaptureImpl::CreateVideoFrameInitData(
           video_frame_init_data.ready_buffer->info->is_premapped
               ? const_cast<uint8_t*>(buffer_context->data())
               : nullptr;
+      size_t premapped_data_size =
+          video_frame_init_data.ready_buffer->info->is_premapped
+              ? buffer_context->data_size()
+              : 0;
 
       // Clone the GpuMemoryBuffer and wrap it in a VideoFrame.
       std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
@@ -499,7 +503,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               buffer_context->GetGpuMemoryBuffer()->GetFormat(),
               gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
               gpu_factories_->GpuMemoryBufferManager(), pool_,
-              base::span<uint8_t>(premapped_data, buffer_context->data_size()));
+              base::span<uint8_t>(premapped_data, premapped_data_size));
       if (!buffer) {
         LOG(ERROR) << "Failed to open GpuMemoryBuffer handle";
         return std::nullopt;
