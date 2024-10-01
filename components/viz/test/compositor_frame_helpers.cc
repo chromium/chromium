@@ -290,6 +290,13 @@ RenderPassBuilder& RenderPassBuilder::SetQuadOffsetTag(const OffsetTag& tag) {
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetQuadMaskFilterInfo(
+    const gfx::MaskFilterInfo& mask_filter_info) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->mask_filter_info = mask_filter_info;
+  return *this;
+}
+
 SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
     const gfx::Rect rect,
     const gfx::Rect visible_rect) {

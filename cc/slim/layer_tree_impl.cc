@@ -627,6 +627,15 @@ void LayerTreeImpl::Draw(Layer& layer,
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
 
+    // If a mask filter from a parent layer that applies to tagged `layer` then
+    // the mask filter bounds shouldn't move based on offset. Currently viz
+    // assumes that mask bounds should move so don't allow this case. Allowing
+    // this would require plumbing a bool to viz that indicates if
+    // `SharedQuadState::mask_filter_info` should be translated, see
+    // crbug.com/361804880 for details
+    CHECK(!data.mask_filter_info_in_target.HasRoundedCorners() &&
+          !data.mask_filter_info_in_target.HasGradientMask());
+
     offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 
     // If `layer` has an offset tag then the position `layer` will be drawn at

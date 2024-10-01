@@ -397,6 +397,15 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
         auto& tag_data = offset_tag_data_[sqs->offset_tag];
         if (!tag_data.current_offset.IsZero()) {
           sqs->quad_to_target_transform.PostTranslate(tag_data.current_offset);
+
+          if (!sqs->mask_filter_info.IsEmpty()) {
+            // Slim compositor enforces that mask filter info isn't added on
+            // a fixed parent layer that has a child layer with offset tag, so
+            // we can assume the mask filter info should also be translated.
+            // See crbug.com/361804880 for details.
+            sqs->mask_filter_info.ApplyTransform(
+                gfx::Transform::MakeTranslation(tag_data.current_offset));
+          }
         }
       }
     }
