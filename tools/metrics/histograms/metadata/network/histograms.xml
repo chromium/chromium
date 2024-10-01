@@ -5143,6 +5143,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.ProxyResolution"
+    enum="IpProtectionProxyResolutionResult" expires_after="2025-01-02">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The result of IpProtectionProxyDelegate::OnResolveProxy's analysis of a
+    request. The enum values are in the order the checks occur, so for example
+    if the request does not match the MDL and the feature is not enabled,
+    `kNoMdlMatch` will be recorded, as that is checked first.
+
+    When the `MaskedDomainList` feature is disabled, this will always be
+    `kMdlNotPopulated`. Otherwise, when `EnableIpPrivacyProxy` is disabled, this
+    will be `kNoMdlMatch` or `kFeatureDisabled`, depending on whether the
+    request matches the MDL.
+
+    This histogram is emitted for every request that undergoes proxy resolution.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
     enum="IpProtectionEligibility" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>

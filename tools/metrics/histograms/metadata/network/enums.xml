@@ -651,6 +651,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Proxy B"/>
 </enum>
 
+<enum name="IpProtectionProxyResolutionResult">
+  <int value="0"
+      label="The MDL is not populated, so an eligility decision could not be
+             made"/>
+  <int value="1" label="The request did not match the MDL"/>
+  <int value="2" label="The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="3" label="The IP Protection setting is disabled"/>
+  <int value="4" label="Had proxy list, but no tokens for the current geo"/>
+  <int value="5" label="Had tokens for the current geo, but no proxy list"/>
+  <int value="6" label="Had neither proxy list nor tokens for the current geo"/>
+  <int value="7" label="The request was resolved to the IP Protection proxies"/>
+</enum>
+
 <enum name="IpProtectionTokenBatchRequestError">
   <int value="58877100" label="Failed to read timestamp"/>
   <int value="354921842" label="At least one extension is required"/>

@@ -23,6 +23,32 @@ enum class ProtectionEligibility {
   kMaxValue = kEligible,
 };
 
+// An enumeration of the disposition of a request. These values are persisted to
+// logs. The values are in the order that the checks occur, so for example if
+// the request does not match the MDL and the feature is not enabled,
+// `kNotMatchingMdl` will be recorded.
+//
+// Entries should not be renumbered and numeric values should never be reused.
+enum class ProxyResolutionResult {
+  // The MDL is not populated, so an eligility decision could not be made.
+  kMdlNotPopulated = 0,
+  // The request did not match the MDL.
+  kNoMdlMatch = 1,
+  // The EnableIpProtectionProxy feature is not enabled.
+  kFeatureDisabled = 2,
+  // The IP Protection setting is disabled.
+  kSettingDisabled = 3,
+  // Tokens for the current geo are not available.
+  kTokensNotAvailable = 4,
+  // The proxy list is not available.
+  kProxyListNotAvailable = 5,
+  // Neither tokens for the current geo, nor the proxy list, are available.
+  kTokensAndProxyListNotAvailable = 6,
+  // The request was resolved to use the IP Protection proxies.
+  kAttemptProxy = 7,
+  kMaxValue = kAttemptProxy,
+};
+
 // An enumeration of the result of an attempt to fetch a proxy list. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -84,17 +110,8 @@ class IpProtectionTelemetry {
   // OnResolveProxy.
   virtual void EmptyTokenCache(ProxyLayer) = 0;
 
-  // An eligibility determination has been made for a request, in a call to
-  // `OnResolveProxy`.
-  virtual void RequestIsEligibleForProtection(ProtectionEligibility) = 0;
-
-  // An availability determination has been made for a request, in a call to
-  // `OnResolveProxy`. This only occurs when the request is eligible and IP
-  // Protection is enabled. Protection is considered available if both tokens
-  // and a proxy list are available.
-  virtual void ProtectionIsAvailableForRequest(
-      bool are_auth_tokens_available,
-      bool is_proxy_list_available) = 0;
+  // An `OnResolveProxy` call has completed with the given result.
+  virtual void ProxyResolution(ProxyResolutionResult) = 0;
 
   // Results of a call to GetAuthToken. `is_token_available` is true if a token
   // was returned; `enable_token_caching_by_geo` represents the feature status;

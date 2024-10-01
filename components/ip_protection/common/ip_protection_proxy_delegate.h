@@ -64,12 +64,10 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
-  bool CheckEligibility(
+  ProxyResolutionResult ClassifyRequest(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
-  bool CheckAvailability(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::ProxyInfo* result);
 
   // Returns the equivalent of replacing all DIRECT proxies in
   // `existing_proxy_list` with the proxies in `custom_proxy_list`.

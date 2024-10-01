@@ -42,16 +42,14 @@ IpProtectionProxyDelegate::IpProtectionProxyDelegate(
 
 IpProtectionProxyDelegate::~IpProtectionProxyDelegate() = default;
 
-void IpProtectionProxyDelegate::OnResolveProxy(
+ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const std::string& method,
-    const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
   auto vlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
-    VLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
+    VLOG(3) << "IPPD::ClassifyRequest(" << url << ", "
             << (top_frame_site.has_value() ? top_frame_site.value()
                                            : net::SchemefulSite())
             << ") - " << message;
@@ -59,42 +57,78 @@ void IpProtectionProxyDelegate::OnResolveProxy(
 
   const std::string& always_proxy = net::features::kIpPrivacyAlwaysProxy.Get();
   if (!always_proxy.empty()) {
-    if (url.host() != always_proxy) {
-      return;
+    if (url.host() == always_proxy) {
+      return ip_protection::ProxyResolutionResult::kAttemptProxy;
     }
+    return ip_protection::ProxyResolutionResult::kNoMdlMatch;
+  }
+
+  // Check eligibility of this request.
+  if (!masked_domain_list_manager_->IsPopulated()) {
+    vlog("proxy allow list not populated");
+    return ip_protection::ProxyResolutionResult::kMdlNotPopulated;
+  } else if (!masked_domain_list_manager_->Matches(url,
+                                                   network_anonymization_key)) {
+    vlog("proxy allow list did not match");
+    return ip_protection::ProxyResolutionResult::kNoMdlMatch;
   } else {
-    // Note: We do not proxy requests if:
-    // - The allow list has not been populated.
-    // - The request doesn't match the allow list.
-    // - The token cache is not available.
-    // - The token cache does not have tokens.
-    // - No proxy list is available.
-    // - `kEnableIpProtection` is `false`.
-    // - `is_ip_protection_enabled_` is `false` (in other words, the user has
-    //   disabled IP Protection via user settings).
-    // - `kIpPrivacyDirectOnly` is `true`.
-    if (!CheckEligibility(url, network_anonymization_key)) {
-      return;
-    }
-    result->set_is_mdl_match(true);
+    vlog("proxy allow list matched");
+  }
 
-    // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
-    // done and IpProtectionProxyDelegate is only created in cases where IP
-    // Protection should be used, remove this check.
-    if (!base::FeatureList::IsEnabled(
-            net::features::kEnableIpProtectionProxy)) {
-      vlog("ip protection proxy cannot be enabled");
-      return;
-    }
+  result->set_is_mdl_match(true);
 
-    if (!ipp_core_->IsIpProtectionEnabled()) {
-      vlog("ip protection proxy is not currently enabled");
-      return;
-    }
-    const bool available = CheckAvailability(url, network_anonymization_key);
-    if (!available) {
-      return;
-    }
+  // Check availability. We do not proxy requests if:
+  // - The allow list has not been populated.
+  // - The request doesn't match the allow list.
+  // - The token cache is not available.
+  // - The token cache does not have tokens.
+  // - No proxy list is available.
+  // - `kEnableIpProtection` is `false`.
+  // - `is_ip_protection_enabled_` is `false` (in other words, the user has
+  //   disabled IP Protection via user settings).
+  // - `kIpPrivacyDirectOnly` is `true`.
+
+  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
+  // done and IpProtectionProxyDelegate is only created in cases where IP
+  // Protection should be used, remove this check.
+  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
+    vlog("ip protection proxy cannot be enabled");
+    return ip_protection::ProxyResolutionResult::kFeatureDisabled;
+  }
+
+  if (!ipp_core_->IsIpProtectionEnabled()) {
+    vlog("ip protection proxy is not currently enabled");
+    return ip_protection::ProxyResolutionResult::kSettingDisabled;
+  }
+  const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
+  const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
+  if (!auth_tokens_are_available && !proxy_list_is_available) {
+    vlog("neither proxy list nor auth token available");
+    return ip_protection::ProxyResolutionResult::
+        kTokensAndProxyListNotAvailable;
+  } else if (!auth_tokens_are_available) {
+    vlog("no auth token available from cache");
+    return ip_protection::ProxyResolutionResult::kTokensNotAvailable;
+  } else if (!proxy_list_is_available) {
+    vlog("no proxy list available from cache");
+    return ip_protection::ProxyResolutionResult::kProxyListNotAvailable;
+  }
+
+  return ip_protection::ProxyResolutionResult::kAttemptProxy;
+}
+
+void IpProtectionProxyDelegate::OnResolveProxy(
+    const GURL& url,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const std::string& method,
+    const net::ProxyRetryInfoMap& proxy_retry_info,
+    net::ProxyInfo* result) {
+  ip_protection::ProxyResolutionResult resolution_result =
+      ClassifyRequest(url, network_anonymization_key, result);
+  ip_protection::Telemetry().ProxyResolution(resolution_result);
+  if (resolution_result !=
+      ip_protection::ProxyResolutionResult::kAttemptProxy) {
+    return;
   }
 
   net::ProxyList proxy_list;
@@ -132,75 +166,17 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   }
 
   if (VLOG_IS_ON(3)) {
-    vlog(base::StrCat({"setting proxy list (before deprioritization) to ",
-                       proxy_list.ToDebugString()}));
+    std::optional<net::SchemefulSite> top_frame_site =
+        network_anonymization_key.GetTopFrameSite();
+    VLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
+            << (top_frame_site.has_value() ? top_frame_site.value()
+                                           : net::SchemefulSite())
+            << ") - setting proxy list (before deprioritization) to "
+            << proxy_list.ToDebugString();
   }
   result->OverrideProxyList(MergeProxyRules(result->proxy_list(), proxy_list));
   result->DeprioritizeBadProxyChains(proxy_retry_info);
   return;
-}
-
-bool IpProtectionProxyDelegate::CheckEligibility(
-    const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key) const {
-  ip_protection::ProtectionEligibility eligibility;
-  bool eligible;
-
-  auto vlog = [&](std::string message) {
-    std::optional<net::SchemefulSite> top_frame_site =
-        network_anonymization_key.GetTopFrameSite();
-    VLOG(3) << "IPPD::CheckEligibility(" << url << ", "
-            << (top_frame_site.has_value() ? top_frame_site.value()
-                                           : net::SchemefulSite())
-            << ") - " << message;
-  };
-  if (!masked_domain_list_manager_->IsPopulated()) {
-    vlog("proxy allow list not populated");
-    eligibility = ip_protection::ProtectionEligibility::kUnknown;
-    eligible = false;
-  } else if (!masked_domain_list_manager_->Matches(url,
-                                                   network_anonymization_key)) {
-    vlog("proxy allow list did not match");
-    eligibility = ip_protection::ProtectionEligibility::kIneligible;
-    eligible = false;
-  } else {
-    vlog("proxy allow list matched");
-    eligibility = ip_protection::ProtectionEligibility::kEligible;
-    eligible = true;
-  }
-
-  ip_protection::Telemetry().RequestIsEligibleForProtection(eligibility);
-  return eligible;
-}
-
-bool IpProtectionProxyDelegate::CheckAvailability(
-    const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key) const {
-  auto vlog = [&](std::string message) {
-    std::optional<net::SchemefulSite> top_frame_site =
-        network_anonymization_key.GetTopFrameSite();
-    VLOG(3) << "IPPD::CheckAvailability(" << url << ", "
-            << (top_frame_site.has_value() ? top_frame_site.value()
-                                           : net::SchemefulSite())
-            << ") - " << message;
-  };
-  const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
-  const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
-  ip_protection::Telemetry().ProtectionIsAvailableForRequest(
-      auth_tokens_are_available, proxy_list_is_available);
-  if (!auth_tokens_are_available) {
-    vlog("no auth token available from cache");
-    return false;
-  }
-  if (!proxy_list_is_available) {
-    // NOTE: When this `vlog()` and histogram are removed, there's no need to
-    // distinguish the case where a proxy list has not been downloaded, and the
-    // case where a proxy list is empty. The `IsProxyListAvailable()` method can
-    // be removed at that time.
-    vlog("no proxy list available from cache");
-    return false;
-  }
-  return true;
 }
 
 void IpProtectionProxyDelegate::OnSuccessfulRequestAfterFailures(
@@ -210,8 +186,8 @@ void IpProtectionProxyDelegate::OnSuccessfulRequestAfterFailures(
   }
 
   // A request was successful, but one or more proxies failed. If _only_ QUIC
-  // proxies failed, then we assume this is because QUIC is not working on this
-  // network, and stop injecting QUIC proxies into the proxy list.
+  // proxies failed, then we assume this is because QUIC is not working on
+  // this network, and stop injecting QUIC proxies into the proxy list.
   bool seen_quic = false;
   for (const auto& chain_and_info : proxy_retry_info) {
     const net::ProxyChain& proxy_chain = chain_and_info.first;
@@ -256,15 +232,15 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
         ipp_core_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
-      // The token value we have here is the full Authorization header value, so
-      // we can add it verbatim.
+      // The token value we have here is the full Authorization header value,
+      // so we can add it verbatim.
       extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
                                std::move(token->token));
     } else {
       vlog("no token available");
-      // This is an unexpected circumstance, but does happen in the wild. Rather
-      // than send the request to the proxy, which will reply with an error,
-      // mark the connection as failed immediately.
+      // This is an unexpected circumstance, but does happen in the wild.
+      // Rather than send the request to the proxy, which will reply with an
+      // error, mark the connection as failed immediately.
       return net::ERR_TUNNEL_CONNECTION_FAILED;
     }
   } else {
