@@ -52,8 +52,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/common/initialize_extensions_client.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_paths.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -176,7 +179,9 @@ void ChromeUnitTestSuite::InitializeProviders() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::RegisterPathProvider();
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EnsureExtensionsClientInitialized();
 #endif
 
