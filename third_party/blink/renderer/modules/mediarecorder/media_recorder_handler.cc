@@ -804,7 +804,7 @@ void MediaRecorderHandler::OnEncodedVideo(
     base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
 
-  if (encoded_data->empty() && encoded_data->side_data()->alpha_data.empty()) {
+  if (encoded_data->empty()) {
     // An encoder drops a frame. This can happen with VideoToolBox encoder as
     // there is no way to disallow the frame dropping with it.
     return;
