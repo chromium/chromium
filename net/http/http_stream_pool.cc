@@ -165,6 +165,10 @@ HttpStreamPool::~HttpStreamPool() {
   }
 }
 
+void HttpStreamPool::OnShuttingDown() {
+  is_shutting_down_ = true;
+}
+
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     HttpStreamPoolSwitchingInfo switching_info,
@@ -357,6 +361,10 @@ bool HttpStreamPool::IsPoolStalled() {
 }
 
 void HttpStreamPool::ProcessPendingRequestsInGroups() {
+  if (is_shutting_down_) {
+    return;
+  }
+
   // Loop until there is nothing more to do.
   while (true) {
     Group* group = FindHighestStalledGroup();

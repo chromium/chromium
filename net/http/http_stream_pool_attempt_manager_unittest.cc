@@ -477,6 +477,8 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   }
 
+  void DestroyHttpNetworkSession() { http_network_session_.reset(); }
+
   HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
   FakeServiceEndpointResolver* resolver() {
@@ -4597,6 +4599,38 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DirectProxyInfoForIpProtection) {
   EXPECT_THAT(requester.result(), Optional(IsOk()));
   EXPECT_EQ(requester.used_proxy_info().ToDebugString(),
             proxy_info.ToDebugString());
+}
+
+// Regression test for crbug.com/369744951. Ensures that destroying
+// an HttpNetworkSession, which owns an HttpStreamPool, doesn't cause a crash
+// when a StreamSocket is returned to the pool in the middle of the destruction.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       DestroyHttpNetworkSessionWithSpdySession) {
+  // Add a SpdySession. The session will be destroyed when the
+  // HttpNetworkSession is being destroyed. The underlying StreamSocket will be
+  // released to HttpStreamPool::Group.
+  CreateFakeSpdySession(
+      StreamKeyBuilder().set_destination("https://a.test").Build());
+
+  // Create a request to a different destination. The request never finishes.
+  StreamRequester requester;
+  requester.set_destination("https://b.test");
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Cancel the request before destructing HttpNetworkSession to avoid a
+  // dangling pointer.
+  requester.ResetRequest();
+
+  // Destroying HttpNetworkSession should not cause crash.
+  DestroyHttpNetworkSession();
 }
 
 }  // namespace net

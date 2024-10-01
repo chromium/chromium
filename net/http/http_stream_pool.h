@@ -112,6 +112,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   ~HttpStreamPool() override;
 
+  // Called when the owner of `this`, which is an HttpNetworkSession, starts
+  // the process of being destroyed.
+  void OnShuttingDown();
+
   // Requests an HttpStream.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
@@ -270,6 +274,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void OnPooledStreamRequestComplete(PooledStreamRequestHelper* helper);
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
+
+  // Set to true when this is in the process of being destructed. When true,
+  // don't process pending requests.
+  bool is_shutting_down_ = false;
 
   const StreamAttemptParams stream_attempt_params_;
 
