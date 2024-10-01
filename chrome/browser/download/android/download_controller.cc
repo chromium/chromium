@@ -24,7 +24,6 @@
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/android/dangerous_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
@@ -37,7 +36,6 @@
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/pref_names.h"
@@ -49,9 +47,6 @@
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
-#include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -188,64 +183,6 @@ bool ShouldOpenPdfInline(DownloadItem* item) {
   return context && context->GetDownloadManagerDelegate() &&
          context->GetDownloadManagerDelegate()->ShouldOpenPdfInline() &&
          !item->IsMustDownload() && item->IsTransient();
-}
-
-class DownloadBlocklistChecker
-    : public safe_browsing::SafeBrowsingDatabaseManager::Client,
-      public base::RefCounted<DownloadBlocklistChecker> {
- public:
-  explicit DownloadBlocklistChecker(download::DownloadItem* item)
-      : url_chain_(item->GetUrlChain()) {}
-
-  void Start() {
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager;
-    if (g_browser_process->safe_browsing_service()) {
-      database_manager =
-          g_browser_process->safe_browsing_service()->database_manager();
-    }
-
-    if (!database_manager ||
-        database_manager->CheckDownloadUrl(url_chain_, this)) {
-      Log(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
-    } else {
-      // Add a reference to this object to prevent it from being destroyed
-      // before url checking result is returned.
-      AddRef();
-    }
-  }
-
- private:
-  friend class base::RefCounted<DownloadBlocklistChecker>;
-
-  ~DownloadBlocklistChecker() override = default;
-
-  void Log(safe_browsing::SBThreatType threat_type) {
-    base::UmaHistogramEnumeration(
-        "SafeBrowsing.AndroidTelemetry.DownloadUrlChainThreatType",
-        threat_type);
-  }
-
-  // SafeBrowsingDatabaseManager::Client:
-  void OnCheckDownloadUrlResult(
-      const std::vector<GURL>& url_chain,
-      safe_browsing::SBThreatType threat_type) override {
-    Log(threat_type);
-    Release();  // Balanced by AddRef in Start.
-  }
-
-  std::vector<GURL> url_chain_;
-};
-
-void RecordDownloadBlocklistState(download::DownloadItem* item) {
-  // Startup in Chrome minimal mode may start a download before
-  // initializing the UI thread.
-  if (!content::BrowserThread::IsThreadInitialized(
-          content::BrowserThread::UI)) {
-    return;
-  }
-
-  auto checker = base::MakeRefCounted<DownloadBlocklistChecker>(item);
-  checker->Start();
 }
 
 void CleanupAppVerificationTimestamps(download::DownloadItem* item) {
@@ -505,8 +442,6 @@ void DownloadController::StartAndroidDownloadInternal(
 }
 
 void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
-  RecordDownloadBlocklistState(download_item);
-
   // For dangerous downloads, we need to show the dangerous infobar before the
   // download can start.
   if (!download_item->IsDangerous() &&

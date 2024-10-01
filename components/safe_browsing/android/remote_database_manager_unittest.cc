@@ -76,12 +76,6 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
     is_callback_called_ = true;
   }
 
-  void OnCheckDownloadUrlResult(const std::vector<GURL>& url_chain,
-                                SBThreatType threat_type) override {
-    EXPECT_EQ(expected_threat_type_, threat_type);
-    is_callback_called_ = true;
-  }
-
   bool IsCallbackCalled() { return is_callback_called_; }
 
  private:
@@ -176,23 +170,6 @@ TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
-}
-
-TEST_F(RemoteDatabaseManagerTest, CheckDownloadUrl) {
-  GURL url("https://example.com");
-  GURL referrer_url("https://unrelated.com");
-  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(url,
-                                                    SB_THREAT_TYPE_URL_MALWARE);
-  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(referrer_url,
-                                                    SB_THREAT_TYPE_SAFE);
-
-  TestClient client(db_, /*expected_url=*/url,
-                    /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE);
-
-  db_->CheckDownloadUrl({GURL("https://unrelated.com/"), url}, &client);
-
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(client.IsCallbackCalled());
 }
 
 }  // namespace safe_browsing

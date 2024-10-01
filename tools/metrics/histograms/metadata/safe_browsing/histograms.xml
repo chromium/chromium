@@ -219,17 +219,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.AndroidTelemetry.DownloadUrlChainThreatType"
-    enum="SBThreatType" expires_after="2025-03-23">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the most severe threat type in the url chain for each download on
-    Android. We only check against the malware and unwanted software lists. This
-    is logged once per download for users with Safe Browsing enabled.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize"
     units="count" expires_after="2025-02-10">
   <owner>xinghuilu@chromium.org</owner>
