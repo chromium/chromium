@@ -46,10 +46,6 @@ using extensions::ExtensionSystem;
 using extensions::SyncBundle;
 
 namespace {
-BASE_FEATURE(kBookmarkAppDeletion,
-             "BookmarkAppDeletion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Returns true if the sync type of |extension| matches |type|.
 bool IsCorrectSyncType(const Extension& extension, syncer::DataType type) {
   return (type == syncer::EXTENSIONS && extension.is_extension()) ||
@@ -308,8 +304,7 @@ void ExtensionSyncService::ApplySyncData(
 
   // Remove all deprecated bookmark apps immediately, as they aren't loaded into
   // the extensions system at all (and thus cannot be looked up).
-  if (base::FeatureList::IsEnabled(kBookmarkAppDeletion) &&
-      extension_sync_data.is_deprecated_bookmark_app()) {
+  if (extension_sync_data.is_deprecated_bookmark_app()) {
     GetSyncBundle(syncer::APPS)->ApplySyncData(extension_sync_data);
     GetSyncBundle(syncer::APPS)
         ->PushSyncDeletion(id, extension_sync_data.GetSyncData());
