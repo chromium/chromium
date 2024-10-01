@@ -268,7 +268,7 @@ void TabGroupSyncBridgeMediator::SavedTabGroupLastUserInteractionTimeUpdated(
 
   if (group->is_shared_tab_group()) {
     CHECK(shared_bridge_);
-    // TODO(crbug.com/351357559): support handling last user interaction time
+    // TODO(crbug.com/370710496): support handling last user interaction time
     // for shared tab groups.
   } else {
     CHECK(saved_bridge_);

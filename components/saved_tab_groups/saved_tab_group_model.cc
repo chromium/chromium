@@ -544,11 +544,11 @@ const SavedTabGroupTab* SavedTabGroupModel::MergeRemoteTab(
   const base::Uuid& tab_guid = remote_tab.saved_tab_guid();
   SavedTabGroup* const group = MutableGroupContainingTab(tab_guid);
   CHECK(group);
-  // TODO(crbug.com/319521964): check whether group has the same group GUID.
+  // TODO(crbug.com/370714643): check whether group has the same group GUID.
 
   const std::optional<int> index = group->GetIndexOfTab(tab_guid);
 
-  // TODO(crbug.com/319521964): check that remote tab always contains position.
+  // TODO(crbug.com/370714643): check that remote tab always contains position.
   const int preferred_index = remote_tab.position().value_or(0);
 
   group->GetTab(tab_guid)->MergeRemoteTab(remote_tab);

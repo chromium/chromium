@@ -67,7 +67,7 @@ void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
 
   SetURL(remote_tab.url());
   SetTitle(remote_tab.title());
-  // TODO(crbug.com/319521964): check that remote tab always contains position.
+  // TODO(crbug.com/370714643): check that remote tab always contains position.
   SetPosition(remote_tab.position().value_or(0));
   SetCreatorCacheGuid(remote_tab.creator_cache_guid());
   SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());

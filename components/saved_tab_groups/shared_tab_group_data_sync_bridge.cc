@@ -488,7 +488,7 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
         change->data().specifics.shared_tab_group_data().guid()));
   }
 
-  // TODO(crbug.com/319521964): resolve and handle tabs missing groups later.
+  // TODO(crbug.com/370719750): resolve and handle tabs missing groups later.
   // ResolveTabsMissingGroups(write_batch.get());
 
   write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
@@ -773,7 +773,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
   // groups.
   RemoveEntitySpecifics(removed_group.saved_guid(), write_batch.get());
 
-  // TODO(crbug.com/319521964): handle tabs missing groups.
+  // TODO(crbug.com/370719750): handle tabs missing groups.
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&SharedTabGroupDataSyncBridge::OnDatabaseSave,
@@ -838,7 +838,7 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
     stored_entries.emplace_back(std::move(proto));
   }
 
-  // TODO(crbug.com/319521964): Handle tabs missing groups.
+  // TODO(crbug.com/370719750): Handle tabs missing groups.
   LoadStoredEntries(std::move(stored_entries), model_wrapper_,
                     metadata_batch->GetAllMetadata());
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
@@ -876,7 +876,6 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
   }
 
   // Update the existing group with remote data.
-  // TODO(crbug.com/319521964): handle group position properly.
   const SavedTabGroup* existing_group =
       model_wrapper_->MergeRemoteGroupMetadata(
           group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
@@ -957,7 +956,7 @@ void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
     // The tab does not have a corresponding group. This can happen when sync
     // sends the tab data before the group data. In this case, the tab is stored
     // in case the group comes in later.
-    // TODO(crbug.com/319521964): keep tabs with no groups.
+    // TODO(crbug.com/370719750): keep tabs with no groups.
   }
 }
 
