@@ -56,27 +56,22 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'DoNotClaimAnnotations',
     'JavaUtilDate',
     'IdentityHashMapUsage',
-    'UnnecessaryMethodReference',
     'LongFloatConversion',
     'CharacterGetNumericValue',
     'ErroneousThreadPoolConstructorChecker',
     'StaticMockMember',
     'MissingSuperCall',
     'ToStringReturnsNull',
+    # Triggers in tests where this is useful to do.
+    'StaticAssignmentOfThrowable',
     # If possible, this should be automatically fixed if turned on:
     'MalformedInlineTag',
-    # TODO(crbug.com/41384359): Follow steps in bug
-    'DoubleBraceInitialization',
     # TODO(crbug.com/41384349): Follow steps in bug.
     'CatchAndPrintStackTrace',
     # TODO(crbug.com/41364336): Follow steps in bug.
     'SynchronizeOnNonFinalField',
     # TODO(crbug.com/41364806): Follow steps in bug.
     'TypeParameterUnusedInFormals',
-    # TODO(crbug.com/41365724): Follow steps in bug.
-    'CatchFail',
-    # TODO(crbug.com/41365725): Follow steps in bug.
-    'JUnitAmbiguousTestClass',
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
@@ -84,8 +79,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnrecognisedJavadocTag',
     # Low priority since the alternatives still work.
     'JdkObsolete',
-    # We don't use that many lambdas.
-    'FunctionalInterfaceClash',
     # There are lots of times when we just want to post a task.
     'FutureReturnValueIgnored',
     # Just false positives in our code.
@@ -109,19 +102,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Low priority to fix.
     'HidingField',
     # Low priority.
-    'IntLongMath',
-    # Low priority.
-    'BadComparable',
-    # Low priority.
     'EqualsHashCode',
-    # Nice to fix but low priority.
-    'TypeParameterShadowing',
-    # Good to have immutable enums, also low priority.
-    'ImmutableEnumChecker',
-    # False positives for testing.
-    'InputStreamSlowMultibyteRead',
-    # Nice to have better primitives.
-    'BoxedPrimitiveConstructor',
     # Not necessary for tests.
     'OverrideThrowableToString',
     # Nice to have better type safety.
@@ -141,28 +122,12 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'EqualsGetClass',
     # A lot of false-positives from CharSequence.equals().
     'UndefinedEquals',
-    # Nice to have.
-    'ExtendingJUnitAssert',
-    # Nice to have.
-    'SystemExitOutsideMain',
-    # Nice to have.
-    'TypeParameterNaming',
-    # Nice to have.
-    'UnusedException',
-    # Nice to have.
-    'UngroupedOverloads',
-    # Nice to have.
-    'FunctionalInterfaceClash',
-    # Nice to have.
-    'InconsistentOverloads',
     # Dagger generated code triggers this.
     'SameNameButDifferent',
-    # Nice to have.
+    # Does not apply to Android because it assumes no desugaring.
     'UnnecessaryLambda',
     # Nice to have.
     'UnnecessaryAnonymousClass',
-    # Nice to have.
-    'LiteProtoToString',
     # Nice to have.
     'MissingSummary',
     # Nice to have.
@@ -173,8 +138,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UseCorrectAssertInTests',
     # Nice to have.
     'InlineFormatString',
-    # Nice to have.
-    'DefaultPackage',
     # Must be off since we are now passing in annotation processor generated
     # code as a source jar (deduplicating work with turbine).
     'RefersToDaggerCodegen',
@@ -189,39 +152,13 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # A lot of existing violations. e.g. Should return List and not ArrayList
     'NonApiType',
     # Nice to have.
-    'Finalize',
-    # Nice to have.
-    'NotJavadoc',
-    # Nice to have.
     'DirectInvocationOnMock',
     # Nice to have.
     'StringCharset',
     # Nice to have.
-    'JUnitIncompatibleType',
-    # Nice to have.
     'MockNotUsedInProduction',
     # Nice to have.
-    'ImpossibleNullComparison',
-    # Nice to have.
-    'UnusedTypeParameter',
-    # Nice to have.
-    'EnumOrdinal',
-    # Nice to have.
-    'NullableOptional',
-    # Nice to have.
-    'SelfAssertion',
-    # Nice to have.
     'StringCaseLocaleUsage',
-    # Nice to have.
-    'JUnit4TestNotRun',
-    # Nice to have.
-    'StaticAssignmentOfThrowable',
-    # Nice to have.
-    'SuperCallToObjectMethod',
-    # Nice to have.
-    'ComparisonOutOfRange',
-    # Nice to have
-    'AddressSelection',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
