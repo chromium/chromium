@@ -452,8 +452,11 @@ void ResponseBodyLoader::DidReceiveDecodedData(
 }
 
 void ResponseBodyLoader::DidFinishLoadingBody() {
-  if (aborted_)
+  if (aborted_) {
     return;
+  }
+
+  TRACE_EVENT0("blink", "ResponseBodyLoader::DidFinishLoadingBody");
 
   if (IsSuspended()) {
     finish_signal_is_pending_ = true;
@@ -465,8 +468,11 @@ void ResponseBodyLoader::DidFinishLoadingBody() {
 }
 
 void ResponseBodyLoader::DidFailLoadingBody() {
-  if (aborted_)
+  if (aborted_) {
     return;
+  }
+
+  TRACE_EVENT0("blink", "ResponseBodyLoader::DidFailLoadingBody");
 
   if (IsSuspended()) {
     fail_signal_is_pending_ = true;
@@ -478,8 +484,11 @@ void ResponseBodyLoader::DidFailLoadingBody() {
 }
 
 void ResponseBodyLoader::DidCancelLoadingBody() {
-  if (aborted_)
+  if (aborted_) {
     return;
+  }
+
+  TRACE_EVENT0("blink", "ResponseBodyLoader::DidCancelLoadingBody");
 
   if (IsSuspended()) {
     cancel_signal_is_pending_ = true;
