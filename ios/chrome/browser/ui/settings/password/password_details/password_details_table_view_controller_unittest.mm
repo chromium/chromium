@@ -452,7 +452,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPasskey) {
   CheckEditCellText(Username(), 0, 2);
   CheckEditCellText(
       l10n_util::GetNSStringF(IDS_IOS_PASSKEY_CREATION_DATE,
-                              base::TimeFormatShortDateNumeric(creation_time)),
+                              base::TimeFormatShortDate(creation_time)),
       0, 3);
 }
 

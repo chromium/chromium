@@ -409,9 +409,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_CREATION_DATE);
   item.textFieldValue =
       passwordDetails.creationTime.has_value()
-          ? l10n_util::GetNSStringF(IDS_IOS_PASSKEY_CREATION_DATE,
-                                    base::TimeFormatShortDateNumeric(
-                                        *(passwordDetails.creationTime)))
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_PASSKEY_CREATION_DATE,
+                base::TimeFormatShortDate(*(passwordDetails.creationTime)))
           : @"";
   item.textFieldEnabled = NO;
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;

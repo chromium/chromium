@@ -9,6 +9,7 @@ source_set("ui") {
     "consent_view_controller.h",
     "consent_view_controller.mm",
     "credential_details_consumer.h",
+    "credential_details_view_controller+Testing.h",
     "credential_details_view_controller.h",
     "credential_details_view_controller.mm",
     "credential_list_coordinator.h",
@@ -162,6 +163,7 @@ source_set("mock_credential_response_handler") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "credential_details_view_controller_unittest.mm",
     "credential_list_coordinator_unittest.mm",
     "credential_list_mediator+Testing.h",
     "credential_list_mediator_unittest.mm",
