@@ -112,15 +112,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        # TODO(b/369494311): Remove testing from compile tasks.
-        'mixins': [
-          'skylab-cft',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'jacuzzi',
       },
       'chromeos-jacuzzi-chrome-tests': {
         'mixins': [
@@ -136,12 +127,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        # TODO(b/369494311): Remove testing from compile tasks.
-        'test_suites': {
-          'skylab_tests': 'chromeos_octopus_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'octopus',
       },
       'chromeos-octopus-chrome-tests': {
         'test_suites': {
@@ -154,14 +139,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        # TODO(b/369494311): Remove testing from compile tasks.
-        'test_suites': {
-          'skylab_tests': 'chromeos_vmlab_tests_no_gtests_no_arc',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'reven-vmtest',
-        'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-reven-chrome-tests': {
         'test_suites': {
