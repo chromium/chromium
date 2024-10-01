@@ -19,13 +19,13 @@
 
 @implementation FirstRunScreenProvider
 
-- (instancetype)initForBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initForProfile:(ProfileIOS*)profile {
   NSMutableArray* screens = [NSMutableArray array];
   [screens addObject:@(kSignIn)];
   [screens addObject:@(kHistorySync)];
 
   if (ShouldDisplaySearchEngineChoiceScreen(
-          *browserState, /*is_first_run_entrypoint=*/true,
+          *profile, /*is_first_run_entrypoint=*/true,
           /*app_started_via_external_intent=*/false)) {
     [screens addObject:@(kChoice)];
   }

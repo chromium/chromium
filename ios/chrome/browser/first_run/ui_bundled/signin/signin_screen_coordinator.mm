@@ -76,7 +76,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+    DCHECK(!browser->GetProfile()->IsOffTheRecord());
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
@@ -96,9 +96,9 @@
   self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // Don't show the sign-in screen since the user is already signed in.
@@ -106,13 +106,12 @@
     return;
   }
   self.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
-  PrefService* prefService = browserState->GetPrefs();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  PrefService* prefService = profile->GetPrefs();
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   self.mediator = [[SigninScreenMediator alloc]
       initWithAccountManagerService:self.accountManagerService
               authenticationService:self.authenticationService

@@ -43,11 +43,11 @@
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+      feature_engagement::TrackerFactory::GetForProfile(profile));
 
   _viewController = [[DefaultBrowserScreenViewController alloc] init];
   _viewController.delegate = self;
@@ -60,11 +60,11 @@
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(browserState);
+            GetForProfile(profile);
 
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
+            GetDispatcherForProfile(profile);
 
     _mediator = [[DefaultBrowserScreenMediator alloc]
            initWithSegmentationService:segmentationService

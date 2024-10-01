@@ -33,7 +33,7 @@
   [super start];
 
   _mediator = [[OmniboxPositionChoiceMediator alloc] init];
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(self.browser->GetProfile());

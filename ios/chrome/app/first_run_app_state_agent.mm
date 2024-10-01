@@ -172,7 +172,7 @@
           ->GetAllIdentities());
 
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
-      initForBrowserState:self.mainBrowser->GetBrowserState()];
+      initForProfile:self.mainBrowser->GetProfile()];
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.presentingInterface.viewController
