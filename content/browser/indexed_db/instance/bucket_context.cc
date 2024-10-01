@@ -610,16 +610,18 @@ void BucketContext::CreateAllExternalObjects(
   }
 
   for (size_t i = 0; i < objects.size(); ++i) {
-    auto& blob_info = objects[i];
-    auto& mojo_object = (*mojo_objects)[i];
+    const IndexedDBExternalObject& blob_info = objects[i];
+    blink::mojom::IDBExternalObjectPtr& mojo_object = (*mojo_objects)[i];
 
     switch (blob_info.object_type()) {
       case IndexedDBExternalObject::ObjectType::kBlob:
       case IndexedDBExternalObject::ObjectType::kFile: {
         DCHECK(mojo_object->is_blob_or_file());
-        auto& output_info = mojo_object->get_blob_or_file();
+        blink::mojom::IDBBlobInfoPtr& output_info =
+            mojo_object->get_blob_or_file();
 
-        auto receiver = output_info->blob.InitWithNewPipeAndPassReceiver();
+        mojo::PendingReceiver<blink::mojom::Blob> receiver =
+            output_info->blob.InitWithNewPipeAndPassReceiver();
         if (blob_info.is_remote_valid()) {
           output_info->uuid = blob_info.uuid();
           blob_info.Clone(std::move(receiver));
