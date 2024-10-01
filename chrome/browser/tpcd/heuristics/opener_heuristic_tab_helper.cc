@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"

@@ -42,8 +42,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
@@ -904,8 +903,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   if (dips_mask != DIPSEventRemovalType::kNone) {
-    auto* dips_service = DIPSServiceFactory::GetForBrowserContext(profile_);
-    if (dips_service) {
+    if (DIPSServiceImpl* dips_service = DIPSServiceImpl::Get(profile_)) {
       dips_service->RemoveEvents(delete_begin_, delete_end_,
                                  filter_builder->BuildNetworkServiceFilter(),
                                  dips_mask);

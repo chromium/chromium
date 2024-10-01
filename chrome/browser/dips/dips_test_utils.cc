@@ -10,6 +10,7 @@
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"

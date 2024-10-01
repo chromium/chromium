@@ -9,8 +9,6 @@
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace dips {
 

@@ -20,7 +20,7 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"

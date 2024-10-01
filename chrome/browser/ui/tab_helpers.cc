@@ -28,7 +28,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"

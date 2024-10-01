@@ -6,7 +6,7 @@
 
 #include "base/rand_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"

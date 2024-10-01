@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dips/dips_service.h"
-
 #include <optional>
 
 #include "base/files/file_util.h"
@@ -23,6 +21,7 @@
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"

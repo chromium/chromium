@@ -50,8 +50,8 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -681,8 +681,7 @@ class ClearDomainReliabilityTester {
 class RemoveDIPSEventsTester {
  public:
   explicit RemoveDIPSEventsTester(Profile* profile) {
-    auto* dips_service = DIPSServiceFactory::GetForBrowserContext(profile);
-    storage_ = dips_service->storage();
+    storage_ = DIPSServiceImpl::Get(profile)->storage();
   }
 
   void WriteEventTimes(GURL url,

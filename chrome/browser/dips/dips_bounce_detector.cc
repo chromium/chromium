@@ -28,7 +28,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browser_context.h"

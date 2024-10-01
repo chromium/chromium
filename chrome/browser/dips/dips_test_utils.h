@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"

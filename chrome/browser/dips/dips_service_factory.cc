@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 using PassKey = base::PassKey<DIPSServiceFactory>;

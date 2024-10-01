@@ -19,7 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/content_settings/core/common/features.h"

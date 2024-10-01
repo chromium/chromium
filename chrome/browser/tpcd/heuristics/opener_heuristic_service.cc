@@ -5,7 +5,7 @@
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
