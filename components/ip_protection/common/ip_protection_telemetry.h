@@ -79,6 +79,9 @@ enum class AuthTokenResultForGeo {
 //
 // More detail on the metrics produced here can be found in
 // `tools/metrics/histograms/metadata/network/histograms.xml`.
+//
+// Note that additional IP-Protection-related metrics are logged directly in
+// `net::UrlRequestHttpJob`, which cannot depend on this component.
 class IpProtectionTelemetry {
  public:
   virtual ~IpProtectionTelemetry() = default;

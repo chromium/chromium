@@ -526,6 +526,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="3G"/>
 </enum>
 
+<enum name="IpProtectionJobResult">
+  <int value="0" label="IP Protection was not attempted"/>
+  <int value="1"
+      label="The request was IP Protected and carried via IP Protection
+             proxies or, if the direct-only parameter is true, made directly"/>
+  <int value="2" label="The request was IP Protected, but fell back to direct"/>
+</enum>
+
 <enum name="JobProtocolErrorLocation">
   <int value="0" label="kSessionStartReadingFailedAsync"/>
   <int value="1" label="kSessionStartReadingFailedSync"/>

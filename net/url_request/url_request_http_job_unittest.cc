@@ -402,11 +402,20 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   histogram_tester.ExpectUniqueSample(
       "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
       /*sample=*/12, /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpJob.IpProtection.JobResult",
+      /*sample=*/URLRequestHttpJob::IpProtectionJobResult::kProtectionSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that IP Protection-specific metrics are NOT recorded for direct requests
 // when the direct-only param is disabled.
 TEST_F(URLRequestHttpJobWithProxyTest, IpProtectionDirectProxyMetricsRecorded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyDirectOnly.name, "false"}});
   const auto kIpProtectionDirectChain =
       ProxyChain::ForIpProtection(std::vector<ProxyServer>());
 

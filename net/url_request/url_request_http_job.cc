@@ -1996,17 +1996,16 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       }
 
       auto& proxy_chain = response_info_->proxy_chain;
+      bool direct_only = net::features::kIpPrivacyDirectOnly.Get();
       // To enable measuring how much traffic would be proxied (for
-      // experimentation and planning purposes), treat the direct
-      // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
+      // experimentation and planning purposes), treat use of the direct
+      // proxy chain as success only when `kIpPrivacyDirectOnly` is
       // true. When it is false, we only care about traffic that actually went
-      // through the IP Protection proxies, so don't log the times.
-      bool log_ip_protection_time =
-          proxy_chain.is_for_ip_protection() &&
-          ((proxy_chain.is_direct() &&
-            net::features::kIpPrivacyDirectOnly.Get()) ||
-           !proxy_chain.is_direct());
-      if (log_ip_protection_time) {
+      // through the IP Protection proxies, so a direct chain must be a
+      // fallback.
+      bool protection_success = proxy_chain.is_for_ip_protection() &&
+                                (!proxy_chain.is_direct() || direct_only);
+      if (protection_success) {
         base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached",
                                 total_time);
         // Log specific times for non-zero chains. The zero chain is the
@@ -2038,6 +2037,20 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
         base::UmaHistogramMediumTimes(
             "Net.HttpJob.TotalTimeNotCached.Secure.Quic", total_time);
       }
+
+      // Log the result of an IP-Protected request.
+      IpProtectionJobResult ipp_result;
+      if (proxy_chain.is_for_ip_protection()) {
+        if (protection_success) {
+          ipp_result = IpProtectionJobResult::kProtectionSuccess;
+        } else {
+          ipp_result = IpProtectionJobResult::kDirectFallback;
+        }
+      } else {
+        ipp_result = IpProtectionJobResult::kProtectionNotAttempted;
+      }
+      base::UmaHistogramEnumeration("Net.HttpJob.IpProtection.JobResult",
+                                    ipp_result);
     }
   }
 

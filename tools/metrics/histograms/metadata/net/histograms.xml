@@ -1911,6 +1911,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.IpProtection.JobResult"
+    enum="IpProtectionJobResult" expires_after="2025-01-19">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Result of a UrlRequestHttpJob with respect to IP Protection: not protected,
+    successfully protected, or fallback on protection failure. This does not
+    measure the result of the request to the destination, so for example a 500
+    from the destination is still considered success.
+
+    When either of the `MaskedDomainList` or `EnableIpPrivacyProxy` features are
+    disabled, this will always be `kProtectionNotAttempted`.
+
+    This histogram is emitted for every request handled by `UrlRequestHttpJob`
+    that is not aborted.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net" units="bytes"
     expires_after="2025-03-23">
   <owner>aakallam@chromium.org</owner>
