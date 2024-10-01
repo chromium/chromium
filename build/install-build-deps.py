@@ -256,7 +256,6 @@ def dev_list():
       "pkgconf",
       "rpm",
       "ruby",
-      "subversion",
       "uuid-dev",
       "wdiff",
       "x11-utils",
