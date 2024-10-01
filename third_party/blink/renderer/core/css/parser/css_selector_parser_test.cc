@@ -176,10 +176,12 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
                               "::-webkit-volume-slider:not(:hover)",
                               "::-webkit-scrollbar:not(:horizontal)",
                               "::slotted(span)::before",
-                              "::slotted(div)::after"};
+                              "::slotted(div)::after",
+                              "::slotted(div)::view-transition"};
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
+    SCOPED_TRACE(test_case);
     CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
