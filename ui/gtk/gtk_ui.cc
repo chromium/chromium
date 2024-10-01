@@ -175,12 +175,15 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   }
 }
 
+int GetXftDpi() {
+  int dpi = -1;
+  g_object_get(gtk_settings_get_default(), "gtk-xft-dpi", &dpi, nullptr);
+  return dpi < 0 ? 0 : dpi;
+}
+
 double FontScale() {
   double resolution = 0;
-  if (GtkCheckVersion(4)) {
-    auto* settings = gtk_settings_get_default();
-    int dpi = 0;
-    g_object_get(settings, "gtk-xft-dpi", &dpi, nullptr);
+  if (const int dpi = GetXftDpi()) {
     resolution = dpi / 1024.0;
   } else {
     GdkScreen* screen = gdk_screen_get_default();
@@ -260,8 +263,8 @@ bool GtkUi::Initialize() {
   connect(settings, "notify::gtk-enable-animations",
           &GtkUi::OnEnableAnimationsChanged);
 
-  // Listen for DPI changes.
-  if (GtkCheckVersion(4)) {
+  // Listen for DPI changes, if supported.
+  if (GetXftDpi() > 0) {
     connect(settings, "notify::gtk-xft-dpi", &GtkUi::OnGtkXftDpiChanged);
   } else {
     GdkScreen* screen = gdk_screen_get_default();
