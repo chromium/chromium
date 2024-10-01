@@ -17,6 +17,19 @@ suite('LoadingStateTest', () => {
     document.body.appendChild(loadingElement);
   });
 
+  function resizeContainer(width: number): Promise<void> {
+    // A ResizeObserver is used to ensure the ResizeObserver callback that shows
+    // the last column gradient has completed.
+    return new Promise<void>(resolve => {
+      const observer = new ResizeObserver(() => {
+        resolve();
+        observer.unobserve(loadingElement.$.loadingContainer);
+      });
+      observer.observe(loadingElement.$.loadingContainer);
+      loadingElement.$.loadingContainer.style.width = `${width}px`;
+    });
+  }
+
   test(
       'last column gradient appears when SVG is wider than its container',
       async () => {
@@ -31,7 +44,7 @@ suite('LoadingStateTest', () => {
 
         // Container should be smaller than the loading gradient, so the last
         // column gradient should appear.
-        document.body.style.width = '200px';
+        await resizeContainer(200);
         await microtasksFinished();
         assertTrue(isVisible(lastColumnGradient));
       });
