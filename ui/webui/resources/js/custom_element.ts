@@ -10,7 +10,7 @@ import {assert} from './assert.js';
  * chrome/test/data/webui/js/custom_element_test.js
  */
 
-export function emptyHTML(): string|TrustedHTML {
+function emptyHTML(): string|TrustedHTML {
   return window.trustedTypes ? window.trustedTypes.emptyHTML : '';
 }
 

@@ -2,25 +2,32 @@
   <div class="flex-container">
     <div class="flex search-container">
       <input type="text" id="search"
-            aria-label="$i18n{search-label}"
-            placeholder="$i18n{search-placeholder}"
-            autocomplete="off" spellcheck="false">
-      <input type="button" class="clear-search" title="$i18n{clear-search}">
+          aria-label="$i18n{search-label}"
+          placeholder="$i18n{search-placeholder}"
+          autocomplete="off" spellcheck="false"
+          @input="${this.onSearchInput_}">
+      <input type="button" class="clear-search" title="$i18n{clear-search}"
+          @click="${this.onClearSearchClick_}">
     </div>
     <div class="flex">
-      <button id="experiment-reset-all">$i18n{reset}</button>
+      <button id="experiment-reset-all" @click="${this.onResetAllClick_}"
+          @keydown="${this.onResetAllKeydown_}" @blur="${this.onResetAllBlur_}">
+        $i18n{reset}
+      </button>
     </div>
   </div>
   <div class="screen-reader-only" id="screen-reader-status-message"
       role="status"></div>
 </div>
-<div id="body-container" style="visibility:hidden">
+<div id="body-container">
   <div id="flagsTemplate">
 <if expr="chromeos_lacros or chromeos_ash">
-    <div class="os-link-container" id="os-link-container">
+      <div class="os-link-container" id="os-link-container"
+          ?hidden="${!this.data.showSystemFlagsLink}">
       <span id="os-flags-link-container" class="os-link-icon"></span>
       <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
-      <a href="#" id="os-link-href" aria-describedby="os-link-desc">
+      <a href="#" id="os-link-href" aria-describedby="os-link-desc"
+          @click="${this.onOsLinkHrefClick_}">
         $i18n{os-flags-link}
       </a>
       <span aria-hidden="true">$i18n{os-flags-text2}</span>
@@ -37,30 +44,37 @@
       <span class="blurb-warning">$i18n{page-warning}</span>
       <span>$i18n{page-warning-explanation}</span>
 <if expr="chromeos_ash">
-      <p id="owner-warning">$i18n{owner-warning}</p>
+      <p id="owner-warning"
+          ?hidden="${!this.data.showOwnerWarning}">
+        $i18n{owner-warning}
+      </p>
 </if>
     </div>
-    <p id="promos" hidden>
+    <p id="promos" ?hidden="${!this.shouldShowPromos_()}">
       <!-- Those strings are not localized because they only appear in
           chrome://flags, which is not localized. -->
-      <span id="channel-promo-beta" hidden>
+      <span id="channel-promo-beta"
+          ?hidden="${!this.data.showBetaChannelPromotion}">
         Interested in cool new Chrome features? Try our
         <a href="https://chrome.com/beta">beta channel</a>.
       </span>
-      <span id="channel-promo-dev" hidden>
+      <span id="channel-promo-dev"
+          ?hidden="${this.data.showDevChannelPromotion}">
         Interested in cool new Chrome features? Try our
         <a href="https://chrome.com/dev">dev channel</a>
       </span>
     </p>
     <div id="tabs" class="tabs" role="tablist">
       <a href="#tab-content-available" id="tab-available" class="tab selected"
-          role="tab"
-          aria-selected="true"
-          aria-controls="panel1">$i18n{available}</a>
+          role="tab" aria-selected="true" aria-controls="panel1"
+          @click="${this.onTabClick_}">
+        $i18n{available}
+      </a>
 <!-- Unsupported experiments are not shown on iOS -->
 <if expr="not is_ios">
       <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
-          role="tab" aria-selected="false" aria-controls="panel2">
+          role="tab" aria-selected="false" aria-controls="panel2"
+          @click="${this.onTabClick_}">
         $i18n{unavailable}
       </a>
 </if>
@@ -69,18 +83,38 @@
       <div id="tab-content-available" class="tab-content selected"
           role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
         <!-- Non default experiments. -->
-        <div id="non-default-experiments"></div>
+        <div id="non-default-experiments">
+          ${this.nonDefaultFeatures.map(feature => html`
+            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+                @select-change="${this.onSelectChange_}"
+                @textarea-change="${this.onTextareaChange_}"
+                @input-change="${this.onInputChange_}">
+            </flags-experiment>
+          `)}
+        </div>
         <!-- Experiments with default settings. -->
-        <div id="default-experiments"></div>
+        <div id="default-experiments">
+          ${this.defaultFeatures.map(feature => html`
+            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+                @select-change="${this.onSelectChange_}"
+                @textarea-change="${this.onTextareaChange_}"
+                @input-change="${this.onInputChange_}">
+            </flags-experiment>
+          `)}
+        </div>
         <div class="no-match hidden" role="alert">$i18n{no-results}</div>
       </div>
 <if expr="not is_ios">
       <div id="tab-content-unavailable" class="tab-content"
           role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
-        <div id="unavailable-experiments"></div>
-        <div class="no-match hidden" role="alert">
-          $i18n{no-results}
+        <div id="unavailable-experiments">
+          ${this.data.unsupportedFeatures.map(feature => html`
+            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+                unsupported>
+            </flags-experiment>
+          `)}
         </div>
+        <div class="no-match hidden" role="alert">$i18n{no-results}</div>
       </div>
 </if>
     </div>
@@ -89,7 +123,10 @@
         <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
         <div class="flex">
 <if expr="not is_ios">
-          <button id="experiment-restart-button" class="primary">
+          <button id="experiment-restart-button" class="primary"
+              @click="${this.onRestartButtonClick_}"
+              @keydown="${this.onRestartButtonKeydown_}"
+              @blur="${this.onRestartButtonBlur_}">
             $i18n{relaunch}
           </button>
 </if>

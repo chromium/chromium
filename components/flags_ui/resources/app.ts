@@ -10,12 +10,13 @@ import './strings.m.js';
 import './experiment.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {emptyHTML} from 'chrome://resources/js/custom_element.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -32,7 +33,7 @@ interface Tab {
 /**
  * Handles in page searching. Matches against the experiment flag name.
  */
-export class FlagSearch {
+class FlagSearch {
   private flagsAppElement: FlagsAppElement;
   private initialized: boolean = false;
   private noMatchMsg: NodeListOf<HTMLElement>;
@@ -57,10 +58,6 @@ export class FlagSearch {
     if (this.initialized) {
       return;
     }
-    this.searchBox.addEventListener('input', this.debounceSearch.bind(this));
-
-    this.flagsAppElement.getRequiredElement<HTMLInputElement>('.clear-search')
-        .addEventListener('click', this.clearSearch.bind(this));
 
     window.addEventListener('keyup', e => {
       // Check for an active textarea inside a <flags-experiment>.
@@ -204,6 +201,33 @@ export class FlagsAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      data: {type: Object},
+      defaultFeatures: {type: Array},
+      nonDefaultFeatures: {type: Array},
+    };
+  }
+
+  protected data: ExperimentalFeaturesData = {
+    supportedFeatures: [],
+    // <if expr="not is_ios">
+    unsupportedFeatures: [],
+    // </if>
+    needsRestart: false,
+    showBetaChannelPromotion: false,
+    showDevChannelPromotion: false,
+    // <if expr="chromeos_ash">
+    showOwnerWarning: false,
+    // </if>
+    // <if expr="chromeos_lacros or chromeos_ash">
+    showSystemFlagsLink: false,
+    // </if>
+  };
+
+  protected defaultFeatures: Feature[] = [];
+  protected nonDefaultFeatures: Feature[] = [];
+
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
   private flagSearch: FlagSearch|null = null;
@@ -224,6 +248,38 @@ export class FlagsAppElement extends CrLitElement {
     assert(el);
     assert(el instanceof HTMLElement);
     return el;
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('data')) {
+      const defaultFeatures: Feature[] = [];
+      const nonDefaultFeatures: Feature[] = [];
+
+      this.data.supportedFeatures.forEach(
+          f => (f.is_default ? defaultFeatures : nonDefaultFeatures).push(f));
+
+      this.defaultFeatures = defaultFeatures;
+      this.nonDefaultFeatures = nonDefaultFeatures;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.flagSearch = new FlagSearch(this);
+    this.flagSearch.init();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    this.showRestartToast(this.data.needsRestart);
+    this.highlightReferencedFlag();
+    this.featuresResolver.resolve();
   }
 
   getTabs(): Tab[] {
@@ -251,8 +307,6 @@ export class FlagsAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.flagSearch = new FlagSearch(this);
-
     // <if expr="not is_ios">
     const pathname = new URL(window.location.href).pathname;
     this.isFlagsDeprecatedUrl_ =
@@ -261,10 +315,7 @@ export class FlagsAppElement extends CrLitElement {
 
     // Get and display the data upon loading.
     this.requestExperimentalFeaturesData();
-    // There is no restart button on iOS.
-    // <if expr="not is_ios">
-    this.setupRestartButton();
-    // </if>
+
     FocusOutlineManager.forDocument(document);
     // Update the highlighted flag when the hash changes.
     window.addEventListener('hashchange', () => this.highlightReferencedFlag);
@@ -328,85 +379,22 @@ export class FlagsAppElement extends CrLitElement {
     }
   }
 
-  /**
-   * Takes the |experimentalFeaturesData| input argument which represents data
-   * about all the current feature entries and populates the page with
-   * that data. It expects an object structure like the above.
-   * @param experimentalFeaturesData Information about all experiments.
-   */
-  private render_(experimentalFeaturesData: ExperimentalFeaturesData) {
-    const defaultFeatures: Feature[] = [];
-    const nonDefaultFeatures: Feature[] = [];
-
-    experimentalFeaturesData.supportedFeatures.forEach(
-        f => (f.is_default ? defaultFeatures : nonDefaultFeatures).push(f));
-
-    this.renderExperiments(
-        nonDefaultFeatures,
-        this.getRequiredElement('#non-default-experiments'));
-
-    this.renderExperiments(
-        defaultFeatures, this.getRequiredElement('#default-experiments'));
-
-    // <if expr="not is_ios">
-    this.renderExperiments(
-        experimentalFeaturesData.unsupportedFeatures,
-        this.getRequiredElement('#unavailable-experiments'), true);
-    // </if>
-
-    this.showRestartToast(experimentalFeaturesData.needsRestart);
-
-    // <if expr="not is_ios">
-    this.getRestartButton().onclick = () =>
-        FlagsBrowserProxyImpl.getInstance().restartBrowser();
-    // </if>
-
-    // Tab panel selection.
-    for (const tab of this.getTabs()) {
-      tab.tabEl.addEventListener('click', e => {
-        e.preventDefault();
-        this.selectTab(tab.tabEl);
-      });
-    }
-
-    const resetAllButton =
-        this.getRequiredElement<HTMLButtonElement>('#experiment-reset-all');
-    resetAllButton.onclick = () => {
-      this.resetAllFlags();
-      this.lastChanged = resetAllButton;
-    };
-    this.registerFocusEvents(resetAllButton);
-
-    // <if expr="is_chromeos">
-    const crosUrlFlagsRedirectButton =
-        this.getRequiredElement<HTMLAnchorElement>('#os-link-href');
-    if (crosUrlFlagsRedirectButton) {
-      crosUrlFlagsRedirectButton.onclick =
-          FlagsBrowserProxyImpl.getInstance().crosUrlFlagsRedirect;
-    }
-    // </if>
-
-    this.highlightReferencedFlag();
-  }
-
-  /**
-   * Add events to an element in order to keep track of the last focused
-   * element. Focus restart button if a previous focus target has been set and
+  /*
+   * Focus restart button if a previous focus target has been set and
    * tab key pressed.
    */
-  private registerFocusEvents(el: HTMLElement) {
-    el.addEventListener('keydown', e => {
-      if (this.lastChanged && e.key === 'Tab' && !e.shiftKey) {
-        e.preventDefault();
-        // <if expr="not is_ios">
-        this.lastFocused = this.lastChanged;
-        this.getRestartButton().focus();
-        // </if>
-      }
-    });
-    el.addEventListener('blur', () => {
-      this.lastChanged = null;
-    });
+  protected onResetAllKeydown_(e: KeyboardEvent) {
+    if (this.lastChanged && e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      // <if expr="not is_ios">
+      this.lastFocused = this.lastChanged;
+      this.getRestartButton().focus();
+      // </if>
+    }
+  }
+
+  protected onResetAllBlur_() {
+    this.lastChanged = null;
   }
 
   /**
@@ -444,8 +432,7 @@ export class FlagsAppElement extends CrLitElement {
   }
 
   /**
-   * Gets details and configuration about the available features. The
-   * |returnExperimentalFeatures()| will be called with reply.
+   * Gets details and configuration about the available features.
    */
   private async requestExperimentalFeaturesData() {
     // <if expr="not is_ios">
@@ -457,55 +444,80 @@ export class FlagsAppElement extends CrLitElement {
     const data =
         await FlagsBrowserProxyImpl.getInstance().requestExperimentalFeatures();
     // </if>
-    this.returnExperimentalFeatures(data);
+
+    this.data = data;
   }
 
   /** Reset all flags to their default values and refresh the UI. */
-  private resetAllFlags() {
+  protected async onResetAllClick_(e: Event) {
+    this.lastChanged = e.target as HTMLElement;
     FlagsBrowserProxyImpl.getInstance().resetAllFlags();
-    assert(this.flagSearch);
-    this.flagSearch.clearSearch();
     this.announceStatus(loadTimeData.getString('reset-acknowledged'));
     this.showRestartToast(true);
-    this.requestExperimentalFeaturesData();
+
+    await this.requestExperimentalFeaturesData();
+    await this.updateComplete;
+
+    assert(this.flagSearch);
+    this.flagSearch.clearSearch();
   }
 
-  private renderExperiments(
-      features: Feature[], container: HTMLElement, unsupported = false) {
-    container.innerHTML = emptyHTML();
-    for (const feature of features) {
-      const experiment = document.createElement('flags-experiment');
-      experiment.unsupported = unsupported;
-      experiment.data = feature;
-      experiment.id = feature.internal_name;
-      container.appendChild(experiment);
-
-      const select = experiment.getSelect();
-      if (select) {
-        experiment.addEventListener('select-change', e => {
-          e.preventDefault();
-          this.showRestartToast(true);
-          this.lastChanged = select;
-        });
-        this.registerFocusEvents(select);
-      }
-
-      const textarea = experiment.getTextarea();
-      if (textarea) {
-        experiment.addEventListener('textarea-change', e => {
-          e.preventDefault();
-          this.showRestartToast(true);
-        });
-      }
-      const textbox = experiment.getTextbox();
-      if (textbox) {
-        experiment.addEventListener('input-change', e => {
-          e.preventDefault();
-          this.showRestartToast(true);
-        });
-      }
-    }
+  protected onSearchInput_() {
+    assert(this.flagSearch);
+    this.flagSearch.debounceSearch();
   }
+
+  protected onClearSearchClick_() {
+    assert(this.flagSearch);
+    this.flagSearch.clearSearch();
+  }
+
+  protected onSelectChange_(e: Event) {
+    const select = e.composedPath()[0];
+    assert(select instanceof HTMLSelectElement);
+    this.lastChanged = select;
+    this.showRestartToast(true);
+
+    // Add listeners so that next 'Tab' keystroke focuses the restart button.
+    const eventTracker = new EventTracker();
+    eventTracker.add(select, 'keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Tab' && !e.shiftKey) {
+        assert(this.lastChanged === select);
+        e.preventDefault();
+        // <if expr="not is_ios">
+        this.lastFocused = this.lastChanged;
+        this.getRestartButton().focus();
+        // </if>
+      }
+    });
+
+    // Remove listeners that were special handling the "Tab" keystroke.
+    eventTracker.add(select, 'blur', () => {
+      assert(this.lastChanged === select);
+      this.lastChanged = null;
+      eventTracker.removeAll();
+    });
+  }
+
+  protected onTextareaChange_() {
+    this.showRestartToast(true);
+  }
+
+  protected onInputChange_() {
+    this.showRestartToast(true);
+  }
+
+  // <if expr="not is_ios">
+  protected onRestartButtonClick_() {
+    FlagsBrowserProxyImpl.getInstance().restartBrowser();
+  }
+  // </if>
+
+  // <if expr="is_chromeos">
+  protected onOsLinkHrefClick_() {
+    FlagsBrowserProxyImpl.getInstance().crosUrlFlagsRedirect();
+  }
+  // </if>
 
   /**
    * Show the restart toast.
@@ -522,45 +534,14 @@ export class FlagsAppElement extends CrLitElement {
     }
   }
 
-  /**
-   * Called by the WebUI to re-populate the page with data representing the
-   * current state of all experimental features.
-   */
-  private returnExperimentalFeatures(experimentalFeaturesData:
-                                         ExperimentalFeaturesData) {
-    const bodyContainer = this.getRequiredElement('#body-container');
-    this.render_(experimentalFeaturesData);
+  protected shouldShowPromos_(): boolean {
+    return this.data.showBetaChannelPromotion ||
+        this.data.showDevChannelPromotion;
+  }
 
-    if (experimentalFeaturesData.showBetaChannelPromotion) {
-      this.getRequiredElement<HTMLSpanElement>('#channel-promo-beta').hidden =
-          false;
-    } else if (experimentalFeaturesData.showDevChannelPromotion) {
-      this.getRequiredElement<HTMLSpanElement>('#channel-promo-dev').hidden =
-          false;
-    }
-
-    this.getRequiredElement<HTMLParagraphElement>('#promos').hidden =
-        !experimentalFeaturesData.showBetaChannelPromotion &&
-        !experimentalFeaturesData.showDevChannelPromotion;
-
-    bodyContainer.style.visibility = 'visible';
-
-    assert(this.flagSearch);
-    this.flagSearch.init();
-
-    // <if expr="chromeos_ash">
-    const ownerWarningDiv = this.getRequiredElement('#owner-warning');
-    ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
-    // </if>
-
-    // <if expr="chromeos_lacros or chromeos_ash">
-    const systemFlagsLinkDiv = this.getRequiredElement('#os-link-container');
-    if (!experimentalFeaturesData.showSystemFlagsLink) {
-      systemFlagsLinkDiv.style.display = 'none';
-    }
-    // </if>
-
-    this.featuresResolver.resolve();
+  protected onTabClick_(e: Event) {
+    e.preventDefault();
+    this.selectTab(e.target as HTMLElement);
   }
 
   // <if expr="not is_ios">
@@ -568,16 +549,15 @@ export class FlagsAppElement extends CrLitElement {
    * Allows the restart button to jump back to the previously focused experiment
    * in the list instead of going to the top of the page.
    */
-  private setupRestartButton() {
-    this.getRestartButton().addEventListener('keydown', e => {
-      if (e.shiftKey && e.key === 'Tab' && this.lastFocused) {
-        e.preventDefault();
-        this.lastFocused.focus();
-      }
-    });
-    this.getRestartButton().addEventListener('blur', () => {
-      this.lastFocused = null;
-    });
+  protected onRestartButtonKeydown_(e: KeyboardEvent) {
+    if (e.shiftKey && e.key === 'Tab' && this.lastFocused) {
+      e.preventDefault();
+      this.lastFocused.focus();
+    }
+  }
+
+  protected onRestartButtonBlur_() {
+    this.lastFocused = null;
   }
   // </if>
 }

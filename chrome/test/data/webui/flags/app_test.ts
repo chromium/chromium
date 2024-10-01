@@ -83,10 +83,10 @@ suite('FlagsAppTest', function() {
   let browserProxy: TestFlagsBrowserProxy;
 
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestFlagsBrowserProxy();
     browserProxy.setFeatureData(experimentalFeaturesData);
     FlagsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('flags-app');
     document.body.appendChild(app);
     app.setAnnounceStatusDelayMsForTesting(0);
