@@ -15,7 +15,7 @@
 
 namespace blink {
 
-PLATFORM_EXPORT uint32_t AtomicStringToFourByteTag(AtomicString tag);
+PLATFORM_EXPORT uint32_t AtomicStringToFourByteTag(const AtomicString& tag);
 PLATFORM_EXPORT AtomicString FourByteTagToAtomicString(uint32_t tag);
 
 template <typename T>

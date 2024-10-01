@@ -208,8 +208,8 @@ AtomicString StringView::ToAtomicString() const {
   if (StringImpl* impl = SharedImpl())
     return AtomicString(impl);
   if (Is8Bit())
-    return AtomicString(Characters8(), length_);
-  return AtomicString(Characters16(), length_);
+    return AtomicString(Span8());
+  return AtomicString(Span16());
 }
 
 String StringView::EncodeForDebugging() const {

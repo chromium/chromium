@@ -266,9 +266,9 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   }
 
   AtomicString AsAtomicString() const {
-    return AtomicString(this->data(), this->size(),
-                        Is8Bit() ? WTF::AtomicStringUCharEncoding::kIs8Bit
-                                 : WTF::AtomicStringUCharEncoding::kIs16Bit);
+    return AtomicString(*this, Is8Bit()
+                                   ? WTF::AtomicStringUCharEncoding::kIs8Bit
+                                   : WTF::AtomicStringUCharEncoding::kIs16Bit);
   }
 
   ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }

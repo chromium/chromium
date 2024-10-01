@@ -69,9 +69,13 @@ class WTF_EXPORT AtomicString {
   explicit AtomicString(const char* chars)
       : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
   AtomicString(const LChar* chars, unsigned length);
+  explicit AtomicString(base::span<const LChar> chars);
   AtomicString(
       const UChar* chars,
       unsigned length,
+      AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
+  explicit AtomicString(
+      base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(const UChar* chars);
 

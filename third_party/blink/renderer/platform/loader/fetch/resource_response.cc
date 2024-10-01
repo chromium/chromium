@@ -464,9 +464,7 @@ void ResourceResponse::SetResourceLoadTiming(
 AtomicString ResourceResponse::ConnectionInfoString() const {
   std::string_view connection_info_string =
       net::HttpConnectionInfoToString(connection_info_);
-  return AtomicString(
-      reinterpret_cast<const LChar*>(connection_info_string.data()),
-      connection_info_string.length());
+  return AtomicString(base::as_byte_span(connection_info_string));
 }
 
 mojom::blink::CacheState ResourceResponse::CacheState() const {

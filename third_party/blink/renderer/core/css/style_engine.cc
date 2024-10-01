@@ -1056,9 +1056,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   AtomicString key;
   if (text.length() >= 1024) {
     size_t digest = FastHash(text.RawByteSpan());
-    LChar digest_as_char[sizeof(digest)];
-    memcpy(digest_as_char, &digest, sizeof(digest));
-    key = AtomicString(digest_as_char, sizeof(digest));
+    key = AtomicString(base::byte_span_from_ref(digest));
   } else {
     key = AtomicString(text);
   }

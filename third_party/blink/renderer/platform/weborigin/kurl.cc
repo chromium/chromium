@@ -960,13 +960,11 @@ void KURL::Init(const KURL& base,
   // expensive for large URLs. However, since many URLs are generated from
   // existing AtomicStrings (which already have their hashes computed), the fast
   // path can often avoid this work.
-  if (!relative.IsNull() &&
-      StringView(output.data(), static_cast<unsigned>(output.length())) ==
-          relative) {
+  const auto output_url_span = base::as_byte_span(output.view());
+  if (!relative.IsNull() && StringView(output_url_span) == relative) {
     string_ = AtomicString(relative.Impl());
   } else {
-    string_ =
-        AtomicString(reinterpret_cast<LChar*>(output.data()), output.length());
+    string_ = AtomicString(output_url_span);
   }
 
   InitProtocolMetadata();
@@ -1092,8 +1090,7 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   if (replacements_valid || !preserve_validity) {
     is_valid_ = replacements_valid;
     parsed_ = new_parsed;
-    string_ =
-        AtomicString(reinterpret_cast<LChar*>(output.data()), output.length());
+    string_ = AtomicString(base::as_byte_span(output.view()));
     InitProtocolMetadata();
     AssertStringSpecIsASCII();
   }

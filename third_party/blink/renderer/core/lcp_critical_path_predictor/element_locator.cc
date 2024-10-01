@@ -225,9 +225,7 @@ bool MatchLocator(const ElementLocator& locator,
 
       case ElementLocator_Component::kNth: {
         const std::string& tag_name_stdstr = c.nth().tag_name();
-        AtomicString tag_name(
-            reinterpret_cast<const LChar*>(tag_name_stdstr.data()),
-            tag_name_stdstr.size());
+        AtomicString tag_name(base::as_byte_span(tag_name_stdstr));
         if (!tag_name.Impl()->IsStatic()) {
           // `tag_name` should only contain one of the known HTML tags.
           return false;
