@@ -150,6 +150,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-app-integration-with-favicon",
+    "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-home@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bottom-toolbar",
     "owners": [ "pnoland@chromium.org","gangwu@chromium.org","lazzzis@google.com" ],
     "expiry_milestone": 150

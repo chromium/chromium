@@ -173,6 +173,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
+    &kAndroidAppIntegrationWithFavicon,
     &kAndroidBottomToolbar,
     &kAndroidElegantTextHeight,
     &kAndroidGoogleSansText,
@@ -439,6 +440,10 @@ BASE_FEATURE(kForceListTabSwitcher,
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAppIntegrationWithFavicon,
+             "AndroidAppIntegrationWithFavicon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidBottomToolbar,
              "AndroidBottomToolbar",
