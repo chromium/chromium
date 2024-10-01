@@ -1531,6 +1531,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.20.0 -> 0.22.0"
 notes = "Changes for incremental font transfer, Ankr, Feat tables, and support for getting access to the SVG document from the SVG table, as well as Avar2."
 
+[[audits.read-fonts]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.22.0 -> 0.22.1"
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

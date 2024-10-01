@@ -57,7 +57,7 @@ impl<'a> GlyphVariationDataHeader<'a> {
 }
 
 impl<'a> Gvar<'a> {
-    fn data_for_gid(&self, gid: GlyphId) -> Result<FontData<'a>, ReadError> {
+    pub fn data_for_gid(&self, gid: GlyphId) -> Result<FontData<'a>, ReadError> {
         let start_idx = gid.to_u32() as usize;
         let end_idx = start_idx + 1;
         let data_start = self.glyph_variation_data_array_offset();

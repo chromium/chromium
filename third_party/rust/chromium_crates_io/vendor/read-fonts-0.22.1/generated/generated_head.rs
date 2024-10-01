@@ -531,7 +531,7 @@ impl<'a> Head<'a> {
         self.data.read_at(range.start).unwrap()
     }
 
-    /// see somewhere else
+    /// Bits identifying the font's style; see [MacStyle]
     pub fn mac_style(&self) -> MacStyle {
         let range = self.shape.mac_style_byte_range();
         self.data.read_at(range.start).unwrap()
