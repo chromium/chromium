@@ -707,6 +707,7 @@ URLLoader::URLLoader(
   // They are non-empty when the values are given by the UA code, therefore
   // they should be ignored by CORS checks.
   net::HttpRequestHeaders merged_headers = request.headers;
+  merged_headers.MergeFrom(ComputeAttributionReportingHeaders(request));
   merged_headers.MergeFrom(request.cors_exempt_headers);
 
   // This should be ensured by the CorsURLLoaderFactory(), which is called
@@ -742,8 +743,6 @@ URLLoader::URLLoader(
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_);
-
-  SetAttributionReportingHeaders(*url_request_, request);
 
   if (request.update_first_party_url_on_redirect) {
     url_request_->set_first_party_url_policy(
