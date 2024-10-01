@@ -755,7 +755,15 @@ chrome_app("chrome") {
     bundle_deps += [ ios_application_icons_target ]
     bundle_deps += ios_providers_resources_targets
   } else {
-    variants = ios_chrome_app_variants
+    _variants = []
+    foreach(_variant, ios_chrome_app_variants) {
+      _variants += [
+        {
+          forward_variables_from(_variant, "*", [ "cpe_bundle_deps" ])
+        },
+      ]
+    }
+    variants = _variants
   }
 
   xcode_extra_attributes = {
