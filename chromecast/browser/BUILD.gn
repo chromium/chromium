@@ -319,6 +319,7 @@ cast_source_set("browser") {
       "android/cast_web_service_android.cc",
     ]
     deps += [
+      "//components/android_autofill/browser:android",
       "//chromecast/browser/android:jni_headers",
       "//components/embedder_support/android:view",
     ]

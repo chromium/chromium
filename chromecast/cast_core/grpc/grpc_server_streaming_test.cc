@@ -271,9 +271,12 @@ TEST_F(GrpcServerStreamingTest,
         ASSERT_THAT(status, StatusIs(grpc::StatusCode::ABORTED));
         reactor_aborted.Signal();
       }));
+  // The handler might have already been called by gRPC framework, so write an
+  // empty message to release its deferred state.
+  cancelled_reactor->Write(TestResponse());
+
   ASSERT_TRUE(reactor_aborted.TimedWait(kEventTimeout));
 
-  cancelled_reactor->Write(TestResponse());
   test::StopGrpcServer(server, kServerStopTimeout);
 }
 
