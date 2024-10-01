@@ -1153,7 +1153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.Actions"
-    enum="AppListFederatedActions" expires_after="2024-11-01">
+    enum="AppListFederatedActions" expires_after="2025-05-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
@@ -1188,7 +1188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.QueryLengthOnStorageSuccess"
-    units="characters" expires_after="2024-11-01">
+    units="characters" expires_after="2025-05-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
