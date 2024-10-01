@@ -6660,6 +6660,7 @@ test("unit_tests") {
       "../browser/user_education/browser_feature_promo_storage_service_unittest.cc",
       "../browser/user_education/recent_session_tracker_unittest.cc",
       "../browser/user_education/user_education_configuration_provider_unittest.cc",
+      "../browser/webapps/installable/installable_utils_unittest.cc",
     ]
   }
 
