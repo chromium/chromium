@@ -68,14 +68,19 @@ int STGEverythingMenu::GenerateTabGroupCommandID(int idx_in_sorted_tab_groups) {
 
 base::Uuid STGEverythingMenu::GetTabGroupIdFromCommandId(int command_id) {
   const int idx_in_sorted_tab_group = (command_id - kMinCommandId) / kGap;
-  return sorted_tab_groups_.at(idx_in_sorted_tab_group);
+  return sorted_non_empty_tab_groups_.at(idx_in_sorted_tab_group);
 }
 
-std::vector<base::Uuid> STGEverythingMenu::GetSortedTabGroupsByCreationTime(
+std::vector<base::Uuid>
+STGEverythingMenu::GetGroupsForDisplaySortedByCreationTime(
     TabGroupSyncService* tab_group_service) {
   CHECK(tab_group_service);
   std::vector<base::Uuid> sorted_tab_groups;
   for (const SavedTabGroup& group : tab_group_service->GetAllGroups()) {
+    if (group.saved_tabs().empty()) {
+      continue;
+    }
+
     sorted_tab_groups.push_back(group.saved_guid());
   }
   auto compare_by_creation_time = [=](const base::Uuid& a,
@@ -115,11 +120,13 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  sorted_tab_groups_ = GetSortedTabGroupsByCreationTime(tab_group_service);
+  sorted_non_empty_tab_groups_ =
+      GetGroupsForDisplaySortedByCreationTime(tab_group_service);
+
   const auto* const color_provider = browser_->window()->GetColorProvider();
-  for (size_t i = 0; i < sorted_tab_groups_.size(); ++i) {
+  for (size_t i = 0; i < sorted_non_empty_tab_groups_.size(); ++i) {
     const std::optional<SavedTabGroup> tab_group =
-        tab_group_service->GetGroup(sorted_tab_groups_[i]);
+        tab_group_service->GetGroup(sorted_non_empty_tab_groups_[i]);
     // In case any tab group gets deleted while creating the model.
     if (!tab_group) {
       continue;

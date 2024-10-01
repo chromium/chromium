@@ -134,6 +134,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
     return all_bookmarks_button_;
   }
 
+  const tab_groups::SavedTabGroupBar* saved_tab_group_bar() const {
+    return saved_tab_group_bar_;
+  }
+
   // Returns the button used when not all the items on the bookmark bar fit.
   views::MenuButton* overflow_button() const { return overflow_button_; }
 

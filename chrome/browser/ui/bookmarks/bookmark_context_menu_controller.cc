@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -209,7 +210,7 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (chrome::IsSavedTabGroupsEnabled(profile_) &&
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
       tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
                     IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);

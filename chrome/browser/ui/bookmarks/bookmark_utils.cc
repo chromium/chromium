@@ -160,10 +160,6 @@ bool IsAppsShortcutEnabled(Profile* profile) {
 #endif
 }
 
-bool IsSavedTabGroupsEnabled(Profile* profile) {
-  return profile->IsRegularProfile();
-}
-
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(

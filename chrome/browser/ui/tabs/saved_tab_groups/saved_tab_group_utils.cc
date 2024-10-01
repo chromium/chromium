@@ -64,6 +64,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTab);
 
+bool SavedTabGroupUtils::IsEnabledForProfile(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  return SavedTabGroupUtils::GetServiceForProfile(profile) != nullptr;
+}
+
 // static
 TabGroupSyncService* SavedTabGroupUtils::GetServiceForProfile(
     Profile* profile) {

@@ -562,10 +562,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupReorderedFromSync() {
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupAdded,
-                                weak_ptr_factory_.GetWeakPtr(), guid,
-                                TriggerSource::REMOTE));
+  HandleTabGroupAdded(guid, TriggerSource::REMOTE);
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
@@ -576,10 +573,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupUpdated,
-                                weak_ptr_factory_.GetWeakPtr(), group_guid,
-                                tab_guid, TriggerSource::REMOTE));
+  HandleTabGroupUpdated(group_guid, tab_guid, TriggerSource::REMOTE);
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedLocally(

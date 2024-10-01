@@ -1151,14 +1151,17 @@ void TabStripModel::AddToGroupForRestore(const std::vector<int>& indices,
                                          const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  if (!group_model_)
+  DCHECK(group_model_);
+  if (!group_model_) {
     return;
+  }
 
   const bool group_exists = group_model_->ContainsTabGroup(group);
-  if (group_exists)
+  if (group_exists) {
     AddToExistingGroupImpl(indices, group);
-  else
+  } else {
     AddToNewGroupImpl(indices, group);
+  }
 }
 
 void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {

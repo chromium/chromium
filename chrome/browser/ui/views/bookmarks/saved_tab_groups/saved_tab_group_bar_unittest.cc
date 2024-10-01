@@ -790,6 +790,24 @@ TEST_P(SavedTabGroupBarUnitTest, AccessibleProperties) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+TEST_P(SavedTabGroupBarUnitTest, GroupWithNoTabsDoesntShow) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  SavedTabGroup empty_pinned_group(u"Test Title",
+                                   tab_groups::TabGroupColorId::kBlue, {});
+  // position must be set or the update time will be overridden during model
+  // save.
+  empty_pinned_group.SetPosition(0);
+
+  service()->AddGroup(std::move(empty_pinned_group));
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+}
+
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarUnitTest,
                          testing::Bool());

@@ -44,6 +44,9 @@ class SavedTabGroupUtils {
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
 
+  // Helper method for checking whether the feature can be used.
+  static bool IsEnabledForProfile(Profile* profile);
+
   // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
   // crbug.com/350514491 is complete.
   // When IsTabGroupSyncServiceDesktopMigrationEnabled() is true use the

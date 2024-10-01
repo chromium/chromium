@@ -49,8 +49,9 @@
 namespace tab_groups {
 namespace {
 
-// Discard orphaned tabs after 30 days if the associated group cannot be found.
-constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
+// Time period for orphaned tabs/groups to live till. once this threshold is
+// passed, on the next merge, they will be deleted.
+constexpr base::TimeDelta kOrphanedObjectDiscardThreshold = base::Days(30);
 
 bool IsValidSpecifics(const sync_pb::SavedTabGroupSpecifics& specifics) {
   // A valid specifics should have at least a guid and be either a group or a
@@ -170,6 +171,7 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
   }
 
   ResolveTabsMissingGroups(write_batch.get());
+  ResolveGroupsMissingTabs(write_batch.get());
 
   // Update sync with any locally stored data not currently stored in sync.
   for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
@@ -232,6 +234,7 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
   }
 
   ResolveTabsMissingGroups(write_batch.get());
+  ResolveGroupsMissingTabs(write_batch.get());
 
   write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
@@ -730,7 +733,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
 
       // Discard the tabs that do not have an associated group and have not been
       // updated within the discard threshold.
-      if (now - last_update_time >= kDiscardOrphanedTabsThreshold) {
+      if (now - last_update_time >= kOrphanedObjectDiscardThreshold) {
         RemoveEntitySpecific(base::Uuid::ParseLowercase(specifics.guid()),
                              write_batch);
         tab_iterator = tabs_missing_groups_.erase(tab_iterator);
@@ -744,6 +747,28 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
                                     DataToSavedTabGroupTab(*tab_iterator));
       tab_iterator = tabs_missing_groups_.erase(tab_iterator);
     }
+  }
+}
+
+void SavedTabGroupSyncBridge::ResolveGroupsMissingTabs(
+    syncer::DataTypeStore::WriteBatch* write_batch) {
+  std::vector<base::Uuid> orphaned_groups_to_destroy;
+  for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
+    if (!group->saved_tabs().empty()) {
+      continue;
+    }
+
+    if ((base::Time::Now() - group->update_time_windows_epoch_micros()) <
+        kOrphanedObjectDiscardThreshold) {
+      continue;
+    }
+
+    orphaned_groups_to_destroy.push_back(group->saved_guid());
+  }
+
+  for (const base::Uuid& group_id : orphaned_groups_to_destroy) {
+    model_wrapper_->RemoveGroup(group_id);
+    write_batch->DeleteData(group_id.AsLowercaseString());
   }
 }
 

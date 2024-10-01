@@ -1488,7 +1488,8 @@ void BookmarkBarView::Init() {
   // Also re-enabled when the model is loaded.
   managed_bookmarks_button_->SetEnabled(false);
 
-  if (chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->profile())) {
     saved_tab_group_bar_ =
         AddChildView(std::make_unique<tab_groups::SavedTabGroupBar>(
             browser_, animations_enabled));
@@ -2080,7 +2081,8 @@ void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
   // Incognito browsers also get triggered if the associated regular profile
   // browser is triggered. Early return because incognito has no
   // `saved_tab_group_bar_`.
-  if (!chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+  if (!tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->profile())) {
     return;
   }
 

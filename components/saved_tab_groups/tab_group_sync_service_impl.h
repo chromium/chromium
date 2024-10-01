@@ -135,6 +135,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // For testing only.
   void SetIsInitializedForTesting(bool initialized) override;
+  SavedTabGroupModel* GetModelForTesting() { return model_.get(); }
 
  private:
   // KeyedService:
