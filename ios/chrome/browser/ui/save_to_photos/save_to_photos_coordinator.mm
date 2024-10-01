@@ -80,14 +80,13 @@
       HandlerForProtocol(dispatcher, ManageStorageAlertCommands);
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  PhotosService* photosService =
-      PhotosServiceFactory::GetForProfile(browserState);
-  PrefService* prefService = browserState->GetPrefs();
+  ProfileIOS* profile = self.browser->GetProfile();
+  PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
+  PrefService* prefService = profile->GetPrefs();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   _mediator = [[SaveToPhotosMediator alloc]
           initWithPhotosService:photosService
                     prefService:prefService
