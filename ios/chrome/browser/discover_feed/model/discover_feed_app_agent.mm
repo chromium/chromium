@@ -24,8 +24,8 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -383,13 +383,8 @@ class DiscoverFeedProfileHelperList {
   if (!IsFeedBackgroundRefreshCompletedNotificationEnabled()) {
     return;
   }
-  UNUserNotificationCenter* center =
-      UNUserNotificationCenter.currentNotificationCenter;
-  [center requestAuthorizationWithOptions:(UNAuthorizationOptionProvisional |
-                                           UNAuthorizationOptionAlert |
-                                           UNAuthorizationOptionSound)
-                        completionHandler:^(BOOL granted, NSError* error){
-                        }];
+
+  [PushNotificationUtil enableProvisionalPushNotificationPermission:nil];
 }
 
 // Requests OS to send a local user notification with `title`.

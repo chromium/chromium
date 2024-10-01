@@ -340,11 +340,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     // Send an NAU on every foreground to report the OS Auth Settings.
     [self sendSettingsChangeNAUWithService:contentNotificationService];
   }
-  [PushNotificationUtil
-      getPermissionSettings:^(UNNotificationSettings* settings) {
-        [PushNotificationUtil
-            updateAuthorizationStatusPref:settings.authorizationStatus];
-      }];
+  [PushNotificationUtil updateAuthorizationStatusPref];
 }
 
 - (void)sendSettingsChangeNAUWithService:
