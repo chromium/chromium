@@ -44,12 +44,11 @@ GoogleLogoServiceFactory::~GoogleLogoServiceFactory() {}
 
 std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<GoogleLogoService>(
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForProfile(browser_state),
-      browser_state->GetSharedURLLoaderFactory());
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetSharedURLLoaderFactory());
 }
 
 web::BrowserState* GoogleLogoServiceFactory::GetBrowserStateToUse(

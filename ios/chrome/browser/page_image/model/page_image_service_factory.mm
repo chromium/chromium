@@ -19,9 +19,15 @@
 
 // static
 page_image_service::ImageService* PageImageServiceFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+page_image_service::ImageService* PageImageServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<page_image_service::ImageService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 PageImageServiceFactory::PageImageServiceFactory()
@@ -44,17 +50,16 @@ PageImageServiceFactory::~PageImageServiceFactory() {}
 
 std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   RemoteSuggestionsService* remote_suggestions_service =
-      RemoteSuggestionsServiceFactory::GetForProfile(browser_state, true);
+      RemoteSuggestionsServiceFactory::GetForProfile(profile, true);
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier =
       std::make_unique<AutocompleteSchemeClassifierImpl>();
 
