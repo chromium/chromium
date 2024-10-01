@@ -19,14 +19,15 @@ namespace ash {
 
 class LobsterSession;
 
-class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
+class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
  public:
   explicit LobsterPageHandler(LobsterSession* active_session, Profile* profile);
 
   ~LobsterPageHandler() override;
 
-  void BindInterface(mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
-                         pending_receiver);
+  void BindInterface(
+      mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
+          pending_receiver);
 
   // lobster::mojom::LobsterPageHandler overrides
   void RequestCandidates(const std::string& query,
@@ -49,7 +50,7 @@ class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
   raw_ptr<LobsterSession> session_;
   raw_ptr<Profile> profile_;
 
-  mojo::Receiver<lobster::mojom::LobsterPageHandler> receiver_{this};
+  mojo::Receiver<lobster::mojom::UntrustedLobsterPageHandler> receiver_{this};
 };
 
 }  // namespace ash

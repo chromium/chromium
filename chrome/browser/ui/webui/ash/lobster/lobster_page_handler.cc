@@ -26,7 +26,7 @@ LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session,
 LobsterPageHandler::~LobsterPageHandler() = default;
 
 void LobsterPageHandler::BindInterface(
-    mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
+    mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
         pending_receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));

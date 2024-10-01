@@ -42,8 +42,9 @@ class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
-  void BindInterface(mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
-                         pending_receiver);
+  void BindInterface(
+      mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
+          pending_receiver);
 
   static constexpr std::string GetWebUIName() { return "MakoUntrusted"; }
 

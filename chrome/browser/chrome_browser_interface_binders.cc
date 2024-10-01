@@ -1973,7 +1973,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       ash::features::IsLobsterEnabled()) {
     registry.ForWebUI<ash::MakoUntrustedUI>()
         .Add<ash::orca::mojom::EditorClient>()
-        .Add<lobster::mojom::LobsterPageHandler>();
+        .Add<lobster::mojom::UntrustedLobsterPageHandler>();
   }
 
   registry.ForWebUI<ash::DemoModeAppUntrustedUI>()

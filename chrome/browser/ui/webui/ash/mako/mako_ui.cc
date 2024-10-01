@@ -142,7 +142,7 @@ void MakoUntrustedUI::BindInterface(
 }
 
 void MakoUntrustedUI::BindInterface(
-    mojo::PendingReceiver<lobster::mojom::LobsterPageHandler>
+    mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
         pending_receiver) {
   if (!ash::features::IsLobsterEnabled()) {
     mojo::ReportBadMessage("Editor is disabled by flags.");

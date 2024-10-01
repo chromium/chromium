@@ -46,9 +46,8 @@ union Response {
 };
 
 // This interface is used from an untrusted UI to communicate with the service.
-// TODO: b/369943326: Rename LobsterPageHandler into
-// UntrustedLobsterPageHandler.
-interface LobsterPageHandler {
+[RenamedFrom="lobster.mojom.LobsterPageHandler"]
+interface UntrustedLobsterPageHandler {
   // Returns any image candidates generated.
   RequestCandidates@0(string query, uint32 num_candidates)
     => (Response response);
