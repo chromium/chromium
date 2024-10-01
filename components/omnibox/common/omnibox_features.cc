@@ -384,15 +384,6 @@ BASE_FEATURE(kAblateSearchProviderWarmup,
              "AblateSearchProviderWarmup",
              DISABLED);
 
-// When enabled, removes unrecognized TemplateURL parameters, rather than
-// keeping them verbatim. This feature will ensure that the new versions of
-// Chrome will properly behave when supplied with Template URLs featuring
-// unknown parameters; rather than inlining the verbatim unexpanded placeholder,
-// the placeholder will be replaced with an empty string.
-BASE_FEATURE(kDropUnrecognizedTemplateUrlParameters,
-             "DropUnrecognizedTemplateUrlParameters",
-             DISABLED);
-
 // If enabled, hl= is reported in search requests (applicable to iOS only).
 BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
              "ReportApplicationLanguageInSearchRequest",

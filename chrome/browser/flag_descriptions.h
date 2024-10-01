@@ -213,9 +213,6 @@ extern const char kDisableInstanceLimitDescription[];
 extern const char kDownloadWarningImprovementsName[];
 extern const char kDownloadWarningImprovementsDescription[];
 
-extern const char kDropUnrecognizedTemplateUrlParametersName[];
-extern const char kDropUnrecognizedTemplateUrlParametersDescription[];
-
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 extern const char kEnableBenchmarkingChoiceDisabled[];

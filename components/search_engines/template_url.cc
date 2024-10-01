@@ -717,8 +717,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
   const auto parameter =
       base::MakeStringPiece(original_url.begin() + start + 1,
                             original_url.begin() + start + 1 + length);
-  const auto full_parameter = base::MakeStringPiece(
-      original_url.begin() + start, original_url.begin() + end + 1);
   // Remove the parameter from the string.  For parameters who replacement is
   // constant and already known, just replace them directly.  For other cases,
   // like parameters whose values may change over time, use |replacements|.
@@ -839,26 +837,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
     // We don't support these.
     if (!optional)
       url->insert(start, "1");
-  } else if (!prepopulated_) {
-    base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ false);
-    // Note: in certain scenarios this function is tested before FeatureFlag is
-    // initialized. Check whether FeatureList has been instantiated before
-    // testing the flag to avoid talking to EarlyFeatureAccessTracker.
-    if (!base::FeatureList::GetInstance() ||
-        !base::FeatureList::IsEnabled(
-            omnibox::kDropUnrecognizedTemplateUrlParameters)) {
-      url->insert(start, full_parameter.data(), full_parameter.size());
-      return false;
-    }
-    // The unrecognized parameters can originate from Chrome's DMA upstream
-    // definitions, or Chrome Extensions. In each case, data has shown that the
-    // parameters don't carry any JSON or Javascript content and should be safe
-    // to be removed.
-    // This still allows JSON payload to be included in the Template URL, but
-    // requires the braces to be escaped ahead of time.
-    //
-    // Fallthrough.
   } else {
     // Despite Chrome normally relying on prepopulated_engines.json file, there
     // are other mechanisms that can supply overrides - see:
@@ -870,7 +848,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
     //
     // Fallthrough.
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ true);
+                              prepopulated_);
   }
   return true;
 }

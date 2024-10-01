@@ -4186,12 +4186,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,
      SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnChromeURLs)},
 #endif  // ENABLE_EXTENSIONS
-    {"omnibox-drop-unrecognized-templateurl-parameters",
-     flag_descriptions::kDropUnrecognizedTemplateUrlParametersName,
-     flag_descriptions::kDropUnrecognizedTemplateUrlParametersDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kDropUnrecognizedTemplateUrlParameters)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"contextual-search-suppress-short-view",
      flag_descriptions::kContextualSearchSuppressShortViewName,

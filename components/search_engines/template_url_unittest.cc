@@ -231,8 +231,7 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
   const TemplateURLRef::PostParams& bad_post_params =
       url_bad.image_url_ref().post_params_;
   ASSERT_EQ(2U, bad_post_params.size());
-  ExpectPostParamIs(bad_post_params[0], "unknown_template",
-                    "{UnknownTemplate}");
+  ExpectPostParamIs(bad_post_params[0], "unknown_template", "");
   ExpectPostParamIs(bad_post_params[1], "bad_value", "bad{value}");
 #endif
 
@@ -469,7 +468,7 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndParse) {
   TemplateURLRef::Replacements replacements;
   bool valid = false;
 
-  EXPECT_EQ("http://foo{fhqwhgads}bar",
+  EXPECT_EQ("http://foobar",
             url.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
                                    nullptr, &valid));
   EXPECT_TRUE(valid);
@@ -500,21 +499,21 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
   const SearchTermsData& stdata = search_terms_data_;
 
   TemplateURL url(data);
-  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
+  EXPECT_EQ("http://foosearch/?q=X",
             url.url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}alternate/?q=X",
+  EXPECT_EQ("http://fooalternate/?q=X",
             url.url_refs()[0].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
+  EXPECT_EQ("http://foosearch/?q=X",
             url.url_refs()[1].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}suggest/?q=X",
+  EXPECT_EQ("http://foosuggest/?q=X",
             url.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}image/",
+  EXPECT_EQ("http://fooimage/",
             url.image_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}image/?translate",
+  EXPECT_EQ("http://fooimage/?translate",
             url.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}newtab/",
+  EXPECT_EQ("http://foonewtab/",
             url.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}context/",
+  EXPECT_EQ("http://foocontext/",
             url.contextual_search_url_ref().ReplaceSearchTerms(args, stdata));
 
   data.prepopulate_id = 123;
@@ -1402,8 +1401,8 @@ TEST_F(TemplateURLTest, ParseParameterUnknown) {
 
   // By default, TemplateURLRef should not consider itself prepopulated.
   // Therefore we should not replace the unknown parameter.
-  EXPECT_FALSE(url.url_ref().ParseParameter(0, 10, &parsed_url, &replacements));
-  EXPECT_EQ("{fhqwhgads}abc", parsed_url);
+  EXPECT_TRUE(url.url_ref().ParseParameter(0, 10, &parsed_url, &replacements));
+  EXPECT_EQ("abc", parsed_url);
   EXPECT_TRUE(replacements.empty());
 
   // If the TemplateURLRef is prepopulated, we should remove unknown parameters.
@@ -1443,7 +1442,7 @@ TEST_F(TemplateURLTest, ParseURLNoKnownParameters) {
   TemplateURLRef::Replacements replacements;
   bool valid = false;
 
-  EXPECT_EQ("{}", url.url_ref().ParseURL("{}", &replacements, nullptr, &valid));
+  EXPECT_EQ("", url.url_ref().ParseURL("{}", &replacements, nullptr, &valid));
   EXPECT_TRUE(valid);
   EXPECT_TRUE(replacements.empty());
 }
@@ -1454,10 +1453,10 @@ TEST_F(TemplateURLTest, ParseURLTwoParameters) {
   TemplateURL url(data);
   TemplateURLRef::Replacements replacements;
   bool valid = false;
-  EXPECT_EQ("{}{}", url.url_ref().ParseURL("{}{{searchTerms}}", &replacements,
-                                           nullptr, &valid));
+  EXPECT_EQ("{}", url.url_ref().ParseURL("{{searchTerms}}", &replacements,
+                                         nullptr, &valid));
   ASSERT_EQ(1U, replacements.size());
-  EXPECT_EQ(3U, replacements[0].index);
+  EXPECT_EQ(1U, replacements[0].index);
   EXPECT_EQ(TemplateURLRef::SEARCH_TERMS, replacements[0].type);
   EXPECT_TRUE(valid);
 }

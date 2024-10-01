@@ -6495,11 +6495,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "omnibox-drop-unrecognized-templateurl-parameters",
-    "owners": [ "ender@google.com", "jdonnelly@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "omnibox-dynamic-max-autocomplete",
     "owners": [ "stkhapugin@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

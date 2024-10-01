@@ -136,7 +136,6 @@ BASE_DECLARE_FEATURE(kStarterPackIPH);
 
 // Search and Suggest requests and params.
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
-BASE_DECLARE_FEATURE(kDropUnrecognizedTemplateUrlParameters);
 BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);

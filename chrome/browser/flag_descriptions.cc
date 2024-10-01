@@ -332,12 +332,6 @@ const char kDownloadWarningImprovementsDescription[] =
     "Enable UI improvements for downloads, download scanning, and download "
     "warnings. The enabled features are subject to change at any time.";
 
-extern const char kDropUnrecognizedTemplateUrlParametersName[] =
-    "Drop unrecognized TemplateURL parameters";
-extern const char kDropUnrecognizedTemplateUrlParametersDescription[] =
-    "When enabled, any unrecognized TemplateURL parameters will be removed "
-    "when performing replacement.";
-
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
 const char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "
