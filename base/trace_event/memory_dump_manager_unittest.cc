@@ -241,7 +241,7 @@ class MemoryDumpManagerTest : public testing::Test {
     mdm_->SetupForTracing(TraceConfig::MemoryDumpConfig());
   }
 
-  void EnableForTracingWithTraceConfig(const std::string trace_config_string) {
+  void EnableForTracingWithTraceConfig(const std::string& trace_config_string) {
     TraceConfig trace_config(trace_config_string);
     mdm_->SetupForTracing(trace_config.memory_dump_config());
   }

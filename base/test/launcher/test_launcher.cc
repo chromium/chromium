@@ -962,7 +962,7 @@ int CountItemsInDirectory(const FilePath& dir) {
 
 // Truncates a snippet in the middle to the given byte limit. byte_limit should
 // be at least 30.
-std::string TruncateSnippet(const std::string_view snippet, size_t byte_limit) {
+std::string TruncateSnippet(std::string_view snippet, size_t byte_limit) {
   if (snippet.length() <= byte_limit) {
     return std::string(snippet);
   }
@@ -2385,7 +2385,7 @@ std::string GetTestOutputSnippet(const TestResult& result,
   return snippet;
 }
 
-std::string TruncateSnippetFocused(const std::string_view snippet,
+std::string TruncateSnippetFocused(std::string_view snippet,
                                    size_t byte_limit) {
   // Find the start of anything that looks like a fatal log message.
   // We want to preferentially preserve these from truncation as we

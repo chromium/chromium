@@ -39,7 +39,7 @@ void ExpectFeatures(const std::string& enabled_features,
   EXPECT_EQ(disabled_features, actual_disabled_features);
 }
 
-std::string GetActiveFieldTrialGroupName(const std::string trial_name) {
+std::string GetActiveFieldTrialGroupName(const std::string& trial_name) {
   FieldTrial::ActiveGroups groups;
   FieldTrialList::GetActiveFieldTrialGroups(&groups);
   for (const auto& group : groups) {
