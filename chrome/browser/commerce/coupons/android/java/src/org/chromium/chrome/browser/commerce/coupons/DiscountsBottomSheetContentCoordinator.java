@@ -11,11 +11,14 @@ import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentPro
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.TYPE;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -51,6 +54,23 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
         mContentRecyclerView =
                 mDiscountsContentContainer.findViewById(R.id.discounts_content_recycler_view);
         mContentRecyclerView.setAdapter(adapter);
+        mContentRecyclerView.addItemDecoration(
+                new ItemDecoration() {
+                    @Override
+                    public void getItemOffsets(
+                            @NonNull Rect outRect,
+                            @NonNull View view,
+                            @NonNull RecyclerView parent,
+                            @NonNull State state) {
+                        // Avoid adding top padding to the first item in the list.
+                        if (parent.getChildAdapterPosition(view) != 0) {
+                            outRect.top =
+                                    mContext.getResources()
+                                            .getDimensionPixelOffset(
+                                                    R.dimen.discount_item_divider_height);
+                        }
+                    }
+                });
 
         mMediator = new DiscountsBottomSheetContentMediator(context, tabSupplier, mModelList);
     }

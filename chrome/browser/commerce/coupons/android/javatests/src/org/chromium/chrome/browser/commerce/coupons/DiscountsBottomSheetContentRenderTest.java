@@ -44,7 +44,10 @@ import java.io.IOException;
 public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setBugComponent(UI_BROWSER_SHOPPING).build();
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(UI_BROWSER_SHOPPING)
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -36,8 +36,12 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/discount_code_background.xml",
+    "java/res/drawable/discount_item_container_background.xml",
     "java/res/layout/discount_item_container.xml",
     "java/res/layout/discounts_content_container.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
 
   deps = [
