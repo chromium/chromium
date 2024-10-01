@@ -1,12 +1,10 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>PressureObserver on DOMWindow of detached iframe</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/test-only-api.js"></script>
-<script src="resources/pressure-helpers.js"></script>
-<body>
-<script>
+// META: variant=?globalScope=window
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
+
 'use strict';
 
 test(() => {
@@ -33,7 +31,12 @@ promise_test(async t => {
                             observer.observe('cpu'));
 }, 'PressureObserver.observe() on detached frame rejects');
 
-promise_test(async t => {
+pressure_test(async t => {
+  await create_virtual_pressure_source('cpu');
+  t.add_cleanup(async () => {
+    await remove_virtual_pressure_source('cpu');
+  });
+
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
@@ -48,7 +51,11 @@ promise_test(async t => {
   observer.disconnect();
 }, 'PressureObserver.disconnect() on detached frame returns');
 
-pressure_test(async (t, mockPressureService) => {
+pressure_test(async t => {
+  await create_virtual_pressure_source('cpu');
+  t.add_cleanup(async () => {
+    await remove_virtual_pressure_source('cpu');
+  });
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
@@ -68,13 +75,17 @@ pressure_test(async (t, mockPressureService) => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    update_virtual_pressure_source('cpu', 'critical').catch(reject);
   });
   assert_equals(changes[0].state, 'critical');
 }, 'Detaching frame while PressureObserver.observe() settles');
 
-pressure_test(async (t, mockPressureService) => {
+pressure_test(async t => {
+  await create_virtual_pressure_source('cpu');
+  t.add_cleanup(async () => {
+    await remove_virtual_pressure_source('cpu');
+  });
+
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
@@ -83,13 +94,11 @@ pressure_test(async (t, mockPressureService) => {
   });
 
   await observer.observe('cpu');
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
-
+  const updatePromise = update_virtual_pressure_source('cpu', 'critical');
   iframe.remove();
+  await updatePromise;
 
   return new Promise(resolve => t.step_timeout(resolve, 1000));
 }, 'PressureObserver on detached frame returns with no callback');
 
-</script>
-</body>
+mark_as_done();

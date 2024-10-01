@@ -1,12 +1,11 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: variant=?globalScope=window
+// META: variant=?globalScope=dedicated_worker
 
 'use strict';
 
 // Regression test for https://issues.chromium.org/issues/333957909
 // Make sure that observe() always returns a Promise.
-pressure_test(async (t, mockPressureService) => {
+promise_test(async (t) => {
   const observer = new PressureObserver(() => {});
   t.add_cleanup(() => observer.disconnect());
 

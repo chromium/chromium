@@ -1,6 +1,17 @@
 This directory contains tests for the
 [Compute Pressure](https://w3c.github.io/compute-pressure/) specification.
 
+## Notes to implementors
+`compute_pressure_rate_obfuscation_mitigation_*`, which test the spec's [rate
+obfuscation
+sections](https://w3c.github.io/compute-pressure/#rate-obfuscation), need to
+send and wait for dozens of updates.
+
+Some tests may need to send over 90 changes and then wait up to 10 seconds for
+the next update. At 1 change per second, this would by far exceed WPT's timeout
+limits, so implementations need to be able to dispatch updates at a higher rate
+than usual for these tests to pass.
+
 ## How to write tests
 ### Tests that only need to run on a window
 To test this API, one needs to be able to control the pressure data that will

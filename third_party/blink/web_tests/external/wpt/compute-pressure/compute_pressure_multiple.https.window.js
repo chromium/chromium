@@ -1,10 +1,19 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: variant=?globalScope=window
+// META: variant=?globalScope=dedicated_worker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
+pressure_test(async t => {
+  await create_virtual_pressure_source('cpu');
+  t.add_cleanup(async () => {
+    await remove_virtual_pressure_source('cpu');
+  });
+
   const changes1_promise = new Promise((resolve, reject) => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
@@ -23,8 +32,7 @@ pressure_test(async (t, mockPressureService) => {
     observer.observe('cpu').catch(reject);
   });
 
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+  await update_virtual_pressure_source('cpu', 'critical');
 
   const [changes1, changes2, changes3] =
       await Promise.all([changes1_promise, changes2_promise, changes3_promise]);
@@ -33,3 +41,5 @@ pressure_test(async (t, mockPressureService) => {
     assert_equals(changes[0].state, 'critical');
   }
 }, 'Three PressureObserver instances receive changes');
+
+mark_as_done();
