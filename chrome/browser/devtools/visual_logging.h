@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_
 #define CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_
 
+#include <cstdint>
 #include <vector>
 
 struct VisualElementImpression {
