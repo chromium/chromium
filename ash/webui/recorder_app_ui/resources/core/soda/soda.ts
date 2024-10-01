@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {i18n} from '../i18n.js';
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
 import {lazyInit, sliceWhen} from '../utils/utils.js';
@@ -291,11 +292,7 @@ export class Transcription {
    * Concatenates textTokens into the string representation of the
    * transcription.
    *
-   * This is also used to export the transcription into a txt file.
-   *
-   * TODO(pihsun): Have a different function for exporting to text format and
-   * when exporting representation used for summary input.
-   * TODO(pihsun): Include speaker label in the output.
+   * This is used for title generation and summary input.
    */
   toPlainText = lazyInit((): string => {
     const ret: string[] = [];
@@ -308,6 +305,47 @@ export class Transcription {
         ret.push('\n');
         startOfParagraph = true;
         continue;
+      }
+      if (!startOfParagraph && (token.leadingSpace ?? true)) {
+        ret.push(' ');
+      }
+      ret.push(token.text);
+      startOfParagraph = false;
+    }
+    return ret.join('');
+  });
+
+  /**
+   * Concatenates textTokens into the string representation of the
+   * transcription. For continuous paragraphs with the same speaker label, adds
+   * the speaker label at the first paragraph.
+   *
+   * This is used to export the transcription into a txt file.
+   */
+  toExportText = lazyInit((): string => {
+    const ret: string[] = [];
+    let startOfParagraph = true;
+    let currentSpeaker: string|null = null;
+    for (const token of this.textTokens) {
+      if (token.kind === 'textSeparator') {
+        ret.push('\n');
+        startOfParagraph = true;
+        continue;
+      }
+      if (token.speakerLabel !== currentSpeaker) {
+        if (!startOfParagraph) {
+          ret.push('\n');
+          startOfParagraph = true;
+        }
+        if (ret.length !== 0) {
+          // Add a new line between two speakers.
+          ret.push('\n');
+        }
+        if (token.speakerLabel !== null) {
+          ret.push(i18n.transcriptionSpeakerLabelLabel(token.speakerLabel));
+          ret.push('\n');
+        }
+        currentSpeaker = token.speakerLabel;
       }
       if (!startOfParagraph && (token.leadingSpace ?? true)) {
         ret.push(' ');
