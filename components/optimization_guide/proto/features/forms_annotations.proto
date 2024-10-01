@@ -23,6 +23,8 @@ message FormsAnnotationsLoggingData {
   FormsAnnotationsRequest request = 1;
 
   FormsAnnotationsResponse response = 2;
+
+  FormsAnnotationsQuality quality = 3;
 }
 
 message FormsAnnotationsRequest {
@@ -46,4 +48,8 @@ message FormsAnnotationsResponse {
 
   // The user annotations entry IDs that were deleted.
   repeated int64 deleted_entry_ids = 3;
+}
+
+message FormsAnnotationsQuality {
+  UserFeedback user_feedback = 1;
 }
