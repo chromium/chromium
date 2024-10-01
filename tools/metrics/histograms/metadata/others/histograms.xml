@@ -72,9 +72,14 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app Google Apps detail page"/>
   <variant name="GoogleToolsBuiltInPage"
       summary="Google tools built in detail page"/>
+  <variant name="HelpMeReadPage"
+      summary="Highlights app Help me read detail page"/>
   <variant name="HelpMeWritePage"
       summary="Highlights app Help me write detail page"/>
-  <variant name="LauncherSearchPage" summary="Launcher search detail page"/>
+  <variant name="LauncherSearchPage"
+      summary="Highlights app Launcher search detail page"/>
+  <variant name="LiveTranslatePage"
+      summary="Highlights app Live translate detail page"/>
   <variant name="LumaFusionPage"
       summary="Highlights app LumaFusion detail page"/>
   <variant name="MessagingPage" summary="Highlights app Messaging detail page"/>

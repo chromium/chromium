@@ -46758,9 +46758,12 @@ should be able to be added at any place in this file.
   <suffix name="GoogleAppsButton" label="Google Apps details page button"/>
   <suffix name="GoogleToolsBuiltInButton"
       label="Google tools built in details page button"/>
-  <suffix name="HelpMeWriteButton" label="Help me write page button"/>
+  <suffix name="HelpMeReadButton" label="Help me read details page button"/>
+  <suffix name="HelpMeWriteButton" label="Help me write details page button"/>
   <suffix name="LauncherSearchButton"
       label="Launcher search details page button"/>
+  <suffix name="LiveTranslateButton"
+      label="Live translate details page button"/>
   <suffix name="LumaFusionButton" label="LumaFusion details page button"/>
   <suffix name="MessagingButton" label="Messaging details page button"/>
   <suffix name="MobileGamingButton" label="Mobile Gaming details page button"/>
