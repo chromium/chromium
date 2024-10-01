@@ -8,6 +8,7 @@
       "sizes": "any"
     }
   ],
+  "description": "$i18n{passwordManagerDescription}",
   "start_url": "/?source=pwa",
   "id": "chrome://password-manager/",
   "display": "standalone",
