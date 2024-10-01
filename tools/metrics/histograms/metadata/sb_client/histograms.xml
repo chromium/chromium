@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbedder.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2024-11-12">
+    enum="SBPhishingClassifierEvent" expires_after="2025-11-12">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
