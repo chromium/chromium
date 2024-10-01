@@ -357,7 +357,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSignOutPreference.initialize(
                         requireContext(),
                         getProfile(),
-                        getChildFragmentManager(),
+                        getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
             mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
@@ -859,7 +859,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
+                getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
@@ -878,7 +878,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
+                getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
@@ -1108,7 +1108,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         profile,
-                        getChildFragmentManager(),
+                        getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         mSnackbarManagerSupplier.get(),
                         profile.isChild()

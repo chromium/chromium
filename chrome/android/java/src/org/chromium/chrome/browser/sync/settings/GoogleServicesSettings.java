@@ -248,7 +248,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
             SignOutCoordinator.startSignOutFlow(
                     requireContext(),
                     getProfile(),
-                    getChildFragmentManager(),
+                    getActivity().getSupportFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                     mSnackbarManagerSupplier.get(),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,

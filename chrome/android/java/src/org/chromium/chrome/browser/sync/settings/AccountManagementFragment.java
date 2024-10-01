@@ -249,7 +249,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             SignOutCoordinator.startSignOutFlow(
                                     requireContext(),
                                     getProfile(),
-                                    getChildFragmentManager(),
+                                    getActivity().getSupportFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
                                     mSnackbarManagerSupplier.get(),
@@ -267,7 +267,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             SignOutCoordinator.startSignOutFlow(
                                     requireContext(),
                                     getProfile(),
-                                    getChildFragmentManager(),
+                                    getActivity().getSupportFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
                                     mSnackbarManagerSupplier.get(),
