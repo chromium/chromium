@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/navigation-api/
-callback NavigationInterceptHandler = Promise<void>();
+callback NavigationInterceptHandler = Promise<undefined>();
 
 dictionary NavigationInterceptOptions {
   NavigationInterceptHandler handler;

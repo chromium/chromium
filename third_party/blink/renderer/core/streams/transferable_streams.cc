@@ -803,7 +803,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
    public:
     explicit ConcatenatingUnderlyingSourceReadRequest(
         ConcatenatingUnderlyingSource* source,
-        ScriptPromiseResolver<IDLPromise>* resolver)
+        ScriptPromiseResolver<IDLPromise<IDLAny>>* resolver)
         : source_(source), resolver_(resolver) {}
 
     void ChunkSteps(ScriptState* script_state,
@@ -862,7 +862,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
    private:
     Member<ConcatenatingUnderlyingSource> source_;
-    Member<ScriptPromiseResolver<IDLPromise>> resolver_;
+    Member<ScriptPromiseResolver<IDLPromise<IDLAny>>> resolver_;
   };
 
   ConcatenatingUnderlyingSource(ScriptState* script_state,
@@ -891,7 +891,8 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       return source2_->Pull(script_state, exception_state);
     }
     auto* promise =
-        MakeGarbageCollected<ScriptPromiseResolver<IDLPromise>>(script_state);
+        MakeGarbageCollected<ScriptPromiseResolver<IDLPromise<IDLAny>>>(
+            script_state);
     auto* read_request =
         MakeGarbageCollected<ConcatenatingUnderlyingSourceReadRequest>(this,
                                                                        promise);

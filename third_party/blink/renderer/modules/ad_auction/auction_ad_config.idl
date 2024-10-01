@@ -60,7 +60,7 @@ dictionary AuctionAdConfig {
   Promise<DOMString> directFromSellerSignalsHeaderAdSlot;
 
   [RuntimeEnabled=FledgeDeprecatedRenderURLReplacements]
-  Promise<record<USVString, USVString>> deprecatedRenderURLReplacements;
+  Promise<record<USVString, USVString>?> deprecatedRenderURLReplacements;
 
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;

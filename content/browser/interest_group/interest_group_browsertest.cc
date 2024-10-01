@@ -23749,10 +23749,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       decisionLogicURL: 'https://test.com',
       sellerCurrency: 'currency is checked late',
       ignored: setTimeout(() => {console.log('I am a timer'); }, 1),
-      perBuyerTimeouts: { 'https://test.com': {
+      perBuyerTimeouts: Promise.resolve({ 'https://test.com': {
           valueOf: () => { console.log('I am a side effect!') }
         }
-      }
+      })
   })"));
   EXPECT_TRUE(console_observer.Wait());
   EXPECT_EQ("I am a timer", console_observer.GetMessageAt(0));

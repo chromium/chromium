@@ -61,7 +61,7 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
 
   Member<ReadableStream> stream_;
   Member<ReadableStreamDefaultReader> reader_;
-  Member<ScriptPromiseResolver<IDLPromise>> cancel_promise_;
+  Member<ScriptPromiseResolver<IDLPromise<IDLUndefined>>> cancel_promise_;
   bool reading_ = false;
   bool read_again_ = false;
   bool clone_for_branch2_ = false;

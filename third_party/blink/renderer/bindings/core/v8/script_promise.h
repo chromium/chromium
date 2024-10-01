@@ -132,23 +132,9 @@ class ScriptPromise : public ScriptPromiseUntyped {
   ScriptPromise() = default;
 
   template <typename T = IDLResolvedType>
-    requires std::is_same_v<T, IDLAny>
   static ScriptPromise<T> FromV8Promise(v8::Isolate* isolate,
                                         v8::Local<v8::Promise> promise) {
     return ScriptPromise<T>(isolate, promise);
-  }
-
-  template <typename T = IDLResolvedType>
-    requires std::is_same_v<T, IDLAny>
-  static ScriptPromise<T> FromV8Value(v8::Isolate* isolate,
-                                      v8::Local<v8::Value> value) {
-    if (value.IsEmpty()) {
-      return ScriptPromise<T>();
-    }
-    if (value->IsPromise()) {
-      return FromV8Promise(isolate, value.As<v8::Promise>());
-    }
-    return ToResolvedPromise<T>(ScriptState::ForCurrentRealm(isolate), value);
   }
 
   static ScriptPromise<IDLResolvedType> RejectWithDOMException(

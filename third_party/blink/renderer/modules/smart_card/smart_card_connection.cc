@@ -99,7 +99,7 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
                                    v8::ExceptionContext::kOperation,
                                    "SmartCardConnection", "startTransaction");
 
-    if (value.IsUndefined()) {
+    if (value.IsUndefined() || value.IsNull()) {
       connection_->OnTransactionCallbackDone(SmartCardDisposition::kReset);
       return ScriptValue();
     }
@@ -685,8 +685,7 @@ void SmartCardConnection::OnBeginTransactionDone(
 
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());
-  v8::Maybe<ScriptPromiseUntyped> transaction_result =
-      transaction_callback->Invoke(nullptr);
+  auto transaction_result = transaction_callback->Invoke(nullptr);
 
   if (transaction_result.IsNothing()) {
     if (try_catch.HasCaught()) {
@@ -702,7 +701,7 @@ void SmartCardConnection::OnBeginTransactionDone(
     return;
   }
 
-  ScriptPromiseUntyped promise = transaction_result.FromJust();
+  auto promise = transaction_result.FromJust();
   promise.Then(MakeGarbageCollected<ScriptFunction>(
                    script_state,
                    MakeGarbageCollected<TransactionFulfilledFunction>(this)),

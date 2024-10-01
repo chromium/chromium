@@ -3942,7 +3942,8 @@ ScriptValue Internals::createWritableStreamAndSink(
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "sink"),
-            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise()))
+            ToV8Traits<IDLPromise<IDLString>>::ToV8(script_state,
+                                                    resolver->Promise()))
       .Check();
   return ScriptValue(script_state->GetIsolate(), object);
 }

@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] getType(DOMString valid type) converts DOMString to Blob
-  assert_equals: expected (string) "text/plain" but got (undefined) undefined
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'ClipboardItem': Failed to convert value to 'Blob'."
 [FAIL] getType(DOMString invalid type) converts DOMString to Blob
-  assert_equals: expected (string) "not a/real type" but got (undefined) undefined
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'ClipboardItem': Failed to convert value to 'Blob'."
 Harness: the test ran to completion.
 

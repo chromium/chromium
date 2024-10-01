@@ -282,7 +282,8 @@ TEST(ToV8TraitsTest, Promise) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   auto promise = ToResolvedUndefinedPromise(scope.GetScriptState());
-  TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
+  TEST_TOV8_TRAITS(scope, IDLPromise<IDLUndefined>, "[object Promise]",
+                   promise);
 }
 
 TEST(ToV8TraitsTest, NotShared) {

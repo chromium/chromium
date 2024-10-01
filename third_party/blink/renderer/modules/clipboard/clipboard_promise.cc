@@ -356,12 +356,14 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  HeapVector<std::pair<String, ScriptPromiseUntyped>> items;
+  HeapVector<std::pair<String, ScriptPromise<Blob>>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
   for (const auto& item : clipboard_item_data_) {
-    ScriptPromiseUntyped promise =
-        ToResolvedPromise<IDLNullable<Blob>>(script_state, item.second);
+    if (!item.second) {
+      continue;
+    }
+    auto promise = ToResolvedPromise<Blob>(script_state, item.second);
     items.emplace_back(item.first, promise);
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {

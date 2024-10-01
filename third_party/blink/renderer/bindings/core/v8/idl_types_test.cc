@@ -105,10 +105,11 @@ static_assert(std::is_base_of<IDLBase, IDLUnrestrictedFloat>::value,
 static_assert(std::is_same<IDLUnrestrictedFloat::ImplType, float>::value,
               "IDLUnrestrictedFloat's ImplType is float");
 
-static_assert(std::is_base_of<IDLBase, IDLPromise>::value,
+static_assert(std::is_base_of<IDLBase, IDLPromise<IDLAny>>::value,
               "IDLPromise inherits from IDLBase");
-static_assert(std::is_same<IDLPromise::ImplType, ScriptPromiseUntyped>::value,
-              "IDLPromise's ImplType is ScriptPromiseUntyped");
+static_assert(
+    std::is_same<IDLPromise<IDLAny>::ImplType, ScriptPromise<IDLAny>>::value,
+    "IDLPromise<T>'s ImplType is ScriptPromiseTyped<T>");
 
 static_assert(std::is_base_of<IDLBase, IDLSequence<IDLByte>>::value,
               "IDLSequence inherits from IDLBase");

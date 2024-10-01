@@ -428,7 +428,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     return;
   }
 
-  v8::Maybe<ScriptPromiseUntyped> result = registered_run_function->Invoke(
+  v8::Maybe<ScriptPromise<IDLAny>> result = registered_run_function->Invoke(
       instance.Get(isolate), urls_param, *data_param);
 
   if (try_catch.HasCaught()) {
@@ -449,7 +449,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   auto* unresolved_request = MakeGarbageCollected<UnresolvedSelectURLRequest>(
       urls.size(), std::move(combined_operation_completion_cb));
 
-  ScriptPromiseUntyped promise = result.FromJust();
+  ScriptPromise<IDLAny> promise = result.FromJust();
 
   auto* success_callback = MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<SelectURLResolutionSuccessCallback>(
@@ -504,7 +504,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     return;
   }
 
-  v8::Maybe<ScriptPromiseUntyped> result =
+  v8::Maybe<ScriptPromise<IDLAny>> result =
       registered_run_function->Invoke(instance.Get(isolate), *data_param);
 
   if (try_catch.HasCaught()) {
@@ -523,7 +523,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   auto* unresolved_request = MakeGarbageCollected<UnresolvedRunRequest>(
       std::move(combined_operation_completion_cb));
 
-  ScriptPromiseUntyped promise = result.FromJust();
+  ScriptPromise<IDLAny> promise = result.FromJust();
 
   auto* success_callback = MakeGarbageCollected<ScriptFunction>(
       script_state,

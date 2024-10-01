@@ -171,7 +171,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  ScriptPromiseUntyped result;
+  ScriptPromise<IDLUndefined> result;
 
   // It's ok to use the main world when there is no callback, since we're only
   // using it to call DOMChangeFinishedCallback which doesn't use the script
@@ -182,7 +182,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   ScriptState::Scope scope(script_state);
 
   if (update_dom_callback_) {
-    v8::Maybe<ScriptPromiseUntyped> maybe_result =
+    v8::Maybe<ScriptPromise<IDLUndefined>> maybe_result =
         update_dom_callback_->Invoke(nullptr);
 
     // If the callback couldn't be run for some reason, treat it as an empty

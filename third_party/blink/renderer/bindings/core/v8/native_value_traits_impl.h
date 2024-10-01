@@ -43,12 +43,16 @@ class GPUVertexBufferLayout;
 class ScriptWrappable;
 struct WrapperTypeInfo;
 
+struct ToV8UndefinedGenerator {
+  DISALLOW_NEW();
+  using ImplType = ToV8UndefinedGenerator;
+};
+
 namespace bindings {
 
 class EnumerationBase;
 class InputDictionaryBase;
 class UnionBase;
-
 CORE_EXPORT void NativeValueTraitsInterfaceNotOfType(
     const WrapperTypeInfo* wrapper_type_info,
     ExceptionState& exception_state);
@@ -117,6 +121,17 @@ struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLAny>>
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {
     return bindings::NativeValueTraitsAnyAdapter(isolate, value);
+  }
+};
+
+// undefined
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLUndefined>
+    : public NativeValueTraitsBase<IDLUndefined> {
+  static ToV8UndefinedGenerator NativeValue(v8::Isolate*,
+                                            v8::Local<v8::Value>,
+                                            ExceptionState&) {
+    return ToV8UndefinedGenerator();
   }
 };
 
@@ -902,19 +917,32 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLObject>>
 };
 
 // Promise types
-template <>
-struct CORE_EXPORT NativeValueTraits<IDLPromise>
-    : public NativeValueTraitsBase<IDLPromise> {
-  static ScriptPromiseUntyped NativeValue(v8::Isolate* isolate,
-                                          v8::Local<v8::Value> value,
-                                          ExceptionState& exception_state) {
-    return ScriptPromise<IDLAny>::FromV8Value(isolate, value);
+template <typename T>
+struct NativeValueTraits<IDLPromise<T>>
+    : public NativeValueTraitsBase<IDLPromise<T>> {
+  static ScriptPromise<T> NativeValue(v8::Isolate* isolate,
+                                      v8::Local<v8::Value> value,
+                                      ExceptionState&) {
+    if (value.IsEmpty()) {
+      return ScriptPromise<T>();
+    }
+    if (value->IsPromise()) {
+      return ScriptPromise<T>::FromV8Promise(isolate, value.As<v8::Promise>());
+    }
+    ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
+    v8::TryCatch try_catch(isolate);
+    auto&& blink_value = NativeValueTraits<T>::NativeValue(
+        isolate, value, PassThroughException(isolate));
+    if (try_catch.HasCaught()) {
+      return ScriptPromise<T>::Reject(script_state, try_catch.Exception());
+    }
+    return ToResolvedPromise<T>(script_state, std::move(blink_value));
   }
 };
 
 // IDLNullable<IDLPromise> must not be used.
-template <>
-struct NativeValueTraits<IDLNullable<IDLPromise>>;
+template <typename T>
+struct NativeValueTraits<IDLNullable<IDLPromise<T>>>;
 
 // Sequence types
 

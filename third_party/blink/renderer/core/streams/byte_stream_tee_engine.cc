@@ -652,7 +652,8 @@ void ByteStreamTeeEngine::Start(ScriptState* script_state,
 
   // 13. Let cancelPromise be a new promise.
   cancel_promise_ =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLPromise>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLPromise<IDLUndefined>>>(
+          script_state);
 
   // 17. Let pull1Algorithm be the following steps:
   // (See PullAlgorithm::Run()).

@@ -19,7 +19,7 @@ namespace blink {
 
 // static
 ClipboardItem* ClipboardItem::Create(
-    const HeapVector<std::pair<String, ScriptPromiseUntyped>>& representations,
+    const HeapVector<std::pair<String, ScriptPromise<Blob>>>& representations,
     ExceptionState& exception_state) {
   // Check that incoming dictionary isn't empty. If it is, it's possible that
   // Javascript bindings implicitly converted an Object (like a
@@ -32,8 +32,7 @@ ClipboardItem* ClipboardItem::Create(
 }
 
 ClipboardItem::ClipboardItem(
-    const HeapVector<std::pair<String, ScriptPromiseUntyped>>&
-        representations) {
+    const HeapVector<std::pair<String, ScriptPromise<Blob>>>& representations) {
   for (const auto& representation : representations) {
     String web_custom_format =
         Clipboard::ParseWebCustomFormat(representation.first);

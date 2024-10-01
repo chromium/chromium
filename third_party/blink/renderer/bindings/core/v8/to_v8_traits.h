@@ -49,13 +49,6 @@ class UnionBase;
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
 
-// Used only for allowing a ScriptPromiseProperty to specify that it will
-// resolve/reject with v8::Undefined.
-struct ToV8UndefinedGenerator {
-  DISALLOW_NEW();
-  using ImplType = ToV8UndefinedGenerator;
-};
-
 // undefined
 template <>
 struct ToV8Traits<IDLUndefined> {
@@ -87,6 +80,12 @@ struct ToV8Traits<IDLAny> {
     if (value.IsEmpty())
       return v8::Undefined(script_state->GetIsolate());
     return value;
+  }
+
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      const bindings::NativeValueTraitsAnyAdapter& adapter) {
+    return adapter;
   }
 };
 
@@ -243,11 +242,11 @@ struct ToV8Traits<IDLObject> {
 };
 
 // Promise
-template <>
-struct ToV8Traits<IDLPromise> {
+template <typename T>
+struct ToV8Traits<IDLPromise<T>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptPromiseUntyped& script_promise) {
+      const ScriptPromise<T>& script_promise) {
     DCHECK(!script_promise.IsEmpty());
     return script_promise.V8Value();
   }

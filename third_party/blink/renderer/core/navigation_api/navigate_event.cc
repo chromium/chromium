@@ -381,7 +381,7 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
   handlers_list.swap(navigation_action_handlers_list_);
 
   for (auto& function : handlers_list) {
-    ScriptPromiseUntyped result;
+    ScriptPromise<IDLUndefined> result;
     if (function->Invoke(this).To(&result))
       navigation_action_promises_list_.push_back(result);
   }

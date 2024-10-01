@@ -69,7 +69,7 @@ class ByteStreamTeeEngine final : public GarbageCollected<ByteStreamTeeEngine> {
 
   Member<ReadableStream> stream_;
   Member<ReadableStreamGenericReader> reader_;
-  Member<ScriptPromiseResolver<IDLPromise>> cancel_promise_;
+  Member<ScriptPromiseResolver<IDLPromise<IDLUndefined>>> cancel_promise_;
   bool reading_ = false;
 
   // The standard contains a number of pairs of variables with one for each
