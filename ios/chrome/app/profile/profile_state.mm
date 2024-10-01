@@ -14,6 +14,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+// TODO(crbug.com/353683675): Remove once each ProfileState -initStage is
+// managed separately (this requires some refactoring before it can happen).
+#import "ios/chrome/app/application_delegate/app_state.h"
+
 // A sub-class of CRBProtocolObservers that declares it conforms to the
 // ProfileStateObserver protocol to please the compiler as it can't see
 // that CRBProtocolObservers conforms to any protocol of the registered
@@ -159,6 +163,17 @@
   _connectedSceneStates.insert(sceneState);
   if (self.initStage >= ProfileInitStage::InitStageUIReady) {
     [_observers profileState:self sceneConnected:sceneState];
+  }
+}
+
+- (void)queueTransitionToNextInitStage {
+  // TODO(crbug.com/353683675): once ProfileInitStage and (app) InitStage
+  // have been decoupled, then this method should only update the current
+  // object. Until then forward the call to AppState if the object is the
+  // "main" profile. This allow converting incrementally the AppAgents to
+  // ProfileStateAgents.
+  if (self.appState.mainProfile == self) {
+    [self.appState queueTransitionToNextInitStage];
   }
 }
 

@@ -529,14 +529,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
   DCHECK(!_profileControllers.empty());
 
-  // TODO(crbug.com/343166723): support marking a specific profile to use when
-  // a new Scene is connected instead of picking one at random.
-  ProfileController* defaultProfile = _profileControllers.begin()->second;
-
-  // TODO(crbug.com/343166723): remove the global mainProfile when it is only
-  // accessed per scene.
-  self.appState.mainProfile = defaultProfile.state;
-
   for (SceneState* sceneState in self.appState.connectedScenes) {
     [self attachProfileToSceneState:sceneState];
   }
@@ -1652,6 +1644,12 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   DCHECK(iterator != _profileControllers.end());
   ProfileState* profileState = iterator->second.state;
+
+  // TODO(crbug.com/343166723): remove the global mainProfile when it is only
+  // accessed per scene.
+  if (!self.appState.mainProfile) {
+    self.appState.mainProfile = profileState;
+  }
 
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // (app) InitStage are fully decoupled.

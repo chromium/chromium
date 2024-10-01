@@ -58,6 +58,15 @@
 // Informs the profile the given `sceneState` connected.
 - (void)sceneStateConnected:(SceneState*)sceneState;
 
+// Queue the transition to the next profile initialization stage.
+//
+// All observers will be notified about each transitions. If an observer call
+// this method from a transition notification, the transition will be queued
+// and performed once the in-progress transition is complete. It is an error
+// to queue more than one transition at once, or to queue a transition when
+// the stage is already InitStageFinal.
+- (void)queueTransitionToNextInitStage;
+
 @end
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_STATE_H_
