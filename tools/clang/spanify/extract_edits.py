@@ -46,6 +46,7 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 """
 
 import sys
+import urllib.parse
 
 import resource
 from os.path import expanduser
@@ -381,7 +382,7 @@ def main():
 
     for index, component in enumerate(component_with_changes):
         for text in component.changes:
-            print(text)
+            print(urllib.parse.unquote(text).replace('\n', '\0'))
 
         summary_file.write(f'patch_{index}: {len(component.changes)}\n')
 

@@ -26,6 +26,9 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+// Special keywords:
+constexpr char kEmptyKeyword[] = "<empty>";
+
 const char kBaseSpanIncludePath[] = "base/containers/span.h";
 
 // Include path that needs to be added to all the files where
@@ -53,6 +56,29 @@ AST_MATCHER_P(clang::FunctionDecl,
   }
   *Builder = std::move(result);
   return is_matching;
+}
+
+std::string EscapeReplacementText(std::string text) {
+  static const std::string_view escaped = "\n\r%@,:<>";
+  static const std::string_view hex = "0123456789ABCDEF";
+
+  // <empty> is a special keyword. It is never escaped.
+  if (text == kEmptyKeyword) {
+    return text;
+  }
+
+  std::string out;
+  for (auto ch : text) {
+    if (escaped.find(ch) != std::string_view::npos) {
+      uint8_t value = static_cast<uint8_t>(ch);
+      out += '%';
+      out += hex[(value >> 4) & 0x0F];
+      out += hex[(value >> 0) & 0x0F];
+    } else {
+      out += ch;
+    }
+  }
+  return out;
 }
 
 struct Node {
@@ -147,7 +173,9 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
   if (file_path.empty()) {
     return {"", ""};
   }
-  std::replace(replacement_text.begin(), replacement_text.end(), '\n', '\0');
+  // If `replacement_text` is a special keyword, e.g. "<empty>", should not
+  // escape `replacement_text`.
+  replacement_text = EscapeReplacementText(replacement_text);
   std::string replacement_directive = llvm::formatv(
       "r:::{0}:::{1}:::{2}:::{3}", file_path, replacement.getOffset(),
       replacement.getLength(), replacement_text);
@@ -448,7 +476,7 @@ static Node getNodeFromCallToExternalFunction(
 static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
                                 const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  std::string replacement = "<empty>";
+  std::string replacement = kEmptyKeyword;
   clang::SourceRange replacement_range;
   if (const auto* nullptr_expr =
           result.Nodes.getNodeAs<clang::CXXNullPtrLiteralExpr>(
