@@ -5280,7 +5280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.ShowGaiaSignin.PermanentlyUntrusted" enum="Boolean"
-    expires_after="2024-11-01">
+    expires_after="2025-10-01">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5291,7 +5291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.ShowGaiaSignin.WaitTime" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-10-01">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>

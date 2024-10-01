@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistence.FetchAccessTokenResult"
-    enum="GoogleServiceAuthError" expires_after="2024-11-01">
+    enum="GoogleServiceAuthError" expires_after="2025-10-01">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistenceV2.InSessionFlowResult"
-    enum="EduCoexistenceFlowV2Result" expires_after="2024-11-01">
+    enum="EduCoexistenceFlowV2Result" expires_after="2025-10-01">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistenceV2.OnboardingFlowResult"
-    enum="EduCoexistenceFlowV2Result" expires_after="2025-03-09">
+    enum="EduCoexistenceFlowV2Result" expires_after="2025-10-01">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
