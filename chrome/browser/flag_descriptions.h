@@ -4929,6 +4929,15 @@ extern const char kSupervisedProfileSubframeReauthDescription[];
 
 extern const char kSupervisedProfileFilteringFallbackName[];
 extern const char kSupervisedProfileFilteringFallbackDescription[];
+
+extern const char kSupervisedProfileCustomSignInInterceptName[];
+extern const char kSupervisedProfileCustomSignInInterceptDescription[];
+
+extern const char kSupervisedProfileSignInIphName[];
+extern const char kSupervisedProfileSignInIphDescription[];
+
+extern const char kSupervisedProfileShowKiteBadgeName[];
+extern const char kSupervisedProfileShowKiteBadgeDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // ============================================================================

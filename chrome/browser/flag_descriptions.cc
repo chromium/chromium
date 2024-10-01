@@ -8460,6 +8460,23 @@ const char kSupervisedProfileFilteringFallbackDescription[] =
     "Family Link website filtering setting is set to block explicit sites. "
     "If the Family Link website filtering setting is set to another value, it "
     "is applied in the pending regardless of this flag.";
+
+const char kSupervisedProfileCustomSignInInterceptName[] =
+    "Supervised Profile custom sign-in intercept";
+const char kSupervisedProfileCustomSignInInterceptDescription[] =
+    "Displays a modified sign-in intercept UI for sign-in attempts from "
+    "supervised users.";
+
+const char kSupervisedProfileSignInIphName[] = "Supervised Profile sign-in IPH";
+const char kSupervisedProfileSignInIphDescription[] =
+    "Displays an in-product help message when a Profile becomes owned by a "
+    "supervised user (either on creation of the new profile, or after sign "
+    "in).";
+
+const char kSupervisedProfileShowKiteBadgeName[] =
+    "Supervised Profile show kite badge";
+const char kSupervisedProfileShowKiteBadgeDescription[] =
+    "Shows a kite badge on the profile avatar for supervised users.";
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // ============================================================================

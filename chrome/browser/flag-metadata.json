@@ -8329,7 +8329,15 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
+  },
+  {
+    "name": "supervised-profile-custom-sign-in-intercept",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "supervised-profile-filtering-fallback",
@@ -8337,7 +8345,7 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
   },
   {
     "name": "supervised-profile-hide-guest",
@@ -8345,7 +8353,15 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
+  },
+  {
+    "name": "supervised-profile-kite-badging",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "supervised-profile-safe-search",
@@ -8353,7 +8369,15 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
+  },
+  {
+    "name": "supervised-profile-sign-in-iph",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "supervised-profile-subframe-reauth",
@@ -8361,7 +8385,7 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
   },
   {
     "name": "supervised-profile-youtube-reauth",
@@ -8369,7 +8393,7 @@
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 133
   },
   {
     "name": "support-f11-and-f12-shortcuts",
