@@ -57,9 +57,12 @@ namespace gpu {
 namespace {
 
 #if BUILDFLAG(IS_OZONE)
+// TODO(crbug.com/330865436): It turns out that `supports_overlays` is
+// currently set only in the browser process; we need to ensure that it is set
+// in the GPU process before we can re-enable this feature.
 BASE_FEATURE(kSupportScanoutOnOzoneOnlyIfOverlaysSupported,
              "SupportScanoutOnOzoneOnlyIfOverlaysSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // `DCHECKS` and dumps without crashing that `backing`'s usage overlaps with
