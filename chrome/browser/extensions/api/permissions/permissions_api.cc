@@ -690,9 +690,9 @@ PermissionsRemoveSiteAccessRequestFunction::Run() {
   DCHECK(web_contents);
   DCHECK_NE(tab_id, -1);
 
-  // TODO(crbug.com/330588494): Add pattern to request removal.
-  bool is_removed = PermissionsManager::Get(browser_context())
-                        ->RemoveSiteAccessRequest(tab_id, extension()->id());
+  bool is_removed =
+      PermissionsManager::Get(browser_context())
+          ->RemoveSiteAccessRequest(tab_id, extension()->id(), pattern);
   if (!is_removed) {
     return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
   }

@@ -1299,10 +1299,9 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   }
 }
 
-// Tests extension can remove a site access request for a tab, if request is
-// existent.
+// Tests extension cannot remove a site access request that doesn't exist.
 TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       RemoveSiteAccessRequest_TabId) {
+       RemoveSiteAccessRequest_TabId_Invalid) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1317,14 +1316,13 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Remove site access request for tab, when it has no active requests.
+  // Extension cannot remove a request when there is no current request.
   {
-    auto function =
+    auto remove_function =
         base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
-    function->set_extension(extension.get());
-
+    remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), GetFunctionParams(tab_id), profile(),
+        remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
         "Extension cannot remove a site access request that doesn't exist.",
@@ -1335,28 +1333,176 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         tab_id, extension->id()));
   }
 
-  // Add site access request for tab.
+  // Extension cannot remove a site access request with a pattern when it
+  // doesn't match the active request (that matches all patterns).
   {
-    auto function =
+    // Add a site access request without a pattern. Not specifying a pattern
+    // means request will be shown for all patterns.
+    auto add_function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
-    function->set_extension(extension.get());
+    add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), GetFunctionParams(tab_id), profile(),
+        add_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request was added.
     EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
         tab_id, extension->id()));
+
+    // Remove a site access request with 'requested.com' pattern. Even though
+    // existent request matches all patterns, the removal must exactly match
+    // request. We do this because we don't support "all urls but <x>".
+    auto remove_function =
+        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+    remove_function->set_extension(extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        remove_function.get(),
+        GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot remove a site access request that doesn't exist.",
+        error);
+
+    // Verify request wasn't removed.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
   }
 
-  // Remove site access request for tab, when it has an active requests.
+  // Extension cannot remove a site access request with a pattern when it
+  // doesn't match the active request (with a different pattern specified).
   {
-    auto function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
-    function->set_extension(extension.get());
-
+    // Add a site access request with 'requested.com' pattern. Adding a new
+    // request overrides existent request.
+    auto add_function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), GetFunctionParams(tab_id), profile(),
+        add_function.get(), GetFunctionParams(tab_id, "*://*.requested.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+
+    // Remove a site access request with a 'other.com' pattern. Function is
+    // invalid because 'other.com' doesn't match with the current request for
+    // 'requested.com'.
+    auto remove_function =
+        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+    remove_function->set_extension(extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        remove_function.get(), GetFunctionParams(tab_id, "*://*.other.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot remove a site access request that doesn't exist.",
+        error);
+
+    // Verify request wasn't removed.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+}
+
+// Tests extension can remove a site access request that matches an existent
+// request.
+TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
+       RemoveSiteAccessRequest_TabId_Valid) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Extension")
+          .SetManifestKey("host_permissions",
+                          base::Value::List().Append("*://*.requested.com/*"))
+          .Build();
+  AddExtensionAndWithheldPermissions(*extension);
+
+  // Open tab on a url requested by the extension.
+  NavigateTo("http://www.requested.com");
+  int tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  auto* permissions_manager = PermissionsManager::Get(profile());
+
+  // Extension can remove a site access request that matches all patterns (by
+  // not specifying one) when it matches the active request (that matches all
+  // patterns).
+  {
+    // Add a site access request without a pattern.
+    auto add_function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    add_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        add_function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+
+    // Remove a site access request without a pattern.
+    auto remove_function =
+        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+    remove_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        remove_function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify request was removed.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Extension can remove a site access request with a pattern when it matches
+  // the current request (with the same pattern).
+  {
+    // Add a site access request with 'requested.com' pattern.
+    auto add_function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    add_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        add_function.get(),
+        GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+
+    // Remove a site access request with 'requested.com' pattern.
+    auto remove_function =
+        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+    remove_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        remove_function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify request was removed.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Extension can remove a site access request without a pattern when it
+  // matches the active request (with a pattern).
+  {
+    // Add a site access request with 'requested.com' pattern.
+    auto add_function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    add_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        add_function.get(),
+        GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+
+    // Remove a site access request without specifying pattern (which matches to
+    // all patterns). Function is valid because it matches the current request
+    // ('all patterns' which matches current request on 'requested.com').
+    auto remove_function =
+        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+    remove_function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
@@ -1367,6 +1513,8 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
 // Tests extension can remove a site access request for a document, if request
 // is existent.
+// Note: Document id is converted to tab id. Thus, here we only need to test the
+// base cases since we have extensive testing for removing requests with tab id.
 TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
        RemoveSiteAccessRequest_DocumentId) {
   scoped_refptr<const Extension> extension =
